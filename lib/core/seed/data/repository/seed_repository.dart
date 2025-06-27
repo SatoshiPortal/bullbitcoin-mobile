@@ -31,11 +31,10 @@ class SeedRepository {
 
   Future<Seed> get(String fingerprint) async {
     final rootToken = RootIsolateToken.instance!;
-    final seed = await compute(
+    return await compute(
       _getSeedInIsolate,
       _IsolateParams(fingerprint: fingerprint, rootToken: rootToken),
     );
-    return seed;
   }
 
   Future<bool> exists(String fingerprint) => _source.exists(fingerprint);
@@ -51,12 +50,16 @@ class _IsolateParams {
 }
 
 Future<Seed> _getSeedInIsolate(_IsolateParams params) async {
-  BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootToken);
-  final secureStorage = SecureStorageDatasourceImpl(
-    const FlutterSecureStorage(),
-  );
-  final seedDatasource = SeedDatasource(secureStorage: secureStorage);
-
-  final model = await seedDatasource.get(params.fingerprint);
-  return model.toEntity();
+  try {
+    BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootToken);
+    final secureStorage = SecureStorageDatasourceImpl(
+      const FlutterSecureStorage(),
+    );
+    final seedDatasource = SeedDatasource(secureStorage: secureStorage);
+    final model = await seedDatasource.get(params.fingerprint);
+    return model.toEntity();
+  } catch (e) {
+    if (e is SeedNotFoundException) rethrow;
+    throw Exception('Failed to get seed in isolate: $e');
+  }
 }
