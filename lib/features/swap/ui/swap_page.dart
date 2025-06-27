@@ -78,59 +78,50 @@ class SwapAmountPage extends StatelessWidget {
             FadingLinearProgress(
               height: 3,
               trigger: amountConfirmedClicked,
-              backgroundColor: context.colour.surface,
+              backgroundColor: context.colour.onPrimary,
               foregroundColor: context.colour.primary,
-              duration: const Duration(milliseconds: 250),
             ),
-            Expanded(
-              child:
-                  !amountConfirmedClicked
-                      ? const SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 24,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              SwapFromToDropdown(type: _SwapDropdownType.from),
-                              Gap(16),
-                              SwapAvailableBalance(),
-                              Gap(16),
-                              SizedBox(
-                                height: 142 * 2,
-                                child: Stack(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.topCenter,
-                                      child: SwapCard(type: _SwapCardType.pay),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: SwapCard(
-                                        type: _SwapCardType.receive,
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: SwapChangeButton(),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Gap(16),
-                              SwapFeesInformation(),
-                              Gap(32),
-                              SwapFromToDropdown(type: _SwapDropdownType.to),
-                              Gap(32),
-                              SwapCreationError(),
-                              Gap(40),
-                            ],
-                          ),
+            const Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SwapFromToDropdown(type: _SwapDropdownType.from),
+                      Gap(16),
+                      SwapAvailableBalance(),
+                      Gap(16),
+                      SizedBox(
+                        height: 142 * 2,
+                        child: Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.topCenter,
+                              child: SwapCard(type: _SwapCardType.pay),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: SwapCard(type: _SwapCardType.receive),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: SwapChangeButton(),
+                            ),
+                          ],
                         ),
-                      )
-                      : const SizedBox.shrink(),
+                      ),
+                      Gap(16),
+                      SwapFeesInformation(),
+                      Gap(32),
+                      SwapFromToDropdown(type: _SwapDropdownType.to),
+                      Gap(32),
+                      SwapCreationError(),
+                      Gap(40),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -498,22 +489,17 @@ class SwapContinueWithAmountButton extends StatelessWidget {
     final disableContinueWithAmounts = context.select(
       (SwapCubit cubit) => cubit.state.disableContinueWithAmounts,
     );
-    final amountConfirmedClicked = context.select(
-      (SwapCubit cubit) => cubit.state.amountConfirmedClicked,
-    );
 
-    return amountConfirmedClicked
-        ? const SizedBox.shrink()
-        : BBButton.big(
-          label: 'Continue',
-          bgColor: context.colour.secondary,
-          textColor: context.colour.onSecondary,
-          disabled: disableContinueWithAmounts,
-          onPressed: () {
-            if (disableContinueWithAmounts) return;
-            context.read<SwapCubit>().continueWithAmountsClicked();
-          },
-        );
+    return BBButton.big(
+      label: 'Continue',
+      bgColor: context.colour.secondary,
+      textColor: context.colour.onSecondary,
+      disabled: disableContinueWithAmounts,
+      onPressed: () {
+        if (disableContinueWithAmounts) return;
+        context.read<SwapCubit>().continueWithAmountsClicked();
+      },
+    );
   }
 }
 

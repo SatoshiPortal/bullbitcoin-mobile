@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class FadingLinearProgress extends StatelessWidget {
+class FadingLinearProgress extends StatefulWidget {
   const FadingLinearProgress({
     super.key,
     required this.trigger,
@@ -17,15 +17,32 @@ class FadingLinearProgress extends StatelessWidget {
   final Duration duration;
 
   @override
+  State<FadingLinearProgress> createState() => _FadingLinearProgressState();
+}
+
+class _FadingLinearProgressState extends State<FadingLinearProgress> {
+  bool isVisible = false;
+
+  @override
+  void didUpdateWidget(FadingLinearProgress oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.trigger != oldWidget.trigger) {
+      setState(() {
+        isVisible = widget.trigger;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height,
+      height: widget.height,
       child: AnimatedOpacity(
-        opacity: trigger ? 1.0 : 0.0,
-        duration: duration,
+        opacity: isVisible ? 1.0 : 0.0,
+        duration: widget.duration,
         child: LinearProgressIndicator(
-          backgroundColor: backgroundColor,
-          color: foregroundColor,
+          backgroundColor: widget.backgroundColor,
+          color: widget.foregroundColor,
         ),
       ),
     );

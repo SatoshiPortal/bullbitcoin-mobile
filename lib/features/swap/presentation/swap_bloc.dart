@@ -468,6 +468,7 @@ class SwapCubit extends Cubit<SwapState> {
       clearAllExceptions();
       emit(state.copyWith(amountConfirmedClicked: true));
 
+      // Validate swap limits first
       if (state.swapAmountBelowLimit) {
         emit(
           state.copyWith(
@@ -515,9 +516,10 @@ class SwapCubit extends Cubit<SwapState> {
 
       _watchChainSwap(swap.id);
       await loadFees();
+      emit(state.copyWith(amountConfirmedClicked: false));
+      await Future.delayed(const Duration(milliseconds: 1000));
       emit(
         state.copyWith(
-          amountConfirmedClicked: false,
           step: SwapPageStep.confirm,
           swap: swap,
           creatingSwap: false,
