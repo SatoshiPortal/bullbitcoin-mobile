@@ -1612,7 +1612,7 @@ class SendSucessScreen extends StatelessWidget {
                     )
                   else if (isLnSwap && isBitcoin)
                     BBText(
-                      'Invoice Will Be Paid Shortly',
+                      'Payment Will Take Time',
                       style: context.font.headlineLarge,
                     )
                   else if (isChainSwap) ...[
