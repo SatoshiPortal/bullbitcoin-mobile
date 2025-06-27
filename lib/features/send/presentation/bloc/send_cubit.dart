@@ -488,7 +488,10 @@ class SendCubit extends Cubit<SendState> {
             state.paymentRequest!.amountSat ?? state.inputAmountSat;
         final swap = await _createChainSwapToExternalUsecase.execute(
           sendWalletId: state.selectedWallet!.id,
-          receiveAddress: state.paymentRequestAddress,
+          receiveAddress:
+              state.paymentRequest!.isBip21
+                  ? (state.paymentRequest! as Bip21PaymentRequest).address
+                  : state.paymentRequestAddress,
           type: swapType,
           amountSat: amountSat,
         );
