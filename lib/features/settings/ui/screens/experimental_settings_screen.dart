@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/experimental/mnemonic_translate/mnemonic_translate_router.dart';
 import 'package:bb_mobile/features/experimental/scan_signed_tx/scan_signed_tx_router.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -34,6 +35,18 @@ class ExperimentalSettingsScreen extends StatelessWidget {
                   title: const Text('Scan / Paste Transaction'),
                   onTap: () => context.pushNamed(ScanSignedTxRoutes.go.name),
                   trailing: const Icon(Icons.qr_code_scanner),
+                ),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
+                  title: const Text('Mnemonic Translator'),
+                  onTap:
+                      () => context.pushNamed(
+                        MnemonicTranslateRoutes.translator.name,
+                      ),
+                  trailing: const Icon(Icons.translate),
                 ),
               ],
             ),
