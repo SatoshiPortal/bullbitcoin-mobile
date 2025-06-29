@@ -495,60 +495,65 @@ class PdkPayjoinDatasource {
     final dio = Dio();
     // Listen for and register new receivers sent from the main isolate
     receivePort.listen((data) async {
-      log('[Senders Isolate] Received data in senders isolate: $data');
-      final senderModel = PayjoinSenderModel.fromJson(
-        data as Map<String, dynamic>,
-      );
-      final sender = Sender.fromJson(json: senderModel.sender);
-      log('[Senders Isolate] Requesting payjoin...');
-      final context = await PdkPayjoinDatasource.request(
-        sender: sender,
-        dio: dio,
-      );
-      log('[Senders Isolate] Payjoin requested.');
+      try {
+        log('[Senders Isolate] Received data in senders isolate: $data');
+        final senderModel = PayjoinSenderModel.fromJson(
+          data as Map<String, dynamic>,
+        );
+        final sender = Sender.fromJson(json: senderModel.sender);
+        log('[Senders Isolate] Requesting payjoin...');
+        final context = await PdkPayjoinDatasource.request(
+          sender: sender,
+          dio: dio,
+        );
+        log('[Senders Isolate] Payjoin requested.');
 
-      // Periodically check for a proposal from the receiver
-      Timer.periodic(
-        const Duration(seconds: PayjoinConstants.directoryPollingInterval),
-        (Timer timer) async {
-          log('[Senders Isolate]Checking for proposal in senders isolate');
-          try {
-            final proposalPsbt = await PdkPayjoinDatasource.getProposalPsbt(
-              context: context,
-              dio: dio,
-            );
-
-            if (proposalPsbt != null) {
-              log('[Senders Isolate] Proposal found in senders isolate');
-              final txId = await TransactionParsing.getTxIdFromPsbt(
-                proposalPsbt,
-              );
-              // The proposal psbt is needed in the main isolate for
-              //  further processing so send it through the model as well as
-              //  its txId.
-              final updatedModel = senderModel.copyWith(
-                proposalPsbt: proposalPsbt,
-                txId: txId,
+        // Periodically check for a proposal from the receiver
+        Timer.periodic(
+          const Duration(seconds: PayjoinConstants.directoryPollingInterval),
+          (Timer timer) async {
+            log('[Senders Isolate]Checking for proposal in senders isolate');
+            try {
+              final proposalPsbt = await PdkPayjoinDatasource.getProposalPsbt(
+                context: context,
+                dio: dio,
               );
 
-              // Notify the main isolate so the payjoin can be processed further
-              sendPort.send(updatedModel.toJson());
+              if (proposalPsbt != null) {
+                log('[Senders Isolate] Proposal found in senders isolate');
+                final txId = await TransactionParsing.getTxIdFromPsbt(
+                  proposalPsbt,
+                );
+                // The proposal psbt is needed in the main isolate for
+                //  further processing so send it through the model as well as
+                //  its txId.
+                final updatedModel = senderModel.copyWith(
+                  proposalPsbt: proposalPsbt,
+                  txId: txId,
+                );
 
-              // Cancel the timer
-              timer.cancel();
+                // Notify the main isolate so the payjoin can be processed further
+                sendPort.send(updatedModel.toJson());
+
+                // Cancel the timer
+                timer.cancel();
+              }
+            } catch (e) {
+              log('[Senders Isolate] periodic timer exception: $e');
+              if (e is PayjoinExpiredException) {
+                // If the request returns an expiry error, mark the receiver as
+                //  expired and notify the main isolate so it stops polling
+                final updatedModel = senderModel.copyWith(isExpired: true);
+                sendPort.send(updatedModel.toJson());
+                timer.cancel();
+              }
             }
-          } catch (e) {
-            log('[Senders Isolate] periodic timer exception: $e');
-            if (e is PayjoinExpiredException) {
-              // If the request returns an expiry error, mark the receiver as
-              //  expired and notify the main isolate so it stops polling
-              final updatedModel = senderModel.copyWith(isExpired: true);
-              sendPort.send(updatedModel.toJson());
-              timer.cancel();
-            }
-          }
-        },
-      );
+          },
+        );
+      } catch (e) {
+        log('[Senders Isolate] Error in listener: $e');
+        // Optionally notify the main isolate of the failure
+      }
     });
   }
 
@@ -652,22 +657,29 @@ class PdkPayjoinDatasource {
 
     for (final ohttpProxyUrl in PayjoinConstants.ohttpRelayUrls) {
       try {
+        log(
+          '[Senders Isolate] Extracting V2 request from sender with relay: $ohttpProxyUrl',
+        );
         result = await sender.extractV2(
           ohttpProxyUrl: await Url.fromStr(ohttpProxyUrl),
         );
         break;
       } catch (e) {
-        log('request exception: $e');
+        final msg = (e as dynamic).msg ?? e.toString();
+        log('[Senders Isolate] request error: $msg');
+        log('[Senders Isolate] Continuing to next OHTTP relay');
         continue;
       }
     }
 
     if (result == null) {
+      log('[Senders Isolate] All OHTTP relays failed');
       throw Exception('All OHTTP relays failed');
     }
 
     final (req, context) = result;
 
+    log('[Senders Isolate] Sending V2 request to ${req.url.asString()}');
     final res = await dio.post(
       req.url.asString(),
       data: req.body,
@@ -676,10 +688,13 @@ class PdkPayjoinDatasource {
         responseType: ResponseType.bytes,
       ),
     );
+    log('[Senders Isolate] Received response from ${req.url.asString()}');
 
     final getCtx = await context.processResponse(
       response: res.data as List<int>,
     );
+
+    log('[Senders Isolate] Processed response for V2 request: $getCtx');
 
     return getCtx;
   }

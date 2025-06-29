@@ -208,6 +208,10 @@ sealed class PaymentRequest with _$PaymentRequest {
       }
 
       final amount = uri.amount;
+      // TODO: The following line is a workaround for the issue with spaces in the 'pj' field.
+      // It can be removed once PDK returns the pj field as an encoded uri string.
+      uri.options['pj'] = uri.options['pj']?.replaceAll(' ', '+');
+
       return PaymentRequest.bip21(
         network: network,
         address: address,
