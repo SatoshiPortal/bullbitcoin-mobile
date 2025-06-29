@@ -106,9 +106,9 @@ abstract class ReceiveState with _$ReceiveState {
           final queryParameters = {
             if (bip21Uri.queryParameters.isNotEmpty)
               ...bip21Uri.queryParameters,
-            'pj': pjUri.queryParameters['pj'],
             if (pjUri.queryParameters['pjos'] != null)
               'pjos': pjUri.queryParameters['pjos'],
+            'pj': pjUri.queryParameters['pj'],
           };
           bip21Uri = bip21Uri.replace(queryParameters: queryParameters);
         }
