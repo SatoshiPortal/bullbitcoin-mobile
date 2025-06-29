@@ -91,8 +91,16 @@ class TransactionDetailsTable extends StatelessWidget {
                       onTap: () async {
                         final url =
                             walletTransaction?.isLiquid == true
-                                ? MempoolUrl.liquidTxidUrl(unblindedUrl ?? '')
-                                : MempoolUrl.bitcoinTxidUrl(txId);
+                                ? MempoolUrl.liquidTxidUrl(
+                                  unblindedUrl ?? '',
+                                  isTestnet:
+                                      walletTransaction?.isTestnet ?? false,
+                                )
+                                : MempoolUrl.bitcoinTxidUrl(
+                                  txId,
+                                  isTestnet:
+                                      walletTransaction?.isTestnet ?? false,
+                                );
                         await launchUrl(Uri.parse(url));
                       },
                       child: Text(
