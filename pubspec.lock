@@ -90,14 +90,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
-  bip32:
+  bip32_keys:
     dependency: "direct main"
     description:
-      name: bip32
-      sha256: "54787cd7a111e9d37394aabbf53d1fc5e2e0e0af2cd01c459147a97c0e3f8a97"
+      name: bip32_keys
+      sha256: e8dfb4e4ad829cbc53c745c2ec72f04aa6b83689f09bc1f8823ee416cb2e5292
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "3.0.1"
   bip39_mnemonic:
     dependency: "direct main"
     description:
@@ -247,10 +247,10 @@ packages:
     dependency: transitive
     description:
       name: camera_android_camerax
-      sha256: b4197bd6ce75bc66963a904c34c4cbb6aaa2260a5d4aca13b3556926cf3a92b8
+      sha256: "4b6c1bef4270c39df96402c4d62f2348c3bb2bbaefd0883b9dbd58f426306ad0"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.18+3"
+    version: "0.6.19"
   camera_avfoundation:
     dependency: transitive
     description:
@@ -1348,10 +1348,10 @@ packages:
     dependency: transitive
     description:
       name: posix
-      sha256: f0d7856b6ca1887cfa6d1d394056a296ae33489db914e365e2044fdada449e62
+      sha256: "6323a5b0fa688b6a010df4905a56b00181479e6d10534cecfecede2aa55add61"
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.2"
+    version: "6.0.3"
   process:
     dependency: transitive
     description:

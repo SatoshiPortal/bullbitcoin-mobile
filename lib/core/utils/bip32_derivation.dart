@@ -2,41 +2,44 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/utils/uint_8_list_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bip32/bip32.dart' as bip32;
+import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bs58check/bs58check.dart' as base58;
 
 class Bip32Derivation {
-  static Future<bip32.BIP32> getAccountXpub({
+  static Future<bip32.Bip32Keys> getAccountXpub({
     required Uint8List seedBytes,
     required ScriptType scriptType,
     required Network network,
     int accountIndex = 0,
   }) async {
-    final root = bip32.BIP32.fromSeed(seedBytes);
+    final root = bip32.Bip32Keys.fromSeed(seedBytes);
     final derivationPath =
         "m/${scriptType.purpose}'/${network.coinType}'/$accountIndex'";
     final derivedAccountKey = root.derivePath(derivationPath);
-    return derivedAccountKey.neutered();
+    return derivedAccountKey.neutered;
   }
 
   static String getXprvFromSeed(Uint8List seedBytes, Network network) {
-    final nw = network == Network.bitcoinTestnet
-        ? bip32.NetworkType(
-            wif: 0x80,
-            bip32: bip32.Bip32Type(public: 0x043587CF, private: 0x04358394),
-          )
-        : null;
-    final root = bip32.BIP32.fromSeed(seedBytes, nw);
+    final nw =
+        network == Network.bitcoinTestnet
+            ? bip32.NetworkType(
+              wif: 0x80,
+              bip32: bip32.Bip32Type(public: 0x043587CF, private: 0x04358394),
+            )
+            : null;
+    final root = bip32.Bip32Keys.fromSeed(seedBytes, network: nw);
     return root.toBase58();
   }
 
-  static bip32.BIP32 getBip32Xpub(String xpub) {
+  static bip32.Bip32Keys getBip32Xpub(String xpub) {
     final decoded = base58.decode(xpub);
     final keyBytes = decoded.sublist(4); // Remove xpub version bytes
     // Add xpub version bytes, since the bip32 library expects them like that
-    final xpubBytes =
-        Uint8List.fromList([...XpubType.xpub.versionBytes, ...keyBytes]);
-    return bip32.BIP32.fromBase58(base58.encode(xpubBytes));
+    final xpubBytes = Uint8List.fromList([
+      ...XpubType.xpub.versionBytes,
+      ...keyBytes,
+    ]);
+    return bip32.Bip32Keys.fromBase58(base58.encode(xpubBytes));
   }
 }
 
@@ -77,12 +80,9 @@ extension ScriptTypeX on ScriptType {
   }
 }
 
-extension Bip32X on bip32.BIP32 {
+extension Bip32X on bip32.Bip32Keys {
   /// Get the fingerprint of the BIP32 key as a hex string
-  String get fingerprintHex {
-    final fingerprintBytes = fingerprint;
-    return fingerprintBytes.toHexString();
-  }
+  String get fingerprintHex => fingerprint.toHexString();
 
   /// Converts an xpub to different extended public key formats
   String convert(XpubType targetType) {
@@ -90,8 +90,10 @@ extension Bip32X on bip32.BIP32 {
     final decoded = base58.decode(xpub);
     final versionBytes = Uint8List.fromList(targetType.versionBytes);
     final keyBytes = decoded.sublist(4); // Remove existing xpub version bytes
-    final newBytes =
-        Uint8List.fromList([...versionBytes, ...keyBytes]); // Apply new prefix
+    final newBytes = Uint8List.fromList([
+      ...versionBytes,
+      ...keyBytes,
+    ]); // Apply new prefix
     return base58.encode(newBytes);
   }
 }

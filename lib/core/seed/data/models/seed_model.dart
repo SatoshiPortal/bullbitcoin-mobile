@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/uint_8_list_x.dart';
-import 'package:bip32/bip32.dart' as bip32;
+import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -31,7 +31,7 @@ sealed class SeedModel with _$SeedModel {
   }
 
   String get masterFingerprint {
-    final root = bip32.BIP32.fromSeed(Uint8List.fromList(bytes));
+    final root = Bip32Keys.fromSeed(Uint8List.fromList(bytes));
     final fingerprintBytes = root.fingerprint;
     final fingerprintHex = fingerprintBytes.toHexString();
     return fingerprintHex;
