@@ -1,8 +1,8 @@
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_usecase.dart';
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/multiline_paste_widget.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/import_method_widget.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/multiline_paste_widget.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/watch_only_details_widget.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
