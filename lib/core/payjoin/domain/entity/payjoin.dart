@@ -45,4 +45,8 @@ sealed class Payjoin with _$Payjoin {
   bool get isCompleted => status == PayjoinStatus.completed;
   bool get isExpired => status == PayjoinStatus.expired;
   bool get isOngoing => !isCompleted && !isExpired;
+
+  // Currently payjoin is always bitcoin, not liquid
+  bool get isBitcoin => true;
+  bool get isLiquid => false;
 }

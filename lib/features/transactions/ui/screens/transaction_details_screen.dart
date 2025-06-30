@@ -26,8 +26,8 @@ class TransactionDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isLoadingTransactionDetails = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.isLoadingInitialData,
+    final isLoading = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.isLoading,
     );
     final tx = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
@@ -93,10 +93,10 @@ class TransactionDetailsScreen extends StatelessWidget {
         ),
       ),
       body:
-          isLoadingTransactionDetails
+          isLoading
               ? FadingLinearProgress(
                 height: 3,
-                trigger: isLoadingTransactionDetails,
+                trigger: isLoading,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 foregroundColor: Theme.of(context).colorScheme.primary,
               )

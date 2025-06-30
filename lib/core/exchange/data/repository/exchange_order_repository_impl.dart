@@ -42,7 +42,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         orderId: orderId,
       );
 
-      return orderModel.toEntity();
+      return orderModel.toEntity(isTestnet: _isTestnet);
     } catch (e) {
       throw Exception('Failed to get order: $e');
     }
@@ -78,7 +78,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         orElse: () => throw Exception('Order not found for txId: $txId'),
       );
 
-      return orderModel.toEntity();
+      return orderModel.toEntity(isTestnet: _isTestnet);
     } catch (e) {
       log.severe('Error fetching order by txId: $e');
       return null;
@@ -115,7 +115,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       List<Order> orders =
-          orderModels.map((model) => model.toEntity()).toList();
+          orderModels
+              .map((model) => model.toEntity(isTestnet: _isTestnet))
+              .toList();
 
       // this filtering should also be done separately, read from disk not over network
       if (type != null) {
@@ -192,7 +194,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         address: toAddress,
       );
 
-      final order = orderModel.toEntity() as BuyOrder;
+      final order = orderModel.toEntity(isTestnet: _isTestnet) as BuyOrder;
 
       return order;
     } catch (e) {
@@ -224,7 +226,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         orderId: orderId,
       );
 
-      final order = orderModel.toEntity();
+      final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! BuyOrder) {
         throw Exception(
@@ -262,7 +264,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         orderId: orderId,
       );
 
-      final order = orderModel.toEntity();
+      final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! BuyOrder) {
         throw Exception(
@@ -300,7 +302,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         orderId: orderId,
       );
 
-      final order = orderModel.toEntity() as BuyOrder;
+      final order = orderModel.toEntity(isTestnet: _isTestnet) as BuyOrder;
 
       return order;
     } catch (e) {

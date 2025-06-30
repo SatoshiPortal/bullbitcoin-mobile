@@ -97,22 +97,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         .listen((_) => _loadDetailsByWalletTxId(txId, walletId: walletId));
 
     // Load the initial details of the transaction.
-    await _loadDetailsByWalletTxId(
-      txId,
-      walletId: walletId,
-      isInitialLoad: true,
-    );
+    await _loadDetailsByWalletTxId(txId, walletId: walletId);
   }
 
   Future<void> _loadDetailsByWalletTxId(
     String txId, {
     required String walletId,
-    bool isInitialLoad = false,
   }) async {
-    // Only show loading indicator on initial load, not on stream updates
-    if (isInitialLoad) {
-      emit(state.copyWith(isLoadingInitialData: true));
-    }
     try {
       final transactionsWithTxId = await _getTransactionsByTxIdUsecase.execute(
         txId,
@@ -157,13 +148,12 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
           wallet: wallet,
           counterpartWallet: counterpartWallet,
           swapCounterpartTxId: swapCounterpartTxId,
-          isLoadingInitialData: false,
         ),
       );
     } on TransactionNotFoundError catch (e) {
-      emit(state.copyWith(notFoundError: e, isLoadingInitialData: false));
+      emit(state.copyWith(notFoundError: e));
     } catch (e) {
-      emit(state.copyWith(err: e, isLoadingInitialData: false));
+      emit(state.copyWith(err: e));
     }
   }
 

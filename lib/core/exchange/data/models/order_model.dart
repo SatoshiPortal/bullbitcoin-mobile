@@ -182,7 +182,7 @@ class OrderModel {
     'unbatchedBuyOnchainFees': unbatchedBuyOnchainFees,
   };
 
-  Order toEntity() {
+  Order toEntity({required bool isTestnet}) {
     final orderMsg =
         message != null && message is Map<String, dynamic>
             ? OrderMessage(
@@ -262,6 +262,7 @@ class OrderModel {
           indexRateCurrency: indexRateCurrency,
           lightningVoucherExpiresAt: lightningVoucherExpiresAtDt,
           unbatchedBuyOnchainFees: unbatchedBuyOnchainFees,
+          isTestnet: isTestnet,
         );
       case OrderType.sell:
         return Order.sell(
@@ -305,6 +306,7 @@ class OrderModel {
           indexRateAmount: indexRateAmount,
           indexRateCurrency: indexRateCurrency,
           lightningVoucherExpiresAt: lightningVoucherExpiresAtDt,
+          isTestnet: isTestnet,
         );
       case OrderType.fiatPayment:
         return Order.fiatPayment(
@@ -339,6 +341,7 @@ class OrderModel {
           payinAmountChanged: payinAmountChangedObj,
           indexRateAmount: indexRateAmount,
           indexRateCurrency: indexRateCurrency,
+          isTestnet: isTestnet,
         );
       case OrderType.funding:
         return Order.funding(
@@ -369,6 +372,7 @@ class OrderModel {
           completedAt: completedAtDt,
           sentAt: sentAtDt,
           payinAmountChanged: payinAmountChangedObj,
+          isTestnet: isTestnet,
         );
       case OrderType.withdraw:
         return Order.withdraw(
@@ -400,6 +404,7 @@ class OrderModel {
           paymentDescription: paymentDescription,
           completedAt: completedAtDt,
           sentAt: sentAtDt,
+          isTestnet: isTestnet,
         );
       case OrderType.reward:
         return Order.reward(
@@ -443,6 +448,7 @@ class OrderModel {
           indexRateAmount: indexRateAmount,
           indexRateCurrency: indexRateCurrency,
           lightningVoucherExpiresAt: lightningVoucherExpiresAtDt,
+          isTestnet: isTestnet,
         );
       case OrderType.refund:
         return Order.refund(
@@ -474,6 +480,7 @@ class OrderModel {
           paymentDescription: paymentDescription,
           completedAt: completedAtDt,
           sentAt: sentAtDt,
+          isTestnet: isTestnet,
         );
       case OrderType.balanceAdjustment:
         return Order.balanceAdjustment(
@@ -503,6 +510,7 @@ class OrderModel {
           paymentDescription: paymentDescription,
           completedAt: completedAtDt,
           sentAt: sentAtDt,
+          isTestnet: isTestnet,
         );
     }
   }
