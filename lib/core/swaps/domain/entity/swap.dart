@@ -296,6 +296,11 @@ sealed class Swap with _$Swap {
     SwapType.liquidToBitcoin,
     SwapType.bitcoinToLiquid,
   ].contains(type);
+  String? get receiveAddress => switch (this) {
+    LnReceiveSwap(:final receiveAddress) => receiveAddress,
+    ChainSwap(:final receiveAddress) => receiveAddress,
+    _ => null,
+  };
 }
 
 extension SwapFeePercent on Swap {
