@@ -110,6 +110,12 @@ class TransactionDetailsTable extends StatelessWidget {
                       ),
                     ),
           ),
+        if (swap?.receiveAddress != null && swap!.receiveAddress!.isNotEmpty)
+          DetailsTableItem(
+            label: 'Recipient Address',
+            displayValue: StringFormatting.truncateMiddle(swap.receiveAddress!),
+            copyValue: swap.receiveAddress,
+          ),
         if (labels.isNotEmpty) TransactionNotesTableItem(notes: labels),
         if (walletLabel.isNotEmpty && !isOrderType)
           DetailsTableItem(

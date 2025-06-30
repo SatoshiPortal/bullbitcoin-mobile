@@ -281,6 +281,12 @@ sealed class Swap with _$Swap {
           : '';
 
   bool get swapCompleted => status == SwapStatus.completed;
+
+  String? get receiveAddress => switch (this) {
+    LnReceiveSwap(:final receiveAddress) => receiveAddress,
+    ChainSwap(:final receiveAddress) => receiveAddress,
+    _ => null,
+  };
 }
 
 extension SwapFeePercent on Swap {
