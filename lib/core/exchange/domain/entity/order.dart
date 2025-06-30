@@ -249,6 +249,7 @@ sealed class Order with _$Order {
     String? indexRateCurrency,
     DateTime? lightningVoucherExpiresAt,
     double? unbatchedBuyOnchainFees,
+    required bool isTestnet,
   }) = BuyOrder;
 
   const factory Order.sell({
@@ -292,6 +293,7 @@ sealed class Order with _$Order {
     double? indexRateAmount,
     String? indexRateCurrency,
     DateTime? lightningVoucherExpiresAt,
+    required bool isTestnet,
   }) = SellOrder;
 
   const factory Order.fiatPayment({
@@ -326,6 +328,7 @@ sealed class Order with _$Order {
     PayinAmountChanged? payinAmountChanged,
     double? indexRateAmount,
     String? indexRateCurrency,
+    required bool isTestnet,
   }) = FiatPaymentOrder;
 
   const factory Order.funding({
@@ -338,7 +341,6 @@ sealed class Order with _$Order {
     required String payinCurrency,
     required double payoutAmount,
     required String payoutCurrency,
-
     required OrderPaymentMethod payinMethod,
     required OrderPaymentMethod payoutMethod,
     required OrderStatus orderStatus,
@@ -357,6 +359,7 @@ sealed class Order with _$Order {
     DateTime? completedAt,
     DateTime? sentAt,
     PayinAmountChanged? payinAmountChanged,
+    required bool isTestnet,
   }) = FundingOrder;
 
   const factory Order.withdraw({
@@ -388,6 +391,7 @@ sealed class Order with _$Order {
     String? paymentDescription,
     DateTime? completedAt,
     DateTime? sentAt,
+    required bool isTestnet,
   }) = WithdrawOrder;
 
   const factory Order.reward({
@@ -431,6 +435,7 @@ sealed class Order with _$Order {
     double? indexRateAmount,
     String? indexRateCurrency,
     DateTime? lightningVoucherExpiresAt,
+    required bool isTestnet,
   }) = RewardOrder;
 
   const factory Order.refund({
@@ -453,7 +458,6 @@ sealed class Order with _$Order {
     required DateTime confirmationDeadline,
     required DateTime createdAt,
     DateTime? scheduledPayoutTime,
-
     String? beneficiaryName,
     String? beneficiaryLabel,
     String? beneficiaryAccountNumber,
@@ -463,6 +467,7 @@ sealed class Order with _$Order {
     String? paymentDescription,
     DateTime? completedAt,
     DateTime? sentAt,
+    required bool isTestnet,
   }) = RefundOrder;
 
   const factory Order.balanceAdjustment({
@@ -492,6 +497,7 @@ sealed class Order with _$Order {
     String? paymentDescription,
     DateTime? completedAt,
     DateTime? sentAt,
+    required bool isTestnet,
   }) = BalanceAdjustmentOrder;
 
   bool get isPayinCompleted => payinStatus == OrderPayinStatus.completed;
@@ -541,6 +547,51 @@ sealed class Order with _$Order {
         return sellOrder.bitcoinAddress ?? sellOrder.liquidAddress;
       case _:
         return null;
+    }
+  }
+
+  bool get isLiquid {
+    switch (this) {
+      case final BuyOrder buyOrder:
+        return buyOrder.liquidAddress != null;
+      case final SellOrder sellOrder:
+        return sellOrder.liquidAddress != null;
+      case final FiatPaymentOrder fiatPaymentOrder:
+        return fiatPaymentOrder.payinMethod == OrderPaymentMethod.liquid;
+      case final RewardOrder rewardOrder:
+        return rewardOrder.liquidAddress != null;
+      default:
+        return false;
+    }
+  }
+
+  bool get isBitcoin {
+    switch (this) {
+      case final BuyOrder buyOrder:
+        return buyOrder.bitcoinAddress != null;
+      case final SellOrder sellOrder:
+        return sellOrder.bitcoinAddress != null;
+      case final FiatPaymentOrder fiatPaymentOrder:
+        return fiatPaymentOrder.payinMethod == OrderPaymentMethod.bitcoin;
+      case final RewardOrder rewardOrder:
+        return rewardOrder.bitcoinAddress != null;
+      default:
+        return false;
+    }
+  }
+
+  bool get isIncoming {
+    switch (orderType) {
+      case OrderType.buy:
+      case OrderType.funding:
+      case OrderType.balanceAdjustment:
+      case OrderType.refund:
+      case OrderType.reward:
+        return true;
+      case OrderType.sell:
+      case OrderType.withdraw:
+      case OrderType.fiatPayment:
+        return false;
     }
   }
 }
