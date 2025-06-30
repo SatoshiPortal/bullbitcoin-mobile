@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -42,6 +43,33 @@ class WatchOnlyDetailsWidget extends StatelessWidget {
           hint: 'fingerprint',
           maxLength: 8,
         ),
+        const Gap(16),
+        DropdownButtonFormField<WalletSource>(
+          alignment: Alignment.centerLeft,
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+          ),
+          icon: Icon(
+            Icons.keyboard_arrow_down,
+            color: context.colour.secondary,
+          ),
+          value: WalletSource.mnemonic,
+          items:
+              WalletSource.values
+                  .map(
+                    (language) => DropdownMenuItem<WalletSource>(
+                      value: language,
+                      child: BBText(
+                        language.name,
+                        style: context.font.headlineSmall,
+                      ),
+                    ),
+                  )
+                  .toList(),
+          onChanged: cubit.onSourceChanged,
+        ),
+
         const Gap(16),
         BBText('Label', style: context.font.titleMedium),
         const Gap(8),

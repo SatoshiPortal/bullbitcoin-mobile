@@ -9,6 +9,7 @@ abstract class ImportWatchOnlyState with _$ImportWatchOnlyState {
   const factory ImportWatchOnlyState({
     WatchOnlyWalletEntity? watchOnlyWallet,
     Wallet? importedWallet,
+    WalletSource? source,
     @Default('') String publicKey,
     @Default('') String error,
   }) = _ImportWatchOnlyState;

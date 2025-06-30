@@ -19,6 +19,7 @@ abstract class WalletRepository {
   Future<Wallet> importWatchOnlySatoshifier({
     required WatchOnly watchOnly,
     required String label,
+    required WalletSource walletSource,
     String? masterFingerprint,
   });
 

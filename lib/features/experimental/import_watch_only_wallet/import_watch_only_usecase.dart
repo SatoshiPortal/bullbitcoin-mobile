@@ -10,6 +10,7 @@ class ImportWatchOnlyUsecase {
 
   Future<Wallet> call({
     required WatchOnly watchOnly,
+    required WalletSource walletSource,
     String label = '',
     String? masterFingerprint,
   }) async {
@@ -18,6 +19,7 @@ class ImportWatchOnlyUsecase {
         watchOnly: watchOnly,
         label: label,
         masterFingerprint: masterFingerprint,
+        walletSource: walletSource,
       );
 
       return wallet;

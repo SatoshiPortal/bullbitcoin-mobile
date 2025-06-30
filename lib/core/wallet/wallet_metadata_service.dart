@@ -218,6 +218,7 @@ class WalletMetadataService {
 
   static Future<WalletMetadataModel> fromWatchOnly({
     required WatchOnly watchOnly,
+    required WalletSource walletSource,
     String? masterFingerprint,
     String? label,
   }) async {
@@ -234,7 +235,7 @@ class WalletMetadataService {
       ),
       masterFingerprint: masterFingerprint ?? watchOnly.masterFingerprint,
       xpubFingerprint: watchOnly.pubkeyFingerprint,
-      source: WalletSource.descriptors,
+      source: walletSource,
       xpub: watchOnly.descriptor.pubkey,
       externalPublicDescriptor: watchOnly.descriptor.external,
       internalPublicDescriptor: watchOnly.descriptor.internal,

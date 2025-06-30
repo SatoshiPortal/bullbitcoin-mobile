@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_usecase.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -29,6 +30,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
 
   Future<void> import() async {
     if (state.watchOnlyWallet == null) return;
+    if (state.source == null) return;
 
     final masterFingerprint =
         state.watchOnlyWallet!.masterFingerprint.isNotEmpty
@@ -40,6 +42,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
         watchOnly: state.watchOnlyWallet!.watchOnly,
         label: state.watchOnlyWallet!.label,
         masterFingerprint: masterFingerprint,
+        walletSource: state.source!,
       );
 
       emit(state.copyWith(importedWallet: wallet));
@@ -72,5 +75,10 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     } else {
       emit(state.copyWith(publicKey: value, watchOnlyWallet: null));
     }
+  }
+
+  void onSourceChanged(WalletSource? value) {
+    if (value == null) return;
+    emit(state.copyWith(source: value));
   }
 }

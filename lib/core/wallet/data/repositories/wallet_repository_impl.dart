@@ -118,6 +118,7 @@ class WalletRepositoryImpl implements WalletRepository {
   @override
   Future<Wallet> importWatchOnlySatoshifier({
     required WatchOnly watchOnly,
+    required WalletSource walletSource,
     String? masterFingerprint,
     String? label,
     bool sync = false,
@@ -126,6 +127,7 @@ class WalletRepositoryImpl implements WalletRepository {
       watchOnly: watchOnly,
       label: label,
       masterFingerprint: masterFingerprint,
+      walletSource: walletSource,
     );
 
     await _walletMetadataDatasource.store(metadata);
