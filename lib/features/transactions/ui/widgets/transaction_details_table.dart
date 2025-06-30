@@ -67,7 +67,7 @@ class TransactionDetailsTable extends StatelessWidget {
 
     final labels = tx?.labels ?? [];
 
-    final address = tx?.toAddress ?? '';
+    final address = tx?.toAddress ?? swap?.receiveAddress ?? '';
     final txId = tx?.txId ?? '';
     final abbreviatedAddress = StringFormatting.truncateMiddle(address);
     final addressLabels = walletTransaction?.toAddressLabels?.join(', ') ?? '';
@@ -110,12 +110,7 @@ class TransactionDetailsTable extends StatelessWidget {
                       ),
                     ),
           ),
-        if (swap?.receiveAddress != null && swap!.receiveAddress!.isNotEmpty)
-          DetailsTableItem(
-            label: 'Recipient Address',
-            displayValue: StringFormatting.truncateMiddle(swap.receiveAddress!),
-            copyValue: swap.receiveAddress,
-          ),
+
         if (labels.isNotEmpty) TransactionNotesTableItem(notes: labels),
         if (walletLabel.isNotEmpty && !isOrderType)
           DetailsTableItem(
@@ -131,7 +126,10 @@ class TransactionDetailsTable extends StatelessWidget {
           ),
         if (abbreviatedAddress.isNotEmpty)
           DetailsTableItem(
-            label: 'Address',
+            label:
+                swap?.receiveAddress != null && swap!.receiveAddress!.isNotEmpty
+                    ? 'Recipient Address'
+                    : 'Address',
             displayValue: abbreviatedAddress,
             copyValue: address,
           ),
