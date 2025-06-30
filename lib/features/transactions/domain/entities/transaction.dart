@@ -60,11 +60,11 @@ sealed class Transaction with _$Transaction {
               swap?.isChainSwap == true ||
               payjoin is PayjoinSender;
   bool get isIncoming =>
-      walletTransaction != null
-          ? walletTransaction!.isIncoming
-          : swap?.isLnReceiveSwap == true ||
-              swap?.isChainSwap == true ||
-              payjoin is PayjoinReceiver;
+      walletTransaction?.isIncoming ??
+      swap?.isLnReceiveSwap == true ||
+          swap?.isChainSwap == true ||
+          payjoin is PayjoinReceiver ||
+          order?.isIncoming == true;
 
   bool get isLnSwap => isSwap && (swap!.isLnReceiveSwap || swap!.isLnSendSwap);
   bool get isChainSwap => isSwap && swap!.isChainSwap;

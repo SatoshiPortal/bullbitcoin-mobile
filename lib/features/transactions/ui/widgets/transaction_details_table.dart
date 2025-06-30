@@ -81,10 +81,6 @@ class TransactionDetailsTable extends StatelessWidget {
     final swapCounterpartTxId = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
     );
-    final abbreviatedSwapCounterpartTransactionTxId =
-        swapCounterpartTxId != null
-            ? StringFormatting.truncateMiddle(swapCounterpartTxId)
-            : '';
 
     return DetailsTable(
       items: [
@@ -686,7 +682,9 @@ class TransactionDetailsTable extends StatelessWidget {
                   counterpartWallet?.isLiquid == true
                       ? 'Liquid transaction ID'
                       : 'Bitcoin transaction ID',
-              displayValue: abbreviatedSwapCounterpartTransactionTxId,
+              displayValue: StringFormatting.truncateMiddle(
+                swapCounterpartTxId,
+              ),
               copyValue: swapCounterpartTxId,
             ),
           if (swap.fees != null)
@@ -713,7 +711,6 @@ class TransactionDetailsTable extends StatelessWidget {
                 ],
               ),
             ),
-
           DetailsTableItem(
             label: 'Created at',
             displayValue: DateFormat(

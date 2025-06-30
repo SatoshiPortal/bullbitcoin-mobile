@@ -579,4 +579,19 @@ sealed class Order with _$Order {
         return false;
     }
   }
+
+  bool get isIncoming {
+    switch (orderType) {
+      case OrderType.buy:
+      case OrderType.funding:
+      case OrderType.balanceAdjustment:
+      case OrderType.refund:
+      case OrderType.reward:
+        return true;
+      case OrderType.sell:
+      case OrderType.withdraw:
+      case OrderType.fiatPayment:
+        return false;
+    }
+  }
 }
