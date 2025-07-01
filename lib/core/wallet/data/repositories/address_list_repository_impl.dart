@@ -7,9 +7,11 @@ import 'package:bb_mobile/core/wallet/domain/repositories/address_list_repositor
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 
 class AddressListRepositoryImpl implements AddressListRepository {
+  // ignore: unused_field
   final AddressHistoryDatasource _addressHistoryDatasource;
   final WalletMetadataDatasource _walletMetadataDatasource;
   final WalletDatasource _bdkWallet;
+  // ignore: unused_field
   final WalletDatasource _lwkWallet;
 
   const AddressListRepositoryImpl({
