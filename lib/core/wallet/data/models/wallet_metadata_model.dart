@@ -21,6 +21,8 @@ abstract class WalletMetadataModel with _$WalletMetadataModel {
     required String internalPublicDescriptor,
     required WalletSource source,
     required bool isDefault,
+    @Default(0) int lastAddressIndex,
+    @Default(0) int lastChangeAddressIndex,
     String? label,
     DateTime? syncedAt,
   }) = _WalletMetadataModel;
@@ -58,6 +60,8 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
     isDefault: isDefault,
     label: label ?? '',
     syncedAt: syncedAt,
+    lastAddressIndex: lastAddressIndex,
+    lastChangeAddressIndex: lastChangeAddressIndex,
   );
 
   static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>
@@ -76,5 +80,7 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
         isDefault: row.isDefault,
         label: row.label,
         syncedAt: row.syncedAt,
+        lastAddressIndex: row.lastAddressIndex,
+        lastChangeAddressIndex: row.lastChangeAddressIndex,
       );
 }

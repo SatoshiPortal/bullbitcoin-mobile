@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/tables/address_history_table.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
@@ -10,7 +11,6 @@ import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
@@ -27,6 +27,7 @@ part 'sqlite_database.g.dart';
     ElectrumServers,
     Swaps,
     AutoSwap,
+    AddressHistory,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
@@ -34,7 +35,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -66,6 +67,22 @@ class SqliteDatabase extends _$SqliteDatabase {
           // Create AutoSwap table and seed it
           await m.createTable(autoSwap);
           await _seedDefaultAutoSwap();
+        }
+        if (from < 3) {
+          // Add lastAddressIndex and lastChangeAddressIndex to WalletMetadata
+          await m.addColumn(walletMetadatas, walletMetadatas.lastAddressIndex);
+          await m.addColumn(
+            walletMetadatas,
+            walletMetadatas.lastChangeAddressIndex,
+          );
+
+          // Initialize existing rows with 0
+          await customStatement(
+            'UPDATE wallet_metadatas SET last_address_index = 0 WHERE last_address_index IS NULL',
+          );
+          await customStatement(
+            'UPDATE wallet_metadatas SET last_change_address_index = 0 WHERE last_change_address_index IS NULL',
+          );
         }
       },
     );

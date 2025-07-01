@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -41,4 +42,21 @@ sealed class WalletModel with _$WalletModel {
   }
 
   String get dbName => hexId;
+
+  factory WalletModel.fromMetadata(WalletMetadataModel metadata) {
+    if (metadata.isBitcoin) {
+      return WalletModel.publicBdk(
+        id: metadata.id,
+        externalDescriptor: metadata.externalPublicDescriptor,
+        internalDescriptor: metadata.internalPublicDescriptor,
+        isTestnet: metadata.isTestnet,
+      );
+    } else {
+      return WalletModel.publicLwk(
+        id: metadata.id,
+        combinedCtDescriptor: metadata.externalPublicDescriptor,
+        isTestnet: metadata.isTestnet,
+      );
+    }
+  }
 }

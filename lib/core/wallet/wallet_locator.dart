@@ -5,16 +5,19 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/address_history_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/address_list_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/address_list_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
@@ -23,6 +26,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_rep
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_address_list_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_used_receive_addresses_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
@@ -51,6 +55,10 @@ class WalletLocator {
 
     locator.registerLazySingleton<FrozenWalletUtxoDatasource>(
       () => FrozenWalletUtxoDatasource(),
+    );
+
+    locator.registerLazySingleton<AddressHistoryDatasource>(
+      () => AddressHistoryDatasource(db: locator<SqliteDatabase>()),
     );
   }
 
@@ -106,6 +114,15 @@ class WalletLocator {
         bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
         lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
         electrumServerStorage: locator<ElectrumServerStorageDatasource>(),
+      ),
+    );
+
+    locator.registerLazySingleton<AddressListRepository>(
+      () => AddressListRepositoryImpl(
+        addressHistoryDatasource: locator<AddressHistoryDatasource>(),
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        bdkWalletDatasource: locator<BdkWalletDatasource>(),
+        lwkWalletDatasource: locator<LwkWalletDatasource>(),
       ),
     );
   }
@@ -174,6 +191,11 @@ class WalletLocator {
       () => WatchWalletTransactionByTxIdUsecase(
         walletTransactionRepository: locator<WalletTransactionRepository>(),
         walletRepository: locator<WalletRepository>(),
+      ),
+    );
+    locator.registerFactory<GetAddressListUsecase>(
+      () => GetAddressListUsecase(
+        addressListRepository: locator<AddressListRepository>(),
       ),
     );
   }
