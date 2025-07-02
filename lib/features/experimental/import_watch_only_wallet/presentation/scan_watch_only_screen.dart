@@ -36,7 +36,9 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                   if (!context.mounted) return;
                   context.replaceNamed(
                     ImportWatchOnlyRoutes.import.name,
-                    extra: WatchOnlyWalletEntity(watchOnly: watchOnly),
+                    extra: WatchOnlyWalletEntity.fromSatoshifier(
+                      watchOnly: watchOnly,
+                    ),
                   );
                 }
               } catch (e) {

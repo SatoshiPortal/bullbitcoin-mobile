@@ -9,8 +9,8 @@ abstract class ImportWatchOnlyState with _$ImportWatchOnlyState {
   const factory ImportWatchOnlyState({
     WatchOnlyWalletEntity? watchOnlyWallet,
     Wallet? importedWallet,
-    WalletSource? source,
     @Default('') String input,
+    @Default('') String overrideMasterFingerprint,
     @Default('') String error,
   }) = _ImportWatchOnlyState;
 

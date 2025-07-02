@@ -1,9 +1,10 @@
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_usecase.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:satoshifier/satoshifier.dart';
 
 class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   final ImportWatchOnlyUsecase _importWatchOnlyUsecase;
@@ -14,35 +15,52 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   }) : _importWatchOnlyUsecase = importWatchOnlyUsecase,
        super(ImportWatchOnlyState(watchOnlyWallet: watchOnlyWallet));
 
+  void init() {
+    if (state.watchOnlyWallet != null) {
+      final combinedDescriptor = state.watchOnlyWallet!.descriptor.combined;
+      parsePastedInput(combinedDescriptor);
+    }
+  }
+
   void updateLabel(String label) {
     if (state.watchOnlyWallet == null) return;
     final watchOnlyWallet = state.watchOnlyWallet!.copyWith(label: label);
     emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
   }
 
-  void overrideFingerprint(String fingerprint) {
-    if (state.watchOnlyWallet == null) return;
-    final watchOnlyWallet = state.watchOnlyWallet!.copyWith(
-      masterFingerprint: fingerprint,
-    );
-    emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
+  void overrideMasterFingerprint(String fingerprint) {
+    if (fingerprint.isNotEmpty && fingerprint.length == 8) {
+      try {
+        hex.decode(fingerprint);
+        final walletWithNewMasterFingerprint = state.watchOnlyWallet!.copyWith(
+          masterFingerprint: fingerprint,
+        );
+        emit(
+          state.copyWith(
+            error: '',
+            overrideMasterFingerprint: fingerprint,
+            watchOnlyWallet: walletWithNewMasterFingerprint,
+          ),
+        );
+      } catch (e) {
+        emit(state.copyWith(error: 'fingerprint must be a valid hex string'));
+        return;
+      }
+    } else {
+      emit(state.copyWith(error: '', overrideMasterFingerprint: fingerprint));
+      return;
+    }
   }
 
   Future<void> import() async {
     if (state.watchOnlyWallet == null) return;
-    if (state.source == null) return;
-
-    final masterFingerprint =
-        state.watchOnlyWallet!.masterFingerprint.isNotEmpty
-            ? state.watchOnlyWallet!.masterFingerprint
-            : state.watchOnlyWallet!.watchOnly.masterFingerprint;
 
     try {
       final wallet = await _importWatchOnlyUsecase(
         watchOnly: state.watchOnlyWallet!.watchOnly,
         label: state.watchOnlyWallet!.label,
-        masterFingerprint: masterFingerprint,
-        walletSource: state.source!,
+        masterFingerprint: state.watchOnlyWallet!.masterFingerprint,
+        walletSource: state.watchOnlyWallet!.source,
       );
 
       emit(state.copyWith(importedWallet: wallet));
@@ -55,30 +73,25 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     emit(state.copyWith(input: value.trim()));
     if (value.length >= 111) {
       try {
-        final watchOnly = await Satoshifier.parse(value);
+        final watchOnlyWallet = await WatchOnlyWalletEntity.parse(value);
 
-        if (watchOnly is! WatchOnly) {
-          emit(state.copyWith(error: 'Unsupported watch only format'));
-          return;
-        }
-
-        final wallet = WatchOnlyWalletEntity(watchOnly: watchOnly);
-        emit(state.copyWith(watchOnlyWallet: wallet, input: value));
-      } catch (e) {
         emit(
           state.copyWith(
-            watchOnlyWallet: null,
-            error: 'Invalid extended public key',
+            watchOnlyWallet: watchOnlyWallet,
+            input: value,
+            overrideMasterFingerprint: watchOnlyWallet.masterFingerprint,
           ),
         );
+      } catch (e) {
+        log.info(e.toString());
+        emit(state.copyWith(error: 'Invalid watch only format'));
       }
-    } else {
-      emit(state.copyWith(input: value, watchOnlyWallet: null));
     }
   }
 
   void onSourceChanged(WalletSource? value) {
     if (value == null) return;
-    emit(state.copyWith(source: value));
+    final watchOnlyWallet = state.watchOnlyWallet!.copyWith(source: value);
+    emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
   }
 }

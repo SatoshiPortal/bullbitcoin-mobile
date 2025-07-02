@@ -27,7 +27,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
           (context) => ImportWatchOnlyCubit(
             watchOnlyWallet: watchOnlyWallet,
             importWatchOnlyUsecase: locator<ImportWatchOnlyUsecase>(),
-          ),
+          )..init(),
       child: Scaffold(
         backgroundColor: context.colour.secondaryFixed,
         appBar: PreferredSize(
@@ -60,7 +60,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                           value: state.input,
                           hint: '',
                           maxLines: 4,
-                          minLines: 4,
+                          minLines: 1,
                           onChanged: cubit.parsePastedInput,
                         ),
                         if (state.error.isNotEmpty)
