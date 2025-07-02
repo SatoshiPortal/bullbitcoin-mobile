@@ -54,9 +54,10 @@ class WatchOnlyDetailsWidget extends StatelessWidget {
             Icons.keyboard_arrow_down,
             color: context.colour.secondary,
           ),
-          value: WalletSource.mnemonic,
+          value: WalletSource.xpub,
           items:
               WalletSource.values
+                  .where((e) => e != WalletSource.mnemonic)
                   .map(
                     (language) => DropdownMenuItem<WalletSource>(
                       value: language,
