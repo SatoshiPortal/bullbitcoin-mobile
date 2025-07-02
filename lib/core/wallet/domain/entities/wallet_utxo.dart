@@ -1,13 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/labels/domain/labelable.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_utxo.freezed.dart';
 
 @freezed
-sealed class WalletUtxo with _$WalletUtxo implements Labelable {
+sealed class WalletUtxo with _$WalletUtxo {
   factory WalletUtxo.bitcoin({
     required String walletId,
     required String txId,
@@ -36,9 +35,6 @@ sealed class WalletUtxo with _$WalletUtxo implements Labelable {
     @Default(false) bool isFrozen,
   }) = LiquidWalletUtxo;
   const WalletUtxo._();
-
-  @override
-  String get labelRef => '$txId:$vout';
 
   String get address => switch (this) {
     BitcoinWalletUtxo(:final address) => address,

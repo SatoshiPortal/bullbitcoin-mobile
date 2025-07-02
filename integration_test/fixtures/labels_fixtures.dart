@@ -15,7 +15,7 @@ final txids = [
 
 final labels = [
   LabelRow(
-    type: LabelableEntity.address,
+    type: LabelType.address,
     ref: addresses[0],
     label: 'Bitcoin Purchase',
     origin: 'wpkh([d34db33f/84h/0h/0h])',
@@ -23,49 +23,33 @@ final labels = [
   ),
   // this duplicate should be ignored by the storage
   LabelRow(
-    type: LabelableEntity.address,
+    type: LabelType.address,
     ref: addresses[0],
     label: 'Bitcoin Purchase',
     origin: 'wpkh([d34db33f/84h/0h/0h])',
     spendable: true,
   ),
+  LabelRow(type: LabelType.address, ref: addresses[0], label: 'Cold Storage'),
   LabelRow(
-    type: LabelableEntity.address,
-    ref: addresses[0],
-    label: 'Cold Storage',
-  ),
-  LabelRow(
-    type: LabelableEntity.address,
+    type: LabelType.address,
     ref: addresses[0],
     label: 'Hardware Wallet',
     origin: 'integration_test',
   ),
   LabelRow(
-    type: LabelableEntity.address,
+    type: LabelType.address,
     ref: addresses[1],
     label: 'Exchange Withdrawal',
     origin: 'integration_test',
   ),
   LabelRow(
-    type: LabelableEntity.address,
+    type: LabelType.address,
     ref: addresses[2],
     label: 'Donation Address',
   ),
-  LabelRow(type: LabelableEntity.tx, ref: txids[0], label: 'Bitcoin Purchase'),
-  LabelRow(type: LabelableEntity.tx, ref: txids[0], label: 'Investment'),
-  LabelRow(
-    type: LabelableEntity.tx,
-    ref: txids[0],
-    label: 'Important Transaction',
-  ),
-  LabelRow(
-    type: LabelableEntity.tx,
-    ref: txids[1],
-    label: 'Important Transaction',
-  ),
-  LabelRow(
-    type: LabelableEntity.tx,
-    ref: txids[2],
-    label: 'Important Transaction',
-  ),
+  LabelRow(type: LabelType.tx, ref: txids[0], label: 'Bitcoin Purchase'),
+  LabelRow(type: LabelType.tx, ref: txids[0], label: 'Investment'),
+  LabelRow(type: LabelType.tx, ref: txids[0], label: 'Important Transaction'),
+  LabelRow(type: LabelType.tx, ref: txids[1], label: 'Important Transaction'),
+  LabelRow(type: LabelType.tx, ref: txids[2], label: 'Important Transaction'),
 ];

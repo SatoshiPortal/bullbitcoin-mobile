@@ -21,6 +21,7 @@ abstract class WalletMetadataModel with _$WalletMetadataModel {
     required String internalPublicDescriptor,
     required WalletSource source,
     required bool isDefault,
+    @Default(0) int lastReceiveAddressIndex,
     String? label,
     DateTime? syncedAt,
   }) = _WalletMetadataModel;

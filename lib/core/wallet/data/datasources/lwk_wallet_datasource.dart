@@ -3,11 +3,9 @@ import 'dart:async';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
@@ -16,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
-class LwkWalletDatasource implements WalletDatasource {
+class LwkWalletDatasource {
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
   final Map<String, Future<void>> _activeSyncs;
@@ -70,7 +68,6 @@ class LwkWalletDatasource implements WalletDatasource {
     }
   }
 
-  @override
   Future<void> sync({
     required WalletModel wallet,
     required ElectrumServerModel electrumServer,
@@ -106,7 +103,6 @@ class LwkWalletDatasource implements WalletDatasource {
     });
   }
 
-  @override
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     try {
       final lwkWallet = await _createPublicWallet(wallet);
@@ -133,19 +129,23 @@ class LwkWalletDatasource implements WalletDatasource {
     }
   }
 
-  @override
-  Future<WalletAddressModel> getNewAddress({
+  Future<({String standard, String confidential, int index})> getNewAddress({
     required WalletModel wallet,
   }) async {
     try {
       final lwkWallet = await _createPublicWallet(wallet);
       final lastUnusedAddressInfo = await lwkWallet.addressLastUnused();
-      final newIndex = lastUnusedAddressInfo.index! + 1;
-      final addressInfo = await lwkWallet.address(index: newIndex);
-      final address = LiquidWalletAddressModel(
-        index: addressInfo.index!,
-        standard: addressInfo.standard,
-        confidential: addressInfo.confidential,
+      // Commented this because why would we not want to use the last unused address?
+      // Don't we unnecessarily skip unused addresses if it was uncommented?
+      // Either way, we check if it was used already or not in the wallet address
+      // repository through the wallet address history datasource. Keeping it commented
+      // instead of deleting it for now, until wallet address history is implemented.
+      //final newIndex = lastUnusedAddressInfo.index! + 1;
+      //final addressInfo = await lwkWallet.address(index: newIndex);
+      final address = (
+        index: lastUnusedAddressInfo.index!,
+        standard: lastUnusedAddressInfo.standard,
+        confidential: lastUnusedAddressInfo.confidential,
       );
       return address;
     } catch (e) {
@@ -157,15 +157,20 @@ class LwkWalletDatasource implements WalletDatasource {
     }
   }
 
-  @override
-  Future<WalletAddressModel> getLastUnusedAddress({
+  Future<({String standard, String confidential, int index})>
+  getLastUnusedAddress({
     required WalletModel wallet,
     bool isChange = false,
   }) async {
     try {
       final lwkWallet = await _createPublicWallet(wallet);
+      if (isChange) {
+        throw Exception(
+          'Change addresses are not retrievable with LWK at the moment.',
+        );
+      }
       final addressInfo = await lwkWallet.addressLastUnused();
-      final address = LiquidWalletAddressModel(
+      final address = (
         index: addressInfo.index!,
         standard: addressInfo.standard,
         confidential: addressInfo.confidential,
@@ -180,15 +185,14 @@ class LwkWalletDatasource implements WalletDatasource {
     }
   }
 
-  @override
-  Future<WalletAddressModel> getAddressByIndex(
+  Future<({String standard, String confidential, int index})> getAddressByIndex(
     int index, {
     required WalletModel wallet,
   }) async {
     try {
       final lwkWallet = await _createPublicWallet(wallet);
       final addressInfo = await lwkWallet.address(index: index);
-      final address = LiquidWalletAddressModel(
+      final address = (
         index: addressInfo.index!,
         standard: addressInfo.standard,
         confidential: addressInfo.confidential,
@@ -203,18 +207,18 @@ class LwkWalletDatasource implements WalletDatasource {
     }
   }
 
-  @override
-  Future<List<WalletAddressModel>> getReceiveAddresses({
+  Future<List<({String standard, String confidential, int index})>>
+  getReceiveAddresses({
     required WalletModel wallet,
     required int limit,
     required int offset,
   }) async {
     try {
       final lwkWallet = await _createPublicWallet(wallet);
-      final addresses = <LiquidWalletAddressModel>[];
+      final addresses = <({String standard, String confidential, int index})>[];
       for (int i = offset; i < offset + limit; i++) {
         final addressInfo = await lwkWallet.address(index: i);
-        final address = LiquidWalletAddressModel(
+        final address = (
           index: addressInfo.index!,
           standard: addressInfo.standard,
           confidential: addressInfo.confidential,
@@ -231,8 +235,8 @@ class LwkWalletDatasource implements WalletDatasource {
     }
   }
 
-  @override
-  Future<List<WalletAddressModel>> getChangeAddresses({
+  Future<List<({String standard, String confidential, int index})>>
+  getChangeAddresses({
     required WalletModel wallet,
     required int limit,
     required int offset,
@@ -248,7 +252,6 @@ class LwkWalletDatasource implements WalletDatasource {
     }
   }
 
-  @override
   Future<bool> isAddressUsed(
     String address, {
     required WalletModel wallet,
@@ -277,7 +280,6 @@ class LwkWalletDatasource implements WalletDatasource {
     }
   }
 
-  @override
   Future<BigInt> getAddressBalanceSat(
     String address, {
     required WalletModel wallet,
@@ -314,7 +316,6 @@ class LwkWalletDatasource implements WalletDatasource {
         : lwk.lBtcAssetId;
   }
 
-  @override
   Future<List<WalletTransactionModel>> getTransactions({
     required WalletModel wallet,
     String? toAddress,
@@ -385,8 +386,7 @@ class LwkWalletDatasource implements WalletDatasource {
                       isOwn: isOwn,
                       value: output.unblinded.value,
                       scriptPubkey: output.scriptPubkey,
-                      standardAddress: output.address.standard,
-                      confidentialAddress: output.address.confidential,
+                      address: output.address.confidential,
                     );
                   }),
                 ),
@@ -495,18 +495,20 @@ class LwkWalletDatasource implements WalletDatasource {
     }
   }
 
-  Future<Map<String, LiquidWalletAddressModel>> _getUsedAddressesMap({
+  Future<Map<String, ({String standard, String confidential, int index})>>
+  _getUsedAddressesMap({
     required WalletModel wallet,
     int batchSize = 10,
   }) async {
     try {
       final lastUnusedAddress = await getLastUnusedAddress(wallet: wallet);
       final lastIndex = lastUnusedAddress.index;
-      final addressMap = <String, LiquidWalletAddressModel>{};
+      final addressMap =
+          <String, ({String standard, String confidential, int index})>{};
       final List<Future<void>> currentBatch = [];
       for (int i = 0; i <= lastIndex; i++) {
         final future = getAddressByIndex(i, wallet: wallet).then((addr) {
-          final address = addr as LiquidWalletAddressModel;
+          final address = addr;
           addressMap[address.standard] = address;
           addressMap[address.confidential] = address;
         });

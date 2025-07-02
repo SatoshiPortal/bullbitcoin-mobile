@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/labelable.dart';
+import 'package:bb_mobile/core/labels/domain/label.dart';
+import 'package:bb_mobile/core/labels/domain/label_error.dart';
 
 class DeleteLabelUsecase {
   final LabelRepository _labelRepository;
@@ -7,20 +8,13 @@ class DeleteLabelUsecase {
   DeleteLabelUsecase({required LabelRepository labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<void> execute<T extends Labelable>({
-    required T entity,
-    required String label,
-  }) async {
+  Future<void> execute(Label label) async {
     try {
-      await _labelRepository.trashOneLabel(entity: entity, label: label);
+      await _labelRepository.trashLabel(label);
+    } on LabelError {
+      rethrow;
     } catch (e) {
-      throw DeleteLabelException(e.toString());
+      throw LabelError.unexpected('Failed to delete label ${label.label}: $e');
     }
   }
-}
-
-class DeleteLabelException implements Exception {
-  final String message;
-
-  DeleteLabelException(this.message);
 }
