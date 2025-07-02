@@ -1,24 +1,6 @@
-import 'package:bb_mobile/core/labels/domain/labelable.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:drift/drift.dart';
 
-@DataClassName('LabelRow')
-class Labels extends Table {
-  TextColumn get label => text()();
-  TextColumn get ref => text()();
-  TextColumn get type => textEnum<LabelableEntity>()();
-  TextColumn get origin => text().nullable()();
-  BoolColumn get spendable => boolean().nullable()();
-
-  @override
-  Set<Column> get primaryKey => {label, ref};
-}
-
-enum LabelableEntity {
+enum LabelType {
   tx,
   address,
   pubkey,
@@ -26,32 +8,34 @@ enum LabelableEntity {
   output,
   xpub;
 
-  static LabelableEntity from(String string) {
+  static LabelType fromString(String string) {
     switch (string) {
       case 'tx':
-        return LabelableEntity.tx;
+        return LabelType.tx;
       case 'address':
-        return LabelableEntity.address;
+        return LabelType.address;
       case 'pubkey':
-        return LabelableEntity.pubkey;
+        return LabelType.pubkey;
       case 'input':
-        return LabelableEntity.input;
+        return LabelType.input;
       case 'output':
-        return LabelableEntity.output;
+        return LabelType.output;
       case 'xpub':
-        return LabelableEntity.xpub;
+        return LabelType.xpub;
       default:
         throw ArgumentError('Invalid type: $string');
     }
   }
+}
 
-  static LabelableEntity fromLabelable(Labelable entity) {
-    return switch (entity) {
-      WalletTransaction() => LabelableEntity.tx,
-      WalletAddress() => LabelableEntity.address,
-      WalletUtxo() || TransactionOutput() => LabelableEntity.output,
-      TransactionInput() => LabelableEntity.input,
-      _ => throw ArgumentError('Invalid type: $entity'),
-    };
-  }
+@DataClassName('LabelRow')
+class Labels extends Table {
+  TextColumn get label => text()();
+  TextColumn get ref => text()();
+  TextColumn get type => textEnum<LabelType>()();
+  TextColumn get origin => text().nullable()();
+  BoolColumn get spendable => boolean().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {label, ref};
 }

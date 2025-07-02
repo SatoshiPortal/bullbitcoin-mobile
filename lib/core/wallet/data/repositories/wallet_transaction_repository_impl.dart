@@ -2,31 +2,30 @@ import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_transaction_mapper.dart';
-import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final LabelDatasource _labelDatasource;
-  final WalletDatasource _bdkWalletTransactionDatasource;
-  final WalletDatasource _lwkWalletTransactionDatasource;
+  final BdkWalletDatasource _bdkWalletTransactionDatasource;
+  final LwkWalletDatasource _lwkWalletTransactionDatasource;
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
   WalletTransactionRepositoryImpl({
     required WalletMetadataDatasource walletMetadataDatasource,
     required LabelDatasource labelDatasource,
-    required WalletDatasource bdkWalletTransactionDatasource,
-    required WalletDatasource lwkWalletTransactionDatasource,
+    required BdkWalletDatasource bdkWalletTransactionDatasource,
+    required LwkWalletDatasource lwkWalletTransactionDatasource,
     required ElectrumServerStorageDatasource electrumServerStorage,
   }) : _labelDatasource = labelDatasource,
        _walletMetadataDatasource = walletMetadataDatasource,
@@ -79,13 +78,16 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   }) async {
     final walletTransactionLists = await Future.wait(
       walletModels.map((walletModel) async {
-        final walletTransactionDatasource =
+        final walletTransactionModels =
             walletModel is PublicBdkWalletModel
-                ? _bdkWalletTransactionDatasource
-                : _lwkWalletTransactionDatasource;
-
-        final walletTransactionModels = await walletTransactionDatasource
-            .getTransactions(wallet: walletModel, toAddress: toAddress);
+                ? await _bdkWalletTransactionDatasource.getTransactions(
+                  wallet: walletModel,
+                  toAddress: toAddress,
+                )
+                : await _lwkWalletTransactionDatasource.getTransactions(
+                  wallet: walletModel,
+                  toAddress: toAddress,
+                );
 
         if (txId != null) {
           walletTransactionModels.retainWhere(
@@ -99,8 +101,8 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                 await (
                   Future.wait(
                     walletTransactionModel.inputs.map((inputModel) async {
-                      final inputLabels = await _labelDatasource.fetchByEntity(
-                        entity: TransactionInputMapper.toEntity(inputModel),
+                      final inputLabels = await _labelDatasource.fetchByRef(
+                        inputModel.labelRef,
                       );
                       return TransactionInputMapper.toEntity(
                         inputModel,
@@ -111,42 +113,17 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                   ),
                   Future.wait(
                     walletTransactionModel.outputs.map((outputModel) async {
-                      final outputLabels = await _labelDatasource.fetchByEntity(
-                        entity: TransactionOutputMapper.toEntity(outputModel),
+                      final outputLabels = await _labelDatasource.fetchByRef(
+                        outputModel.labelRef,
                       );
-                      List<LabelModel> addressLabels;
-                      switch (outputModel) {
-                        case LiquidTransactionOutputModel _:
-                          final (
-                            standardAddressLabels,
-                            confidentialAddressLabels,
-                          ) = await (
-                                _labelDatasource.fetchByEntity(
-                                  entity: AddressOnly(
-                                    payload: outputModel.standardAddress,
-                                  ),
-                                ),
-                                _labelDatasource.fetchByEntity(
-                                  entity: AddressOnly(
-                                    payload: outputModel.confidentialAddress,
-                                  ),
-                                ),
-                              ).wait;
+                      final outputModelAddress = outputModel.address;
+                      final addressLabels =
+                          outputModelAddress != null
+                              ? await _labelDatasource.fetchByRef(
+                                outputModelAddress,
+                              )
+                              : <LabelModel>[];
 
-                          addressLabels = [
-                            ...standardAddressLabels,
-                            ...confidentialAddressLabels,
-                          ];
-                        case BitcoinTransactionOutputModel _:
-                          addressLabels =
-                              outputModel.address != null
-                                  ? await _labelDatasource.fetchByEntity(
-                                    entity: AddressOnly(
-                                      payload: outputModel.address!,
-                                    ),
-                                  )
-                                  : [];
-                      }
                       return TransactionOutputMapper.toEntity(
                         outputModel,
                         labels:
@@ -157,14 +134,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                       );
                     }),
                   ),
-                  _labelDatasource.fetchByEntity(
-                    entity: WalletTransactionMapper.toEntity(
-                      walletTransactionModel,
-                      walletId: '',
-                      inputs: [],
-                      outputs: [],
-                    ),
-                  ),
+                  _labelDatasource.fetchByRef(walletTransactionModel.txId),
                 ).wait;
 
             return WalletTransactionMapper.toEntity(
@@ -233,15 +203,15 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                 ),
               );
 
-          final walletTransactionDatasource =
-              isLiquid
-                  ? _lwkWalletTransactionDatasource
-                  : _bdkWalletTransactionDatasource;
-
-          return walletTransactionDatasource.sync(
-            wallet: walletModel,
-            electrumServer: electrumServer,
-          );
+          return isLiquid
+              ? _lwkWalletTransactionDatasource.sync(
+                wallet: walletModel,
+                electrumServer: electrumServer,
+              )
+              : _bdkWalletTransactionDatasource.sync(
+                wallet: walletModel,
+                electrumServer: electrumServer,
+              );
         }),
       );
     }

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/labels/domain/labelable.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -23,7 +22,7 @@ enum WalletTransactionStatus {
 }
 
 @freezed
-sealed class WalletTransaction with _$WalletTransaction implements Labelable {
+sealed class WalletTransaction with _$WalletTransaction {
   const factory WalletTransaction({
     required String walletId,
     required Network network,
@@ -64,23 +63,13 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
   }
 
   String? get toAddress {
-    final output = destinationOutput;
+    final output = destinationOutput?.address;
 
-    switch (output) {
-      case BitcoinTransactionOutput _:
-        return output.address;
-      case LiquidTransactionOutput _:
-        return output.confidentialAddress;
-      case null:
-        return null;
-    }
+    return output;
   }
 
   List<String>? get toAddressLabels {
     final output = destinationOutput;
     return output?.addressLabels;
   }
-
-  @override
-  String get labelRef => txId;
 }

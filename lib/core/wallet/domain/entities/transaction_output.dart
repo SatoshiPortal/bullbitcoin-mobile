@@ -1,12 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/labels/domain/labelable.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transaction_output.freezed.dart';
 
 @freezed
-sealed class TransactionOutput with _$TransactionOutput implements Labelable {
+sealed class TransactionOutput with _$TransactionOutput {
   const factory TransactionOutput.bitcoin({
     required String txId,
     required int vout,
@@ -23,13 +22,9 @@ sealed class TransactionOutput with _$TransactionOutput implements Labelable {
     required bool isOwn,
     required BigInt value,
     required String scriptPubkey,
-    required String standardAddress,
-    required String confidentialAddress,
+    required String address,
     @Default([]) List<String> labels,
     @Default([]) List<String> addressLabels,
   }) = LiquidTransactionOutput;
   const TransactionOutput._();
-
-  @override
-  String get labelRef => '$txId:$vout';
 }

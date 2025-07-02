@@ -1,15 +1,15 @@
-import 'package:bb_mobile/core/wallet/domain/entities/address_details.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/address_list_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 
 class GetAddressListUsecase {
-  final AddressListRepository _addressListRepository;
+  final WalletAddressRepository _walletAddressRepository;
 
   const GetAddressListUsecase({
-    required AddressListRepository addressListRepository,
-  }) : _addressListRepository = addressListRepository;
+    required WalletAddressRepository walletAddressRepository,
+  }) : _walletAddressRepository = walletAddressRepository;
 
-  Future<List<AddressDetails>> execute({
+  Future<List<WalletAddress>> execute({
     required String walletId,
     bool isChange = false,
     int? limit,
@@ -17,16 +17,18 @@ class GetAddressListUsecase {
   }) {
     try {
       if (isChange) {
-        return _addressListRepository.getUsedChangeAddresses(
+        return _walletAddressRepository.getUsedChangeAddresses(
           walletId,
           limit: limit,
           offset: offset ?? 0,
+          descending: true,
         );
       } else {
-        return _addressListRepository.getUsedReceiveAddresses(
+        return _walletAddressRepository.getGeneratedReceiveAddresses(
           walletId,
           limit: limit,
           offset: offset ?? 0,
+          descending: true,
         );
       }
     } on WalletError {

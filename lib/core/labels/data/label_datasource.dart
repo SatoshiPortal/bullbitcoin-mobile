@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/labels/data/label_model.dart';
-import 'package:bb_mobile/core/labels/domain/labelable.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:drift/drift.dart';
 
 class LabelDatasource {
@@ -9,19 +7,14 @@ class LabelDatasource {
 
   LabelDatasource({required SqliteDatabase sqlite}) : _sqlite = sqlite;
 
-  Future<void> store<T extends Labelable>({
-    required String label,
-    required T entity,
-    String? origin,
-    bool? spendable,
-  }) async {
+  Future<void> store(LabelModel label) async {
     await _sqlite.managers.labels.create(
       (l) => l(
-        label: label,
-        type: LabelableEntity.fromLabelable(entity),
-        ref: entity.labelRef,
-        origin: Value(origin),
-        spendable: Value(spendable),
+        label: label.label,
+        type: label.type,
+        ref: label.ref,
+        origin: Value(label.origin),
+        spendable: Value(label.spendable),
       ),
     );
   }
@@ -29,41 +22,32 @@ class LabelDatasource {
   Future<List<LabelModel>> fetchByLabel({required String label}) async {
     final labelModels =
         await _sqlite.managers.labels.filter((l) => l.label(label)).get();
-    return labelModels.map((row) => LabelModelMapper.fromSqlite(row)).toList();
+    return labelModels.map((row) => LabelModel.fromSqlite(row)).toList();
   }
 
-  Future<List<LabelModel>> fetchByEntity<T extends Labelable>({
-    required T entity,
-  }) async {
+  Future<List<LabelModel>> fetchByRef(String ref) async {
     final labelModels =
-        await _sqlite.managers.labels
-            .filter((l) => l.ref(entity.labelRef))
-            .get();
-    return labelModels.map((row) => LabelModelMapper.fromSqlite(row)).toList();
+        await _sqlite.managers.labels.filter((l) => l.ref(ref)).get();
+    return labelModels.map((row) => LabelModel.fromSqlite(row)).toList();
   }
 
   Future<void> trashByLabel({required String label}) async {
     await _sqlite.managers.labels.filter((l) => l.label(label)).delete();
   }
 
-  Future<void> trashByEntity<T extends Labelable>({required T entity}) async {
-    await _sqlite.managers.labels
-        .filter((l) => l.ref(entity.labelRef))
-        .delete();
+  Future<void> trashByRef(String ref) async {
+    await _sqlite.managers.labels.filter((l) => l.ref(ref)).delete();
   }
 
-  Future<void> trashOneLabel<T extends Labelable>({
-    required T entity,
-    required String label,
-  }) async {
+  Future<void> trashLabel(LabelModel label) async {
     await _sqlite.managers.labels
-        .filter((l) => l.ref(entity.labelRef) & l.label(label))
+        .filter((l) => l.ref(label.ref) & l.label(label.label))
         .delete();
   }
 
   Future<List<LabelModel>> fetchAll() async {
     final labelModels = await _sqlite.managers.labels.get();
-    return labelModels.map((row) => LabelModelMapper.fromSqlite(row)).toList();
+    return labelModels.map((row) => LabelModel.fromSqlite(row)).toList();
   }
 
   Future<void> trashAll() async {

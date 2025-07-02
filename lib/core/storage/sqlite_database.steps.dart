@@ -1198,7 +1198,7 @@ final class Schema3 extends i0.VersionedSchema {
     electrumServers,
     swaps,
     autoSwap,
-    addressHistory,
+    walletAddressHistory,
   ];
   late final Shape0 transactions = Shape0(
     source: i0.VersionedTable(
@@ -1407,9 +1407,9 @@ final class Schema3 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape9 addressHistory = Shape9(
+  late final Shape9 walletAddressHistory = Shape9(
     source: i0.VersionedTable(
-      entityName: 'address_history',
+      entityName: 'wallet_address_history',
       withoutRowId: false,
       isStrict: false,
       tableConstraints: [],
@@ -1423,7 +1423,6 @@ final class Schema3 extends i0.VersionedSchema {
         _column_95,
         _column_96,
         _column_97,
-        _column_98,
       ],
       attachedDatabase: database,
     ),
@@ -1443,8 +1442,6 @@ class Shape9 extends i0.VersionedTable {
       columnsByName['index']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<bool> get isChange =>
       columnsByName['is_change']! as i1.GeneratedColumn<bool>;
-  i1.GeneratedColumn<bool> get isUsed =>
-      columnsByName['is_used']! as i1.GeneratedColumn<bool>;
   i1.GeneratedColumn<int> get balanceSat =>
       columnsByName['balance_sat']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<int> get nrOfTransactions =>
@@ -1472,38 +1469,28 @@ i1.GeneratedColumn<bool> _column_93(String aliasedName) =>
         'CHECK ("is_change" IN (0, 1))',
       ),
     );
-i1.GeneratedColumn<bool> _column_94(String aliasedName) =>
-    i1.GeneratedColumn<bool>(
-      'is_used',
-      aliasedName,
-      false,
-      type: i1.DriftSqlType.bool,
-      defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
-        'CHECK ("is_used" IN (0, 1))',
-      ),
-    );
-i1.GeneratedColumn<int> _column_95(String aliasedName) =>
+i1.GeneratedColumn<int> _column_94(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'balance_sat',
       aliasedName,
       false,
       type: i1.DriftSqlType.int,
     );
-i1.GeneratedColumn<int> _column_96(String aliasedName) =>
+i1.GeneratedColumn<int> _column_95(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'nr_of_transactions',
       aliasedName,
       false,
       type: i1.DriftSqlType.int,
     );
-i1.GeneratedColumn<DateTime> _column_97(String aliasedName) =>
+i1.GeneratedColumn<DateTime> _column_96(String aliasedName) =>
     i1.GeneratedColumn<DateTime>(
       'created_at',
       aliasedName,
       false,
       type: i1.DriftSqlType.dateTime,
     );
-i1.GeneratedColumn<DateTime> _column_98(String aliasedName) =>
+i1.GeneratedColumn<DateTime> _column_97(String aliasedName) =>
     i1.GeneratedColumn<DateTime>(
       'updated_at',
       aliasedName,

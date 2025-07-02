@@ -22,8 +22,7 @@ class TransactionOutputMapper {
           isOwn: transactionOutput.isOwn,
           value: transactionOutput.value,
           scriptPubkey: transactionOutput.scriptPubkey,
-          standardAddress: transactionOutput.standardAddress,
-          confidentialAddress: transactionOutput.confidentialAddress,
+          address: transactionOutput.address,
         );
     }
   }
@@ -53,8 +52,7 @@ class TransactionOutputMapper {
           value: transactionOutputModel.value,
           labels: labels,
           scriptPubkey: transactionOutputModel.scriptPubkey,
-          standardAddress: transactionOutputModel.standardAddress,
-          confidentialAddress: transactionOutputModel.confidentialAddress,
+          address: transactionOutputModel.address,
           addressLabels: addressLabels,
         );
     }

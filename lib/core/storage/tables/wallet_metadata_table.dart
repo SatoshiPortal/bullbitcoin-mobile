@@ -16,9 +16,6 @@ class WalletMetadatas extends Table {
   BoolColumn get isDefault => boolean()();
   TextColumn get label => text().nullable()();
   DateTimeColumn get syncedAt => dateTime().nullable()();
-  IntColumn get lastAddressIndex => integer().withDefault(const Constant(0))();
-  IntColumn get lastChangeAddressIndex =>
-      integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};

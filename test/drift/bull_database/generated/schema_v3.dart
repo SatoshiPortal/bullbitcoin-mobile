@@ -5311,12 +5311,12 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
   }
 }
 
-class AddressHistory extends Table
-    with TableInfo<AddressHistory, AddressHistoryData> {
+class WalletAddressHistory extends Table
+    with TableInfo<WalletAddressHistory, WalletAddressHistoryData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  AddressHistory(this.attachedDatabase, [this._alias]);
+  WalletAddressHistory(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
     'id',
     aliasedName,
@@ -5359,16 +5359,6 @@ class AddressHistory extends Table
       'CHECK ("is_change" IN (0, 1))',
     ),
   );
-  late final GeneratedColumn<bool> isUsed = GeneratedColumn<bool>(
-    'is_used',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_used" IN (0, 1))',
-    ),
-  );
   late final GeneratedColumn<int> balanceSat = GeneratedColumn<int>(
     'balance_sat',
     aliasedName,
@@ -5404,7 +5394,6 @@ class AddressHistory extends Table
     walletId,
     index,
     isChange,
-    isUsed,
     balanceSat,
     nrOfTransactions,
     createdAt,
@@ -5414,13 +5403,16 @@ class AddressHistory extends Table
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'address_history';
+  static const String $name = 'wallet_address_history';
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  AddressHistoryData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  WalletAddressHistoryData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return AddressHistoryData(
+    return WalletAddressHistoryData(
       id:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
@@ -5446,11 +5438,6 @@ class AddressHistory extends Table
             DriftSqlType.bool,
             data['${effectivePrefix}is_change'],
           )!,
-      isUsed:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_used'],
-          )!,
       balanceSat:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
@@ -5475,30 +5462,28 @@ class AddressHistory extends Table
   }
 
   @override
-  AddressHistory createAlias(String alias) {
-    return AddressHistory(attachedDatabase, alias);
+  WalletAddressHistory createAlias(String alias) {
+    return WalletAddressHistory(attachedDatabase, alias);
   }
 }
 
-class AddressHistoryData extends DataClass
-    implements Insertable<AddressHistoryData> {
+class WalletAddressHistoryData extends DataClass
+    implements Insertable<WalletAddressHistoryData> {
   final int id;
   final String address;
   final String walletId;
   final int index;
   final bool isChange;
-  final bool isUsed;
   final int balanceSat;
   final int nrOfTransactions;
   final DateTime createdAt;
   final DateTime updatedAt;
-  const AddressHistoryData({
+  const WalletAddressHistoryData({
     required this.id,
     required this.address,
     required this.walletId,
     required this.index,
     required this.isChange,
-    required this.isUsed,
     required this.balanceSat,
     required this.nrOfTransactions,
     required this.createdAt,
@@ -5512,7 +5497,6 @@ class AddressHistoryData extends DataClass
     map['wallet_id'] = Variable<String>(walletId);
     map['index'] = Variable<int>(index);
     map['is_change'] = Variable<bool>(isChange);
-    map['is_used'] = Variable<bool>(isUsed);
     map['balance_sat'] = Variable<int>(balanceSat);
     map['nr_of_transactions'] = Variable<int>(nrOfTransactions);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -5520,14 +5504,13 @@ class AddressHistoryData extends DataClass
     return map;
   }
 
-  AddressHistoryCompanion toCompanion(bool nullToAbsent) {
-    return AddressHistoryCompanion(
+  WalletAddressHistoryCompanion toCompanion(bool nullToAbsent) {
+    return WalletAddressHistoryCompanion(
       id: Value(id),
       address: Value(address),
       walletId: Value(walletId),
       index: Value(index),
       isChange: Value(isChange),
-      isUsed: Value(isUsed),
       balanceSat: Value(balanceSat),
       nrOfTransactions: Value(nrOfTransactions),
       createdAt: Value(createdAt),
@@ -5535,18 +5518,17 @@ class AddressHistoryData extends DataClass
     );
   }
 
-  factory AddressHistoryData.fromJson(
+  factory WalletAddressHistoryData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return AddressHistoryData(
+    return WalletAddressHistoryData(
       id: serializer.fromJson<int>(json['id']),
       address: serializer.fromJson<String>(json['address']),
       walletId: serializer.fromJson<String>(json['walletId']),
       index: serializer.fromJson<int>(json['index']),
       isChange: serializer.fromJson<bool>(json['isChange']),
-      isUsed: serializer.fromJson<bool>(json['isUsed']),
       balanceSat: serializer.fromJson<int>(json['balanceSat']),
       nrOfTransactions: serializer.fromJson<int>(json['nrOfTransactions']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -5562,7 +5544,6 @@ class AddressHistoryData extends DataClass
       'walletId': serializer.toJson<String>(walletId),
       'index': serializer.toJson<int>(index),
       'isChange': serializer.toJson<bool>(isChange),
-      'isUsed': serializer.toJson<bool>(isUsed),
       'balanceSat': serializer.toJson<int>(balanceSat),
       'nrOfTransactions': serializer.toJson<int>(nrOfTransactions),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -5570,37 +5551,36 @@ class AddressHistoryData extends DataClass
     };
   }
 
-  AddressHistoryData copyWith({
+  WalletAddressHistoryData copyWith({
     int? id,
     String? address,
     String? walletId,
     int? index,
     bool? isChange,
-    bool? isUsed,
     int? balanceSat,
     int? nrOfTransactions,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) => AddressHistoryData(
+  }) => WalletAddressHistoryData(
     id: id ?? this.id,
     address: address ?? this.address,
     walletId: walletId ?? this.walletId,
     index: index ?? this.index,
     isChange: isChange ?? this.isChange,
-    isUsed: isUsed ?? this.isUsed,
     balanceSat: balanceSat ?? this.balanceSat,
     nrOfTransactions: nrOfTransactions ?? this.nrOfTransactions,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
-  AddressHistoryData copyWithCompanion(AddressHistoryCompanion data) {
-    return AddressHistoryData(
+  WalletAddressHistoryData copyWithCompanion(
+    WalletAddressHistoryCompanion data,
+  ) {
+    return WalletAddressHistoryData(
       id: data.id.present ? data.id.value : this.id,
       address: data.address.present ? data.address.value : this.address,
       walletId: data.walletId.present ? data.walletId.value : this.walletId,
       index: data.index.present ? data.index.value : this.index,
       isChange: data.isChange.present ? data.isChange.value : this.isChange,
-      isUsed: data.isUsed.present ? data.isUsed.value : this.isUsed,
       balanceSat:
           data.balanceSat.present ? data.balanceSat.value : this.balanceSat,
       nrOfTransactions:
@@ -5614,13 +5594,12 @@ class AddressHistoryData extends DataClass
 
   @override
   String toString() {
-    return (StringBuffer('AddressHistoryData(')
+    return (StringBuffer('WalletAddressHistoryData(')
           ..write('id: $id, ')
           ..write('address: $address, ')
           ..write('walletId: $walletId, ')
           ..write('index: $index, ')
           ..write('isChange: $isChange, ')
-          ..write('isUsed: $isUsed, ')
           ..write('balanceSat: $balanceSat, ')
           ..write('nrOfTransactions: $nrOfTransactions, ')
           ..write('createdAt: $createdAt, ')
@@ -5636,7 +5615,6 @@ class AddressHistoryData extends DataClass
     walletId,
     index,
     isChange,
-    isUsed,
     balanceSat,
     nrOfTransactions,
     createdAt,
@@ -5645,49 +5623,46 @@ class AddressHistoryData extends DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is AddressHistoryData &&
+      (other is WalletAddressHistoryData &&
           other.id == this.id &&
           other.address == this.address &&
           other.walletId == this.walletId &&
           other.index == this.index &&
           other.isChange == this.isChange &&
-          other.isUsed == this.isUsed &&
           other.balanceSat == this.balanceSat &&
           other.nrOfTransactions == this.nrOfTransactions &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
 
-class AddressHistoryCompanion extends UpdateCompanion<AddressHistoryData> {
+class WalletAddressHistoryCompanion
+    extends UpdateCompanion<WalletAddressHistoryData> {
   final Value<int> id;
   final Value<String> address;
   final Value<String> walletId;
   final Value<int> index;
   final Value<bool> isChange;
-  final Value<bool> isUsed;
   final Value<int> balanceSat;
   final Value<int> nrOfTransactions;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  const AddressHistoryCompanion({
+  const WalletAddressHistoryCompanion({
     this.id = const Value.absent(),
     this.address = const Value.absent(),
     this.walletId = const Value.absent(),
     this.index = const Value.absent(),
     this.isChange = const Value.absent(),
-    this.isUsed = const Value.absent(),
     this.balanceSat = const Value.absent(),
     this.nrOfTransactions = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
-  AddressHistoryCompanion.insert({
+  WalletAddressHistoryCompanion.insert({
     this.id = const Value.absent(),
     required String address,
     required String walletId,
     required int index,
     required bool isChange,
-    required bool isUsed,
     required int balanceSat,
     required int nrOfTransactions,
     required DateTime createdAt,
@@ -5696,18 +5671,16 @@ class AddressHistoryCompanion extends UpdateCompanion<AddressHistoryData> {
        walletId = Value(walletId),
        index = Value(index),
        isChange = Value(isChange),
-       isUsed = Value(isUsed),
        balanceSat = Value(balanceSat),
        nrOfTransactions = Value(nrOfTransactions),
        createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
-  static Insertable<AddressHistoryData> custom({
+  static Insertable<WalletAddressHistoryData> custom({
     Expression<int>? id,
     Expression<String>? address,
     Expression<String>? walletId,
     Expression<int>? index,
     Expression<bool>? isChange,
-    Expression<bool>? isUsed,
     Expression<int>? balanceSat,
     Expression<int>? nrOfTransactions,
     Expression<DateTime>? createdAt,
@@ -5719,7 +5692,6 @@ class AddressHistoryCompanion extends UpdateCompanion<AddressHistoryData> {
       if (walletId != null) 'wallet_id': walletId,
       if (index != null) 'index': index,
       if (isChange != null) 'is_change': isChange,
-      if (isUsed != null) 'is_used': isUsed,
       if (balanceSat != null) 'balance_sat': balanceSat,
       if (nrOfTransactions != null) 'nr_of_transactions': nrOfTransactions,
       if (createdAt != null) 'created_at': createdAt,
@@ -5727,25 +5699,23 @@ class AddressHistoryCompanion extends UpdateCompanion<AddressHistoryData> {
     });
   }
 
-  AddressHistoryCompanion copyWith({
+  WalletAddressHistoryCompanion copyWith({
     Value<int>? id,
     Value<String>? address,
     Value<String>? walletId,
     Value<int>? index,
     Value<bool>? isChange,
-    Value<bool>? isUsed,
     Value<int>? balanceSat,
     Value<int>? nrOfTransactions,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
   }) {
-    return AddressHistoryCompanion(
+    return WalletAddressHistoryCompanion(
       id: id ?? this.id,
       address: address ?? this.address,
       walletId: walletId ?? this.walletId,
       index: index ?? this.index,
       isChange: isChange ?? this.isChange,
-      isUsed: isUsed ?? this.isUsed,
       balanceSat: balanceSat ?? this.balanceSat,
       nrOfTransactions: nrOfTransactions ?? this.nrOfTransactions,
       createdAt: createdAt ?? this.createdAt,
@@ -5771,9 +5741,6 @@ class AddressHistoryCompanion extends UpdateCompanion<AddressHistoryData> {
     if (isChange.present) {
       map['is_change'] = Variable<bool>(isChange.value);
     }
-    if (isUsed.present) {
-      map['is_used'] = Variable<bool>(isUsed.value);
-    }
     if (balanceSat.present) {
       map['balance_sat'] = Variable<int>(balanceSat.value);
     }
@@ -5791,13 +5758,12 @@ class AddressHistoryCompanion extends UpdateCompanion<AddressHistoryData> {
 
   @override
   String toString() {
-    return (StringBuffer('AddressHistoryCompanion(')
+    return (StringBuffer('WalletAddressHistoryCompanion(')
           ..write('id: $id, ')
           ..write('address: $address, ')
           ..write('walletId: $walletId, ')
           ..write('index: $index, ')
           ..write('isChange: $isChange, ')
-          ..write('isUsed: $isUsed, ')
           ..write('balanceSat: $balanceSat, ')
           ..write('nrOfTransactions: $nrOfTransactions, ')
           ..write('createdAt: $createdAt, ')
@@ -5818,7 +5784,9 @@ class DatabaseAtV3 extends GeneratedDatabase {
   late final ElectrumServers electrumServers = ElectrumServers(this);
   late final Swaps swaps = Swaps(this);
   late final AutoSwap autoSwap = AutoSwap(this);
-  late final AddressHistory addressHistory = AddressHistory(this);
+  late final WalletAddressHistory walletAddressHistory = WalletAddressHistory(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5833,7 +5801,7 @@ class DatabaseAtV3 extends GeneratedDatabase {
     electrumServers,
     swaps,
     autoSwap,
-    addressHistory,
+    walletAddressHistory,
   ];
   @override
   int get schemaVersion => 3;

@@ -6,11 +6,9 @@ import 'package:bb_mobile/core/electrum/data/repository/electrum_server_reposito
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
@@ -45,7 +43,7 @@ extension BdkNetworkX on bdk.Network {
   }
 }
 
-class BdkWalletDatasource implements WalletDatasource {
+class BdkWalletDatasource {
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
   final Map<String, Future<void>> _activeSyncs;
@@ -84,7 +82,6 @@ class BdkWalletDatasource implements WalletDatasource {
     return balance;
   }
 
-  @override
   Future<void> sync({
     required WalletModel wallet,
     required ElectrumServerModel electrumServer,
@@ -262,7 +259,6 @@ class BdkWalletDatasource implements WalletDatasource {
     return psbt.asString();
   }
 
-  @override
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     final bdkWallet = await _createWallet(wallet);
     final unspent = bdkWallet.listUnspent();
@@ -289,7 +285,6 @@ class BdkWalletDatasource implements WalletDatasource {
     return utxos;
   }
 
-  @override
   Future<List<WalletTransactionModel>> getTransactions({
     required WalletModel wallet,
     String? toAddress,
@@ -390,8 +385,7 @@ class BdkWalletDatasource implements WalletDatasource {
     return walletTxs.whereType<WalletTransactionModel>().toList();
   }
 
-  @override
-  Future<WalletAddressModel> getNewAddress({
+  Future<({String address, int index})> getNewAddress({
     required WalletModel wallet,
   }) async {
     final bdkWallet = await _createWallet(wallet);
@@ -402,11 +396,10 @@ class BdkWalletDatasource implements WalletDatasource {
     final index = addressInfo.index;
     final address = addressInfo.address.asString();
 
-    return BitcoinWalletAddressModel(index: index, address: address);
+    return (index: index, address: address);
   }
 
-  @override
-  Future<WalletAddressModel> getLastUnusedAddress({
+  Future<({String address, int index})> getLastUnusedAddress({
     required WalletModel wallet,
     bool isChange = false,
   }) async {
@@ -420,11 +413,10 @@ class BdkWalletDatasource implements WalletDatasource {
     final index = addressInfo.index;
     final address = addressInfo.address.asString();
 
-    return BitcoinWalletAddressModel(index: index, address: address);
+    return (index: index, address: address);
   }
 
-  @override
-  Future<WalletAddressModel> getAddressByIndex(
+  Future<String> getAddressByIndex(
     int index, {
     required WalletModel wallet,
   }) async {
@@ -433,62 +425,57 @@ class BdkWalletDatasource implements WalletDatasource {
       addressIndex: bdk.AddressIndex.peek(index: index),
     );
 
-    return BitcoinWalletAddressModel(
-      index: addressInfo.index,
-      address: addressInfo.address.asString(),
-    );
+    final address = addressInfo.address.asString();
+
+    return address;
   }
 
-  @override
-  Future<List<WalletAddressModel>> getReceiveAddresses({
+  Future<List<({String address, int index})>> getReceiveAddresses({
     required WalletModel wallet,
     required int limit,
     required int offset,
   }) async {
     final bdkWallet = await _createWallet(wallet);
 
-    final addresses = <BitcoinWalletAddressModel>[];
+    final addresses = <({String address, int index})>[];
     for (int i = offset; i < offset + limit; i++) {
-      final address = bdkWallet.getAddress(
+      final addressInfo = bdkWallet.getAddress(
         addressIndex: bdk.AddressIndex.peek(index: i),
       );
 
-      final model = BitcoinWalletAddressModel(
-        index: address.index,
-        address: address.address.asString(),
+      final address = (
+        index: addressInfo.index,
+        address: addressInfo.address.asString(),
       );
-      addresses.add(model);
+      addresses.add(address);
     }
 
     return addresses;
   }
 
-  @override
-  Future<List<WalletAddressModel>> getChangeAddresses({
+  Future<List<({String address, int index})>> getChangeAddresses({
     required WalletModel wallet,
     required int limit,
     required int offset,
   }) async {
     final bdkWallet = await _createWallet(wallet);
 
-    final addresses = <BitcoinWalletAddressModel>[];
+    final addresses = <({String address, int index})>[];
     for (int i = offset; i < offset + limit; i++) {
-      final address = bdkWallet.getInternalAddress(
+      final addressInfo = bdkWallet.getInternalAddress(
         addressIndex: bdk.AddressIndex.peek(index: i),
       );
 
-      final model = BitcoinWalletAddressModel(
-        index: address.index,
-        address: address.address.asString(),
+      final address = (
+        index: addressInfo.index,
+        address: addressInfo.address.asString(),
       );
-
-      addresses.add(model);
+      addresses.add(address);
     }
 
     return addresses;
   }
 
-  @override
   Future<bool> isAddressUsed(
     String address, {
     required WalletModel wallet,
@@ -517,7 +504,6 @@ class BdkWalletDatasource implements WalletDatasource {
     return false;
   }
 
-  @override
   Future<BigInt> getAddressBalanceSat(
     String address, {
     required WalletModel wallet,
