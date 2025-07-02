@@ -22,65 +22,87 @@ class WatchOnlyDetailsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Gap(24),
         BBText('Extended Public Key', style: context.font.titleMedium),
         const Gap(8),
-        BBText(watchOnlyWallet.watchOnly.descriptor.pubkey, style: null),
-        const Gap(16),
-        BBText('Type', style: context.font.titleMedium),
+        BBText(watchOnlyWallet.descriptor.pubkey, style: null),
+        const Gap(24),
+        BBText(
+          '${watchOnlyWallet.descriptor.derivation.label} Descriptor',
+          style: context.font.titleMedium,
+        ),
+        const Gap(8),
+        BBText(watchOnlyWallet.descriptor.combined, style: null),
+        const Gap(24),
+        BBText('Override Master fingerprint', style: context.font.titleMedium),
         const Gap(8),
         BBText(
-          watchOnlyWallet.watchOnly.descriptor.derivation.label,
+          'Is able to generate Psbt?    ${watchOnlyWallet.canGenerateValidPsbt ? 'Yes' : 'No'}',
           style: null,
         ),
-        const Gap(16),
-        BBText('Fingerprint', style: context.font.titleMedium),
         const Gap(8),
-        BBInputText(
-          onChanged: cubit.overrideFingerprint,
-          value: watchOnlyWallet.watchOnly.descriptor.fingerprint,
-          maxLines: 1,
-          hint: 'fingerprint',
-          maxLength: 8,
+        BBText(
+          'Pubkey Fingerprint:    ${watchOnlyWallet.pubkeyFingerprint}',
+          style: null,
         ),
-        const Gap(16),
-        DropdownButtonFormField<WalletSource>(
-          alignment: Alignment.centerLeft,
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+        const Gap(8),
+        SizedBox(
+          width: 150,
+          child: BBInputText(
+            onChanged: cubit.overrideMasterFingerprint,
+            value: cubit.state.overrideMasterFingerprint,
+            maxLines: 1,
+            hint: 'fingerprint',
+            maxLength: 8,
           ),
-          icon: Icon(
-            Icons.keyboard_arrow_down,
-            color: context.colour.secondary,
-          ),
-          value: WalletSource.xpub,
-          items:
-              WalletSource.values
-                  .where((e) => e != WalletSource.mnemonic)
-                  .map(
-                    (language) => DropdownMenuItem<WalletSource>(
-                      value: language,
-                      child: BBText(
-                        language.name,
-                        style: context.font.headlineSmall,
-                      ),
-                    ),
-                  )
-                  .toList(),
-          onChanged: cubit.onSourceChanged,
+        ),
+        const Gap(24),
+        Row(
+          children: [
+            SizedBox(
+              width: 100,
+              child: BBText('Source', style: context.font.titleMedium),
+            ),
+            SizedBox(
+              width: 200,
+              child: DropdownButtonFormField<WalletSource>(
+                alignment: Alignment.centerLeft,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                ),
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: context.colour.secondary,
+                ),
+                value: watchOnlyWallet.source,
+                items:
+                    WalletSource.values
+                        .where((e) => e != WalletSource.mnemonic)
+                        .map(
+                          (language) => DropdownMenuItem<WalletSource>(
+                            value: language,
+                            child: BBText(
+                              language.name,
+                              style: context.font.headlineSmall,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                onChanged: cubit.onSourceChanged,
+              ),
+            ),
+          ],
         ),
 
-        const Gap(16),
+        const Gap(24),
         BBText('Label', style: context.font.titleMedium),
         const Gap(8),
         BBInputText(
           onChanged: cubit.updateLabel,
           value: watchOnlyWallet.label,
-          hint: 'label (optional)',
           maxLines: 1,
         ),
-        const Gap(16),
+        const Gap(24),
         BBButton.big(
           onPressed: cubit.import,
           label: 'Import',
