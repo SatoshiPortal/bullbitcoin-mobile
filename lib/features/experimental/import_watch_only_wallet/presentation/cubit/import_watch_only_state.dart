@@ -10,7 +10,7 @@ abstract class ImportWatchOnlyState with _$ImportWatchOnlyState {
     WatchOnlyWalletEntity? watchOnlyWallet,
     Wallet? importedWallet,
     WalletSource? source,
-    @Default('') String publicKey,
+    @Default('') String input,
     @Default('') String error,
   }) = _ImportWatchOnlyState;
 

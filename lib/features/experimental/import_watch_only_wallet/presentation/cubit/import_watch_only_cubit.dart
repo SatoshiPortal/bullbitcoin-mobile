@@ -51,8 +51,8 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     }
   }
 
-  Future<void> parseExtendedPublicKey(String value) async {
-    emit(state.copyWith(publicKey: value.trim()));
+  Future<void> parsePastedInput(String value) async {
+    emit(state.copyWith(input: value.trim()));
     if (value.length >= 111) {
       try {
         final watchOnly = await Satoshifier.parse(value);
@@ -63,7 +63,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
         }
 
         final wallet = WatchOnlyWalletEntity(watchOnly: watchOnly);
-        emit(state.copyWith(watchOnlyWallet: wallet, publicKey: value));
+        emit(state.copyWith(watchOnlyWallet: wallet, input: value));
       } catch (e) {
         emit(
           state.copyWith(
@@ -73,7 +73,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
         );
       }
     } else {
-      emit(state.copyWith(publicKey: value, watchOnlyWallet: null));
+      emit(state.copyWith(input: value, watchOnlyWallet: null));
     }
   }
 

@@ -56,13 +56,12 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                       const Gap(32),
                       if (state.watchOnlyWallet == null) ...[
                         MultilinePasteWidget(
-                          title: 'Paste or scan xpub, ypub or zpub',
-                          value: state.publicKey,
+                          title: 'Paste xpub, ypub, zpub or descriptor',
+                          value: state.input,
                           hint: '',
                           maxLines: 4,
                           minLines: 4,
-                          maxLength: 111,
-                          onChanged: cubit.parseExtendedPublicKey,
+                          onChanged: cubit.parsePastedInput,
                         ),
                         if (state.error.isNotEmpty)
                           Center(
