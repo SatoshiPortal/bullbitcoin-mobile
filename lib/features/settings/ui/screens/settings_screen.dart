@@ -79,18 +79,6 @@ class SettingsScreen extends StatelessWidget {
                   title: Text(context.loc.electrumServerSettingsLabel),
                   onTap: () {
                     ElectrumSettingsRouter.showElectrumServerSettings(context);
-                  },
-                  trailing: const Icon(Icons.chevron_right),
-                ),
-                if (isSuperuser)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: const Text('Auto Swap Settings'),
-                    onTap: () {
-                      AutoSwapSettingsRouter.showAutoSwapSettings(context);
                     },
                     trailing: const Icon(Icons.chevron_right),
                   ),
