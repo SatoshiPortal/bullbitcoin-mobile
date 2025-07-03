@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/bip85_derivation.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CreateEncryptedVaultUsecase {
   final RecoverBullRepository _recoverBullRepository;

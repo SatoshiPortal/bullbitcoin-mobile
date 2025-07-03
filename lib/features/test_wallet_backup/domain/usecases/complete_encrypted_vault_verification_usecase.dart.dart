@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CompleteEncryptedVaultVerificationUsecase {
   final WalletRepository _walletRepository;

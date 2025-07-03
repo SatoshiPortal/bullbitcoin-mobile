@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_storage_keys.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 // create an enum called Migration with two values v4 and v5
 enum MigrationRequired { v4, v5 }

@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconne
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/backup_wallet/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/features/backup_wallet/domain/usecases/save_to_file_system_usecase.dart';
 import 'package:bb_mobile/features/backup_wallet/domain/usecases/save_to_google_drive_usecase.dart';
