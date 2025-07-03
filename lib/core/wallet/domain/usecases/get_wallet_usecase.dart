@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class GetWalletUsecase {
   final WalletRepository _wallet;

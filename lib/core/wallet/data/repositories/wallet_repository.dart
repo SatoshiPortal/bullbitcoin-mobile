@@ -15,17 +15,16 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:rxdart/transformers.dart';
 
-class WalletRepositoryImpl implements WalletRepository {
+class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
-  WalletRepositoryImpl({
+  WalletRepository({
     required WalletMetadataDatasource walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
@@ -40,24 +39,20 @@ class WalletRepositoryImpl implements WalletRepository {
     _startAutoSyncing();
   }
 
-  @override
   Stream<Wallet> get walletSyncStartedStream =>
       _walletSyncStartedStream
           .asyncMap((walletId) async => await getWallet(walletId))
           .whereType<Wallet>();
 
-  @override
   Stream<Wallet> get walletSyncFinishedStream =>
       _walletSyncFinishedStream
           .asyncMap((walletId) async => await getWallet(walletId))
           .whereType<Wallet>();
 
-  @override
   bool isWalletSyncing({String? walletId}) =>
       _bdkWallet.isWalletSyncing(walletId: walletId) ||
       _lwkWallet.isWalletSyncing(walletId: walletId);
 
-  @override
   Future<Wallet> createWallet({
     required Seed seed,
     required Network network,
@@ -114,21 +109,14 @@ class WalletRepositoryImpl implements WalletRepository {
     );
   }
 
-  @override
-  Future<Wallet> importWatchOnlyWallet({
-    required String xpub,
-    required Network network,
-    required ScriptType scriptType,
+  Future<Wallet> importDescriptor({
+    required String descriptor,
     required String label,
     bool sync = false,
-    String? overrideFingerprint,
   }) async {
-    final metadata = await WalletMetadataService.deriveFromXpub(
-      xpub: xpub,
-      network: network,
-      scriptType: scriptType,
+    final metadata = await WalletMetadataService.fromDescriptor(
+      descriptor: descriptor,
       label: label,
-      overrideFingerprint: overrideFingerprint,
     );
 
     await _walletMetadataDatasource.store(metadata);
@@ -138,9 +126,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
     final allWallets = await getWallets(onlyDefaults: true);
     for (final wallet in allWallets) {
-      if (wallet.id == metadata.id) {
-        throw Exception('Wallet already exists');
-      }
+      if (wallet.id == metadata.id) throw 'Wallet already exists';
     }
 
     // Return the created wallet entity
@@ -163,7 +149,50 @@ class WalletRepositoryImpl implements WalletRepository {
     );
   }
 
-  @override
+  Future<Wallet> importWatchOnlyXpub({
+    required String xpub,
+    required Network network,
+    required ScriptType scriptType,
+    required String label,
+    bool sync = false,
+  }) async {
+    final metadata = await WalletMetadataService.deriveFromXpub(
+      xpub: xpub,
+      network: network,
+      scriptType: scriptType,
+      label: label,
+    );
+
+    await _walletMetadataDatasource.store(metadata);
+
+    // Fetch the balance (in the future maybe other details of the wallet too)
+    final balance = await _getBalance(metadata, sync: sync);
+
+    final allWallets = await getWallets(onlyDefaults: true);
+    for (final wallet in allWallets) {
+      if (wallet.id == metadata.id) throw 'Wallet already exists';
+    }
+
+    // Return the created wallet entity
+    return Wallet(
+      origin: metadata.id,
+      label: metadata.label,
+      network: Network.fromEnvironment(
+        isTestnet: metadata.isTestnet,
+        isLiquid: metadata.isLiquid,
+      ),
+      isDefault: metadata.isDefault,
+      masterFingerprint: metadata.masterFingerprint,
+      xpubFingerprint: metadata.xpubFingerprint,
+      scriptType: metadata.scriptType,
+      xpub: metadata.xpub,
+      externalPublicDescriptor: metadata.externalPublicDescriptor,
+      internalPublicDescriptor: metadata.internalPublicDescriptor,
+      source: metadata.source,
+      balanceSat: balance.totalSat,
+    );
+  }
+
   Future<Wallet?> getWallet(String walletId, {bool sync = false}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
@@ -207,7 +236,6 @@ class WalletRepositoryImpl implements WalletRepository {
     );
   }
 
-  @override
   Future<List<Wallet>> getWallets({
     Environment? environment,
     bool? onlyDefaults,
@@ -279,7 +307,6 @@ class WalletRepositoryImpl implements WalletRepository {
         .toList();
   }
 
-  @override
   Future<void> updateEncryptedBackupTime(
     DateTime time, {
     required String walletId,
@@ -295,7 +322,6 @@ class WalletRepositoryImpl implements WalletRepository {
     );
   }
 
-  @override
   Future<void> updateBackupInfo({
     required bool isEncryptedVaultTested,
     required bool isPhysicalBackupTested,
@@ -319,7 +345,6 @@ class WalletRepositoryImpl implements WalletRepository {
     );
   }
 
-  @override
   Future<WalletBalances> getWalletBalances({required String walletId}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
     if (metadata == null) {
@@ -336,7 +361,6 @@ class WalletRepositoryImpl implements WalletRepository {
     );
   }
 
-  @override
   Future<void> deleteWallet({required String walletId}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
     if (metadata == null) {

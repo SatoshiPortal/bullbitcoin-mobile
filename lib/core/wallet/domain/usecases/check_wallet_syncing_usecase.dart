@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CheckWalletSyncingUsecase {
   final WalletRepository _walletRepository;

@@ -93,6 +93,10 @@ dependencies:
   sliver_tools: ^0.2.12
   logging_colorful: ^1.2.2
   timelines_plus: ^1.0.7
+  satoshifier:
+    git:
+      url: https://github.com/ethicnology/dart-satoshifier.git
+      ref: main
 
 dev_dependencies:
   build_runner: ^2.4.15
