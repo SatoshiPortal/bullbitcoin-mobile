@@ -18,7 +18,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:rxdart/transformers.dart';
-import 'package:satoshifier/satoshifier.dart' show WatchOnly;
 
 class WalletRepositoryImpl implements WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -116,18 +115,14 @@ class WalletRepositoryImpl implements WalletRepository {
   }
 
   @override
-  Future<Wallet> importWatchOnlySatoshifier({
-    required WatchOnly watchOnly,
-    required WalletSource walletSource,
-    String? masterFingerprint,
-    String? label,
+  Future<Wallet> importDescriptor({
+    required String descriptor,
+    required String label,
     bool sync = false,
   }) async {
-    final metadata = await WalletMetadataService.fromWatchOnly(
-      watchOnly: watchOnly,
+    final metadata = await WalletMetadataService.fromDescriptor(
+      descriptor: descriptor,
       label: label,
-      masterFingerprint: masterFingerprint,
-      walletSource: walletSource,
     );
 
     await _walletMetadataDatasource.store(metadata);
@@ -161,20 +156,18 @@ class WalletRepositoryImpl implements WalletRepository {
   }
 
   @override
-  Future<Wallet> importWatchOnlyWallet({
+  Future<Wallet> importWatchOnlyXpub({
     required String xpub,
     required Network network,
     required ScriptType scriptType,
     required String label,
     bool sync = false,
-    String? overrideFingerprint,
   }) async {
     final metadata = await WalletMetadataService.deriveFromXpub(
       xpub: xpub,
       network: network,
       scriptType: scriptType,
       label: label,
-      overrideFingerprint: overrideFingerprint,
     );
 
     await _walletMetadataDatasource.store(metadata);
