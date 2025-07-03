@@ -5,14 +5,13 @@ import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 
-class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
+class LiquidWalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final SeedDatasource _seed;
   final LwkWalletDatasource _lwkWallet;
 
-  LiquidWalletRepositoryImpl({
+  LiquidWalletRepository({
     required WalletMetadataDatasource walletMetadataDatasource,
     required SeedDatasource seedDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
@@ -20,7 +19,6 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
        _seed = seedDatasource,
        _lwkWallet = lwkWalletDatasource;
 
-  @override
   Future<String> buildPset({
     required String walletId,
     required String address,
@@ -54,13 +52,11 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
     return pset;
   }
 
-  @override
   Future<(int, int)> getPsetSizeAndAbsoluteFees({required String pset}) async {
     final (size, fees) = await _lwkWallet.decodeAbsoluteFeesFromPset(pset);
     return (size, fees);
   }
 
-  @override
   Future<String> signPset({
     required String pset,
     required String walletId,

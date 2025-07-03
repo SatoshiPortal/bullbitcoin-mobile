@@ -16,7 +16,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
@@ -67,7 +66,7 @@ class WalletLocator {
     );
 
     locator.registerLazySingleton<LiquidWalletRepository>(
-      () => LiquidWalletRepositoryImpl(
+      () => LiquidWalletRepository(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         seedDatasource: locator<SeedDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
