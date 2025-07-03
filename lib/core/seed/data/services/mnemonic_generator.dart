@@ -1,10 +1,8 @@
-import 'package:bb_mobile/core/seed/domain/services/mnemonic_generator.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
-class MnemonicGeneratorImpl implements MnemonicGenerator {
-  const MnemonicGeneratorImpl();
+class MnemonicGenerator {
+  const MnemonicGenerator();
 
-  @override
   Future<List<String>> generate() async {
     try {
       final mnemonic = await bdk.Mnemonic.create(bdk.WordCount.words12);
