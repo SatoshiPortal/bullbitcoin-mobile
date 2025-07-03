@@ -10,13 +10,12 @@ import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_dataso
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_address_history_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository_impl.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
@@ -60,7 +59,7 @@ class WalletLocator {
 
   static void registerRepositories() {
     locator.registerLazySingleton<BitcoinWalletRepository>(
-      () => BitcoinWalletRepositoryImpl(
+      () => BitcoinWalletRepository(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         seedDatasource: locator<SeedDatasource>(),

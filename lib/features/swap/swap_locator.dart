@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.d
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';

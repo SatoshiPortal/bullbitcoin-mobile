@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 
 class SignBitcoinTxUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;

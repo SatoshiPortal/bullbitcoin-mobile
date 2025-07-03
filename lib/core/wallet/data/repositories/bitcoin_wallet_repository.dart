@@ -9,14 +9,13 @@ import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 
-class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
+class BitcoinWalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
 
-  BitcoinWalletRepositoryImpl({
+  BitcoinWalletRepository({
     required WalletMetadataDatasource walletMetadataDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
@@ -24,7 +23,6 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
        _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource;
 
-  @override
   Future<String> buildPsbt({
     required String walletId,
     required String address,
@@ -68,7 +66,6 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     return psbt;
   }
 
-  @override
   Future<String> signPsbt(String psbt, {required String walletId}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
@@ -99,7 +96,6 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     return signedPsbt;
   }
 
-  @override
   Future<bool> isScriptOfWallet({
     required String walletId,
     required Uint8List script,
@@ -128,13 +124,11 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     return isFromWallet;
   }
 
-  @override
   Future<int> getTxSize({required String psbt}) async {
     final txSize = await _bdkWallet.decodeTxSize(psbt);
     return txSize;
   }
 
-  @override
   Future<int> getTxFeeAmount({required String psbt}) async {
     final feeAbsolute = await _bdkWallet.getFeeAmount(psbt);
     return feeAbsolute;
