@@ -31,6 +31,7 @@ abstract class WalletRepository {
     bool? onlyLiquid,
     bool sync = false,
   });
+  Future<void> deleteWallet({required String walletId});
   // TODO: The recoverbull backup functionality should be moved to the wallet repo
   // and instead of having the updateBackupInfo and updateEncryptedBackupTime methods,
   //  doing the restore and backup create through the Wallet repository should

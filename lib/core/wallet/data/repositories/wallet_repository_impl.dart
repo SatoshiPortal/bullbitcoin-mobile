@@ -336,6 +336,17 @@ class WalletRepositoryImpl implements WalletRepository {
     );
   }
 
+  @override
+  Future<void> deleteWallet({required String walletId}) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    // Delete wallet metadata from database
+    await _walletMetadataDatasource.delete(walletId);
+  }
+
   Stream<String> get _walletSyncStartedStream => StreamGroup.merge([
     _bdkWallet.walletSyncStartedStream,
     _lwkWallet.walletSyncStartedStream,

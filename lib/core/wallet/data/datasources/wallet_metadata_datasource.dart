@@ -27,4 +27,10 @@ class WalletMetadataDatasource {
     final rows = await _sqlite.managers.walletMetadatas.get();
     return rows.map((e) => WalletMetadataModelMapper.fromSqlite(e)).toList();
   }
+
+  Future<void> delete(String walletId) async {
+    await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .delete();
+  }
 }
