@@ -19,41 +19,37 @@ class WatchOnlyDetailsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return watchOnlyWallet.when(
+      descriptor:
+          (_, _, _) => _DescriptorDetailsWidget(
+            entity: watchOnlyWallet as WatchOnlyDescriptorEntity,
+            cubit: cubit,
+          ),
+      xpub:
+          (_, _, _) => _XpubDetailsWidget(
+            entity: watchOnlyWallet as WatchOnlyXpubEntity,
+            cubit: cubit,
+          ),
+    );
+  }
+}
+
+class _DescriptorDetailsWidget extends StatelessWidget {
+  const _DescriptorDetailsWidget({required this.entity, required this.cubit});
+
+  final WatchOnlyDescriptorEntity entity;
+  final ImportWatchOnlyCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText('Extended Public Key', style: context.font.titleMedium),
-        const Gap(8),
-        BBText(watchOnlyWallet.descriptor.pubkey, style: null),
-        const Gap(24),
-        BBText(
-          '${watchOnlyWallet.descriptor.derivation.label} Descriptor',
-          style: context.font.titleMedium,
-        ),
-        const Gap(8),
-        BBText(watchOnlyWallet.descriptor.combined, style: null),
-        const Gap(24),
-        BBText('Override Master fingerprint', style: context.font.titleMedium),
+        BBText('Descriptor', style: context.font.titleMedium),
         const Gap(8),
         BBText(
-          'Is able to generate Psbt?    ${watchOnlyWallet.canGenerateValidPsbt ? 'Yes' : 'No'}',
-          style: null,
-        ),
-        const Gap(8),
-        BBText(
-          'Pubkey Fingerprint:    ${watchOnlyWallet.pubkeyFingerprint}',
-          style: null,
-        ),
-        const Gap(8),
-        SizedBox(
-          width: 150,
-          child: BBInputText(
-            onChanged: cubit.overrideMasterFingerprint,
-            value: cubit.state.overrideMasterFingerprint,
-            maxLines: 1,
-            hint: 'fingerprint',
-            maxLength: 8,
-          ),
+          entity.descriptor.derivation.label,
+          style: context.font.bodyMedium,
         ),
         const Gap(24),
         Row(
@@ -74,15 +70,14 @@ class WatchOnlyDetailsWidget extends StatelessWidget {
                   Icons.keyboard_arrow_down,
                   color: context.colour.secondary,
                 ),
-                value: watchOnlyWallet.source,
+                value: entity.source,
                 items:
-                    WalletSource.values
-                        .where((e) => e != WalletSource.mnemonic)
+                    [WalletSource.descriptors, WalletSource.coldcard]
                         .map(
-                          (language) => DropdownMenuItem<WalletSource>(
-                            value: language,
+                          (source) => DropdownMenuItem<WalletSource>(
+                            value: source,
                             child: BBText(
-                              language.name,
+                              source.name,
                               style: context.font.headlineSmall,
                             ),
                           ),
@@ -93,13 +88,75 @@ class WatchOnlyDetailsWidget extends StatelessWidget {
             ),
           ],
         ),
-
         const Gap(24),
         BBText('Label', style: context.font.titleMedium),
         const Gap(8),
         BBInputText(
           onChanged: cubit.updateLabel,
-          value: watchOnlyWallet.label,
+          value: entity.label,
+          maxLines: 1,
+        ),
+        const Gap(24),
+        BBButton.big(
+          onPressed: cubit.import,
+          label: 'Import',
+          bgColor: context.colour.primary,
+          textColor: context.colour.onPrimary,
+        ),
+        const Gap(24),
+      ],
+    );
+  }
+}
+
+class _XpubDetailsWidget extends StatelessWidget {
+  const _XpubDetailsWidget({required this.entity, required this.cubit});
+
+  final WatchOnlyXpubEntity entity;
+  final ImportWatchOnlyCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BBText('Extended Public Key', style: context.font.titleMedium),
+        const Gap(8),
+        BBText(entity.pubkey, style: context.font.bodyMedium),
+        BBText('Type', style: context.font.titleMedium),
+        const Gap(8),
+        BBText(
+          entity.extendedPubkey.derivation.label,
+          style: context.font.bodyMedium,
+        ),
+        const Gap(24),
+        Row(
+          children: [
+            SizedBox(
+              width: 100,
+              child: BBText('Source', style: context.font.titleMedium),
+            ),
+            SizedBox(
+              width: 200,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 16.0,
+                ),
+                child: BBText(
+                  entity.source.name,
+                  style: context.font.headlineSmall,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const Gap(24),
+        BBText('Label', style: context.font.titleMedium),
+        const Gap(8),
+        BBInputText(
+          onChanged: cubit.updateLabel,
+          value: entity.label,
           maxLines: 1,
         ),
         const Gap(24),
