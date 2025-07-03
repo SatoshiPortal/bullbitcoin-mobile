@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -87,7 +88,7 @@ class _WalletSettingsView extends StatelessWidget {
             return BlocConsumer<WalletSettingsCubit, WalletSettingsState>(
               listener: (context, state) {
                 if (state.deleteStatus == WalletDeleteStatus.success) {
-                  context.pop();
+                  context.goNamed(WalletRoute.walletHome.name);
                 } else if (state.deleteStatus == WalletDeleteStatus.error) {
                   _showErrorDialog(context, state.deleteError);
                 }
@@ -206,8 +207,8 @@ class _WalletSettingsView extends StatelessWidget {
                       child: BBButton.big(
                         label: 'Delete',
                         onPressed: () {
+                          Navigator.of(bottomSheetContext).pop();
                           context.read<WalletSettingsCubit>().deleteWallet();
-                          context.pop();
                         },
                         bgColor: context.colour.secondary,
                         textColor: context.colour.onPrimary,
