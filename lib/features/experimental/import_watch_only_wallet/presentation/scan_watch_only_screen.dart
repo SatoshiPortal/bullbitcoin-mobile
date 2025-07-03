@@ -32,13 +32,22 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
               setState(() => _scanned = data);
               try {
                 final watchOnly = await Satoshifier.parse(data);
-                if (watchOnly is WatchOnly) {
+
+                if (watchOnly is WatchOnlyDescriptor) {
                   if (!context.mounted) return;
                   context.replaceNamed(
                     ImportWatchOnlyRoutes.import.name,
-                    extra: WatchOnlyWalletEntity.fromSatoshifier(
-                      watchOnly: watchOnly,
+                    extra: WatchOnlyWalletEntity.descriptor(
+                      watchOnlyDescriptor: watchOnly,
                     ),
+                  );
+                }
+
+                if (watchOnly is WatchOnlyXpub) {
+                  if (!context.mounted) return;
+                  context.replaceNamed(
+                    ImportWatchOnlyRoutes.import.name,
+                    extra: WatchOnlyWalletEntity.xpub(watchOnlyXpub: watchOnly),
                   );
                 }
               } catch (e) {

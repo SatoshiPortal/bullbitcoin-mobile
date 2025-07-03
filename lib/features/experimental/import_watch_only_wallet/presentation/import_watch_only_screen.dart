@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_usecase.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/import_method_widget.dart';
@@ -26,13 +27,16 @@ class ImportWatchOnlyScreen extends StatelessWidget {
       create:
           (context) => ImportWatchOnlyCubit(
             watchOnlyWallet: watchOnlyWallet,
-            importWatchOnlyUsecase: locator<ImportWatchOnlyUsecase>(),
+            importWatchOnlyDescriptorUsecase:
+                locator<ImportWatchOnlyDescriptorUsecase>(),
+            importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
           )..init(),
       child: Scaffold(
         backgroundColor: context.colour.secondaryFixed,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(56),
-          child: TopBar(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: TopBar(
             title: 'Import wallet',
             color: context.colour.secondaryFixed,
             onBack: () => Navigator.of(context).pop(),

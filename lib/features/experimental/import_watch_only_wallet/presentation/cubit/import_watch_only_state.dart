@@ -10,7 +10,6 @@ abstract class ImportWatchOnlyState with _$ImportWatchOnlyState {
     WatchOnlyWalletEntity? watchOnlyWallet,
     Wallet? importedWallet,
     @Default('') String input,
-    @Default('') String overrideMasterFingerprint,
     @Default('') String error,
   }) = _ImportWatchOnlyState;
 
