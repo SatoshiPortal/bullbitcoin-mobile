@@ -409,7 +409,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         );
         if (source == WalletSource.coldcard || source == WalletSource.xpub) {
           try {
-            await _newWalletRepository.importWatchOnlyWallet(
+            await _newWalletRepository.importWatchOnlyXpub(
               xpub: xpubFromDescriptor,
               scriptType: scriptType,
               network: network,

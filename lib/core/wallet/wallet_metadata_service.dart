@@ -3,8 +3,7 @@ import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:satoshifier/satoshifier.dart'
-    show WatchOnly, WatchOnlyExtension;
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
 
 class WalletMetadataService {
   static String encodeOrigin({
@@ -166,10 +165,6 @@ class WalletMetadataService {
     required Network network,
     required ScriptType scriptType,
     String label = '',
-
-    /// Sign only wallets must substitute the public key extended fingerprint
-    /// to the wallet master bip32 fingerprint or invalid psbt will be generated
-    String? overrideFingerprint,
   }) async {
     if (network.isLiquid) {
       throw UnimplementedError(
@@ -179,19 +174,19 @@ class WalletMetadataService {
 
     final bip32Xpub = Bip32Derivation.getBip32Xpub(xpub);
     final xpubBase58 = bip32Xpub.toBase58();
-    final fingerprint = overrideFingerprint ?? bip32Xpub.fingerprintHex;
+    final pubkeyFingerprint = bip32Xpub.fingerprintHex;
 
     final descriptor =
         await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
           xpubBase58,
-          fingerprint: fingerprint,
+          fingerprint: pubkeyFingerprint,
           scriptType: scriptType,
           isTestnet: network.isTestnet,
         );
     final changeDescriptor =
         await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
           xpubBase58,
-          fingerprint: fingerprint,
+          fingerprint: pubkeyFingerprint,
           scriptType: scriptType,
           isTestnet: network.isTestnet,
           isInternalKeychain: true,
@@ -199,11 +194,11 @@ class WalletMetadataService {
 
     return WalletMetadataModel(
       id: WalletMetadataService.encodeOrigin(
-        fingerprint: fingerprint,
+        fingerprint: pubkeyFingerprint,
         network: network,
         scriptType: scriptType,
       ),
-      xpubFingerprint: fingerprint,
+      xpubFingerprint: bip32Xpub.fingerprintHex,
       source: WalletSource.xpub,
       xpub: bip32Xpub.convert(scriptType.getXpubType(network)),
       externalPublicDescriptor: descriptor,
@@ -216,29 +211,25 @@ class WalletMetadataService {
     );
   }
 
-  static Future<WalletMetadataModel> fromWatchOnly({
-    required WatchOnly watchOnly,
-    required WalletSource walletSource,
-    String? masterFingerprint,
+  static Future<WalletMetadataModel> fromDescriptor({
+    required String descriptor,
     String? label,
   }) async {
-    final scriptType = ScriptType.fromName(
-      watchOnly.descriptor.derivation.name,
-    );
-    final network = Network.fromName(watchOnly.descriptor.network.name);
+    final entity = await WatchOnlyWalletEntity.parse(descriptor);
+    if (entity is! WatchOnlyDescriptorEntity) throw 'Unsupported descriptor';
 
     return WalletMetadataModel(
       id: WalletMetadataService.encodeOrigin(
-        fingerprint: watchOnly.descriptor.fingerprint,
-        network: network,
-        scriptType: scriptType,
+        fingerprint: entity.masterFingerprint,
+        network: entity.network,
+        scriptType: entity.scriptType,
       ),
-      masterFingerprint: masterFingerprint ?? watchOnly.masterFingerprint,
-      xpubFingerprint: watchOnly.pubkeyFingerprint,
-      source: walletSource,
-      xpub: watchOnly.descriptor.pubkey,
-      externalPublicDescriptor: watchOnly.descriptor.external,
-      internalPublicDescriptor: watchOnly.descriptor.internal,
+      masterFingerprint: entity.masterFingerprint,
+      xpubFingerprint: entity.pubkeyFingerprint,
+      source: entity.source,
+      xpub: entity.pubkey,
+      externalPublicDescriptor: entity.descriptor.external,
+      internalPublicDescriptor: entity.descriptor.internal,
       isDefault: false,
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
