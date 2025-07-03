@@ -10,7 +10,7 @@
 // import 'package:bb_mobile/core/utils/logger.dart';
 // import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository_impl.dart';
 // import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-// import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
+// import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 // import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 // import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 // import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';

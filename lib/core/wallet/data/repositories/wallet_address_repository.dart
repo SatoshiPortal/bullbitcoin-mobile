@@ -6,16 +6,15 @@ import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 
-class WalletAddressRepositoryImpl implements WalletAddressRepository {
+class WalletAddressRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
   final WalletAddressHistoryDatasource _walletAddressHistoryDatasource;
 
-  WalletAddressRepositoryImpl({
+  WalletAddressRepository({
     required WalletMetadataDatasource walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
@@ -25,7 +24,6 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
        _lwkWallet = lwkWalletDatasource,
        _walletAddressHistoryDatasource = walletAddressHistoryDatasource;
 
-  @override
   Future<WalletAddress> getNewReceiveAddress({required String walletId}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
@@ -92,7 +90,6 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
     return walletAddress;
   }
 
-  @override
   Future<List<WalletAddress>> getGeneratedReceiveAddresses(
     String walletId, {
     int? limit,
@@ -119,7 +116,6 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
     return [];
   }
 
-  @override
   Future<List<WalletAddress>> getUsedChangeAddresses(
     String walletId, {
     int? limit,

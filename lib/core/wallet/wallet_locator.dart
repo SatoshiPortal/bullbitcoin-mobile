@@ -11,12 +11,11 @@ import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_address_history_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository_impl.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository_impl.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -94,7 +93,7 @@ class WalletLocator {
     );
 
     locator.registerLazySingleton<WalletAddressRepository>(
-      () => WalletAddressRepositoryImpl(
+      () => WalletAddressRepository(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),

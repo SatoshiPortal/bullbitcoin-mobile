@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository_impl.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 
 class SignLiquidTxUsecase {
   final LiquidWalletRepository _liquidWalletRepository;
