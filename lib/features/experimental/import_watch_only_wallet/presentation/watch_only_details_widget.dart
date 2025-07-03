@@ -47,6 +47,10 @@ class _DescriptorDetailsWidget extends StatelessWidget {
       children: [
         BBText('Descriptor', style: context.font.titleMedium),
         const Gap(8),
+        BBText(entity.descriptor.combined, style: context.font.bodyMedium),
+        const Gap(24),
+        BBText('Type', style: context.font.titleMedium),
+        const Gap(8),
         BBText(
           entity.descriptor.derivation.label,
           style: context.font.bodyMedium,
@@ -123,6 +127,7 @@ class _XpubDetailsWidget extends StatelessWidget {
         BBText('Extended Public Key', style: context.font.titleMedium),
         const Gap(8),
         BBText(entity.pubkey, style: context.font.bodyMedium),
+        const Gap(24),
         BBText('Type', style: context.font.titleMedium),
         const Gap(8),
         BBText(
