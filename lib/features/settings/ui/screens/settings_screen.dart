@@ -76,12 +76,23 @@ class SettingsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                   tileColor: Colors.transparent,
+                  title: const Text('Wallets'),
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.wallets.name);
+                  },
+                  trailing: const Icon(Icons.chevron_right),
+                ),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
                   title: Text(context.loc.electrumServerSettingsLabel),
                   onTap: () {
                     ElectrumSettingsRouter.showElectrumServerSettings(context);
-                    },
-                    trailing: const Icon(Icons.chevron_right),
-                  ),
+                  },
+                  trailing: const Icon(Icons.chevron_right),
+                ),
                 ListTile(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),
