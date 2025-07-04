@@ -78,7 +78,7 @@ You can **scan or paste** a variety of key formats:
 ### Press Enter
 <img src="/coldcard-q/descriptor/coldcard-q_descriptor-2.jpeg" alt="ColdCard Q Descriptor 2" style="max-width: 100%; height: auto;">
 
-### Select P2PSH-Segwit (other format are supported as well)
+### Select Segwit (other format are supported as well)
 <img src="/coldcard-q/descriptor/coldcard-q_descriptor-3.jpeg" alt="ColdCard Q Descriptor 3" style="max-width: 100%; height: auto;">
 
 ### Press the button QR
