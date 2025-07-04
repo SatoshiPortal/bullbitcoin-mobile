@@ -1,6 +1,11 @@
 # The URL the site will be built for
 base_url = "https://example.com"
 
+# The site title
+title = "BULL Documentation"
+
+theme = "radion"
+
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = false
 
@@ -14,3 +19,12 @@ highlight_code = true
 
 [extra]
 # Put all your custom variables here
+
+# Pagination for the index section
+paginate_by = 5
+
+# Taxonomies configuration for the theme
+taxonomies = [
+    {name = "categories", feed = true},
+    {name = "tags", feed = true},
+]

@@ -1,0 +1,33 @@
+{% macro meta(page) %}
+    <svg class="icon i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <data>{{ page.reading_time }} minute read</data>
+    <svg class="icon i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    {% if page.date %}Published: {{ page.date | date(format="%F") }}{% endif %}
+{% endmacro meta %}
+
+{% macro page_in_list(page) %}
+    <article itemscope itemtype="http://schema.org/CreativeWork">
+        <header>
+            <h2 itemprop="name">
+                <a href="{{ page.permalink | safe }}">{{ page.title }}</a>
+            </h2>
+            <data class="muted">{{ self::meta(page=page) }}</data>
+        </header>
+        {% if page.summary %}
+            <section itemprop="summary">
+                {{ page.summary | safe }}
+                <nav class="readmore"><a itemprop="url" href="{{ page.permalink | safe }}">Read More&nbsp;&raquo;</a></nav>
+            </section>
+        {% endif %}
+    </article>
+{% endmacro page_in_list %}

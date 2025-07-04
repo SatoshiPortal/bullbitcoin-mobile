@@ -1,0 +1,17 @@
+<section
+  style="width: 100%; max-width: {% if width %}{{ width }}{% else %}100{% endif %}%; margin: 0 auto; text-align: center;">
+  <video autoplay loop muted playsinline
+    style="max-width: 100%; height: auto;{% if height %} max-height: {{ height }}px; object-fit: contain;{% endif %} display: inline-block;">
+    {% for source in sources -%}
+    {% set type = source | split(pat=".") | last -%}
+    <source src="{{ config.base_url | safe }}{{ page.path | safe }}{{ source | safe }}" type="video/{{ type }}">
+    {% endfor -%}
+    Your browser doesn't support the video tag, which I use in place of .gifs, and/or the video formats in use here
+    – sorry!
+  </video>
+  {% if caption %}
+  <caption style="margin-top: 0.5em;">
+    <p style="font-style: italic;">{{ caption | safe }}</p>
+  </caption>
+  {% endif %}
+</section>
