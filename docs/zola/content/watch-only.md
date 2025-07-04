@@ -39,6 +39,23 @@ You can **scan or paste** a variety of key formats:
 - **Descriptor (P2WPKH / BIP84):**  
   `wpkh([86241f88/84h/0h/0h]xpub6D8aKHkNUjVrjpVcrmsyiSuUR3PTfV2eLaV4bBhAqDGqug2yuchjzEet2GMixYWT6opmFr7WXDi1ofZBF5YMCwZuftQ8hCHaUPXNiqfJvLs/<0;1>/*)#ht0s3dna`
 
+
+
+
+## Import Watch-Only in `BULL`
+
+### Tap the import button in the settings
+<img src="/bull/watch-only/watch-only_settings.png" alt="ColdCard Q Advanced Tools" style="max-width: 50%; height: auto;">
+
+### Tap `Scan QR` or the `paste` button with your descriptor in clipboard
+<img src="/bull/watch-only/watch-only_import.png" alt="ColdCard Q Advanced Tools" style="max-width: 50%; height: auto;">
+
+### Review the details, add an optional label and tap `Import`
+<img src="/bull/watch-only/watch-only_label.png" alt="ColdCard Q Advanced Tools" style="max-width: 50%; height: auto;">
+
+
+
+
 ## ColdCard Q combined descriptor
 
 > **Note:** ColdCard Documentation to [Export Single Signature Descriptors](https://coldcard.com/docs/descriptor_export/#single-signature-descriptor-examples)
