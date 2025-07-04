@@ -11,14 +11,6 @@ demo = "https://micahkepe.com/radion/"
 # be merged with user data, some kind of prefix or nesting is preferable
 # Use snake_casing to be consistent with the rest of Zola
 [extra]
-radion_menu = [
-    {url = "$BASE_URL", name = "Home"},
-    {url = "$BASE_URL/categories", name = "Categories"},
-    {url = "$BASE_URL/tags", name = "Tags"},
-    {url = "https://www.bullbitcoin.com", name = "Bull Bitcoin"},
-]
-codeblock = true
-github = "https://github.com/your-github-link"
 
 [author]
 authors = ["ethicnology"]
