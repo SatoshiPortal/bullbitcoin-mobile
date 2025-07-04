@@ -2,9 +2,12 @@
 title = "Watch-Only Wallets"
 description = "Descriptors, xpub, ypub, zpub…"
 date = 2025-07-04
+authors = ["ethicnology"]
+
 [taxonomies]
 categories = ["guides"]
 tags = ["watch only", "ColdCard Q", "wallet"]
+
 [extra]
 toc = true
 +++

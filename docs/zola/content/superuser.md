@@ -2,9 +2,12 @@
 title = "Superuser Mode"
 description = "How to enable superuser mode in Bull Mobile"
 date = 2025-07-04
+authors = ["ethicnology"]
+
 [taxonomies]
 categories = ["guides"]
 tags = ["superuser", "advanced", "experimental", "danger zone"]
+
 [extra]
 toc = true
 +++
