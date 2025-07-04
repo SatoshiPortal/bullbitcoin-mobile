@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/settings/ui/screens/experimental_settings_scr
 import 'package:bb_mobile/features/settings/ui/screens/language_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/wallet_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/wallets_list_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -23,8 +23,8 @@ enum SettingsRoute {
   language('language'),
   currency('currency'),
   backupSettings('backup-settings'),
-  wallets('wallets'),
-  walletSettings('wallet-settings/:walletId'),
+  walletDetailsWalletList('wallet-details'),
+  walletDetailsSelectedWallet(':walletId'),
   logs('logs'),
   legacySeeds('legacy-seeds'),
   experimental('experimental-settings');
@@ -61,16 +61,16 @@ class SettingsRouter {
         ],
       ),
       GoRoute(
-        path: SettingsRoute.wallets.path,
-        name: SettingsRoute.wallets.name,
+        path: SettingsRoute.walletDetailsWalletList.path,
+        name: SettingsRoute.walletDetailsWalletList.name,
         builder: (context, state) => const WalletsListScreen(),
       ),
       GoRoute(
-        path: SettingsRoute.walletSettings.path,
-        name: SettingsRoute.walletSettings.name,
+        path: SettingsRoute.walletDetailsSelectedWallet.path,
+        name: SettingsRoute.walletDetailsSelectedWallet.name,
         builder: (context, state) {
           final walletId = state.pathParameters['walletId']!;
-          return WalletSettingsScreen(walletId: walletId);
+          return WalletDetailsScreen(walletId: walletId);
         },
       ),
       GoRoute(

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/logger.dart' show log;
-import 'package:bb_mobile/features/settings/presentation/bloc/wallet_settings_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -13,24 +13,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class WalletSettingsScreen extends StatelessWidget {
+class WalletDetailsScreen extends StatelessWidget {
   final String walletId;
 
-  const WalletSettingsScreen({super.key, required this.walletId});
+  const WalletDetailsScreen({super.key, required this.walletId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => WalletSettingsCubit(walletId: walletId),
-      child: _WalletSettingsView(walletId: walletId),
+      create: (context) => WalletDetailsCubit(walletId: walletId),
+      child: _WalletDetailsView(walletId: walletId),
     );
   }
 }
 
-class _WalletSettingsView extends StatelessWidget {
+class _WalletDetailsView extends StatelessWidget {
   final String walletId;
 
-  const _WalletSettingsView({required this.walletId});
+  const _WalletDetailsView({required this.walletId});
 
   @override
   Widget build(BuildContext context) {
@@ -48,14 +48,14 @@ class _WalletSettingsView extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Wallet Settings',
+          title: 'Wallet Details',
           onBack: () => context.pop(),
         ),
         actions: [
           if (isDefault)
             const SizedBox.shrink()
           else
-            BlocBuilder<WalletSettingsCubit, WalletSettingsState>(
+            BlocBuilder<WalletDetailsCubit, WalletDetailsState>(
               builder: (context, state) {
                 final isDeleting =
                     state.deleteStatus == WalletDeleteStatus.loading;
@@ -85,7 +85,7 @@ class _WalletSettingsView extends StatelessWidget {
             if (wallet == null) {
               return const Center(child: Text('Wallet not found'));
             }
-            return BlocConsumer<WalletSettingsCubit, WalletSettingsState>(
+            return BlocConsumer<WalletDetailsCubit, WalletDetailsState>(
               listener: (context, state) {
                 if (state.deleteStatus == WalletDeleteStatus.success) {
                   context.goNamed(WalletRoute.walletHome.name);
@@ -208,7 +208,7 @@ class _WalletSettingsView extends StatelessWidget {
                         label: 'Delete',
                         onPressed: () {
                           Navigator.of(bottomSheetContext).pop();
-                          context.read<WalletSettingsCubit>().deleteWallet();
+                          context.read<WalletDetailsCubit>().deleteWallet();
                         },
                         bgColor: context.colour.secondary,
                         textColor: context.colour.onPrimary,

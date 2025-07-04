@@ -30,7 +30,10 @@ class _WalletsListScreenState extends State<WalletsListScreen> {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(title: 'Wallets', onBack: () => context.pop()),
+        flexibleSpace: TopBar(
+          title: 'Wallet details',
+          onBack: () => context.pop(),
+        ),
       ),
       body: SafeArea(
         child: BlocBuilder<WalletBloc, WalletState>(
@@ -61,7 +64,7 @@ class _WalletsListScreenState extends State<WalletsListScreen> {
                   return InkWell(
                     onTap: () {
                       context.pushNamed(
-                        SettingsRoute.walletSettings.name,
+                        SettingsRoute.walletDetailsSelectedWallet.name,
                         pathParameters: {'walletId': wallet.id},
                       );
                       // Refresh wallet list when returning from wallet details

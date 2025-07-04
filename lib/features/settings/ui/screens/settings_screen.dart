@@ -55,9 +55,11 @@ class SettingsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                   tileColor: Colors.transparent,
-                  title: const Text('Wallets'),
+                  title: const Text('Wallet details'),
                   onTap: () {
-                    context.pushNamed(SettingsRoute.wallets.name);
+                    context.pushNamed(
+                      SettingsRoute.walletDetailsWalletList.name,
+                    );
                   },
                   trailing: const Icon(Icons.chevron_right),
                 ),

@@ -4,22 +4,22 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'wallet_settings_cubit.freezed.dart';
-part 'wallet_settings_state.dart';
+part 'wallet_details_cubit.freezed.dart';
+part 'wallet_details_state.dart';
 
-class WalletSettingsCubit extends Cubit<WalletSettingsState> {
+class WalletDetailsCubit extends Cubit<WalletDetailsState> {
   final String walletId;
   final DeleteWalletUsecase _deleteWalletUsecase;
   final WalletBloc _walletBloc;
 
-  WalletSettingsCubit({
+  WalletDetailsCubit({
     required this.walletId,
     DeleteWalletUsecase? deleteWalletUsecase,
     WalletBloc? walletBloc,
   }) : _deleteWalletUsecase =
            deleteWalletUsecase ?? locator<DeleteWalletUsecase>(),
        _walletBloc = walletBloc ?? locator<WalletBloc>(),
-       super(const WalletSettingsState());
+       super(const WalletDetailsState());
 
   Future<void> deleteWallet() async {
     try {
