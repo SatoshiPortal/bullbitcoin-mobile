@@ -39,27 +39,33 @@ class WalletHomeScreen extends StatelessWidget {
           }
         }
       },
-      child: const Column(
-        children: [
-          WalletHomeTopSection(),
-          Expanded(
-            child: SingleChildScrollView(
+      child: Scaffold(
+        body: NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (overscroll) {
+            overscroll.disallowIndicator();
+            return true;
+          },
+          child: const SingleChildScrollView(
+            physics: ClampingScrollPhysics(),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 80),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  WalletHomeTopSection(),
                   HomeWarnings(),
                   AutoSwapFeeWarning(),
                   HomeWalletCards(),
+                  Gap(16),
                 ],
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 13.0),
-            child: WalletBottomButtons(),
-          ),
-          Gap(16),
-        ],
+        ),
+        bottomNavigationBar: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 13.0, vertical: 8.0),
+          child: WalletBottomButtons(),
+        ),
       ),
     );
   }
