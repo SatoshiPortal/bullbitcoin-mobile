@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/address_list_bottom_sheet.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -120,6 +121,39 @@ class _WalletDetailsView extends StatelessWidget {
                     ),
                     const SizedBox(height: 18),
                     _InfoField(label: 'Derivation Path', value: derivationPath),
+                    const Gap(18),
+                    ListTile(
+                      // Remove the default border and padding
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
+                      tileColor: Colors.transparent,
+                      contentPadding: EdgeInsets.zero,
+                      title: BBText(
+                        'View addresses',
+                        style: context.font.bodyLarge?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                            ),
+                          ),
+                          builder: (bottomSheetContext) {
+                            return BlocProvider.value(
+                              value: context.read<WalletDetailsCubit>(),
+                              child: const AddressListBottomSheet(),
+                            );
+                          },
+                        );
+                      },
+                      trailing: const Icon(Icons.arrow_drop_down),
+                    ),
                   ],
                 );
               },
