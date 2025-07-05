@@ -24,7 +24,7 @@ enum SettingsRoute {
   currency('currency'),
   backupSettings('backup-settings'),
   walletDetailsWalletList('wallet-details'),
-  walletDetailsSelectedWallet('wallet-details/:walletId'),
+  walletDetailsSelectedWallet(':walletId'),
   logs('logs'),
   legacySeeds('legacy-seeds'),
   experimental('experimental-settings');
@@ -64,14 +64,16 @@ class SettingsRouter {
         path: SettingsRoute.walletDetailsWalletList.path,
         name: SettingsRoute.walletDetailsWalletList.name,
         builder: (context, state) => const WalletsListScreen(),
-      ),
-      GoRoute(
-        path: SettingsRoute.walletDetailsSelectedWallet.path,
-        name: SettingsRoute.walletDetailsSelectedWallet.name,
-        builder: (context, state) {
-          final walletId = state.pathParameters['walletId']!;
-          return WalletDetailsScreen(walletId: walletId);
-        },
+        routes: [
+          GoRoute(
+            path: SettingsRoute.walletDetailsSelectedWallet.path,
+            name: SettingsRoute.walletDetailsSelectedWallet.name,
+            builder: (context, state) {
+              final walletId = state.pathParameters['walletId']!;
+              return WalletDetailsScreen(walletId: walletId);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: SettingsRoute.logs.path,
