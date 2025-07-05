@@ -1,5 +1,8 @@
 # See https://www.dartlang.org/guides/libraries/private-files
 
+# Zola
+docs/zola/public/
+
 # # Untrack unused platform files
 macos/
 linux/

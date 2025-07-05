@@ -1,0 +1,9 @@
+<section style="width: 100%; max-width: {% if width %}{{ width }}{% else %}100{% endif %}%; margin: 0 auto; text-align: center;">
+  <audio controls="controls">
+    <source type="audio/mp3" src="{{ config.base_url | safe }}{{ page.path | safe }}{{ source | safe }}">
+    </source>
+    <source type="audio/ogg" src="{{ config.base_url | safe }}{{ page.path | safe }}{{ source | safe }}">
+    </source>
+    <p>Your browser does not support the audio element.</p>
+  </audio>
+</section>
