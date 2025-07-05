@@ -50,3 +50,13 @@ ios-pod-update:
 ios-sqlite-update:
 	@echo "🔄 Updating SQLite"
 	@cd ios && pod update sqlite3 && cd -
+
+create-feature:
+	@if [ -z "$(FEATURE)" ]; then \
+		echo "❌ Error: FEATURE name is required"; \
+		echo "Usage: make create-feature FEATURE=your_feature_name"; \
+		echo "Example: make create-feature FEATURE=user_profile"; \
+		exit 1; \
+	fi
+	@echo "🎯 Creating feature: $(FEATURE)"
+	@./scripts/create_feature.sh $(FEATURE)
