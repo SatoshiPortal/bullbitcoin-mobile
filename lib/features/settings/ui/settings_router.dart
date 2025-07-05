@@ -24,7 +24,7 @@ enum SettingsRoute {
   currency('currency'),
   backupSettings('backup-settings'),
   walletDetailsWalletList('wallet-details'),
-  walletDetailsSelectedWallet(':walletId'),
+  walletDetailsSelectedWallet('wallet-details/:walletId'),
   logs('logs'),
   legacySeeds('legacy-seeds'),
   experimental('experimental-settings');
