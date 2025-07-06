@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/features/template/data/datasources/local_datasource.dart';
 import 'package:bb_mobile/features/template/data/datasources/remote_datasource.dart';
+import 'package:bb_mobile/features/template/data/ip_address_model.dart';
+import 'package:bb_mobile/features/template/domain/ip_address_entity.dart';
 
 class TemplateRepository {
   final LocalDatasource _localDatasource;
@@ -11,26 +15,26 @@ class TemplateRepository {
   }) : _localDatasource = localDatasource,
        _remoteDatasource = remoteDatasource;
 
-  Future<String> getIpAddressAndWriteToFile() async {
+  Future<IpAddressEntity> getIpAddressAndWriteToFile() async {
     try {
       final ipAddress = await _remoteDatasource.fetchIpAddress();
-      await _localDatasource.writeToFile(ipAddress);
-      return ipAddress;
+      await _localDatasource.writeToFile(json.encode(ipAddress.toJson()));
+      return ipAddress.toEntity();
     } catch (e) {
       throw 'Failed to get IP address: $e';
     }
   }
 
-  Future<Map<String, dynamic>> getDetailedIPInfo() async {
+  Future<IpAddressEntity?> getCachedIpAddress() async {
     try {
-      final data = await _localDatasource.readFromFile();
-      return {
-        'data': data,
-        'timestamp': DateTime.now().toIso8601String(),
-        'source': 'TemplateRepository',
-      };
+      final file = await _localDatasource.readFile();
+      if (file == null) return null;
+
+      return IpAddressModel.fromJson(
+        json.decode(file.readAsStringSync()) as Map<String, dynamic>,
+      ).toEntity();
     } catch (e) {
-      throw 'Failed to get detailed IP info: $e';
+      throw 'Failed to get cached IP address: $e';
     }
   }
 }

@@ -1,22 +1,27 @@
 import 'dart:convert';
-import 'dart:io';
+
+import 'package:bb_mobile/features/template/data/ip_address_model.dart';
+// ignore: depend_on_referenced_packages
+import 'package:http/http.dart' as http;
 
 class RemoteDatasource {
-  final HttpClient _httpClient;
+  final http.Client _httpClient;
+  final Uri _apiEndpoint = Uri(
+    scheme: 'https',
+    host: 'ifconfig.me',
+    path: '/all.json',
+  );
 
-  RemoteDatasource({required HttpClient httpClient}) : _httpClient = httpClient;
+  RemoteDatasource({http.Client? httpClient})
+    : _httpClient = httpClient ?? http.Client();
 
-  Future<String> fetchIpAddress() async {
+  Future<IpAddressModel> fetchIpAddress() async {
     try {
-      // Make HTTP request to get IP address using ifconfig.me
-      final request = await _httpClient.getUrl(
-        Uri.parse('https://ifconfig.me/ip'),
-      );
-      final response = await request.close();
-
+      final response = await _httpClient.get(_apiEndpoint);
       if (response.statusCode == 200) {
-        final responseBody = await response.transform(utf8.decoder).join();
-        return responseBody.trim();
+        return IpAddressModel.fromJson(
+          json.decode(response.body) as Map<String, dynamic>,
+        );
       } else {
         throw 'HTTP request failed with status: ${response.statusCode}';
       }
@@ -27,15 +32,9 @@ class RemoteDatasource {
 
   Future<Map<String, dynamic>> getDetailedIPInfo() async {
     try {
-      // Get detailed info using ifconfig.me/all.json
-      final request = await _httpClient.getUrl(
-        Uri.parse('https://ifconfig.me/all.json'),
-      );
-      final response = await request.close();
-
+      final response = await _httpClient.get(_apiEndpoint);
       if (response.statusCode == 200) {
-        final responseBody = await response.transform(utf8.decoder).join();
-        return json.decode(responseBody) as Map<String, dynamic>;
+        return json.decode(response.body) as Map<String, dynamic>;
       } else {
         throw 'HTTP request failed with status: ${response.statusCode}';
       }
