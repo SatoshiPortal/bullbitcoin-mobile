@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/template/domain/ip_address_entity.dart';
 import 'package:bb_mobile/features/template/presentation/template_cubit.dart';
 import 'package:bb_mobile/features/template/presentation/template_state.dart';
 import 'package:bb_mobile/features/template/template_router.dart';
+import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -13,7 +14,10 @@ class TemplatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('IP Address Info'),
+        title: BBText(
+          'IP Address Info',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: BlocConsumer<TemplateCubit, TemplateState>(
@@ -21,8 +25,11 @@ class TemplatePage extends StatelessWidget {
           if (state.error != null && state.error!.isNotEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.error!),
-                backgroundColor: Colors.red,
+                content: BBText(
+                  state.error!,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  color: Theme.of(context).colorScheme.onError,
+                ),
               ),
             );
             if (state.redirection == Redirection.toSomewhereElse) {
@@ -43,32 +50,42 @@ class TemplatePage extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: state.isLoading ? null : cubit.collectIp,
                   icon: const Icon(Icons.download),
-                  label: const Text('Collect and cache my IP info'),
+                  label: BBText(
+                    'Collect and cache my IP info',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ),
                 ElevatedButton.icon(
                   onPressed: state.isLoading ? null : cubit.getCachedIp,
                   icon: const Icon(Icons.remove_red_eye),
-                  label: const Text('Get cached IP info'),
+                  label: BBText(
+                    'Get cached IP info',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 if (state.isLoading)
                   const Center(child: CircularProgressIndicator()),
                 if (!state.isLoading && state.ipAddress != null)
-                  _buildIpAddressInfo(state.ipAddress!),
+                  _buildIpAddressInfo(context, state.ipAddress!),
                 if (!state.isLoading &&
                     state.error != null &&
                     state.error!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
+                    child: BBText(
                       state.error!,
-                      style: const TextStyle(color: Colors.red),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                   ),
                 const Spacer(),
                 ElevatedButton(
                   onPressed: cubit.reset,
-                  child: const Text('Reset'),
+                  child: BBText(
+                    'Reset',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
               ],
             ),
@@ -78,7 +95,7 @@ class TemplatePage extends StatelessWidget {
     );
   }
 
-  Widget _buildIpAddressInfo(IpAddressEntity ip) {
+  Widget _buildIpAddressInfo(BuildContext context, IpAddressEntity ip) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -90,48 +107,68 @@ class TemplatePage extends StatelessWidget {
               children: [
                 Icon(
                   ip.isSecureConnection ? Icons.lock : Icons.lock_open,
-                  color: ip.isSecureConnection ? Colors.green : Colors.orange,
+                  color:
+                      ip.isSecureConnection
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.secondary,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                BBText(
                   ip.displayInfo,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const Spacer(),
                 Icon(
                   ip.isMobileUserAgent ? Icons.phone_android : Icons.computer,
-                  color: Colors.blueGrey,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            _infoRow('User Agent', ip.userAgent),
-            _infoRow('Compression', ip.isCompressionSupported ? 'Yes' : 'No'),
-            _infoRow('Timestamp', ip.timestamp.toString()),
+            _infoRow(context, 'User Agent', ip.userAgent),
+            _infoRow(
+              context,
+              'Compression',
+              ip.isCompressionSupported ? 'Yes' : 'No',
+            ),
+            _infoRow(context, 'Timestamp', ip.timestamp.toString()),
             const SizedBox(height: 8),
-            const Text(
+            BBText(
               'Supported Encodings:',
-              style: TextStyle(fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             Wrap(
               spacing: 4,
               children:
                   ip.supportedEncodings
-                      .map((e) => Chip(label: Text(e.name)))
+                      .map(
+                        (e) => Chip(
+                          label: BBText(
+                            e.name,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      )
                       .toList(),
             ),
             const SizedBox(height: 8),
-            const Text(
+            BBText(
               'Accepted MIME Types:',
-              style: TextStyle(fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             Wrap(
               spacing: 4,
               children:
-                  ip.forwardedChain.map((e) => Chip(label: Text(e))).toList(),
+                  ip.forwardedChain
+                      .map(
+                        (e) => Chip(
+                          label: BBText(
+                            e,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      )
+                      .toList(),
             ),
           ],
         ),
@@ -139,7 +176,7 @@ class TemplatePage extends StatelessWidget {
     );
   }
 
-  Widget _infoRow(String label, String value) {
+  Widget _infoRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -147,12 +184,14 @@ class TemplatePage extends StatelessWidget {
         children: [
           SizedBox(
             width: 140,
-            child: Text(
+            child: BBText(
               '$label:',
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
-          Expanded(child: Text(value)),
+          Expanded(
+            child: BBText(value, style: Theme.of(context).textTheme.bodyMedium),
+          ),
         ],
       ),
     );
