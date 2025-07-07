@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_cubit.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_state.dart';
+import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,15 +31,8 @@ class RequestIdentifierScreen extends StatelessWidget {
       ),
       body: BlocConsumer<RequestIdentifierCubit, RequestIdentifierState>(
         listener: (context, state) {
-          if (state.redirect != null) {
-            // switch (state.redirect) {
-            // case RequestIdentifierRedirect.toSend:
-            //   context.go('/send');
-            //   break;
-            // case RequestIdentifierRedirect.toNostr:
-            //   context.go('/send');
-            //   break;
-            // }
+          if (state.request != null) {
+            context.push(SendRoute.send.path, extra: state.request);
           }
         },
         builder: (context, state) {

@@ -5,12 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class RequestIdentifierCubit extends Cubit<RequestIdentifierState> {
   RequestIdentifierCubit() : super(const RequestIdentifierState());
 
-  void onScanned(String data) {
+  Future<void> onScanned(String data) async {
     if (data.isEmpty) return;
 
     try {
-      PaymentRequest.parse(data);
-      emit(state.copyWith(redirect: RequestIdentifierRedirect.toSend));
+      final request = await PaymentRequest.parse(data);
+      emit(state.copyWith(request: request));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -21,11 +21,11 @@ class RequestIdentifierCubit extends Cubit<RequestIdentifierState> {
     emit(state.copyWith(rawRequest: data));
   }
 
-  void validatePaymentRequest() {
+  Future<void> validatePaymentRequest() async {
     if (state.rawRequest.isEmpty) return;
     try {
-      PaymentRequest.parse(state.rawRequest);
-      emit(state.copyWith(redirect: RequestIdentifierRedirect.toSend));
+      final request = await PaymentRequest.parse(state.rawRequest);
+      emit(state.copyWith(request: request));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
