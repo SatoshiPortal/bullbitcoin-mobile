@@ -52,9 +52,11 @@ class WalletBottomButtons extends StatelessWidget {
             iconData: Icons.crop_free,
             label: 'Send',
             iconFirst: true,
-            onPressed: () {
-              context.pushNamed(SendRoute.send.name, extra: wallet);
-            },
+            onPressed:
+                () => context.pushNamed(
+                  SendRoute.requestIdentifier.name,
+                  extra: wallet,
+                ),
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,
             disabled: wallet?.signer == SignerEntity.none && !isSuperuser,

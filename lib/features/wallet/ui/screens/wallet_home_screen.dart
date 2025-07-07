@@ -32,7 +32,10 @@ class WalletHomeScreen extends StatelessWidget {
           final defaultWallet = _getDefaultWallet(context);
 
           if (velocity > 0) {
-            context.pushNamed(SendRoute.send.name, extra: defaultWallet);
+            context.pushNamed(
+              SendRoute.requestIdentifier.name,
+              extra: defaultWallet,
+            );
           } else {
             // Swipe left = Receive
             context.pushNamed(ReceiveRoute.receiveLightning.name);
