@@ -32,7 +32,13 @@ class RequestIdentifierScreen extends StatelessWidget {
       body: BlocConsumer<RequestIdentifierCubit, RequestIdentifierState>(
         listener: (context, state) {
           if (state.request != null) {
-            context.push(SendRoute.send.path, extra: state.request);
+            final wallet = state.wallet;
+            final request = state.request!;
+            final RequestIdentifierExtra requestIdentifierExtra = (
+              wallet: wallet,
+              request: request,
+            );
+            context.push(SendRoute.send.path, extra: requestIdentifierExtra);
           }
         },
         builder: (context, state) {

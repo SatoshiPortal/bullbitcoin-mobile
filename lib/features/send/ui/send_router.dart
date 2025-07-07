@@ -36,10 +36,13 @@ class SendRouter {
       GoRoute(
         name: SendRoute.requestIdentifier.name,
         path: SendRoute.requestIdentifier.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => RequestIdentifierCubit(),
-          child: const RequestIdentifierScreen(),
-        ),
+        builder: (context, state) {
+          final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
+          return BlocProvider(
+            create: (_) => RequestIdentifierCubit(wallet: wallet),
+            child: const RequestIdentifierScreen(),
+          );
+        },
       ),
     ],
   );

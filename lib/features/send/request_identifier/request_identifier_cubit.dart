@@ -1,9 +1,13 @@
 import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+typedef RequestIdentifierExtra = ({Wallet? wallet, PaymentRequest request});
+
 class RequestIdentifierCubit extends Cubit<RequestIdentifierState> {
-  RequestIdentifierCubit() : super(const RequestIdentifierState());
+  RequestIdentifierCubit({Wallet? wallet})
+    : super(RequestIdentifierState(wallet: wallet));
 
   Future<void> onScanned(String data) async {
     if (data.isEmpty) return;
