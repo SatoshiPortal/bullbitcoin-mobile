@@ -593,8 +593,8 @@ class NetworkDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sendType = context.select<SendCubit, SendType>(
-      (cubit) => cubit.state.sendType,
+    final sendType = context.select<SendCubit, SendAddressType?>(
+      (cubit) => cubit.state.sendAddressType,
     );
 
     return AnimatedOpacity(
@@ -602,9 +602,9 @@ class NetworkDisplay extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       child: IgnorePointer(
         child: BBSegmentFull(
-          items: SendType.values.map((e) => e.displayName).toSet(),
+          items: SendAddressType.values.map((e) => e.displayName).toSet(),
           onSelected: (c) {},
-          initialValue: sendType.displayName,
+          initialValue: sendType?.displayName,
         ),
       ),
     );

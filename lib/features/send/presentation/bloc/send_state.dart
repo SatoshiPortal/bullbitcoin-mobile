@@ -13,38 +13,38 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'send_state.freezed.dart';
 
-enum SendType {
+enum SendAddressType {
   bitcoin,
   lightning,
   liquid;
 
-  static SendType from(PaymentRequest paymentRequest) {
+  static SendAddressType from(PaymentRequest paymentRequest) {
     switch (paymentRequest) {
       case BitcoinPaymentRequest():
-        return SendType.bitcoin;
+        return SendAddressType.bitcoin;
       case LiquidPaymentRequest():
-        return SendType.liquid;
+        return SendAddressType.liquid;
       case Bolt11PaymentRequest():
       case LnAddressPaymentRequest():
-        return SendType.lightning;
+        return SendAddressType.lightning;
       case Bip21PaymentRequest():
         if (paymentRequest.network.isBitcoin) {
-          return SendType.bitcoin;
+          return SendAddressType.bitcoin;
         } else {
-          return SendType.liquid;
+          return SendAddressType.liquid;
         }
       case PsbtPaymentRequest():
-        return SendType.bitcoin; //TODO(azad): nop
+        return SendAddressType.bitcoin; //TODO(azad): nop
     }
   }
 
   String get displayName {
     switch (this) {
-      case SendType.bitcoin:
+      case SendAddressType.bitcoin:
         return 'Bitcoin';
-      case SendType.lightning:
+      case SendAddressType.lightning:
         return 'Lightning';
-      case SendType.liquid:
+      case SendAddressType.liquid:
         return 'Liquid';
     }
   }
@@ -66,7 +66,6 @@ enum SendProcess {
 abstract class SendState with _$SendState {
   const factory SendState({
     @Default(SendStep.address) SendStep step,
-    @Default(SendType.lightning) SendType sendType,
     @Default('') String scannedRawPaymentRequest,
     @Default('') String copiedRawPaymentRequest,
     PaymentRequest? paymentRequest,
@@ -319,17 +318,21 @@ abstract class SendState with _$SendState {
           : inputAmountSat <= selectedWallet!.balanceSat.toInt();
 
   String sendTypeName() {
-    switch (sendType) {
-      case SendType.bitcoin:
+    if (sendAddressType == null) return '';
+    switch (sendAddressType!) {
+      case SendAddressType.bitcoin:
         return 'Send';
-      case SendType.lightning:
+      case SendAddressType.lightning:
         return 'Swap';
-      case SendType.liquid:
+      case SendAddressType.liquid:
         return 'Send';
     }
   }
 
-  bool get isLightning => sendType == SendType.lightning;
+  SendAddressType? get sendAddressType =>
+      paymentRequest != null ? SendAddressType.from(paymentRequest!) : null;
+
+  bool get isLightning => sendAddressType == SendAddressType.lightning;
   bool get isLightningBitcoinSwap =>
       isLightning && selectedWallet!.network.isBitcoin;
 
@@ -375,8 +378,10 @@ abstract class SendState with _$SendState {
 
   bool get requireChainSwap {
     if (selectedWallet == null) return false;
-    return (selectedWallet!.network.isBitcoin && sendType == SendType.liquid) ||
-        (selectedWallet!.network.isLiquid && sendType == SendType.bitcoin);
+    return (selectedWallet!.network.isBitcoin &&
+            sendAddressType == SendAddressType.liquid) ||
+        (selectedWallet!.network.isLiquid &&
+            sendAddressType == SendAddressType.bitcoin);
   }
 
   NetworkFee? get selectedFee {
@@ -400,6 +405,14 @@ abstract class SendState with _$SendState {
   }
 
   bool get isChainSwap => chainSwap != null;
+
+  bool get isNormalOnchainSend {
+    if (selectedWallet == null || paymentRequest == null) return false;
+    return (selectedWallet!.isLiquid &&
+            sendAddressType == SendAddressType.liquid) ||
+        (selectedWallet!.network.isBitcoin &&
+            sendAddressType == SendAddressType.bitcoin);
+  }
 
   FeeOptions? get feeOptions =>
       selectedWallet == null
