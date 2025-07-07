@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
@@ -19,7 +18,6 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
-import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -38,220 +36,28 @@ class SendScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final step = context.select<SendCubit, SendStep>(
-      (cubit) => cubit.state.step,
-    );
-    switch (step) {
-      case SendStep.address:
-        return const SendAddressScreen();
-      case SendStep.amount:
-        return const SendAmountScreen();
-      case SendStep.confirm:
-        return const SendConfirmScreen();
-      case SendStep.sending:
-        return const SendSendingScreen();
-      case SendStep.success:
-        return const SendSucessScreen();
-    }
-  }
-}
+    return BlocListener<SendCubit, SendState>(
+      listenWhen: (previous, current) => previous.step != current.step,
+      listener: (context, state) {},
+      child: Builder(
+        builder: (context) {
+          final step = context.select<SendCubit, SendStep>(
+            (cubit) => cubit.state.step,
+          );
 
-class SendAddressScreen extends StatelessWidget {
-  const SendAddressScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Send',
-          color: context.colour.secondaryFixedDim,
-          onBack: () => context.pop(),
-        ),
-      ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Column(
-            children: [
-              FadingLinearProgress(
-                height: 3,
-                trigger: context.select(
-                  (SendCubit cubit) =>
-                      cubit.state.loadingBestWallet || cubit.state.creatingSwap,
-                ),
-                backgroundColor: context.colour.onPrimary,
-                foregroundColor: context.colour.primary,
-              ),
-              Expanded(
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.5,
-                      child: OpenTheCameraWidget(
-                        onScannedPaymentRequest:
-                            (data) => context
-                                .read<SendCubit>()
-                                .onScannedPaymentRequest(data.$1, data.$2),
-                      ),
-                    ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: SingleChildScrollView(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: context.colour.onPrimary,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(12),
-                              topRight: Radius.circular(12),
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Gap(32),
-                              BBText(
-                                "Recipient's address",
-                                style: context.font.bodyMedium,
-                              ),
-                              const Gap(16),
-                              const AddressField(),
-                              const Gap(16),
-                              const AddressErrorSection(),
-                              const Gap(16),
-                              const SendContinueWithAddressButton(),
-                              const Gap(42),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SendContinueWithAddressButton extends StatelessWidget {
-  const SendContinueWithAddressButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final loadingBestWallet = context.select(
-      (SendCubit cubit) => cubit.state.loadingBestWallet,
-    );
-    final isValidPaymentRequest = context.select(
-      (SendCubit cubit) => cubit.state.paymentRequest != null,
-    );
-    final creatingSwap = context.select(
-      (SendCubit cubit) => cubit.state.creatingSwap,
-    );
-
-    return BBButton.big(
-      label: 'Continue',
-      onPressed: () {
-        context.read<SendCubit>().continueOnAddressConfirmed();
-      },
-      disabled: !isValidPaymentRequest || loadingBestWallet || creatingSwap,
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onPrimary,
-    );
-  }
-}
-
-class AddressField extends StatelessWidget {
-  const AddressField({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final address = context.select<SendCubit, String>(
-      (cubit) => cubit.state.copiedRawPaymentRequest,
-    );
-
-    return BBInputText(
-      onChanged: context.read<SendCubit>().onChangedText,
-      value: address,
-      hint: 'Paste a payment address or invoice',
-      hintStyle: context.font.bodyLarge?.copyWith(
-        color: context.colour.surfaceContainer,
-      ),
-      maxLines: 1,
-      rightIcon: Icon(
-        Icons.paste_sharp,
-        color: context.colour.secondary,
-        size: 20,
-      ),
-      onRightTap: () {
-        Clipboard.getData(Clipboard.kTextPlain).then((value) {
-          if (value != null) {
-            if (context.mounted) {
-              context.read<SendCubit>().onChangedText(value.text ?? '');
-            }
+          switch (step) {
+            case SendStep.amount:
+              return const SendAmountScreen();
+            case SendStep.confirm:
+              return const SendConfirmScreen();
+            case SendStep.sending:
+              return const SendSendingScreen();
+            case SendStep.success:
+              return const SendSucessScreen();
           }
-        });
-      },
+        },
+      ),
     );
-  }
-}
-
-class AddressErrorSection extends StatelessWidget {
-  const AddressErrorSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final balanceError = context.select(
-      (SendCubit cubit) => cubit.state.insufficientBalanceException,
-    );
-    final swapError = context.select(
-      (SendCubit cubit) => cubit.state.swapCreationException,
-    );
-    final invalidAddress = context.select(
-      (SendCubit cubit) => cubit.state.invalidBitcoinStringException,
-    );
-    if (balanceError != null) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: BBText(
-          balanceError.message,
-          style: context.font.bodyMedium,
-          color: context.colour.error,
-          textAlign: TextAlign.center,
-          maxLines: 2,
-        ),
-      );
-    }
-    if (swapError != null) {
-      return BBText(
-        swapError.message,
-        style: context.font.bodyMedium,
-        color: context.colour.error,
-        textAlign: TextAlign.center,
-        maxLines: 2,
-      );
-    }
-    if (invalidAddress != null) {
-      return BBText(
-        invalidAddress.toString(),
-        style: context.font.bodyMedium,
-        color: context.colour.error,
-        textAlign: TextAlign.center,
-        maxLines: 2,
-      );
-    }
-    return const SizedBox(height: 21);
   }
 }
 
@@ -295,7 +101,14 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: 'Send',
-          onBack: () => context.read<SendCubit>().backClicked(),
+          onBack: () {
+            final cubit = context.read<SendCubit>();
+            if (cubit.state.step == SendStep.confirm) {
+              cubit.setStep(SendStep.amount);
+            } else {
+              context.goNamed(WalletRoute.walletHome.name);
+            }
+          },
         ),
       ),
       body: Column(
@@ -361,7 +174,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                     (SendCubit cubit) => cubit.state.buildTransactionException,
                   );
                   final selectedWalletLabel = context.select(
-                    (SendCubit cubit) => cubit.state.selectedWallet!.label,
+                    (SendCubit cubit) => cubit.state.selectedWallet?.label,
                   );
                   return IgnorePointer(
                     ignoring: state.amountConfirmedClicked,
@@ -628,7 +441,14 @@ class SendConfirmScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: 'Send',
-          onBack: () => context.read<SendCubit>().backClicked(),
+          onBack: () {
+            final cubit = context.read<SendCubit>();
+            if (cubit.state.step == SendStep.confirm) {
+              cubit.setStep(SendStep.amount);
+            } else {
+              context.goNamed(WalletRoute.walletHome.name);
+            }
+          },
         ),
       ),
       body: Column(
@@ -1082,7 +902,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               children: [
                 Expanded(
                   child: BBText(
-                    paymentRequest!.isLnAddress
+                    paymentRequest.isLnAddress
                         ? paymentRequestAddress
                         : StringFormatting.truncateMiddle(
                           paymentRequestAddress,

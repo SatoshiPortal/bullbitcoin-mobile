@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -125,9 +126,10 @@ class SendLocator {
   }
 
   static void registerBlocs() {
-    locator.registerFactoryParam<SendCubit, Wallet?, void>(
-      (wallet, _) => SendCubit(
+    locator.registerFactoryParam<SendCubit, Wallet?, PaymentRequest>(
+      (wallet, request) => SendCubit(
         wallet: wallet,
+        paymentRequest: request,
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
         getSettingsUsecase: locator<GetSettingsUsecase>(),

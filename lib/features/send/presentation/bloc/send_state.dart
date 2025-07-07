@@ -50,7 +50,7 @@ enum SendAddressType {
   }
 }
 
-enum SendStep { address, amount, confirm, sending, success }
+enum SendStep { amount, confirm, sending, success }
 
 enum SendProcess {
   bitcoinOnchain,
@@ -65,10 +65,8 @@ enum SendProcess {
 @freezed
 abstract class SendState with _$SendState {
   const factory SendState({
-    @Default(SendStep.address) SendStep step,
-    @Default('') String scannedRawPaymentRequest,
-    @Default('') String copiedRawPaymentRequest,
-    PaymentRequest? paymentRequest,
+    @Default(SendStep.amount) SendStep step,
+    required PaymentRequest paymentRequest,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
     @Default('') String amount,
@@ -138,46 +136,22 @@ abstract class SendState with _$SendState {
     return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
   }
 
-  /// Whether we have a valid payment request
-  bool get hasValidPaymentRequest => paymentRequest != null;
-
   String get paymentRequestAddress {
-    if (paymentRequest == null) {
-      return copiedRawPaymentRequest.isNotEmpty
-          ? copiedRawPaymentRequest
-          : scannedRawPaymentRequest;
+    switch (paymentRequest) {
+      case final Bip21PaymentRequest bip21Request:
+        if (invoiceHasMrh) return 'MRH'; // TODO: MRH
+        return bip21Request.address;
+      case final Bolt11PaymentRequest bolt11Request:
+        return bolt11Request.invoice;
+      case final LnAddressPaymentRequest lnAddressRequest:
+        return lnAddressRequest.address;
+      case final BitcoinPaymentRequest bitcoinRequest:
+        return bitcoinRequest.address;
+      case final LiquidPaymentRequest liquidRequest:
+        return liquidRequest.address;
+      case final PsbtPaymentRequest psbtRequest:
+        return psbtRequest.psbt;
     }
-
-    if (paymentRequest!.isBip21) {
-      if (invoiceHasMrh) {
-        // Return the raw string instead of the payment request
-        return copiedRawPaymentRequest.isNotEmpty
-            ? copiedRawPaymentRequest
-            : scannedRawPaymentRequest;
-      }
-      final bip21PaymentRequest = paymentRequest! as Bip21PaymentRequest;
-      return bip21PaymentRequest.address;
-    }
-    if (paymentRequest!.isBolt11) {
-      final bolt11PaymentRequest = paymentRequest! as Bolt11PaymentRequest;
-      return bolt11PaymentRequest.invoice;
-    }
-    if (paymentRequest!.isLnAddress) {
-      final lnAddressPaymentRequest =
-          paymentRequest! as LnAddressPaymentRequest;
-      return lnAddressPaymentRequest.address;
-    }
-    if (paymentRequest!.isBitcoinAddress) {
-      final bitcoinPaymentRequest = paymentRequest! as BitcoinPaymentRequest;
-      return bitcoinPaymentRequest.address;
-    }
-    if (paymentRequest!.isLiquidAddress) {
-      final liquidPaymentRequest = paymentRequest! as LiquidPaymentRequest;
-      return liquidPaymentRequest.address;
-    }
-    return copiedRawPaymentRequest.isNotEmpty
-        ? copiedRawPaymentRequest
-        : scannedRawPaymentRequest;
   }
 
   bool get isInputAmountFiat =>
@@ -318,8 +292,7 @@ abstract class SendState with _$SendState {
           : inputAmountSat <= selectedWallet!.balanceSat.toInt();
 
   String sendTypeName() {
-    if (sendAddressType == null) return '';
-    switch (sendAddressType!) {
+    switch (sendAddressType) {
       case SendAddressType.bitcoin:
         return 'Send';
       case SendAddressType.lightning:
@@ -329,8 +302,7 @@ abstract class SendState with _$SendState {
     }
   }
 
-  SendAddressType? get sendAddressType =>
-      paymentRequest != null ? SendAddressType.from(paymentRequest!) : null;
+  SendAddressType get sendAddressType => SendAddressType.from(paymentRequest);
 
   bool get isLightning => sendAddressType == SendAddressType.lightning;
   bool get isLightningBitcoinSwap =>
@@ -407,7 +379,7 @@ abstract class SendState with _$SendState {
   bool get isChainSwap => chainSwap != null;
 
   bool get isNormalOnchainSend {
-    if (selectedWallet == null || paymentRequest == null) return false;
+    if (selectedWallet == null) return false;
     return (selectedWallet!.isLiquid &&
             sendAddressType == SendAddressType.liquid) ||
         (selectedWallet!.network.isBitcoin &&

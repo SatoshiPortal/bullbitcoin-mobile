@@ -23,12 +23,18 @@ class SendRouter {
     builder: (context, state) {
       // Pass a preselected wallet to the send bloc if one is set in the URI
       //  of the incoming route
-      final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
+      if (state.extra is! RequestIdentifierExtra) throw 'Invalid extra';
+
+      final identifierExtra = state.extra! as RequestIdentifierExtra;
       return BlocProvider(
         create:
             (_) =>
-                locator<SendCubit>(param1: wallet)
-                  ..loadWalletWithRatesAndFees(),
+                locator<SendCubit>(
+                    param1: identifierExtra.wallet,
+                    param2: identifierExtra.request,
+                  )
+                  ..loadWalletWithRatesAndFees()
+                  ..processPaymentRequest(),
         child: const SendScreen(),
       );
     },
