@@ -42,14 +42,14 @@ class SelectBestWalletUsecase {
         try {
           // Use liquid
           return _selectBestWallet(
-            request.amountSat,
+            request.amountSat ?? 0,
             Network.liquidMainnet,
             wallets,
           );
         } catch (_) {
           // unless liquid doesn’t have balance, use bitcoin
           return _selectBestWallet(
-            request.amountSat,
+            request.amountSat ?? 0,
             Network.bitcoinMainnet,
             wallets,
           );

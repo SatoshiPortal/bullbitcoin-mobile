@@ -26,7 +26,7 @@ sealed class PaymentRequest with _$PaymentRequest {
 
   const factory PaymentRequest.bolt11({
     required String invoice,
-    required int amountSat,
+    int? amountSat,
     required String paymentHash,
     @Default('') String description,
     required int expiresAt,

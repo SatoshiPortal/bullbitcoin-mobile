@@ -118,6 +118,7 @@ abstract class SendState with _$SendState {
     ConfirmTransactionException? confirmTransactionException,
     ExchangeApiException? exchangeApiException,
     FeesException? feesException,
+    LoadWalletException? loadWalletException,
 
     // swapLimits
     SwapLimits? bitcoinLnSwapLimits,
@@ -398,9 +399,7 @@ abstract class SendState with _$SendState {
     }
   }
 
-  bool get isChainSwap =>
-      (sendType == SendType.liquid && !selectedWallet!.isLiquid) ||
-      sendType == SendType.bitcoin && selectedWallet!.isLiquid;
+  bool get isChainSwap => chainSwap != null;
 
   FeeOptions? get feeOptions =>
       selectedWallet == null
@@ -533,4 +532,15 @@ class FeesException implements Exception {
   String toString() => message;
 
   String get title => 'Fees Api Failed';
+}
+
+class LoadWalletException implements Exception {
+  final String message;
+
+  LoadWalletException(this.message);
+
+  @override
+  String toString() => message;
+
+  String get title => 'Loading Wallet Failed';
 }
