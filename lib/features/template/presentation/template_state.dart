@@ -10,7 +10,7 @@ sealed class TemplateState with _$TemplateState {
   const factory TemplateState({
     @Default(Redirection.none) Redirection redirection,
     @Default(false) bool isLoading,
-    String? error,
+    Exception? error,
     IpAddressEntity? ipAddress,
   }) = _TemplateState;
 }

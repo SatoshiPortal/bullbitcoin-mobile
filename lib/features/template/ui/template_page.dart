@@ -22,11 +22,11 @@ class TemplatePage extends StatelessWidget {
       ),
       body: BlocConsumer<TemplateCubit, TemplateState>(
         listener: (context, state) {
-          if (state.error != null && state.error!.isNotEmpty) {
+          if (state.error != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: BBText(
-                  state.error!,
+                  state.error!.toString(),
                   style: Theme.of(context).textTheme.bodyMedium,
                   color: Theme.of(context).colorScheme.onError,
                 ),
@@ -68,13 +68,11 @@ class TemplatePage extends StatelessWidget {
                   const Center(child: CircularProgressIndicator()),
                 if (!state.isLoading && state.ipAddress != null)
                   _buildIpAddressInfo(context, state.ipAddress!),
-                if (!state.isLoading &&
-                    state.error != null &&
-                    state.error!.isNotEmpty)
+                if (!state.isLoading && state.error != null)
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: BBText(
-                      state.error!,
+                      state.error!.toString(),
                       style: Theme.of(context).textTheme.bodyMedium,
                       color: Theme.of(context).colorScheme.error,
                     ),
