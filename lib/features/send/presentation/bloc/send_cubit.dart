@@ -161,6 +161,8 @@ class SendCubit extends Cubit<SendState> {
         invalidBitcoinStringException: null,
         buildTransactionException: null,
         confirmTransactionException: null,
+        feesException: null,
+        exchangeApiException: null,
       ),
     );
   }
@@ -666,26 +668,34 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> getCurrencies() async {
-    final settings = await _getSettingsUsecase.execute();
+    try {
+      final settings = await _getSettingsUsecase.execute();
 
-    final (exchangeRate, fiatCurrencies) =
-        await (
-          _convertSatsToCurrencyAmountUsecase.execute(),
-          _getAvailableCurrenciesUsecase.execute(),
-        ).wait;
+      final (exchangeRate, fiatCurrencies) =
+          await (
+            _convertSatsToCurrencyAmountUsecase.execute(),
+            _getAvailableCurrenciesUsecase.execute(),
+          ).wait;
 
-    final bitcoinUnit = settings.bitcoinUnit;
-    final fiatCurrency = settings.currencyCode;
+      final bitcoinUnit = settings.bitcoinUnit;
+      final fiatCurrency = settings.currencyCode;
 
-    emit(
-      state.copyWith(
-        fiatCurrencyCodes: fiatCurrencies,
-        fiatCurrencyCode: fiatCurrency,
-        exchangeRate: exchangeRate,
-        bitcoinUnit: bitcoinUnit,
-        inputAmountCurrencyCode: bitcoinUnit.code,
-      ),
-    );
+      emit(
+        state.copyWith(
+          fiatCurrencyCodes: fiatCurrencies,
+          fiatCurrencyCode: fiatCurrency,
+          exchangeRate: exchangeRate,
+          bitcoinUnit: bitcoinUnit,
+          inputAmountCurrencyCode: bitcoinUnit.code,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          exchangeApiException: ExchangeApiException(e.toString()),
+        ),
+      );
+    }
   }
 
   Future<void> amountChanged(String amount) async {
@@ -962,7 +972,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> loadFees() async {
-    if (state.selectedWallet == null) return;
+    //  if (state.selectedWallet == null) return;
     try {
       final bitcoinFees = await _getNetworkFeesUsecase.execute(isLiquid: false);
       final liquidFees = await _getNetworkFeesUsecase.execute(isLiquid: true);
@@ -974,7 +984,7 @@ class SendCubit extends Cubit<SendState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(feesException: FeesException(e.toString())));
     }
   }
 
@@ -1321,11 +1331,19 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> getExchangeRate({String? currencyCode}) async {
-    final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
-      currencyCode: currencyCode ?? state.fiatCurrencyCode,
-    );
+    try {
+      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: currencyCode ?? state.fiatCurrencyCode,
+      );
 
-    emit(state.copyWith(exchangeRate: exchangeRate));
+      emit(state.copyWith(exchangeRate: exchangeRate));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          exchangeApiException: ExchangeApiException(e.toString()),
+        ),
+      );
+    }
   }
 
   void onNumberPressed(String n) {

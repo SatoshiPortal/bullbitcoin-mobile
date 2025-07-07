@@ -52,6 +52,16 @@ enum SendType {
 
 enum SendStep { address, amount, confirm, sending, success }
 
+enum SendProcess {
+  bitcoinOnchain,
+  bitcoinOnchainPayjoin,
+  liquidOnchain,
+  lbtcLn,
+  btcLn,
+  btcLbtcChain,
+  lbtcBtcChain,
+}
+
 @freezed
 abstract class SendState with _$SendState {
   const factory SendState({
@@ -99,12 +109,15 @@ abstract class SendState with _$SendState {
     @Default(false) bool signingTransaction,
     @Default(false) bool broadcastingTransaction,
     @Default('') String balanceApproximatedAmount,
+    // exceptions
     SwapCreationException? swapCreationException,
     InsufficientBalanceException? insufficientBalanceException,
     InvalidBitcoinStringException? invalidBitcoinStringException,
     SwapLimitsException? swapLimitsException,
     BuildTransactionException? buildTransactionException,
     ConfirmTransactionException? confirmTransactionException,
+    ExchangeApiException? exchangeApiException,
+    FeesException? feesException,
 
     // swapLimits
     SwapLimits? bitcoinLnSwapLimits,
@@ -498,4 +511,26 @@ class ConfirmTransactionException implements Exception {
   String toString() => message;
 
   String get title => 'Confirmation Failed';
+}
+
+class ExchangeApiException implements Exception {
+  final String message;
+
+  ExchangeApiException(this.message);
+
+  @override
+  String toString() => message;
+
+  String get title => 'Exchange Api Failed';
+}
+
+class FeesException implements Exception {
+  final String message;
+
+  FeesException(this.message);
+
+  @override
+  String toString() => message;
+
+  String get title => 'Fees Api Failed';
 }
