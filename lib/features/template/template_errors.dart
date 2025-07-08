@@ -1,13 +1,15 @@
-class NoIpAddressError implements Exception {
-  String message = 'No IP address found';
+class TemplateError implements Exception {
+  final String message;
+  TemplateError(this.message);
 
   @override
   String toString() => message;
 }
 
-class NoCachedIpError implements Exception {
-  String message = 'No IP cached';
+class NoIpAddressError extends TemplateError {
+  NoIpAddressError() : super('No IP address found');
+}
 
-  @override
-  String toString() => message;
+class NoCachedIpError extends TemplateError {
+  NoCachedIpError() : super('No IP cached');
 }
