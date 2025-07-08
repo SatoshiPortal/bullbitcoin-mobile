@@ -157,6 +157,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       } catch (e) {
         emit(
           state.copyWith(
+            downloadedBackupFile: backupFile,
             status: BackupSettingsStatus.error,
             error: 'Local backup key derivation failed.',
           ),

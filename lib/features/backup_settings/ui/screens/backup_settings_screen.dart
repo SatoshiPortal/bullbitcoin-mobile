@@ -57,7 +57,7 @@ class _Screen extends StatelessWidget {
         }
         if (state.error != null) {
           log.severe('Export failed: ${state.error}');
-          if (state.error != 'Local backup key derivation failed.') {
+          if (state.error == 'Local backup key derivation failed.') {
             // Navigate to Key Server flow, require PIN
             context.pushNamed(
               KeyServerRoute.keyServerFlow.name,
