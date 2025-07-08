@@ -156,7 +156,9 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       final encryptedBackup = await switch (state.vaultProvider) {
         FileSystem(:final fileAsString) => _fetchBackupFromFileSystemUsecase
             .execute(fileAsString),
-        GoogleDrive() => _fetchLatestGoogleDriveBackupUsecase.execute(),
+        GoogleDrive() => _fetchLatestGoogleDriveBackupUsecase.execute().then(
+          (result) => result.$1,
+        ),
         ICloud() => Future<String>.error('iCloud backup not implemented'),
       };
 

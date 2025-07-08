@@ -72,7 +72,10 @@ class RecoverbullLocator {
     locator.registerFactory<ConnectToGoogleDriveUsecase>(
       () => ConnectToGoogleDriveUsecase(locator<GoogleDriveRepository>()),
     );
-
+    locator.registerFactory<ConnectToGoogleDriveSilentlyUsecase>(
+      () =>
+          ConnectToGoogleDriveSilentlyUsecase(locator<GoogleDriveRepository>()),
+    );
     locator.registerFactory<DisconnectFromGoogleDriveUsecase>(
       () => DisconnectFromGoogleDriveUsecase(locator<GoogleDriveRepository>()),
     );
