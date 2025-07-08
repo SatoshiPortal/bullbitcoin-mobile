@@ -6,11 +6,13 @@ import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_reposito
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -60,6 +62,13 @@ class RecoverbullLocator {
   }
 
   static void registerUsecases() {
+    locator.registerFactory<CreateEncryptedVaultUsecase>(
+      () => CreateEncryptedVaultUsecase(
+        seedRepository: locator<SeedRepository>(),
+        walletRepository: locator<WalletRepository>(),
+        recoverBullRepository: locator<RecoverBullRepository>(),
+      ),
+    );
     locator.registerFactory<ConnectToGoogleDriveUsecase>(
       () => ConnectToGoogleDriveUsecase(locator<GoogleDriveRepository>()),
     );
@@ -98,6 +107,9 @@ class RecoverbullLocator {
 
     locator.registerFactory<SelectFolderPathUsecase>(
       () => SelectFolderPathUsecase(locator<FileSystemRepository>()),
+    );
+    locator.registerFactory<SaveToFileSystemUsecase>(
+      () => SaveToFileSystemUsecase(locator<FileSystemRepository>()),
     );
     locator.registerLazySingleton<CompletePhysicalBackupVerificationUsecase>(
       () => CompletePhysicalBackupVerificationUsecase(
