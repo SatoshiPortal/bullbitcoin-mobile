@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
@@ -89,17 +90,6 @@ enum ScriptType {
   }
 }
 
-enum WalletSource {
-  mnemonic,
-  xpub,
-  descriptors,
-  coldcard;
-
-  static WalletSource fromName(String name) {
-    return WalletSource.values.firstWhere((source) => source.name == name);
-  }
-}
-
 @freezed
 abstract class Wallet with _$Wallet {
   const factory Wallet({
@@ -114,7 +104,7 @@ abstract class Wallet with _$Wallet {
     required String xpub,
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
-    required WalletSource source,
+    required Signer signer,
     required BigInt balanceSat,
     @Default(false) bool isEncryptedVaultTested,
     @Default(false) bool isPhysicalBackupTested,
@@ -134,9 +124,7 @@ abstract class Wallet with _$Wallet {
       Network.liquidMainnet ||
       Network.liquidTestnet => 'Liquid and Lightning network',
     };
-    if (source == WalletSource.xpub || source == WalletSource.coldcard) {
-      name = 'Watch-only';
-    }
+    if (signer == Signer.none) name = 'Watch-only';
     return name;
   }
 
@@ -158,8 +146,5 @@ abstract class Wallet with _$Wallet {
     return network == Network.liquidMainnet || network == Network.liquidTestnet;
   }
 
-  bool get isWatchOnly => switch (source) {
-    WalletSource.xpub || WalletSource.coldcard => true,
-    _ => false,
-  };
+  bool get isWatchOnly => signer == Signer.none;
 }

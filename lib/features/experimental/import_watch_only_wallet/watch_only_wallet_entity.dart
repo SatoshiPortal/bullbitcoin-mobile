@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
@@ -8,13 +9,13 @@ part 'watch_only_wallet_entity.freezed.dart';
 abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
   const factory WatchOnlyWalletEntity.descriptor({
     required satoshifier.WatchOnlyDescriptor watchOnlyDescriptor,
-    @Default(WalletSource.descriptors) WalletSource source,
+    @Default(Signer.remote) Signer signer,
     @Default('') String label,
   }) = WatchOnlyDescriptorEntity;
 
   const factory WatchOnlyWalletEntity.xpub({
     required satoshifier.WatchOnlyXpub watchOnlyXpub,
-    @Default(WalletSource.xpub) WalletSource source,
+    @Default(Signer.none) Signer signer,
     @Default('') String label,
   }) = WatchOnlyXpubEntity;
 
@@ -23,13 +24,13 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
   T when<T>({
     required T Function(
       satoshifier.WatchOnlyDescriptor watchOnlyDescriptor,
-      WalletSource source,
+      Signer signer,
       String label,
     )
     descriptor,
     required T Function(
       satoshifier.WatchOnlyXpub watchOnlyXpub,
-      WalletSource source,
+      Signer signer,
       String label,
     )
     xpub,
@@ -38,12 +39,12 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
       final entity = this as WatchOnlyDescriptorEntity;
       return descriptor(
         entity.watchOnlyDescriptor,
-        entity.source,
+        entity.signer,
         entity.label,
       );
     } else if (this is WatchOnlyXpubEntity) {
       final entity = this as WatchOnlyXpubEntity;
-      return xpub(entity.watchOnlyXpub, entity.source, entity.label);
+      return xpub(entity.watchOnlyXpub, entity.signer, entity.label);
     }
     throw UnimplementedError();
   }

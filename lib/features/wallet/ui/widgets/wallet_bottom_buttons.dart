@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
@@ -56,10 +57,7 @@ class WalletBottomButtons extends StatelessWidget {
             },
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,
-            disabled:
-                (wallet?.source == WalletSource.xpub ||
-                    wallet?.source == WalletSource.coldcard) &&
-                !isSuperuser,
+            disabled: wallet?.signer == Signer.none && !isSuperuser,
           ),
         ),
       ],

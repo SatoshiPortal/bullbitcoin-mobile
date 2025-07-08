@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -149,7 +150,7 @@ class WalletMetadataService {
       ),
       masterFingerprint: seed.masterFingerprint,
       xpubFingerprint: xpub.fingerprintHex,
-      source: WalletSource.mnemonic,
+      signer: Signer.local,
       xpub: xpub.convert(scriptType.getXpubType(network)),
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: changeDescriptor,
@@ -199,7 +200,7 @@ class WalletMetadataService {
         scriptType: scriptType,
       ),
       xpubFingerprint: bip32Xpub.fingerprintHex,
-      source: WalletSource.xpub,
+      signer: Signer.none,
       xpub: bip32Xpub.convert(scriptType.getXpubType(network)),
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: changeDescriptor,
@@ -226,7 +227,7 @@ class WalletMetadataService {
       ),
       masterFingerprint: entity.masterFingerprint,
       xpubFingerprint: entity.pubkeyFingerprint,
-      source: entity.source,
+      signer: entity.signer,
       xpub: entity.pubkey,
       externalPublicDescriptor: entity.descriptor.external,
       internalPublicDescriptor: entity.descriptor.internal,

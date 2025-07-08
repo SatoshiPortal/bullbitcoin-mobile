@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -60,11 +60,11 @@ class _DescriptorDetailsWidget extends StatelessWidget {
           children: [
             SizedBox(
               width: 100,
-              child: BBText('Source', style: context.font.titleMedium),
+              child: BBText('Signer', style: context.font.titleMedium),
             ),
             SizedBox(
               width: 200,
-              child: DropdownButtonFormField<WalletSource>(
+              child: DropdownButtonFormField<Signer>(
                 alignment: Alignment.centerLeft,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
@@ -74,11 +74,11 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                   Icons.keyboard_arrow_down,
                   color: context.colour.secondary,
                 ),
-                value: entity.source,
+                value: entity.signer,
                 items:
-                    [WalletSource.descriptors, WalletSource.coldcard]
+                    [Signer.remote, Signer.none]
                         .map(
-                          (source) => DropdownMenuItem<WalletSource>(
+                          (source) => DropdownMenuItem<Signer>(
                             value: source,
                             child: BBText(
                               source.name,
@@ -87,7 +87,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                           ),
                         )
                         .toList(),
-                onChanged: cubit.onSourceChanged,
+                onChanged: cubit.onSignerChanged,
               ),
             ),
           ],
@@ -139,7 +139,7 @@ class _XpubDetailsWidget extends StatelessWidget {
           children: [
             SizedBox(
               width: 100,
-              child: BBText('Source', style: context.font.titleMedium),
+              child: BBText('Signer', style: context.font.titleMedium),
             ),
             SizedBox(
               width: 200,
@@ -149,7 +149,7 @@ class _XpubDetailsWidget extends StatelessWidget {
                   vertical: 16.0,
                 ),
                 child: BBText(
-                  entity.source.name,
+                  entity.signer.name,
                   style: context.font.headlineSmall,
                 ),
               ),

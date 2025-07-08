@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
@@ -71,9 +71,9 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     }
   }
 
-  void onSourceChanged(WalletSource? value) {
+  void onSignerChanged(Signer? value) {
     if (value == null) return;
-    final watchOnlyWallet = state.watchOnlyWallet!.copyWith(source: value);
+    final watchOnlyWallet = state.watchOnlyWallet!.copyWith(signer: value);
     emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
   }
 }
