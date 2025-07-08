@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_set
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_key_warning.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
+import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
@@ -56,9 +57,22 @@ class _Screen extends StatelessWidget {
         }
         if (state.error != null) {
           log.severe('Export failed: ${state.error}');
-          context.read<BackupSettingsCubit>().clearDownloadedData();
+          if (state.error != 'Local backup key derivation failed.') {
+            // Navigate to Key Server flow, require PIN
+            context.pushNamed(
+              KeyServerRoute.keyServerFlow.name,
+              extra: (
+                state.downloadedBackupFile ?? '',
+                CurrentKeyServerFlow.recovery.name,
+                false,
+              ),
+            );
+            context.read<BackupSettingsCubit>().clearDownloadedData();
+          } else {
+            context.read<BackupSettingsCubit>().clearDownloadedData();
+          }
         }
-        if (state.derivedVaultKey != null && !isBottomSheetShown) {
+        if (state.derivedBackupKey != null && !isBottomSheetShown) {
           isBottomSheetShown = true;
           BlurredBottomSheet.show<void>(
             context: context,
@@ -89,7 +103,7 @@ class _Screen extends StatelessWidget {
                           children: [
                             const Gap(24),
                             BBText(
-                              'Vault Key',
+                              'Backup Key',
                               style: context.font.headlineMedium?.copyWith(
                                 color: context.colour.secondary,
                               ),
@@ -134,7 +148,7 @@ class _Screen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: SelectableText(
-                                state.derivedVaultKey!,
+                                state.derivedBackupKey!,
                                 style: context.font.bodyMedium?.copyWith(
                                   color: context.colour.secondary,
                                   fontFamily: 'monospace',
@@ -148,7 +162,9 @@ class _Screen extends StatelessWidget {
                                 label: 'Copy to Clipboard',
                                 onPressed: () {
                                   Clipboard.setData(
-                                    ClipboardData(text: state.derivedVaultKey!),
+                                    ClipboardData(
+                                      text: state.derivedBackupKey!,
+                                    ),
                                   );
                                   Navigator.of(context).pop();
                                   context
@@ -399,7 +415,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
           label:
               state.status == BackupSettingsStatus.viewingKey
                   ? 'Revealing...'
-                  : 'View Vault Key',
+                  : 'View Backup Key',
           onPressed:
               state.status == BackupSettingsStatus.viewingKey
                   ? () {}
@@ -419,7 +435,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
                           await cubit.viewVaultKey(fileContent);
                         }
                       } catch (e) {
-                        log.severe('Failed to view vault key: $e');
+                        log.severe('Failed to view backup key: $e');
                       }
                     }
                   },

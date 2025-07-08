@@ -151,14 +151,24 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         return;
       }
 
-      final vaultKey = await _createBackupKeyFromDefaultSeedUsecase.execute(
-        path,
-      );
+      String? backupKey;
+      try {
+        backupKey = await _createBackupKeyFromDefaultSeedUsecase.execute(path);
+      } catch (e) {
+        emit(
+          state.copyWith(
+            status: BackupSettingsStatus.error,
+            error: 'Local backup key derivation failed.',
+          ),
+        );
+
+        return;
+      }
 
       emit(
         state.copyWith(
           status: BackupSettingsStatus.success,
-          derivedVaultKey: vaultKey,
+          derivedBackupKey: backupKey,
         ),
       );
     } catch (e) {
@@ -172,7 +182,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     emit(
       state.copyWith(
         downloadedBackupFile: null,
-        derivedVaultKey: null,
+        derivedBackupKey: null,
         error: null,
       ),
     );
