@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update
+.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update drift-migrations
 
 all: setup
 	@echo "✨ All tasks completed!"
@@ -35,13 +35,9 @@ hooks:
 		git config --local core.hooksPath .git_hooks/; \
 	fi
 
-drift-migrate:
-	@echo "🔄 Strating SQLiteMigration"
+drift-migrations:
+	@echo "🔄 Create schema and sum migrations"
 	dart run drift_dev make-migrations
-
-drift-schema:
-	@echo "📚 Generating drift schema"
-	dart run drift_dev schema dump lib/core/storage/sqlite_database.dart lib/core/storage/tables/bull_database
 
 ios-pod-update:
 	@echo " Fetch dependencies"
