@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_v4.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
@@ -74,36 +75,7 @@ class SqliteDatabase extends _$SqliteDatabase {
           // TODO: Should we seed this table with already generated addresses here?
         }
         if (from < 4) {
-          // Rename source column to signer
-          const sqlRename =
-              'ALTER TABLE wallet_metadatas RENAME COLUMN source TO signer';
-          await customStatement(sqlRename);
-
-          // Select all metadatas
-          const sqlSelect = 'SELECT id, signer FROM wallet_metadatas';
-          final metadatas = await customSelect(sqlSelect).get();
-
-          // Map old source values to new signer enum values
-          for (final metadata in metadatas) {
-            final id = metadata.read<String>('id');
-            final source = metadata.read<String>('signer'); // renamed source
-
-            String signer;
-            switch (source) {
-              case 'mnemonic':
-                signer = 'local';
-              case 'descriptors':
-                signer = 'remote';
-              default:
-                signer = 'none';
-            }
-
-            // Update the new signer value
-            await customUpdate(
-              'UPDATE wallet_metadatas SET signer = ? WHERE id = ?',
-              variables: [Variable.withString(signer), Variable.withString(id)],
-            );
-          }
+          await SchemaV4.migrate(this, walletMetadatas);
         }
       },
     );
