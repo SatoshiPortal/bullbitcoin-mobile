@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 
 class CalculateLiquidAbsoluteFeesUsecase {
   final LiquidWalletRepository _liquidWalletRepository;

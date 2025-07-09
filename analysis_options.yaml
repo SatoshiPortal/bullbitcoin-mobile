@@ -6,6 +6,7 @@ linter:
     avoid_dynamic_calls: false
     no_wildcard_variable_uses: false
     unawaited_futures: true
+    avoid_redundant_argument_values: false
     
 
 analyzer:

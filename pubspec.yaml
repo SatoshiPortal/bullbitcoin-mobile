@@ -56,13 +56,14 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
-  bip32: ^2.0.0
+  bip85: ^2.0.0
+  bip21_uri: ^2.0.1
+  bip32_keys: ^3.0.1
   bip39_mnemonic: ^3.0.9
   bs58check: ^1.0.2
   gif: ^2.3.0
   custom_sliding_segmented_control: ^1.8.5
   shimmer: ^3.0.0
-  bip21_uri: ^2.0.1
   googleapis: ^13.2.0
   google_sign_in: ^6.2.2
   extension_google_sign_in_as_googleapis_auth: ^2.0.12
@@ -70,7 +71,6 @@ dependencies:
     git:
       url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
       ref: 334b5402d8b7b80b4736663861f7952020312831
-  bip85: ^2.0.0
   flutter_zxing: ^2.1.0
   webview_cookie_manager:
     git:
@@ -93,6 +93,10 @@ dependencies:
   sliver_tools: ^0.2.12
   logging_colorful: ^1.2.2
   timelines_plus: ^1.0.7
+  satoshifier:
+    git:
+      url: https://github.com/ethicnology/dart-satoshifier.git
+      ref: main
 
 dev_dependencies:
   build_runner: ^2.4.15

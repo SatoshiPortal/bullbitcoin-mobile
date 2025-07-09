@@ -4,19 +4,17 @@ part 'wallet_address_model.freezed.dart';
 
 @freezed
 sealed class WalletAddressModel with _$WalletAddressModel {
-  const factory WalletAddressModel.bitcoin({
+  const factory WalletAddressModel({
+    required String walletId,
     required int index,
     required String address,
-  }) = BitcoinWalletAddressModel;
-  const factory WalletAddressModel.liquid({
-    required int index,
-    required String standard,
-    required String confidential,
-  }) = LiquidWalletAddressModel;
+    @Default(false) bool isChange,
+    @Default(0) int balanceSat,
+    @Default(0) int nrOfTransactions,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) = _WalletAddressModel;
   const WalletAddressModel._();
 
-  String get address => switch (this) {
-    BitcoinWalletAddressModel(:final address) => address,
-    LiquidWalletAddressModel(:final confidential) => confidential,
-  };
+  String get labelRef => address;
 }

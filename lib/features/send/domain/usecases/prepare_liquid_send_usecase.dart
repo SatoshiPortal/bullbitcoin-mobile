@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 
 class PrepareLiquidSendUsecase {
   final LiquidWalletRepository _liquidWalletRepository;

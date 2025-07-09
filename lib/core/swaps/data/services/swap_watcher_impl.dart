@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 
 class SwapWatcherServiceImpl implements SwapWatcherService {
@@ -165,10 +165,9 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
 
   Future<void> _processSendBitcoinToLnRefund({required LnSendSwap swap}) async {
     try {
-      final address = await _walletAddressRepository.getNewAddress(
+      final address = await _walletAddressRepository.getNewReceiveAddress(
         walletId: swap.sendWalletId,
       );
-      if (!address.isBitcoin) throw 'Refund Address is not a Bitcoin address';
 
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
@@ -266,12 +265,9 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
 
   Future<void> _processSendLiquidToLnRefund({required LnSendSwap swap}) async {
     try {
-      final address = await _walletAddressRepository.getNewAddress(
+      final address = await _walletAddressRepository.getNewReceiveAddress(
         walletId: swap.sendWalletId,
       );
-      if (!address.isLiquid) {
-        throw Exception('Refund Address is not a Liquid address');
-      }
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
       final network = Network.fromEnvironment(
@@ -366,12 +362,8 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     try {
       String finalClaimAddress;
       if (swap.receiveWalletId != null) {
-        final claimAddress = await _walletAddressRepository.getNewAddress(
-          walletId: swap.receiveWalletId!,
-        );
-        if (!claimAddress.isBitcoin) {
-          throw Exception('Claim address is not a Bitcoin address');
-        }
+        final claimAddress = await _walletAddressRepository
+            .getNewReceiveAddress(walletId: swap.receiveWalletId!);
         finalClaimAddress = claimAddress.address;
       } else {
         if (swap.receiveAddress!.startsWith('bitcoin:')) {
@@ -423,12 +415,9 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     required ChainSwap swap,
   }) async {
     try {
-      final refundAddress = await _walletAddressRepository.getNewAddress(
+      final refundAddress = await _walletAddressRepository.getNewReceiveAddress(
         walletId: swap.sendWalletId,
       );
-      if (!refundAddress.isBitcoin) {
-        throw Exception('Refund address is not a Bitcoin address');
-      }
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
       final network = Network.fromEnvironment(
@@ -485,12 +474,8 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     try {
       String finalClaimAddress;
       if (swap.receiveWalletId != null) {
-        final claimAddress = await _walletAddressRepository.getNewAddress(
-          walletId: swap.receiveWalletId!,
-        );
-        if (!claimAddress.isLiquid) {
-          throw Exception('Claim address is not a Liquid address');
-        }
+        final claimAddress = await _walletAddressRepository
+            .getNewReceiveAddress(walletId: swap.receiveWalletId!);
         finalClaimAddress = claimAddress.address;
       } else {
         if (swap.receiveAddress!.startsWith('liquidnetwork:') ||
@@ -544,12 +529,9 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     required ChainSwap swap,
   }) async {
     try {
-      final refundAddress = await _walletAddressRepository.getNewAddress(
+      final refundAddress = await _walletAddressRepository.getNewReceiveAddress(
         walletId: swap.sendWalletId,
       );
-      if (!refundAddress.isLiquid) {
-        throw Exception('Claim address is not a Liquid address');
-      }
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
       final network = Network.fromEnvironment(

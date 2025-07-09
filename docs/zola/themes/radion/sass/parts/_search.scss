@@ -1,0 +1,65 @@
+/* Style the magnifying glass SVG */
+.search-icon {
+  position: absolute;
+  left: 10px;
+  width: 24px;
+  height: 24px;
+  /* default gray */
+  stroke: var(--text-color, #757575);
+  /* Adjust icon color */
+  pointer-events: none;
+  /* Ensure the SVG doesn't block input interaction */
+  padding: 2.5px 0px;
+}
+
+/* Input field styling */
+#search {
+  width: 100%;
+  padding: 10px 10px 10px 40px;
+  /* Left padding for the icon */
+  font-size: 14px;
+  border: 1.5px solid transparent;
+  /* Remove border when not focused */
+  border-radius: 4px;
+  background-color: var(--search-bg-color, #fff);
+  color: var(--text-color, #000);
+  outline: none;
+  height: 35px;
+  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif
+}
+
+.light #search {
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Highlight border when the input is focused */
+#search:focus {
+  border: 1.5px solid var(--search-border-color, #ddd);
+}
+
+.search-results {
+  display: none;
+  /* Initial state hidden */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--search-border-color, #ddd);
+  border-radius: 4px;
+  background-color: var(--bg-primary, #fff);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.light .search-results {
+  background-color: var(--bg-light, #f9f9f9);
+}
+
+.search-results__no-results {
+  padding: 1rem !important;
+  font-style: italic;
+  justify-content: center;
+  align-content: center;
+}

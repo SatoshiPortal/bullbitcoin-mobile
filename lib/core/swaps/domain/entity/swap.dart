@@ -281,6 +281,26 @@ sealed class Swap with _$Swap {
           : '';
 
   bool get swapCompleted => status == SwapStatus.completed;
+
+  bool get isBitcoin =>
+      [
+        SwapType.bitcoinToLightning,
+        SwapType.lightningToBitcoin,
+      ].contains(type) ||
+      (type == SwapType.liquidToBitcoin && isChainSwapInternal ||
+          type == SwapType.bitcoinToLiquid && !isChainSwapInternal);
+
+  bool get isLiquid => [
+    SwapType.liquidToLightning,
+    SwapType.lightningToLiquid,
+    SwapType.liquidToBitcoin,
+    SwapType.bitcoinToLiquid,
+  ].contains(type);
+  String? get receiveAddress => switch (this) {
+    LnReceiveSwap(:final receiveAddress) => receiveAddress,
+    ChainSwap(:final receiveAddress) => receiveAddress,
+    _ => null,
+  };
 }
 
 extension SwapFeePercent on Swap {

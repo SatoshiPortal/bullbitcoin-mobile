@@ -2,13 +2,14 @@ import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
+import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:flutter/foundation.dart';
 
@@ -169,12 +170,12 @@ class AutoSwapExecutionUsecase {
     );
 
     if (walletTx != null) {
-      await _labelRepository.store(
+      final txLabel = Label.tx(
+        transactionId: walletTx.txId,
+        walletId: defaultLiquidWallet.id,
         label: 'Auto-Swap',
-        entity: walletTx,
-        origin: defaultLiquidWallet.origin,
-        spendable: false,
       );
+      await _labelRepository.store(txLabel);
     }
     return swap;
   }

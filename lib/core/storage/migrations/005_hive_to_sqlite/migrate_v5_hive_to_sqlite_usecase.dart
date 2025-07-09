@@ -13,8 +13,8 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:boltz/boltz.dart' as boltz;
 
 class MigrateToV5HiveToSqliteToUsecase {
@@ -409,7 +409,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         );
         if (source == WalletSource.coldcard || source == WalletSource.xpub) {
           try {
-            await _newWalletRepository.importWatchOnlyWallet(
+            await _newWalletRepository.importWatchOnlyXpub(
               xpub: xpubFromDescriptor,
               scriptType: scriptType,
               network: network,

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
@@ -6,9 +7,13 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/loading/loading_box_content.dart';
 import 'package:bb_mobile/ui/components/loading/loading_line_content.dart';
+import 'package:bb_mobile/ui/components/text/text.dart';
+import 'package:bb_mobile/ui/themes/app_theme.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class WalletDetailScreen extends StatelessWidget {
   const WalletDetailScreen({super.key, required this.walletId});
@@ -39,7 +44,18 @@ class WalletDetailScreen extends StatelessWidget {
         title:
             walletName.isEmpty
                 ? const LoadingLineContent(width: 150)
-                : Text(walletName),
+                : BBText(walletName, style: context.font.headlineMedium),
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.pushNamed(
+                SettingsRoute.walletDetailsSelectedWallet.name,
+                pathParameters: {'walletId': walletId},
+              );
+            },
+            icon: const Icon(CupertinoIcons.settings),
+          ),
+        ],
       ),
       body: Stack(
         alignment: Alignment.bottomCenter,

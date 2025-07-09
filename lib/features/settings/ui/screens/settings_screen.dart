@@ -39,27 +39,6 @@ class SettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                if (isSuperuser && kDebugMode)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: const Text('Experimental / Danger Zone'),
-                    onTap:
-                        () =>
-                            context.pushNamed(SettingsRoute.experimental.name),
-                    trailing: const Icon(Icons.chevron_right),
-                  ),
-                if (isSuperuser)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: Text(context.loc.testnetModeSettingsLabel),
-                    trailing: const TestnetModeSwitch(),
-                  ),
                 ListTile(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),
@@ -71,32 +50,30 @@ class SettingsScreen extends StatelessWidget {
                   },
                   trailing: const Icon(Icons.chevron_right),
                 ),
-                if (isSuperuser)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: Text(context.loc.electrumServerSettingsLabel),
-                    onTap: () {
-                      ElectrumSettingsRouter.showElectrumServerSettings(
-                        context,
-                      );
-                    },
-                    trailing: const Icon(Icons.chevron_right),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                if (isSuperuser)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: const Text('Auto Swap Settings'),
-                    onTap: () {
-                      AutoSwapSettingsRouter.showAutoSwapSettings(context);
-                    },
-                    trailing: const Icon(Icons.chevron_right),
+                  tileColor: Colors.transparent,
+                  title: const Text('Wallet details'),
+                  onTap: () {
+                    context.pushNamed(
+                      SettingsRoute.walletDetailsWalletList.name,
+                    );
+                  },
+                  trailing: const Icon(Icons.chevron_right),
+                ),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
                   ),
+                  tileColor: Colors.transparent,
+                  title: Text(context.loc.electrumServerSettingsLabel),
+                  onTap: () {
+                    ElectrumSettingsRouter.showElectrumServerSettings(context);
+                  },
+                  trailing: const Icon(Icons.chevron_right),
+                ),
                 ListTile(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),
@@ -108,18 +85,6 @@ class SettingsScreen extends StatelessWidget {
                   },
                   trailing: const Icon(Icons.chevron_right),
                 ),
-                if (isSuperuser)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: Text(context.loc.languageSettingsLabel),
-                    onTap: () {
-                      context.pushNamed(SettingsRoute.language.name);
-                    },
-                    trailing: const Icon(Icons.chevron_right),
-                  ),
                 ListTile(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),
@@ -165,19 +130,6 @@ class SettingsScreen extends StatelessWidget {
                     },
                     trailing: const Icon(Icons.chevron_right),
                   ),
-                if (isSuperuser)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: const Text('Import watch-only (experimental)'),
-                    onTap:
-                        () => context.pushNamed(
-                          ImportWatchOnlyRoutes.import.name,
-                        ),
-                    trailing: const Icon(Icons.qr_code_2),
-                  ),
                 ListTile(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),
@@ -192,6 +144,52 @@ class SettingsScreen extends StatelessWidget {
                   },
                   trailing: const Icon(Icons.chevron_right),
                 ),
+                if (isSuperuser && kDebugMode)
+                  ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
+                    title: const Text('Experimental / Danger Zone'),
+                    onTap:
+                        () =>
+                            context.pushNamed(SettingsRoute.experimental.name),
+                    trailing: const Icon(Icons.chevron_right),
+                  ),
+                if (isSuperuser)
+                  ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
+                    title: Text(context.loc.testnetModeSettingsLabel),
+                    trailing: const TestnetModeSwitch(),
+                  ),
+                if (isSuperuser)
+                  ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
+                    title: Text(context.loc.languageSettingsLabel),
+                    onTap: () {
+                      context.pushNamed(SettingsRoute.language.name);
+                    },
+                    trailing: const Icon(Icons.chevron_right),
+                  ),
+                if (isSuperuser)
+                  ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
+                    title: const Text('Import watch-only'),
+                    onTap:
+                        () => context.pushNamed(
+                          ImportWatchOnlyRoutes.import.name,
+                        ),
+                    trailing: const Icon(Icons.qr_code_2),
+                  ),
               ],
             ),
           ),

@@ -1,6 +1,11 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_has_ongoing_swaps_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
@@ -42,7 +47,29 @@ class SettingsLocator {
       ),
     );
 
-    // Bloc
+    // Wallet-related usecases
+    locator.registerFactory<CheckWalletHasOngoingSwapsUsecase>(
+      () => CheckWalletHasOngoingSwapsUsecase(
+        mainnetSwapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+        testnetSwapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
+        ),
+      ),
+    );
+    locator.registerFactory<DeleteWalletUsecase>(
+      () => DeleteWalletUsecase(
+        walletRepository: locator<WalletRepository>(),
+        checkOngoingSwapsUsecase: locator<CheckWalletHasOngoingSwapsUsecase>(),
+      ),
+    );
+
+    // Blocs
     locator.registerFactory<SettingsCubit>(
       () => SettingsCubit(
         setEnvironmentUsecase: locator<SetEnvironmentUsecase>(),

@@ -15,7 +15,6 @@ import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dar
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
-import 'package:bb_mobile/features/recover_wallet/recover_wallet_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
@@ -45,7 +44,6 @@ class AppLocator {
     AppStartupLocator.setup();
     AppUnlockLocator.setup();
     OnboardingLocator.setup();
-    RecoverWalletLocator.setup();
     LegacySeedViewLocator.setup();
     SettingsLocator.setup();
     BitcoinPriceLocator.setup();

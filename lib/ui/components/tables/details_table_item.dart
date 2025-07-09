@@ -1,3 +1,4 @@
+import 'package:bb_mobile/ui/components/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
@@ -6,7 +7,7 @@ class DetailsTableItem extends StatefulWidget {
   const DetailsTableItem({
     super.key,
     required this.label,
-    required this.displayValue,
+    this.displayValue,
     this.copyValue,
     this.isUnderline = false,
     this.expandableChild,
@@ -14,7 +15,7 @@ class DetailsTableItem extends StatefulWidget {
   });
 
   final String label;
-  final String displayValue;
+  final String? displayValue;
   final String? copyValue;
   final bool isUnderline;
   final Widget? expandableChild;
@@ -58,18 +59,20 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                     Flexible(
                       child:
                           widget.displayWidget ??
-                          Text(
-                            widget.displayValue,
-                            textAlign: TextAlign.end,
-                            overflow: TextOverflow.clip,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: theme.colorScheme.outlineVariant,
-                              decoration:
-                                  widget.isUnderline
-                                      ? TextDecoration.underline
-                                      : TextDecoration.none,
-                            ),
-                          ),
+                          (widget.displayValue != null
+                              ? Text(
+                                widget.displayValue!,
+                                textAlign: TextAlign.end,
+                                overflow: TextOverflow.clip,
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  color: theme.colorScheme.outlineVariant,
+                                  decoration:
+                                      widget.isUnderline
+                                          ? TextDecoration.underline
+                                          : TextDecoration.none,
+                                ),
+                              )
+                              : const LoadingLineContent()),
                     ),
                     const Gap(8),
                     if (widget.copyValue != null &&

@@ -39,6 +39,10 @@ drift-migrate:
 	@echo "🔄 Strating SQLiteMigration"
 	dart run drift_dev make-migrations
 
+drift-schema:
+	@echo "📚 Generating drift schema"
+	dart run drift_dev schema dump lib/core/storage/sqlite_database.dart lib/core/storage/tables/bull_database
+
 ios-pod-update:
 	@echo " Fetch dependencies"
 	@cd ios && pod install --repo-update && cd -

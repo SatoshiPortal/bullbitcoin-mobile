@@ -1,20 +1,18 @@
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class WatchStartedWalletSyncsUsecase {
   final WalletRepository _walletRepository;
 
-  WatchStartedWalletSyncsUsecase({
-    required WalletRepository walletRepository,
-  }) : _walletRepository = walletRepository;
+  WatchStartedWalletSyncsUsecase({required WalletRepository walletRepository})
+    : _walletRepository = walletRepository;
 
-  Stream<Wallet> execute({
-    String? walletId,
-  }) {
+  Stream<Wallet> execute({String? walletId}) {
     try {
       if (walletId != null) {
-        return _walletRepository.walletSyncStartedStream
-            .where((wallet) => wallet.id == walletId);
+        return _walletRepository.walletSyncStartedStream.where(
+          (wallet) => wallet.id == walletId,
+        );
       } else {
         return _walletRepository.walletSyncStartedStream;
       }

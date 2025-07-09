@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
-import 'package:bb_mobile/core/labels/domain/label_entity.dart';
-import 'package:bb_mobile/core/labels/domain/labelable.dart';
+import 'package:bb_mobile/core/labels/domain/label.dart';
 
 class LabelRepository {
   final LabelDatasource _labelDatasource;
@@ -9,45 +8,24 @@ class LabelRepository {
   LabelRepository({required LabelDatasource labelDatasource})
     : _labelDatasource = labelDatasource;
 
-  Future<void> store<T extends Labelable>({
-    required String label,
-    required T entity,
-    String? origin,
-    bool? spendable,
-  }) async {
-    await _labelDatasource.store(
-      label: label,
-      entity: entity,
-      origin: origin,
-      spendable: spendable,
-    );
+  Future<void> store(Label label) async {
+    final model = LabelModel.fromEntity(label);
+
+    await _labelDatasource.store(model);
   }
 
-  Future<List<Label>> fetchByLabel({required String label}) async {
+  Future<List<Label>> fetchByLabel(String label) async {
     final labelModels = await _labelDatasource.fetchByLabel(label: label);
     return labelModels.map((model) => model.toEntity()).toList();
   }
 
-  Future<List<Label>> fetchByEntity<T extends Labelable>({
-    required T entity,
-  }) async {
-    final labelModels = await _labelDatasource.fetchByEntity(entity: entity);
-    return labelModels.map((model) => model.toEntity()).toList();
-  }
-
-  Future<void> trashByLabel({required String label}) async {
+  Future<void> trashByLabel(String label) async {
     await _labelDatasource.trashByLabel(label: label);
   }
 
-  Future<void> trashByEntity<T extends Labelable>({required T entity}) async {
-    await _labelDatasource.trashByEntity(entity: entity);
-  }
-
-  Future<void> trashOneLabel<T extends Labelable>({
-    required T entity,
-    required String label,
-  }) async {
-    await _labelDatasource.trashOneLabel(entity: entity, label: label);
+  Future<void> trashLabel(Label label) async {
+    final model = LabelModel.fromEntity(label);
+    await _labelDatasource.trashLabel(model);
   }
 
   Future<List<Label>> fetchAll() async {

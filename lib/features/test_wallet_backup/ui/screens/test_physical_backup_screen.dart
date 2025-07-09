@@ -115,16 +115,18 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                       Expanded(
                         child: AnimatedOpacity(
                           opacity:
-                              state.status == TestWalletBackupStatus.success
+                              state.status == TestWalletBackupStatus.success ||
+                                      state.status ==
+                                          TestWalletBackupStatus.verifying
                                   ? 1.0
                                   : 0.0,
                           duration: const Duration(milliseconds: 600),
                           curve: Curves.easeInOut,
                           child:
                               !isVerifying
-                                  ? state.shuffledMnemonic.isNotEmpty
+                                  ? (state.shuffledMnemonic.isNotEmpty
                                       ? const TestPhysicalBackupScreen()
-                                      : const SizedBox.shrink()
+                                      : const SizedBox.shrink())
                                   : const ShuffledMnemonicScreen(),
                         ),
                       ),

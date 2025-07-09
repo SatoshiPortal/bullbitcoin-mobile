@@ -43,6 +43,7 @@ class PayjoinConstants {
   static const List<String> ohttpRelayUrls = [
     'https://ohttp.achow101.com',
     'https://pj.bobspacebkk.com',
+    'https://ohttp.cakewallet.com',
   ];
   static const String directoryUrl = 'https://payjo.in';
   static const directoryPollingInterval = 5;

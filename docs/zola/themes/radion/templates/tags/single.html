@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+
+{% block content %}
+    {% block header %}
+        {{ super() }}
+    {% endblock header %}
+
+    <h1>{{ term.name }}</h1>
+
+    {% for page in term.pages %}
+        {{ post_macros::page_in_list(page=page) }}
+    {% endfor %}
+{% endblock content %}

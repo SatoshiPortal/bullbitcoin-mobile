@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 
 class SendWithPayjoinUsecase {
   final PayjoinRepository _payjoinRepository;

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
 import 'package:path_provider/path_provider.dart';
+
 export 'package:logging_colorful/logging_colorful.dart';
 
 // DONE: add a String encryptionKey to the Logger
@@ -87,34 +88,51 @@ class Logger {
     return sanitizedContent;
   }
 
+  /// Logs information messages that are part of the normal operation of the app.
+  /// These messages are typically written to file only and not kept in memory.
+  /// Use for recording general app flow and user actions.
   void info(Object? message, {Object? error, StackTrace? trace}) {
     logger.info(message, error, trace);
   }
 
+  /// Logs static configuration information at startup or during major configuration changes.
+  /// Use for logging app settings, environment details, or significant state changes.
   void config(Object? message, {Object? error, StackTrace? trace}) {
     logger.config(message, error, trace);
   }
 
+  /// Logs basic tracing information for debugging.
+  /// Use for high-level flow tracking during development and troubleshooting.
   void fine(Object? message, {Object? error, StackTrace? trace}) {
     logger.fine(message, error, trace);
   }
 
+  /// Logs detailed tracing information.
+  /// Use for more granular debugging information than fine(), such as loop iterations or method entry/exit.
   void finer(Object? message, {Object? error, StackTrace? trace}) {
     logger.finer(message, error, trace);
   }
 
+  /// Logs highly detailed tracing information.
+  /// Use for the most detailed level of debugging, such as variable values within loops.
   void finest(Object? message, {Object? error, StackTrace? trace}) {
     logger.finest(message, error, trace);
   }
 
+  /// Logs potentially harmful situations that don't prevent the app from working.
+  /// Use for recoverable errors or unexpected but handled conditions.
   void warning(Object? message, {Object? error, StackTrace? trace}) {
     logger.warning(message, error, trace);
   }
 
+  /// Logs serious errors that may prevent parts of the app from working correctly.
+  /// Use for unrecoverable errors that require immediate attention.
   void severe(Object? message, {Object? error, StackTrace? trace}) {
     logger.severe(message, error, trace);
   }
 
+  /// Logs critical errors that could crash the app or make it unusable.
+  /// Use for the most severe errors that require immediate intervention.
   void shout(Object? message, {Object? error, StackTrace? trace}) {
     logger.shout(message, error, trace);
   }

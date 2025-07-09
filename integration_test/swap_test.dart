@@ -5,8 +5,8 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
@@ -209,10 +209,13 @@ void main() {
         'Waiting 60 seconds for transaction to confirm to check balances',
       );
       await Future.delayed(const Duration(seconds: 60));
-      instantWallet = await walletRepository.getWallet(
+      final wallet = await walletRepository.getWallet(
         instantWallet.id,
         sync: true,
       );
+      if (wallet == null) throw 'Instant wallet not found';
+      instantWallet = wallet;
+
       final liquidBalance = instantWallet.balanceSat;
       final receiveSwap =
           await swapRepositoryMainnet.getSwap(swapId: receiveLbtcSwapId)

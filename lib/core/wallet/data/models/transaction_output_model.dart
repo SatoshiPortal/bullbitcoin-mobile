@@ -20,8 +20,9 @@ sealed class TransactionOutputModel with _$TransactionOutputModel {
     required bool isOwn,
     required BigInt value,
     required String scriptPubkey,
-    required String standardAddress,
-    required String confidentialAddress,
+    required String address,
   }) = LiquidTransactionOutputModel;
   const TransactionOutputModel._();
+
+  String get labelRef => '$txId:$vout';
 }

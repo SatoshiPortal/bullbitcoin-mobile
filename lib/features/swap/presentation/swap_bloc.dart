@@ -238,7 +238,9 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     } catch (e) {
       emit(
-        state.copyWith(swapLimitsException: SwapLimitsException(e.toString())),
+        state.copyWith(
+          buildTransactionException: BuildTransactionException(e.toString()),
+        ),
       );
     }
   }

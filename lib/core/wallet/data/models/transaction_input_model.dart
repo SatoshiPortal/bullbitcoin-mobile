@@ -25,4 +25,6 @@ sealed class TransactionInputModel with _$TransactionInputModel {
     required int previousTxVout,
   }) = LiquidTransactionInputModel;
   const TransactionInputModel._();
+
+  String get labelRef => '$txId:$vin';
 }

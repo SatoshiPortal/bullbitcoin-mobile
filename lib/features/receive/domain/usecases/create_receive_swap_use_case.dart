@@ -1,19 +1,19 @@
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
+import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_use_case.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_new_receive_address_use_case.dart';
 
 class CreateReceiveSwapUsecase {
   final WalletRepository _walletRepository;
   final SwapRepository _swapRepository;
   final SwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
-  final GetReceiveAddressUsecase _getNewAddressUsecase;
+  final GetNewReceiveAddressUsecase _getNewAddressUsecase;
   final LabelRepository _labelRepository;
 
   CreateReceiveSwapUsecase({
@@ -21,7 +21,7 @@ class CreateReceiveSwapUsecase {
     required SwapRepository swapRepository,
     required SwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
-    required GetReceiveAddressUsecase getNewAddressUsecase,
+    required GetNewReceiveAddressUsecase getNewAddressUsecase,
     required LabelRepository labelRepository,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
@@ -80,15 +80,15 @@ class CreateReceiveSwapUsecase {
 
       final claimAddress = await _getNewAddressUsecase.execute(
         walletId: walletId,
-        newAddress: true,
       );
 
       if (description != null && description.isNotEmpty) {
-        await _labelRepository.store<WalletAddress>(
-          entity: claimAddress,
+        final addressLabel = Label.addr(
+          address: claimAddress.address,
           label: description,
-          origin: wallet.origin,
+          walletId: wallet.id,
         );
+        await _labelRepository.store(addressLabel);
       }
 
       switch (type) {

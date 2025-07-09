@@ -1,8 +1,9 @@
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_usecase.dart';
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/multiline_paste_widget.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/import_method_widget.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/multiline_paste_widget.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/watch_only_details_widget.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -26,13 +27,16 @@ class ImportWatchOnlyScreen extends StatelessWidget {
       create:
           (context) => ImportWatchOnlyCubit(
             watchOnlyWallet: watchOnlyWallet,
-            importWatchOnlyUsecase: locator<ImportWatchOnlyUsecase>(),
-          ),
+            importWatchOnlyDescriptorUsecase:
+                locator<ImportWatchOnlyDescriptorUsecase>(),
+            importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
+          )..init(),
       child: Scaffold(
         backgroundColor: context.colour.secondaryFixed,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(56),
-          child: TopBar(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: TopBar(
             title: 'Import wallet',
             color: context.colour.secondaryFixed,
             onBack: () => Navigator.of(context).pop(),
@@ -56,13 +60,12 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                       const Gap(32),
                       if (state.watchOnlyWallet == null) ...[
                         MultilinePasteWidget(
-                          title: 'Paste or scan xpub, ypub or zpub',
-                          value: state.publicKey,
+                          title: 'Paste xpub, ypub, zpub or descriptor',
+                          value: state.input,
                           hint: '',
                           maxLines: 4,
-                          minLines: 4,
-                          maxLength: 111,
-                          onChanged: cubit.parseExtendedPublicKey,
+                          minLines: 1,
+                          onChanged: cubit.parsePastedInput,
                         ),
                         if (state.error.isNotEmpty)
                           Center(
