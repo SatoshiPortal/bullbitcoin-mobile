@@ -35,7 +35,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -72,6 +72,38 @@ class SqliteDatabase extends _$SqliteDatabase {
           // Create WalletAddressHistory table
           await m.createTable(walletAddressHistory);
           // TODO: Should we seed this table with already generated addresses here?
+        }
+        if (from < 4) {
+          // Rename source column to signer
+          const sqlRename =
+              'ALTER TABLE wallet_metadatas RENAME COLUMN source TO signer';
+          await customStatement(sqlRename);
+
+          // Select all metadatas
+          const sqlSelect = 'SELECT id, signer FROM wallet_metadatas';
+          final metadatas = await customSelect(sqlSelect).get();
+
+          // Map old source values to new signer enum values
+          for (final metadata in metadatas) {
+            final id = metadata.read<String>('id');
+            final source = metadata.read<String>('signer'); // renamed source
+
+            String signer;
+            switch (source) {
+              case 'mnemonic':
+                signer = 'local';
+              case 'descriptors':
+                signer = 'remote';
+              default:
+                signer = 'none';
+            }
+
+            // Update the new signer value
+            await customUpdate(
+              'UPDATE wallet_metadatas SET signer = ? WHERE id = ?',
+              variables: [Variable.withString(signer), Variable.withString(id)],
+            );
+          }
         }
       },
     );
