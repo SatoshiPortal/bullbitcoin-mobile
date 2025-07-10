@@ -60,7 +60,9 @@ class _ShowPsbtView extends StatelessWidget {
                   bgColor: context.colour.secondary,
                   textColor: context.colour.onPrimary,
                   onPressed: () {
-                    context.goNamed(BroadcastSignedTxRoute.broadcastScan.name);
+                    context.pushNamed(
+                      BroadcastSignedTxRoute.broadcastHome.name,
+                    );
                   },
                 ),
               ],

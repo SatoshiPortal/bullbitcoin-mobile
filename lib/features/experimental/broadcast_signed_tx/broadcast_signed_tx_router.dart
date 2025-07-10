@@ -2,13 +2,14 @@ import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_page.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/scan_tx_page.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum BroadcastSignedTxRoute {
-  broadcastHome('/broadcast-signed-tx/home'),
-  broadcastScan('/broadcast-signed-tx/scan');
+  broadcastHome('/broadcast-signed-tx'),
+  broadcastScan('scan');
 
   const BroadcastSignedTxRoute(this.path);
 
@@ -26,24 +27,35 @@ class BroadcastSignedTxRouter {
       GoRoute(
         name: BroadcastSignedTxRoute.broadcastHome.name,
         path: BroadcastSignedTxRoute.broadcastHome.path,
-        builder: (context, state) => const BroadcastSignedTxPage(),
-      ),
-      GoRoute(
-        name: BroadcastSignedTxRoute.broadcastScan.name,
-        path: BroadcastSignedTxRoute.broadcastScan.path,
         builder:
             (context, state) =>
                 BlocListener<BroadcastSignedTxCubit, BroadcastSignedTxState>(
                   listenWhen:
                       (previous, state) =>
+                          previous.txid.isEmpty && state.txid.isNotEmpty,
+                  listener:
+                      (context, state) =>
+                          context.goNamed(WalletRoute.walletHome.name),
+                  child: const BroadcastSignedTxPage(),
+                ),
+        routes: [
+          GoRoute(
+            name: BroadcastSignedTxRoute.broadcastScan.name,
+            path: BroadcastSignedTxRoute.broadcastScan.path,
+            builder:
+                (context, state) => BlocListener<
+                  BroadcastSignedTxCubit,
+                  BroadcastSignedTxState
+                >(
+                  listenWhen:
+                      (previous, state) =>
                           previous.transaction == null &&
                           state.transaction != null,
-                  listener:
-                      (context, state) => context.goNamed(
-                        BroadcastSignedTxRoute.broadcastHome.name,
-                      ),
+                  listener: (context, state) => context.pop(),
                   child: const ScanTxPage(),
                 ),
+          ),
+        ],
       ),
     ],
   );

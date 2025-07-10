@@ -50,7 +50,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                 child: BBButton.big(
                   label: 'Scan BBQR / Hex',
                   onPressed:
-                      () => context.goNamed(
+                      () => context.pushNamed(
                         BroadcastSignedTxRoute.broadcastScan.name,
                       ),
                   bgColor: context.colour.onPrimary,
