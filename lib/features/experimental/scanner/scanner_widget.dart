@@ -4,11 +4,13 @@ import 'package:flutter_zxing/flutter_zxing.dart';
 class ScannerWidget extends StatefulWidget {
   final void Function(String data) onScanned;
   final ResolutionPreset resolution;
+  final Duration scanDelay;
 
   const ScannerWidget({
     super.key,
     required this.onScanned,
     this.resolution = ResolutionPreset.high,
+    this.scanDelay = const Duration(milliseconds: 1000),
   });
 
   @override
@@ -25,6 +27,8 @@ class _ScannerState extends State<ScannerWidget> {
   @override
   Widget build(BuildContext context) {
     return ReaderWidget(
+      scanDelay: widget.scanDelay,
+      scanDelaySuccess: widget.scanDelay,
       onScan: (result) {
         if (!mounted) return;
 
