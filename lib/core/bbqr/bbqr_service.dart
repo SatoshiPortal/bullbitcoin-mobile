@@ -11,8 +11,11 @@ enum TxFormat { psbt, hex }
 
 class BbqrService {
   final Map<int, String> parts = {};
+  BbqrOptions? options;
 
   BbqrService();
+
+  bool get isScanningBbqr => parts.isNotEmpty && options != null;
 
   Future<({TxFormat format, String data})?> scanTransaction(
     String payload,
@@ -26,17 +29,17 @@ class BbqrService {
         return null;
       }
     } else {
-      final options = BbqrOptions.decode(payload);
-      parts[options.share] = payload;
+      options = BbqrOptions.decode(payload);
+      parts[options!.share] = payload;
 
-      if (options.total < parts.length) {
+      if (options!.total < parts.length) {
         // reset another state.bbqr
         // and expect the next scan to be a new BBQR
         parts.clear();
         return null;
       }
 
-      if (options.total == parts.length) {
+      if (options!.total == parts.length) {
         final bbqrParts = parts.values.toList();
         final bbqrJoiner = await bbqr.Joined.tryFromParts(parts: bbqrParts);
         final psbt = await PartiallySignedTransaction.fromString(
