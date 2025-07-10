@@ -9,10 +9,8 @@ import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/ui/components/bottom_sheet/x.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,7 +44,6 @@ class _Screen extends StatelessWidget {
     final isSuperuser = context.select(
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
     );
-    bool isBottomSheetShown = false;
 
     return BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
       listener: (context, state) {
@@ -71,124 +68,6 @@ class _Screen extends StatelessWidget {
           } else {
             context.read<BackupSettingsCubit>().clearDownloadedData();
           }
-        }
-        if (state.derivedBackupKey != null && !isBottomSheetShown) {
-          isBottomSheetShown = true;
-          BlurredBottomSheet.show<void>(
-            context: context,
-            child: Container(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.8,
-              ),
-              decoration: BoxDecoration(
-                color: context.colour.onPrimary,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(32),
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 10,
-                    ),
-                    child: Column(
-                      children: [
-                        const Gap(20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Gap(24),
-                            BBText(
-                              'Backup Key',
-                              style: context.font.headlineMedium?.copyWith(
-                                color: context.colour.secondary,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                context
-                                    .read<BackupSettingsCubit>()
-                                    .clearDownloadedData();
-                                isBottomSheetShown = false;
-                              },
-                              child: Icon(
-                                Icons.close,
-                                color: context.colour.secondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Flexible(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: context.colour.secondary.withValues(
-                                  alpha: 0.1,
-                                ),
-                                border: Border.all(
-                                  color: context.colour.secondary.withValues(
-                                    alpha: 0.2,
-                                  ),
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: SelectableText(
-                                state.derivedBackupKey!,
-                                style: context.font.bodyMedium?.copyWith(
-                                  color: context.colour.secondary,
-                                  fontFamily: 'monospace',
-                                ),
-                              ),
-                            ),
-                            const Gap(32),
-                            SizedBox(
-                              width: double.infinity,
-                              child: BBButton.big(
-                                label: 'Copy to Clipboard',
-                                onPressed: () {
-                                  Clipboard.setData(
-                                    ClipboardData(
-                                      text: state.derivedBackupKey!,
-                                    ),
-                                  );
-                                  Navigator.of(context).pop();
-                                  context
-                                      .read<BackupSettingsCubit>()
-                                      .clearDownloadedData();
-                                  isBottomSheetShown = false;
-                                },
-                                bgColor: context.colour.secondary,
-                                textStyle: context.font.headlineLarge,
-                                textColor: context.colour.onPrimary,
-                              ),
-                            ),
-                            const Gap(30),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ).then((_) {
-            isBottomSheetShown = false;
-          });
         }
       },
       builder: (context, state) {
@@ -424,19 +303,11 @@ class _ViewVaultKeyButton extends StatelessWidget {
                       context,
                     );
                     if (confirmed == true) {
-                      try {
-                        if (!context.mounted) return;
-                        final cubit = context.read<BackupSettingsCubit>();
-                        final filePath = await cubit.selectBackupFile();
-                        if (filePath != null) {
-                          final fileContent = await cubit.readBackupFile(
-                            filePath,
-                          );
-                          await cubit.viewVaultKey(fileContent);
-                        }
-                      } catch (e) {
-                        log.severe('Failed to view backup key: $e');
-                      }
+                      if (!context.mounted) return;
+                      // Navigate to provider selection screen
+                      await context.pushNamed(
+                        BackupSettingsSubroute.chooseVaultProvider.name,
+                      );
                     }
                   },
           bgColor: Colors.transparent,

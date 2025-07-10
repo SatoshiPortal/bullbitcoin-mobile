@@ -183,6 +183,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     emit(
       state.copyWith(
         downloadedBackupFile: null,
+        selectedBackupFile: null,
         derivedBackupKey: null,
         error: null,
       ),
@@ -195,5 +196,60 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
   Future<String> readBackupFile(String filePath) async {
     return await _fetchBackupFromFileSystemUsecase.execute(filePath);
+  }
+
+  Future<void> selectGoogleDriveProvider() async {
+    try {
+      emit(state.copyWith(status: BackupSettingsStatus.loading, error: null));
+
+      // Connect to Google Drive silently first, fallback to normal signin
+      try {
+        await _connectToGoogleDriveSilentlyUsecase.execute();
+      } catch (_) {
+        await _connectToGoogleDriveUsecase.execute();
+      }
+
+      // Fetch the latest backup file from Google Drive
+      final (content, fileName) =
+          await _fetchLatestGoogleDriveBackupUsecase.execute();
+
+      emit(
+        state.copyWith(
+          status: BackupSettingsStatus.success,
+          selectedBackupFile: content,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(status: BackupSettingsStatus.error, error: e.toString()),
+      );
+    }
+  }
+
+  Future<void> selectFileSystemProvider() async {
+    try {
+      emit(state.copyWith(status: BackupSettingsStatus.loading, error: null));
+
+      // Select backup file from file system
+      final filePath = await _selectFileFromPathUsecase.execute();
+      if (filePath == null) {
+        emit(state.copyWith(status: BackupSettingsStatus.initial));
+        return;
+      }
+
+      // Read the backup file content
+      final content = await _fetchBackupFromFileSystemUsecase.execute(filePath);
+
+      emit(
+        state.copyWith(
+          status: BackupSettingsStatus.success,
+          selectedBackupFile: content,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(status: BackupSettingsStatus.error, error: e.toString()),
+      );
+    }
   }
 }

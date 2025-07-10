@@ -18,6 +18,7 @@ sealed class BackupSettingsState with _$BackupSettingsState {
     DateTime? lastEncryptedBackup,
     @Default(BackupSettingsStatus.initial) BackupSettingsStatus status,
     String? downloadedBackupFile,
+    String? selectedBackupFile,
     String? derivedBackupKey,
     Object? error,
   }) = _BackupSettingsState;
