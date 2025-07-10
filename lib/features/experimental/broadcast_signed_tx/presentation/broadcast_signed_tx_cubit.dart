@@ -1,33 +1,25 @@
 import 'package:bb_mobile/core/bbqr/bbqr_service.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/experimental/scan_signed_tx/scan_signed_tx_state.dart';
+import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScanSignedTxCubit extends Cubit<ScanSignedTxState> {
-  final BbqrService bbqrService;
-
+class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
 
-  ScanSignedTxCubit({
+  BroadcastSignedTxCubit({
     required BroadcastBitcoinTransactionUsecase
     broadcastBitcoinTransactionUsecase,
-  }) : bbqrService = BbqrService(),
-       _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
-       super(const ScanSignedTxState());
+  }) : _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
+       super(BroadcastSignedTxState(bbqr: BbqrService()));
 
-  Future<void> tryCollectTx(String payload) async {
+  Future<void> onScanned(String payload) async {
     try {
-      emit(state.copyWith(error: null));
+      emit(state.copyWith(error: null, transaction: null));
 
-      final tx = await bbqrService.scanTransaction(payload);
-
+      final tx = await state.bbqr.scanTransaction(payload);
       if (tx != null) emit(state.copyWith(transaction: tx));
-
-      if (bbqrService.parts.isNotEmpty) {
-        emit(state.copyWith(parts: Map.from(bbqrService.parts)));
-      }
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
