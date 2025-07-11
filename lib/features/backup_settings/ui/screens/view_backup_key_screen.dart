@@ -59,10 +59,13 @@ class _Screen extends StatelessWidget {
           body: SafeArea(
             child: Column(
               children: [
+                FadingLinearProgress(
+                  trigger: state.status == BackupSettingsStatus.viewingKey,
+                  backgroundColor: context.colour.surface,
+                  foregroundColor: context.colour.primary,
+                ),
                 const Spacer(),
 
-                if (state.status == BackupSettingsStatus.viewingKey)
-                  const FadingLinearProgress(trigger: true),
                 if (state.derivedBackupKey != null) ...[
                   Padding(
                     padding: const EdgeInsets.all(24),

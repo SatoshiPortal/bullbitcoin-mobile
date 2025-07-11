@@ -58,10 +58,6 @@ class _Screen extends StatelessWidget {
         }
         if (state.error != null) {
           log.severe('Provider selection failed: ${state.error}');
-          // Show error to user
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.error.toString())));
           context.read<BackupSettingsCubit>().clearDownloadedData();
         }
       },
