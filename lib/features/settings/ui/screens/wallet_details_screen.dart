@@ -54,7 +54,23 @@ class WalletDetailsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child:
-            wallet == null
+            isDeletingWallet
+                ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(),
+                      const Gap(16),
+                      BBText(
+                        'Deleting wallet...',
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                : wallet == null
                 ? const Center(child: Text('Wallet not found'))
                 : ListView(
                   padding: const EdgeInsets.symmetric(

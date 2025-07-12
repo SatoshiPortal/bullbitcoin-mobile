@@ -15,23 +15,12 @@ class WalletDeletionConfirmationAlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: context.colour.onPrimary,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      contentPadding: EdgeInsets.zero,
-      content: Text(
-        'Are you sure you want to delete this wallet?',
-        style: context.font.bodyLarge?.copyWith(
-          color: context.colour.secondary,
-        ),
-      ),
+      title: const Text('Delete Wallet'),
+      content: const Text('Are you sure you want to delete this wallet?'),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            'Cancel',
-            style: context.font.bodyMedium?.copyWith(
-              color: context.colour.secondary,
-            ),
-          ),
+          child: const Text('Cancel'),
         ),
         TextButton(
           onPressed: () {
@@ -39,30 +28,10 @@ class WalletDeletionConfirmationAlertDialog extends StatelessWidget {
             // Trigger wallet deletion logic
             context.read<WalletBloc>().add(WalletDeleted(walletId));
           },
-          child: Text(
-            'Delete',
-            style: context.font.bodyMedium?.copyWith(
-              color: context.colour.error,
-            ),
-          ),
+          child: const Text('Delete'),
         ),
       ],
-      actionsPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       actionsAlignment: MainAxisAlignment.spaceBetween,
-      buttonPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      titlePadding: const EdgeInsets.all(24),
-      title: Text(
-        'Delete Wallet',
-        style: context.font.headlineMedium?.copyWith(
-          color: context.colour.secondary,
-        ),
-      ),
-      titleTextStyle: context.font.headlineMedium?.copyWith(
-        color: context.colour.secondary,
-      ),
-      contentTextStyle: context.font.bodyLarge?.copyWith(
-        color: context.colour.secondary,
-      ),
     );
   }
 }

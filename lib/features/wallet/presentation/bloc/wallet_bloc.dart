@@ -291,7 +291,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     try {
       emit(state.copyWith(isDeletingWallet: true, walletDeletionError: null));
       await _deleteWalletUsecase.execute(walletId: event.walletId);
-      // Refresh the wallets after deletion
+      log.info('[WalletBloc] Wallet with id $walletId deleted successfully');
+      // Remove the wallet from the state to directly update the UI
+      // without needing to refresh the wallets again
+      emit(
+        state.copyWith(
+          wallets: state.wallets.where((w) => w.id != walletId).toList(),
+        ),
+      );
+
+      // Refresh the wallets to ensure everything is up to date
+      // and also trigger other things.
       add(const WalletRefreshed());
     } on WalletError catch (e) {
       emit(state.copyWith(walletDeletionError: e));
