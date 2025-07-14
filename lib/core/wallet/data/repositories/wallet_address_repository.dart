@@ -104,16 +104,64 @@ class WalletAddressRepository {
       descending: descending,
     );
 
-    // Check if no indexes are missing based on the fact that the indexes should
+    // TODO: Check if no indexes are missing based on the fact that the indexes should
     // be continuous and the first index in ascending order should be 0 and the
     // last index should be the maximum index and taking the limit and offset into account,
     //  else get them from the wallet.
     // If more than one address is missing, don't fetch them one by one,
-    // but fetch all that
+    // but fetch all that are missing in one go.
 
-    // Get the balance and number of transactions for each address.
+    final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
+    if (walletMetadata == null) {
+      throw WalletError.notFound(walletId);
+    }
 
-    return [];
+    final walletModel = WalletModel.fromMetadata(walletMetadata);
+    final addresses = await Future.wait(
+      addressHistory.map((addressModel) async {
+        // Get the balance and number of transactions for each address.
+        final (balanceSat, transactions) =
+            walletModel is PublicBdkWalletModel
+                ? await (
+                  _bdkWallet.getAddressBalanceSat(
+                    addressModel.address,
+                    wallet: walletModel,
+                  ),
+                  _bdkWallet.getTransactions(
+                    wallet: walletModel,
+                    toAddress: addressModel.address,
+                  ),
+                ).wait
+                : await (
+                  _lwkWallet.getAddressBalanceSat(
+                    addressModel.address,
+                    wallet: walletModel,
+                  ),
+                  _lwkWallet.getTransactions(
+                    wallet: walletModel,
+                    toAddress: addressModel.address,
+                  ),
+                ).wait;
+        if (addressModel.balanceSat != balanceSat.toInt() ||
+            addressModel.nrOfTransactions != transactions.length) {
+          // Update the address model with the latest balance and number of transactions.
+          addressModel = addressModel.copyWith(
+            balanceSat: balanceSat.toInt(),
+            nrOfTransactions: transactions.length,
+            updatedAt: DateTime.now(),
+          );
+          // Store the updated address model in the history.
+          await _walletAddressHistoryDatasource.store(addressModel);
+        }
+
+        // TODO: Get labels for the addresses
+        final labels = <String>[];
+
+        return WalletAddressMapper.toEntity(addressModel, labels: labels);
+      }),
+    );
+
+    return addresses;
   }
 
   Future<List<WalletAddress>> getUsedChangeAddresses(
@@ -121,8 +169,7 @@ class WalletAddressRepository {
     int? limit,
     int offset = 0,
     required bool descending,
-  }) {
-    // TODO: implement getUsedChangeAddresses
-    throw UnimplementedError();
+  }) async {
+    return [];
   }
 }
