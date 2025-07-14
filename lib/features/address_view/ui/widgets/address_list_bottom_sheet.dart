@@ -167,6 +167,8 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                 const Gap(16),
                 Expanded(
                   child: BBButton.big(
+                    disabled:
+                        true, // TODO: implement change address list functionality
                     label: 'Change',
                     bgColor: context.colour.secondary,
                     textColor: context.colour.onSecondary,
