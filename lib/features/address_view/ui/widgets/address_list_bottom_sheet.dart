@@ -98,7 +98,16 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                       ),
                     ),
                   );
-                } else if (addresses.isNotEmpty) {
+                } else if (addresses.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No addresses found',
+                      style: context.font.bodyMedium?.copyWith(
+                        color: context.colour.onSurface,
+                      ),
+                    ),
+                  );
+                } else {
                   return ListView.separated(
                     separatorBuilder: (context, index) => const Gap(16),
                     physics: const NeverScrollableScrollPhysics(),
@@ -136,8 +145,6 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                     },
                   );
                 }
-
-                return const SizedBox.shrink();
               },
             ),
             const Gap(24),

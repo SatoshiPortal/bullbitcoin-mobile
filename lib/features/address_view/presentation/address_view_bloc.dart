@@ -55,6 +55,8 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
         state.copyWith(
           receiveAddresses: receiveAddresses,
           changeAddresses: changeAddresses,
+          hasReachedEndOfReceiveAddresses: receiveAddresses.length < _limit,
+          hasReachedEndOfChangeAddresses: changeAddresses.length < _limit,
         ),
       );
     } on WalletError catch (error) {
@@ -86,6 +88,7 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
         state.copyWith(
           receiveAddresses: List.from(state.receiveAddresses)
             ..addAll(moreReceiveAddresses),
+          hasReachedEndOfReceiveAddresses: moreReceiveAddresses.length < _limit,
         ),
       );
     } on WalletError catch (error) {
@@ -118,6 +121,7 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
         state.copyWith(
           changeAddresses: List.from(state.changeAddresses)
             ..addAll(moreChangeAddresses),
+          hasReachedEndOfChangeAddresses: moreChangeAddresses.length < _limit,
         ),
       );
     } on WalletError catch (error) {

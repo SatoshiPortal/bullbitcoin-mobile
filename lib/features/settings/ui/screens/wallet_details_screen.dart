@@ -129,7 +129,7 @@ class WalletDetailsScreen extends StatelessWidget {
                               create:
                                   (_) => locator<AddressViewBloc>(
                                     param1: wallet!.id,
-                                    param2: 20,
+                                    param2: 10,
                                   ),
                               child: const AddressListBottomSheet(),
                             );

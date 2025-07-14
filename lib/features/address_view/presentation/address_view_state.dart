@@ -6,12 +6,9 @@ sealed class AddressViewState with _$AddressViewState {
     @Default([]) List<WalletAddress> receiveAddresses,
     @Default([]) List<WalletAddress> changeAddresses,
     @Default(false) bool isLoading,
+    @Default(false) bool hasReachedEndOfReceiveAddresses,
+    @Default(false) bool hasReachedEndOfChangeAddresses,
     WalletError? error,
   }) = _AddressViewState;
   const AddressViewState._();
-
-  bool get hasReachedEndOfReceiveAddresses =>
-      receiveAddresses.isNotEmpty && receiveAddresses.last.index == 0;
-  bool get hasReachedEndOfChangeAddresses =>
-      changeAddresses.isNotEmpty && changeAddresses.last.index == 0;
 }
