@@ -8,13 +8,31 @@ class WalletAddressHistoryDatasource {
 
   WalletAddressHistoryDatasource({required SqliteDatabase db}) : _db = db;
 
-  Future<void> store(WalletAddressModel walletAddress) async {
+  Future<void> create(WalletAddressModel walletAddress) async {
     final addressHistoryRow = WalletAddressMapper.toSqliteCompanion(
       walletAddress,
     );
-    await _db
-        .into(_db.walletAddressHistory)
-        .insertOnConflictUpdate(addressHistoryRow);
+    await _db.into(_db.walletAddressHistory).insert(addressHistoryRow);
+  }
+
+  Future<void> update(WalletAddressModel walletAddress) async {
+    final addressHistoryRow = WalletAddressMapper.toSqliteCompanion(
+      walletAddress,
+    );
+
+    final updatedRows = await (_db.update(_db.walletAddressHistory)..where(
+      (t) =>
+          t.walletId.equals(walletAddress.walletId) &
+          t.index.equals(walletAddress.index) &
+          t.isChange.equals(walletAddress.isChange),
+    )).write(addressHistoryRow);
+
+    if (updatedRows == 0) {
+      throw StateError(
+        'No address found for walletId: ${walletAddress.walletId}, '
+        'index: ${walletAddress.index}, isChange: ${walletAddress.isChange}',
+      );
+    }
   }
 
   Future<WalletAddressModel?> get(String address) async {

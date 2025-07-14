@@ -28,7 +28,6 @@ class GetAddressListUsecase {
           walletId,
           limit: limit,
           offset: offset ?? 0,
-          descending: true,
         );
       }
     } on WalletError {

@@ -83,7 +83,7 @@ class WalletAddressRepository {
 
     // Store the address in the wallet address history so we don't generate it again
     // and so we can track its usage.
-    await _walletAddressHistoryDatasource.store(walletAddressModel);
+    await _walletAddressHistoryDatasource.create(walletAddressModel);
 
     final walletAddress = WalletAddressMapper.toEntity(walletAddressModel);
 
@@ -94,34 +94,129 @@ class WalletAddressRepository {
     String walletId, {
     int? limit,
     int offset = 0,
-    bool descending = true,
   }) async {
-    // ignore: unused_local_variable
-    final addressHistory = await _walletAddressHistoryDatasource.getByWalletId(
-      walletId,
-      limit: limit,
-      offset: offset,
-      descending: descending,
-    );
+    // Fetch wallet metadata and history in parallel
+    final (walletMetadata, addressHistory) =
+        await (
+          _walletMetadataDatasource.fetch(walletId),
+          _walletAddressHistoryDatasource.getByWalletId(
+            walletId,
+            limit: limit,
+            offset: offset,
+            descending: true,
+          ),
+        ).wait;
 
-    // TODO: Check if no indexes are missing based on the fact that the indexes should
-    // be continuous and the first index in ascending order should be 0 and the
-    // last index should be the maximum index and taking the limit and offset into account,
-    //  else get them from the wallet.
-    // If more than one address is missing, don't fetch them one by one,
-    // but fetch all that are missing in one go.
-
-    final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
     if (walletMetadata == null) {
       throw WalletError.notFound(walletId);
     }
 
     final walletModel = WalletModel.fromMetadata(walletMetadata);
-    final addresses = await Future.wait(
+    final isBdkWallet = walletModel is PublicBdkWalletModel;
+
+    if (addressHistory.isEmpty) {
+      return [];
+    }
+
+    // Fill any gaps in the address history
+    final completeHistory = await _fillAddressGaps(
+      addressHistory: addressHistory,
+      walletModel: walletModel,
+      walletId: walletId,
+      isBdkWallet: isBdkWallet,
+    );
+
+    // Sort and limit the addresses as requested
+    completeHistory.sort((a, b) => b.index.compareTo(a.index));
+    final trimmedHistory =
+        limit != null && completeHistory.length > limit
+            ? completeHistory.sublist(0, limit)
+            : completeHistory;
+
+    // Enrich addresses with balance and transaction data in parallel
+    return _enrichAddresses(
+      addressHistory: trimmedHistory,
+      walletModel: walletModel,
+      isBdkWallet: isBdkWallet,
+    );
+  }
+
+  Future<List<WalletAddressModel>> _fillAddressGaps({
+    required List<WalletAddressModel> addressHistory,
+    required WalletModel walletModel,
+    required String walletId,
+    required bool isBdkWallet,
+  }) async {
+    // Find all gaps in one pass (history is in descending order)
+    final gaps = <int>[];
+    for (int i = 1; i < addressHistory.length; i++) {
+      final previousIndex = addressHistory[i - 1].index;
+      final currentIndex = addressHistory[i].index;
+
+      // Check for gaps between consecutive addresses
+      for (int j = currentIndex + 1; j < previousIndex; j++) {
+        gaps.add(j);
+      }
+    }
+
+    if (gaps.isEmpty) return addressHistory;
+
+    // Generate all missing addresses in parallel
+    final missingAddresses = await Future.wait(
+      gaps.map(
+        (index) => _generateAddressModel(
+          index: index,
+          walletModel: walletModel,
+          walletId: walletId,
+          isBdkWallet: isBdkWallet,
+        ),
+      ),
+    );
+
+    // Store all missing addresses
+    await Future.wait(
+      missingAddresses.map(
+        (model) => _walletAddressHistoryDatasource.create(model),
+      ),
+    );
+
+    // Return a new list with all addresses combined
+    return [...addressHistory, ...missingAddresses];
+  }
+
+  Future<WalletAddressModel> _generateAddressModel({
+    required int index,
+    required WalletModel walletModel,
+    required String walletId,
+    required bool isBdkWallet,
+  }) async {
+    final address =
+        isBdkWallet
+            ? await _bdkWallet.getAddressByIndex(index, wallet: walletModel)
+            : (await _lwkWallet.getAddressByIndex(
+              index,
+              wallet: walletModel,
+            )).confidential;
+
+    return WalletAddressModel(
+      walletId: walletId,
+      index: index,
+      address: address,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+  }
+
+  Future<List<WalletAddress>> _enrichAddresses({
+    required List<WalletAddressModel> addressHistory,
+    required WalletModel walletModel,
+    required bool isBdkWallet,
+  }) async {
+    final enrichedAddresses = await Future.wait(
       addressHistory.map((addressModel) async {
-        // Get the balance and number of transactions for each address.
+        // Fetch balance and transactions in parallel
         final (balanceSat, transactions) =
-            walletModel is PublicBdkWalletModel
+            isBdkWallet
                 ? await (
                   _bdkWallet.getAddressBalanceSat(
                     addressModel.address,
@@ -142,26 +237,25 @@ class WalletAddressRepository {
                     toAddress: addressModel.address,
                   ),
                 ).wait;
+
+        // Update if balance or transaction count changed
         if (addressModel.balanceSat != balanceSat.toInt() ||
             addressModel.nrOfTransactions != transactions.length) {
-          // Update the address model with the latest balance and number of transactions.
           addressModel = addressModel.copyWith(
             balanceSat: balanceSat.toInt(),
             nrOfTransactions: transactions.length,
             updatedAt: DateTime.now(),
           );
-          // Store the updated address model in the history.
-          await _walletAddressHistoryDatasource.store(addressModel);
+          // It is important to use `update` instead of `create` here,
+          // as we are updating an existing address in the history.
+          await _walletAddressHistoryDatasource.update(addressModel);
         }
 
         // TODO: Get labels for the addresses
-        final labels = <String>[];
-
-        return WalletAddressMapper.toEntity(addressModel, labels: labels);
+        return WalletAddressMapper.toEntity(addressModel, labels: <String>[]);
       }),
     );
-
-    return addresses;
+    return enrichedAddresses;
   }
 
   Future<List<WalletAddress>> getUsedChangeAddresses(
