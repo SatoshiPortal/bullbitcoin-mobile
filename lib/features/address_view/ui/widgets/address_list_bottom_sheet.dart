@@ -28,8 +28,8 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
 
   void _onScroll() {
     final bloc = context.read<AddressViewBloc>();
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 300) {
+    final threshold = _scrollController.position.maxScrollExtent * 0.8;
+    if (_scrollController.position.pixels >= threshold) {
       if (showChangeAddresses) {
         bloc.add(const AddressViewEvent.loadMoreChangeAddresses());
       } else {
