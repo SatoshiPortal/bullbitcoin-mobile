@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -15,8 +15,8 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_rep
 import 'package:flutter/foundation.dart';
 
 class AutoSwapExecutionUsecase {
-  final SwapRepository _mainnetRepository;
-  final SwapRepository _testnetRepository;
+  final BoltzSwapRepository _mainnetRepository;
+  final BoltzSwapRepository _testnetRepository;
   final WalletRepository _walletRepository;
   final LiquidWalletRepository _liquidWalletRepository;
   final LiquidBlockchainRepository _liquidBlockchainRepository;
@@ -25,8 +25,8 @@ class AutoSwapExecutionUsecase {
   final LabelRepository _labelRepository;
 
   AutoSwapExecutionUsecase({
-    required SwapRepository mainnetRepository,
-    required SwapRepository testnetRepository,
+    required BoltzSwapRepository mainnetRepository,
+    required BoltzSwapRepository testnetRepository,
     required WalletRepository walletRepository,
     required LiquidWalletRepository liquidWalletRepository,
     required LiquidBlockchainRepository liquidBlockchainRepository,

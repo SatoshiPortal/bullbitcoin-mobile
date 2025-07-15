@@ -1,13 +1,13 @@
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class UpdatePaidSendSwapUsecase {
-  final SwapRepository _swapRepository;
-  final SwapRepository _swapRepositoryTestnet;
+  final BoltzSwapRepository _swapRepository;
+  final BoltzSwapRepository _swapRepositoryTestnet;
 
   UpdatePaidSendSwapUsecase({
-    required SwapRepository swapRepository,
-    required SwapRepository swapRepositoryTestnet,
+    required BoltzSwapRepository swapRepository,
+    required BoltzSwapRepository swapRepositoryTestnet,
   }) : _swapRepository = swapRepository,
        _swapRepositoryTestnet = swapRepositoryTestnet;
 

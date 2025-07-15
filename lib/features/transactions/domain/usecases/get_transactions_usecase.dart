@@ -3,16 +3,16 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 
 class GetTransactionsUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final SwapRepository _mainnetSwapRepository;
-  final SwapRepository _testnetSwapRepository;
+  final BoltzSwapRepository _mainnetBoltzSwapRepository;
+  final BoltzSwapRepository _testnetBoltzSwapRepository;
   final PayjoinRepository _payjoinRepository;
   final ExchangeOrderRepository _mainnetOrderRepository;
   final ExchangeOrderRepository _testnetOrderRepository;
@@ -20,15 +20,15 @@ class GetTransactionsUsecase {
   GetTransactionsUsecase({
     required SettingsRepository settingsRepository,
     required WalletTransactionRepository walletTransactionRepository,
-    required SwapRepository mainnetSwapRepository,
-    required SwapRepository testnetSwapRepository,
+    required BoltzSwapRepository mainnetBoltzSwapRepository,
+    required BoltzSwapRepository testnetBoltzSwapRepository,
     required PayjoinRepository payjoinRepository,
     required ExchangeOrderRepository mainnetOrderRepository,
     required ExchangeOrderRepository testnetOrderRepository,
   }) : _settingsRepository = settingsRepository,
        _walletTransactionRepository = walletTransactionRepository,
-       _mainnetSwapRepository = mainnetSwapRepository,
-       _testnetSwapRepository = testnetSwapRepository,
+       _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
+       _testnetBoltzSwapRepository = testnetBoltzSwapRepository,
        _payjoinRepository = payjoinRepository,
        _mainnetOrderRepository = mainnetOrderRepository,
        _testnetOrderRepository = testnetOrderRepository;
@@ -42,8 +42,8 @@ class GetTransactionsUsecase {
       final environment = settings.environment;
       final swapRepository =
           environment.isTestnet
-              ? _testnetSwapRepository
-              : _mainnetSwapRepository;
+              ? _testnetBoltzSwapRepository
+              : _mainnetBoltzSwapRepository;
       final orderRepository =
           environment.isTestnet
               ? _testnetOrderRepository

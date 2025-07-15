@@ -1,18 +1,18 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 
 class GetSwapsUsecase {
-  final SwapRepository _mainnetSwapRepository;
-  final SwapRepository _testnetSwapRepository;
+  final BoltzSwapRepository _mainnetBoltzSwapRepository;
+  final BoltzSwapRepository _testnetBoltzSwapRepository;
   final SettingsRepository _settingsRepository;
 
   GetSwapsUsecase({
-    required SwapRepository mainnetSwapRepository,
-    required SwapRepository testnetSwapRepository,
+    required BoltzSwapRepository mainnetBoltzSwapRepository,
+    required BoltzSwapRepository testnetBoltzSwapRepository,
     required SettingsRepository settingsRepository,
-  }) : _mainnetSwapRepository = mainnetSwapRepository,
-       _testnetSwapRepository = testnetSwapRepository,
+  }) : _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
+       _testnetBoltzSwapRepository = testnetBoltzSwapRepository,
        _settingsRepository = settingsRepository;
 
   Future<List<Swap>> execute({String? walletId}) async {
@@ -22,8 +22,12 @@ class GetSwapsUsecase {
 
       final swaps =
           isTestnet
-              ? await _testnetSwapRepository.getAllSwaps(walletId: walletId)
-              : await _mainnetSwapRepository.getAllSwaps(walletId: walletId);
+              ? await _testnetBoltzSwapRepository.getAllSwaps(
+                walletId: walletId,
+              )
+              : await _mainnetBoltzSwapRepository.getAllSwaps(
+                walletId: walletId,
+              );
       return swaps;
     } catch (e) {
       throw GetSwapsException('Failed to fetch swaps: $e');

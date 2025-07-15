@@ -1,25 +1,27 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 
 class GetUnconfirmedIncomingBalanceUsecase {
   final SettingsRepository _settingsRepository;
-  final SwapRepository _mainnetSwapRepository;
-  final SwapRepository _testnetSwapRepository;
+  final BoltzSwapRepository _mainnetBoltzSwapRepository;
+  final BoltzSwapRepository _testnetBoltzSwapRepository;
 
   GetUnconfirmedIncomingBalanceUsecase({
     required SettingsRepository settingsRepository,
-    required SwapRepository mainnetSwapRepository,
-    required SwapRepository testnetSwapRepository,
+    required BoltzSwapRepository mainnetBoltzSwapRepository,
+    required BoltzSwapRepository testnetBoltzSwapRepository,
   }) : _settingsRepository = settingsRepository,
-       _mainnetSwapRepository = mainnetSwapRepository,
-       _testnetSwapRepository = testnetSwapRepository;
+       _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
+       _testnetBoltzSwapRepository = testnetBoltzSwapRepository;
 
   Future<int> execute({required List<String> walletIds}) async {
     final settings = await _settingsRepository.fetch();
     final environment = settings.environment;
     final swapRepository =
-        environment.isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
+        environment.isTestnet
+            ? _testnetBoltzSwapRepository
+            : _mainnetBoltzSwapRepository;
 
     final allSwaps = await swapRepository.getAllSwaps();
 

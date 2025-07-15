@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_has_ongoing_swaps_usecase.dart';
@@ -50,12 +50,12 @@ class SettingsLocator {
     // Wallet-related usecases
     locator.registerFactory<CheckWalletHasOngoingSwapsUsecase>(
       () => CheckWalletHasOngoingSwapsUsecase(
-        mainnetSwapRepository: locator<SwapRepository>(
+        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         settingsRepository: locator<SettingsRepository>(),
-        testnetSwapRepository: locator<SwapRepository>(
+        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants
                   .boltzTestnetSwapRepositoryInstanceName,

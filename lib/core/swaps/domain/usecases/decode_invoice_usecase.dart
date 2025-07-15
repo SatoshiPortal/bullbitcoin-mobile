@@ -1,15 +1,15 @@
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 
 class DecodeInvoiceUsecase {
-  final SwapRepository _mainnetSwapRepository;
-  final SwapRepository _testnetSwapRepository;
+  final BoltzSwapRepository _mainnetBoltzSwapRepository;
+  final BoltzSwapRepository _testnetBoltzSwapRepository;
 
   DecodeInvoiceUsecase({
-    required SwapRepository mainnetSwapRepository,
-    required SwapRepository testnetSwapRepository,
-  }) : _mainnetSwapRepository = mainnetSwapRepository,
-       _testnetSwapRepository = testnetSwapRepository;
+    required BoltzSwapRepository mainnetBoltzSwapRepository,
+    required BoltzSwapRepository testnetBoltzSwapRepository,
+  }) : _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
+       _testnetBoltzSwapRepository = testnetBoltzSwapRepository;
 
   Future<Invoice> execute({
     required String invoice,
@@ -17,7 +17,7 @@ class DecodeInvoiceUsecase {
   }) async {
     try {
       final swapRepository =
-          isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
+          isTestnet ? _testnetBoltzSwapRepository : _mainnetBoltzSwapRepository;
 
       return await swapRepository.decodeInvoice(invoice: invoice);
     } catch (e) {

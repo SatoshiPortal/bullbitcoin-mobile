@@ -1,13 +1,13 @@
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 
 class GetAutoSwapSettingsUsecase {
-  final SwapRepository _mainnetRepository;
-  final SwapRepository _testnetRepository;
+  final BoltzSwapRepository _mainnetRepository;
+  final BoltzSwapRepository _testnetRepository;
 
   GetAutoSwapSettingsUsecase({
-    required SwapRepository mainnetRepository,
-    required SwapRepository testnetRepository,
+    required BoltzSwapRepository mainnetRepository,
+    required BoltzSwapRepository testnetRepository,
   }) : _mainnetRepository = mainnetRepository,
        _testnetRepository = testnetRepository;
 
