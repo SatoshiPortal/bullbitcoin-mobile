@@ -62,7 +62,10 @@ class GetTransactionsUsecase {
               environment: environment,
             ),
             orderRepository.getOrders(),
-            swapRepository.getAllSwaps(walletId: walletId),
+            swapRepository.getAllSwaps(
+              walletId: walletId,
+              isTestnet: environment.isTestnet,
+            ),
           ).wait;
 
       // Add related payjoins, swaps and orders to the broadcasted wallet transactions

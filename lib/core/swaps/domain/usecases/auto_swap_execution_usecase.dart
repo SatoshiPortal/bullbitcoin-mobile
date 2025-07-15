@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -45,15 +46,17 @@ class AutoSwapExecutionUsecase {
     required bool isTestnet,
     required bool feeBlock,
   }) async {
-    final repository = isTestnet ? _testnetRepository : _mainnetRepository;
-    final autoSwapSettings = await repository.getAutoSwapParams(
+    final swapRepository = isTestnet ? _testnetRepository : _mainnetRepository;
+    final autoSwapSettings = await swapRepository.getAutoSwapParams(
       isTestnet: isTestnet,
     );
     if (!autoSwapSettings.enabled) {
       throw AutoSwapDisabledException('Auto swap is disabled');
     }
-
-    final wallets = await _walletRepository.getWallets();
+    final environment = isTestnet ? Environment.testnet : Environment.mainnet;
+    final wallets = await _walletRepository.getWallets(
+      environment: environment,
+    );
 
     final defaultLiquidWallet =
         wallets.where((w) => w.isDefault && w.isLiquid).firstOrNull;
@@ -79,7 +82,7 @@ class AutoSwapExecutionUsecase {
     }
 
     debugPrint('Balance threshold exceeded, checking swap limits...');
-    final (swapLimits, swapFees) = await repository.getSwapLimitsAndFees(
+    final (swapLimits, swapFees) = await swapRepository.getSwapLimitsAndFees(
       SwapType.liquidToBitcoin,
     );
 
@@ -121,7 +124,7 @@ class AutoSwapExecutionUsecase {
     debugPrint(
       'Creating swap with amount: ${autoSwapSettings.swapAmount(walletBalance)} sats',
     );
-    final swap = await repository.createLiquidToBitcoinSwap(
+    final swap = await swapRepository.createLiquidToBitcoinSwap(
       sendWalletMnemonic: liquidWalletMnemonic.mnemonicWords.join(' '),
       sendWalletId: defaultLiquidWallet.id,
       amountSat: autoSwapSettings.swapAmount(walletBalance),
@@ -151,13 +154,13 @@ class AutoSwapExecutionUsecase {
       isTestnet: defaultLiquidWallet.isTestnet,
     );
 
-    await repository.updatePaidSendSwap(
+    await swapRepository.updatePaidSendSwap(
       swapId: swap.id,
       txid: txid,
       absoluteFees: 0,
     );
     // Reset blockTillNextExecution after successful swap
-    await repository.updateAutoSwapParams(
+    await swapRepository.updateAutoSwapParams(
       autoSwapSettings.copyWith(blockTillNextExecution: false),
       isTestnet: isTestnet,
     );

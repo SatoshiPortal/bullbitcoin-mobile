@@ -23,7 +23,9 @@ class CheckWalletHasOngoingSwapsUsecase {
 
       final swapRepository =
           isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
-      final ongoingSwaps = await swapRepository.getOngoingSwaps();
+      final ongoingSwaps = await swapRepository.getOngoingSwaps(
+        isTestnet: isTestnet,
+      );
 
       // Check if any ongoing swap is associated with this wallet
       final hasOngoingSwaps = ongoingSwaps.any((swap) {

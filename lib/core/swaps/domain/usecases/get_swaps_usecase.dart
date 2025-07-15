@@ -22,8 +22,14 @@ class GetSwapsUsecase {
 
       final swaps =
           isTestnet
-              ? await _testnetSwapRepository.getAllSwaps(walletId: walletId)
-              : await _mainnetSwapRepository.getAllSwaps(walletId: walletId);
+              ? await _testnetSwapRepository.getAllSwaps(
+                walletId: walletId,
+                isTestnet: true,
+              )
+              : await _mainnetSwapRepository.getAllSwaps(
+                walletId: walletId,
+                isTestnet: false,
+              );
       return swaps;
     } catch (e) {
       throw GetSwapsException('Failed to fetch swaps: $e');

@@ -21,7 +21,9 @@ class GetUnconfirmedIncomingBalanceUsecase {
     final swapRepository =
         environment.isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
 
-    final allSwaps = await swapRepository.getAllSwaps();
+    final allSwaps = await swapRepository.getAllSwaps(
+      isTestnet: environment.isTestnet,
+    );
 
     final filtered = allSwaps.where(
       (s) =>
