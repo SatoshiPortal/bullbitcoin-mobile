@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/experimental/psbt_flow/show_bbqr/show_bbqr_wi
 import 'package:bb_mobile/features/experimental/psbt_flow/show_psbt/show_psbt_cubit.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/show_psbt/show_psbt_state.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
+import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,10 +29,10 @@ class _ShowPsbtView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.surface,
       appBar: AppBar(
-        title: const Text('PSBT'),
-        backgroundColor: context.colour.surface,
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(title: 'PSBT', onBack: () => context.pop()),
       ),
       body: BlocBuilder<ShowPsbtCubit, ShowPsbtState>(
         builder: (context, state) {
@@ -53,8 +54,12 @@ class _ShowPsbtView extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(child: ShowBbqrWidget(parts: state.bbqrParts)),
+                SizedBox(
+                  height: 500,
+                  child: ShowBbqrWidget(parts: state.bbqrParts),
+                ),
                 BBButton.big(
                   label: 'Next',
                   bgColor: context.colour.secondary,
