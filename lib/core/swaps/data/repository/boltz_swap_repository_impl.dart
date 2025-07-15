@@ -591,11 +591,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<LnSendSwap?> getSendSwapByInvoice({
-    required String invoice,
-    bool? isTestnet,
-  }) async {
-    final allSwaps = await _boltz.storage.fetchAll(isTestnet: isTestnet);
+  Future<LnSendSwap?> getSendSwapByInvoice({required String invoice}) async {
+    final allSwaps = await _boltz.storage.fetchAll();
     for (final swapModel in allSwaps) {
       final swap = swapModel.toEntity();
       if (swap.type == SwapType.lightningToBitcoin ||
