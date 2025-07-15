@@ -10,8 +10,13 @@ import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDatasource _boltz;
+  final bool _isTestnet;
 
-  BoltzSwapRepositoryImpl({required BoltzDatasource boltz}) : _boltz = boltz;
+  BoltzSwapRepositoryImpl({
+    required BoltzDatasource boltz,
+    required bool isTestnet,
+  }) : _boltz = boltz,
+       _isTestnet = isTestnet;
 
   @override
   Stream<Swap> get swapUpdatesStream =>
@@ -23,7 +28,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String mnemonic,
     required String walletId,
     required int amountSat,
-    required bool isTestnet,
     required String electrumUrl,
     required String claimAddress,
     String? description,
@@ -34,7 +38,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       mnemonic: mnemonic,
       index: index,
       outAmount: amountSat,
-      isTestnet: isTestnet,
+      isTestnet: _isTestnet,
       electrumUrl: electrumUrl,
       magicRouteHintAddress: claimAddress,
       description: description,
@@ -69,7 +73,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String mnemonic,
     required String walletId,
     required int amountSat,
-    required bool isTestnet,
     required String electrumUrl,
     required String claimAddress,
     String? description,
@@ -80,7 +83,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       mnemonic: mnemonic,
       index: index,
       outAmount: amountSat,
-      isTestnet: isTestnet,
+      isTestnet: _isTestnet,
       electrumUrl: electrumUrl,
       magicRouteHintAddress: claimAddress,
       description: description,
@@ -116,7 +119,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String mnemonic,
     required String walletId,
     required String invoice,
-    required bool isTestnet,
     required String electrumUrl,
   }) async {
     final index = await _nextSubKeyIndex(walletId);
@@ -125,7 +127,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       mnemonic: mnemonic,
       index: index,
       invoice: invoice,
-      isTestnet: isTestnet,
+      isTestnet: _isTestnet,
       electrumUrl: electrumUrl,
     );
 
@@ -166,7 +168,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String mnemonic,
     required String walletId,
     required String invoice,
-    required bool isTestnet,
     required String electrumUrl,
   }) async {
     final index = await _nextSubKeyIndex(walletId);
@@ -175,7 +176,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       mnemonic: mnemonic,
       index: index,
       invoice: invoice,
-      isTestnet: isTestnet,
+      isTestnet: _isTestnet,
       electrumUrl: electrumUrl,
     );
 
@@ -215,7 +216,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String sendWalletMnemonic,
     required String sendWalletId,
     required int amountSat,
-    required bool isTestnet,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
     String? receiveWalletId,
@@ -227,7 +227,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       mnemonic: sendWalletMnemonic,
       index: index,
       amountSat: amountSat,
-      isTestnet: isTestnet,
+      isTestnet: _isTestnet,
       btcElectrumUrl: btcElectrumUrl,
       lbtcElectrumUrl: lbtcElectrumUrl,
       receiveWalletId: receiveWalletId,
@@ -242,7 +242,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String sendWalletMnemonic,
     required String sendWalletId,
     required int amountSat,
-    required bool isTestnet,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
     String? receiveWalletId,
@@ -254,7 +253,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       mnemonic: sendWalletMnemonic,
       index: index,
       amountSat: amountSat,
-      isTestnet: isTestnet,
+      isTestnet: _isTestnet,
       btcElectrumUrl: btcElectrumUrl,
       lbtcElectrumUrl: lbtcElectrumUrl,
       receiveWalletId: receiveWalletId,
@@ -507,8 +506,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<List<Swap>> getOngoingSwaps({bool? isTestnet}) async {
-    final allSwapModels = await _boltz.storage.fetchAll(isTestnet: isTestnet);
+  Future<List<Swap>> getOngoingSwaps() async {
+    final allSwapModels = await _boltz.storage.fetchAll(isTestnet: _isTestnet);
 
     final allSwaps =
         allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
@@ -529,10 +528,10 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<List<Swap>> getAllSwaps({String? walletId, bool? isTestnet}) async {
+  Future<List<Swap>> getAllSwaps({String? walletId}) async {
     final allSwapModels = await _boltz.storage.fetchAll(
       walletId: walletId,
-      isTestnet: isTestnet,
+      isTestnet: _isTestnet,
     );
     final allSwaps =
         allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
@@ -720,21 +719,18 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<AutoSwap> getAutoSwapParams({required bool isTestnet}) async {
+  Future<AutoSwap> getAutoSwapParams() async {
     final model =
-        isTestnet
+        _isTestnet
             ? await _boltz.storage.getAutoSwapSettingsTestnet()
             : await _boltz.storage.getAutoSwapSettings();
     return model.toEntity();
   }
 
   @override
-  Future<void> updateAutoSwapParams(
-    AutoSwap params, {
-    required bool isTestnet,
-  }) async {
+  Future<void> updateAutoSwapParams(AutoSwap params) async {
     final model = AutoSwapModel.fromEntity(params);
-    if (isTestnet) {
+    if (_isTestnet) {
       await _boltz.storage.storeAutoSwapSettingsTestnet(model);
     } else {
       await _boltz.storage.storeAutoSwapSettings(model);

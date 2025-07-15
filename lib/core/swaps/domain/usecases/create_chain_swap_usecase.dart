@@ -75,7 +75,6 @@ class CreateChainSwapUsecase {
             sendWalletId: bitcoinWalletId,
             receiveWalletId: liquidWalletId,
             amountSat: amountSat!,
-            isTestnet: isTestnet,
             btcElectrumUrl: btcElectrumUrl,
             lbtcElectrumUrl: lbtcElectrumUrl,
           );
@@ -85,7 +84,6 @@ class CreateChainSwapUsecase {
             sendWalletId: liquidWalletId,
             receiveWalletId: bitcoinWalletId,
             amountSat: amountSat!,
-            isTestnet: isTestnet,
             btcElectrumUrl: btcElectrumUrl,
             lbtcElectrumUrl: lbtcElectrumUrl,
           );
@@ -93,7 +91,7 @@ class CreateChainSwapUsecase {
           throw Exception('Swap Type provided is not a chain swap!');
       }
     } catch (e) {
-      throw e.toString();
+      throw Exception('Failed to create chain swap: $e');
     }
   }
 }

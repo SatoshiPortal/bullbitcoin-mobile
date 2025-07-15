@@ -96,7 +96,6 @@ class CreateReceiveSwapUsecase {
           return await swapRepository.createLightningToBitcoinSwap(
             walletId: walletId,
             amountSat: amountSat,
-            isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic,
             electrumUrl: btcElectrumUrl,
             claimAddress: claimAddress.address,
@@ -107,7 +106,6 @@ class CreateReceiveSwapUsecase {
           return await swapRepository.createLightningToLiquidSwap(
             walletId: walletId,
             amountSat: amountSat,
-            isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic,
             electrumUrl: lbtcElectrumUrl,
             claimAddress: claimAddress.address,

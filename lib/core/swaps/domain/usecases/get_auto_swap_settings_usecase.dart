@@ -13,6 +13,6 @@ class GetAutoSwapSettingsUsecase {
 
   Future<AutoSwap> execute({required bool isTestnet}) async {
     final repository = isTestnet ? _testnetRepository : _mainnetRepository;
-    return await repository.getAutoSwapParams(isTestnet: isTestnet);
+    return await repository.getAutoSwapParams();
   }
 }

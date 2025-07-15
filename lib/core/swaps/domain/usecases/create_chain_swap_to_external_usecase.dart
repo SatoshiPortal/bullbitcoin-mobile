@@ -63,7 +63,6 @@ class CreateChainSwapToExternalUsecase {
             sendWalletMnemonic: sendWalletMnemonic.mnemonicWords.join(' '),
             sendWalletId: sendWalletId,
             amountSat: amountSat,
-            isTestnet: isTestnet,
             btcElectrumUrl: btcElectrumUrl,
             lbtcElectrumUrl: lbtcElectrumUrl,
             externalRecipientAddress: receiveAddress,
@@ -78,7 +77,6 @@ class CreateChainSwapToExternalUsecase {
             sendWalletMnemonic: sendWalletMnemonic.mnemonicWords.join(' '),
             sendWalletId: sendWalletId,
             amountSat: amountSat,
-            isTestnet: isTestnet,
             btcElectrumUrl: btcElectrumUrl,
             lbtcElectrumUrl: lbtcElectrumUrl,
             externalRecipientAddress: receiveAddress,
@@ -89,7 +87,7 @@ class CreateChainSwapToExternalUsecase {
           );
       }
     } catch (e) {
-      throw e.toString();
+      throw Exception('Failed to create chain swap to external: $e');
     }
   }
 }

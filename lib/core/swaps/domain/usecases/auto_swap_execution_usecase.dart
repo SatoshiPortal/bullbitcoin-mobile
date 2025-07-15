@@ -47,9 +47,7 @@ class AutoSwapExecutionUsecase {
     required bool feeBlock,
   }) async {
     final swapRepository = isTestnet ? _testnetRepository : _mainnetRepository;
-    final autoSwapSettings = await swapRepository.getAutoSwapParams(
-      isTestnet: isTestnet,
-    );
+    final autoSwapSettings = await swapRepository.getAutoSwapParams();
     if (!autoSwapSettings.enabled) {
       throw AutoSwapDisabledException('Auto swap is disabled');
     }
@@ -128,7 +126,6 @@ class AutoSwapExecutionUsecase {
       sendWalletMnemonic: liquidWalletMnemonic.mnemonicWords.join(' '),
       sendWalletId: defaultLiquidWallet.id,
       amountSat: autoSwapSettings.swapAmount(walletBalance),
-      isTestnet: defaultLiquidWallet.isTestnet,
       btcElectrumUrl: btcElectrumUrl,
       lbtcElectrumUrl: lbtcElectrumUrl,
       receiveWalletId: defaultBitcoinWallet.id,
@@ -162,7 +159,6 @@ class AutoSwapExecutionUsecase {
     // Reset blockTillNextExecution after successful swap
     await swapRepository.updateAutoSwapParams(
       autoSwapSettings.copyWith(blockTillNextExecution: false),
-      isTestnet: isTestnet,
     );
     debugPrint('Swap executed successfully!');
 

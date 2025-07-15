@@ -50,6 +50,7 @@ class SwapsLocator {
           url: ApiServiceConstants.boltzTestnetUrlPath,
           boltzStore: locator<BoltzStorageDatasource>(),
         ),
+        isTestnet: true,
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
@@ -58,6 +59,7 @@ class SwapsLocator {
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
         boltz: BoltzDatasource(boltzStore: locator<BoltzStorageDatasource>()),
+        isTestnet: false,
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,

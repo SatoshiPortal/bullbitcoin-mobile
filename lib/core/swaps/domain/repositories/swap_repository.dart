@@ -11,7 +11,6 @@ abstract class SwapRepository {
     required String mnemonic,
     required String walletId,
     required int amountSat,
-    required bool isTestnet,
     required String electrumUrl,
     required String claimAddress,
     String? description,
@@ -28,7 +27,6 @@ abstract class SwapRepository {
     required String mnemonic,
     required String walletId,
     required int amountSat,
-    required bool isTestnet,
     required String electrumUrl,
     required String claimAddress,
     String? description,
@@ -45,7 +43,6 @@ abstract class SwapRepository {
     required String mnemonic,
     required String walletId,
     required String invoice,
-    required bool isTestnet,
     required String electrumUrl,
   });
   Future<void> coopSignBitcoinToLightningSwap({required String swapId});
@@ -59,7 +56,6 @@ abstract class SwapRepository {
     required String mnemonic,
     required String walletId,
     required String invoice,
-    required bool isTestnet,
     required String electrumUrl,
   });
   Future<void> coopSignLiquidToLightningSwap({required String swapId});
@@ -74,7 +70,6 @@ abstract class SwapRepository {
     required String sendWalletMnemonic,
     required String sendWalletId,
     required int amountSat,
-    required bool isTestnet,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
     String? receiveWalletId,
@@ -85,7 +80,6 @@ abstract class SwapRepository {
     required String sendWalletMnemonic,
     required String sendWalletId,
     required int amountSat,
-    required bool isTestnet,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
     String? receiveWalletId,
@@ -140,8 +134,8 @@ abstract class SwapRepository {
   // SWAP STORAGE UTILITY
   Future<Swap> getSwap({required String swapId});
   Future<LnSendSwap?> getSendSwapByInvoice({required String invoice});
-  Future<List<Swap>> getOngoingSwaps({bool? isTestnet});
-  Future<List<Swap>> getAllSwaps({String? walletId, bool? isTestnet});
+  Future<List<Swap>> getOngoingSwaps();
+  Future<List<Swap>> getAllSwaps({String? walletId});
   Future<Swap?> getSwapByTxId(String txId);
 
   Future<void> updateSwap({required Swap swap});
@@ -158,6 +152,6 @@ abstract class SwapRepository {
   // Add a method to subscribe to swap updates
   Stream<Swap> get swapUpdatesStream;
 
-  Future<AutoSwap> getAutoSwapParams({required bool isTestnet});
-  Future<void> updateAutoSwapParams(AutoSwap params, {required bool isTestnet});
+  Future<AutoSwap> getAutoSwapParams();
+  Future<void> updateAutoSwapParams(AutoSwap params);
 }

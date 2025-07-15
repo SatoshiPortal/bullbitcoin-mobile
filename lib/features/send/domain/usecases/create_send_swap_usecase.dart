@@ -85,7 +85,6 @@ class CreateSendSwapUsecase {
           return await swapRepository.createBitcoinToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
-            isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: btcElectrumUrl,
           );
@@ -94,7 +93,6 @@ class CreateSendSwapUsecase {
           return await swapRepository.createLiquidToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
-            isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: lbtcElectrumUrl,
           );

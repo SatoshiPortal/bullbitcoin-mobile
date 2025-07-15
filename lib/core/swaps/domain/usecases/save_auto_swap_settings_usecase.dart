@@ -13,6 +13,6 @@ class SaveAutoSwapSettingsUsecase {
 
   Future<void> execute(AutoSwap params, {required bool isTestnet}) async {
     final repository = isTestnet ? _testnetRepository : _mainnetRepository;
-    await repository.updateAutoSwapParams(params, isTestnet: isTestnet);
+    await repository.updateAutoSwapParams(params);
   }
 }
