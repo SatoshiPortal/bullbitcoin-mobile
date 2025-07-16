@@ -109,17 +109,24 @@ class BoltzStorageDatasource {
     };
   }
 
-  Future<List<SwapModel>> fetchAll({String? walletId}) async {
+  Future<List<SwapModel>> fetchAll({String? walletId, bool? isTestnet}) async {
     final all =
-        await _localSwapStorage.managers.swaps
-            .filter(
-              (f) =>
-                  walletId == null
-                      ? const Constant(true) // No filtering
-                      : f.sendWalletId.equals(walletId) |
-                          f.receiveWalletId.equals(walletId),
-            )
-            .get();
+        await _localSwapStorage.managers.swaps.filter((f) {
+          Expression<bool> expr = const Constant(true);
+
+          if (walletId != null) {
+            expr =
+                expr &
+                (f.sendWalletId.equals(walletId) |
+                    f.receiveWalletId.equals(walletId));
+          }
+
+          if (isTestnet != null) {
+            expr = expr & f.isTestnet.equals(isTestnet);
+          }
+
+          return expr;
+        }).get();
     return all.map((e) => SwapModel.fromSqlite(e)).toList();
   }
 

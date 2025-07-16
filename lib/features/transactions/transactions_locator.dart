@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transa
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
@@ -29,11 +29,11 @@ class TransactionsLocator {
       () => GetTransactionsUsecase(
         settingsRepository: locator<SettingsRepository>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
-        mainnetSwapRepository: locator<SwapRepository>(
+        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        testnetSwapRepository: locator<SwapRepository>(
+        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants
                   .boltzTestnetSwapRepositoryInstanceName,
@@ -52,11 +52,11 @@ class TransactionsLocator {
       () => GetTransactionsByTxIdUsecase(
         settingsRepository: locator<SettingsRepository>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
-        mainnetSwapRepository: locator<SwapRepository>(
+        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        testnetSwapRepository: locator<SwapRepository>(
+        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants
                   .boltzTestnetSwapRepositoryInstanceName,

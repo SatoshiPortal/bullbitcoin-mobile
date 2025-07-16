@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 
 class SwapWatcherServiceImpl implements SwapWatcherService {
-  final BoltzSwapRepositoryImpl _boltzRepo;
+  final BoltzSwapRepository _boltzRepo;
   final WalletAddressRepository _walletAddressRepository;
   final FeesRepository _feesRepository;
   final SettingsRepository _settingsRepository;
@@ -21,7 +21,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   StreamSubscription<Swap>? _swapStreamSubscription;
 
   SwapWatcherServiceImpl({
-    required BoltzSwapRepositoryImpl boltzRepo,
+    required BoltzSwapRepository boltzRepo,
     required WalletAddressRepository walletAddressRepository,
     required FeesRepository feesRepository,
     required SettingsRepository settingsRepository,

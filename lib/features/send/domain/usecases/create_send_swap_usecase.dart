@@ -1,21 +1,21 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/lightning.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CreateSendSwapUsecase {
   final WalletRepository _walletRepository;
-  final SwapRepository _swapRepository;
-  final SwapRepository _swapRepositoryTestnet;
+  final BoltzSwapRepository _swapRepository;
+  final BoltzSwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
 
   CreateSendSwapUsecase({
     required WalletRepository walletRepository,
-    required SwapRepository swapRepository,
-    required SwapRepository swapRepositoryTestnet,
+    required BoltzSwapRepository swapRepository,
+    required BoltzSwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
@@ -85,7 +85,6 @@ class CreateSendSwapUsecase {
           return await swapRepository.createBitcoinToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
-            isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: btcElectrumUrl,
           );
@@ -94,7 +93,6 @@ class CreateSendSwapUsecase {
           return await swapRepository.createLiquidToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
-            isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: lbtcElectrumUrl,
           );
