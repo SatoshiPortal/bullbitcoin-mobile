@@ -50,8 +50,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   final FetchLatestGoogleDriveBackupUsecase
   _fetchLatestGoogleDriveBackupUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
-  final ConnectToGoogleDriveSilentlyUsecase
-  _connectToGoogleDriveSilentlyUsecase;
 
   Future<void> checkBackupStatus() async {
     try {
@@ -64,23 +62,26 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         emit(state.copyWith(status: BackupSettingsStatus.success));
         return;
       }
-
+      final isDefaultPhysicalBackupTested = defaultWallets.every(
+        (e) => e.isPhysicalBackupTested,
+      );
+      final isDefaultEncryptedBackupTested = defaultWallets.every(
+        (e) => e.isEncryptedVaultTested,
+      );
+      final lastPhysicalBackup =
+          defaultWallets
+              .firstWhere((e) => e.network == Network.bitcoinMainnet)
+              .latestPhysicalBackup;
+      final lastEncryptedBackup =
+          defaultWallets
+              .firstWhere((e) => e.network == Network.bitcoinMainnet)
+              .latestEncryptedBackup;
       emit(
         state.copyWith(
-          isDefaultPhysicalBackupTested: defaultWallets.every(
-            (e) => e.isPhysicalBackupTested,
-          ),
-          isDefaultEncryptedBackupTested: defaultWallets.every(
-            (e) => e.isEncryptedVaultTested,
-          ),
-          lastPhysicalBackup:
-              defaultWallets
-                  .firstWhere((e) => e.network == Network.bitcoinMainnet)
-                  .latestPhysicalBackup,
-          lastEncryptedBackup:
-              defaultWallets
-                  .firstWhere((e) => e.network == Network.bitcoinMainnet)
-                  .latestEncryptedBackup,
+          isDefaultPhysicalBackupTested: isDefaultPhysicalBackupTested,
+          isDefaultEncryptedBackupTested: isDefaultEncryptedBackupTested,
+          lastPhysicalBackup: lastPhysicalBackup,
+          lastEncryptedBackup: lastEncryptedBackup,
           status: BackupSettingsStatus.success,
           error: null,
         ),
