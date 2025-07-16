@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/buy/domain/buy_error.dart';
 
 class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   final BullbitcoinApiDatasource _bullbitcoinApiDatasource;
@@ -173,16 +173,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         isTestnet: _isTestnet,
       );
 
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
+      if (apiKeyModel == null || !apiKeyModel.isActive) {
+        throw const BuyError.unauthenticated();
       }
 
       final orderModel = await _bullbitcoinApiDatasource.createBuyOrder(
@@ -197,6 +189,14 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet) as BuyOrder;
 
       return order;
+    } on BullBitcoinApiMinAmountException catch (e) {
+      final minAmountBtc = e.minAmount;
+      final minAmountSat = minAmountBtc * 1e8; // Convert BTC
+      throw BuyError.belowMinAmount(minAmountSat: minAmountSat.toInt());
+    } on BullBitcoinApiMaxAmountException catch (e) {
+      final maxAmountBtc = e.maxAmount;
+      final maxAmountSat = maxAmountBtc * 1e8; // Convert BTC
+      throw BuyError.aboveMaxAmount(maxAmountSat: maxAmountSat.toInt());
     } catch (e) {
       throw Exception('Failed to place buy order: $e');
     }

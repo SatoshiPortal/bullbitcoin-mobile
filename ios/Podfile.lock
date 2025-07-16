@@ -243,15 +243,19 @@ SPEC CHECKSUMS:
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
   bdk_flutter: 86c9ba59ee282dee08c3a29599abe867d10a8b10
   bip85: f656a7e6b23afda4960efb11c87d51d68e8be3db
+  bdk_flutter: 86c9ba59ee282dee08c3a29599abe867d10a8b10
+  bip85: f656a7e6b23afda4960efb11c87d51d68e8be3db
   boltz: 6388ec2412f3753b63a9e65c97f87ea26f43bddc
+  camera_avfoundation: adb0207d868b2d873e895371d88448399ab78d87
+  dart_bbqr: 10143a83ef3919f9ac06974e3bbe23cac4abc39b
   camera_avfoundation: adb0207d868b2d873e895371d88448399ab78d87
   dart_bbqr: 10143a83ef3919f9ac06974e3bbe23cac4abc39b
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
+  file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_native_splash: df59bb2e1421aa0282cb2e95618af4dcb0c56c29
-  flutter_nfc_kit: 3985c93f749b9cb4747479205c2f10bd2f877a11
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   flutter_zxing: d527c3ff9c7f3606dd29a7ec8c4055f7daa088c5
   google_sign_in_ios: 7411fab6948df90490dc4620ecbcabdc3ca04017
@@ -261,7 +265,12 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   lwk: 22e06bc5664247d6b2dac91cfe209b63b70dd580
+  no_screenshot: 67d110f12466f4913b488803d4e498d03ef2889e
+  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   no_screenshot: 67d110f12466f4913b488803d4e498d03ef2889e
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
@@ -270,9 +279,13 @@ SPEC CHECKSUMS:
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
-  sqlite3: 83105acd294c9137c026e2da1931c30b4588ab81
-  sqlite3_flutter_libs: e645eaf549cf0e924ca4d4d17b1b7d60cd2d3a05
+  sqlite3: 3e82a2daae39ba3b41ae6ee84a130494585460fc
+  sqlite3_flutter_libs: 7bea6d85399aebaeb54e4f9845dcac6f5033cf22
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
+  tor: 662a9f5b980b5c86decb8ba611de9bcd4c8286eb
+  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
+  webview_cookie_manager: eaf920722b493bd0f7611b5484771ca53fed03f7
+  webview_flutter_wkwebview: a4af96a051138e28e29f60101d094683b9f82188
   tor: 662a9f5b980b5c86decb8ba611de9bcd4c8286eb
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   webview_cookie_manager: eaf920722b493bd0f7611b5484771ca53fed03f7

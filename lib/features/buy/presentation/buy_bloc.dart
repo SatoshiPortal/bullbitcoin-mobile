@@ -1,18 +1,19 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/accelerate_buy_order_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/create_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_new_receive_address_use_case.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/buy_error.dart';
+import 'package:bb_mobile/features/buy/domain/usecases/accelerate_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/usecases/confirm_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/usecases/create_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/usecases/refresh_buy_order_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -129,9 +130,6 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       emit(state.copyWith(selectedWallet: event.wallet));
     } catch (e) {
       log.severe('[BuyBloc] _onSelectedWalletChanged error: $e');
-      if (e is GetNewReceiveAddressException) {
-        emit(state.copyWith(getNewReceiveAddressException: e));
-      }
     }
   }
 
@@ -158,7 +156,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           isCreatingOrder: true,
           buyOrder: null,
           getNewReceiveAddressException: null,
-          createBuyOrderException: null,
+          createOrderBuyError: null,
         ),
       );
 
@@ -177,18 +175,18 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       final order = await _createBuyOrderUsecase.execute(
         toAddress: toAddress,
         orderAmount: FiatAmount(state.amount!),
-        currency: state.currency,
+        currency: state.currency!,
         isLiquid: state.selectedWallet?.network.isLiquid == true,
         isOwner: true,
       );
 
       emit(state.copyWith(buyOrder: order));
-    } catch (e) {
-      if (e is GetNewReceiveAddressException) {
-        emit(state.copyWith(getNewReceiveAddressException: e));
-      } else if (e is CreateBuyOrderException) {
-        emit(state.copyWith(createBuyOrderException: e));
-      }
+    } on BuyError catch (e) {
+      log.severe('[BuyBloc] _onCreateOrder error: $e');
+      emit(state.copyWith(createOrderBuyError: e));
+    } on GetNewReceiveAddressException catch (e) {
+      log.severe('[BuyBloc] _onCreateOrder GetNewReceiveAddressException: $e');
+      emit(state.copyWith(getNewReceiveAddressException: e));
     } finally {
       emit(state.copyWith(isCreatingOrder: false));
     }

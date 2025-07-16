@@ -62,6 +62,10 @@ class CurrencyText extends StatelessWidget {
       text = '** ${text.split(' ').last}';
     }
 
-    return BBText(text, style: style, color: color, textAlign: textAlign);
+    return Text(
+      text,
+      style: style?.copyWith(color: color),
+      textAlign: textAlign,
+    );
   }
 }

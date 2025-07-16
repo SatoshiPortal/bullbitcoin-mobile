@@ -129,7 +129,30 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-    if (resp.statusCode != 200) throw Exception('Failed to create order');
+    final statusCode = resp.statusCode;
+    final error = resp.data['error'];
+    if (statusCode != 200) throw Exception('Failed to create order');
+    if (error != null) {
+      final reason = error['data']['reason'];
+      final limitReason = reason['limit'];
+      if (limitReason != null) {
+        final isBelowLimit =
+            limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
+        final limitAmount = limitReason['amount'] as String;
+        final limitCurrency = limitReason['currencyCode'] as String;
+        if (isBelowLimit) {
+          throw BullBitcoinApiMinAmountException(
+            minAmount: double.parse(limitAmount),
+            currency: limitCurrency,
+          );
+        } else {
+          throw BullBitcoinApiMaxAmountException(
+            maxAmount: double.parse(limitAmount),
+            currency: limitCurrency,
+          );
+        }
+      }
+    }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 
@@ -258,4 +281,24 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       resp.data['result']['element']['element'] as Map<String, dynamic>,
     );
   }
+}
+
+class BullBitcoinApiMinAmountException implements Exception {
+  final double minAmount;
+  final String currency;
+
+  BullBitcoinApiMinAmountException({
+    required this.minAmount,
+    required this.currency,
+  });
+}
+
+class BullBitcoinApiMaxAmountException implements Exception {
+  final double maxAmount;
+  final String currency;
+
+  BullBitcoinApiMaxAmountException({
+    required this.maxAmount,
+    required this.currency,
+  });
 }
