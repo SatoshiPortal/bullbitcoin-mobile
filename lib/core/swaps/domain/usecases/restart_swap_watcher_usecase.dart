@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
+import 'package:bb_mobile/core/swaps/data/services/swap_watcher.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
 class RestartSwapWatcherUsecase {
