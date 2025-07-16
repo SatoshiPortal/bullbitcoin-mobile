@@ -4,13 +4,12 @@ import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 
-class SwapWatcherServiceImpl implements SwapWatcherService {
+class SwapWatcherService {
   final BoltzSwapRepository _boltzRepo;
   final WalletAddressRepository _walletAddressRepository;
   final FeesRepository _feesRepository;
@@ -20,7 +19,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       StreamController<Swap>.broadcast();
   StreamSubscription<Swap>? _swapStreamSubscription;
 
-  SwapWatcherServiceImpl({
+  SwapWatcherService({
     required BoltzSwapRepository boltzRepo,
     required WalletAddressRepository walletAddressRepository,
     required FeesRepository feesRepository,
@@ -31,7 +30,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
        _settingsRepository = settingsRepository {
     unawaited(startWatching());
   }
-  @override
+
   Stream<Swap> get swapStream => _swapStreamController.stream;
 
   Future<void> startWatching() async {
@@ -55,7 +54,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     log.info('Swap watcher started and listening');
   }
 
-  @override
   Future<void> restartWatcherWithOngoingSwaps() async {
     await _swapStreamSubscription?.cancel();
     final swaps = await _boltzRepo.getOngoingSwaps();
@@ -64,7 +62,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     await startWatching();
   }
 
-  @override
   Future<void> processSwap(Swap swap) async {
     try {
       switch (swap.status) {

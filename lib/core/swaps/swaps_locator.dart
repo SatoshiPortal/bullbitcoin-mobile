@@ -8,8 +8,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/data/services/swap_watcher_impl.dart';
-import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
+import 'package:bb_mobile/core/swaps/data/services/swap_watcher.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
@@ -68,7 +67,7 @@ class SwapsLocator {
 
   static void registerServices() {
     locator.registerLazySingleton<SwapWatcherService>(
-      () => SwapWatcherServiceImpl(
+      () => SwapWatcherService(
         boltzRepo: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
@@ -81,7 +80,7 @@ class SwapsLocator {
     );
 
     locator.registerLazySingleton<SwapWatcherService>(
-      () => SwapWatcherServiceImpl(
+      () => SwapWatcherService(
         boltzRepo: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants

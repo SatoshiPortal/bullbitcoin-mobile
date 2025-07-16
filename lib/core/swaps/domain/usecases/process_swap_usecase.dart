@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/swaps/data/services/swap_watcher.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
 
 class ProcessSwapUsecase {
   final SwapWatcherService _watcher;
