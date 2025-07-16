@@ -13,8 +13,6 @@ class GoogleDriveRepository {
 
   Future<void> disconnect() => _dataSource.disconnect();
 
-  Future<void> connectSilently() async => await _dataSource.connectSilently();
-
   Future<List<DriveFile>> fetchBackupFiles() async {
     final files = await _dataSource.fetchAll();
     return files

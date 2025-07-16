@@ -27,8 +27,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     required FetchLatestGoogleDriveBackupUsecase
     fetchLatestGoogleDriveBackupUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
-    required ConnectToGoogleDriveSilentlyUsecase
-    connectToGoogleDriveSilentlyUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _selectFolderPathUsecase = selectFolderPathUsecase,
        _saveToFileSystemUsecase = saveToFileSystemUsecase,
@@ -39,8 +37,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
        _fetchLatestGoogleDriveBackupUsecase =
            fetchLatestGoogleDriveBackupUsecase,
        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
-       _connectToGoogleDriveSilentlyUsecase =
-           connectToGoogleDriveSilentlyUsecase,
+
        super(BackupSettingsState());
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -96,12 +93,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   Future<void> exportVault() async {
     try {
       emit(state.copyWith(status: BackupSettingsStatus.exporting, error: null));
-      try {
-        await _connectToGoogleDriveSilentlyUsecase.execute();
-      } catch (_) {
         await _connectToGoogleDriveUsecase.execute();
-      }
-      final (content, fileName) =
+      final (content: content, fileName: fileName) =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
       final folderPath = await _selectFolderPathUsecase.execute();
       if (folderPath == null) {
@@ -202,10 +195,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     try {
       emit(state.copyWith(status: BackupSettingsStatus.loading, error: null));
 
-      // Connect to Google Drive silently first, fallback to normal signin
-      try {
-        await _connectToGoogleDriveSilentlyUsecase.execute();
-      } catch (_) {
         await _connectToGoogleDriveUsecase.execute();
       }
 

@@ -33,20 +33,6 @@ class GoogleDriveAppDatasource {
     }
   }
 
-  Future<void> connectSilently() async {
-    try {
-      final account = await _google.signInSilently();
-      if (account == null) throw 'Silent sign-in failed';
-      final client = await _google.authenticatedClient();
-      if (client == null) throw 'Failed to get authenticated client';
-      _driveApi = drive.DriveApi(client);
-    } catch (e) {
-      log.severe('Google Silent Sign-in error: $e');
-      await disconnect();
-      rethrow;
-    }
-  }
-
   Future<void> disconnect() async {
     await _google.disconnect();
     _driveApi = null;

@@ -13,17 +13,3 @@ class ConnectToGoogleDriveUsecase {
     }
   }
 }
-
-class ConnectToGoogleDriveSilentlyUsecase {
-  final GoogleDriveRepository _repository;
-
-  ConnectToGoogleDriveSilentlyUsecase(this._repository);
-
-  Future<void> execute() async {
-    try {
-      await _repository.connectSilently();
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-}

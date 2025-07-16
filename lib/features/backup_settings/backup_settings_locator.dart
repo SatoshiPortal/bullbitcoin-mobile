@@ -26,8 +26,6 @@ class BackupSettingsLocator {
         fetchLatestGoogleDriveBackupUsecase:
             locator<FetchLatestGoogleDriveBackupUsecase>(),
         connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
-        connectToGoogleDriveSilentlyUsecase:
-            locator<ConnectToGoogleDriveSilentlyUsecase>(),
       ),
     );
   }
