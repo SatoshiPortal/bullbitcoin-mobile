@@ -1,6 +1,6 @@
+import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
-import 'package:bb_mobile/features/experimental/scanner/scanner_widget.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,7 +21,7 @@ class ScanQrPage extends StatelessWidget {
           return Stack(
             fit: StackFit.expand,
             children: [
-              ScannerWidget(
+              QrScannerWidget(
                 onScanned: cubit.onQrScanned,
                 scanDelay:
                     state

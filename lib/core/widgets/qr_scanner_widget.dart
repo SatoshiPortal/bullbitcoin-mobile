@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 
-class ScannerWidget extends StatefulWidget {
+class QrScannerWidget extends StatefulWidget {
   final void Function(String data) onScanned;
   final ResolutionPreset resolution;
   final Duration scanDelay;
 
-  const ScannerWidget({
+  const QrScannerWidget({
     super.key,
     required this.onScanned,
     this.resolution = ResolutionPreset.high,
@@ -14,10 +14,10 @@ class ScannerWidget extends StatefulWidget {
   });
 
   @override
-  State<ScannerWidget> createState() => _ScannerState();
+  State<QrScannerWidget> createState() => _ScannerState();
 }
 
-class _ScannerState extends State<ScannerWidget> {
+class _ScannerState extends State<QrScannerWidget> {
   @override
   void dispose() {
     super.dispose();
