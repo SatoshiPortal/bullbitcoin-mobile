@@ -157,7 +157,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         FileSystem(:final fileAsString) => _fetchBackupFromFileSystemUsecase
             .execute(fileAsString),
         GoogleDrive() => _fetchLatestGoogleDriveBackupUsecase.execute().then(
-          (result) => result.$1,
+          (result) => result.content,
         ),
         ICloud() => Future<String>.error('iCloud backup not implemented'),
       };

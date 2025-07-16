@@ -94,7 +94,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   Future<void> exportVault() async {
     try {
       emit(state.copyWith(status: BackupSettingsStatus.exporting, error: null));
-        await _connectToGoogleDriveUsecase.execute();
+      await _connectToGoogleDriveUsecase.execute();
       final (content: content, fileName: fileName) =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
       final folderPath = await _selectFolderPathUsecase.execute();
@@ -196,11 +196,10 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     try {
       emit(state.copyWith(status: BackupSettingsStatus.loading, error: null));
 
-        await _connectToGoogleDriveUsecase.execute();
-      }
+      await _connectToGoogleDriveUsecase.execute();
 
       // Fetch the latest backup file from Google Drive
-      final (content, fileName) =
+      final (content: content, fileName: fileName) =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
 
       emit(
