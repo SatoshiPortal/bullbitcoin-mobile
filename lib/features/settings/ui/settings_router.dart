@@ -12,8 +12,11 @@ import 'package:bb_mobile/features/settings/ui/screens/log_settings_screen.dart'
 import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/wallets_list_screen.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -70,7 +73,35 @@ class SettingsRouter {
             name: SettingsRoute.walletDetailsSelectedWallet.name,
             builder: (context, state) {
               final walletId = state.pathParameters['walletId']!;
-              return WalletDetailsScreen(walletId: walletId);
+              return MultiBlocListener(
+                listeners: [
+                  BlocListener<WalletBloc, WalletState>(
+                    listenWhen: (previous, current) {
+                      // Listen for wallet deletion to go back to the wallet list
+                      return previous.wallets.length > current.wallets.length;
+                    },
+                    listener: (context, state) {
+                      context.pop();
+                    },
+                  ),
+                  BlocListener<WalletBloc, WalletState>(
+                    listenWhen: (previous, current) {
+                      // Listen for wallet deletion error to show an alert dialog
+                      return previous.walletDeletionError == null &&
+                          current.walletDeletionError != null;
+                    },
+                    listener: (context, state) {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (dialogContext) =>
+                                const FailedWalletDeletionAlertDialog(),
+                      );
+                    },
+                  ),
+                ],
+                child: WalletDetailsScreen(walletId: walletId),
+              );
             },
           ),
         ],

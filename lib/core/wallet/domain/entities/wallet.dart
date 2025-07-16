@@ -147,4 +147,10 @@ abstract class Wallet with _$Wallet {
   }
 
   bool get isWatchOnly => signer == Signer.none;
+
+  String get derivationPath {
+    // Todo: this might not be correct for all imported wallets and
+    //  we should derive it properly from the descriptor
+    return "m / ${scriptType.purpose}' / 0' / 0'";
+  }
 }

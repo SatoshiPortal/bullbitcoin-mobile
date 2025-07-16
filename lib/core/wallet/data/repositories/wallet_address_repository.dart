@@ -28,7 +28,7 @@ class WalletAddressRepository {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
-      throw WalletError.walletNotFound(walletId);
+      throw WalletError.notFound(walletId);
     }
 
     final walletModel = WalletModel.fromMetadata(metadata);

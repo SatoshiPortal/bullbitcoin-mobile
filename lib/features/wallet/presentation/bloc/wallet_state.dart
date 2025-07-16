@@ -16,6 +16,8 @@ sealed class WalletState with _$WalletState {
     @Default(null) double? currentSwapFeePercent,
     @Default(null) AutoSwap? autoSwapSettings,
     @Default(false) bool autoSwapExecuting,
+    @Default(false) bool isDeletingWallet,
+    WalletError? walletDeletionError,
   }) = _WalletState;
   const WalletState._();
 

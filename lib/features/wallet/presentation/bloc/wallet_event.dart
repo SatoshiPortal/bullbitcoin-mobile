@@ -24,6 +24,12 @@ class WalletSyncFinished extends WalletEvent {
   const WalletSyncFinished(this.wallet);
 }
 
+class WalletDeleted extends WalletEvent {
+  final String walletId;
+
+  const WalletDeleted(this.walletId);
+}
+
 class StartTorInitialization extends WalletEvent {
   const StartTorInitialization();
 }
