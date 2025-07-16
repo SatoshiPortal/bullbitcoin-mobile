@@ -20,7 +20,7 @@ class ScanNfcPage extends StatelessWidget {
       body: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
         builder: (context, state) {
           final cubit = context.read<BroadcastSignedTxCubit>();
-          return NfcScannerWidget(onScanned: (tag) => cubit.onNfcScanned(tag));
+          return NfcScannerWidget(onScanned: cubit.onNfcScanned);
         },
       ),
     );

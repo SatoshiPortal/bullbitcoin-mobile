@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/widgets/transaction_details_widget.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/broadcast_signed_tx_router.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/paste_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -80,14 +81,41 @@ class BroadcastSignedTxPage extends StatelessWidget {
                 // Broadcast button
                 if (state.transaction != null) ...[
                   TransactionDetailsWidget(tx: state.transaction!.tx),
-                  const SizedBox(height: 16),
+                ],
+
+                if (state.transaction != null) ...[
+                  if (state.pushTxUri != null && state.isBroadcasted == false)
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: BBButton.big(
+                        label: 'PushTx',
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onPrimary,
+                        onPressed: cubit.pushTxUri,
+                      ),
+                    ),
+
+                  if (state.isBroadcasted == false && state.pushTxUri == null)
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: BBButton.big(
+                        label: 'Broadcast',
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onPrimary,
+                        onPressed: cubit.broadcastTransaction,
+                      ),
+                    ),
+                ],
+
+                if (state.isBroadcasted == true) ...[
                   Padding(
                     padding: const EdgeInsets.only(left: 100, right: 100),
                     child: BBButton.big(
-                      label: 'Broadcast',
+                      label: 'Done',
                       bgColor: context.colour.secondary,
                       textColor: context.colour.onPrimary,
-                      onPressed: cubit.broadcastTransaction,
+                      onPressed:
+                          () => context.goNamed(WalletRoute.walletHome.name),
                     ),
                   ),
                 ],

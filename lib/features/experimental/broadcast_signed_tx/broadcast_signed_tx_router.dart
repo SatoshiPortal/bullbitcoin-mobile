@@ -3,7 +3,6 @@ import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/scan_nfc_page.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/scan_qr_page.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -29,17 +28,7 @@ class BroadcastSignedTxRouter {
       GoRoute(
         name: BroadcastSignedTxRoute.broadcastHome.name,
         path: BroadcastSignedTxRoute.broadcastHome.path,
-        builder:
-            (context, state) =>
-                BlocListener<BroadcastSignedTxCubit, BroadcastSignedTxState>(
-                  listenWhen:
-                      (previous, state) =>
-                          previous.txid.isEmpty && state.txid.isNotEmpty,
-                  listener:
-                      (context, state) =>
-                          context.goNamed(WalletRoute.walletHome.name),
-                  child: const BroadcastSignedTxPage(),
-                ),
+        builder: (context, state) => const BroadcastSignedTxPage(),
         routes: [
           GoRoute(
             name: BroadcastSignedTxRoute.broadcastScanQr.name,

@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation
 import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
@@ -49,8 +50,8 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       }
 
       final uriString = match.group(1)!;
-      final uri = Uri.parse(uriString);
-      final fragmentParams = Uri.splitQueryString(uri.fragment);
+      final pushTx = Uri.parse(uriString);
+      final fragmentParams = Uri.splitQueryString(pushTx.fragment);
 
       if (fragmentParams.isEmpty ||
           !fragmentParams.keys.contains('t') ||
@@ -66,6 +67,19 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       final _ = base64Url.decode(checksumBase64Url);
 
       await tryParseTransaction(txBytesHex);
+
+      emit(state.copyWith(pushTxUri: pushTx));
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  Future<void> pushTxUri() async {
+    if (state.pushTxUri == null) return;
+
+    try {
+      await launchUrl(state.pushTxUri!, mode: LaunchMode.externalApplication);
+      emit(state.copyWith(isBroadcasted: true));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -100,11 +114,11 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     try {
       if (state.transaction == null) return;
 
-      final txid = await _broadcastBitcoinTransactionUsecase.execute(
+      await _broadcastBitcoinTransactionUsecase.execute(
         state.transaction!.data,
         isPsbt: state.transaction!.format == TxFormat.psbt,
       );
-      emit(state.copyWith(txid: txid));
+      emit(state.copyWith(isBroadcasted: true));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
