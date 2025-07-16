@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 
 class TransactionDetailsWidget extends StatelessWidget {
@@ -50,16 +51,26 @@ class TransactionDetailsWidget extends StatelessWidget {
             ],
           ),
           const Gap(8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: context.colour.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: BBText(
-              '${tx.txid.substring(0, _txidCut)}…${tx.txid.substring(tx.txid.length - _txidCut)}',
-              style: context.font.bodySmall?.copyWith(
-                color: context.colour.primary,
+          GestureDetector(
+            onTap: () => Clipboard.setData(ClipboardData(text: tx.txid)),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: context.colour.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  BBText(
+                    '${tx.txid.substring(0, _txidCut)}…${tx.txid.substring(tx.txid.length - _txidCut)}',
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.colour.primary,
+                    ),
+                  ),
+                  const Gap(4),
+                  Icon(Icons.copy, size: 12, color: context.colour.primary),
+                ],
               ),
             ),
           ),
