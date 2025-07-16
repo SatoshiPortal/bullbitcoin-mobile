@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class ScanTxPage extends StatelessWidget {
-  const ScanTxPage({super.key});
+class ScanQrPage extends StatelessWidget {
+  const ScanQrPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class ScanTxPage extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               ScannerWidget(
-                onScanned: cubit.onScanned,
+                onScanned: cubit.onQrScanned,
                 scanDelay:
                     state
                             .bbqr

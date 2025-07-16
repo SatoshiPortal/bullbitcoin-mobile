@@ -1,7 +1,8 @@
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_page.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
-import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/scan_tx_page.dart';
+import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/scan_nfc_page.dart';
+import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/scan_qr_page.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +10,8 @@ import 'package:go_router/go_router.dart';
 
 enum BroadcastSignedTxRoute {
   broadcastHome('/broadcast-signed-tx'),
-  broadcastScan('scan');
+  broadcastScanQr('scan-qr'),
+  broadcastScanNfc('scan-nfc');
 
   const BroadcastSignedTxRoute(this.path);
 
@@ -40,8 +42,8 @@ class BroadcastSignedTxRouter {
                 ),
         routes: [
           GoRoute(
-            name: BroadcastSignedTxRoute.broadcastScan.name,
-            path: BroadcastSignedTxRoute.broadcastScan.path,
+            name: BroadcastSignedTxRoute.broadcastScanQr.name,
+            path: BroadcastSignedTxRoute.broadcastScanQr.path,
             builder:
                 (context, state) => BlocListener<
                   BroadcastSignedTxCubit,
@@ -52,7 +54,23 @@ class BroadcastSignedTxRouter {
                           previous.transaction == null &&
                           state.transaction != null,
                   listener: (context, state) => context.pop(),
-                  child: const ScanTxPage(),
+                  child: const ScanQrPage(),
+                ),
+          ),
+          GoRoute(
+            name: BroadcastSignedTxRoute.broadcastScanNfc.name,
+            path: BroadcastSignedTxRoute.broadcastScanNfc.path,
+            builder:
+                (context, state) => BlocListener<
+                  BroadcastSignedTxCubit,
+                  BroadcastSignedTxState
+                >(
+                  listenWhen:
+                      (previous, state) =>
+                          previous.transaction == null &&
+                          state.transaction != null,
+                  listener: (context, state) => context.pop(),
+                  child: const ScanNfcPage(),
                 ),
           ),
         ],
