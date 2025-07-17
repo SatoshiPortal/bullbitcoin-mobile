@@ -50,76 +50,84 @@ class BuyAccelerateScreen extends StatelessWidget {
             ? FormatAmount.fiat(absoluteFeeFiatEstimate, currencyCode)
             : null;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Confirm express withdrawal')),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                Text(
-                  'The Bitcoin network fee will be deducted from the amount you receive and collected by the Bitcoin miners',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.black,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return; // Don't allow back navigation
+
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Confirm express withdrawal')),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  Text(
+                    'The Bitcoin network fee will be deducted from the amount you receive and collected by the Bitcoin miners',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 32),
-                BuyConfirmDetailRow(
-                  label: 'Network fees',
-                  value: formattedAbsoluteFee,
-                ),
-                BuyConfirmDetailRow(
-                  label: 'Estimated fee value',
-                  value: formattedFeeFiatEstimate,
-                ),
-                BuyConfirmDetailRow(
-                  label: 'Network fee rate',
-                  value: formattedRelativeFee,
-                ),
-                const BuyConfirmDetailRow(
-                  label: 'Confirmation time',
-                  value: '~10 minutes',
-                ),
-                const SizedBox(height: 32),
-              ],
+                  const SizedBox(height: 32),
+                  BuyConfirmDetailRow(
+                    label: 'Network fees',
+                    value: formattedAbsoluteFee,
+                  ),
+                  BuyConfirmDetailRow(
+                    label: 'Estimated fee value',
+                    value: formattedFeeFiatEstimate,
+                  ),
+                  BuyConfirmDetailRow(
+                    label: 'Network fee rate',
+                    value: formattedRelativeFee,
+                  ),
+                  const BuyConfirmDetailRow(
+                    label: 'Confirmation time',
+                    value: '~10 minutes',
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (isAcceleratingOrder)
-                const Center(child: CircularProgressIndicator())
-              else
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isAcceleratingOrder)
+                  const Center(child: CircularProgressIndicator())
+                else
+                  BBButton.big(
+                    label: 'Wait for free withdrawal',
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    },
+                    bgColor: Colors.white,
+                    textColor: theme.colorScheme.secondary,
+                  ),
+                const Gap(16),
                 BBButton.big(
-                  label: 'Wait for free withdrawal',
+                  label: 'Confirm express',
+                  disabled: isAcceleratingOrder,
                   onPressed: () {
-                    Navigator.of(context, rootNavigator: true).pop();
+                    context.read<BuyBloc>().add(
+                      const BuyEvent.accelerateTransactionConfirmed(),
+                    );
                   },
-                  bgColor: Colors.white,
-                  textColor: theme.colorScheme.secondary,
+                  bgColor: theme.colorScheme.secondary,
+                  textColor: theme.colorScheme.onPrimary,
                 ),
-              const Gap(16),
-              BBButton.big(
-                label: 'Confirm express',
-                disabled: isAcceleratingOrder,
-                onPressed: () {
-                  context.read<BuyBloc>().add(
-                    const BuyEvent.accelerateTransactionConfirmed(),
-                  );
-                },
-                bgColor: theme.colorScheme.secondary,
-                textColor: theme.colorScheme.onPrimary,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
