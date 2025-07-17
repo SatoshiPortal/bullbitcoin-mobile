@@ -62,10 +62,9 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       }
 
       final txBase64Url = base64Url.normalize(fragmentParams['t']!);
-      final checksumBase64Url = base64Url.normalize(fragmentParams['c']!);
+      final _ = base64Url.normalize(fragmentParams['c']!);
 
       final txBytesHex = hex.encode(base64Url.decode(txBase64Url));
-      final _ = base64Url.decode(checksumBase64Url);
 
       await tryParseTransaction(txBytesHex);
 

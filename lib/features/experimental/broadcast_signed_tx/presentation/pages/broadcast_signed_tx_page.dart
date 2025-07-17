@@ -83,29 +83,37 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   TransactionDetailsWidget(tx: state.transaction!.tx),
                 ],
 
-                if (state.transaction != null) ...[
-                  if (state.pushTxUri != null && state.isBroadcasted == false)
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: BBButton.big(
-                        label: 'PushTx',
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onPrimary,
-                        onPressed: cubit.pushTxUri,
-                      ),
-                    ),
+                if (state.transaction != null)
+                  Row(
+                    children: [
+                      if (state.pushTxUri != null &&
+                          state.isBroadcasted == false)
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: BBButton.big(
+                              label: 'PushTx',
+                              bgColor: context.colour.secondary,
+                              textColor: context.colour.onPrimary,
+                              onPressed: cubit.pushTxUri,
+                            ),
+                          ),
+                        ),
 
-                  if (state.isBroadcasted == false && state.pushTxUri == null)
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: BBButton.big(
-                        label: 'Broadcast',
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onPrimary,
-                        onPressed: cubit.broadcastTransaction,
-                      ),
-                    ),
-                ],
+                      if (state.isBroadcasted == false)
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: BBButton.big(
+                              label: 'Broadcast',
+                              bgColor: context.colour.secondary,
+                              textColor: context.colour.onPrimary,
+                              onPressed: cubit.broadcastTransaction,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
 
                 if (state.isBroadcasted == true) ...[
                   Padding(
