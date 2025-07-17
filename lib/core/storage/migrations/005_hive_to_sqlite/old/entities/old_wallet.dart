@@ -24,9 +24,9 @@ extension BaseWalletTypeExtension on OldBaseWalletType {
   String get getImage {
     switch (this) {
       case OldBaseWalletType.Bitcoin:
-        return Assets.images.iconBtc.path;
+        return Assets.misc.iconBtc.path;
       case OldBaseWalletType.Liquid:
-        return Assets.images.iconLbtc.path;
+        return Assets.misc.iconLbtc.path;
     }
   }
 }

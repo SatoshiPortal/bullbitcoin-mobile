@@ -26,7 +26,10 @@ class OnboardingSplash extends StatelessWidget {
               children: [
                 const Spacer(flex: 2),
                 SuperuserTapUnlocker(
-                  child: Image.asset(Assets.bbLogoWhite.path, height: 127),
+                  child: Image.asset(
+                    Assets.logos.bbLogoWhite.path,
+                    height: 127,
+                  ),
                 ),
                 const Gap(36),
                 BBText(
@@ -121,7 +124,7 @@ class _BG extends StatelessWidget {
         Opacity(
           opacity: 0.1,
           child: Image.asset(
-            Assets.images2.bgLong.path,
+            Assets.backgrounds.bgLong.path,
             fit: BoxFit.cover,
             height: double.infinity,
             width: double.infinity,

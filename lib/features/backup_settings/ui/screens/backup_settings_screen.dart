@@ -96,7 +96,7 @@ class _KeyServerStatusWidget extends StatelessWidget {
               child:
                   state.torStatus == TorStatus.connecting
                       ? Gif(
-                        image: AssetImage(Assets.images2.cubesLoading.path),
+                        image: AssetImage(Assets.animations.cubesLoading.path),
                         autostart: Autostart.loop,
                         height: 56,
                         width: 56,

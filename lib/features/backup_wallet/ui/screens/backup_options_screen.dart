@@ -58,7 +58,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                     if (isSuperuser) ...[
                       BackupOptionCard(
                         icon: Image.asset(
-                          Assets.encryptedVault.path,
+                          Assets.misc.encryptedVault.path,
                           width: 36,
                           height: 45,
                           fit: BoxFit.cover,
@@ -79,7 +79,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                     ],
                     BackupOptionCard(
                       icon: Image.asset(
-                        Assets.physicalBackup.path,
+                        Assets.misc.physicalBackup.path,
                         width: 36,
                         height: 45,
                         fit: BoxFit.cover,

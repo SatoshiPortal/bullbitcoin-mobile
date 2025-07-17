@@ -18,7 +18,7 @@ class OpenTheCameraWidget extends StatelessWidget {
       child: Column(
         children: [
           const Gap(30),
-          Image.asset(Assets.qRPlaceholder.path, height: 221, width: 221),
+          Image.asset(Assets.misc.qRPlaceholder.path, height: 221, width: 221),
           const Gap(24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 48),

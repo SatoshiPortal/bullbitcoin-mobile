@@ -118,16 +118,18 @@ flutter:
 
   assets:
     - .env
-    - assets/images/
     - assets/
     - assets/icons/
-    - assets/images2/
+    - assets/logos/
+    - assets/backgrounds/
+    - assets/animations/
+    - assets/misc/
 
 flutter_native_splash:
-  background_image: "assets/bb-logo-white-splash.png"
+  background_image: "assets/logos/bb-logo-white-splash.png"
   android_12:
     color: "#C50909"
-    image: assets/bb-logo-white-splash.png
+    image: assets/logos/bb-logo-white-splash.png
     # icon_background_color: "#C50909"
     icon_background_color: "#C50909"
 
@@ -136,7 +138,7 @@ flutter_native_splash:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/iconnew.png"
+  image_path: "assets/misc/iconnew.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
   adaptive_icon_background: "#FBFBFB"
-  adaptive_icon_foreground: "assets/iconnew-red.png"
+  adaptive_icon_foreground: "assets/misc/iconnew-red.png"

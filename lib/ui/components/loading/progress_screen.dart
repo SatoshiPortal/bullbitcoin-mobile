@@ -31,7 +31,7 @@ class ProgressScreen extends StatelessWidget {
                 autostart: Autostart.loop,
                 width: 200,
                 height: 200,
-                image: AssetImage(Assets.images2.cubesLoading.path),
+                image: AssetImage(Assets.animations.cubesLoading.path),
               ),
             )
           else
@@ -55,10 +55,7 @@ class ProgressScreen extends StatelessWidget {
               maxLines: 3,
             ),
           ],
-          if (extras.isNotEmpty) ...[
-            const Gap(16),
-            ...extras,
-          ],
+          if (extras.isNotEmpty) ...[const Gap(16), ...extras],
         ],
       ),
     );

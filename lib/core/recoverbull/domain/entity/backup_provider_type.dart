@@ -17,11 +17,11 @@ extension BackupProviderTypeX on BackupProviderType {
   String get iconPath {
     switch (this) {
       case BackupProviderType.googleDrive:
-        return Assets.googleDrive.path;
+        return Assets.misc.googleDrive.path;
       case BackupProviderType.iCloud:
-        return Assets.icloud.path;
+        return Assets.misc.icloud.path;
       case BackupProviderType.custom:
-        return Assets.customLocation.path;
+        return Assets.misc.customLocation.path;
     }
   }
 
