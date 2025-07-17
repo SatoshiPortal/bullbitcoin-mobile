@@ -122,18 +122,9 @@ flutter:
     - assets/
     - assets/icons/
     - assets/images2/
-    # - assets/textlogo.png
-    # - assets/nfc_scan.png
-    # - assets/cc-logo.png
-    # - assets/bb-logo2.png
-    # - assets/bb-white.png
-    # - assets/arrow_down.png
-    # - assets/arrow_down_white.png
-    # - assets/request-payment.svg
-    # - assets/new-address.svg
 
 flutter_native_splash:
-  background_image: "assets/splash.png"
+  background_image: "assets/bb-logo-white-splash.png"
   android_12:
     color: "#C50909"
     image: assets/bb-logo-white-splash.png
