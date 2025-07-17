@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/experimental/broadcast_signed_tx/broadcast_signed_tx_router.dart';
+import 'package:bb_mobile/features/experimental/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/show_bbqr/show_bbqr_widget.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/show_psbt/show_psbt_cubit.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/show_psbt/show_psbt_state.dart';

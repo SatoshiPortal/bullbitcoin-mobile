@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/experimental/broadcast_signed_tx/broadcast_signed_tx_router.dart';
+import 'package:bb_mobile/features/experimental/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/psbt_router.dart';
 import 'package:go_router/go_router.dart';

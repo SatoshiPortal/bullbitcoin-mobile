@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/experimental/broadcast_signed_tx/broadcast_signed_tx_router.dart';
+import 'package:bb_mobile/features/experimental/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
