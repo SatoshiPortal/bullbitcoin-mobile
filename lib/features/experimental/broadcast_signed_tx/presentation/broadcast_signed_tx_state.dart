@@ -11,6 +11,6 @@ abstract class BroadcastSignedTxState with _$BroadcastSignedTxState {
     @Default(null) ParsedTx? transaction,
     @Default(false) bool isBroadcasted,
     @Default(null) Uri? pushTxUri,
-    String? error,
+    @Default(null) Exception? error,
   }) = _BroadcastSignedTxState;
 }

@@ -73,7 +73,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
 
                 if (state.error != null)
                   BBText(
-                    state.error!,
+                    state.error.toString(),
                     style: context.font.bodyMedium,
                     color: context.colour.error,
                   ),
