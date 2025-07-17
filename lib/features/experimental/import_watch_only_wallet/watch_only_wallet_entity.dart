@@ -11,6 +11,7 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
     required satoshifier.WatchOnlyDescriptor watchOnlyDescriptor,
     @Default(Signer.remote) Signer signer,
     @Default('') String label,
+    @Default(null) SignerDevice? signerDevice,
   }) = WatchOnlyDescriptorEntity;
 
   const factory WatchOnlyWalletEntity.xpub({

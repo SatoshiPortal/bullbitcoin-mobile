@@ -78,16 +78,53 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                 items:
                     [Signer.remote, Signer.none]
                         .map(
-                          (source) => DropdownMenuItem<Signer>(
-                            value: source,
+                          (value) => DropdownMenuItem<Signer>(
+                            value: value,
                             child: BBText(
-                              source.name,
+                              value.displayName,
                               style: context.font.headlineSmall,
                             ),
                           ),
                         )
                         .toList(),
                 onChanged: cubit.onSignerChanged,
+              ),
+            ),
+          ],
+        ),
+        const Gap(24),
+        Row(
+          children: [
+            SizedBox(
+              width: 100,
+              child: BBText('Signer Device', style: context.font.titleMedium),
+            ),
+            SizedBox(
+              width: 200,
+              child: DropdownButtonFormField<SignerDevice?>(
+                alignment: Alignment.centerLeft,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                ),
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: context.colour.secondary,
+                ),
+                value: entity.signerDevice,
+                items:
+                    [null, ...SignerDevice.values]
+                        .map(
+                          (value) => DropdownMenuItem<SignerDevice?>(
+                            value: value,
+                            child: BBText(
+                              value?.displayName ?? 'None',
+                              style: context.font.headlineSmall,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                onChanged: cubit.onSignerDeviceChanged,
               ),
             ),
           ],
