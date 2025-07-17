@@ -72,7 +72,7 @@ class WalletDetailScreen extends StatelessWidget {
                   WalletDetailBalanceCard(
                     balanceSat: wallet.balanceSat.toInt(),
                     isLiquid: wallet.isLiquid,
-                    walletSource: wallet.source,
+                    signer: wallet.signer,
                   ),
                   const Gap(16.0),
                   const WalletDetailTxsList(),

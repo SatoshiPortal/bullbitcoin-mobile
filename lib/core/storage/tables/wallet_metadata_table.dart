@@ -1,5 +1,15 @@
 import 'package:drift/drift.dart';
 
+enum Signer {
+  local,
+  remote,
+  none;
+
+  static Signer fromName(String name) {
+    return Signer.values.firstWhere((source) => source.name == name);
+  }
+}
+
 @DataClassName('WalletMetadataRow')
 class WalletMetadatas extends Table {
   TextColumn get id => text()();
@@ -12,7 +22,7 @@ class WalletMetadatas extends Table {
   TextColumn get xpub => text()();
   TextColumn get externalPublicDescriptor => text()();
   TextColumn get internalPublicDescriptor => text()();
-  TextColumn get source => text()();
+  TextColumn get signer => text()();
   BoolColumn get isDefault => boolean()();
   TextColumn get label => text().nullable()();
   DateTimeColumn get syncedAt => dateTime().nullable()();

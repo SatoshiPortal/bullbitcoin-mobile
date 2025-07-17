@@ -104,7 +104,7 @@ class WalletRepository {
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
-      source: metadata.source,
+      signer: metadata.signer,
       balanceSat: balance.totalSat,
     );
   }
@@ -144,7 +144,7 @@ class WalletRepository {
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
-      source: metadata.source,
+      signer: metadata.signer,
       balanceSat: balance.totalSat,
     );
   }
@@ -188,7 +188,7 @@ class WalletRepository {
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
-      source: metadata.source,
+      signer: metadata.signer,
       balanceSat: balance.totalSat,
     );
   }
@@ -217,7 +217,7 @@ class WalletRepository {
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
-      source: metadata.source,
+      signer: metadata.signer,
       balanceSat: balance.totalSat,
       isEncryptedVaultTested: metadata.isEncryptedVaultTested,
       isPhysicalBackupTested: metadata.isPhysicalBackupTested,
@@ -286,7 +286,7 @@ class WalletRepository {
             xpub: entry.value.xpub,
             externalPublicDescriptor: entry.value.externalPublicDescriptor,
             internalPublicDescriptor: entry.value.internalPublicDescriptor,
-            source: entry.value.source,
+            signer: entry.value.signer,
             balanceSat: balances[entry.key].totalSat,
             isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
             isPhysicalBackupTested: entry.value.isPhysicalBackupTested,

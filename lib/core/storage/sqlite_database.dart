@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_v4.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
@@ -35,7 +36,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -72,6 +73,9 @@ class SqliteDatabase extends _$SqliteDatabase {
           // Create WalletAddressHistory table
           await m.createTable(walletAddressHistory);
           // TODO: Should we seed this table with already generated addresses here?
+        }
+        if (from < 4) {
+          await SchemaV4.migrate(this, walletMetadatas);
         }
       },
     );

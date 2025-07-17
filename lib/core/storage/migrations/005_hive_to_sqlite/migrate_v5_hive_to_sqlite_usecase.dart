@@ -397,17 +397,12 @@ class MigrateToV5HiveToSqliteToUsecase {
           OldScriptType.bip44 => ScriptType.bip44,
         };
 
-        final source = switch (oldWatchOnlyWallet.type) {
-          OldBBWalletType.main => WalletSource.mnemonic,
-          OldBBWalletType.coldcard => WalletSource.coldcard,
-          OldBBWalletType.xpub => WalletSource.xpub,
-          OldBBWalletType.words => WalletSource.mnemonic,
-          OldBBWalletType.descriptors => WalletSource.descriptors,
-        };
         final xpubFromDescriptor = fullKeyFromDescriptor(
           oldWatchOnlyWallet.internalPublicDescriptor,
         );
-        if (source == WalletSource.coldcard || source == WalletSource.xpub) {
+
+        if (oldWatchOnlyWallet.type == OldBBWalletType.coldcard ||
+            oldWatchOnlyWallet.type == OldBBWalletType.xpub) {
           try {
             await _newWalletRepository.importWatchOnlyXpub(
               xpub: xpubFromDescriptor,

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 
@@ -19,7 +20,7 @@ abstract class WalletMetadataModel with _$WalletMetadataModel {
     required String xpub,
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
-    required WalletSource source,
+    required Signer signer,
     required bool isDefault,
     @Default(0) int lastReceiveAddressIndex,
     String? label,
@@ -55,7 +56,7 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
     xpub: xpub,
     externalPublicDescriptor: externalPublicDescriptor,
     internalPublicDescriptor: internalPublicDescriptor,
-    source: source.name,
+    signer: signer.name,
     isDefault: isDefault,
     label: label ?? '',
     syncedAt: syncedAt,
@@ -73,7 +74,7 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
         xpub: row.xpub,
         externalPublicDescriptor: row.externalPublicDescriptor,
         internalPublicDescriptor: row.internalPublicDescriptor,
-        source: WalletSource.fromName(row.source),
+        signer: Signer.fromName(row.signer),
         isDefault: row.isDefault,
         label: row.label,
         syncedAt: row.syncedAt,
