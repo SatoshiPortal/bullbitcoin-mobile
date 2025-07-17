@@ -1,8 +1,8 @@
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
-import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_page.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
-import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/scan_nfc_page.dart';
-import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/scan_qr_page.dart';
+import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart';
+import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/pages/scan_nfc_page.dart';
+import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/pages/scan_qr_page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
