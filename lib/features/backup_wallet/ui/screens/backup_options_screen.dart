@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/cards/backup_option_card.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -57,7 +58,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                     if (isSuperuser) ...[
                       BackupOptionCard(
                         icon: Image.asset(
-                          'assets/encrypted_vault.png',
+                          Assets.encryptedVault.path,
                           width: 36,
                           height: 45,
                           fit: BoxFit.cover,
@@ -78,7 +79,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                     ],
                     BackupOptionCard(
                       icon: Image.asset(
-                        'assets/physical_backup.png',
+                        Assets.physicalBackup.path,
                         width: 36,
                         height: 45,
                         fit: BoxFit.cover,
