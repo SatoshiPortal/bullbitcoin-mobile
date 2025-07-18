@@ -31,9 +31,9 @@ class AllSettingsScreen extends StatelessWidget {
               children: [
                 SettingsEntryItem(
                   icon: Icons.account_balance_wallet,
-                  title: 'Exchange Account',
+                  title: 'Exchange Settings',
                   onTap: () {
-                    context.pushNamed(SettingsRoute.exchangeAccount.name);
+                    context.pushNamed(SettingsRoute.exchangeSettings.name);
                   },
                 ),
                 SettingsEntryItem(

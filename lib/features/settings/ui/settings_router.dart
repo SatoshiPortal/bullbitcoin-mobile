@@ -13,7 +13,18 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/experimental_sett
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/bitcoin_wallets_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_account_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/file_upload_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/legacy_transactions_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/logout_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/recipients_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/language/language_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
@@ -35,6 +46,17 @@ enum SettingsRoute {
   legacySeeds('legacy-seeds'),
   experimental('experimental-settings'),
   exchangeAccount('exchange-account'),
+  exchangeSettings('exchange-settings'),
+  exchangeAccountInfo('exchange-account-info'),
+  exchangeSecurity('exchange-security'),
+  exchangeBitcoinWallets('exchange-bitcoin-wallets'),
+  exchangeAppSettings('exchange-app-settings'),
+  exchangeFileUpload('exchange-file-upload'),
+  exchangeTransactions('exchange-transactions'),
+  exchangeLegacyTransactions('exchange-legacy-transactions'),
+  exchangeRecipients('exchange-recipients'),
+  exchangeReferrals('exchange-referrals'),
+  exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
   appSettings('app-settings');
 
@@ -53,6 +75,61 @@ class SettingsRouter {
         name: SettingsRoute.exchangeAccount.name,
         path: SettingsRoute.exchangeAccount.path,
         builder: (context, state) => const ExchangeAccountScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeSettings.name,
+        path: SettingsRoute.exchangeSettings.path,
+        builder: (context, state) => const ExchangeSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeAccountInfo.name,
+        path: SettingsRoute.exchangeAccountInfo.path,
+        builder: (context, state) => const AccountInfoScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeSecurity.name,
+        path: SettingsRoute.exchangeSecurity.path,
+        builder: (context, state) => const SecurityScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeBitcoinWallets.name,
+        path: SettingsRoute.exchangeBitcoinWallets.path,
+        builder: (context, state) => const BitcoinWalletsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeAppSettings.name,
+        path: SettingsRoute.exchangeAppSettings.path,
+        builder: (context, state) => const ExchangeAppSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeFileUpload.name,
+        path: SettingsRoute.exchangeFileUpload.path,
+        builder: (context, state) => const FileUploadScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeTransactions.name,
+        path: SettingsRoute.exchangeTransactions.path,
+        builder: (context, state) => const TransactionsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeLegacyTransactions.name,
+        path: SettingsRoute.exchangeLegacyTransactions.path,
+        builder: (context, state) => const LegacyTransactionsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeRecipients.name,
+        path: SettingsRoute.exchangeRecipients.path,
+        builder: (context, state) => const RecipientsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeReferrals.name,
+        path: SettingsRoute.exchangeReferrals.path,
+        builder: (context, state) => const ReferralsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeLogout.name,
+        path: SettingsRoute.exchangeLogout.path,
+        builder: (context, state) => const LogoutScreen(),
       ),
       GoRoute(
         name: SettingsRoute.bitcoinSettings.name,
