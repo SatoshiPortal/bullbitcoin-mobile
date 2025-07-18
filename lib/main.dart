@@ -26,8 +26,6 @@ import 'package:payjoin_flutter/common.dart';
 
 class Bull {
   static Future<void> init() async {
-    WidgetsFlutterBinding.ensureInitialized();
-
     await Future.wait([
       LibLwk.init(),
       BoltzCore.init(),
@@ -50,6 +48,7 @@ class Bull {
 Future main() async {
   await runZonedGuarded(
     () async {
+      WidgetsFlutterBinding.ensureInitialized();
       await Bull.init();
       runApp(const BullBitcoinWalletApp());
     },

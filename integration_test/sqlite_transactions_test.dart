@@ -3,15 +3,16 @@ import 'dart:convert';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_remote_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/transaction/data/models/transaction_mapper.dart';
 import 'package:bb_mobile/core/transaction/data/transaction_repository.dart';
+import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-void main() async {
-  await Bull.init();
+void main({bool isInitialized = false}) async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  if (!isInitialized) await Bull.init();
 
   final sqlite = locator<SqliteDatabase>();
   final electrumDatasource = ElectrumRemoteDatasource(
@@ -43,7 +44,7 @@ void main() async {
       // Fetch the transaction from electrum
       final txBytes = await electrumDatasource.getTransaction(txid);
       // Converts the bytes into entity
-      final txEntity = await TransactionMapper.fromBytes(txBytes);
+      final txEntity = await RawBitcoinTxEntity.fromBytes(txBytes);
 
       // Store the transaction into sqlite
       await sqlite.managers.transactions.create(

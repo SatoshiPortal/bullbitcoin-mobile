@@ -6,10 +6,11 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter/material.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-void main() async {
-  await Bull.init();
+void main({bool isInitialized = false}) async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  if (!isInitialized) await Bull.init();
 
   final bitcoinPriceDatasource = locator<BullbitcoinApiDatasource>(
     instanceName: 'mainnetExchangeApiDatasource',

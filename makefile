@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update drift-migrations docker-build docker-run
+.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update drift-migrations docker-build docker-run test unit-test integration-test
 
 all: setup
 	@echo "✨ All tasks completed!"
@@ -74,3 +74,14 @@ feature:
 docker-build:
 	@echo "🏗️ Building Docker image"
 	@ docker build -t bull-mobile .
+
+
+test: unit-test integration-test
+
+unit-test: 
+	@echo "🏃‍ running unit tests"
+	@flutter test --reporter=compact
+
+integration-test:
+	@echo "🧪 integration tests"
+	@flutter test integration_test/_test.dart --reporter=compact
