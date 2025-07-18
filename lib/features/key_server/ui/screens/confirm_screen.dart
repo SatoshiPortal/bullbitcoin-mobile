@@ -90,6 +90,7 @@ class ConfirmScreen extends StatelessWidget {
               ),
               if (state.authInputType == AuthInputType.pin)
                 DialPad(
+                  disableFeedback: true,
                   onNumberPressed:
                       (e) => context.read<KeyServerCubit>().enterKey(e),
                   onBackspacePressed:

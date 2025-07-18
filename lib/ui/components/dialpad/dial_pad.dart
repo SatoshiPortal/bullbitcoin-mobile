@@ -7,15 +7,19 @@ class DialPad extends StatelessWidget {
     super.key,
     required this.onNumberPressed,
     required this.onBackspacePressed,
+    this.disableFeedback = false,
   });
 
   final Function(String) onNumberPressed;
   final Function() onBackspacePressed;
+  final bool disableFeedback;
 
   Widget numPadButton(BuildContext context, String num) {
     return Expanded(
       child: InkWell(
         onTap: () => onNumberPressed(num),
+        splashFactory: disableFeedback ? NoSplash.splashFactory : null,
+        highlightColor: disableFeedback ? Colors.transparent : null,
         child: SizedBox(
           height: 64,
 
@@ -35,6 +39,8 @@ class DialPad extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: onBackspacePressed,
+        splashFactory: disableFeedback ? NoSplash.splashFactory : null,
+        highlightColor: disableFeedback ? Colors.transparent : null,
         child: SizedBox(
           height: 64,
 
