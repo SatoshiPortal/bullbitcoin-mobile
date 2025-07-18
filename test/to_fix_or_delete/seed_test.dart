@@ -1,3 +1,4 @@
+// import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 // import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 // import 'package:test/test.dart';
 
@@ -58,3 +59,9 @@
 //     }
 //   });
 // }
+
+// Temporary main function to prevent compilation errors
+// TODO: Remove this when tests are ready to be implemented
+void main() {
+  // Tests are commented out and will be implemented later
+}

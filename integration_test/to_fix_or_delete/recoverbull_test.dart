@@ -176,3 +176,9 @@
 //     }
 //   });
 // }
+
+// Temporary main function to prevent compilation errors
+// TODO: Remove this when tests are ready to be implemented
+void main() {
+  // Tests are commented out and will be implemented later
+}

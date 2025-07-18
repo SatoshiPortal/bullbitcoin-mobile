@@ -39,11 +39,11 @@
 //       'model float claim feature convince exchange truck cream assume fancy swamp offer';
 
 //   /*
-//    * 
-//    * 
+//    *
+//    *
 //    * INVOICES MUST BE UPDATED FOR EVERY TEST OF SUBMARINE SEND SWAPS
-//    * 
-//    * 
+//    *
+//    *
 //    */
 //   // const liquidSendInvoice = '';
 //   // const bitcoinSendInvoice = '';
@@ -279,3 +279,9 @@
 //     });
 //   }, timeout: const Timeout(Duration(minutes: 30)));
 // }
+
+// Temporary main function to prevent compilation errors
+// TODO: Remove this when tests are ready to be implemented
+void main() {
+  // Tests are commented out and will be implemented later
+}
