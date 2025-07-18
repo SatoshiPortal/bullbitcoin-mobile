@@ -5,13 +5,16 @@ import 'package:bb_mobile/features/experimental/experimental_router.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
 import 'package:bb_mobile/features/legacy_seed_view/ui/legacy_seed_view_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
-import 'package:bb_mobile/features/settings/ui/screens/currency_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/experimental_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/language_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/log_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/wallet_details_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/wallets_list_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/experimental_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_account_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/language/language_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -30,7 +33,10 @@ enum SettingsRoute {
   walletDetailsSelectedWallet(':walletId'),
   logs('logs'),
   legacySeeds('legacy-seeds'),
-  experimental('experimental-settings');
+  experimental('experimental-settings'),
+  exchangeAccount('exchange-account'),
+  bitcoinSettings('bitcoin-settings'),
+  appSettings('app-settings');
 
   final String path;
 
@@ -41,8 +47,24 @@ class SettingsRouter {
   static final route = GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
-    builder: (context, state) => const SettingsScreen(),
+    builder: (context, state) => const AllSettingsScreen(),
     routes: [
+      GoRoute(
+        name: SettingsRoute.exchangeAccount.name,
+        path: SettingsRoute.exchangeAccount.path,
+        builder: (context, state) => const ExchangeAccountScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.bitcoinSettings.name,
+        path: SettingsRoute.bitcoinSettings.path,
+        builder: (context, state) => const BitcoinSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.appSettings.name,
+        path: SettingsRoute.appSettings.path,
+        builder: (context, state) => const AppSettingsScreen(),
+      ),
+
       GoRoute(
         name: SettingsRoute.language.name,
         path: SettingsRoute.language.path,
