@@ -1,0 +1,30 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - run: make clean
+      - run: make deps
+      - run: make build-runner
+      - run: make l10n
+      
+      - name: Run Unit Tests
+        run: make unit-test
+
+      - name: Run Integration Tests
+        run: make integration-test 
