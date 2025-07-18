@@ -96,6 +96,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                       () => context.read<PinCodeSettingBloc>().add(
                         const PinCodeSettingPinCodeNumberRemoved(),
                       ),
+                  disableFeedback: true,
                 ),
               ],
             ),
