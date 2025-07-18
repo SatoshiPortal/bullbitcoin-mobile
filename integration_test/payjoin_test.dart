@@ -15,23 +15,23 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:test/test.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  await Bull.init();
 
-  late WalletRepository walletRepository;
-  late WalletAddressRepository addressRepository;
-  late WalletUtxoRepository utxoRepository;
-  late PayjoinRepository payjoinRepository;
-  late ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase;
-  late SendWithPayjoinUsecase sendWithPayjoinUsecase;
-  late PrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
   late Wallet receiverWallet;
   late Wallet senderWallet;
+
+  final walletRepository = locator<WalletRepository>();
+  final addressRepository = locator<WalletAddressRepository>();
+  final utxoRepository = locator<WalletUtxoRepository>();
+  final payjoinRepository = locator<PayjoinRepository>();
+  final receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
+  final sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
+  final prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
 
   // TODO: Change and move these to github secrets so the testnet coins for our integration
   //  tests are not at risk of being used by others.
@@ -41,19 +41,7 @@ void main() {
       'model float claim feature convince exchange truck cream assume fancy swamp offer';
 
   setUpAll(() async {
-    await Future.wait([dotenv.load(isOptional: true), core.init()]);
-
-    await AppLocator.setup();
-
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
-
-    walletRepository = locator<WalletRepository>();
-    addressRepository = locator<WalletAddressRepository>();
-    utxoRepository = locator<WalletUtxoRepository>();
-    payjoinRepository = locator<PayjoinRepository>();
-    receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
-    sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
-    prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
 
     final receiverSeedModel = SeedModel.mnemonic(
       mnemonicWords: receiverMnemonic.split(' '),

@@ -1,46 +1,38 @@
-import 'dart:async';
-
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:test/test.dart';
 
-void main() {
-  late BullbitcoinApiDatasource bitcoinPriceDatasource;
-  late GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase;
-  late ConvertCurrencyToSatsAmountUsecase convertCurrencyToSatsAmountUsecase;
-  late ConvertSatsToCurrencyAmountUsecase convertSatsToCurrencyAmountUsecase;
+void main() async {
+  await Bull.init();
 
-  setUpAll(() async {
-    await Future.wait([dotenv.load(isOptional: true), core.init()]);
-
-    await AppLocator.setup();
-
-    bitcoinPriceDatasource = locator.get<BullbitcoinApiDatasource>();
-    getAvailableCurrenciesUsecase =
-        locator.get<GetAvailableCurrenciesUsecase>();
-    convertCurrencyToSatsAmountUsecase =
-        locator.get<ConvertCurrencyToSatsAmountUsecase>();
-    convertSatsToCurrencyAmountUsecase =
-        locator.get<ConvertSatsToCurrencyAmountUsecase>();
-  });
-
-  setUp(() {});
+  final bitcoinPriceDatasource = locator<BullbitcoinApiDatasource>(
+    instanceName: 'mainnetExchangeApiDatasource',
+  );
+  final getAvailableCurrenciesUsecase =
+      locator<GetAvailableCurrenciesUsecase>();
+  final convertCurrencyToSatsAmountUsecase =
+      locator<ConvertCurrencyToSatsAmountUsecase>();
+  final convertSatsToCurrencyAmountUsecase =
+      locator<ConvertSatsToCurrencyAmountUsecase>();
 
   group('Exchange Rate Integration Tests', () {
     group('have a working BullBitcoin API', () {
       test('with currencies we expect', () async {
-        final expectedCurrencies = ['USD', 'CAD', 'INR', 'CRC', 'EUR'];
+        final expectedCurrencies = ['USD', 'CAD', 'MXN', 'CRC', 'EUR'];
         final currencies = await getAvailableCurrenciesUsecase.execute();
 
         for (final currency in expectedCurrencies) {
-          expect(currencies.contains(currency), true);
+          expect(
+            currencies.contains(currency),
+            true,
+            reason: 'Currency $currency not found',
+          );
         }
       });
       test('with prices for available currencies', () async {

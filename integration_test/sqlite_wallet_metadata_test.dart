@@ -13,7 +13,7 @@ void main() async {
   final sqlite = locator<SqliteDatabase>();
 
   group('WalletMetadata Sqlite Integration Tests', () {
-    test('', () async {
+    test('can store and fetch a wallet metadata', () async {
       const fingerprint = 'master';
       const scriptType = ScriptType.bip84;
 
