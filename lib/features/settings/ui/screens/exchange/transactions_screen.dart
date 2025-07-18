@@ -1,32 +1,26 @@
+import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-class TransactionsScreen extends StatelessWidget {
-  const TransactionsScreen({super.key});
+class ExchangeTransactionsScreen extends StatelessWidget {
+  const ExchangeTransactionsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Transactions')),
-      body: const Center(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          title: 'Transactions',
+          onBack: () => context.pop(),
+        ),
+      ),
+      body: const SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.history, size: 64, color: Colors.grey),
-              SizedBox(height: 16),
-              Text(
-                'Transactions',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Transaction history and settings coming soon.',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+          child: Center(child: Text('Transactions - Coming Soon')),
         ),
       ),
     );

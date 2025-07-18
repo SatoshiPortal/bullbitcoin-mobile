@@ -1,29 +1,70 @@
+import 'package:bb_mobile/ui/components/buttons/button.dart';
+import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
+import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-class SecurityScreen extends StatelessWidget {
-  const SecurityScreen({super.key});
+class ExchangeSecurityScreen extends StatelessWidget {
+  const ExchangeSecurityScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Security Settings')),
-      body: const Center(
+      backgroundColor: context.colour.secondaryFixed,
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          title: 'Security Settings',
+          onBack: () => context.pop(),
+        ),
+      ),
+      body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.security, size: 64, color: Colors.grey),
-              SizedBox(height: 16),
-              Text(
-                'Security Settings',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Security settings coming soon.',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-                textAlign: TextAlign.center,
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: context.colour.onPrimary,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: context.colour.surface.withValues(alpha: 0.1),
+                      spreadRadius: 1,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Manage 2FA and password',
+                      style: context.font.bodyLarge?.copyWith(
+                        color: context.colour.outline,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: BBButton.big(
+                        label: 'Access Settings',
+                        onPressed: () {
+                          // TODO: Navigate to security settings
+                        },
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onPrimary,
+                        iconData: Icons.arrow_forward,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

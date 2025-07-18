@@ -84,17 +84,17 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.exchangeAccountInfo.name,
         path: SettingsRoute.exchangeAccountInfo.path,
-        builder: (context, state) => const AccountInfoScreen(),
+        builder: (context, state) => const ExchangeAccountInfoScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeSecurity.name,
         path: SettingsRoute.exchangeSecurity.path,
-        builder: (context, state) => const SecurityScreen(),
+        builder: (context, state) => const ExchangeSecurityScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeBitcoinWallets.name,
         path: SettingsRoute.exchangeBitcoinWallets.path,
-        builder: (context, state) => const BitcoinWalletsScreen(),
+        builder: (context, state) => const ExchangeBitcoinWalletsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeAppSettings.name,
@@ -104,32 +104,32 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.exchangeFileUpload.name,
         path: SettingsRoute.exchangeFileUpload.path,
-        builder: (context, state) => const FileUploadScreen(),
+        builder: (context, state) => const ExchangeFileUploadScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeTransactions.name,
         path: SettingsRoute.exchangeTransactions.path,
-        builder: (context, state) => const TransactionsScreen(),
+        builder: (context, state) => const ExchangeTransactionsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeLegacyTransactions.name,
         path: SettingsRoute.exchangeLegacyTransactions.path,
-        builder: (context, state) => const LegacyTransactionsScreen(),
+        builder: (context, state) => const ExchangeLegacyTransactionsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeRecipients.name,
         path: SettingsRoute.exchangeRecipients.path,
-        builder: (context, state) => const RecipientsScreen(),
+        builder: (context, state) => const ExchangeRecipientsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeReferrals.name,
         path: SettingsRoute.exchangeReferrals.path,
-        builder: (context, state) => const ReferralsScreen(),
+        builder: (context, state) => const ExchangeReferralsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeLogout.name,
         path: SettingsRoute.exchangeLogout.path,
-        builder: (context, state) => const LogoutScreen(),
+        builder: (context, state) => const ExchangeLogoutScreen(),
       ),
       GoRoute(
         name: SettingsRoute.bitcoinSettings.name,
