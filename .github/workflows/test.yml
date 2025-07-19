@@ -22,6 +22,11 @@ jobs:
       - run: make deps
       - run: make build-runner
       - run: make l10n
+
+      - name: Create .env file
+        run: |
+          echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
+          echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
       
       - name: Run Unit Tests
         run: make unit-test

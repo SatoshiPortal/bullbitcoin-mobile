@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usec
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
 import 'package:test/test.dart';
 
@@ -35,12 +36,15 @@ void main({bool isInitialized = false}) async {
   final sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
   final prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
 
-  // TODO: Change and move these to github secrets so the testnet coins for our integration
-  //  tests are not at risk of being used by others.
-  const receiverMnemonic =
-      'duty tattoo frown crazy pelican aisle area wrist robot stove taxi material';
-  const senderMnemonic =
-      'model float claim feature convince exchange truck cream assume fancy swamp offer';
+  final receiverMnemonic = dotenv.env['TEST_ALICE_MNEMONIC'];
+  final senderMnemonic = dotenv.env['TEST_BOB_MNEMONIC'];
+
+  if (receiverMnemonic == null || receiverMnemonic.isEmpty) {
+    throw Exception('TEST_ALICE_MNEMONIC environment variable is not set');
+  }
+  if (senderMnemonic == null || senderMnemonic.isEmpty) {
+    throw Exception('TEST_BOB_MNEMONIC environment variable is not set');
+  }
 
   setUpAll(() async {
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
