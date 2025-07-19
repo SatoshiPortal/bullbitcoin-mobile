@@ -70,7 +70,7 @@ void main({bool isInitialized = false}) async {
 
         debugPrint('Converted $amountSat sats to $amount $currency');
 
-        expect(bitcoinPrice, amount);
+        expect(amount, bitcoinPrice);
       });
 
       test('that converts currency to sats', () async {
@@ -85,7 +85,7 @@ void main({bool isInitialized = false}) async {
 
         final expectedSats = BigInt.from((amount * 100000000) ~/ bitcoinPrice);
 
-        expect(expectedSats, sats);
+        expect(sats, expectedSats);
       });
 
       test('that converts sats to currency', () async {
@@ -99,7 +99,7 @@ void main({bool isInitialized = false}) async {
         debugPrint('Converted $sats sats to $amount $currency');
 
         final expectedAmount = sats / BigInt.from(100000000) * bitcoinPrice;
-        expect(expectedAmount, amount);
+        expect(amount, expectedAmount);
       });
     });
   });
