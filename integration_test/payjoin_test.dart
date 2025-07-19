@@ -158,12 +158,12 @@ void main({bool isInitialized = false}) async {
         expect(pjUri.queryParameters.containsKey('pj'), true);
 
         // Build the psbt with the sender wallet
-        const amountSat = 1000000;
+        const amountSat = 10000;
         const networkFeesSatPerVb = 1000.0;
         final preparedBitcoinSend = await prepareBitcoinSendUsecase.execute(
           walletId: senderWallet.id,
           address: address.address,
-          amountSat: 1000000,
+          amountSat: 10000,
           networkFee: const NetworkFee.relative(networkFeesSatPerVb),
           ignoreUnspendableInputs: false,
         );
@@ -343,7 +343,7 @@ void main({bool isInitialized = false}) async {
               payjoinCompleters[payjoin.id] = Completer();
             }
 
-            const amountSat = 1000000;
+            const amountSat = 1000;
             // Set up multiple sender sessions
             for (int i = 0; i < numberOfPayjoins; i++) {
               // Build the psbt with the sender wallet
