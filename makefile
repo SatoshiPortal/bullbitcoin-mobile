@@ -84,4 +84,4 @@ unit-test:
 
 integration-test:
 	@echo "🧪 integration tests"
-	@flutter test integration_test/_test.dart --reporter=compact
+	@flutter test integration_test/ --reporter=compact
