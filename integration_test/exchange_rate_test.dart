@@ -8,7 +8,7 @@ import 'package:bb_mobile/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-void main({bool isInitialized = false}) async {
+Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
@@ -21,6 +21,9 @@ void main({bool isInitialized = false}) async {
       locator<ConvertCurrencyToSatsAmountUsecase>();
   final convertSatsToCurrencyAmountUsecase =
       locator<ConvertSatsToCurrencyAmountUsecase>();
+
+  const currency = 'USD';
+  final bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
 
   group('Exchange Rate Integration Tests', () {
     group('have a working BullBitcoin API', () {
@@ -53,13 +56,6 @@ void main({bool isInitialized = false}) async {
     });
 
     group('have working conversion use cases', () {
-      const currency = 'USD';
-      late double bitcoinPrice;
-
-      setUp(() async {
-        bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
-      });
-
       test('that get the price of one bitcoin', () async {
         final amountSat = ConversionConstants.satsAmountOfOneBitcoin;
 
