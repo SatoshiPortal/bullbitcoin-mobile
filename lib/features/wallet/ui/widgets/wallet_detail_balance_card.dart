@@ -30,8 +30,8 @@ class WalletDetailBalanceCard extends StatelessWidget {
         image: DecorationImage(
           image: AssetImage(
             isLiquid
-                ? Assets.images2.bgInstantWallet.path
-                : Assets.images2.bgSecureWallet.path,
+                ? Assets.backgrounds.bgInstantWallet.path
+                : Assets.backgrounds.bgSecureWallet.path,
           ),
           fit: BoxFit.cover,
           colorFilter:

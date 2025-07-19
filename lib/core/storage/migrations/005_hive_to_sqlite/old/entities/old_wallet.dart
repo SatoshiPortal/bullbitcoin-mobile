@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_address.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_swap.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_transaction.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:crypto/crypto.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -23,9 +24,9 @@ extension BaseWalletTypeExtension on OldBaseWalletType {
   String get getImage {
     switch (this) {
       case OldBaseWalletType.Bitcoin:
-        return 'assets/images/icon_btc.png';
+        return Assets.misc.iconBtc.path;
       case OldBaseWalletType.Liquid:
-        return 'assets/images/icon_lbtc.png';
+        return Assets.misc.iconLbtc.path;
     }
   }
 }

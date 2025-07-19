@@ -1463,7 +1463,7 @@ class SendSendingScreen extends StatelessWidget {
               Gif(
                 autostart: Autostart.loop,
                 height: 123,
-                image: AssetImage(Assets.images2.cubesLoading.path),
+                image: AssetImage(Assets.animations.cubesLoading.path),
               ),
               if (!isLnSwap) ...[
                 const Gap(8),

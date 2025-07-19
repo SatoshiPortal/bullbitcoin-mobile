@@ -26,7 +26,7 @@ class OnboardingRecoverySuccess extends StatelessWidget {
                   height: 200,
                   width: 200,
                   child: Gif(
-                    image: AssetImage(Assets.images2.successTick.path),
+                    image: AssetImage(Assets.animations.successTick.path),
                     autostart: Autostart.once,
                     height: 200,
                     width: 200,

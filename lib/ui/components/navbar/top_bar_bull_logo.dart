@@ -39,7 +39,7 @@ class _BullLogo extends StatelessWidget {
       return InkWell(
         onTap: onTap,
         child: Image.asset(
-          Assets.images2.bbLogoSmall.path,
+          Assets.logos.bbLogoSmall.path,
           width: 32,
           height: 32,
         ),
@@ -47,7 +47,7 @@ class _BullLogo extends StatelessWidget {
     }
 
     return Gif(
-      image: AssetImage(Assets.images2.bbSync.path),
+      image: AssetImage(Assets.animations.bbSync.path),
       autostart: Autostart.loop,
       height: 32,
       width: 32,
