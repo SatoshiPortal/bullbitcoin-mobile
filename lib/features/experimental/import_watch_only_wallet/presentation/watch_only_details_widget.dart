@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -64,7 +65,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
             ),
             SizedBox(
               width: 200,
-              child: DropdownButtonFormField<Signer>(
+              child: DropdownButtonFormField<SignerEntity>(
                 alignment: Alignment.centerLeft,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
@@ -76,18 +77,55 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                 ),
                 value: entity.signer,
                 items:
-                    [Signer.remote, Signer.none]
+                    [SignerEntity.remote, SignerEntity.none]
                         .map(
-                          (source) => DropdownMenuItem<Signer>(
-                            value: source,
+                          (value) => DropdownMenuItem<SignerEntity>(
+                            value: value,
                             child: BBText(
-                              source.name,
+                              value.displayName,
                               style: context.font.headlineSmall,
                             ),
                           ),
                         )
                         .toList(),
                 onChanged: cubit.onSignerChanged,
+              ),
+            ),
+          ],
+        ),
+        const Gap(24),
+        Row(
+          children: [
+            SizedBox(
+              width: 100,
+              child: BBText('Signer Device', style: context.font.titleMedium),
+            ),
+            SizedBox(
+              width: 200,
+              child: DropdownButtonFormField<SignerDeviceEntity?>(
+                alignment: Alignment.centerLeft,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                ),
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: context.colour.secondary,
+                ),
+                value: entity.signerDevice,
+                items:
+                    [null, ...SignerDeviceEntity.values]
+                        .map(
+                          (value) => DropdownMenuItem<SignerDeviceEntity?>(
+                            value: value,
+                            child: BBText(
+                              value?.displayName ?? 'None',
+                              style: context.font.headlineSmall,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                onChanged: cubit.onSignerDeviceChanged,
               ),
             ),
           ],

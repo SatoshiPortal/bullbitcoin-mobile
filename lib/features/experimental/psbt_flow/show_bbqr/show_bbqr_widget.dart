@@ -38,10 +38,9 @@ class _ShowBbqrView extends StatelessWidget {
         }
 
         return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             QrImageView(data: state.parts[state.currentIndex]),
-            const SizedBox(height: 16),
             Text(
               'Part ${state.currentIndex + 1} of ${state.parts.length}',
               style: context.font.bodyMedium?.copyWith(

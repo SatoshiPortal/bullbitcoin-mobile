@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_remote_datasource.dart'
     show ElectrumRemoteDatasource;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/transaction/data/models/transaction_mapper.dart';
+import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -14,7 +14,7 @@ class TransactionRepository {
     required ElectrumRemoteDatasource electrumRemoteDatasource,
   }) : _electrumRemoteDatasource = electrumRemoteDatasource;
 
-  Future<Tx> fetch({required String txid}) async {
+  Future<RawBitcoinTxEntity> fetch({required String txid}) async {
     final sqlite = locator<SqliteDatabase>();
     final cachedTransaction =
         await sqlite.managers.transactions
@@ -22,12 +22,12 @@ class TransactionRepository {
             .getSingleOrNull();
 
     if (cachedTransaction != null) {
-      return TransactionMapper.fromSqlite(cachedTransaction);
+      return TransactionModelExtension.toEntity(cachedTransaction);
     }
 
     // If not found in cache, fetch from Electrum
     final txBytes = await _electrumRemoteDatasource.getTransaction(txid);
-    final tx = await TransactionMapper.fromBytes(txBytes);
+    final tx = await RawBitcoinTxEntity.fromBytes(txBytes);
 
     // Cache the transaction
     await sqlite.managers.transactions.create(

@@ -9,17 +9,12 @@ enum PsbtFlowRoutes {
 }
 
 class PsbtRouterConfig {
-  static final route = ShellRoute(
-    builder: (context, state, child) => child,
-    routes: [
-      GoRoute(
-        name: PsbtFlowRoutes.show.name,
-        path: PsbtFlowRoutes.show.path,
-        builder: (context, state) {
-          final psbt = state.extra as String?;
-          return ShowPsbtScreen(psbt: psbt ?? '');
-        },
-      ),
-    ],
+  static final route = GoRoute(
+    name: PsbtFlowRoutes.show.name,
+    path: PsbtFlowRoutes.show.path,
+    builder: (context, state) {
+      final psbt = state.extra as String?;
+      return ShowPsbtScreen(psbt: psbt ?? '');
+    },
   );
 }
