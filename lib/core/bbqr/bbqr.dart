@@ -9,11 +9,11 @@ import 'package:dart_bbqr/bbqr.dart' as bbqr;
 
 enum TxFormat { psbt, hex }
 
-class BbqrService {
+class Bbqr {
   final Map<int, String> parts = {};
   BbqrOptions? options;
 
-  BbqrService();
+  Bbqr();
 
   bool get isScanningBbqr => parts.isNotEmpty && options != null;
 

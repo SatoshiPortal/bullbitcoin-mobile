@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/bbqr/bbqr_service.dart';
+import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/errors.dart';
@@ -17,7 +17,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     required BroadcastBitcoinTransactionUsecase
     broadcastBitcoinTransactionUsecase,
   }) : _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
-       super(BroadcastSignedTxState(bbqr: BbqrService()));
+       super(BroadcastSignedTxState(bbqr: Bbqr()));
 
   void clear() => emit(state.copyWith(error: null, transaction: null));
 
