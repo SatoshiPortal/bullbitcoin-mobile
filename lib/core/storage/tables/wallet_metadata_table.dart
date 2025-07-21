@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:drift/drift.dart';
 
 enum Signer {
@@ -10,15 +11,19 @@ enum Signer {
     return Signer.values.firstWhere((source) => source.name == name);
   }
 
-  String get displayName =>
-      StringFormatting.camelCaseToTitleCase(name, separator: ' ');
+  SignerEntity toEntity() => switch (this) {
+    Signer.local => SignerEntity.local,
+    Signer.remote => SignerEntity.remote,
+    Signer.none => SignerEntity.none,
+  };
 }
 
 enum SignerDevice {
   coldcardQ;
 
-  String get displayName =>
-      StringFormatting.camelCaseToTitleCase(name, separator: ' ');
+  SignerDeviceEntity toEntity() => switch (this) {
+    SignerDevice.coldcardQ => SignerDeviceEntity.coldcardQ,
+  };
 }
 
 @DataClassName('WalletMetadataRow')

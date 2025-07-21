@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -64,7 +65,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
             ),
             SizedBox(
               width: 200,
-              child: DropdownButtonFormField<Signer>(
+              child: DropdownButtonFormField<SignerEntity>(
                 alignment: Alignment.centerLeft,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
@@ -76,9 +77,9 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                 ),
                 value: entity.signer,
                 items:
-                    [Signer.remote, Signer.none]
+                    [SignerEntity.remote, SignerEntity.none]
                         .map(
-                          (value) => DropdownMenuItem<Signer>(
+                          (value) => DropdownMenuItem<SignerEntity>(
                             value: value,
                             child: BBText(
                               value.displayName,
@@ -101,7 +102,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
             ),
             SizedBox(
               width: 200,
-              child: DropdownButtonFormField<SignerDevice?>(
+              child: DropdownButtonFormField<SignerDeviceEntity?>(
                 alignment: Alignment.centerLeft,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
@@ -113,9 +114,9 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                 ),
                 value: entity.signerDevice,
                 items:
-                    [null, ...SignerDevice.values]
+                    [null, ...SignerDeviceEntity.values]
                         .map(
-                          (value) => DropdownMenuItem<SignerDevice?>(
+                          (value) => DropdownMenuItem<SignerDeviceEntity?>(
                             value: value,
                             child: BBText(
                               value?.displayName ?? 'None',

@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
@@ -9,14 +10,14 @@ part 'watch_only_wallet_entity.freezed.dart';
 abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
   const factory WatchOnlyWalletEntity.descriptor({
     required satoshifier.WatchOnlyDescriptor watchOnlyDescriptor,
-    @Default(Signer.remote) Signer signer,
+    @Default(SignerEntity.remote) SignerEntity signer,
     @Default('') String label,
-    @Default(null) SignerDevice? signerDevice,
+    @Default(null) SignerDeviceEntity? signerDevice,
   }) = WatchOnlyDescriptorEntity;
 
   const factory WatchOnlyWalletEntity.xpub({
     required satoshifier.WatchOnlyXpub watchOnlyXpub,
-    @Default(Signer.none) Signer signer,
+    @Default(SignerEntity.none) SignerEntity signer,
     @Default('') String label,
   }) = WatchOnlyXpubEntity;
 
@@ -25,13 +26,13 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
   T when<T>({
     required T Function(
       satoshifier.WatchOnlyDescriptor watchOnlyDescriptor,
-      Signer signer,
+      SignerEntity signer,
       String label,
     )
     descriptor,
     required T Function(
       satoshifier.WatchOnlyXpub watchOnlyXpub,
-      Signer signer,
+      SignerEntity signer,
       String label,
     )
     xpub,
