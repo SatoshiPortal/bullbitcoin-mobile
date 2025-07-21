@@ -18,9 +18,9 @@ class WalletMetadataService {
     } else if (network.isBitcoin && network.isTestnet) {
       networkPath = "1h";
     } else if (network.isLiquid && network.isMainnet) {
-      networkPath = "1667h";
+      networkPath = "1776h";
     } else if (network.isLiquid && network.isTestnet) {
-      networkPath = "1668h";
+      networkPath = "1777h";
     } else {
       throw 'Unexpected network path';
     }
@@ -80,9 +80,9 @@ class WalletMetadataService {
         network = Network.bitcoinMainnet;
       case '1h':
         network = Network.bitcoinTestnet;
-      case '1667h':
+      case '1776h':
         network = Network.liquidMainnet;
-      case '1668h':
+      case '1777h': // All testnets are 1h but we need to distinguish bitcoin and liquid testnets
         network = Network.liquidTestnet;
       default:
         throw 'Unknown script: $matchingNetwork';
