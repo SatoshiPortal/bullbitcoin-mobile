@@ -65,6 +65,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   SettingsEntryItem(
                     icon: Icons.qr_code_2,
                     title: 'Import watch-only',
+                    isSuperUser: true,
                     onTap:
                         () => context.pushNamed(
                           ImportWatchOnlyRoutes.import.name,
@@ -74,19 +75,17 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   SettingsEntryItem(
                     icon: Icons.science,
                     title: 'Experimental / Danger Zone',
+                    isSuperUser: true,
                     onTap:
                         () =>
                             context.pushNamed(SettingsRoute.experimental.name),
                   ),
                 if (isSuperuser)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    leading: const Icon(Icons.science),
-                    title: const Text('Testnet Mode'),
-                    trailing: const TestnetModeSwitch(),
+                  const SettingsEntryItem(
+                    icon: Icons.science,
+                    title: 'Testnet Mode',
+                    isSuperUser: true,
+                    trailing: TestnetModeSwitch(),
                   ),
               ],
             ),

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -56,28 +57,43 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.btc.path,
               label: 'Buy',
               onPressed: () {
-                context.pushNamed(BuyRoute.buy.name);
+                if (isSuperuser) {
+                  context.pushNamed(BuyRoute.buy.name);
+                } else {
+                  ComingSoonBottomSheet.show(
+                    context,
+                    description: 'Buy Bitcoin with CAD, CRC, EUR or MXN',
+                  );
+                }
               },
               position: _ButtonPosition.first,
-              disabled: !isSuperuser,
+              disabled: false,
             ),
             const Gap(1),
             _ActionButton(
               icon: Assets.icons.dollar.path,
               label: 'Sell',
               onPressed: () {
-                // context.pushNamed(AppRoute.sell.name);
+                ComingSoonBottomSheet.show(
+                  context,
+                  description: 'Sell Bitcoin to fiat',
+                );
               },
               position: _ButtonPosition.middle,
-              disabled: true,
+              disabled: false,
             ),
             const Gap(1),
             _ActionButton(
               icon: Assets.icons.rightArrow.path,
               label: 'Pay',
-              onPressed: () {},
+              onPressed: () {
+                ComingSoonBottomSheet.show(
+                  context,
+                  description: 'Make fiat payments with Bitcoin',
+                );
+              },
               position: _ButtonPosition.middle,
-              disabled: true,
+              disabled: false,
             ),
             const Gap(1),
             _ActionButton(

@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
+import 'package:bb_mobile/ui/components/settings/settings_entry_item.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,156 +40,111 @@ class SettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  tileColor: Colors.transparent,
-                  title: Text(context.loc.backupSettingsLabel),
+                SettingsEntryItem(
+                  icon: Icons.save_alt,
+                  title: context.loc.backupSettingsLabel,
                   onTap: () {
                     context.pushNamed(SettingsRoute.backupSettings.name);
                   },
-                  trailing: const Icon(Icons.chevron_right),
                 ),
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  tileColor: Colors.transparent,
-                  title: const Text('Wallet details'),
+                SettingsEntryItem(
+                  icon: Icons.account_balance_wallet,
+                  title: 'Wallet details',
                   onTap: () {
                     context.pushNamed(
                       SettingsRoute.walletDetailsWalletList.name,
                     );
                   },
-                  trailing: const Icon(Icons.chevron_right),
                 ),
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  tileColor: Colors.transparent,
-                  title: Text(context.loc.electrumServerSettingsLabel),
+                SettingsEntryItem(
+                  icon: Icons.settings_input_component,
+                  title: context.loc.electrumServerSettingsLabel,
                   onTap: () {
                     ElectrumSettingsRouter.showElectrumServerSettings(context);
                   },
-                  trailing: const Icon(Icons.chevron_right),
                 ),
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  tileColor: Colors.transparent,
-                  title: Text(context.loc.pinCodeSettingsLabel),
+                SettingsEntryItem(
+                  icon: Icons.security,
+                  title: context.loc.pinCodeSettingsLabel,
                   onTap: () {
                     context.pushNamed(SettingsRoute.pinCode.name);
                   },
-                  trailing: const Icon(Icons.chevron_right),
                 ),
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  tileColor: Colors.transparent,
-                  title: const Text('Currency'),
+                SettingsEntryItem(
+                  icon: Icons.attach_money,
+                  title: 'Currency',
                   onTap: () {
                     context.pushNamed(SettingsRoute.currency.name);
                   },
-                  trailing: const Icon(Icons.chevron_right),
                 ),
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  tileColor: Colors.transparent,
-                  title: const Text('Auto Swap Settings'),
+                SettingsEntryItem(
+                  icon: Icons.swap_horiz,
+                  title: 'Auto Swap Settings',
                   onTap: () {
                     AutoSwapSettingsRouter.showAutoSwapSettings(context);
                   },
-                  trailing: const Icon(Icons.chevron_right),
                 ),
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  tileColor: Colors.transparent,
-                  title: const Text('Logs'),
+                SettingsEntryItem(
+                  icon: Icons.article,
+                  title: 'Logs',
                   onTap: () {
                     context.pushNamed(SettingsRoute.logs.name);
                   },
-                  trailing: const Icon(Icons.chevron_right),
                 ),
                 if (hasLegacySeeds)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: const Text('Legacy Seeds'),
+                  SettingsEntryItem(
+                    icon: Icons.vpn_key,
+                    title: 'Legacy Seeds',
+                    isSuperUser: true,
                     onTap: () {
                       context.pushNamed(SettingsRoute.legacySeeds.name);
                     },
-                    trailing: const Icon(Icons.chevron_right),
                   ),
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  tileColor: Colors.transparent,
-                  title: const Text('Terms & Conditions'),
+                SettingsEntryItem(
+                  icon: Icons.description,
+                  title: 'Terms & Conditions',
                   onTap: () {
                     final url = Uri.parse(
                       SettingsConstants.termsAndConditionsLink,
                     );
                     launchUrl(url, mode: LaunchMode.inAppBrowserView);
                   },
-                  trailing: const Icon(Icons.chevron_right),
                 ),
                 if (isSuperuser && kDebugMode)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: const Text('Experimental / Danger Zone'),
+                  SettingsEntryItem(
+                    icon: Icons.science,
+                    title: 'Experimental / Danger Zone',
+                    isSuperUser: true,
                     onTap:
                         () =>
                             context.pushNamed(SettingsRoute.experimental.name),
-                    trailing: const Icon(Icons.chevron_right),
                   ),
                 if (isSuperuser)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: Text(context.loc.testnetModeSettingsLabel),
+                  SettingsEntryItem(
+                    icon: Icons.science,
+                    title: context.loc.testnetModeSettingsLabel,
+                    isSuperUser: true,
+                    onTap: null,
                     trailing: const TestnetModeSwitch(),
                   ),
                 if (isSuperuser)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: Text(context.loc.languageSettingsLabel),
+                  SettingsEntryItem(
+                    icon: Icons.language,
+                    title: context.loc.languageSettingsLabel,
+                    isSuperUser: true,
                     onTap: () {
                       context.pushNamed(SettingsRoute.language.name);
                     },
-                    trailing: const Icon(Icons.chevron_right),
                   ),
                 if (isSuperuser)
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    tileColor: Colors.transparent,
-                    title: const Text('Import watch-only'),
+                  SettingsEntryItem(
+                    icon: Icons.qr_code_2,
+                    title: 'Import watch-only',
+                    isSuperUser: true,
                     onTap:
                         () => context.pushNamed(
                           ImportWatchOnlyRoutes.import.name,
                         ),
-                    trailing: const Icon(Icons.qr_code_2),
                   ),
               ],
             ),

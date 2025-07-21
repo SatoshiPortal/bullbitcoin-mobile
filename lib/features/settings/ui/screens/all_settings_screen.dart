@@ -17,6 +17,7 @@ class AllSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     final appVersion = context.select(
       (SettingsCubit cubit) => cubit.state.appVersion,
     );
