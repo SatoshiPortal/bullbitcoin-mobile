@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,6 +11,7 @@ import 'generated/schema_v5.dart' as v5;
 Future<void> main() async {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
   late SchemaVerifier verifier;
+  log = await Logger.init();
 
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 

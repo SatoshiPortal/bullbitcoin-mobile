@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:lwk/lwk.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
 
 Future main() async {
@@ -36,7 +37,9 @@ Future main() async {
         dotenv.load(isOptional: true),
         LibBbqr.init(),
       ]);
-      log = await Logger.init();
+      log = await Logger.init(
+        directory: await getApplicationDocumentsDirectory(),
+      );
 
       // The Locator setup might depend on the initialization of the libraries above
       //  so it's important to call it after the initialization

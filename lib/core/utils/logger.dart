@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
-import 'package:path_provider/path_provider.dart';
 
 export 'package:logging_colorful/logging_colorful.dart';
 
@@ -60,10 +59,9 @@ class Logger {
   static Future<Logger> init({
     String? encryptionKey,
     String name = 'Logger',
+    Directory? directory,
   }) async {
-    final dir = await getApplicationDocumentsDirectory();
-    // android dir: "/data/user/0/com.bullbitcoin.mobile/app_flutter"
-    // ios dir: "/var/mobile/Library/Application Support/com.bullbitcoin.mobile/app_flutter"
+    final dir = directory ?? Directory.current;
 
     return Logger._(
       encryptionKey,

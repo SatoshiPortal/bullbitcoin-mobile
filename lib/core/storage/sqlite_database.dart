@@ -65,18 +65,28 @@ class SqliteDatabase extends _$SqliteDatabase {
         ]);
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        if (from < 2) {
-          // Create AutoSwap table and seed it
-          await m.createTable(autoSwap);
-          await _seedDefaultAutoSwap();
+        try {
+          if (from < 2) {
+            // Create AutoSwap table and seed it
+            await m.createTable(autoSwap);
+            await _seedDefaultAutoSwap();
+          }
+          if (from < 3) {
+            // Create WalletAddressHistory table
+            await m.createTable(walletAddressHistory);
+            // TODO: Should we seed this table with already generated addresses here?
+          }
+          if (from < 4) await SchemaV4.migrate(this, walletMetadatas);
+          if (from < 5) await SchemaV5.migrate(m, walletMetadatas);
+        } catch (e, stackTrace) {
+          await log.migration(
+            level: Level.SEVERE,
+            message: 'Migration failure: $e',
+            exception: e,
+            stackTrace: stackTrace,
+          );
+          rethrow;
         }
-        if (from < 3) {
-          // Create WalletAddressHistory table
-          await m.createTable(walletAddressHistory);
-          // TODO: Should we seed this table with already generated addresses here?
-        }
-        if (from < 4) await SchemaV4.migrate(this, walletMetadatas);
-        if (from < 5) await SchemaV5.migrate(m, walletMetadatas);
       },
     );
   }
