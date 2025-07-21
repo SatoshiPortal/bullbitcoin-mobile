@@ -3,7 +3,6 @@ import 'package:bb_mobile/features/experimental/psbt_flow/show_bbqr/show_bbqr_wi
 import 'package:bb_mobile/features/experimental/psbt_flow/show_psbt/show_psbt_cubit.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/show_psbt/show_psbt_state.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,9 +29,9 @@ class _ShowPsbtView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('PSBT'),
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(title: 'PSBT', onBack: () => context.pop()),
       ),
       body: BlocBuilder<ShowPsbtCubit, ShowPsbtState>(
         builder: (context, state) {
