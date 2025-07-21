@@ -7,8 +7,8 @@ setup: clean deps build-runner l10n hooks ios-pod-update
 	@echo "🚀 Setup complete!"
 
 clean:
-	@echo "🧹 Clean and remove pubspec.lock"
-	@flutter clean && rm pubspec.lock
+	@echo "🧹 Clean and remove pubspec.lock and ios/Podfile.lock"
+	@flutter clean && rm pubspec.lock && rm ios/Podfile.lock
 
 deps:
 	@echo "🏃 Fetch dependencies"

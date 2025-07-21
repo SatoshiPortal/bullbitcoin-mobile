@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/experimental/scanner/scanner_widget.dart';
+import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_cubit.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_state.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -49,7 +49,7 @@ class RequestIdentifierScreen extends StatelessWidget {
             children: [
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
-                child: ScannerWidget(onScanned: cubit.onScanned),
+                child: QrScannerWidget(onScanned: cubit.onScanned),
               ),
               Positioned(
                 left: 0,

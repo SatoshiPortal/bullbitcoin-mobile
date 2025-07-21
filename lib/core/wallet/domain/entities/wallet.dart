@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
@@ -104,7 +104,7 @@ abstract class Wallet with _$Wallet {
     required String xpub,
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
-    required Signer signer,
+    required SignerEntity signer,
     required BigInt balanceSat,
     @Default(false) bool isEncryptedVaultTested,
     @Default(false) bool isPhysicalBackupTested,
@@ -124,7 +124,7 @@ abstract class Wallet with _$Wallet {
       Network.liquidMainnet ||
       Network.liquidTestnet => 'Liquid and Lightning network',
     };
-    if (signer == Signer.none) name = 'Watch-only';
+    if (signer == SignerEntity.none) name = 'Watch-only';
     return name;
   }
 
@@ -146,11 +146,11 @@ abstract class Wallet with _$Wallet {
     return network == Network.liquidMainnet || network == Network.liquidTestnet;
   }
 
-  bool get isWatchOnly => signer == Signer.none;
-
   String get derivationPath {
     // Todo: this might not be correct for all imported wallets and
     //  we should derive it properly from the descriptor
     return "m / ${scriptType.purpose}' / 0' / 0'";
   }
+
+  bool get isWatchOnly => signer == SignerEntity.none;
 }

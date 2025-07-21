@@ -151,6 +151,7 @@ class WalletMetadataService {
       masterFingerprint: seed.masterFingerprint,
       xpubFingerprint: xpub.fingerprintHex,
       signer: Signer.local,
+      signerDevice: null,
       xpub: xpub.convert(scriptType.getXpubType(network)),
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: changeDescriptor,
@@ -201,6 +202,7 @@ class WalletMetadataService {
       ),
       xpubFingerprint: bip32Xpub.fingerprintHex,
       signer: Signer.none,
+      signerDevice: null,
       xpub: bip32Xpub.convert(scriptType.getXpubType(network)),
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: changeDescriptor,
@@ -227,7 +229,11 @@ class WalletMetadataService {
       ),
       masterFingerprint: entity.masterFingerprint,
       xpubFingerprint: entity.pubkeyFingerprint,
-      signer: entity.signer,
+      signer: Signer.fromEntity(entity.signer),
+      signerDevice:
+          entity.signerDevice != null
+              ? SignerDevice.fromEntity(entity.signerDevice!)
+              : null,
       xpub: entity.pubkey,
       externalPublicDescriptor: entity.descriptor.external,
       internalPublicDescriptor: entity.descriptor.internal,
