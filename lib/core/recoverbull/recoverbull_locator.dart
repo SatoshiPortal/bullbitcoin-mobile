@@ -9,7 +9,8 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_fro
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_google_drive_backups_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_google_drive_backup_content_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
@@ -68,11 +69,14 @@ class RecoverbullLocator {
       () => DisconnectFromGoogleDriveUsecase(locator<GoogleDriveRepository>()),
     );
 
-    locator.registerFactory<FetchLatestGoogleDriveBackupUsecase>(
-      () =>
-          FetchLatestGoogleDriveBackupUsecase(locator<GoogleDriveRepository>()),
+    locator.registerFactory<FetchAllGoogleDriveBackupsUsecase>(
+      () => FetchAllGoogleDriveBackupsUsecase(locator<GoogleDriveRepository>()),
     );
-
+    locator.registerFactory<FetchGoogleDriveBackupContentUsecase>(
+      () => FetchGoogleDriveBackupContentUsecase(
+        locator<GoogleDriveRepository>(),
+      ),
+    );
     locator.registerFactory<CreateBackupKeyFromDefaultSeedUsecase>(
       () => CreateBackupKeyFromDefaultSeedUsecase(
         seedRepository: locator<SeedRepository>(),

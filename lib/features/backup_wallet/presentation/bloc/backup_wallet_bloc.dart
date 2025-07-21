@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/backup_wallet/domain/usecases/create_encrypted_vault_usecase.dart';
@@ -20,13 +19,12 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   final CreateEncryptedVaultUsecase createEncryptedBackupUsecase;
   final SelectFolderPathUsecase selectFolderPathUsecase;
   final ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase;
-  final FetchLatestGoogleDriveBackupUsecase fetchLatestBackupUsecase;
   final DisconnectFromGoogleDriveUsecase disconnectFromGoogleDriveUsecase;
   final SaveToFileSystemUsecase saveToFileSystemUsecase;
   final SaveToGoogleDriveUsecase saveToGoogleDriveUsecase;
   BackupWalletBloc({
     required this.createEncryptedBackupUsecase,
-    required this.fetchLatestBackupUsecase,
+
     required this.connectToGoogleDriveUsecase,
     required this.disconnectFromGoogleDriveUsecase,
     required this.selectFolderPathUsecase,

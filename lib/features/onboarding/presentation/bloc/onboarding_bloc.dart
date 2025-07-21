@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_google_drive_backups_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_google_drive_backup_content_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/find_mnemonic_words_usecase.dart';
@@ -26,22 +28,27 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
     required RestoreEncryptedVaultFromBackupKeyUsecase
     restoreEncryptedVaultFromBackupKeyUsecase,
-    required FetchLatestGoogleDriveBackupUsecase
-    fetchLatestGoogleDriveBackupUsecase,
+
     required FetchBackupFromFileSystemUsecase fetchBackupFromFileSystemUsecase,
+
     required CompletePhysicalBackupVerificationUsecase
     completePhysicalBackupVerificationUsecase,
+    required FetchAllGoogleDriveBackupsUsecase
+    fetchAllGoogleDriveBackupsUsecase,
+    required FetchGoogleDriveBackupContentUsecase
+    fetchGoogleDriveBackupContentUsecase,
   }) : _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
        _findMnemonicWordsUsecase = findMnemonicWordsUsecase,
        _selectFileFromPathUsecase = selectFileFromPathUsecase,
        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
        _restoreEncryptedVaultFromBackupKeyUsecase =
            restoreEncryptedVaultFromBackupKeyUsecase,
-       _fetchLatestGoogleDriveBackupUsecase =
-           fetchLatestGoogleDriveBackupUsecase,
+       _fetchGoogleDriveBackupContentUsecase =
+           fetchGoogleDriveBackupContentUsecase,
        _fetchBackupFromFileSystemUsecase = fetchBackupFromFileSystemUsecase,
        _completePhysicalBackupVerificationUsecase =
            completePhysicalBackupVerificationUsecase,
+       _fetchAllGoogleDriveBackupsUsecase = fetchAllGoogleDriveBackupsUsecase,
        super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoveryWordChanged>(_onRecoveryWordChanged);
