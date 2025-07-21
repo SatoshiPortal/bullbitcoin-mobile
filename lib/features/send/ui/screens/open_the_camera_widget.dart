@@ -13,49 +13,55 @@ class OpenTheCameraWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: context.colour.secondaryFixedDim,
-      child: Column(
-        children: [
-          const Gap(30),
-          Image.asset(Assets.misc.qRPlaceholder.path, height: 221, width: 221),
-          const Gap(24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 48),
-            child: BBText(
-              'Scan any Bitcoin or Lightning QR code to pay with bitcoin.',
-              style: context.font.bodyMedium,
-              color: context.colour.outlineVariant,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-            ),
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          PageRouteBuilder(
+            pageBuilder:
+                (context, _, _) => FullScreenScannerPage(
+                  onScannedPaymentRequest: onScannedPaymentRequest,
+                ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) => child,
           ),
-          const Gap(24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 52),
-            child: BBButton.small(
-              outlined: true,
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder:
-                        (context, _, _) => FullScreenScannerPage(
-                          onScannedPaymentRequest: onScannedPaymentRequest,
-                        ),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) =>
-                            child,
-                  ),
-                );
-              },
-              label: 'Open the Camera',
-              bgColor: Colors.transparent,
-              borderColor: context.colour.surfaceContainer,
-              textColor: context.colour.secondary,
+        );
+      },
+      child: ColoredBox(
+        color: context.colour.secondaryFixedDim,
+        child: Column(
+          children: [
+            const Gap(30),
+            Image.asset(
+              Assets.misc.qRPlaceholder.path,
+              height: 221,
+              width: 221,
             ),
-          ),
-          const Gap(24),
-        ],
+            const Gap(24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 48),
+              child: BBText(
+                'Scan any Bitcoin or Lightning QR code to pay with bitcoin.',
+                style: context.font.bodyMedium,
+                color: context.colour.outlineVariant,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+              ),
+            ),
+            const Gap(24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 52),
+              child: BBButton.small(
+                outlined: true,
+                onPressed: () {},
+                label: 'Open the Camera',
+                bgColor: Colors.transparent,
+                borderColor: context.colour.surfaceContainer,
+                textColor: context.colour.secondary,
+              ),
+            ),
+            const Gap(24),
+          ],
+        ),
       ),
     );
   }
