@@ -59,7 +59,6 @@ class WalletAddressRepository {
             await _walletAddressHistoryDatasource.getByWalletId(
               walletId,
               limit: 1,
-              offset: 0,
               descending: true,
             );
         // Generate a new address with the next index.
@@ -93,7 +92,7 @@ class WalletAddressRepository {
   Future<List<WalletAddress>> getGeneratedReceiveAddresses(
     String walletId, {
     int? limit,
-    int offset = 0,
+    int? fromIndex,
   }) async {
     // Fetch wallet metadata and history in parallel
     final (walletMetadata, addressHistory) =
@@ -102,7 +101,7 @@ class WalletAddressRepository {
           _walletAddressHistoryDatasource.getByWalletId(
             walletId,
             limit: limit,
-            offset: offset,
+            fromIndex: fromIndex,
             descending: true,
           ),
         ).wait;
@@ -115,7 +114,36 @@ class WalletAddressRepository {
     final isBdkWallet = walletModel is PublicBdkWalletModel;
 
     if (addressHistory.isEmpty) {
-      return [];
+      int startIndex;
+      if (fromIndex == null) {
+        // Get the last used address from the wallet datasource since nothing is in history.
+
+        startIndex =
+            isBdkWallet
+                ? await _bdkWallet.getLastUnusedAddressIndex(
+                  wallet: walletModel,
+                )
+                : await _lwkWallet.getLastUnusedAddressIndex(
+                  wallet: walletModel,
+                );
+
+        if (startIndex == 0) {
+          // This means no addresses have been generated yet.
+          return [];
+        }
+      } else {
+        startIndex = fromIndex;
+      }
+
+      // Generate the last unused address and add it to the history to start from there.
+      addressHistory.add(
+        await _generateAddressModel(
+          index: startIndex,
+          walletModel: walletModel,
+          walletId: walletId,
+          isBdkWallet: isBdkWallet,
+        ),
+      );
     }
 
     // Fill any gaps in the address history
@@ -124,6 +152,8 @@ class WalletAddressRepository {
       walletModel: walletModel,
       walletId: walletId,
       isBdkWallet: isBdkWallet,
+      limit: limit,
+      fromIndex: fromIndex,
     );
 
     // Sort and limit the addresses as requested
@@ -146,9 +176,19 @@ class WalletAddressRepository {
     required WalletModel walletModel,
     required String walletId,
     required bool isBdkWallet,
+    int? limit,
+    int? fromIndex,
   }) async {
-    // Find all gaps in one pass (history is in descending order)
     final gaps = <int>[];
+
+    // Find gaps above the highest index in the history
+    if (fromIndex != null && addressHistory.first.index < fromIndex) {
+      for (int i = addressHistory.first.index + 1; i <= fromIndex; i++) {
+        gaps.add(i);
+      }
+    }
+
+    // Find all other gaps in one pass (history is in descending order)
     for (int i = 1; i < addressHistory.length; i++) {
       final previousIndex = addressHistory[i - 1].index;
       final currentIndex = addressHistory[i].index;
@@ -156,6 +196,25 @@ class WalletAddressRepository {
       // Check for gaps between consecutive addresses
       for (int j = currentIndex + 1; j < previousIndex; j++) {
         gaps.add(j);
+      }
+    }
+
+    // If a limit is set, complete until the limit is reached.
+    final lastAddressHistoryIndex = addressHistory.last.index;
+    if (limit != null && gaps.length + addressHistory.length < limit) {
+      // Fill gaps until we reach the limit
+      for (
+        int i = lastAddressHistoryIndex - 1;
+        gaps.length + addressHistory.length < limit && i >= 0;
+        i--
+      ) {
+        gaps.add(i);
+      }
+    }
+    // If no limit is set, make sure to fill until index 0.
+    else if (limit == null && lastAddressHistoryIndex > 0) {
+      for (int i = lastAddressHistoryIndex - 1; i >= 0; i--) {
+        gaps.add(i);
       }
     }
 
@@ -261,7 +320,7 @@ class WalletAddressRepository {
   Future<List<WalletAddress>> getUsedChangeAddresses(
     String walletId, {
     int? limit,
-    int offset = 0,
+    int? fromIndex,
     required bool descending,
   }) async {
     return [];

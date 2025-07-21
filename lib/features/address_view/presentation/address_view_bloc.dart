@@ -38,16 +38,11 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
       // Fetch initial receive and change addresses
       final (receiveAddresses, changeAddresses) =
           await (
-            _getAddressListUseCase.execute(
-              walletId: _walletId,
-              limit: _limit,
-              offset: 0,
-            ),
+            _getAddressListUseCase.execute(walletId: _walletId, limit: _limit),
             _getAddressListUseCase.execute(
               walletId: _walletId,
               isChange: true,
               limit: _limit,
-              offset: 0,
             ),
           ).wait;
 
@@ -77,18 +72,19 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
     try {
       emit(state.copyWith(isLoading: true));
 
-      final offset = state.receiveAddresses.length;
       final moreReceiveAddresses = await _getAddressListUseCase.execute(
         walletId: _walletId,
         limit: _limit,
-        offset: offset,
+        fromIndex: state.nextReceiveAddressIndexToLoad,
       );
 
       emit(
         state.copyWith(
           receiveAddresses: List.from(state.receiveAddresses)
             ..addAll(moreReceiveAddresses),
-          hasReachedEndOfReceiveAddresses: moreReceiveAddresses.length < _limit,
+          hasReachedEndOfReceiveAddresses:
+              moreReceiveAddresses.length < _limit ||
+              moreReceiveAddresses.lastOrNull?.index == 0,
         ),
       );
     } on WalletError catch (error) {
@@ -109,19 +105,20 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
     try {
       emit(state.copyWith(isLoading: true));
 
-      final offset = state.changeAddresses.length;
       final moreChangeAddresses = await _getAddressListUseCase.execute(
         walletId: _walletId,
         isChange: true,
         limit: _limit,
-        offset: offset,
+        fromIndex: state.nextChangeAddressIndexToLoad,
       );
 
       emit(
         state.copyWith(
           changeAddresses: List.from(state.changeAddresses)
             ..addAll(moreChangeAddresses),
-          hasReachedEndOfChangeAddresses: moreChangeAddresses.length < _limit,
+          hasReachedEndOfChangeAddresses:
+              moreChangeAddresses.length < _limit ||
+              moreChangeAddresses.lastOrNull?.index == 0,
         ),
       );
     } on WalletError catch (error) {

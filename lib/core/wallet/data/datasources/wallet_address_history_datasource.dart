@@ -51,7 +51,7 @@ class WalletAddressHistoryDatasource {
   Future<List<WalletAddressModel>> getByWalletId(
     String walletId, {
     int? limit,
-    int? offset,
+    int? fromIndex,
     bool isChange = false,
     required bool descending,
   }) async {
@@ -59,7 +59,14 @@ class WalletAddressHistoryDatasource {
     final query =
         _db.select(_db.walletAddressHistory)
           ..where(
-            (t) => t.walletId.equals(walletId) & t.isChange.equals(isChange),
+            (t) =>
+                t.walletId.equals(walletId) &
+                t.isChange.equals(isChange) &
+                (fromIndex != null
+                    ? descending
+                        ? t.index.isSmallerOrEqualValue(fromIndex)
+                        : t.index.isBiggerOrEqualValue(fromIndex)
+                    : const Constant(true)),
           )
           ..orderBy([
             (t) =>
@@ -69,7 +76,7 @@ class WalletAddressHistoryDatasource {
           ]);
 
     if (limit != null) {
-      query.limit(limit, offset: offset);
+      query.limit(limit);
     }
 
     final rows = await query.get();

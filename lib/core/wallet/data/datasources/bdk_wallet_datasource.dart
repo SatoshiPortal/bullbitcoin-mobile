@@ -389,31 +389,50 @@ class BdkWalletDatasource {
     required WalletModel wallet,
   }) async {
     final bdkWallet = await _createWallet(wallet);
+    // Get the last unused address instead of increasing the address right away
+    //  so we start at index 0.
     final addressInfo = bdkWallet.getAddress(
-      addressIndex: const bdk.AddressIndex.increase(),
+      addressIndex: const bdk.AddressIndex.lastUnused(),
     );
 
     final index = addressInfo.index;
     final address = addressInfo.address.asString();
 
+    // Now increase the address index so the next call to getAddress
+    //  will return a new address with the next index.
+    bdkWallet.getAddress(addressIndex: const bdk.AddressIndex.increase());
+
     return (index: index, address: address);
   }
 
-  Future<({String address, int index})> getLastUnusedAddress({
+  Future<int> getLastUnusedAddressIndex({
     required WalletModel wallet,
     bool isChange = false,
   }) async {
     final bdkWallet = await _createWallet(wallet);
     const lastUnusedAddressIndex = bdk.AddressIndex.lastUnused();
+
     final addressInfo =
         isChange
             ? bdkWallet.getInternalAddress(addressIndex: lastUnusedAddressIndex)
             : bdkWallet.getAddress(addressIndex: lastUnusedAddressIndex);
 
     final index = addressInfo.index;
-    final address = addressInfo.address.asString();
 
-    return (index: index, address: address);
+    /*if (index == 0) {
+      // If the index is 0, it means no addresses have been used yet
+      // so we need to reset the address index to 0 after the getAddress call
+      // incremented it. Since this function should not have that side effect,
+      // and should merely be a getter.
+      const resetIndex = bdk.AddressIndex.reset(index: 0);
+      if (isChange) {
+        bdkWallet.getInternalAddress(addressIndex: resetIndex);
+      } else {
+        bdkWallet.getAddress(addressIndex: resetIndex);
+      }
+    }*/
+
+    return index;
   }
 
   Future<String> getAddressByIndex(

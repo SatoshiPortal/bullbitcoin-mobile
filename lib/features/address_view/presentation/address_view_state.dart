@@ -11,4 +11,18 @@ sealed class AddressViewState with _$AddressViewState {
     WalletError? error,
   }) = _AddressViewState;
   const AddressViewState._();
+
+  int? get nextReceiveAddressIndexToLoad =>
+      receiveAddresses.isEmpty
+          ? null
+          : receiveAddresses.last.index > 0
+          ? receiveAddresses.last.index - 1
+          : null;
+
+  int? get nextChangeAddressIndexToLoad =>
+      changeAddresses.isEmpty
+          ? null
+          : changeAddresses.last.index > 0
+          ? changeAddresses.last.index - 1
+          : null;
 }
