@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx_script_sig.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx_vin.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx_vout.dart';
@@ -8,11 +5,10 @@ import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'tx.freezed.dart';
-part 'tx.g.dart';
 
 @freezed
-abstract class TxEntity with _$TxEntity {
-  const factory TxEntity({
+abstract class RawBitcoinTxEntity with _$RawBitcoinTxEntity {
+  const factory RawBitcoinTxEntity({
     required String txid,
     required int version,
     required BigInt size,
@@ -20,44 +16,11 @@ abstract class TxEntity with _$TxEntity {
     required int locktime,
     required List<TxVin> vin,
     required List<TxVout> vout,
-  }) = _TxEntity;
+  }) = _RawBitcoinTxEntity;
 
-  const TxEntity._();
+  const RawBitcoinTxEntity._();
 
-  factory TxEntity.fromJson(Map<String, dynamic> json) =>
-      _$TxEntityFromJson(json);
-
-  static TransactionModel toModel(TxEntity tx) {
-    return TransactionModel(
-      txid: tx.txid,
-      version: tx.version,
-      size: tx.size.toString(),
-      vsize: tx.vsize.toString(),
-      locktime: tx.locktime,
-      vin: json.encode(tx.vin),
-      vout: json.encode(tx.vout),
-    );
-  }
-
-  factory TxEntity.fromSqlite(TransactionModel row) {
-    return TxEntity(
-      txid: row.txid,
-      version: row.version,
-      size: BigInt.parse(row.size),
-      vsize: BigInt.parse(row.vsize),
-      locktime: row.locktime,
-      vin:
-          (json.decode(row.vin) as List)
-              .map((e) => TxVin.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      vout:
-          (json.decode(row.vout) as List)
-              .map((e) => TxVout.fromJson(e as Map<String, dynamic>))
-              .toList(),
-    );
-  }
-
-  static Future<TxEntity> fromBytes(List<int> bytes) async {
+  static Future<RawBitcoinTxEntity> fromBytes(List<int> bytes) async {
     final bdkTx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
 
     final txid = bdkTx.txid();
@@ -74,7 +37,7 @@ abstract class TxEntity with _$TxEntity {
       vout.add(_mapOutput(output, i));
     }
 
-    return TxEntity(
+    return RawBitcoinTxEntity(
       txid: txid,
       version: version,
       size: size,
@@ -85,7 +48,7 @@ abstract class TxEntity with _$TxEntity {
     );
   }
 
-  static Future<TxEntity> fromPsbt(String psbtBase64) async {
+  static Future<RawBitcoinTxEntity> fromPsbt(String psbtBase64) async {
     final psbt = await bdk.PartiallySignedTransaction.fromString(psbtBase64);
     final txBytes = psbt.extractTx().serialize();
     return fromBytes(txBytes);

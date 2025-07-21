@@ -8,7 +8,7 @@ import 'package:gap/gap.dart';
 class TransactionDetailsWidget extends StatelessWidget {
   static const int _txidCut = 10;
 
-  final TxEntity tx;
+  final RawBitcoinTxEntity tx;
 
   const TransactionDetailsWidget({super.key, required this.tx});
 

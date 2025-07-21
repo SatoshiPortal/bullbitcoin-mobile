@@ -88,7 +88,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   Future<void> tryParseTransaction(String input) async {
     emit(state.copyWith(error: null));
     try {
-      final tx = await TxEntity.fromPsbt(input);
+      final tx = await RawBitcoinTxEntity.fromPsbt(input);
       emit(
         state.copyWith(
           transaction: (format: TxFormat.psbt, data: input, tx: tx),
@@ -96,7 +96,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       );
     } catch (e) {
       try {
-        final tx = await TxEntity.fromBytes(hex.decode(input));
+        final tx = await RawBitcoinTxEntity.fromBytes(hex.decode(input));
         emit(
           state.copyWith(
             transaction: (format: TxFormat.hex, data: input, tx: tx),

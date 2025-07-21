@@ -17,12 +17,11 @@ class BbqrService {
 
   bool get isScanningBbqr => parts.isNotEmpty && options != null;
 
-  Future<({TxFormat format, String data, TxEntity tx})?> scanTransaction(
-    String payload,
-  ) async {
+  Future<({TxFormat format, String data, RawBitcoinTxEntity tx})?>
+  scanTransaction(String payload) async {
     if (!BbqrOptions.isValid(payload)) {
       try {
-        final tx = await TxEntity.fromBytes(hex.decode(payload));
+        final tx = await RawBitcoinTxEntity.fromBytes(hex.decode(payload));
         return (format: TxFormat.hex, data: payload, tx: tx);
       } catch (e) {
         log.severe('e: $e');
@@ -43,7 +42,7 @@ class BbqrService {
         final bbqrParts = parts.values.toList();
         final bbqrJoiner = await bbqr.Joined.tryFromParts(parts: bbqrParts);
         final psbtBase64 = base64.encode(bbqrJoiner.data);
-        final tx = await TxEntity.fromPsbt(psbtBase64);
+        final tx = await RawBitcoinTxEntity.fromPsbt(psbtBase64);
         return (format: TxFormat.psbt, data: psbtBase64, tx: tx);
       } else {
         return null;
