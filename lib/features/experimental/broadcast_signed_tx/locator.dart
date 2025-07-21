@@ -13,8 +13,8 @@ class BroadcastSignedTxLocator {
   }
 
   static void registerBlocs() {
-    locator.registerFactoryParam<BroadcastSignedTxCubit, void, void>(
-      (_, _) => BroadcastSignedTxCubit(
+    locator.registerFactory<BroadcastSignedTxCubit>(
+      () => BroadcastSignedTxCubit(
         broadcastBitcoinTransactionUsecase:
             locator<BroadcastBitcoinTransactionUsecase>(),
       ),
