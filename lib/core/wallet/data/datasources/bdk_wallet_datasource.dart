@@ -419,19 +419,6 @@ class BdkWalletDatasource {
 
     final index = addressInfo.index;
 
-    /*if (index == 0) {
-      // If the index is 0, it means no addresses have been used yet
-      // so we need to reset the address index to 0 after the getAddress call
-      // incremented it. Since this function should not have that side effect,
-      // and should merely be a getter.
-      const resetIndex = bdk.AddressIndex.reset(index: 0);
-      if (isChange) {
-        bdkWallet.getInternalAddress(addressIndex: resetIndex);
-      } else {
-        bdkWallet.getAddress(addressIndex: resetIndex);
-      }
-    }*/
-
     return index;
   }
 
