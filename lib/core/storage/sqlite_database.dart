@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_v4.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_v5.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
@@ -74,12 +75,8 @@ class SqliteDatabase extends _$SqliteDatabase {
           await m.createTable(walletAddressHistory);
           // TODO: Should we seed this table with already generated addresses here?
         }
-        if (from < 4) {
-          await SchemaV4.migrate(this, walletMetadatas);
-        }
-        if (from < 5) {
-          await m.addColumn(walletMetadatas, walletMetadatas.signerDevice);
-        }
+        if (from < 4) await SchemaV4.migrate(this, walletMetadatas);
+        if (from < 5) await SchemaV5.migrate(m, walletMetadatas);
       },
     );
   }
