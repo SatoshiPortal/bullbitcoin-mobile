@@ -229,8 +229,11 @@ class WalletMetadataService {
       ),
       masterFingerprint: entity.masterFingerprint,
       xpubFingerprint: entity.pubkeyFingerprint,
-      signer: entity.signer.toModel(),
-      signerDevice: entity.signerDevice?.toModel(),
+      signer: Signer.fromEntity(entity.signer),
+      signerDevice:
+          entity.signerDevice != null
+              ? SignerDevice.fromEntity(entity.signerDevice!)
+              : null,
       xpub: entity.pubkey,
       externalPublicDescriptor: entity.descriptor.external,
       internalPublicDescriptor: entity.descriptor.internal,

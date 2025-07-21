@@ -11,6 +11,12 @@ enum Signer {
     return Signer.values.firstWhere((source) => source.name == name);
   }
 
+  static Signer fromEntity(SignerEntity entity) => switch (entity) {
+    SignerEntity.local => Signer.local,
+    SignerEntity.remote => Signer.remote,
+    SignerEntity.none => Signer.none,
+  };
+
   SignerEntity toEntity() => switch (this) {
     Signer.local => SignerEntity.local,
     Signer.remote => SignerEntity.remote,
@@ -20,6 +26,10 @@ enum Signer {
 
 enum SignerDevice {
   coldcardQ;
+
+  static SignerDevice fromEntity(SignerDeviceEntity entity) => switch (entity) {
+    SignerDeviceEntity.coldcardQ => SignerDevice.coldcardQ,
+  };
 
   SignerDeviceEntity toEntity() => switch (this) {
     SignerDevice.coldcardQ => SignerDeviceEntity.coldcardQ,
