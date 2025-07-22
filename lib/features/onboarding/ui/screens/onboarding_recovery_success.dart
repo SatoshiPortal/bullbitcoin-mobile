@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
+import 'package:bb_mobile/features/onboarding/ui/widgets/recovered_wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
 class OnboardingRecoverySuccess extends StatelessWidget {
@@ -14,42 +14,40 @@ class OnboardingRecoverySuccess extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        title: const Text('Recovered Wallets'),
+        forceMaterialTransparency: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            const Spacer(),
-            Column(
-              children: [
-                SizedBox(
-                  height: 200,
-                  width: 200,
-                  child: Gif(
-                    image: AssetImage(Assets.animations.successTick.path),
-                    autostart: Autostart.once,
-                    height: 200,
-                    width: 200,
-                  ),
-                ),
-                const Gap(8),
-                BBText(
-                  'Wallet recovered successfully',
-                  style: context.font.headlineLarge,
-                ),
-              ],
+            BBText(
+              'The following wallets were successfully recovered',
+              style: context.font.bodySmall,
             ),
-            const Spacer(flex: 2),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: BBButton.big(
-                label: 'Got it',
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onPrimary,
-                onPressed: () {
-                  context.goNamed(WalletRoute.walletHome.name);
-                },
-              ),
+            const Gap(16),
+            const Expanded(child: RecoveredWalletCards()),
+            const Gap(16),
+            BBButton.big(
+              label: 'Try Another',
+              bgColor: Colors.transparent,
+              outlined: true,
+              textColor: context.colour.secondary,
+              onPressed: () {
+                context.goNamed(OnboardingRoute.chooseRecoverProvider.name);
+              },
+            ),
+            const Gap(8),
+            BBButton.big(
+              label: 'Done',
+              bgColor: context.colour.secondary,
+              textColor: context.colour.onPrimary,
+              onPressed: () {
+                context.goNamed(WalletRoute.walletHome.name);
+              },
             ),
           ],
         ),
