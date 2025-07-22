@@ -290,6 +290,7 @@ class _ExportVaultButton extends StatelessWidget {
                   ? () {}
                   : () => context.read<BackupSettingsCubit>().exportVault(),
           bgColor: Colors.transparent,
+          disabled: state.status == BackupSettingsStatus.exporting,
           textColor: context.colour.secondary,
           borderColor: context.colour.secondary,
           outlined: true,
@@ -325,6 +326,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
                     }
                   },
           bgColor: Colors.transparent,
+          disabled: state.status == BackupSettingsStatus.viewingKey,
           textColor: context.colour.secondary,
           borderColor: context.colour.secondary,
           outlined: true,
