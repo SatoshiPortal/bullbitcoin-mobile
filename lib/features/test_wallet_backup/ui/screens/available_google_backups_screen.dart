@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
+import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -47,7 +47,7 @@ class BackupsList extends StatelessWidget {
         return GestureDetector(
           onTap: () {
             context.pushNamed(
-              OnboardingRoute.fetchedBackupInfo.name,
+              TestWalletBackupSubroute.testBackupInfo.name,
               extra: backup.id,
             );
           },
