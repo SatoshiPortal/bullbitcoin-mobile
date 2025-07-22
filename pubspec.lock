@@ -110,10 +110,10 @@ packages:
     dependency: "direct main"
     description:
       name: bip39_mnemonic
-      sha256: e36c1f1fecd938d433b8f7a1e74d5bc721e16816b59dbac5b31307f079d3b3bc
+      sha256: e280b785d40dda3f70186d5a51126c5d3ae2c3b9a1bafdbd20a94b50c8253fb3
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.9"
+    version: "3.0.10"
   bip85:
     dependency: "direct main"
     description:
@@ -1470,7 +1470,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "3347690d1934172512c8a34d0246163b51650721"
+      resolved-ref: "4558f4bb3fb22044a643a09df2be7f365c4bf0d5"
       url: "https://github.com/ethicnology/dart-satoshifier.git"
     source: git
     version: "0.0.1"
