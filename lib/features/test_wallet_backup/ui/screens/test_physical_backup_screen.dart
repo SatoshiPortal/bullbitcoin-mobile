@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
@@ -57,7 +57,9 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                   state.status == TestWalletBackupStatus.verifying;
 
               final mnemonicWallets =
-                  state.wallets.where((w) => w.signer == Signer.local).toList();
+                  state.wallets
+                      .where((w) => w.signer == SignerEntity.local)
+                      .toList();
 
               final title =
                   'Test ${state.selectedWallet?.isDefault ?? false ? 'Default Wallets' : state.selectedWallet?.getLabel() ?? ''}';

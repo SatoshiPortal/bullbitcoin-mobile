@@ -36,7 +36,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -76,6 +76,9 @@ class SqliteDatabase extends _$SqliteDatabase {
         }
         if (from < 4) {
           await SchemaV4.migrate(this, walletMetadatas);
+        }
+        if (from < 5) {
+          await m.addColumn(walletMetadatas, walletMetadatas.signerDevice);
         }
       },
     );

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
@@ -25,7 +26,6 @@ import 'package:bb_mobile/ui/components/price_input/price_input.dart';
 import 'package:bb_mobile/ui/components/segment/segmented_full.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -784,7 +784,6 @@ class _BottomButtons extends StatelessWidget {
     final isSuperuser = context.select(
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
     );
-    final isSuperuserDebug = isSuperuser && kDebugMode;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -813,7 +812,9 @@ class _BottomButtons extends StatelessWidget {
             ),
             const Gap(12),
           ],
-          if (wallet != null && wallet.isWatchOnly && isSuperuserDebug)
+          if (wallet != null &&
+              wallet.signer == SignerEntity.remote &&
+              isSuperuser)
             const ShowPsbtButton()
           else
             const ConfirmSendButton(),
