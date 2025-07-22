@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_d
 import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_cloud_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
@@ -18,7 +19,6 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/tor/data/repository/tor_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -105,6 +105,11 @@ class RecoverbullLocator {
     );
     locator.registerLazySingleton<CompletePhysicalBackupVerificationUsecase>(
       () => CompletePhysicalBackupVerificationUsecase(
+        walletRepository: locator<WalletRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<CompleteCloudBackupVerificationUsecase>(
+      () => CompleteCloudBackupVerificationUsecase(
         walletRepository: locator<WalletRepository>(),
       ),
     );
