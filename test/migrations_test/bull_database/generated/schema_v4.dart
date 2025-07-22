@@ -680,6 +680,13 @@ class WalletMetadatas extends Table
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  late final GeneratedColumn<String> signerDevice = GeneratedColumn<String>(
+    'signer_device',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
     'is_default',
     aliasedName,
@@ -717,6 +724,7 @@ class WalletMetadatas extends Table
     externalPublicDescriptor,
     internalPublicDescriptor,
     signer,
+    signerDevice,
     isDefault,
     label,
     syncedAt,
@@ -785,6 +793,10 @@ class WalletMetadatas extends Table
             DriftSqlType.string,
             data['${effectivePrefix}signer'],
           )!,
+      signerDevice: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}signer_device'],
+      ),
       isDefault:
           attachedDatabase.typeMapping.read(
             DriftSqlType.bool,
@@ -820,6 +832,7 @@ class WalletMetadatasData extends DataClass
   final String externalPublicDescriptor;
   final String internalPublicDescriptor;
   final String signer;
+  final String? signerDevice;
   final bool isDefault;
   final String? label;
   final DateTime? syncedAt;
@@ -835,6 +848,7 @@ class WalletMetadatasData extends DataClass
     required this.externalPublicDescriptor,
     required this.internalPublicDescriptor,
     required this.signer,
+    this.signerDevice,
     required this.isDefault,
     this.label,
     this.syncedAt,
@@ -861,6 +875,9 @@ class WalletMetadatasData extends DataClass
       internalPublicDescriptor,
     );
     map['signer'] = Variable<String>(signer);
+    if (!nullToAbsent || signerDevice != null) {
+      map['signer_device'] = Variable<String>(signerDevice);
+    }
     map['is_default'] = Variable<bool>(isDefault);
     if (!nullToAbsent || label != null) {
       map['label'] = Variable<String>(label);
@@ -890,6 +907,10 @@ class WalletMetadatasData extends DataClass
       externalPublicDescriptor: Value(externalPublicDescriptor),
       internalPublicDescriptor: Value(internalPublicDescriptor),
       signer: Value(signer),
+      signerDevice:
+          signerDevice == null && nullToAbsent
+              ? const Value.absent()
+              : Value(signerDevice),
       isDefault: Value(isDefault),
       label:
           label == null && nullToAbsent ? const Value.absent() : Value(label),
@@ -929,6 +950,7 @@ class WalletMetadatasData extends DataClass
         json['internalPublicDescriptor'],
       ),
       signer: serializer.fromJson<String>(json['signer']),
+      signerDevice: serializer.fromJson<String?>(json['signerDevice']),
       isDefault: serializer.fromJson<bool>(json['isDefault']),
       label: serializer.fromJson<String?>(json['label']),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
@@ -953,6 +975,7 @@ class WalletMetadatasData extends DataClass
         internalPublicDescriptor,
       ),
       'signer': serializer.toJson<String>(signer),
+      'signerDevice': serializer.toJson<String?>(signerDevice),
       'isDefault': serializer.toJson<bool>(isDefault),
       'label': serializer.toJson<String?>(label),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
@@ -971,6 +994,7 @@ class WalletMetadatasData extends DataClass
     String? externalPublicDescriptor,
     String? internalPublicDescriptor,
     String? signer,
+    Value<String?> signerDevice = const Value.absent(),
     bool? isDefault,
     Value<String?> label = const Value.absent(),
     Value<DateTime?> syncedAt = const Value.absent(),
@@ -996,6 +1020,7 @@ class WalletMetadatasData extends DataClass
     internalPublicDescriptor:
         internalPublicDescriptor ?? this.internalPublicDescriptor,
     signer: signer ?? this.signer,
+    signerDevice: signerDevice.present ? signerDevice.value : this.signerDevice,
     isDefault: isDefault ?? this.isDefault,
     label: label.present ? label.value : this.label,
     syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
@@ -1037,6 +1062,10 @@ class WalletMetadatasData extends DataClass
               ? data.internalPublicDescriptor.value
               : this.internalPublicDescriptor,
       signer: data.signer.present ? data.signer.value : this.signer,
+      signerDevice:
+          data.signerDevice.present
+              ? data.signerDevice.value
+              : this.signerDevice,
       isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
       label: data.label.present ? data.label.value : this.label,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
@@ -1057,6 +1086,7 @@ class WalletMetadatasData extends DataClass
           ..write('externalPublicDescriptor: $externalPublicDescriptor, ')
           ..write('internalPublicDescriptor: $internalPublicDescriptor, ')
           ..write('signer: $signer, ')
+          ..write('signerDevice: $signerDevice, ')
           ..write('isDefault: $isDefault, ')
           ..write('label: $label, ')
           ..write('syncedAt: $syncedAt')
@@ -1077,6 +1107,7 @@ class WalletMetadatasData extends DataClass
     externalPublicDescriptor,
     internalPublicDescriptor,
     signer,
+    signerDevice,
     isDefault,
     label,
     syncedAt,
@@ -1096,6 +1127,7 @@ class WalletMetadatasData extends DataClass
           other.externalPublicDescriptor == this.externalPublicDescriptor &&
           other.internalPublicDescriptor == this.internalPublicDescriptor &&
           other.signer == this.signer &&
+          other.signerDevice == this.signerDevice &&
           other.isDefault == this.isDefault &&
           other.label == this.label &&
           other.syncedAt == this.syncedAt);
@@ -1113,6 +1145,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   final Value<String> externalPublicDescriptor;
   final Value<String> internalPublicDescriptor;
   final Value<String> signer;
+  final Value<String?> signerDevice;
   final Value<bool> isDefault;
   final Value<String?> label;
   final Value<DateTime?> syncedAt;
@@ -1129,6 +1162,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     this.externalPublicDescriptor = const Value.absent(),
     this.internalPublicDescriptor = const Value.absent(),
     this.signer = const Value.absent(),
+    this.signerDevice = const Value.absent(),
     this.isDefault = const Value.absent(),
     this.label = const Value.absent(),
     this.syncedAt = const Value.absent(),
@@ -1146,6 +1180,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
     required String signer,
+    this.signerDevice = const Value.absent(),
     required bool isDefault,
     this.label = const Value.absent(),
     this.syncedAt = const Value.absent(),
@@ -1172,6 +1207,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     Expression<String>? externalPublicDescriptor,
     Expression<String>? internalPublicDescriptor,
     Expression<String>? signer,
+    Expression<String>? signerDevice,
     Expression<bool>? isDefault,
     Expression<String>? label,
     Expression<DateTime>? syncedAt,
@@ -1195,6 +1231,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
       if (internalPublicDescriptor != null)
         'internal_public_descriptor': internalPublicDescriptor,
       if (signer != null) 'signer': signer,
+      if (signerDevice != null) 'signer_device': signerDevice,
       if (isDefault != null) 'is_default': isDefault,
       if (label != null) 'label': label,
       if (syncedAt != null) 'synced_at': syncedAt,
@@ -1214,6 +1251,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     Value<String>? externalPublicDescriptor,
     Value<String>? internalPublicDescriptor,
     Value<String>? signer,
+    Value<String?>? signerDevice,
     Value<bool>? isDefault,
     Value<String?>? label,
     Value<DateTime?>? syncedAt,
@@ -1236,6 +1274,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
       internalPublicDescriptor:
           internalPublicDescriptor ?? this.internalPublicDescriptor,
       signer: signer ?? this.signer,
+      signerDevice: signerDevice ?? this.signerDevice,
       isDefault: isDefault ?? this.isDefault,
       label: label ?? this.label,
       syncedAt: syncedAt ?? this.syncedAt,
@@ -1289,6 +1328,9 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     if (signer.present) {
       map['signer'] = Variable<String>(signer.value);
     }
+    if (signerDevice.present) {
+      map['signer_device'] = Variable<String>(signerDevice.value);
+    }
     if (isDefault.present) {
       map['is_default'] = Variable<bool>(isDefault.value);
     }
@@ -1318,6 +1360,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
           ..write('externalPublicDescriptor: $externalPublicDescriptor, ')
           ..write('internalPublicDescriptor: $internalPublicDescriptor, ')
           ..write('signer: $signer, ')
+          ..write('signerDevice: $signerDevice, ')
           ..write('isDefault: $isDefault, ')
           ..write('label: $label, ')
           ..write('syncedAt: $syncedAt, ')
