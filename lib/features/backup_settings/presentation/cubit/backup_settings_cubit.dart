@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_la
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -111,6 +112,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         ),
       );
     } catch (e) {
+      log.severe('exportVault error: $e');
       emit(
         state.copyWith(status: BackupSettingsStatus.error, error: e.toString()),
       );
@@ -149,11 +151,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       try {
         backupKey = await _createBackupKeyFromDefaultSeedUsecase.execute(path);
       } catch (e) {
+        log.severe('Local backup key derivation failed: $e');
         emit(
           state.copyWith(
             downloadedBackupFile: backupFile,
-            status: BackupSettingsStatus.error,
-            error: 'Local backup key derivation failed.',
+            derivedBackupKey: null,
+            error: e,
           ),
         );
 
@@ -163,10 +166,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       emit(
         state.copyWith(
           status: BackupSettingsStatus.success,
+
           derivedBackupKey: backupKey,
         ),
       );
     } catch (e) {
+      log.severe('viewVaultKey error: $e');
       emit(
         state.copyWith(status: BackupSettingsStatus.error, error: e.toString()),
       );
@@ -178,6 +183,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       state.copyWith(
         downloadedBackupFile: null,
         selectedBackupFile: null,
+        status: BackupSettingsStatus.initial,
         derivedBackupKey: null,
         error: null,
       ),
