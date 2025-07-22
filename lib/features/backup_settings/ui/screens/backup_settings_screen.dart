@@ -45,71 +45,85 @@ class _Screen extends StatelessWidget {
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
     );
 
-    return BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
-      listener: (context, state) {
-        if (state.downloadedBackupFile != null) {
-          Clipboard.setData(ClipboardData(text: state.downloadedBackupFile!));
-          log.info('Vault exported and copied to clipboard');
-          context.read<BackupSettingsCubit>().clearDownloadedData();
-        }
-        if (state.error != null) {
-          log.severe('Export failed: ${state.error}');
-          if (state.error == 'Local backup key derivation failed.') {
-            // Navigate to Key Server flow, require PIN
-            context.pushNamed(
-              KeyServerRoute.keyServerFlow.name,
-              extra: (
-                state.downloadedBackupFile ?? '',
-                CurrentKeyServerFlow.recovery.name,
-                false,
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<BackupSettingsCubit, BackupSettingsState>(
+          listenWhen:
+              (previous, current) =>
+                  previous.downloadedBackupFile !=
+                      current.downloadedBackupFile &&
+                  current.downloadedBackupFile != null,
+          listener: (context, state) {
+            if (state.downloadedBackupFile != null) {
+              Clipboard.setData(
+                ClipboardData(text: state.downloadedBackupFile!),
+              );
+              log.info('Vault exported and copied to clipboard');
+              context.read<BackupSettingsCubit>().clearDownloadedData();
+            }
+          },
+        ),
+        BlocListener<BackupSettingsCubit, BackupSettingsState>(
+          listenWhen: (previous, current) => previous.error != current.error,
+          listener: (context, state) {
+            if (state.error != null &&
+                state.derivedBackupKey == null &&
+                state.status == BackupSettingsStatus.viewingKey) {
+              context.pushNamed(
+                KeyServerRoute.keyServerFlow.name,
+                extra: (
+                  state.downloadedBackupFile ?? '',
+                  CurrentKeyServerFlow.recovery.name,
+                  false,
+                ),
+              );
+              context.read<BackupSettingsCubit>().clearDownloadedData();
+            }
+          },
+        ),
+      ],
+      child: BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              forceMaterialTransparency: true,
+              automaticallyImplyLeading: false,
+              flexibleSpace: TopBar(
+                title: context.loc.backupSettingsScreenTitle,
+                onBack: () => context.pop(),
               ),
-            );
-            context.read<BackupSettingsCubit>().clearDownloadedData();
-          } else {
-            context.read<BackupSettingsCubit>().clearDownloadedData();
-          }
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            forceMaterialTransparency: true,
-            automaticallyImplyLeading: false,
-            flexibleSpace: TopBar(
-              title: context.loc.backupSettingsScreenTitle,
-              onBack: () => context.pop(),
             ),
-          ),
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Gap(20),
-                  const _BackupTestStatusWidget(),
-                  const Gap(30),
-                  if (state.lastEncryptedBackup != null && isSuperuser) ...[
-                    const _ExportVaultButton(),
-                    const Gap(10),
-                    _ViewVaultKeyButton(),
-                    const Gap(10),
-                  ],
-                  if (state.lastEncryptedBackup != null ||
-                      state.lastPhysicalBackup != null)
-                    const _TestBackupButton(),
-                  const Gap(5),
-                  const _StartBackupButton(),
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Gap(20),
+                    const _BackupTestStatusWidget(),
+                    const Gap(30),
+                    if (state.lastEncryptedBackup != null && isSuperuser) ...[
+                      const _ExportVaultButton(),
+                      const Gap(10),
+                      _ViewVaultKeyButton(),
+                      const Gap(10),
+                    ],
+                    if (state.lastEncryptedBackup != null ||
+                        state.lastPhysicalBackup != null)
+                      const _TestBackupButton(),
+                    const Gap(5),
+                    const _StartBackupButton(),
 
-                  const Spacer(),
-                  if (state.lastEncryptedBackup != null && isSuperuser)
-                    const _KeyServerStatusWidget(),
-                ],
+                    const Spacer(),
+                    if (state.lastEncryptedBackup != null && isSuperuser)
+                      const _KeyServerStatusWidget(),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

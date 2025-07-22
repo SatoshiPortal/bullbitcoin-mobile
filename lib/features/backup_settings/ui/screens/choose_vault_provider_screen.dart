@@ -45,22 +45,31 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<BackupSettingsCubit, BackupSettingsState>(
-      listener: (context, state) {
-        if (state.selectedBackupFile != null) {
-          // Navigate to backup key display screen
-          context.pushNamed(
-            BackupSettingsSubroute.viewBackupKey.name,
-            extra: state.selectedBackupFile,
-          );
-          // Clear the selectedBackupFile to prevent double navigation
-          context.read<BackupSettingsCubit>().clearDownloadedData();
-        }
-        if (state.error != null) {
-          log.severe('Provider selection failed: ${state.error}');
-          context.read<BackupSettingsCubit>().clearDownloadedData();
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<BackupSettingsCubit, BackupSettingsState>(
+          listenWhen:
+              (previous, current) =>
+                  previous.selectedBackupFile != current.selectedBackupFile &&
+                  current.selectedBackupFile != null,
+          listener: (context, state) {
+            context.pushNamed(
+              BackupSettingsSubroute.viewBackupKey.name,
+              extra: state.selectedBackupFile,
+            );
+            context.read<BackupSettingsCubit>().clearDownloadedData();
+          },
+        ),
+
+        BlocListener<BackupSettingsCubit, BackupSettingsState>(
+          listenWhen:
+              (previous, current) =>
+                  previous.error != current.error && current.error != null,
+          listener: (context, state) {
+            context.read<BackupSettingsCubit>().clearDownloadedData();
+          },
+        ),
+      ],
       child: BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
         builder: (context, state) {
           if (state.status == BackupSettingsStatus.loading) {

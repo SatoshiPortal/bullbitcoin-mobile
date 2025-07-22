@@ -37,12 +37,13 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
+      listenWhen:
+          (previous, current) =>
+              previous.error != current.error && current.error != null,
       listener: (context, state) {
-        if (state.error != null) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.error.toString())));
-        }
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(state.error.toString())));
       },
       builder: (context, state) {
         return Scaffold(
