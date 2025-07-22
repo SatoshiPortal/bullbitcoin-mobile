@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -33,6 +34,7 @@ class WalletLocator {
         ),
       ),
     );
+
     // Bloc
     locator.registerFactory<WalletBloc>(
       () => WalletBloc(
@@ -52,6 +54,7 @@ class WalletLocator {
         getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),
         saveAutoSwapSettingsUsecase: locator<SaveAutoSwapSettingsUsecase>(),
         autoSwapExecutionUsecase: locator<AutoSwapExecutionUsecase>(),
+        deleteWalletUsecase: locator<DeleteWalletUsecase>(),
       ),
     );
   }

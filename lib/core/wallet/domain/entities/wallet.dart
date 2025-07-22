@@ -146,5 +146,36 @@ abstract class Wallet with _$Wallet {
     return network == Network.liquidMainnet || network == Network.liquidTestnet;
   }
 
+  String get derivationPath {
+    // Find the content between [ and ]
+    final startBracket = externalPublicDescriptor.indexOf('[');
+    final endBracket = externalPublicDescriptor.indexOf(']');
+
+    if (startBracket == -1 || endBracket == -1 || startBracket >= endBracket) {
+      // Fallback to hardcoded path if descriptor doesn't contain path info
+      return "m / ${scriptType.purpose}' / ${network.coinType}' / 0'";
+    }
+
+    // Extract fingerprint/path portion
+    final keyOrigin = externalPublicDescriptor.substring(
+      startBracket + 1,
+      endBracket,
+    );
+
+    // Split by / to separate fingerprint from path
+    final parts = keyOrigin.split('/');
+
+    if (parts.length < 2) {
+      // Invalid format, use fallback
+      return "m / ${scriptType.purpose}' / ${network.coinType}' / 0'";
+    }
+
+    // Skip first part (fingerprint) and join the rest
+    final pathParts = parts.skip(1).toList();
+
+    // Construct the derivation path from the parts
+    return "m / ${pathParts.join(' / ')}";
+  }
+
   bool get isWatchOnly => signer == SignerEntity.none;
 }

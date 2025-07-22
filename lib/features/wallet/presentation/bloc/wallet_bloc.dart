@@ -13,9 +13,11 @@ import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
@@ -43,6 +45,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
     required SaveAutoSwapSettingsUsecase saveAutoSwapSettingsUsecase,
     required AutoSwapExecutionUsecase autoSwapExecutionUsecase,
+    required DeleteWalletUsecase deleteWalletUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -57,6 +60,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _getAutoSwapSettingsUsecase = getAutoSwapSettingsUsecase,
        _saveAutoSwapSettingsUsecase = saveAutoSwapSettingsUsecase,
        _autoSwapExecutionUsecase = autoSwapExecutionUsecase,
+       _deleteWalletUsecase = deleteWalletUsecase,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -67,6 +71,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<BlockAutoSwapUntilNextExecution>(_onBlockAutoSwapUntilNextExecution);
     on<ExecuteAutoSwap>(_onExecuteAutoSwap);
     on<ExecuteAutoSwapFeeOverride>(_onExecuteAutoSwapFeeOverride);
+    on<WalletDeleted>(_onDeleted);
 
     // Start listening to auto swap timer when bloc is created
   }
@@ -85,6 +90,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
   final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
   final AutoSwapExecutionUsecase _autoSwapExecutionUsecase;
+  final DeleteWalletUsecase _deleteWalletUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -274,6 +280,35 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
     } catch (e) {
       emit(state.copyWith(status: WalletStatus.failure, error: e));
+    }
+  }
+
+  Future<void> _onDeleted(
+    WalletDeleted event,
+    Emitter<WalletState> emit,
+  ) async {
+    final walletId = event.walletId;
+    try {
+      emit(state.copyWith(isDeletingWallet: true, walletDeletionError: null));
+      await _deleteWalletUsecase.execute(walletId: event.walletId);
+      log.info('[WalletBloc] Wallet with id $walletId deleted successfully');
+      // Remove the wallet from the state to directly update the UI
+      // without needing to refresh the wallets again
+      emit(
+        state.copyWith(
+          wallets: state.wallets.where((w) => w.id != walletId).toList(),
+        ),
+      );
+
+      // Refresh the wallets to ensure everything is up to date
+      // and also trigger other things.
+      add(const WalletRefreshed());
+    } on WalletError catch (e) {
+      emit(state.copyWith(walletDeletionError: e));
+    } catch (e) {
+      log.severe('[WalletBloc] Failed to delete wallet with id $walletId: $e');
+    } finally {
+      emit(state.copyWith(isDeletingWallet: false));
     }
   }
 

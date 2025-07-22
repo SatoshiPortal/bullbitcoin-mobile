@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/core_locator.dart';
+import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
@@ -63,5 +64,6 @@ class AppLocator {
     BuyLocator.setup();
     FundExchangeLocator.setup();
     AutoSwapLocator.setup();
+    AddressViewLocator.setup();
   }
 }

@@ -134,14 +134,9 @@ class LwkWalletDatasource {
   }) async {
     try {
       final lwkWallet = await _createPublicWallet(wallet);
+      // For LWK, address reuse is taken care of by the repository and the address history database,
+      //  so here we just get the last unused address.
       final lastUnusedAddressInfo = await lwkWallet.addressLastUnused();
-      // Commented this because why would we not want to use the last unused address?
-      // Don't we unnecessarily skip unused addresses if it was uncommented?
-      // Either way, we check if it was used already or not in the wallet address
-      // repository through the wallet address history datasource. Keeping it commented
-      // instead of deleting it for now, until wallet address history is implemented.
-      //final newIndex = lastUnusedAddressInfo.index! + 1;
-      //final addressInfo = await lwkWallet.address(index: newIndex);
       final address = (
         index: lastUnusedAddressInfo.index!,
         standard: lastUnusedAddressInfo.standard,
@@ -157,8 +152,7 @@ class LwkWalletDatasource {
     }
   }
 
-  Future<({String standard, String confidential, int index})>
-  getLastUnusedAddress({
+  Future<int> getLastUnusedAddressIndex({
     required WalletModel wallet,
     bool isChange = false,
   }) async {
@@ -170,12 +164,7 @@ class LwkWalletDatasource {
         );
       }
       final addressInfo = await lwkWallet.addressLastUnused();
-      final address = (
-        index: addressInfo.index!,
-        standard: addressInfo.standard,
-        confidential: addressInfo.confidential,
-      );
-      return address;
+      return addressInfo.index!;
     } catch (e) {
       if (e is lwk.LwkError) {
         throw e.msg;
@@ -501,8 +490,7 @@ class LwkWalletDatasource {
     int batchSize = 10,
   }) async {
     try {
-      final lastUnusedAddress = await getLastUnusedAddress(wallet: wallet);
-      final lastIndex = lastUnusedAddress.index;
+      final lastIndex = await getLastUnusedAddressIndex(wallet: wallet);
       final addressMap =
           <String, ({String standard, String confidential, int index})>{};
       final List<Future<void>> currentBatch = [];

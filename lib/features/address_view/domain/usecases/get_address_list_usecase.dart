@@ -13,22 +13,21 @@ class GetAddressListUsecase {
     required String walletId,
     bool isChange = false,
     int? limit,
-    int? offset,
+    int? fromIndex,
   }) {
     try {
       if (isChange) {
         return _walletAddressRepository.getUsedChangeAddresses(
           walletId,
           limit: limit,
-          offset: offset ?? 0,
+          fromIndex: fromIndex,
           descending: true,
         );
       } else {
         return _walletAddressRepository.getGeneratedReceiveAddresses(
           walletId,
           limit: limit,
-          offset: offset ?? 0,
-          descending: true,
+          fromIndex: fromIndex,
         );
       }
     } on WalletError {
