@@ -1,6 +1,6 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

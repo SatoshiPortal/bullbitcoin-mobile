@@ -1,3 +1,7 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -5,10 +9,6 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart'
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/ui/components/loading/loading_box_content.dart';
-import 'package:bb_mobile/ui/components/loading/loading_line_content.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

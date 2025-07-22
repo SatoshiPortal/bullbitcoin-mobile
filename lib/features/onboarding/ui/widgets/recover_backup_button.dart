@@ -1,6 +1,6 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/dropdown/selectable_list.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/selectable_custom_fee_list_item.dart';
-import 'package:bb_mobile/ui/components/dropdown/selectable_list.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';

@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

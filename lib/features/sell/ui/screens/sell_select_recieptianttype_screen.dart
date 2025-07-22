@@ -1,7 +1,7 @@
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -47,10 +47,7 @@ class _SellSelectRecieptiantTypeFormState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(
-          'Select country',
-          style: context.font.bodyMedium,
-        ),
+        BBText('Select country', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -72,17 +69,11 @@ class _SellSelectRecieptiantTypeFormState
                 items: [
                   DropdownMenuItem(
                     value: 'CAD',
-                    child: BBText(
-                      'CAD',
-                      style: context.font.headlineSmall,
-                    ),
+                    child: BBText('CAD', style: context.font.headlineSmall),
                   ),
                   DropdownMenuItem(
                     value: 'USD',
-                    child: BBText(
-                      'USD',
-                      style: context.font.headlineSmall,
-                    ),
+                    child: BBText('USD', style: context.font.headlineSmall),
                   ),
                 ],
                 onChanged: (value) {},
@@ -91,10 +82,7 @@ class _SellSelectRecieptiantTypeFormState
           ),
         ),
         const Gap(16.0),
-        BBText(
-          'Payout method',
-          style: context.font.bodyMedium,
-        ),
+        BBText('Payout method', style: context.font.bodyMedium),
         const Gap(4.0),
         _buildPayoutMethodOption(context, 'Add to my account balance'),
         _buildPayoutMethodOption(context, 'Bank account'),
@@ -124,9 +112,10 @@ class _SellSelectRecieptiantTypeFormState
         margin: const EdgeInsets.symmetric(vertical: 4.0),
         decoration: BoxDecoration(
           border: Border.all(
-            color: _selectedPayoutMethod == method
-                ? context.colour.primary
-                : context.colour.surface,
+            color:
+                _selectedPayoutMethod == method
+                    ? context.colour.primary
+                    : context.colour.surface,
             width: 2.0,
           ),
           borderRadius: BorderRadius.circular(4.0),
@@ -143,10 +132,7 @@ class _SellSelectRecieptiantTypeFormState
               },
               activeColor: context.colour.primary,
             ),
-            BBText(
-              method,
-              style: context.font.bodyMedium,
-            ),
+            BBText(method, style: context.font.bodyMedium),
           ],
         ),
       ),

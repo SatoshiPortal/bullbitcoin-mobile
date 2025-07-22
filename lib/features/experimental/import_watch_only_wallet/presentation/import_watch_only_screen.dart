@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
@@ -8,9 +11,6 @@ import 'package:bb_mobile/features/experimental/import_watch_only_wallet/present
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
