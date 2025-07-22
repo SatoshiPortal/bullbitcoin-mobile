@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 

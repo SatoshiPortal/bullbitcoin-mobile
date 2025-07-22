@@ -1,6 +1,6 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

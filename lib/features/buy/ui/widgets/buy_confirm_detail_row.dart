@@ -1,4 +1,4 @@
-import 'package:bb_mobile/ui/components/loading/loading_line_content.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
 
 class BuyConfirmDetailRow extends StatelessWidget {

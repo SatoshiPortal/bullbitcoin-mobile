@@ -1,8 +1,8 @@
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/segment/segmented_full.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -75,10 +75,7 @@ class _SellSelectBeneficiaryScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(
-          'Payout method',
-          style: context.font.bodyMedium,
-        ),
+        BBText('Payout method', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -99,10 +96,7 @@ class _SellSelectBeneficiaryScreenState
           ),
         ),
         const Gap(16.0),
-        BBText(
-          'Institution Number',
-          style: context.font.bodyMedium,
-        ),
+        BBText('Institution Number', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -122,10 +116,7 @@ class _SellSelectBeneficiaryScreenState
           ),
         ),
         const Gap(16.0),
-        BBText(
-          'Transit Number',
-          style: context.font.bodyMedium,
-        ),
+        BBText('Transit Number', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -145,10 +136,7 @@ class _SellSelectBeneficiaryScreenState
           ),
         ),
         const Gap(16.0),
-        BBText(
-          'Account Number',
-          style: context.font.bodyMedium,
-        ),
+        BBText('Account Number', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -168,10 +156,7 @@ class _SellSelectBeneficiaryScreenState
           ),
         ),
         const Gap(16.0),
-        BBText(
-          'Label (optional)',
-          style: context.font.bodyMedium,
-        ),
+        BBText('Label (optional)', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -268,10 +253,7 @@ class _SellSelectBeneficiaryScreenState
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
-                  name,
-                  style: context.font.headlineLarge,
-                ),
+                BBText(name, style: context.font.headlineLarge),
                 BBText(
                   'Wire Transfer\nAlex poullot\nInstitution Number: 123\nTransit Number: 12345\nAccount Number: 12345678',
                   style: context.font.labelMedium,
@@ -286,14 +268,14 @@ class _SellSelectBeneficiaryScreenState
               groupValue: true,
               onChanged: (value) {},
               activeColor: context.colour.primary,
-              fillColor: WidgetStateProperty.resolveWith<Color>(
-                (Set<WidgetState> states) {
-                  if (states.contains(WidgetState.selected)) {
-                    return context.colour.primary;
-                  }
-                  return context.colour.outline;
-                },
-              ),
+              fillColor: WidgetStateProperty.resolveWith<Color>((
+                Set<WidgetState> states,
+              ) {
+                if (states.contains(WidgetState.selected)) {
+                  return context.colour.primary;
+                }
+                return context.colour.outline;
+              }),
             ),
           ],
         ),

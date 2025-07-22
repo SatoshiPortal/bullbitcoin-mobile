@@ -1,8 +1,8 @@
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/template/domain/ip_address_entity.dart';
 import 'package:bb_mobile/features/template/presentation/template_cubit.dart';
 import 'package:bb_mobile/features/template/presentation/template_state.dart';
 import 'package:bb_mobile/features/template/template_router.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

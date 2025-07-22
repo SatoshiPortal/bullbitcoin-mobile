@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -13,7 +14,6 @@ import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
-import 'package:bb_mobile/ui/screens/route_error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

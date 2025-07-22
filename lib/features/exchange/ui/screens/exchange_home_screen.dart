@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
@@ -5,9 +8,6 @@ import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar_bull_logo.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';

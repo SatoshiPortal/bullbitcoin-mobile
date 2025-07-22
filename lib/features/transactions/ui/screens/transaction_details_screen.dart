@@ -1,5 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -11,11 +16,6 @@ import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_s
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_label_bottomsheet.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/ui/components/badges/transaction_direction_badge.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/loading/loading_box_content.dart';
-import 'package:bb_mobile/ui/components/loading/loading_line_content.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';

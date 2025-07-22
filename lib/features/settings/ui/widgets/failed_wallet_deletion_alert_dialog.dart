@@ -1,6 +1,6 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

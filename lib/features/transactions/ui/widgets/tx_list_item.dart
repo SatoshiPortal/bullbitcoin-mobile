@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';

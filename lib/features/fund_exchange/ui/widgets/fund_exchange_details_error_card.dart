@@ -1,4 +1,4 @@
-import 'package:bb_mobile/ui/components/cards/info_card.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:flutter/material.dart';
 
 class FundExchangeDetailsErrorCard extends StatelessWidget {

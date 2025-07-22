@@ -1,7 +1,7 @@
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -38,10 +38,7 @@ class SellAmountForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(
-          'You pay',
-          style: context.font.bodyMedium,
-        ),
+        BBText('You pay', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -68,10 +65,7 @@ class SellAmountForm extends StatelessWidget {
           color: context.colour.outline,
         ),
         const Gap(16.0),
-        BBText(
-          'Select currency',
-          style: context.font.bodyMedium,
-        ),
+        BBText('Select currency', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -93,17 +87,11 @@ class SellAmountForm extends StatelessWidget {
                 items: [
                   DropdownMenuItem(
                     value: 'CAD',
-                    child: BBText(
-                      'CAD',
-                      style: context.font.headlineSmall,
-                    ),
+                    child: BBText('CAD', style: context.font.headlineSmall),
                   ),
                   DropdownMenuItem(
                     value: 'EUR',
-                    child: BBText(
-                      'EUR',
-                      style: context.font.headlineSmall,
-                    ),
+                    child: BBText('EUR', style: context.font.headlineSmall),
                   ),
                 ],
                 onChanged: (value) {},
@@ -112,10 +100,7 @@ class SellAmountForm extends StatelessWidget {
           ),
         ),
         const Gap(16.0),
-        BBText(
-          'Network',
-          style: context.font.bodyMedium,
-        ),
+        BBText('Network', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -138,17 +123,11 @@ class SellAmountForm extends StatelessWidget {
                 items: [
                   DropdownMenuItem(
                     value: 'Bitcoin',
-                    child: BBText(
-                      'Bitcoin',
-                      style: context.font.headlineSmall,
-                    ),
+                    child: BBText('Bitcoin', style: context.font.headlineSmall),
                   ),
                   DropdownMenuItem(
                     value: 'Liquid',
-                    child: BBText(
-                      'Liquid',
-                      style: context.font.headlineSmall,
-                    ),
+                    child: BBText('Liquid', style: context.font.headlineSmall),
                   ),
                 ],
                 onChanged: (value) {},

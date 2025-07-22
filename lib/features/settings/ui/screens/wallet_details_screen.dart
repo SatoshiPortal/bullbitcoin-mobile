@@ -1,12 +1,12 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/widgets/address_list_bottom_sheet.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_confirmation_alert_dialog.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

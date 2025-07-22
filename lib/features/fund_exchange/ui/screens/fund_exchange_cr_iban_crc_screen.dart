@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_detail.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_done_bottom_navigation_bar.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
