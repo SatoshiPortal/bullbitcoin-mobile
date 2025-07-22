@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/features/onboarding/ui/screens/available_google_backups_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/fetched_backup_info_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
@@ -18,7 +19,8 @@ enum OnboardingRoute {
   splash('splash'),
   recoverOptions('recover-options'),
   chooseRecoverProvider('choose-recover-provider'),
-  retrievedBackupInfo('retrieved-backup-info'),
+  availableGoogleBackupsForRecovery('available-google-backups-for-recovery'),
+  fetchedBackupInfo('fetched-backup-info'),
   recoverFromEncrypted('recover-from-encrypted'),
   recoverFromPhysical('recover-from-physical'),
   recoverSuccess('recover-success');
@@ -92,17 +94,25 @@ class OnboardingRouter {
                 builder: (context, state) => const OnboardingRecoverOptions(),
               ),
               GoRoute(
-                name: OnboardingRoute.retrievedBackupInfo.name,
-                path: OnboardingRoute.retrievedBackupInfo.path,
+                name: OnboardingRoute.fetchedBackupInfo.name,
+                path: OnboardingRoute.fetchedBackupInfo.path,
                 builder: (context, state) {
-                  final backupInfo = state.extra! as BackupInfo;
-                  return FetchedBackupInfoScreen(encryptedInfo: backupInfo);
+                  final backupFileId = state.extra! as String;
+                  return FetchedBackupInfoScreen(backupFileId: backupFileId);
                 },
               ),
               GoRoute(
                 name: OnboardingRoute.chooseRecoverProvider.name,
                 path: OnboardingRoute.chooseRecoverProvider.path,
                 builder: (context, state) => const ChooseVaultProviderScreen(),
+              ),
+              GoRoute(
+                name: OnboardingRoute.availableGoogleBackupsForRecovery.name,
+                path: OnboardingRoute.availableGoogleBackupsForRecovery.path,
+                builder: (context, state) {
+                  final backups = state.extra! as List<DriveFile>;
+                  return AvailableGoogleBackupsScreen(backups: backups);
+                },
               ),
               GoRoute(
                 name: OnboardingRoute.recoverSuccess.name,

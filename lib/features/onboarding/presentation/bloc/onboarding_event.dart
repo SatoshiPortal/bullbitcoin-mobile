@@ -50,3 +50,12 @@ class StartTransitioning extends OnboardingEvent {
 class EndTransitioning extends OnboardingEvent {
   const EndTransitioning();
 }
+
+class FetchAllGoogleDriveBackups extends OnboardingEvent {
+  const FetchAllGoogleDriveBackups();
+}
+
+class SelectCloudBackupToFetch extends OnboardingEvent {
+  const SelectCloudBackupToFetch({required this.id});
+  final String id;
+}
