@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update drift-migrations
+.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update drift-migrations docker-build docker-run
 
 all: setup
 	@echo "✨ All tasks completed!"
@@ -70,3 +70,7 @@ feature:
 
 %:
 	@:
+
+docker-build:
+	@echo "🏗️ Building Docker image"
+	@ docker build -t bull-mobile .
