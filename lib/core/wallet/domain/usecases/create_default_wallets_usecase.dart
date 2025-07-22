@@ -68,6 +68,7 @@ class CreateDefaultWalletsUsecase {
 
       return defaultWallets;
     } catch (e) {
+      log.severe('Failed to create default wallets: $e');
       throw CreateDefaultWalletsException(e.toString());
     }
   }

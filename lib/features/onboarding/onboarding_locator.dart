@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_cloud_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
@@ -7,6 +8,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vau
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -29,6 +31,9 @@ class OnboardingLocator {
             locator<FetchGoogleDriveBackupContentUsecase>(),
         completePhysicalBackupVerificationUsecase:
             locator<CompletePhysicalBackupVerificationUsecase>(),
+        completeCloudBackupVerificationUsecase:
+            locator<CompleteCloudBackupVerificationUsecase>(),
+        importWalletUsecase: locator<ImportWalletUsecase>(),
       ),
     );
     locator.registerFactory<FetchAllGoogleDriveBackupsUsecase>(
