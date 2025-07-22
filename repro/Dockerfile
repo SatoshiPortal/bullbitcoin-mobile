@@ -75,8 +75,13 @@ RUN sudo chown -R $USER /app
 # Clone the Bull Bitcoin mobile repository
 RUN git clone --branch main https://github.com/SatoshiPortal/bullbitcoin-mobile /app
 
-# Copy device-spec.json into the container
-COPY device-spec.json /app/device-spec.json
+# Create device-spec.json directly in the container
+RUN echo '{\
+    "supportedAbis": ["armeabi-v7a", "armeabi"],\
+    "supportedLocales": ["en"],\
+    "screenDensity": 280,\
+    "sdkVersion": 31\
+}' > /app/device-spec.json
 
 WORKDIR /app
 
