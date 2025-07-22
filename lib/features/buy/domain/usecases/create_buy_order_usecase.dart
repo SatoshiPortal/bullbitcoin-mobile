@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/buy/domain/buy_error.dart';
 
 class CreateBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
@@ -39,18 +40,11 @@ class CreateBuyOrderUsecase {
         isOwner: isOwner,
       );
       return order;
+    } on BuyError {
+      rethrow;
     } catch (e) {
       log.severe('Error in CreateBuyOrderUsecase: $e');
-      throw CreateBuyOrderException('$e');
+      throw BuyError.unexpected(message: '$e');
     }
   }
-}
-
-class CreateBuyOrderException implements Exception {
-  final String message;
-
-  CreateBuyOrderException(this.message);
-
-  @override
-  String toString() => '[CreateBuyOrderUsecase]: $message';
 }

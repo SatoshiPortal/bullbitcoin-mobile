@@ -10,22 +10,22 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_funding_rep
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/accelerate_buy_order_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/create_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/buy/domain/usecases/accelerate_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/usecases/confirm_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/usecases/create_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/usecases/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
 

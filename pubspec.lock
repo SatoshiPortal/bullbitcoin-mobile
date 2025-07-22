@@ -1470,7 +1470,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "3347690d1934172512c8a34d0246163b51650721"
+      resolved-ref: "4558f4bb3fb22044a643a09df2be7f365c4bf0d5"
       url: "https://github.com/ethicnology/dart-satoshifier.git"
     source: git
     version: "0.0.1"
