@@ -92,7 +92,6 @@ class RecoverbullLocator {
       () => RestoreEncryptedVaultFromBackupKeyUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
         walletRepository: locator<WalletRepository>(),
-        createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
       ),
     );
 
