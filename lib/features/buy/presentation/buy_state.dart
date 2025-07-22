@@ -16,7 +16,7 @@ sealed class BuyState with _$BuyState {
     @Default('') String bitcoinAddressInput,
     GetNewReceiveAddressException? getNewReceiveAddressException,
     @Default(false) bool isCreatingOrder,
-    CreateBuyOrderException? createBuyOrderException,
+    BuyError? createOrderBuyError,
     @Default(false) bool isRefreshingOrder,
     RefreshBuyOrderException? refreshBuyOrderException,
     @Default(false) bool isConfirmingOrder,
@@ -41,7 +41,8 @@ sealed class BuyState with _$BuyState {
 
   double? get amount => double.tryParse(amountInput);
 
-  FiatCurrency get currency => FiatCurrency.fromCode(currencyInput);
+  FiatCurrency? get currency =>
+      currencyInput.isNotEmpty ? FiatCurrency.fromCode(currencyInput) : null;
 
   bool get isAmountTooLow {
     return amount == null || amount! <= 0;

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/ui/components/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
 
 class FundExchangeDoneBottomNavigationBar extends StatelessWidget {

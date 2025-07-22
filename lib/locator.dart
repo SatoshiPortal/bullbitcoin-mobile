@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/core_locator.dart';
+import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
@@ -8,6 +9,7 @@ import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/buy/buy_locator.dart';
 import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_locator.dart';
+import 'package:bb_mobile/features/experimental/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_locator.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
 import 'package:bb_mobile/features/key_server/key_server_locator.dart';
@@ -56,10 +58,12 @@ class AppLocator {
     BackupWalletLocator.setup();
     TestWalletBackupLocator.setup();
     ImportWatchOnlyLocator.setup();
+    BroadcastSignedTxLocator.setup();
     SwapLocator.setup();
     ExchangeLocator.setup();
     BuyLocator.setup();
     FundExchangeLocator.setup();
     AutoSwapLocator.setup();
+    AddressViewLocator.setup();
   }
 }

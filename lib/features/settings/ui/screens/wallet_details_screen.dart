@@ -1,102 +1,80 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
-import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
+import 'package:bb_mobile/features/address_view/ui/widgets/address_list_bottom_sheet.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_confirmation_alert_dialog.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class WalletDetailsScreen extends StatelessWidget {
-  final String walletId;
-
   const WalletDetailsScreen({super.key, required this.walletId});
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => WalletDetailsCubit(walletId: walletId),
-      child: _WalletDetailsView(walletId: walletId),
-    );
-  }
-}
-
-class _WalletDetailsView extends StatelessWidget {
   final String walletId;
 
-  const _WalletDetailsView({required this.walletId});
-
   @override
   Widget build(BuildContext context) {
-    final isDefault =
-        context
-            .read<WalletBloc>()
-            .state
-            .wallets
-            .firstWhere((w) => w.id == walletId)
-            .isDefault;
+    Wallet? wallet;
+    try {
+      wallet = context.read<WalletBloc>().state.wallets.firstWhere(
+        (w) => w.id == walletId,
+      );
+    } catch (e) {
+      log.severe('Wallet with ID $walletId not found to show details');
+    }
+    final isDeletingWallet = context.select(
+      (WalletBloc bloc) => bloc.state.isDeletingWallet,
+    );
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Wallet Details',
-          onBack: () => context.pop(),
-        ),
+        title: const Text('Wallet Details'),
         actions: [
-          if (isDefault)
-            const SizedBox.shrink()
-          else
-            BlocBuilder<WalletDetailsCubit, WalletDetailsState>(
-              builder: (context, state) {
-                final isDeleting =
-                    state.deleteStatus == WalletDeleteStatus.loading;
-                return IconButton(
-                  onPressed:
-                      isDeleting
-                          ? null
-                          : () => _showDeleteConfirmationDialog(context),
-                  icon:
-                      isDeleting
-                          ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                          : const Icon(CupertinoIcons.delete),
-                );
-              },
+          if (wallet != null && wallet.isDefault == false)
+            IconButton(
+              onPressed:
+                  isDeletingWallet
+                      ? null
+                      : () => showDialog(
+                        context: context,
+                        builder:
+                            (dialogContext) =>
+                                WalletDeletionConfirmationAlertDialog(
+                                  walletId: wallet!.id,
+                                ),
+                      ),
+              icon: const Icon(CupertinoIcons.delete),
             ),
         ],
       ),
       body: SafeArea(
-        child: BlocBuilder<WalletBloc, WalletState>(
-          builder: (context, walletState) {
-            final wallet =
-                walletState.wallets.where((w) => w.id == walletId).firstOrNull;
-            if (wallet == null) {
-              return const Center(child: Text('Wallet not found'));
-            }
-            return BlocConsumer<WalletDetailsCubit, WalletDetailsState>(
-              listener: (context, state) {
-                if (state.deleteStatus == WalletDeleteStatus.success) {
-                  context.goNamed(WalletRoute.walletHome.name);
-                } else if (state.deleteStatus == WalletDeleteStatus.error) {
-                  _showErrorDialog(context, state.deleteError);
-                }
-              },
-              builder: (context, state) {
-                final derivationPath =
-                    "m / ${wallet.scriptType.purpose}' / 0' / 0'";
-                return ListView(
+        child:
+            isDeletingWallet
+                ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(),
+                      const Gap(16),
+                      BBText(
+                        'Deleting wallet...',
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                : wallet == null
+                ? const Center(child: Text('Wallet not found'))
+                : ListView(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 24,
@@ -119,131 +97,50 @@ class _WalletDetailsView extends StatelessWidget {
                       value: wallet.getWalletTypeString(),
                     ),
                     const SizedBox(height: 18),
-                    _InfoField(label: 'Derivation Path', value: derivationPath),
-                  ],
-                );
-              },
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  void _showDeleteConfirmationDialog(BuildContext context) {
-    final wallet =
-        context
-            .read<WalletBloc>()
-            .state
-            .wallets
-            .where((w) => w.id == walletId)
-            .firstOrNull;
-
-    if (wallet == null) return;
-
-    final walletName = wallet.getLabel() ?? 'Unnamed Wallet';
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      isScrollControlled: true,
-      builder:
-          (bottomSheetContext) => Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header with close button
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: BBText(
-                        'Are you sure you want to delete "$walletName"? ',
-                        style: context.font.headlineMedium?.copyWith(
-                          color: context.colour.secondary,
+                    _InfoField(
+                      label: 'Derivation Path',
+                      value: wallet.derivationPath,
+                    ),
+                    const Gap(18),
+                    ListTile(
+                      // Remove the default border and padding
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
+                      tileColor: Colors.transparent,
+                      contentPadding: EdgeInsets.zero,
+                      title: BBText(
+                        'View addresses',
+                        style: context.font.bodyLarge?.copyWith(
+                          color: context.colour.outline,
                         ),
                       ),
-                    ),
-                    const Gap(12),
-                    Expanded(
-                      child: IconButton(
-                        onPressed: () => Navigator.of(bottomSheetContext).pop(),
-                        icon: const Icon(Icons.close),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                    ),
-                  ],
-                ),
-                const Gap(12),
-                // Content
-                BBText(
-                  'This action cannot be undone. Make sure you have backed up your wallet.',
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.outline,
-                  ),
-                ),
-                const Gap(24),
-                // Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: BBButton.big(
-                        label: 'Cancel',
-                        onPressed: () => Navigator.of(bottomSheetContext).pop(),
-                        bgColor: Colors.transparent,
-                        outlined: true,
-                        textColor: context.colour.secondary,
-                      ),
-                    ),
-                    const Gap(12),
-                    Expanded(
-                      child: BBButton.big(
-                        label: 'Delete',
-                        onPressed: () {
-                          Navigator.of(bottomSheetContext).pop();
-                          context.read<WalletDetailsCubit>().deleteWallet();
-                        },
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onPrimary,
-                      ),
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                            ),
+                          ),
+                          builder: (bottomSheetContext) {
+                            return BlocProvider(
+                              create:
+                                  (_) => locator<AddressViewBloc>(
+                                    param1: wallet!.id,
+                                    param2: 10,
+                                  ),
+                              child: const AddressListBottomSheet(),
+                            );
+                          },
+                        );
+                      },
+                      trailing: const Icon(Icons.arrow_drop_down),
                     ),
                   ],
                 ),
-                // Add bottom padding for safe area
-                SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 16),
-              ],
-            ),
-          ),
-    );
-  }
-
-  void _showErrorDialog(BuildContext context, String? errorMessage) {
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: const Text('Delete Failed'),
-            content: BBText(
-              errorMessage ??
-                  'An unknown error occurred while deleting the wallet.',
-              style: context.font.bodyMedium?.copyWith(
-                color: context.colour.error,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
+      ),
     );
   }
 }

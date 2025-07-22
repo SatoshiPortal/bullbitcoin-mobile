@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:rxdart/transformers.dart';
 
@@ -104,7 +105,7 @@ class WalletRepository {
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
-      signer: metadata.signer,
+      signer: metadata.signer.toEntity(),
       balanceSat: balance.totalSat,
     );
   }
@@ -144,7 +145,7 @@ class WalletRepository {
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
-      signer: metadata.signer,
+      signer: metadata.signer.toEntity(),
       balanceSat: balance.totalSat,
     );
   }
@@ -188,7 +189,7 @@ class WalletRepository {
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
-      signer: metadata.signer,
+      signer: metadata.signer.toEntity(),
       balanceSat: balance.totalSat,
     );
   }
@@ -217,7 +218,7 @@ class WalletRepository {
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
-      signer: metadata.signer,
+      signer: metadata.signer.toEntity(),
       balanceSat: balance.totalSat,
       isEncryptedVaultTested: metadata.isEncryptedVaultTested,
       isPhysicalBackupTested: metadata.isPhysicalBackupTested,
@@ -286,7 +287,7 @@ class WalletRepository {
             xpub: entry.value.xpub,
             externalPublicDescriptor: entry.value.externalPublicDescriptor,
             internalPublicDescriptor: entry.value.internalPublicDescriptor,
-            signer: entry.value.signer,
+            signer: entry.value.signer.toEntity(),
             balanceSat: balances[entry.key].totalSat,
             isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
             isPhysicalBackupTested: entry.value.isPhysicalBackupTested,
@@ -314,7 +315,7 @@ class WalletRepository {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
-      throw WalletNotFoundException(walletId);
+      throw WalletError.notFound(walletId);
     }
 
     await _walletMetadataDatasource.store(
@@ -332,7 +333,7 @@ class WalletRepository {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
-      throw WalletNotFoundException(walletId);
+      throw WalletError.notFound(walletId);
     }
 
     await _walletMetadataDatasource.store(
@@ -348,7 +349,7 @@ class WalletRepository {
   Future<WalletBalances> getWalletBalances({required String walletId}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
     if (metadata == null) {
-      throw WalletNotFoundException(walletId);
+      throw WalletError.notFound(walletId);
     }
     final balance = await _getBalance(metadata);
     return WalletBalances(
@@ -364,7 +365,7 @@ class WalletRepository {
   Future<void> deleteWallet({required String walletId}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
     if (metadata == null) {
-      throw WalletNotFoundException(walletId);
+      throw WalletError.notFound(walletId);
     }
 
     // Delete wallet metadata from database
@@ -499,10 +500,4 @@ class WalletRepository {
       rethrow;
     }
   }
-}
-
-class WalletNotFoundException implements Exception {
-  final String message;
-
-  const WalletNotFoundException(this.message);
 }

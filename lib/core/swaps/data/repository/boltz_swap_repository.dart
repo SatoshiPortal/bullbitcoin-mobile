@@ -486,7 +486,7 @@ class BoltzSwapRepository {
     // });
   }
 
-  Future<List<Swap>> getOngoingSwaps() async {
+  Future<List<Swap>> getOngoingSwaps({String? walletId}) async {
     final allSwapModels = await _boltz.storage.fetchAll(isTestnet: _isTestnet);
 
     final allSwaps =
@@ -494,15 +494,18 @@ class BoltzSwapRepository {
     return allSwaps
         .where(
           (swap) =>
-              (swap.status == SwapStatus.pending) ||
-              (swap.status == SwapStatus.paid) ||
-              (swap.status == SwapStatus.canCoop) ||
-              (swap.status == SwapStatus.claimable) ||
-              (swap.status == SwapStatus.refundable) ||
-              (swap is ChainSwap &&
-                  swap.status == SwapStatus.completed &&
-                  swap.receiveTxid == null &&
-                  swap.refundTxid == null),
+              (walletId == null ||
+                  swap.walletId == walletId ||
+                  swap is ChainSwap && swap.receiveWalletId == walletId) &&
+              ((swap.status == SwapStatus.pending) ||
+                  (swap.status == SwapStatus.paid) ||
+                  (swap.status == SwapStatus.canCoop) ||
+                  (swap.status == SwapStatus.claimable) ||
+                  (swap.status == SwapStatus.refundable) ||
+                  (swap is ChainSwap &&
+                      swap.status == SwapStatus.completed &&
+                      swap.receiveTxid == null &&
+                      swap.refundTxid == null)),
         )
         .toList();
   }

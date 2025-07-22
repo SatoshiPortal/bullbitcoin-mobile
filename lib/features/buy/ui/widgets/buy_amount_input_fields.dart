@@ -1,7 +1,6 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
-import 'package:bb_mobile/ui/components/loading/loading_line_content.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -47,7 +46,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText('Amount you spend', style: context.font.bodyMedium),
+        Text('Amount you spend', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -84,16 +83,19 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            BBText(
+            Text(
               'Balance: $balance',
-              style: context.font.labelSmall,
-              color:
-                  balance == null ? Colors.transparent : context.colour.outline,
+              style: context.font.labelSmall?.copyWith(
+                color:
+                    balance == null
+                        ? Colors.transparent
+                        : context.colour.outline,
+              ),
             ),
           ],
         ),
         const Gap(16.0),
-        BBText('Select currency', style: context.font.bodyMedium),
+        Text('Select currency', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -117,7 +119,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                         .map(
                           (currencyCode) => DropdownMenuItem<String>(
                             value: currencyCode,
-                            child: BBText(
+                            child: Text(
                               currencyCode,
                               style: context.font.headlineSmall,
                             ),

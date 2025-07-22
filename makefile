@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update drift-migrations
+.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update drift-migrations docker-build docker-run
 
 all: setup
 	@echo "✨ All tasks completed!"
@@ -7,8 +7,8 @@ setup: clean deps build-runner l10n hooks ios-pod-update
 	@echo "🚀 Setup complete!"
 
 clean:
-	@echo "🧹 Clean and remove pubspec.lock"
-	@flutter clean && rm pubspec.lock
+	@echo "🧹 Clean and remove pubspec.lock and ios/Podfile.lock"
+	@flutter clean && rm pubspec.lock && rm ios/Podfile.lock
 
 deps:
 	@echo "🏃 Fetch dependencies"
@@ -70,3 +70,7 @@ feature:
 
 %:
 	@:
+
+docker-build:
+	@echo "🏗️ Building Docker image"
+	@ docker build -t bull-mobile .

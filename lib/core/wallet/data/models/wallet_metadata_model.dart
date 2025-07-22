@@ -25,6 +25,7 @@ abstract class WalletMetadataModel with _$WalletMetadataModel {
     @Default(0) int lastReceiveAddressIndex,
     String? label,
     DateTime? syncedAt,
+    SignerDevice? signerDevice,
   }) = _WalletMetadataModel;
 
   const WalletMetadataModel._();
@@ -60,6 +61,7 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
     isDefault: isDefault,
     label: label ?? '',
     syncedAt: syncedAt,
+    signerDevice: signerDevice,
   );
 
   static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>
@@ -78,5 +80,6 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
         isDefault: row.isDefault,
         label: row.label,
         syncedAt: row.syncedAt,
+        signerDevice: row.signerDevice,
       );
 }

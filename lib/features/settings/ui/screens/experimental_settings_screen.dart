@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/experimental/scan_signed_tx/scan_signed_tx_router.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/features/experimental/broadcast_signed_tx/router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,9 +31,12 @@ class ExperimentalSettingsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                   tileColor: Colors.transparent,
-                  title: const Text('Scan / Paste Transaction'),
-                  onTap: () => context.pushNamed(ScanSignedTxRoutes.go.name),
-                  trailing: const Icon(Icons.qr_code_scanner),
+                  title: const Text('Broadcast Signed Transaction'),
+                  onTap:
+                      () => context.pushNamed(
+                        BroadcastSignedTxRoute.broadcastHome.name,
+                      ),
+                  trailing: const Icon(Icons.broadcast_on_home),
                 ),
               ],
             ),
