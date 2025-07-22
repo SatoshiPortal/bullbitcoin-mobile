@@ -5,7 +5,7 @@ import 'package:drift/drift.dart';
 ///
 /// Changes:
 /// - Add column signerDevice
-/// - Replace 1667h by 1776h and 1668h by 1777h in the id column
+/// - Replace 1667h by 1776h and 1668h by 1h in the id column
 class SchemaV5 {
   static Future<void> migrate(
     Migrator m,
@@ -22,14 +22,14 @@ class SchemaV5 {
       ),
     );
 
-    // Replace 1667h by 1776h and 1668h by 1777h in the id column
+    // Replace 1667h by 1776h and 1668h by 1h in the id column
     await m.database.customStatement('''
       UPDATE wallet_metadatas
       SET id = REPLACE(id, '/1667h/', '/1776h/')
       WHERE id LIKE '%/1667h/%';
 
       UPDATE wallet_metadatas
-      SET id = REPLACE(id, '/1668h/', '/1777h/')
+      SET id = REPLACE(id, '/1668h/', '/1h/')
       WHERE id LIKE '%/1668h/%';
       ''');
   }
