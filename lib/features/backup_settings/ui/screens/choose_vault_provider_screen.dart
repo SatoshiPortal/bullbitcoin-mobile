@@ -2,8 +2,8 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.da
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/selectors/backup_provider_selector.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -83,33 +83,29 @@ class _Screen extends StatelessWidget {
             );
           }
 
-          return _buildScaffold(context);
-        },
-      ),
-    );
-  }
-
-  Widget _buildScaffold(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          onBack: () => context.pop(),
-          title: "Choose vault location",
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            BackupProviderSelector(
-              onProviderSelected:
-                  (provider) => onProviderSelected(context, provider),
+          return Scaffold(
+            appBar: AppBar(
+              forceMaterialTransparency: true,
+              title: BBText(
+                "Choose vault location",
+                style: context.font.headlineMedium,
+                color: context.colour.secondary,
+              ),
             ),
-          ],
-        ),
+            body: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BackupProviderSelector(
+                    onProviderSelected:
+                        (provider) => onProviderSelected(context, provider),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
