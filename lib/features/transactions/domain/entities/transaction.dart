@@ -72,6 +72,7 @@ sealed class Transaction with _$Transaction {
   DateTime? get timestamp =>
       swap?.creationTime ??
       payjoin?.createdAt ??
+      order?.createdAt ??
       walletTransaction?.confirmationTime;
 
   int get amountSat =>
