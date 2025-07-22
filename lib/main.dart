@@ -37,9 +37,9 @@ Future main() async {
         dotenv.load(isOptional: true),
         LibBbqr.init(),
       ]);
-      log = await Logger.init(
-        directory: await getApplicationDocumentsDirectory(),
-      );
+
+      final logDirectory = await getApplicationDocumentsDirectory();
+      log = Logger.init(directory: logDirectory);
 
       // The Locator setup might depend on the initialization of the libraries above
       //  so it's important to call it after the initialization

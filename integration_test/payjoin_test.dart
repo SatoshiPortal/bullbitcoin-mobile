@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -42,7 +41,6 @@ void main() {
       'model float claim feature convince exchange truck cream assume fancy swamp offer';
 
   setUpAll(() async {
-    log = await Logger.init();
     await Future.wait([dotenv.load(isOptional: true), core.init()]);
 
     await AppLocator.setup();
