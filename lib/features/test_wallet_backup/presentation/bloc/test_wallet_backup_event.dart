@@ -50,3 +50,12 @@ class LoadMnemonicForWallet extends TestWalletBackupEvent {
   const LoadMnemonicForWallet({required this.wallet});
   final Wallet wallet;
 }
+
+class FetchAllGoogleDriveBackupsTest extends TestWalletBackupEvent {
+  const FetchAllGoogleDriveBackupsTest();
+}
+
+class SelectCloudBackupTest extends TestWalletBackupEvent {
+  const SelectCloudBackupTest({required this.id});
+  final String id;
+}
