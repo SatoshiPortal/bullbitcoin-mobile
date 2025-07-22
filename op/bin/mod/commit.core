@@ -1,8 +1,0 @@
-#!/bin/bash
-
-function main.commit {
-    cd "$REPO_DIR" || exit 1;
-    git add .
-    git commit -S -m "$1"
-    cd - || exit
-}
