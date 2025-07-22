@@ -28,6 +28,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_us
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
@@ -121,6 +122,13 @@ class WalletLocator {
         seedRepository: locator<SeedRepository>(),
         settingsRepository: locator<SettingsRepository>(),
         mnemonicGenerator: locator<MnemonicGenerator>(),
+        walletRepository: locator<WalletRepository>(),
+      ),
+    );
+    locator.registerFactory<ImportWalletUsecase>(
+      () => ImportWalletUsecase(
+        seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
         walletRepository: locator<WalletRepository>(),
       ),
     );
