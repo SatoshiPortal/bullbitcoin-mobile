@@ -80,7 +80,7 @@ test: unit-test integration-test
 
 unit-test: 
 	@echo "🏃‍ running unit tests"
-	@flutter test --reporter=compact
+	@flutter test test/ --reporter=compact
 
 integration-test:
 	@echo "🧪 integration tests"
