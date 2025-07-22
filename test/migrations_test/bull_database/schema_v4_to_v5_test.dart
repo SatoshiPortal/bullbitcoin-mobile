@@ -59,5 +59,49 @@ Future<void> main() async {
       expect(wallet1.signerDevice, null);
       await migratedDb.close();
     });
+
+    test('liquid testnet cointype', () async {
+      // Get schema at version 3
+      final schema = await verifier.schemaAt(4);
+
+      // Create database with v3 schema and add test data
+      final oldDb = v4.DatabaseAtV4(schema.newConnection());
+
+      // Insert test data with different source values
+      await oldDb
+          .into(oldDb.walletMetadatas)
+          .insert(
+            v4.WalletMetadatasCompanion.insert(
+              id: 'elwpkh([d2b5406d/84h/1668h/0h])',
+              masterFingerprint: 'x',
+              xpubFingerprint: 'x',
+              isEncryptedVaultTested: false,
+              isPhysicalBackupTested: false,
+              xpub: 'x',
+              externalPublicDescriptor: 'x',
+              internalPublicDescriptor: 'x',
+              signer: 'local',
+              isDefault: false,
+            ),
+          );
+
+      await oldDb.close();
+
+      // Run the migration to v5
+      final db = SqliteDatabase(schema.newConnection());
+      await verifier.migrateAndValidate(db, 5);
+      await db.close();
+
+      // Verify the migrated data using v4 schema
+      final migratedDb = v5.DatabaseAtV5(schema.newConnection());
+
+      // Check that all records are still present
+      final wallet1 =
+          await migratedDb.select(migratedDb.walletMetadatas).getSingle();
+
+      expect(wallet1.id, 'elwpkh([d2b5406d/84h/1h/0h])');
+      expect(wallet1.signerDevice, null);
+      await migratedDb.close();
+    });
   });
 }
