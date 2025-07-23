@@ -76,6 +76,8 @@ class _Screen extends StatelessWidget {
                 ),
               );
               context.read<BackupSettingsCubit>().clearDownloadedData();
+            } else {
+              log.severe('Backup settings error: ${state.error}');
             }
           },
         ),
