@@ -26,7 +26,7 @@ void main() {
           .into(oldDb.walletMetadatas)
           .insert(
             v3.WalletMetadatasCompanion.insert(
-              id: 'wallet1',
+              id: 'elwpkh([d2b5406d/84h/1667h/0h])',
               masterFingerprint: '12345678',
               xpubFingerprint: '87654321',
               isEncryptedVaultTested: false,
@@ -44,7 +44,7 @@ void main() {
           .into(oldDb.walletMetadatas)
           .insert(
             v3.WalletMetadatasCompanion.insert(
-              id: 'wallet2',
+              id: 'elwpkh([d2b5406d/84h/1668h/0h])',
               masterFingerprint: '87654321',
               xpubFingerprint: '12345678',
               isEncryptedVaultTested: true,
@@ -93,13 +93,19 @@ void main() {
       expect(allWallets.length, 3);
 
       // Verify the migration mappings
-      final wallet1 = allWallets.firstWhere((w) => w.id == 'wallet1');
+      final wallet1 = allWallets.firstWhere(
+        (w) => w.id == 'elwpkh([d2b5406d/84h/1776h/0h])',
+      );
       expect(wallet1.signer, 'local');
       expect(wallet1.isDefault, true);
+      expect(wallet1.signerDevice, null);
 
-      final wallet2 = allWallets.firstWhere((w) => w.id == 'wallet2');
+      final wallet2 = allWallets.firstWhere(
+        (w) => w.id == 'elwpkh([d2b5406d/84h/1h/0h])',
+      );
       expect(wallet2.signer, 'remote');
       expect(wallet2.isDefault, false);
+      expect(wallet2.signerDevice, null);
 
       final wallet3 = allWallets.firstWhere((w) => w.id == 'wallet3');
       expect(wallet3.signer, 'none');
@@ -171,6 +177,50 @@ void main() {
       final allWallets =
           await migratedDb.select(migratedDb.walletMetadatas).get();
       expect(allWallets.length, 0);
+      await migratedDb.close();
+    });
+
+    test('liquid testnet cointype', () async {
+      // Get schema at version 3
+      final schema = await verifier.schemaAt(3);
+
+      // Create database with v3 schema and add test data
+      final oldDb = v3.DatabaseAtV3(schema.newConnection());
+
+      // Insert test data with different source values
+      await oldDb
+          .into(oldDb.walletMetadatas)
+          .insert(
+            v3.WalletMetadatasCompanion.insert(
+              id: 'elwpkh([d2b5406d/84h/1668h/0h])',
+              masterFingerprint: 'x',
+              xpubFingerprint: 'x',
+              isEncryptedVaultTested: false,
+              isPhysicalBackupTested: false,
+              xpub: 'x',
+              externalPublicDescriptor: 'x',
+              internalPublicDescriptor: 'x',
+              source: 'local',
+              isDefault: false,
+            ),
+          );
+
+      await oldDb.close();
+
+      // Run the migration to v5
+      final db = SqliteDatabase(schema.newConnection());
+      await verifier.migrateAndValidate(db, 4);
+      await db.close();
+
+      // Verify the migrated data using v4 schema
+      final migratedDb = v4.DatabaseAtV4(schema.newConnection());
+
+      // Check that all records are still present
+      final wallet1 =
+          await migratedDb.select(migratedDb.walletMetadatas).getSingle();
+
+      expect(wallet1.id, 'elwpkh([d2b5406d/84h/1h/0h])');
+      expect(wallet1.signerDevice, null);
       await migratedDb.close();
     });
   });
