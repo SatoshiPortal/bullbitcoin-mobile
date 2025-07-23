@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/bip85_derivation.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 
 class CreateBackupKeyFromDefaultSeedUsecase {
   final SeedRepository _seed;
@@ -25,7 +26,7 @@ class CreateBackupKeyFromDefaultSeedUsecase {
       );
 
       if (defaultWallets.isEmpty) {
-        throw Exception('No default wallet found');
+        throw const NoDefaultWalletFoundError();
       }
 
       final defaultWallet = defaultWallets[0];
