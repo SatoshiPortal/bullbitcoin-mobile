@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
@@ -130,7 +131,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         emit(
           state.copyWith(
             status: BackupSettingsStatus.error,
-            error: 'Selected backup file is corrupted',
+            error: const BackupVaultCorruptedError(),
           ),
         );
         return;
@@ -141,7 +142,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         emit(
           state.copyWith(
             status: BackupSettingsStatus.error,
-            error: 'Backup file missing derivation path',
+            error: const BackupVaultMissingDerivationPathError(),
           ),
         );
         return;
@@ -154,9 +155,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         log.severe('Local backup key derivation failed: $e');
         emit(
           state.copyWith(
-            downloadedBackupFile: backupFile,
-            derivedBackupKey: null,
-            error: e,
+            status: BackupSettingsStatus.error,
+            error: const BackupKeyDerivationFailedError(),
           ),
         );
 

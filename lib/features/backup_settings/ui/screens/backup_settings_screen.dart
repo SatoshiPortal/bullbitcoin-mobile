@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
+import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
@@ -54,21 +55,18 @@ class _Screen extends StatelessWidget {
                       current.downloadedBackupFile &&
                   current.downloadedBackupFile != null,
           listener: (context, state) {
-            if (state.downloadedBackupFile != null) {
-              Clipboard.setData(
-                ClipboardData(text: state.downloadedBackupFile!),
-              );
-              log.info('Vault exported and copied to clipboard');
-              context.read<BackupSettingsCubit>().clearDownloadedData();
-            }
+            Clipboard.setData(ClipboardData(text: state.downloadedBackupFile!));
+            log.info('Vault exported and copied to clipboard');
+            context.read<BackupSettingsCubit>().clearDownloadedData();
           },
         ),
         BlocListener<BackupSettingsCubit, BackupSettingsState>(
-          listenWhen: (previous, current) => previous.error != current.error,
+          listenWhen:
+              (previous, current) =>
+                  previous.error != current.error && current.error != null,
           listener: (context, state) {
-            if (state.error != null &&
-                state.derivedBackupKey == null &&
-                state.status == BackupSettingsStatus.viewingKey) {
+            if (state.derivedBackupKey == null &&
+                state.error is BackupKeyDerivationFailedError) {
               context.pushNamed(
                 KeyServerRoute.keyServerFlow.name,
                 extra: (
