@@ -16,8 +16,10 @@ class DriveFile {
       final lastPart = parts.last;
       final cleaned = lastPart
           .replaceAll('.json', '')
+          // Removes all occurrences of '[', ']', and whitespace characters since backupId is a List of integers in string format
           .replaceAll(RegExp(r'[\[\]\s]'), '');
 
+      // Checks if the cleaned string contains only digits and commas
       if (!RegExp(r'^[\d,]+$').hasMatch(cleaned)) {
         return name.replaceAll('.json', '');
       }
