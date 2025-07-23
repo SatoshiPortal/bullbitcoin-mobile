@@ -56,22 +56,17 @@ class _ScreenState extends State<_Screen> {
       listenWhen:
           (previous, current) =>
               current.onboardingStepStatus != previous.onboardingStepStatus,
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state.onboardingStepStatus == OnboardingStepStatus.success) {
           context.read<OnboardingBloc>().add(const StartTransitioning());
           final bloc = context.read<OnboardingBloc>();
           if (state.availableCloudBackups.isNotEmpty) {
-            context
-                .pushNamed(
-                  OnboardingRoute.availableGoogleBackupsForRecovery.name,
-                  extra: state.availableCloudBackups,
-                )
-                .then((_) {
-                  if (mounted) {
-                    bloc.add(const EndTransitioning());
-                  }
-                });
-          } else {
+            await context.pushNamed(
+              OnboardingRoute.availableGoogleBackupsForRecovery.name,
+              extra: state.availableCloudBackups,
+            );
+          }
+          if (mounted) {
             bloc.add(const EndTransitioning());
           }
         }
