@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
 part 'wallet.freezed.dart';
 
@@ -60,6 +61,16 @@ enum Network {
     } else {
       return isTestnet ? bitcoinTestnet : bitcoinMainnet;
     }
+  }
+
+  factory Network.fromSatoshifier(satoshifier.Network network) {
+    return switch (network) {
+      satoshifier.Network.bitcoinMainnet => bitcoinMainnet,
+      satoshifier.Network.bitcoinTestnet => bitcoinTestnet,
+      satoshifier.Network.liquidMainnet => liquidMainnet,
+      satoshifier.Network.liquidTestnet => liquidTestnet,
+      _ => throw Exception('Invalid network'),
+    };
   }
 }
 
