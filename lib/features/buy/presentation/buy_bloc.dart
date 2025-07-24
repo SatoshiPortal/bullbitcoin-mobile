@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_new_receive_address_use_case.dart';
@@ -33,6 +34,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required ConvertSatsToCurrencyAmountUsecase
     convertSatsToCurrencyAmountUsecase,
     required AccelerateBuyOrderUsecase accelerateBuyOrderUsecase,
+    required GetSettingsUsecase getSettingsUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _getNewReceiveAddressUsecase = getNewReceiveAddressUsecase,
        _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
@@ -42,6 +44,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
        _getNetworkFeesUsecase = getNetworkFeesUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
        _accelerateBuyOrderUsecase = accelerateBuyOrderUsecase,
+       _getSettingsUsecase = getSettingsUsecase,
        super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
     on<_BuyAmountInputChanged>(_onAmountInputChanged);
@@ -64,16 +67,20 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final AccelerateBuyOrderUsecase _accelerateBuyOrderUsecase;
+  final GetSettingsUsecase _getSettingsUsecase;
 
   Future<void> _onStarted(_BuyStarted event, Emitter<BuyState> emit) async {
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
+      final currencyInput =
+          summary.currency ??
+          (await _getSettingsUsecase.execute()).currencyCode;
       emit(
         state.copyWith(
           userSummary: summary,
           apiKeyException: null,
           getUserSummaryException: null,
-          currencyInput: summary.currency,
+          currencyInput: currencyInput,
         ),
       );
 

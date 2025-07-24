@@ -27,11 +27,9 @@ abstract class ExchangeState with _$ExchangeState {
   bool get hasUser => userSummary != null;
 
   bool get isFullyVerifiedKycLevel =>
-      userSummary?.groups.contains('KYC_IDENTITY_VERIFIED') ?? false;
-  bool get isLightKycLevel =>
-      userSummary?.groups.contains('KYC_LIGHT_VERIFICATION') ?? false;
-  bool get isLimitedKycLevel =>
-      userSummary?.groups.contains('KYC_LIMITED_VERIFICATION') ?? false;
+      userSummary?.isFullyVerifiedKycLevel ?? false;
+  bool get isLightKycLevel => userSummary?.isLightKycLevel ?? false;
+  bool get isLimitedKycLevel => userSummary?.isLimitedKycLevel ?? false;
 
   List<UserBalance> get balances =>
       userSummary?.balances.where((b) => b.amount > 0).toList() ?? [];
