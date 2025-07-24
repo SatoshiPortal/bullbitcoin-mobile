@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -19,14 +22,27 @@ class ViewBackupKeyScreen extends StatefulWidget {
   State<ViewBackupKeyScreen> createState() => _ViewBackupKeyScreenState();
 }
 
-class _ViewBackupKeyScreenState extends State<ViewBackupKeyScreen> {
+class _ViewBackupKeyScreenState extends State<ViewBackupKeyScreen>
+    with PrivacyScreen {
+  @override
+  void dispose() {
+    unawaited(disableScreenPrivacy());
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create:
-          (context) =>
-              locator<BackupSettingsCubit>()..viewVaultKey(widget.backupFile),
-      child: const _Screen(),
+    return FutureBuilder(
+      future: enableScreenPrivacy(),
+      builder: (context, snapshot) {
+        return BlocProvider(
+          create:
+              (context) =>
+                  locator<BackupSettingsCubit>()
+                    ..viewVaultKey(widget.backupFile),
+          child: const _Screen(),
+        );
+      },
     );
   }
 }
