@@ -42,7 +42,7 @@ class BuyAccelerateScreen extends StatelessWidget {
       (BuyBloc bloc) => bloc.state.exchangeRate,
     );
     final absoluteFeeFiatEstimate =
-        absoluteFee != null && exchangeRate != null
+        absoluteFee != null && exchangeRate > 0
             ? ConvertAmount.satsToFiat(absoluteFee, exchangeRate)
             : null;
     final formattedFeeFiatEstimate =

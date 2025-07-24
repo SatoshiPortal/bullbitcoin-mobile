@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,7 +42,18 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
   @override
   Widget build(BuildContext context) {
     final currency = context.select((BuyBloc bloc) => bloc.state.currency);
+    final balance = context.select((BuyBloc bloc) => bloc.state.balance);
     final balances = context.select((BuyBloc bloc) => bloc.state.balances);
+    final fiatAmount = context.select((BuyBloc bloc) => bloc.state.amount);
+    final amountSat = context.select((BuyBloc bloc) => bloc.state.amountSat);
+    final bitcoinUnit = context.select(
+      (BuyBloc bloc) => bloc.state.bitcoinUnit,
+    );
+    final isFiatCurrencyInput = context.select(
+      (BuyBloc bloc) => bloc.state.isFiatCurrencyInput,
+    );
+    final amountInputDecimals =
+        isFiatCurrencyInput ? currency?.decimals ?? 2 : bitcoinUnit.decimals;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,12 +90,12 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                             decimal: true,
                           ),
                           inputFormatters:
-                              currency.decimals > 0
+                              amountInputDecimals > 0
                                   ? [
                                     FilteringTextInputFormatter.allow(
                                       RegExp(
                                         r'^\d+\.?\d{0,'
-                                        '${currency.decimals}'
+                                        '$amountInputDecimals'
                                         '}',
                                       ),
                                     ),
@@ -94,7 +106,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           ),
                           decoration: InputDecoration(
                             hintText: NumberFormat.decimalPatternDigits(
-                              decimalDigits: currency.decimals,
+                              decimalDigits: amountInputDecimals,
                             ).format(0),
                             hintStyle: context.font.displaySmall?.copyWith(
                               color: context.colour.primary,
@@ -105,14 +117,14 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                       ),
                       const Gap(8.0),
                       Text(
-                        currency.code,
+                        isFiatCurrencyInput ? currency.code : bitcoinUnit.code,
                         style: context.font.displaySmall?.copyWith(
                           color: context.colour.primary,
                         ),
                       ),
                     ],
                   ),
-                const Gap(8),
+                const Gap(16),
                 if (currency == null)
                   const LoadingLineContent(
                     padding: EdgeInsets.symmetric(vertical: 12.0),
@@ -120,10 +132,33 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                 else
                   Row(
                     children: [
-                      Icon(Icons.swap_vert, color: context.colour.outline),
+                      InkWell(
+                        onTap: () {
+                          context.read<BuyBloc>().add(
+                            const BuyEvent.fiatCurrencyInputToggled(),
+                          );
+                          // Clear the amount input when switching currency type
+                          // manually to avoid confusion with the previous input
+                          // and since the input formatters will change.
+                          _amountController.clear();
+                        },
+                        child: Icon(
+                          Icons.swap_vert,
+                          color: context.colour.outline,
+                        ),
+                      ),
                       const Gap(8.0),
+                      CurrencyText(
+                        amountSat ?? 0,
+                        showFiat: !isFiatCurrencyInput,
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                        fiatCurrency: currency.code,
+                        fiatAmount: !isFiatCurrencyInput ? fiatAmount : null,
+                      ),
                       Text(
-                        '0 BTC approx.',
+                        ' approx.',
                         style: context.font.bodyMedium?.copyWith(
                           color: context.colour.outline,
                         ),
@@ -138,8 +173,12 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           onPressed: () {
-                            _amountController.text =
-                                balances[currency.code]?.toString() ?? '0';
+                            if (!isFiatCurrencyInput) {
+                              context.read<BuyBloc>().add(
+                                const BuyEvent.fiatCurrencyInputToggled(),
+                              );
+                            }
+                            _amountController.text = balance?.toString() ?? '0';
                           },
                           child: Text(
                             'Max',

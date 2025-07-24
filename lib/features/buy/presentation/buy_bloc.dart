@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
@@ -6,6 +8,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summar
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_new_receive_address_use_case.dart';
@@ -49,6 +52,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     on<_BuyStarted>(_onStarted);
     on<_BuyAmountInputChanged>(_onAmountInputChanged);
     on<_BuyCurrencyInputChanged>(_onCurrencyInputChanged);
+    on<_BuyFiatCurrencyInputToggled>(_onFiatCurrencyInputToggled);
     on<_BuySelectedWalletChanged>(_onSelectedWalletChanged);
     on<_BuyBitcoinAddressInputChanged>(_onBitcoinAddressInputChanged);
     on<_BuyCreateOrder>(_onCreateOrder);
@@ -72,15 +76,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   Future<void> _onStarted(_BuyStarted event, Emitter<BuyState> emit) async {
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
-      final currencyInput =
-          summary.currency ??
-          (await _getSettingsUsecase.execute()).currencyCode;
+      final settings = await _getSettingsUsecase.execute();
+      final currencyInput = summary.currency ?? settings.currencyCode;
       emit(
         state.copyWith(
           userSummary: summary,
           apiKeyException: null,
           getUserSummaryException: null,
           currencyInput: currencyInput,
+          bitcoinUnit: settings.bitcoinUnit,
         ),
       );
 
@@ -91,6 +95,20 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           selectedWallet: wallets.isNotEmpty ? wallets.first : null,
         ),
       );
+
+      try {
+        final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+          currencyCode: currencyInput,
+        );
+        emit(state.copyWith(exchangeRate: exchangeRate));
+      } catch (e) {
+        log.severe(
+          '[BuyBloc] _onStarted convertSatsToCurrencyAmount error: $e',
+        );
+        if (e is ConvertSatsToCurrencyAmountException) {
+          emit(state.copyWith(convertSatsToCurrencyAmountException: e));
+        }
+      }
     } catch (e) {
       log.severe('[BuyBloc] _onStarted error: $e');
       if (e is ApiKeyException) {
@@ -124,8 +142,35 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   ) async {
     try {
       emit(state.copyWith(currencyInput: event.currencyCode));
+
+      // Fetch the exchange rate for the new currency input.
+      try {
+        final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+          currencyCode: event.currencyCode,
+        );
+        emit(state.copyWith(exchangeRate: exchangeRate));
+      } catch (e) {
+        log.severe(
+          '[BuyBloc] _onStarted convertSatsToCurrencyAmount error: $e',
+        );
+        if (e is ConvertSatsToCurrencyAmountException) {
+          emit(state.copyWith(convertSatsToCurrencyAmountException: e));
+        }
+      }
     } catch (e) {
       log.severe('[BuyBloc] _onCurrencyInputChanged error: $e');
+    }
+  }
+
+  Future<void> _onFiatCurrencyInputToggled(
+    _BuyFiatCurrencyInputToggled event,
+    Emitter<BuyState> emit,
+  ) async {
+    try {
+      // Toggle the fiat currency input state.
+      emit(state.copyWith(isFiatCurrencyInput: !state.isFiatCurrencyInput));
+    } catch (e) {
+      log.severe('[BuyBloc] _onIsFiatCurrencyInputToggled error: $e');
     }
   }
 
@@ -181,7 +226,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       }
       final order = await _createBuyOrderUsecase.execute(
         toAddress: toAddress,
-        orderAmount: FiatAmount(state.amount!),
+        orderAmount:
+            state.isFiatCurrencyInput
+                ? FiatAmount(state.amount!)
+                : BitcoinAmount(state.amountBtc!),
         currency: state.currency!,
         isLiquid: state.selectedWallet?.network.isLiquid == true,
         isOwner: true,
@@ -191,6 +239,22 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     } on BuyError catch (e) {
       log.severe('[BuyBloc] _onCreateOrder error: $e');
       emit(state.copyWith(createOrderBuyError: e));
+
+      // Refresh the exchange rate so that the user can update the amount better
+      //  if the amount was the reason for the error.
+      try {
+        final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+          currencyCode: state.currency!.code,
+        );
+        emit(state.copyWith(exchangeRate: exchangeRate));
+      } catch (e) {
+        log.severe(
+          '[BuyBloc] _onStarted convertSatsToCurrencyAmount error: $e',
+        );
+        if (e is ConvertSatsToCurrencyAmountException) {
+          emit(state.copyWith(convertSatsToCurrencyAmountException: e));
+        }
+      }
     } on GetNewReceiveAddressException catch (e) {
       log.severe('[BuyBloc] _onCreateOrder GetNewReceiveAddressException: $e');
       emit(state.copyWith(getNewReceiveAddressException: e));
