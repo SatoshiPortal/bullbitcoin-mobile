@@ -1,0 +1,81 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - run: make clean
+      - run: make deps
+      - run: make build-runner
+      - run: make l10n
+
+      - name: Create .env file
+        run: |
+          echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
+          echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
+      
+      - name: Run Unit Tests
+        run: make unit-test
+
+  # android-integration-test:
+  #   runs-on: macos-latest
+
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: flutter-actions/setup-flutter@v4
+  #     - uses: bluefireteam/melos-action@v2
+  #     - uses: dtolnay/rust-toolchain@stable
+  #       with:
+  #         toolchain: stable
+  #     - uses: nttld/setup-ndk@v1
+  #       with:
+  #         ndk-version: r25b
+  #     - uses: actions/setup-java@v3
+  #       with:
+  #         distribution: zulu
+  #         java-version: "21"
+
+  #     - run: make clean
+  #     - run: make deps
+  #     - run: make build-runner
+  #     - run: make l10n
+
+  #     - name: Create .env file
+  #       run: |
+  #         echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
+  #         echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env    
+
+  #     # - name: Build the binaries
+  #     #   run: melos run build:android
+  #     # - name: Copy the binaries to the needed location
+  #     #   run: |
+  #     #     CURR_VERSION=library_name-v`awk '/^version: /{print $2}' packages/library_name/pubspec.yaml`
+  #     #     cp platform-build/android.tar.gz packages/flutter_library_name/android/$CURR_VERSION.tar.gz
+  #     #     echo Copied file!
+
+  #     - name: Run Flutter integration tests
+  #       uses: Wandalen/wretry.action@master # sometimes android tests are flaky
+  #       with:
+  #         attempt_limit: 5
+  #         action: reactivecircus/android-emulator-runner@v2
+  #         with: |
+  #           api-level: 33
+  #           target: google_apis
+  #           arch: x86_64
+  #           ram-size: 1024M
+  #           disk-size: 2048M
+  #           script: cd packages/flutter_library_name/example && flutter test -d `flutter devices | grep android | tr ' ' '\n' | grep emulator-` integration_test

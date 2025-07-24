@@ -1,46 +1,42 @@
-import 'dart:async';
-
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:payjoin_flutter/src/generated/frb_generated.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-void main() {
-  late BullbitcoinApiDatasource bitcoinPriceDatasource;
-  late GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase;
-  late ConvertCurrencyToSatsAmountUsecase convertCurrencyToSatsAmountUsecase;
-  late ConvertSatsToCurrencyAmountUsecase convertSatsToCurrencyAmountUsecase;
+Future<void> main({bool isInitialized = false}) async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  if (!isInitialized) await Bull.init();
 
-  setUpAll(() async {
-    await Future.wait([dotenv.load(isOptional: true), core.init()]);
+  final bitcoinPriceDatasource = locator<BullbitcoinApiDatasource>(
+    instanceName: 'mainnetExchangeApiDatasource',
+  );
+  final getAvailableCurrenciesUsecase =
+      locator<GetAvailableCurrenciesUsecase>();
+  final convertCurrencyToSatsAmountUsecase =
+      locator<ConvertCurrencyToSatsAmountUsecase>();
+  final convertSatsToCurrencyAmountUsecase =
+      locator<ConvertSatsToCurrencyAmountUsecase>();
 
-    await AppLocator.setup();
-
-    bitcoinPriceDatasource = locator.get<BullbitcoinApiDatasource>();
-    getAvailableCurrenciesUsecase =
-        locator.get<GetAvailableCurrenciesUsecase>();
-    convertCurrencyToSatsAmountUsecase =
-        locator.get<ConvertCurrencyToSatsAmountUsecase>();
-    convertSatsToCurrencyAmountUsecase =
-        locator.get<ConvertSatsToCurrencyAmountUsecase>();
-  });
-
-  setUp(() {});
+  const currency = 'USD';
+  final bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
 
   group('Exchange Rate Integration Tests', () {
     group('have a working BullBitcoin API', () {
       test('with currencies we expect', () async {
-        final expectedCurrencies = ['USD', 'CAD', 'INR', 'CRC', 'EUR'];
+        final expectedCurrencies = ['USD', 'CAD', 'MXN', 'CRC', 'EUR'];
         final currencies = await getAvailableCurrenciesUsecase.execute();
 
         for (final currency in expectedCurrencies) {
-          expect(currencies.contains(currency), true);
+          expect(
+            currencies.contains(currency),
+            true,
+            reason: 'Currency $currency not found',
+          );
         }
       });
       test('with prices for available currencies', () async {
@@ -60,13 +56,6 @@ void main() {
     });
 
     group('have working conversion use cases', () {
-      const currency = 'USD';
-      late double bitcoinPrice;
-
-      setUp(() async {
-        bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
-      });
-
       test('that get the price of one bitcoin', () async {
         final amountSat = ConversionConstants.satsAmountOfOneBitcoin;
 
@@ -77,7 +66,7 @@ void main() {
 
         debugPrint('Converted $amountSat sats to $amount $currency');
 
-        expect(bitcoinPrice, amount);
+        expect(amount, bitcoinPrice);
       });
 
       test('that converts currency to sats', () async {
@@ -92,7 +81,7 @@ void main() {
 
         final expectedSats = BigInt.from((amount * 100000000) ~/ bitcoinPrice);
 
-        expect(expectedSats, sats);
+        expect(sats, expectedSats);
       });
 
       test('that converts sats to currency', () async {
@@ -106,7 +95,7 @@ void main() {
         debugPrint('Converted $sats sats to $amount $currency');
 
         final expectedAmount = sats / BigInt.from(100000000) * bitcoinPrice;
-        expect(expectedAmount, amount);
+        expect(amount, expectedAmount);
       });
     });
   });

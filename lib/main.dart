@@ -24,27 +24,32 @@ import 'package:lwk/lwk.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
 
+class Bull {
+  static Future<void> init() async {
+    await Future.wait([
+      LibLwk.init(),
+      BoltzCore.init(),
+      LibBip85.init(),
+      PConfig.initializeApp(),
+      dotenv.load(isOptional: true),
+      LibBbqr.init(),
+    ]);
+
+    final logDirectory = await getApplicationDocumentsDirectory();
+    log = Logger.init(directory: logDirectory);
+
+    // The Locator setup might depend on the initialization of the libraries above
+    //  so it's important to call it after the initialization
+    await AppLocator.setup();
+    Bloc.observer = AppBlocObserver();
+  }
+}
+
 Future main() async {
   await runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
-
-      await Future.wait([
-        LibLwk.init(),
-        BoltzCore.init(),
-        LibBip85.init(),
-        PConfig.initializeApp(),
-        dotenv.load(isOptional: true),
-        LibBbqr.init(),
-      ]);
-
-      final logDirectory = await getApplicationDocumentsDirectory();
-      log = Logger.init(directory: logDirectory);
-
-      // The Locator setup might depend on the initialization of the libraries above
-      //  so it's important to call it after the initialization
-      await AppLocator.setup();
-      Bloc.observer = AppBlocObserver();
+      await Bull.init();
       runApp(const BullBitcoinWalletApp());
     },
     (error, stack) {

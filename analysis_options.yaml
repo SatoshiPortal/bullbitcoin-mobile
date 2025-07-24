@@ -13,8 +13,6 @@ analyzer:
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
-    - test/
-    - integration_test/
     - maintainance/**
     - pubspec.yaml
   
