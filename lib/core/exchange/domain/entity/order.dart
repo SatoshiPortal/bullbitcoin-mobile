@@ -95,7 +95,7 @@ class BitcoinAmount extends OrderAmount {
 
 enum OrderStatus {
   canceled('Canceled'),
-  expired('Expired'),
+  expired('Payment deadline expired'),
   inProgress('In progress'),
   awaitingConfirmation('Awaiting confirmation'),
   completed('Completed'),

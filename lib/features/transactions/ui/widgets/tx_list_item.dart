@@ -191,7 +191,35 @@ class TxListItem extends StatelessWidget {
                   ),
                 ),
                 const Gap(4.0),
-                if (date != null)
+                if (isOrderType && tx.order!.isCompleted() && date != null)
+                  Row(
+                    children: [
+                      BBText(
+                        date,
+                        style: context.font.labelSmall?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
+                      const Gap(4.0),
+                      Icon(
+                        Icons.check_circle,
+                        size: 12.0,
+                        color: context.colour.inverseSurface,
+                      ),
+                    ],
+                  )
+                else if (isOrderType)
+                  Row(
+                    children: [
+                      BBText(
+                        tx.order!.orderStatus.value,
+                        style: context.font.labelSmall?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
+                    ],
+                  )
+                else if (date != null)
                   Row(
                     children: [
                       BBText(
