@@ -5,7 +5,7 @@ class FetchLatestGoogleDriveBackupUsecase {
 
   FetchLatestGoogleDriveBackupUsecase(this._repository);
 
-  Future<String> execute() async {
+  Future<({String content, String fileName})> execute() async {
     try {
       final availableBackups = await _repository.fetchBackupFiles();
       final latestBackup = availableBackups.reduce((a, b) {
@@ -13,7 +13,8 @@ class FetchLatestGoogleDriveBackupUsecase {
         final bTime = b.createdTime;
         return aTime.compareTo(bTime) > 0 ? a : b;
       });
-      return await _repository.fetchBackupContent(latestBackup.id);
+      final content = await _repository.fetchBackupContent(latestBackup.id);
+      return (content: content, fileName: latestBackup.name);
     } catch (e) {
       throw Exception(e.toString());
     }

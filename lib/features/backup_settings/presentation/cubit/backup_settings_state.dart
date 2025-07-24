@@ -1,5 +1,14 @@
 part of 'backup_settings_cubit.dart';
 
+enum BackupSettingsStatus {
+  initial,
+  loading,
+  success,
+  error,
+  viewingKey,
+  exporting,
+}
+
 @freezed
 sealed class BackupSettingsState with _$BackupSettingsState {
   factory BackupSettingsState({
@@ -7,6 +16,10 @@ sealed class BackupSettingsState with _$BackupSettingsState {
     DateTime? lastPhysicalBackup,
     @Default(false) bool isDefaultEncryptedBackupTested,
     DateTime? lastEncryptedBackup,
-    @Default(false) bool loading,
+    @Default(BackupSettingsStatus.initial) BackupSettingsStatus status,
+    String? downloadedBackupFile,
+    String? selectedBackupFile,
+    String? derivedBackupKey,
+    Object? error,
   }) = _BackupSettingsState;
 }
