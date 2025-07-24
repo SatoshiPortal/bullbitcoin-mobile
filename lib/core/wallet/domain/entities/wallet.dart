@@ -117,6 +117,17 @@ abstract class Wallet with _$Wallet {
   const Wallet._();
 
   String get id => origin;
+  String getAddressType() {
+    if (isLiquid) {
+      return 'Confidential Segwit';
+    }
+
+    return switch (scriptType) {
+      ScriptType.bip84 => 'Native Segwit',
+      ScriptType.bip49 => 'Compatible Script',
+      ScriptType.bip44 => 'Legacy',
+    };
+  }
 
   String getWalletTypeString() {
     String name = switch (network) {
@@ -126,6 +137,13 @@ abstract class Wallet with _$Wallet {
     };
     if (signer == SignerEntity.none) name = 'Watch-only';
     return name;
+  }
+
+  String getNetworkString() {
+    return switch (network) {
+      Network.bitcoinMainnet || Network.bitcoinTestnet => 'Bitcoin network',
+      Network.liquidMainnet || Network.liquidTestnet => 'Liquid network',
+    };
   }
 
   String getLabel() {

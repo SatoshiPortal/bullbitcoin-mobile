@@ -40,16 +40,17 @@ class WalletOptionsScreen extends StatelessWidget {
                               );
                             },
                           ),
-                          SettingsEntryItem(
-                            icon: Icons.currency_bitcoin,
-                            title: 'Addresses',
-                            onTap: () {
-                              context.pushNamed(
-                                SettingsRoute.walletAddresses.name,
-                                pathParameters: {'walletId': walletId},
-                              );
-                            },
-                          ),
+                          if (!wallet.isLiquid)
+                            SettingsEntryItem(
+                              icon: Icons.currency_bitcoin,
+                              title: 'Addresses',
+                              onTap: () {
+                                context.pushNamed(
+                                  SettingsRoute.walletAddresses.name,
+                                  pathParameters: {'walletId': walletId},
+                                );
+                              },
+                            ),
                         ],
                       ),
                     ),
