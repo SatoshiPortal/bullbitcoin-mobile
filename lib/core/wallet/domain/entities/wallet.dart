@@ -141,8 +141,10 @@ abstract class Wallet with _$Wallet {
 
   String getNetworkString() {
     return switch (network) {
-      Network.bitcoinMainnet || Network.bitcoinTestnet => 'Bitcoin network',
-      Network.liquidMainnet || Network.liquidTestnet => 'Liquid network',
+      Network.bitcoinMainnet => 'Bitcoin Network',
+      Network.bitcoinTestnet => 'Bitcoin Testnet',
+      Network.liquidMainnet => 'Liquid Network',
+      Network.liquidTestnet => 'Liquid Testnet',
     };
   }
 
