@@ -185,7 +185,7 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                       child: BBText(
                         wallet.isDefault
                             ? 'Default Wallets'
-                            : wallet.getLabel() ?? '',
+                            : wallet.getLabel(),
                         style: context.font.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                           fontSize: 18,

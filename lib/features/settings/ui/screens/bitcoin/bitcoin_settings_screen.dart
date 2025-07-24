@@ -32,7 +32,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
               children: [
                 SettingsEntryItem(
                   icon: Icons.account_balance_wallet,
-                  title: 'Wallet Details',
+                  title: 'Wallets',
                   onTap: () {
                     context.pushNamed(
                       SettingsRoute.walletDetailsWalletList.name,

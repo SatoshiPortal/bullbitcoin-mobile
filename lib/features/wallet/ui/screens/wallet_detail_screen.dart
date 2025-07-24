@@ -36,7 +36,7 @@ class WalletDetailScreen extends StatelessWidget {
                     ? // TODO: use labels from translations for hardcoded names here
                     "Instant Payments"
                     : "Secure Bitcoin"
-                : wallet.getLabel() ?? ''
+                : wallet.getLabel()
             : '';
 
     return Scaffold(

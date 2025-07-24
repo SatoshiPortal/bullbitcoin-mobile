@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
+import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
@@ -11,6 +13,7 @@ import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/experimental_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
@@ -42,6 +45,8 @@ enum SettingsRoute {
   backupSettings('backup-settings'),
   walletDetailsWalletList('wallet-details'),
   walletDetailsSelectedWallet(':walletId'),
+  walletOptions(':walletId/options'),
+  walletAddresses(':walletId/addresses'),
   logs('logs'),
   legacySeeds('legacy-seeds'),
   experimental('experimental-settings'),
@@ -168,6 +173,14 @@ class SettingsRouter {
         builder: (context, state) => const WalletsListScreen(),
         routes: [
           GoRoute(
+            path: SettingsRoute.walletOptions.path,
+            name: SettingsRoute.walletOptions.name,
+            builder: (context, state) {
+              final walletId = state.pathParameters['walletId']!;
+              return WalletOptionsScreen(walletId: walletId);
+            },
+          ),
+          GoRoute(
             path: SettingsRoute.walletDetailsSelectedWallet.path,
             name: SettingsRoute.walletDetailsSelectedWallet.name,
             builder: (context, state) {
@@ -200,6 +213,19 @@ class SettingsRouter {
                   ),
                 ],
                 child: WalletDetailsScreen(walletId: walletId),
+              );
+            },
+          ),
+          GoRoute(
+            path: SettingsRoute.walletAddresses.path,
+            name: SettingsRoute.walletAddresses.name,
+            builder: (context, state) {
+              final walletId = state.pathParameters['walletId']!;
+              return BlocProvider(
+                create:
+                    (_) =>
+                        locator<AddressViewBloc>(param1: walletId, param2: 10),
+                child: AddressesScreen(walletId: walletId),
               );
             },
           ),
