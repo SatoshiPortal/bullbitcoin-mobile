@@ -166,7 +166,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       emit(
         state.copyWith(
           status: BackupSettingsStatus.success,
-
           derivedBackupKey: backupKey,
         ),
       );
