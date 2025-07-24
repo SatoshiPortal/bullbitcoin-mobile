@@ -126,7 +126,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         state.copyWith(status: BackupSettingsStatus.viewingKey, error: null),
       );
 
-      final backupInfo = BackupInfo(backupFile: backupFile);
+      final backupInfo = backupFile.backupInfo;
       if (backupInfo.isCorrupted) {
         emit(
           state.copyWith(

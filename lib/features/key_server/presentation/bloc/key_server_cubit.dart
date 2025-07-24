@@ -134,7 +134,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   Future<void> autoFetchKey() async {
     try {
       emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
-      final backupInfo = BackupInfo(backupFile: state.backupFile);
+      final backupInfo = state.backupFile.backupInfo;
       final backupKey = await createBackupKeyFromDefaultSeedUsecase.execute(
         backupInfo.path ?? '',
       );

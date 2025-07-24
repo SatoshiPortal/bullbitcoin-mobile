@@ -165,7 +165,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.success,
-          backupInfo: BackupInfo(backupFile: encryptedBackup),
+          backupInfo: encryptedBackup.backupInfo,
         ),
       );
     } catch (e) {
@@ -192,7 +192,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       return;
     } catch (e) {
       await _handleError(
-        'Failed recover the wallet: ${BackupInfo(backupFile: event.backupFile).id}',
+        'Failed recover the wallet: ${event.backupFile.backupInfo.id}',
         emit,
       );
       return;

@@ -19,6 +19,10 @@ class BackupInfo {
   String? get path => BullBackup.fromJson(backupFile).path;
   String get id => HEX.encode(BullBackup.fromJson(backupFile).id);
   DateTime get createdAt => DateTime.fromMillisecondsSinceEpoch(
-        BullBackup.fromJson(backupFile).createdAt,
-      );
+    BullBackup.fromJson(backupFile).createdAt,
+  );
+}
+
+extension ToBackupInfo on String {
+  BackupInfo get backupInfo => BackupInfo(backupFile: this);
 }
