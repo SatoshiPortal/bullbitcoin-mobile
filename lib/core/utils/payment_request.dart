@@ -70,9 +70,7 @@ sealed class PaymentRequest with _$PaymentRequest {
           message: parsed.message,
           amountSat: parsed.sats,
           lightning: parsed.lightning,
-          // TODO: The following line is a workaround for the issue with spaces in the 'pj' field.
-          // TODO: It can be removed once PDK returns the pj field as an encoded uri string.
-          pj: parsed.pj.replaceAll(' ', '+'),
+          pj: parsed.pj,
           pjos: parsed.pjos,
         ),
         satoshifier.BitcoinAddress() => PaymentRequest.bitcoin(
