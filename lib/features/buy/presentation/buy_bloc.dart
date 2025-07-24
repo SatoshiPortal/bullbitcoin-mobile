@@ -89,12 +89,17 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       );
 
       final wallets = await _getWalletsUsecase.execute();
-      emit(
-        state.copyWith(
-          wallets: wallets,
-          selectedWallet: wallets.isNotEmpty ? wallets.first : null,
-        ),
-      );
+      // Always prefer the default liquid wallet if available, fallback to just
+      // the first wallet if no default liquid wallet is found.
+      final selectedWallet =
+          wallets.isNotEmpty
+              ? wallets.firstWhere(
+                (w) => w.isDefault && w.isLiquid,
+                orElse: () => wallets.first,
+              )
+              : null;
+
+      emit(state.copyWith(wallets: wallets, selectedWallet: selectedWallet));
 
       try {
         final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
