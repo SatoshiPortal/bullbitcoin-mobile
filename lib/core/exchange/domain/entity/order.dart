@@ -4,12 +4,13 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'order.freezed.dart';
 
 enum FiatCurrency {
-  cad('CAD'),
-  eur('EUR'),
-  mxn('MXN');
+  cad('CAD', decimals: 2),
+  eur('EUR', decimals: 2),
+  mxn('MXN', decimals: 2);
 
-  const FiatCurrency(this.code);
+  const FiatCurrency(this.code, {required this.decimals});
   final String code;
+  final int decimals;
 
   static FiatCurrency fromCode(String code) {
     switch (code.toUpperCase()) {

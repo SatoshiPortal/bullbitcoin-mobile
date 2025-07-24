@@ -1,9 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 
 class BuyAmountInputFields extends StatefulWidget {
   const BuyAmountInputFields({super.key});
@@ -37,65 +40,123 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
 
   @override
   Widget build(BuildContext context) {
-    final currencyCode = context.select(
-      (BuyBloc bloc) => bloc.state.currencyInput,
-    );
-    final balance = context.select((BuyBloc bloc) => bloc.state.balance);
+    final currency = context.select((BuyBloc bloc) => bloc.state.currency);
     final balances = context.select((BuyBloc bloc) => bloc.state.balances);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Amount you spend', style: context.font.bodyMedium),
+        Text('Enter amount', style: context.font.bodyMedium),
         const Gap(4.0),
-        SizedBox(
-          height: 56,
-          child: Material(
-            elevation: 2,
-            color: context.colour.onPrimary,
-            borderRadius: BorderRadius.circular(2.0),
-            child: Center(
-              child:
-                  currencyCode.isEmpty
-                      ? const LoadingLineContent()
-                      : TextFormField(
-                        controller: _amountController,
-                        enabled: currencyCode.isNotEmpty,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        style: context.font.headlineMedium,
-                        decoration: InputDecoration(
-                          hintText: '0 $currencyCode',
-                          hintStyle: context.font.headlineMedium?.copyWith(
-                            color: context.colour.outline,
+        Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 16.0,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (currency == null)
+                  const LoadingLineContent(
+                    padding: EdgeInsets.symmetric(vertical: 12.0),
+                  )
+                else
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _amountController,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
                           ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16.0,
+                          inputFormatters:
+                              currency.decimals > 0
+                                  ? [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(
+                                        r'^\d+\.?\d{0,'
+                                        '${currency.decimals}'
+                                        '}',
+                                      ),
+                                    ),
+                                  ]
+                                  : [FilteringTextInputFormatter.digitsOnly],
+                          style: context.font.displaySmall?.copyWith(
+                            color: context.colour.primary,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: NumberFormat.decimalPatternDigits(
+                              decimalDigits: currency.decimals,
+                            ).format(0),
+                            hintStyle: context.font.displaySmall?.copyWith(
+                              color: context.colour.primary,
+                            ),
+                            border: InputBorder.none,
                           ),
                         ),
                       ),
+                      const Gap(8.0),
+                      Text(
+                        currency.code,
+                        style: context.font.displaySmall?.copyWith(
+                          color: context.colour.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                const Gap(8),
+                if (currency == null)
+                  const LoadingLineContent(
+                    padding: EdgeInsets.symmetric(vertical: 12.0),
+                  )
+                else
+                  Row(
+                    children: [
+                      Icon(Icons.swap_vert, color: context.colour.outline),
+                      const Gap(8.0),
+                      Text(
+                        '0 BTC approx.',
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
+                      const Spacer(),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onPressed: () {
+                            _amountController.text =
+                                balances[currency.code]?.toString() ?? '0';
+                          },
+                          child: Text(
+                            'Max',
+                            style: context.font.bodyMedium?.copyWith(
+                              color: context.colour.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
             ),
           ),
         ),
-        const Gap(2.0),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Balance: $balance',
-              style: context.font.labelSmall?.copyWith(
-                color:
-                    balance == null
-                        ? Colors.transparent
-                        : context.colour.outline,
-              ),
-            ),
-          ],
-        ),
         const Gap(16.0),
-        Text('Select currency', style: context.font.bodyMedium),
+        Text('Payment method', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -105,7 +166,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
-                value: currencyCode.isEmpty ? null : currencyCode,
+                value: currency?.code,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -120,7 +181,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           (currencyCode) => DropdownMenuItem<String>(
                             value: currencyCode,
                             child: Text(
-                              currencyCode,
+                              '$currencyCode Balance - ${FormatAmount.fiat(balances[currencyCode] ?? 0, currencyCode, simpleFormat: true)}',
                               style: context.font.headlineSmall,
                             ),
                           ),

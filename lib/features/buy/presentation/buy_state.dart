@@ -39,7 +39,7 @@ sealed class BuyState with _$BuyState {
 
   double? get balance => balances[currencyInput];
 
-  double? get amount => double.tryParse(amountInput);
+  double? get amount => double.tryParse(amountInput.replaceAll(',', '.'));
 
   FiatCurrency? get currency =>
       currencyInput.isNotEmpty ? FiatCurrency.fromCode(currencyInput) : null;

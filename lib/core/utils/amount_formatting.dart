@@ -34,11 +34,19 @@ class FormatAmount {
     }
   }
 
-  static String fiat(double fiat, String currencyCode) {
-    final currencyFormatter = NumberFormat.currency(
-      name: currencyCode,
-      customPattern: '#,##0.00 ¤',
-    );
+  static String fiat(
+    double fiat,
+    String currencyCode, {
+    bool simpleFormat = false,
+  }) {
+    final currencyFormatter =
+        simpleFormat
+            ? NumberFormat.simpleCurrency(name: currencyCode)
+            : NumberFormat.currency(
+              name: currencyCode,
+              customPattern: '#,##0.00 ¤',
+            );
+
     return currencyFormatter.format(fiat);
   }
 }
