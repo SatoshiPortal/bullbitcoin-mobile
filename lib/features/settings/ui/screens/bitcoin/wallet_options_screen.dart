@@ -19,7 +19,7 @@ class WalletOptionsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(wallet?.getLabel() ?? 'Unnamed Wallet')),
+      appBar: AppBar(title: Text(wallet?.displayLabel ?? 'Unnamed Wallet')),
       body: SafeArea(
         child:
             wallet == null
@@ -40,17 +40,16 @@ class WalletOptionsScreen extends StatelessWidget {
                               );
                             },
                           ),
-                          if (!wallet.isLiquid)
-                            SettingsEntryItem(
-                              icon: Icons.currency_bitcoin,
-                              title: 'Addresses',
-                              onTap: () {
-                                context.pushNamed(
-                                  SettingsRoute.walletAddresses.name,
-                                  pathParameters: {'walletId': walletId},
-                                );
-                              },
-                            ),
+                          SettingsEntryItem(
+                            icon: Icons.currency_bitcoin,
+                            title: 'Addresses',
+                            onTap: () {
+                              context.pushNamed(
+                                SettingsRoute.walletAddresses.name,
+                                pathParameters: {'walletId': walletId},
+                              );
+                            },
+                          ),
                         ],
                       ),
                     ),
