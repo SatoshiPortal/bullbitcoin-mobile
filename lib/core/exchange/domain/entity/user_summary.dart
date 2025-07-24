@@ -223,4 +223,19 @@ class UserSummary {
       currency.hashCode ^
       dca.hashCode ^
       autoBuy.hashCode;
+
+  /// Returns balances to display in the UI
+  /// Shows all balances above 0, or the user's default currency if all are 0
+  List<UserBalance> get displayBalances {
+    // Filter balances above 0
+    final balancesAboveZero = balances.where((b) => b.amount > 0).toList();
+
+    // If no balances above 0, show the user's default currency
+    if (balancesAboveZero.isEmpty) {
+      final defaultCurrency = currency.isNotEmpty ? currency : 'CAD';
+      return [UserBalance(amount: 0, currencyCode: defaultCurrency)];
+    }
+
+    return balancesAboveZero;
+  }
 }
