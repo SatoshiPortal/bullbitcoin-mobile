@@ -87,8 +87,10 @@ class WalletDetailsScreen extends StatelessWidget {
                     const SizedBox(height: 18),
                     _InfoField(
                       label: 'Address type',
-                      value: wallet.getWalletTypeString(),
+                      value: wallet.addressType,
                     ),
+                    const SizedBox(height: 18),
+                    _InfoField(label: 'Network', value: wallet.networkString),
                     const SizedBox(height: 18),
                     _InfoField(
                       label: 'Derivation Path',

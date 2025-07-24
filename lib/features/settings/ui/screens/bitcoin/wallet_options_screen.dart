@@ -19,7 +19,7 @@ class WalletOptionsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(wallet?.getLabel() ?? 'Unnamed Wallet')),
+      appBar: AppBar(title: Text(wallet?.displayLabel ?? 'Unnamed Wallet')),
       body: SafeArea(
         child:
             wallet == null

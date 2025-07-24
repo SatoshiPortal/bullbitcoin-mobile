@@ -58,7 +58,7 @@ class WalletsListScreen extends StatelessWidget {
                           children: [
                             Expanded(
                               child: BBText(
-                                wallet.getLabel(),
+                                wallet.displayLabel,
                                 overflow: TextOverflow.ellipsis,
                                 style: context.font.bodyLarge?.copyWith(
                                   color: context.colour.outlineVariant,

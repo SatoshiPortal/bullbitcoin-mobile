@@ -62,7 +62,7 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                       .toList();
 
               final title =
-                  'Test ${state.selectedWallet?.isDefault ?? false ? 'Default Wallets' : state.selectedWallet?.getLabel() ?? ''}';
+                  'Test ${state.selectedWallet?.isDefault ?? false ? 'Default Wallets' : state.selectedWallet?.displayLabel ?? ''}';
 
               return Scaffold(
                 backgroundColor: context.colour.onSecondary,
@@ -185,7 +185,7 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                       child: BBText(
                         wallet.isDefault
                             ? 'Default Wallets'
-                            : wallet.getLabel(),
+                            : wallet.displayLabel,
                         style: context.font.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                           fontSize: 18,
