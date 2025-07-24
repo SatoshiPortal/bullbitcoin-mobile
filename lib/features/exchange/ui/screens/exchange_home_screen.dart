@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
@@ -169,8 +170,14 @@ class ExchangeHomeScreen extends StatelessWidget {
                         iconData: Icons.arrow_upward,
                         label: 'Withdraw',
                         iconFirst: true,
-                        disabled: true,
-                        onPressed: () {},
+                        disabled: false,
+                        onPressed: () {
+                          ComingSoonBottomSheet.show(
+                            context,
+                            description:
+                                'Withdraw Fiat from Account Balance to External Account',
+                          );
+                        },
                         bgColor: context.colour.secondary,
                         textColor: context.colour.onPrimary,
                       ),

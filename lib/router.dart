@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
+import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -47,6 +48,10 @@ class AppRouter {
                 final isSuperuser =
                     context.read<SettingsCubit>().state.isSuperuser ?? false;
                 if (index == 1 && !isSuperuser) {
+                  ComingSoonBottomSheet.show(
+                    context,
+                    description: 'Link your BullBitcoin Account',
+                  );
                   return;
                 }
 

@@ -44,7 +44,7 @@ class WalletsListScreen extends StatelessWidget {
                     return InkWell(
                       onTap: () {
                         context.pushNamed(
-                          SettingsRoute.walletDetailsSelectedWallet.name,
+                          SettingsRoute.walletOptions.name,
                           pathParameters: {'walletId': wallet.id},
                         );
                       },
@@ -58,7 +58,7 @@ class WalletsListScreen extends StatelessWidget {
                           children: [
                             Expanded(
                               child: BBText(
-                                wallet.getLabel() ?? 'Unnamed Wallet',
+                                wallet.getLabel(),
                                 overflow: TextOverflow.ellipsis,
                                 style: context.font.bodyLarge?.copyWith(
                                   color: context.colour.outlineVariant,

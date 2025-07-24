@@ -1,13 +1,8 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/autoswap/ui/autoswap_settings_router.dart';
-import 'package:bb_mobile/features/electrum_settings/ui/electrum_settings_router.dart';
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:bb_mobile/ui/components/settings/settings_entry_item.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,20 +11,15 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+class AllSettingsScreen extends StatelessWidget {
+  const AllSettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
+
     final appVersion = context.select(
       (SettingsCubit cubit) => cubit.state.appVersion,
-    );
-    final hasLegacySeeds = context.select(
-      (SettingsCubit cubit) => cubit.state.hasLegacySeeds ?? false,
     );
 
     return Scaffold(
@@ -41,33 +31,38 @@ class SettingsScreen extends StatelessWidget {
             child: Column(
               children: [
                 SettingsEntryItem(
+                  icon: Icons.account_balance_wallet,
+                  title: 'Exchange Settings',
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.exchangeSettings.name);
+                  },
+                ),
+                SettingsEntryItem(
                   icon: Icons.save_alt,
-                  title: context.loc.backupSettingsLabel,
+                  title: 'Wallet Backup',
                   onTap: () {
                     context.pushNamed(SettingsRoute.backupSettings.name);
                   },
                 ),
                 SettingsEntryItem(
-                  icon: Icons.account_balance_wallet,
-                  title: 'Wallet details',
+                  icon: Icons.currency_bitcoin,
+                  title: 'Bitcoin Settings',
                   onTap: () {
-                    context.pushNamed(
-                      SettingsRoute.walletDetailsWalletList.name,
-                    );
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.settings_input_component,
-                  title: context.loc.electrumServerSettingsLabel,
-                  onTap: () {
-                    ElectrumSettingsRouter.showElectrumServerSettings(context);
+                    context.pushNamed(SettingsRoute.bitcoinSettings.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.security,
-                  title: context.loc.pinCodeSettingsLabel,
+                  title: 'Security Pin',
                   onTap: () {
                     context.pushNamed(SettingsRoute.pinCode.name);
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.language,
+                  title: 'Language',
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.language.name);
                   },
                 ),
                 SettingsEntryItem(
@@ -78,31 +73,16 @@ class SettingsScreen extends StatelessWidget {
                   },
                 ),
                 SettingsEntryItem(
-                  icon: Icons.swap_horiz,
-                  title: 'Auto Swap Settings',
+                  icon: Icons.settings,
+                  title: 'App Settings',
                   onTap: () {
-                    AutoSwapSettingsRouter.showAutoSwapSettings(context);
+                    context.pushNamed(SettingsRoute.appSettings.name);
                   },
                 ),
-                SettingsEntryItem(
-                  icon: Icons.article,
-                  title: 'Logs',
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.logs.name);
-                  },
-                ),
-                if (hasLegacySeeds)
-                  SettingsEntryItem(
-                    icon: Icons.vpn_key,
-                    title: 'Legacy Seeds',
-                    isSuperUser: true,
-                    onTap: () {
-                      context.pushNamed(SettingsRoute.legacySeeds.name);
-                    },
-                  ),
+
                 SettingsEntryItem(
                   icon: Icons.description,
-                  title: 'Terms & Conditions',
+                  title: 'Terms of Service',
                   onTap: () {
                     final url = Uri.parse(
                       SettingsConstants.termsAndConditionsLink,
@@ -110,42 +90,6 @@ class SettingsScreen extends StatelessWidget {
                     launchUrl(url, mode: LaunchMode.inAppBrowserView);
                   },
                 ),
-                if (isSuperuser && kDebugMode)
-                  SettingsEntryItem(
-                    icon: Icons.science,
-                    title: 'Experimental / Danger Zone',
-                    isSuperUser: true,
-                    onTap:
-                        () =>
-                            context.pushNamed(SettingsRoute.experimental.name),
-                  ),
-                if (isSuperuser)
-                  SettingsEntryItem(
-                    icon: Icons.science,
-                    title: context.loc.testnetModeSettingsLabel,
-                    isSuperUser: true,
-                    onTap: null,
-                    trailing: const TestnetModeSwitch(),
-                  ),
-                if (isSuperuser)
-                  SettingsEntryItem(
-                    icon: Icons.language,
-                    title: context.loc.languageSettingsLabel,
-                    isSuperUser: true,
-                    onTap: () {
-                      context.pushNamed(SettingsRoute.language.name);
-                    },
-                  ),
-                if (isSuperuser)
-                  SettingsEntryItem(
-                    icon: Icons.qr_code_2,
-                    title: 'Import watch-only',
-                    isSuperUser: true,
-                    onTap:
-                        () => context.pushNamed(
-                          ImportWatchOnlyRoutes.import.name,
-                        ),
-                  ),
               ],
             ),
           ),

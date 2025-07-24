@@ -128,8 +128,8 @@ abstract class Wallet with _$Wallet {
     return name;
   }
 
-  String? getLabel() {
-    if (!isDefault) return label;
+  String getLabel() {
+    if (!isDefault) return label ?? origin;
 
     return switch (network) {
       Network.bitcoinMainnet || Network.bitcoinTestnet => 'Secure Bitcoin',

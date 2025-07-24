@@ -2,11 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
-import 'package:bb_mobile/features/address_view/ui/widgets/address_list_bottom_sheet.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_confirmation_alert_dialog.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,14 +17,10 @@ class WalletDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Wallet? wallet;
-    try {
-      wallet = context.read<WalletBloc>().state.wallets.firstWhere(
-        (w) => w.id == walletId,
-      );
-    } catch (e) {
-      log.severe('Wallet with ID $walletId not found to show details');
-    }
+    final Wallet? wallet = context.select(
+      (WalletBloc bloc) =>
+          bloc.state.wallets.where((w) => w.id == walletId).firstOrNull,
+    );
     final isDeletingWallet = context.select(
       (WalletBloc bloc) => bloc.state.isDeletingWallet,
     );
@@ -47,7 +40,7 @@ class WalletDetailsScreen extends StatelessWidget {
                         builder:
                             (dialogContext) =>
                                 WalletDeletionConfirmationAlertDialog(
-                                  walletId: wallet!.id,
+                                  walletId: wallet.id,
                                 ),
                       ),
               icon: const Icon(CupertinoIcons.delete),
@@ -100,43 +93,6 @@ class WalletDetailsScreen extends StatelessWidget {
                     _InfoField(
                       label: 'Derivation Path',
                       value: wallet.derivationPath,
-                    ),
-                    const Gap(18),
-                    ListTile(
-                      // Remove the default border and padding
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                      tileColor: Colors.transparent,
-                      contentPadding: EdgeInsets.zero,
-                      title: BBText(
-                        'View addresses',
-                        style: context.font.bodyLarge?.copyWith(
-                          color: context.colour.outline,
-                        ),
-                      ),
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          backgroundColor: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
-                            ),
-                          ),
-                          builder: (bottomSheetContext) {
-                            return BlocProvider(
-                              create:
-                                  (_) => locator<AddressViewBloc>(
-                                    param1: wallet!.id,
-                                    param2: 10,
-                                  ),
-                              child: const AddressListBottomSheet(),
-                            );
-                          },
-                        );
-                      },
-                      trailing: const Icon(Icons.arrow_drop_down),
                     ),
                   ],
                 ),

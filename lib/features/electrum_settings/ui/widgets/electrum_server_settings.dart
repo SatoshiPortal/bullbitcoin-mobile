@@ -403,7 +403,7 @@ class _Header extends StatelessWidget {
           ),
           BBButton.big(
             label:
-                'Configure ${state.isSelectedNetworkLiquid ? "Bitcoin" : "Liquid"} Network',
+                'Toggle ${state.isSelectedNetworkLiquid ? "Bitcoin" : "Liquid"} Network',
             onPressed:
                 () => context.read<ElectrumSettingsBloc>().add(
                   state.isSelectedNetworkLiquid

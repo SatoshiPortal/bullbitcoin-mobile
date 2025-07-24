@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usec
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/exchange_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -54,6 +55,11 @@ class SettingsLocator {
         setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
         getOldSeedsUsecase: locator<GetOldSeedsUsecase>(),
       ),
+    );
+
+    // Exchange Settings Bloc
+    locator.registerFactory<ExchangeSettingsCubit>(
+      () => ExchangeSettingsCubit(),
     );
   }
 }
