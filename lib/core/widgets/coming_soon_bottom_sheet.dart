@@ -17,10 +17,12 @@ class ComingSoonBottomSheet extends StatelessWidget {
     String? description,
     String? icon,
   }) {
+    final theme = Theme.of(context);
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: theme.colorScheme.onPrimary,
+      useRootNavigator: true,
       builder:
           (context) => ComingSoonBottomSheet(
             description:
@@ -36,9 +38,8 @@ class ComingSoonBottomSheet extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: SafeArea(
         child: Padding(
