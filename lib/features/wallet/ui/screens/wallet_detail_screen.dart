@@ -49,7 +49,7 @@ class WalletDetailScreen extends StatelessWidget {
           IconButton(
             onPressed: () {
               context.pushNamed(
-                SettingsRoute.walletDetailsSelectedWallet.name,
+                SettingsRoute.walletOptions.name,
                 pathParameters: {'walletId': walletId},
               );
             },
