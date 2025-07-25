@@ -147,13 +147,23 @@ class _ExchangeAppSettingsScreenState extends State<ExchangeAppSettingsScreen> {
   Future<void> _savePreferences() async {
     if (selectedLanguage == null || selectedCurrency == null) {
       // Show error message
+      final theme = Theme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: BBText(
+          content: const Text(
             'Please set both language and currency before saving',
-            style: context.font.bodyMedium,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: Colors.white),
           ),
-          backgroundColor: context.colour.error,
+          duration: const Duration(seconds: 2),
+          backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
+          behavior: SnackBarBehavior.floating,
+          elevation: 4,
+          margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 80),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
       );
       return;
@@ -170,24 +180,44 @@ class _ExchangeAppSettingsScreenState extends State<ExchangeAppSettingsScreen> {
       );
 
       if (!mounted) return;
+      final theme = Theme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: BBText(
+          content: const Text(
             'Settings saved successfully',
-            style: context.font.bodyMedium,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: Colors.white),
           ),
-          backgroundColor: context.colour.primary,
+          duration: const Duration(seconds: 2),
+          backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
+          behavior: SnackBarBehavior.floating,
+          elevation: 4,
+          margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 80),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
       );
     } catch (e) {
       if (!mounted) return;
+      final theme = Theme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: BBText(
+          content: Text(
             'Failed to save settings: $e',
-            style: context.font.bodyMedium,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 14, color: Colors.white),
           ),
-          backgroundColor: context.colour.error,
+          duration: const Duration(seconds: 2),
+          backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
+          behavior: SnackBarBehavior.floating,
+          elevation: 4,
+          margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 80),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
       );
     } finally {
