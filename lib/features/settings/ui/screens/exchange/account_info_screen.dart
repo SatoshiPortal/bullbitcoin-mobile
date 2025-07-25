@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,7 +42,12 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
             onBack: () => context.pop(),
           ),
         ),
-        body: const Center(child: Text('Unable to load account information')),
+        body: Center(
+          child: BBText(
+            'Unable to load account information',
+            style: context.font.bodyMedium,
+          ),
+        ),
       );
     }
 
@@ -118,7 +124,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(
+            BBText(
               label,
               style: context.font.headlineMedium?.copyWith(
                 color: context.colour.secondary,
@@ -130,7 +136,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  BBText(
                     value,
                     style: context.font.bodyLarge?.copyWith(
                       color: context.colour.secondary,
@@ -143,7 +149,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                       Clipboard.setData(ClipboardData(text: value));
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
+                          content: BBText(
                             'User number copied to clipboard',
                             style: context.font.bodyMedium?.copyWith(
                               color: context.colour.onPrimary,
@@ -162,7 +168,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                 ],
               )
             else
-              Text(
+              BBText(
                 value,
                 style: context.font.bodyLarge?.copyWith(
                   color: context.colour.secondary,

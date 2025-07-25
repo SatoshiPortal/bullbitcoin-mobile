@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 
 class NotLoggedInBottomSheet extends StatelessWidget {
@@ -43,7 +44,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
                 color: context.colour.primary,
               ),
               const SizedBox(height: 16),
-              Text(
+              BBText(
                 'You Are Not Logged in',
                 style: context.font.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -51,7 +52,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              Text(
+              BBText(
                 'Please log in to your Bull Bitcoin account to access exchange settings.',
                 style: context.font.bodyMedium?.copyWith(
                   color: context.colour.secondary.withValues(alpha: 0.7),

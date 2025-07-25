@@ -100,7 +100,7 @@ class CopyInput extends StatelessWidget {
             backgroundColor: Colors.white,
             title:
                 modalTitle != null
-                    ? Text(
+                    ? BBText(
                       modalTitle!,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontSize: 20,
@@ -128,7 +128,7 @@ class CopyInput extends StatelessWidget {
                       ClipboardData(text: clipboardText ?? text),
                     );
                   },
-                  child: const Text('Copy'),
+                  child: BBText('Copy', style: theme.textTheme.bodyLarge),
                 ),
               TextButton(
                 style: TextButton.styleFrom(
@@ -136,7 +136,7 @@ class CopyInput extends StatelessWidget {
                   textStyle: theme.textTheme.bodyLarge,
                 ),
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Close'),
+                child: BBText('Close', style: theme.textTheme.bodyLarge),
               ),
             ],
           ),

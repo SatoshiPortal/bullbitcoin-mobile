@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 
 class LogoutConfirmationBottomSheet extends StatelessWidget {
@@ -44,7 +45,7 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
               const SizedBox(height: 24),
               Icon(Icons.logout, size: 48, color: context.colour.error),
               const SizedBox(height: 16),
-              Text(
+              BBText(
                 'Confirm Logout',
                 style: context.font.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -52,7 +53,7 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              Text(
+              BBText(
                 'Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access exchange features.',
                 style: context.font.bodyMedium?.copyWith(
                   color: context.colour.secondary.withValues(alpha: 0.7),

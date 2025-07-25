@@ -3,6 +3,7 @@ import 'dart:math' show pow;
 import 'package:bb_mobile/core/exchange/data/models/funding_details_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_request_params_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
@@ -279,6 +280,30 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     return FundingDetailsModel.fromJson(
       resp.data['result']['element']['element'] as Map<String, dynamic>,
     );
+  }
+
+  Future<void> saveUserPreference({
+    required String apiKey,
+    required UserPreferencePayload params,
+  }) async {
+    try {
+      final resp = await _http.post(
+        _usersPath,
+        data: {
+          'id': 1,
+          'jsonrpc': '2.0',
+          'method': 'saveUserPreferences',
+          'params': {'userPreferences': params.toMap()},
+        },
+        options: Options(headers: {'X-API-Key': apiKey}),
+      );
+
+      if (resp.statusCode == null || resp.statusCode != 200) {
+        throw Exception('Failed to save user preferences');
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 }
 
