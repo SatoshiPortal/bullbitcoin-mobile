@@ -157,7 +157,7 @@ class UserSummary {
   final String email;
   final List<UserBalance> balances;
   final String language;
-  final String currency;
+  final String? currency;
   final UserDca dca;
   final UserAutoBuy autoBuy;
 
@@ -168,7 +168,7 @@ class UserSummary {
     required this.email,
     required this.balances,
     required this.language,
-    required this.currency,
+    this.currency,
     required this.dca,
     required this.autoBuy,
   });
@@ -223,4 +223,8 @@ class UserSummary {
       currency.hashCode ^
       dca.hashCode ^
       autoBuy.hashCode;
+
+  bool get isFullyVerifiedKycLevel => groups.contains('KYC_IDENTITY_VERIFIED');
+  bool get isLightKycLevel => groups.contains('KYC_LIGHT_VERIFICATION');
+  bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');
 }

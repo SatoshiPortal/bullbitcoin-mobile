@@ -30,6 +30,9 @@ class BuyInputScreen extends StatelessWidget {
       final error = bloc.state.createOrderBuyError;
       return error is AboveMaxAmountBuyError ? error : null;
     });
+    final insufficientFunds = context.select(
+      (BuyBloc bloc) => bloc.state.isBalanceTooLow,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -83,6 +86,13 @@ class BuyInputScreen extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                if (insufficientFunds)
+                  Text(
+                    'You do not have enough balance to create this order.',
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.colour.error,
+                    ),
                   ),
                 const Gap(16),
                 BBButton.big(
