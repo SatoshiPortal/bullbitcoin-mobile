@@ -10,7 +10,6 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_funding_rep
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/check_exchange_api_key_exists_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
@@ -182,13 +181,6 @@ class ExchangeLocator {
         testnetExchangeRateRepository: locator<ExchangeRateRepository>(
           instanceName: 'testnetExchangeRateRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
-    locator.registerFactory<CheckExchangeApiKeyExistsUsecase>(
-      () => CheckExchangeApiKeyExistsUsecase(
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );

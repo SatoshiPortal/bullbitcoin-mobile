@@ -86,7 +86,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       emit(state.copyWith(isSaving: true));
 
       await _saveUserPreferencesUsecase.execute(
-        language: state.selectedLanguage!,
+        language: state.selectedLanguage,
         currency: state.selectedCurrency,
       );
 

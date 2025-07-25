@@ -59,8 +59,8 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
 
   @override
   Future<void> saveUserPreference({
-    required String language,
-    required String? currency,
+    String? language,
+    String? currency,
     String? dcaEnabled,
     String? autoBuyEnabled,
   }) async {

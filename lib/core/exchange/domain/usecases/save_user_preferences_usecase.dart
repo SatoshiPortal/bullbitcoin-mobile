@@ -15,8 +15,8 @@ class SaveUserPreferencesUsecase {
        _settingsRepository = settingsRepository;
 
   Future<void> execute({
-    required String language,
-    required String? currency,
+    String? language,
+    String? currency,
     String? dcaEnabled,
     String? autoBuyEnabled,
   }) async {

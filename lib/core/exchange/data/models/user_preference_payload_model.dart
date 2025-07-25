@@ -5,8 +5,8 @@ class UserPreferencePayload {
   final String? autoBuyEnabled;
 
   UserPreferencePayload({
-    required this.laguage,
-    required this.currencyCode,
+    this.laguage,
+    this.currencyCode,
     this.dcaEnabled,
     this.autoBuyEnabled,
   });
