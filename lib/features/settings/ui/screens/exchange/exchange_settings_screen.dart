@@ -136,9 +136,8 @@ class ExchangeSettingsScreen extends StatelessWidget {
                     } else {
                       LogoutConfirmationBottomSheet.show(
                         context,
-                        onConfirm: () {
-                          // TODO: Implement logout functionality in ExchangeCubit
-                          // context.read<ExchangeCubit>().logout();
+                        onConfirm: () async {
+                          await context.read<ExchangeCubit>().logout();
                         },
                       );
                     }
