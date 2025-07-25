@@ -258,7 +258,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 
-  /// FUNDING API
   Future<FundingDetailsModel> getFundingDetails({
     required String apiKey,
     required FundingDetailsRequestParamsModel fundingDetailsRequestParams,

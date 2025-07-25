@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
@@ -59,7 +60,9 @@ class SettingsLocator {
 
     // Exchange Settings Bloc
     locator.registerFactory<ExchangeSettingsCubit>(
-      () => ExchangeSettingsCubit(),
+      () => ExchangeSettingsCubit(
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+      ),
     );
   }
 }

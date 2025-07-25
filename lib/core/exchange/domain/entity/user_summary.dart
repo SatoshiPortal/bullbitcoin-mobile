@@ -230,7 +230,8 @@ class UserSummary {
 
     // If no balances above 0, show the user's default currency
     if (balancesAboveZero.isEmpty) {
-      final defaultCurrency = currency.isNotEmpty ? currency : 'CAD';
+      final defaultCurrency =
+          currency != null && currency!.isNotEmpty ? currency! : 'CAD';
       return [UserBalance(amount: 0, currencyCode: defaultCurrency)];
     }
 
@@ -240,5 +241,4 @@ class UserSummary {
   bool get isFullyVerifiedKycLevel => groups.contains('KYC_IDENTITY_VERIFIED');
   bool get isLightKycLevel => groups.contains('KYC_LIGHT_VERIFICATION');
   bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');
-
 }
