@@ -1,3 +1,28 @@
+enum ExchangeLanguage {
+  en('EN'),
+  fr('FR'),
+  es('ES'),
+  it('IT');
+
+  const ExchangeLanguage(this._lang);
+  final String _lang;
+
+  String get code => _lang;
+
+  String get displayName {
+    switch (this) {
+      case ExchangeLanguage.en:
+        return 'English';
+      case ExchangeLanguage.fr:
+        return 'French';
+      case ExchangeLanguage.es:
+        return 'Spanish';
+      case ExchangeLanguage.it:
+        return 'Italian';
+    }
+  }
+}
+
 class UserProfile {
   final String firstName;
   final String lastName;

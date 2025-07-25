@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/not_logged_in_bottom_sheet.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/exchange_settings_cubit.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/settings/settings_entry_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,184 +12,142 @@ class ExchangeSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => locator<ExchangeSettingsCubit>()..init(),
-      child: Builder(
-        builder:
-            (
-              context,
-            ) => BlocListener<ExchangeSettingsCubit, ExchangeSettingsState>(
-              listener: (context, state) {
-                if (state.status == ExchangeSettingsStatus.noAuth) {
-                  NotLoggedInBottomSheet.show(context);
-                }
-              },
-              child: BlocBuilder<ExchangeSettingsCubit, ExchangeSettingsState>(
-                builder: (context, state) {
-                  return Scaffold(
-                    appBar: AppBar(title: const Text('Exchange Settings')),
-                    body: SafeArea(
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            children: [
-                              SettingsEntryItem(
-                                icon: Icons.account_circle,
-                                title: 'Account Information',
-                                onTap: () {
-                                  if (state.status ==
-                                      ExchangeSettingsStatus.noAuth) {
-                                    NotLoggedInBottomSheet.show(context);
-                                  } else {
-                                    context.pushNamed(
-                                      SettingsRoute.exchangeAccountInfo.name,
-                                    );
-                                  }
-                                },
-                              ),
-                              SettingsEntryItem(
-                                icon: Icons.security,
-                                title: 'Security Settings',
-                                onTap: () {
-                                  if (state.status ==
-                                      ExchangeSettingsStatus.noAuth) {
-                                    NotLoggedInBottomSheet.show(context);
-                                  } else {
-                                    context.pushNamed(
-                                      SettingsRoute.exchangeSecurity.name,
-                                    );
-                                  }
-                                },
-                              ),
-                              SettingsEntryItem(
-                                icon: Icons.currency_bitcoin,
-                                title: 'Default Bitcoin Wallets',
-                                onTap: () {
-                                  if (state.status ==
-                                      ExchangeSettingsStatus.noAuth) {
-                                    NotLoggedInBottomSheet.show(context);
-                                  } else {
-                                    context.pushNamed(
-                                      SettingsRoute.exchangeBitcoinWallets.name,
-                                    );
-                                  }
-                                },
-                              ),
-                              SettingsEntryItem(
-                                icon: Icons.settings,
-                                title: 'App Settings',
-                                onTap: () {
-                                  if (state.status ==
-                                      ExchangeSettingsStatus.noAuth) {
-                                    NotLoggedInBottomSheet.show(context);
-                                  } else {
-                                    context.pushNamed(
-                                      SettingsRoute.exchangeAppSettings.name,
-                                    );
-                                  }
-                                },
-                              ),
-                              SettingsEntryItem(
-                                icon: Icons.upload_file,
-                                title: 'Secure File Upload',
-                                onTap: () {
-                                  if (state.status ==
-                                      ExchangeSettingsStatus.noAuth) {
-                                    NotLoggedInBottomSheet.show(context);
-                                  } else {
-                                    context.pushNamed(
-                                      SettingsRoute.exchangeFileUpload.name,
-                                    );
-                                  }
-                                },
-                              ),
-                              SettingsEntryItem(
-                                icon: Icons.history,
-                                title: 'Transactions',
-                                onTap: () {
-                                  if (state.status ==
-                                      ExchangeSettingsStatus.noAuth) {
-                                    NotLoggedInBottomSheet.show(context);
-                                  } else {
-                                    context.pushNamed(
-                                      SettingsRoute.exchangeTransactions.name,
-                                    );
-                                  }
-                                },
-                              ),
-                              SettingsEntryItem(
-                                icon: Icons.history_edu,
-                                title: 'Legacy Transactions',
-                                onTap: () {
-                                  if (state.status ==
-                                      ExchangeSettingsStatus.noAuth) {
-                                    NotLoggedInBottomSheet.show(context);
-                                  } else {
-                                    context.pushNamed(
-                                      SettingsRoute
-                                          .exchangeLegacyTransactions
-                                          .name,
-                                    );
-                                  }
-                                },
-                              ),
-                              SettingsEntryItem(
-                                icon: Icons.people,
-                                title: 'Recipients',
-                                onTap: () {
-                                  if (state.status ==
-                                      ExchangeSettingsStatus.noAuth) {
-                                    NotLoggedInBottomSheet.show(context);
-                                  } else {
-                                    context.pushNamed(
-                                      SettingsRoute.exchangeRecipients.name,
-                                    );
-                                  }
-                                },
-                              ),
-                              SettingsEntryItem(
-                                icon: Icons.share,
-                                title: 'Referrals',
-                                onTap: () {
-                                  if (state.status ==
-                                      ExchangeSettingsStatus.noAuth) {
-                                    NotLoggedInBottomSheet.show(context);
-                                  } else {
-                                    context.pushNamed(
-                                      SettingsRoute.exchangeReferrals.name,
-                                    );
-                                  }
-                                },
-                              ),
-                              SettingsEntryItem(
-                                icon: Icons.logout,
-                                title: 'Log Out',
-                                onTap: () {
-                                  if (state.status ==
-                                      ExchangeSettingsStatus.noAuth) {
-                                    NotLoggedInBottomSheet.show(context);
-                                  } else {
-                                    LogoutConfirmationBottomSheet.show(
-                                      context,
-                                      onConfirm: () {
-                                        context
-                                            .read<ExchangeSettingsCubit>()
-                                            .logout();
-                                      },
-                                    );
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+    final state = context.select((ExchangeCubit cubit) => cubit.state);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Exchange Settings')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                SettingsEntryItem(
+                  icon: Icons.account_circle,
+                  title: 'Account Information',
+                  onTap: () {
+                    if (!state.hasUser) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeAccountInfo.name);
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.security,
+                  title: 'Security Settings',
+                  onTap: () {
+                    if (!state.hasUser) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeSecurity.name);
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.currency_bitcoin,
+                  title: 'Default Bitcoin Wallets',
+                  onTap: () {
+                    if (!state.hasUser) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(
+                        SettingsRoute.exchangeBitcoinWallets.name,
+                      );
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.settings,
+                  title: 'App Settings',
+                  onTap: () {
+                    if (!state.hasUser) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeAppSettings.name);
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.upload_file,
+                  title: 'Secure File Upload',
+                  onTap: () {
+                    if (!state.hasUser) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeFileUpload.name);
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.history,
+                  title: 'Transactions',
+                  onTap: () {
+                    if (!state.hasUser) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(
+                        SettingsRoute.exchangeTransactions.name,
+                      );
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.history_edu,
+                  title: 'Legacy Transactions',
+                  onTap: () {
+                    if (!state.hasUser) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(
+                        SettingsRoute.exchangeLegacyTransactions.name,
+                      );
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.people,
+                  title: 'Recipients',
+                  onTap: () {
+                    if (!state.hasUser) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeRecipients.name);
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.share,
+                  title: 'Referrals',
+                  onTap: () {
+                    if (!state.hasUser) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeReferrals.name);
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.logout,
+                  title: 'Log Out',
+                  onTap: () {
+                    if (!state.hasUser) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      LogoutConfirmationBottomSheet.show(
+                        context,
+                        onConfirm: () {
+                          // TODO: Implement logout functionality in ExchangeCubit
+                          // context.read<ExchangeCubit>().logout();
+                        },
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
+          ),
+        ),
       ),
     );
   }

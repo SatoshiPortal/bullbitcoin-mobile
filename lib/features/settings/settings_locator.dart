@@ -1,6 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/usecases/check_exchange_api_key_exists_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
@@ -10,7 +7,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usec
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/exchange_settings_cubit.dart';
+
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -57,16 +54,6 @@ class SettingsLocator {
         setHideAmountsUsecase: locator<SetHideAmountsUsecase>(),
         setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
         getOldSeedsUsecase: locator<GetOldSeedsUsecase>(),
-      ),
-    );
-
-    // Exchange Settings Bloc
-    locator.registerFactory<ExchangeSettingsCubit>(
-      () => ExchangeSettingsCubit(
-        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
-        checkExchangeApiKeyExistsUsecase:
-            locator<CheckExchangeApiKeyExistsUsecase>(),
-        deleteExchangeApiKeyUsecase: locator<DeleteExchangeApiKeyUsecase>(),
       ),
     );
   }

@@ -15,6 +15,9 @@ abstract class ExchangeState with _$ExchangeState {
     GetExchangeUserSummaryException? getUserSummaryException,
     SaveExchangeApiKeyException? saveApiKeyException,
     DeleteExchangeApiKeyException? deleteApiKeyException,
+    String? selectedLanguage,
+    String? selectedCurrency,
+    @Default(false) bool isSaving,
   }) = _ExchangeState;
 
   const ExchangeState._();
