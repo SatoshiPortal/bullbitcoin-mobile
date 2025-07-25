@@ -1,6 +1,6 @@
 part of 'exchange_settings_cubit.dart';
 
-enum ExchangeSettingsStatus { initial, loading, success, error }
+enum ExchangeSettingsStatus { initial, loading, success, error, noAuth }
 
 @freezed
 sealed class ExchangeSettingsState with _$ExchangeSettingsState {

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -13,7 +12,6 @@ class ExchangeLocator {
     locator.registerLazySingleton<ExchangeCubit>(
       () => ExchangeCubit(
         saveExchangeApiKeyUsecase: locator.get<SaveExchangeApiKeyUsecase>(),
-        deleteExchangeApiKeyUsecase: locator.get<DeleteExchangeApiKeyUsecase>(),
         getExchangeUserSummaryUsecase:
             locator.get<GetExchangeUserSummaryUsecase>(),
       ),

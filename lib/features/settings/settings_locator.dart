@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/exchange/domain/usecases/check_exchange_api_key_exists_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -62,6 +64,9 @@ class SettingsLocator {
     locator.registerFactory<ExchangeSettingsCubit>(
       () => ExchangeSettingsCubit(
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        checkExchangeApiKeyExistsUsecase:
+            locator<CheckExchangeApiKeyExistsUsecase>(),
+        deleteExchangeApiKeyUsecase: locator<DeleteExchangeApiKeyUsecase>(),
       ),
     );
   }
