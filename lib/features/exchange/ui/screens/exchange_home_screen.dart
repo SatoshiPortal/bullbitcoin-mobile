@@ -23,14 +23,14 @@ class ExchangeHomeScreen extends StatelessWidget {
     final isFetchingUserSummary = context.select(
       (ExchangeCubit cubit) => cubit.state.isFetchingUserSummary,
     );
-    final isApiKeyInvalid = context.select(
+    final notLoggedIn = context.select(
       (ExchangeCubit cubit) => cubit.state.notLoggedIn,
     );
     final isFullyVerified = context.select(
       (ExchangeCubit cubit) => cubit.state.isFullyVerifiedKycLevel,
     );
 
-    if (isFetchingUserSummary || isApiKeyInvalid) {
+    if (isFetchingUserSummary || notLoggedIn) {
       return const Center(child: CircularProgressIndicator());
     }
 

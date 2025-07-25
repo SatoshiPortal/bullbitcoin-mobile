@@ -23,8 +23,8 @@ class ExchangeRouter {
       path: ExchangeRoute.exchangeHome.path,
       redirect: (context, state) {
         // Redirect to auth screen if API key is invalid
-        final isApiKeyInvalid = context.read<ExchangeCubit>().state.notLoggedIn;
-        if (isApiKeyInvalid) {
+        final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
+        if (notLoggedIn) {
           return ExchangeRoute.exchangeAuth.path;
         }
         return null;
