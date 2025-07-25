@@ -24,7 +24,7 @@ class ExchangeHomeScreen extends StatelessWidget {
       (ExchangeCubit cubit) => cubit.state.isFetchingUserSummary,
     );
     final isApiKeyInvalid = context.select(
-      (ExchangeCubit cubit) => cubit.state.isApiKeyInvalid,
+      (ExchangeCubit cubit) => cubit.state.notLoggedIn,
     );
     final isFullyVerified = context.select(
       (ExchangeCubit cubit) => cubit.state.isFullyVerifiedKycLevel,

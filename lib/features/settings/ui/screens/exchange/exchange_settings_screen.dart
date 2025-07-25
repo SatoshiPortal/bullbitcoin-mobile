@@ -26,7 +26,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   icon: Icons.account_circle,
                   title: 'Account Information',
                   onTap: () {
-                    if (state.isApiKeyInvalid) {
+                    if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
                     } else {
                       context.pushNamed(SettingsRoute.exchangeAccountInfo.name);
@@ -37,7 +37,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   icon: Icons.security,
                   title: 'Security Settings',
                   onTap: () {
-                    if (state.isApiKeyInvalid) {
+                    if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
                     } else {
                       context.pushNamed(SettingsRoute.exchangeSecurity.name);
@@ -48,7 +48,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   icon: Icons.currency_bitcoin,
                   title: 'Default Bitcoin Wallets',
                   onTap: () {
-                    if (state.isApiKeyInvalid) {
+                    if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
                     } else {
                       context.pushNamed(
@@ -61,7 +61,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   icon: Icons.settings,
                   title: 'App Settings',
                   onTap: () {
-                    if (state.isApiKeyInvalid) {
+                    if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
                     } else {
                       context.pushNamed(SettingsRoute.exchangeAppSettings.name);
@@ -72,7 +72,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   icon: Icons.upload_file,
                   title: 'Secure File Upload',
                   onTap: () {
-                    if (state.isApiKeyInvalid) {
+                    if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
                     } else {
                       context.pushNamed(SettingsRoute.exchangeFileUpload.name);
@@ -83,7 +83,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   icon: Icons.history,
                   title: 'Transactions',
                   onTap: () {
-                    if (state.isApiKeyInvalid) {
+                    if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
                     } else {
                       context.pushNamed(
@@ -96,7 +96,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   icon: Icons.history_edu,
                   title: 'Legacy Transactions',
                   onTap: () {
-                    if (state.isApiKeyInvalid) {
+                    if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
                     } else {
                       context.pushNamed(
@@ -109,7 +109,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   icon: Icons.people,
                   title: 'Recipients',
                   onTap: () {
-                    if (state.isApiKeyInvalid) {
+                    if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
                     } else {
                       context.pushNamed(SettingsRoute.exchangeRecipients.name);
@@ -120,7 +120,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   icon: Icons.share,
                   title: 'Referrals',
                   onTap: () {
-                    if (state.isApiKeyInvalid) {
+                    if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
                     } else {
                       context.pushNamed(SettingsRoute.exchangeReferrals.name);
@@ -131,7 +131,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   icon: Icons.logout,
                   title: 'Log Out',
                   onTap: () {
-                    if (state.isApiKeyInvalid) {
+                    if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
                     } else {
                       LogoutConfirmationBottomSheet.show(

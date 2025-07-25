@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class NotLoggedInBottomSheet extends StatelessWidget {
   const NotLoggedInBottomSheet({super.key});
@@ -63,8 +65,11 @@ class NotLoggedInBottomSheet extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               BBButton.big(
-                label: 'OK',
-                onPressed: () => Navigator.of(context).pop(),
+                label: 'LOGIN',
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  context.goNamed(ExchangeRoute.exchangeHome.name);
+                },
                 bgColor: context.colour.secondary,
                 textColor: context.colour.onPrimary,
               ),

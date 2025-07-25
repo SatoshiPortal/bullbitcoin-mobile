@@ -103,6 +103,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
       // Clear any previous exceptions
       emit(state.copyWith(deleteApiKeyException: null));
+      await _deleteExchangeApiKeyUsecase.execute();
 
       // Clear WebView data and API key
       final webviewController = WebViewController();
@@ -111,7 +112,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         webviewController.clearCache(),
         webviewController.clearLocalStorage(),
         cookieManager.clearCookies(),
-        _deleteExchangeApiKeyUsecase.execute(),
       ]);
 
       // Clear the user summary and selected preferences

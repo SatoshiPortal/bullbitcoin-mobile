@@ -50,7 +50,7 @@ class FundExchangeRouter {
         },
         redirect: (context, state) {
           final isApiKeyInvalid =
-              context.read<ExchangeCubit>().state.isApiKeyInvalid;
+              context.read<ExchangeCubit>().state.notLoggedIn;
           if (isApiKeyInvalid) {
             return ExchangeRoute.exchangeHome.path;
           }

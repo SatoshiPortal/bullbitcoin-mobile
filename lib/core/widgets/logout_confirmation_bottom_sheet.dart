@@ -4,13 +4,13 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 
 class LogoutConfirmationBottomSheet extends StatelessWidget {
-  final VoidCallback onConfirm;
+  final Future<void> Function() onConfirm;
 
   const LogoutConfirmationBottomSheet({super.key, required this.onConfirm});
 
   static Future<void> show(
     BuildContext context, {
-    required VoidCallback onConfirm,
+    required Future<void> Function() onConfirm,
   }) {
     final theme = Theme.of(context);
     return showModalBottomSheet<void>(
@@ -43,7 +43,7 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              Icon(Icons.logout, size: 48, color: context.colour.error),
+              Icon(Icons.logout, size: 48, color: context.colour.primary),
               const SizedBox(height: 16),
               BBText(
                 'Confirm Logout',
@@ -77,11 +77,11 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                   Expanded(
                     child: BBButton.small(
                       label: 'Logout',
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.of(context).pop();
-                        onConfirm();
+                        await onConfirm();
                       },
-                      bgColor: context.colour.error,
+                      bgColor: Colors.black,
                       textColor: context.colour.onPrimary,
                     ),
                   ),

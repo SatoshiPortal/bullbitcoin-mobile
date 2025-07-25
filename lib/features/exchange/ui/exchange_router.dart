@@ -23,8 +23,7 @@ class ExchangeRouter {
       path: ExchangeRoute.exchangeHome.path,
       redirect: (context, state) {
         // Redirect to auth screen if API key is invalid
-        final isApiKeyInvalid =
-            context.read<ExchangeCubit>().state.isApiKeyInvalid;
+        final isApiKeyInvalid = context.read<ExchangeCubit>().state.notLoggedIn;
         if (isApiKeyInvalid) {
           return ExchangeRoute.exchangeAuth.path;
         }
@@ -36,7 +35,7 @@ class ExchangeRouter {
           child: BlocListener<ExchangeCubit, ExchangeState>(
             listenWhen:
                 (previous, current) =>
-                    !previous.isApiKeyInvalid && current.isApiKeyInvalid,
+                    !previous.notLoggedIn && current.notLoggedIn,
             listener: (context, state) {
               // Redirect to auth screen if the API key becomes invalid
               context.goNamed(ExchangeRoute.exchangeAuth.name);
@@ -64,7 +63,7 @@ class ExchangeRouter {
           child: BlocListener<ExchangeCubit, ExchangeState>(
             listenWhen:
                 (previous, current) =>
-                    previous.isApiKeyInvalid && !current.isApiKeyInvalid,
+                    previous.notLoggedIn && !current.notLoggedIn,
             listener: (context, state) {
               // Redirect to home screen if the API key becomes valid
               context.goNamed(ExchangeRoute.exchangeHome.name);
