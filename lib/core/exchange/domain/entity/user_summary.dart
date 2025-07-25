@@ -157,7 +157,7 @@ class UserSummary {
   final String email;
   final List<UserBalance> balances;
   final String language;
-  final String currency;
+  final String? currency;
   final UserDca dca;
   final UserAutoBuy autoBuy;
 
@@ -168,7 +168,7 @@ class UserSummary {
     required this.email,
     required this.balances,
     required this.language,
-    required this.currency,
+    this.currency,
     required this.dca,
     required this.autoBuy,
   });
@@ -224,8 +224,6 @@ class UserSummary {
       dca.hashCode ^
       autoBuy.hashCode;
 
-  /// Returns balances to display in the UI
-  /// Shows all balances above 0, or the user's default currency if all are 0
   List<UserBalance> get displayBalances {
     // Filter balances above 0
     final balancesAboveZero = balances.where((b) => b.amount > 0).toList();
@@ -238,4 +236,9 @@ class UserSummary {
 
     return balancesAboveZero;
   }
+
+  bool get isFullyVerifiedKycLevel => groups.contains('KYC_IDENTITY_VERIFIED');
+  bool get isLightKycLevel => groups.contains('KYC_LIGHT_VERIFICATION');
+  bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');
+
 }
