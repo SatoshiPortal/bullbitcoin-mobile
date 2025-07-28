@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/buy/domain/buy_error.dart';
+import 'package:bb_mobile/features/sell/domain/sell_error.dart';
 
 class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   final BullbitcoinApiDatasource _bullbitcoinApiDatasource;
@@ -214,7 +215,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null || !apiKeyModel.isActive) {
-        throw const BuyError.unauthenticated();
+        throw const SellError.unauthenticated();
       }
 
       final orderModel = await _bullbitcoinApiDatasource.createSellOrder(
@@ -230,11 +231,11 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     } on BullBitcoinApiMinAmountException catch (e) {
       final minAmountBtc = e.minAmount;
       final minAmountSat = minAmountBtc * 1e8; // Convert BTC
-      throw BuyError.belowMinAmount(minAmountSat: minAmountSat.toInt());
+      throw SellError.belowMinAmount(minAmountSat: minAmountSat.toInt());
     } on BullBitcoinApiMaxAmountException catch (e) {
       final maxAmountBtc = e.maxAmount;
       final maxAmountSat = maxAmountBtc * 1e8; // Convert BTC
-      throw BuyError.aboveMaxAmount(maxAmountSat: maxAmountSat.toInt());
+      throw SellError.aboveMaxAmount(maxAmountSat: maxAmountSat.toInt());
     } catch (e) {
       throw Exception('Failed to place sell order: $e');
     }
