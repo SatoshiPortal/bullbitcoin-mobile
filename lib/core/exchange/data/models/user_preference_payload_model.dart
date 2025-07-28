@@ -1,11 +1,11 @@
 class UserPreferencePayloadModel {
-  final String? laguage;
+  final String? language;
   final String? currencyCode;
   final String? dcaEnabled;
   final String? autoBuyEnabled;
 
   UserPreferencePayloadModel({
-    this.laguage,
+    this.language,
     this.currencyCode,
     this.dcaEnabled,
     this.autoBuyEnabled,
@@ -14,7 +14,7 @@ class UserPreferencePayloadModel {
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> data = {};
 
-    data['LANGUAGE'] = laguage;
+    data['LANGUAGE'] = language;
     data['DEFAULT_FIAT_CURRENCY_CODE'] = currencyCode;
     if (dcaEnabled != null) {
       data['DCA_ENABLED'] = dcaEnabled;

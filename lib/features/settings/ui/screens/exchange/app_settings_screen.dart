@@ -97,8 +97,8 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                   width: double.infinity,
                   child: BBButton.big(
                     label: 'Save',
-                    onPressed: () {
-                      context.read<ExchangeCubit>().savePreferences();
+                    onPressed: () async {
+                      await context.read<ExchangeCubit>().savePreferences();
                     },
                     disabled: state.isSaving || hasUnsetValues,
                     bgColor:

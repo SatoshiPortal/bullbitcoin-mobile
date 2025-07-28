@@ -78,7 +78,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   }
 
   Future<void> savePreferences() async {
-    if (state.selectedLanguage == null || state.selectedCurrency == null) {
+    if (state.selectedLanguage == null && state.selectedCurrency == null) {
       return;
     }
 
