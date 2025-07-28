@@ -305,6 +305,60 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       rethrow;
     }
   }
+
+  Future<OrderModel> createSellOrder({
+    required String apiKey,
+    required FiatCurrency fiatCurrency,
+    required OrderAmount orderAmount,
+    required Network network,
+  }) async {
+    final params = <String, dynamic>{
+      'fiatCurrency': fiatCurrency.code,
+      'bitcoinNetwork': network.value,
+    };
+
+    if (orderAmount.isFiat) {
+      params['fiatAmount'] = orderAmount.amount;
+    } else if (orderAmount.isBitcoin) {
+      params['bitcoinAmount'] = orderAmount.amount;
+    }
+
+    final resp = await _http.post(
+      _ordersPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'sellToBalance',
+        'params': params,
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    final statusCode = resp.statusCode;
+    final error = resp.data['error'];
+    if (statusCode != 200) throw Exception('Failed to create sell order');
+    if (error != null) {
+      final reason = error['data']['reason'];
+      final limitReason = reason['limit'];
+      if (limitReason != null) {
+        final isBelowLimit =
+            limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
+        final limitAmount = limitReason['amount'] as String;
+        final limitCurrency = limitReason['currencyCode'] as String;
+        if (isBelowLimit) {
+          throw BullBitcoinApiMinAmountException(
+            minAmount: double.parse(limitAmount),
+            currency: limitCurrency,
+          );
+        } else {
+          throw BullBitcoinApiMaxAmountException(
+            maxAmount: double.parse(limitAmount),
+            currency: limitCurrency,
+          );
+        }
+      }
+    }
+    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+  }
 }
 
 class BullBitcoinApiMinAmountException implements Exception {
