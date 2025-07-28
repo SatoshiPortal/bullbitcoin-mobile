@@ -78,12 +78,16 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
   }
 
-  void onSignerDeviceChanged(SignerDeviceEntity? value) {
+  void onSignerDeviceChanged(SignerDeviceEntity? device) {
     if (state.watchOnlyWallet == null) return;
     if (state.watchOnlyWallet is! WatchOnlyDescriptorEntity) return;
 
     final entity = state.watchOnlyWallet! as WatchOnlyDescriptorEntity;
-    final watchOnlyWallet = entity.copyWith(signerDevice: value);
+
+    final watchOnlyWallet = entity.copyWith(
+      signerDevice: device,
+      signer: device == null ? SignerEntity.none : SignerEntity.remote,
+    );
     emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
   }
 }
