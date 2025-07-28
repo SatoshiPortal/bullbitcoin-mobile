@@ -1,24 +1,44 @@
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ExchangeAccountInfoScreen extends StatelessWidget {
   const ExchangeAccountInfoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final state = context.select((ExchangeCubit cubit) => cubit.state);
+    final userSummary = state.userSummary;
+
+    if (state.isFetchingUserSummary) {
+      return Scaffold(
+        backgroundColor: context.colour.secondaryFixed,
+        appBar: AppBar(title: const Text('Account information')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (userSummary == null) {
+      return Scaffold(
+        backgroundColor: context.colour.secondaryFixed,
+        appBar: AppBar(title: const Text('Account information')),
+
+        body: Center(
+          child: BBText(
+            'Unable to load account information',
+            style: context.font.bodyMedium,
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: context.colour.secondaryFixed,
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Account Information',
-          onBack: () => context.pop(),
-        ),
-      ),
+      appBar: AppBar(title: const Text('Account information')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -29,26 +49,46 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
               _buildInfoField(
                 context,
                 'User number',
-                '1234-5678',
+                userSummary.userNumber.toString(),
                 isCopyable: true,
               ),
               const SizedBox(height: 32),
               _buildInfoField(
                 context,
                 'Verification level',
-                'Identity verified',
+                _getVerificationLevel(userSummary),
               ),
               const SizedBox(height: 32),
-              _buildInfoField(context, 'Email', 'john.doe@example.com'),
+              _buildInfoField(context, 'Email', userSummary.email),
               const SizedBox(height: 32),
-              _buildInfoField(context, 'First name', 'John'),
+              _buildInfoField(
+                context,
+                'First name',
+                userSummary.profile.firstName,
+              ),
               const SizedBox(height: 32),
-              _buildInfoField(context, 'Last name', 'Doe'),
+              _buildInfoField(
+                context,
+                'Last name',
+                userSummary.profile.lastName,
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  String _getVerificationLevel(UserSummary userSummary) {
+    if (userSummary.isFullyVerifiedKycLevel) {
+      return 'Identity verified';
+    } else if (userSummary.isLightKycLevel) {
+      return 'Light verification';
+    } else if (userSummary.isLimitedKycLevel) {
+      return 'Limited verification';
+    } else {
+      return 'Not verified';
+    }
   }
 
   Widget _buildInfoField(
@@ -62,7 +102,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(
+            BBText(
               label,
               style: context.font.headlineMedium?.copyWith(
                 color: context.colour.secondary,
@@ -74,7 +114,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  BBText(
                     value,
                     style: context.font.bodyLarge?.copyWith(
                       color: context.colour.secondary,
@@ -85,15 +125,30 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: value));
+                      final theme = Theme.of(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
+                          content: const BBText(
                             'User number copied to clipboard',
-                            style: context.font.bodyMedium?.copyWith(
-                              color: context.colour.onPrimary,
-                            ),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 14, color: Colors.white),
                           ),
                           duration: const Duration(seconds: 2),
+                          backgroundColor: theme.colorScheme.onSurface
+                              .withAlpha(204),
+                          behavior: SnackBarBehavior.floating,
+                          elevation: 4,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 80,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
                       );
                     },
@@ -106,7 +161,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                 ],
               )
             else
-              Text(
+              BBText(
                 value,
                 style: context.font.bodyLarge?.copyWith(
                   color: context.colour.secondary,

@@ -49,9 +49,8 @@ class FundExchangeRouter {
           return const FundExchangeAccountScreen();
         },
         redirect: (context, state) {
-          final isApiKeyInvalid =
-              context.read<ExchangeCubit>().state.isApiKeyInvalid;
-          if (isApiKeyInvalid) {
+          final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
+          if (notLoggedIn) {
             return ExchangeRoute.exchangeHome.path;
           }
           return null;

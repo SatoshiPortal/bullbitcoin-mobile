@@ -15,6 +15,9 @@ abstract class ExchangeState with _$ExchangeState {
     GetExchangeUserSummaryException? getUserSummaryException,
     SaveExchangeApiKeyException? saveApiKeyException,
     DeleteExchangeApiKeyException? deleteApiKeyException,
+    String? selectedLanguage,
+    String? selectedCurrency,
+    @Default(false) bool isSaving,
   }) = _ExchangeState;
 
   const ExchangeState._();
@@ -23,7 +26,7 @@ abstract class ExchangeState with _$ExchangeState {
       userSummary == null &&
       getUserSummaryException == null &&
       apiKeyException == null;
-  bool get isApiKeyInvalid => apiKeyException != null;
+  bool get notLoggedIn => apiKeyException != null || !hasUser;
   bool get hasUser => userSummary != null;
 
   bool get isFullyVerifiedKycLevel =>

@@ -14,8 +14,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sliver_tools/sliver_tools.dart';
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class ExchangeHomeScreen extends StatelessWidget {
   const ExchangeHomeScreen({super.key});
@@ -25,14 +23,14 @@ class ExchangeHomeScreen extends StatelessWidget {
     final isFetchingUserSummary = context.select(
       (ExchangeCubit cubit) => cubit.state.isFetchingUserSummary,
     );
-    final isApiKeyInvalid = context.select(
-      (ExchangeCubit cubit) => cubit.state.isApiKeyInvalid,
+    final notLoggedIn = context.select(
+      (ExchangeCubit cubit) => cubit.state.notLoggedIn,
     );
     final isFullyVerified = context.select(
       (ExchangeCubit cubit) => cubit.state.isFullyVerifiedKycLevel,
     );
 
-    if (isFetchingUserSummary || isApiKeyInvalid) {
+    if (isFetchingUserSummary || notLoggedIn) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -121,22 +119,6 @@ class ExchangeHomeScreen extends StatelessWidget {
                             color: context.colour.onPrimary,
                           ),
                         ),
-                      ),
-                      IconButton(
-                        visualDensity: VisualDensity.compact,
-                        onPressed: () async {
-                          final webviewController = WebViewController();
-                          final cookieManager = WebviewCookieManager();
-                          await Future.wait([
-                            webviewController.clearCache(),
-                            webviewController.clearLocalStorage(),
-                            cookieManager.clearCookies(),
-                            context.read<ExchangeCubit>().logout(),
-                          ]);
-                        },
-                        iconSize: 24,
-                        color: context.colour.onPrimary,
-                        icon: const Icon(Icons.logout),
                       ),
                     ],
                   ),

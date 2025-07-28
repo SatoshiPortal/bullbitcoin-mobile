@@ -19,6 +19,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summar
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -289,6 +290,18 @@ class ExchangeLocator {
         ),
         testnetExchangeFundingRepository: locator<ExchangeFundingRepository>(
           instanceName: 'testnetExchangeFundingRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<SaveUserPreferencesUsecase>(
+      () => SaveUserPreferencesUsecase(
+        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
+          instanceName: 'mainnetExchangeUserRepository',
+        ),
+        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
+          instanceName: 'testnetExchangeUserRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
       ),

@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_sc
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
+
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/bitcoin_wallets_screen.dart';

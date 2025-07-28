@@ -1,3 +1,28 @@
+enum ExchangeLanguage {
+  en('EN'),
+  fr('FR'),
+  es('ES'),
+  it('IT');
+
+  const ExchangeLanguage(this._lang);
+  final String _lang;
+
+  String get code => _lang;
+
+  String get displayName {
+    switch (this) {
+      case ExchangeLanguage.en:
+        return 'English';
+      case ExchangeLanguage.fr:
+        return 'French';
+      case ExchangeLanguage.es:
+        return 'Spanish';
+      case ExchangeLanguage.it:
+        return 'Italian';
+    }
+  }
+}
+
 class UserProfile {
   final String firstName;
   final String lastName;
@@ -156,7 +181,7 @@ class UserSummary {
   final UserProfile profile;
   final String email;
   final List<UserBalance> balances;
-  final String language;
+  final String? language;
   final String? currency;
   final UserDca dca;
   final UserAutoBuy autoBuy;
@@ -167,7 +192,7 @@ class UserSummary {
     required this.profile,
     required this.email,
     required this.balances,
-    required this.language,
+    this.language,
     this.currency,
     required this.dca,
     required this.autoBuy,
@@ -223,6 +248,20 @@ class UserSummary {
       currency.hashCode ^
       dca.hashCode ^
       autoBuy.hashCode;
+
+  List<UserBalance> get displayBalances {
+    // Filter balances above 0
+    final balancesAboveZero = balances.where((b) => b.amount > 0).toList();
+
+    // If no balances above 0, show the user's default currency
+    if (balancesAboveZero.isEmpty) {
+      final defaultCurrency =
+          currency != null && currency!.isNotEmpty ? currency! : 'CAD';
+      return [UserBalance(amount: 0, currencyCode: defaultCurrency)];
+    }
+
+    return balancesAboveZero;
+  }
 
   bool get isFullyVerifiedKycLevel => groups.contains('KYC_IDENTITY_VERIFIED');
   bool get isLightKycLevel => groups.contains('KYC_LIGHT_VERIFICATION');
