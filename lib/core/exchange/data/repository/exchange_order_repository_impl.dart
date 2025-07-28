@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -27,13 +28,13 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null) {
-        throw Exception(
+        throw ApiKeyException(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
       }
 
       if (!apiKeyModel.isActive) {
-        throw Exception(
+        throw ApiKeyException(
           'API key is inactive. Please login again to your Bull Bitcoin account.',
         );
       }
@@ -57,13 +58,13 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null) {
-        throw Exception(
+        throw ApiKeyException(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
       }
 
       if (!apiKeyModel.isActive) {
-        throw Exception(
+        throw ApiKeyException(
           'API key is inactive. Please login again to your Bull Bitcoin account.',
         );
       }
@@ -98,17 +99,15 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null) {
-        log.info(
+        throw ApiKeyException(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
-        return [];
       }
 
       if (!apiKeyModel.isActive) {
-        log.info(
+        throw ApiKeyException(
           'API key is inactive. Please login again to your Bull Bitcoin account.',
         );
-        return [];
       }
 
       final orderModels = await _bullbitcoinApiDatasource.listOrderSummaries(
@@ -214,8 +213,16 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         isTestnet: _isTestnet,
       );
 
-      if (apiKeyModel == null || !apiKeyModel.isActive) {
-        throw const SellError.unauthenticated();
+      if (apiKeyModel == null) {
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw ApiKeyException(
+          'API key is inactive. Please login again to your Bull Bitcoin account.',
+        );
       }
 
       final orderModel = await _bullbitcoinApiDatasource.createSellOrder(
@@ -249,13 +256,13 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null) {
-        throw Exception(
+        throw ApiKeyException(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
       }
 
       if (!apiKeyModel.isActive) {
-        throw Exception(
+        throw ApiKeyException(
           'API key is inactive. Please login again to your Bull Bitcoin account.',
         );
       }
@@ -287,13 +294,13 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null) {
-        throw Exception(
+        throw ApiKeyException(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
       }
 
       if (!apiKeyModel.isActive) {
-        throw Exception(
+        throw ApiKeyException(
           'API key is inactive. Please login again to your Bull Bitcoin account.',
         );
       }
@@ -325,13 +332,13 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null) {
-        throw Exception(
+        throw ApiKeyException(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
       }
 
       if (!apiKeyModel.isActive) {
-        throw Exception(
+        throw ApiKeyException(
           'API key is inactive. Please login again to your Bull Bitcoin account.',
         );
       }

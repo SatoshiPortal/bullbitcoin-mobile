@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_request_params_model.dart';
@@ -29,12 +30,12 @@ class ExchangeFundingRepositoryImpl implements ExchangeFundingRepository {
       final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
 
       if (apiKey == null) {
-        throw Exception(
+        throw ApiKeyException(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
       }
       if (!apiKey.isActive) {
-        throw Exception(
+        throw ApiKeyException(
           'API key is inactive. Please login again to your Bull Bitcoin account.',
         );
       }

@@ -3,6 +3,7 @@ import 'dart:math' show pow;
 import 'package:bb_mobile/core/exchange/data/models/funding_details_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_request_params_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/recipient_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -358,6 +359,50 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       }
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+  }
+
+  Future<List<RecipientModel>> listRecipients({required String apiKey}) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'listRecipients',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to list recipients');
+    }
+    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    if (elements == null) return [];
+    return elements
+        .map((e) => RecipientModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<RecipientModel>> listRecipientsFiat({
+    required String apiKey,
+  }) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'listRecipientsFiat',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to list fiat recipients');
+    }
+    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    if (elements == null) return [];
+    return elements
+        .map((e) => RecipientModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }
 
