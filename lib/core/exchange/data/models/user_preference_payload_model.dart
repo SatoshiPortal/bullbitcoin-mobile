@@ -1,10 +1,10 @@
-class UserPreferencePayload {
+class UserPreferencePayloadModel {
   final String? laguage;
   final String? currencyCode;
   final String? dcaEnabled;
   final String? autoBuyEnabled;
 
-  UserPreferencePayload({
+  UserPreferencePayloadModel({
     this.laguage,
     this.currencyCode,
     this.dcaEnabled,

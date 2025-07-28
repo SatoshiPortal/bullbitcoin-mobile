@@ -75,7 +75,7 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
         );
       }
 
-      final params = UserPreferencePayload(
+      final params = UserPreferencePayloadModel(
         laguage: language,
         currencyCode: currency,
         dcaEnabled: dcaEnabled,

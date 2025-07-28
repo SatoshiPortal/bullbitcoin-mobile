@@ -15,6 +15,12 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.select((ExchangeCubit cubit) => cubit.state);
+    final userSummary = state.userSummary;
+    final selectedLanguage = state.selectedLanguage ?? userSummary?.language;
+    final selectedCurrency = state.selectedCurrency ?? userSummary?.currency;
+
+    final hasUnsetValues = selectedLanguage == null || selectedCurrency == null;
     return BlocListener<ExchangeCubit, ExchangeState>(
       listenWhen: (previous, current) => previous.isSaving && !current.isSaving,
       listener: (context, state) {
@@ -38,96 +44,72 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
           ),
         );
       },
-      child: Builder(
-        builder: (context) {
-          final state = context.select((ExchangeCubit cubit) => cubit.state);
-          final userSummary = state.userSummary;
-          final selectedLanguage =
-              state.selectedLanguage ?? userSummary?.language;
-          final selectedCurrency =
-              state.selectedCurrency ?? userSummary?.currency;
-
-          final hasUnsetValues =
-              selectedLanguage == null || selectedCurrency == null;
-
-          return Scaffold(
-            backgroundColor: context.colour.secondaryFixed,
-            appBar: AppBar(
-              forceMaterialTransparency: true,
-              automaticallyImplyLeading: false,
-              flexibleSpace: TopBar(
-                title: 'App Settings',
-                onBack: () => context.pop(),
-              ),
-            ),
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildDropdownField(
-                      context,
-                      'Preferred Language',
-                      selectedLanguage,
-                      ExchangeLanguage.values.map((lang) => lang.code).toList(),
-                      ExchangeLanguage.values
-                          .map((lang) => lang.displayName)
-                          .toList(),
-                      (value) {
-                        context.read<ExchangeCubit>().updateSelectedLanguage(
-                          value,
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                    _buildDropdownField(
-                      context,
-                      'Default Currency',
-                      selectedCurrency,
-                      FiatCurrency.values
-                          .map((currency) => currency.code)
-                          .toList(),
-                      FiatCurrency.values
-                          .map((currency) => currency.code)
-                          .toList(),
-                      (value) {
-                        context.read<ExchangeCubit>().updateSelectedCurrency(
-                          value,
-                        );
-                      },
-                    ),
-                    const Spacer(),
-                    if (hasUnsetValues) ...[
-                      BBText(
-                        'Please set both language and currency preferences before saving.',
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.colour.error,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                    SizedBox(
-                      width: double.infinity,
-                      child: BBButton.big(
-                        label: 'Save',
-                        onPressed: () {
-                          context.read<ExchangeCubit>().savePreferences();
-                        },
-                        disabled: state.isSaving || hasUnsetValues,
-                        bgColor:
-                            hasUnsetValues
-                                ? context.colour.outline
-                                : Colors.black,
-                        textColor: context.colour.onPrimary,
-                      ),
-                    ),
-                  ],
+      child: Scaffold(
+        backgroundColor: context.colour.secondaryFixed,
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: TopBar(
+            title: 'App Settings',
+            onBack: () => context.pop(),
+          ),
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDropdownField(
+                  context,
+                  'Preferred Language',
+                  selectedLanguage,
+                  ExchangeLanguage.values.map((lang) => lang.code).toList(),
+                  ExchangeLanguage.values
+                      .map((lang) => lang.displayName)
+                      .toList(),
+                  (value) {
+                    context.read<ExchangeCubit>().updateSelectedLanguage(value);
+                  },
                 ),
-              ),
+                const SizedBox(height: 24),
+                _buildDropdownField(
+                  context,
+                  'Default Currency',
+                  selectedCurrency,
+                  FiatCurrency.values.map((currency) => currency.code).toList(),
+                  FiatCurrency.values.map((currency) => currency.code).toList(),
+                  (value) {
+                    context.read<ExchangeCubit>().updateSelectedCurrency(value);
+                  },
+                ),
+                const Spacer(),
+                if (hasUnsetValues) ...[
+                  BBText(
+                    'Please set both language and currency preferences before saving.',
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.colour.error,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                SizedBox(
+                  width: double.infinity,
+                  child: BBButton.big(
+                    label: 'Save',
+                    onPressed: () {
+                      context.read<ExchangeCubit>().savePreferences();
+                    },
+                    disabled: state.isSaving || hasUnsetValues,
+                    bgColor:
+                        hasUnsetValues ? context.colour.outline : Colors.black,
+                    textColor: context.colour.onPrimary,
+                  ),
+                ),
+              ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
