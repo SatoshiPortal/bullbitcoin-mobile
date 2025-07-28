@@ -224,4 +224,21 @@ void main() {
       await migratedDb.close();
     });
   });
+
+  group('v3 to v4: wallet_address_history', () {
+    test('wallet_addresses created', () async {
+      // Get schema at version 3
+      final schema = await verifier.schemaAt(3);
+
+      // Run the migration to v4
+      final db = SqliteDatabase(schema.newConnection());
+      await verifier.migrateAndValidate(db, 4);
+      await db.close();
+
+      // Verify the migrated data using v4 schema
+      final newDb = v4.DatabaseAtV4(schema.newConnection());
+
+      expect(await newDb.select(newDb.walletAddresses).get(), []);
+    });
+  });
 }
