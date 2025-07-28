@@ -18,7 +18,6 @@ abstract class ExchangeState with _$ExchangeState {
     String? selectedLanguage,
     String? selectedCurrency,
     @Default(false) bool isSaving,
-    @Default(false) bool manualLogout,
   }) = _ExchangeState;
 
   const ExchangeState._();

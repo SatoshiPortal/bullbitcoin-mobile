@@ -32,11 +32,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     try {
       // Clear any previous exceptions
       emit(
-        state.copyWith(
-          apiKeyException: null,
-          getUserSummaryException: null,
-          manualLogout: false,
-        ),
+        state.copyWith(apiKeyException: null, getUserSummaryException: null),
       );
 
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
@@ -121,7 +117,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       // Clear the user summary and selected preferences
       emit(
         state.copyWith(
-          manualLogout: true,
           userSummary: null,
           selectedLanguage: null,
           selectedCurrency: null,

@@ -35,9 +35,7 @@ class ExchangeRouter {
           child: BlocListener<ExchangeCubit, ExchangeState>(
             listenWhen:
                 (previous, current) =>
-                    !previous.notLoggedIn &&
-                    current.notLoggedIn &&
-                    current.manualLogout,
+                    !previous.notLoggedIn && current.notLoggedIn,
             listener: (context, state) {
               // Redirect to auth screen if the API key becomes invalid
               context.goNamed(ExchangeRoute.exchangeAuth.name);
