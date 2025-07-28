@@ -38,6 +38,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
       emit(state.copyWith(userSummary: userSummary));
+      emit(state.copyWith(selectedLanguage: userSummary.language));
+      emit(state.copyWith(selectedCurrency: userSummary.currency));
     } catch (e) {
       log.severe('Error during init: $e');
       if (e is ApiKeyException) {
