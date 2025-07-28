@@ -4,10 +4,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:drift/drift.dart';
 
 class WalletAddressMapper {
-  static WalletAddressHistoryCompanion toSqliteCompanion(
-    WalletAddressModel model,
-  ) {
-    return WalletAddressHistoryCompanion(
+  static WalletAddressesCompanion toSqliteCompanion(WalletAddressModel model) {
+    return WalletAddressesCompanion(
       address: Value(model.address),
       walletId: Value(model.walletId),
       index: Value(model.index),
@@ -19,7 +17,7 @@ class WalletAddressMapper {
     );
   }
 
-  static WalletAddressModel fromSqliteRow(WalletAddressHistoryRow row) {
+  static WalletAddressModel fromSqliteRow(WalletAddressRow row) {
     return WalletAddressModel(
       address: row.address,
       walletId: row.walletId,
