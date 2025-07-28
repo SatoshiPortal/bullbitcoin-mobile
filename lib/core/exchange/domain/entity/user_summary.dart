@@ -181,7 +181,7 @@ class UserSummary {
   final UserProfile profile;
   final String email;
   final List<UserBalance> balances;
-  final String language;
+  final String? language;
   final String? currency;
   final UserDca dca;
   final UserAutoBuy autoBuy;
@@ -192,7 +192,7 @@ class UserSummary {
     required this.profile,
     required this.email,
     required this.balances,
-    required this.language,
+    this.language,
     this.currency,
     required this.dca,
     required this.autoBuy,

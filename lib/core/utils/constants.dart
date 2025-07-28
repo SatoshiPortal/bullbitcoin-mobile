@@ -86,7 +86,7 @@ class ApiServiceConstants {
   static String bbApiUrl =
       dotenv.env['BB_API_URL'] ?? 'https://api.bullbitcoin.com';
   static String bbApiTestUrl =
-      dotenv.env['BB_API_TEST_URL'] ?? 'https://api05.bullbitcoin.com';
+      dotenv.env['BB_API_TEST_URL'] ?? 'https://api05.bullbitcoin.dev';
   static String bbAuthUrl = 'https://${dotenv.env['BB_AUTH_URL']}';
   static String bbAuthTestUrl = 'https://${dotenv.env['BB_AUTH_TEST_URL']}';
   static String bbKycUrl = 'https://app.bullbitcoin.com/kyc';

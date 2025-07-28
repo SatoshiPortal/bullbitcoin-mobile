@@ -4,7 +4,7 @@ class UserSummaryModel {
   final UserProfileModel profile;
   final String email;
   final List<UserBalanceModel> balances;
-  final String language;
+  final String? language;
   final String? currency;
   final UserDcaModel dca;
   final UserAutoBuyModel autoBuy;
@@ -33,7 +33,7 @@ class UserSummaryModel {
           (json['balances'] as List)
               .map((e) => UserBalanceModel.fromJson(e as Map<String, dynamic>))
               .toList(),
-      language: json['language'] as String,
+      language: json['language'] as String?,
       currency: json['currency'] as String?,
       dca: UserDcaModel.fromJson(json['dca'] as Map<String, dynamic>),
       autoBuy: UserAutoBuyModel.fromJson(
