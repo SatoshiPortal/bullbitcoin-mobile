@@ -8,6 +8,11 @@ abstract class ExchangeOrderRepository {
     required Network network,
     required bool isOwner,
   });
+  Future<SellOrder> placeSellOrder({
+    required OrderAmount orderAmount,
+    required FiatCurrency currency,
+    required Network network,
+  });
   Future<BuyOrder> confirmBuyOrder(String orderId);
   Future<BuyOrder> refreshBuyOrder(String orderId);
   Future<BuyOrder> accelerateBuyOrder(String orderId);

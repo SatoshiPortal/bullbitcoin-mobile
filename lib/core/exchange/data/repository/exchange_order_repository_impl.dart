@@ -203,6 +203,44 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   }
 
   @override
+  Future<SellOrder> placeSellOrder({
+    required OrderAmount orderAmount,
+    required FiatCurrency currency,
+    required Network network,
+  }) async {
+    try {
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+
+      if (apiKeyModel == null || !apiKeyModel.isActive) {
+        throw const BuyError.unauthenticated();
+      }
+
+      final orderModel = await _bullbitcoinApiDatasource.createSellOrder(
+        apiKey: apiKeyModel.key,
+        fiatCurrency: currency,
+        orderAmount: orderAmount,
+        network: network,
+      );
+
+      final order = orderModel.toEntity(isTestnet: _isTestnet) as SellOrder;
+
+      return order;
+    } on BullBitcoinApiMinAmountException catch (e) {
+      final minAmountBtc = e.minAmount;
+      final minAmountSat = minAmountBtc * 1e8; // Convert BTC
+      throw BuyError.belowMinAmount(minAmountSat: minAmountSat.toInt());
+    } on BullBitcoinApiMaxAmountException catch (e) {
+      final maxAmountBtc = e.maxAmount;
+      final maxAmountSat = maxAmountBtc * 1e8; // Convert BTC
+      throw BuyError.aboveMaxAmount(maxAmountSat: maxAmountSat.toInt());
+    } catch (e) {
+      throw Exception('Failed to place sell order: $e');
+    }
+  }
+
+  @override
   Future<BuyOrder> confirmBuyOrder(String orderId) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
