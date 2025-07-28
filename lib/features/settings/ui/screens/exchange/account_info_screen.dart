@@ -1,12 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class ExchangeAccountInfoScreen extends StatelessWidget {
   const ExchangeAccountInfoScreen({super.key});
@@ -19,14 +17,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     if (state.isFetchingUserSummary) {
       return Scaffold(
         backgroundColor: context.colour.secondaryFixed,
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: 'Account Information',
-            onBack: () => context.pop(),
-          ),
-        ),
+        appBar: AppBar(title: const Text('Account information')),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -34,14 +25,8 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     if (userSummary == null) {
       return Scaffold(
         backgroundColor: context.colour.secondaryFixed,
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: 'Account Information',
-            onBack: () => context.pop(),
-          ),
-        ),
+        appBar: AppBar(title: const Text('Account information')),
+
         body: Center(
           child: BBText(
             'Unable to load account information',
@@ -53,14 +38,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: context.colour.secondaryFixed,
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Account Information',
-          onBack: () => context.pop(),
-        ),
-      ),
+      appBar: AppBar(title: const Text('Account information')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
