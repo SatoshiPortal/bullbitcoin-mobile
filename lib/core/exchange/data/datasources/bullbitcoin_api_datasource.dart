@@ -284,7 +284,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
   Future<void> saveUserPreference({
     required String apiKey,
-    required UserPreferencePayload params,
+    required UserPreferencePayloadModel params,
   }) async {
     try {
       final resp = await _http.post(
