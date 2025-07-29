@@ -1,18 +1,22 @@
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
-import 'package:bb_mobile/features/sell/ui/screens/sell_payout_method_screen.dart';
+import 'package:bb_mobile/features/sell/ui/screens/sell_external_wallet_network_selection_screen.dart';
+import 'package:bb_mobile/features/sell/ui/screens/sell_in_progress_screen.dart';
+import 'package:bb_mobile/features/sell/ui/screens/sell_receive_payment_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_screen.dart';
+import 'package:bb_mobile/features/sell/ui/screens/sell_send_payment_screen.dart';
+import 'package:bb_mobile/features/sell/ui/screens/sell_success_screen.dart';
+import 'package:bb_mobile/features/sell/ui/screens/sell_wallet_selection_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum SellRoute {
   sell('/sell'),
-  sellPayoutMethod('payout-method'),
-  sellRecipient('recipient'),
-  sellWallet('wallet'),
-  sellNetwork('network'),
-  sellConfirmation('confirmation'),
+  sellWalletSelection('wallet-selection'),
+  sellExternalWalletNetworkSelection('external-wallet-network-selection'),
+  sellExternalWalletReceivePayment('external-wallet-receive-payment'),
+  sellSendPayment('send-payment'),
   sellInProgress('in-progress'),
   sellSuccess('success');
 
@@ -51,10 +55,10 @@ class SellRouter {
                 BlocListener<SellBloc, SellState>(
                   listenWhen:
                       (previous, current) =>
-                          previous is SellAmountState &&
-                          current is SellPayoutMethodState,
+                          previous is SellAmountInputState &&
+                          current is SellWalletSelectionState,
                   listener: (context, state) {
-                    context.pushNamed(SellRoute.sellPayoutMethod.name);
+                    context.pushNamed(SellRoute.sellWalletSelection.name);
                   },
                 ),
               ],
@@ -62,9 +66,88 @@ class SellRouter {
             ),
         routes: [
           GoRoute(
-            name: SellRoute.sellPayoutMethod.name,
-            path: SellRoute.sellPayoutMethod.path,
-            builder: (context, state) => const SellPayoutMethodScreen(),
+            name: SellRoute.sellWalletSelection.name,
+            path: SellRoute.sellWalletSelection.path,
+            builder:
+                (context, state) => BlocListener<SellBloc, SellState>(
+                  listenWhen:
+                      (previous, current) =>
+                          previous is SellWalletSelectionState &&
+                          current is SellPaymentState &&
+                          current.selectedWallet != null,
+                  listener: (context, state) {
+                    context.pushNamed(SellRoute.sellSendPayment.name);
+                  },
+                  child: const SellWalletSelectionScreen(),
+                ),
+          ),
+          GoRoute(
+            name: SellRoute.sellSendPayment.name,
+            path: SellRoute.sellSendPayment.path,
+            builder:
+                (context, state) => BlocListener<SellBloc, SellState>(
+                  listenWhen:
+                      (previous, current) =>
+                          previous is SellPaymentState &&
+                          current is SellInProgressState,
+                  listener: (context, state) {
+                    context.pushNamed(SellRoute.sellInProgress.name);
+                  },
+                  child: const SellSendPaymentScreen(),
+                ),
+          ),
+          GoRoute(
+            name: SellRoute.sellExternalWalletNetworkSelection.name,
+            path: SellRoute.sellExternalWalletNetworkSelection.path,
+            builder:
+                (context, state) => BlocListener<SellBloc, SellState>(
+                  listenWhen:
+                      (previous, current) =>
+                          previous is SellWalletSelectionState &&
+                          current is SellPaymentState &&
+                          current.selectedWallet == null,
+                  listener: (context, state) {
+                    context.pushNamed(
+                      SellRoute.sellExternalWalletReceivePayment.name,
+                    );
+                  },
+                  child: const SellExternalWalletNetworkSelectionScreen(),
+                ),
+          ),
+          GoRoute(
+            name: SellRoute.sellExternalWalletReceivePayment.name,
+            path: SellRoute.sellExternalWalletReceivePayment.path,
+            builder:
+                (context, state) => BlocListener<SellBloc, SellState>(
+                  listenWhen:
+                      (previous, current) =>
+                          previous is SellPaymentState &&
+                          current is SellInProgressState,
+                  listener: (context, state) {
+                    context.pushNamed(SellRoute.sellInProgress.name);
+                  },
+                  child: const SellReceivePaymentScreen(),
+                ),
+          ),
+          GoRoute(
+            name: SellRoute.sellInProgress.name,
+            path: SellRoute.sellInProgress.path,
+            builder:
+                (context, state) => BlocListener<SellBloc, SellState>(
+                  listenWhen:
+                      (previous, current) =>
+                          previous is SellPaymentState &&
+                          current is SellInProgressState,
+                  listener: (context, state) {
+                    context.pushNamed(SellRoute.sellInProgress.name);
+                  },
+                  child: const SellInProgressScreen(),
+                ),
+          ),
+          GoRoute(
+            name: SellRoute.sellSuccess.name,
+            path: SellRoute.sellSuccess.path,
+            builder: (context, state) => const SellSuccessScreen(),
           ),
         ],
       ),

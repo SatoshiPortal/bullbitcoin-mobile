@@ -1,9 +1,16 @@
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 
 class SellLocator {
@@ -24,6 +31,18 @@ class SellLocator {
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
+
+    locator.registerFactory<RefreshSellOrderUsecase>(
+      () => RefreshSellOrderUsecase(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
   }
 
   static void registerBlocs() {
@@ -32,6 +51,15 @@ class SellLocator {
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         getSettingsUsecase: locator<GetSettingsUsecase>(),
         createSellOrderUsecase: locator<CreateSellOrderUsecase>(),
+        refreshSellOrderUsecase: locator<RefreshSellOrderUsecase>(),
+        prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
+        prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
+        signBitcoinTxUsecase: locator<SignBitcoinTxUsecase>(),
+        signLiquidTxUsecase: locator<SignLiquidTxUsecase>(),
+        broadcastBitcoinTransactionUsecase:
+            locator<BroadcastBitcoinTransactionUsecase>(),
+        broadcastLiquidTransactionUsecase:
+            locator<BroadcastLiquidTransactionUsecase>(),
       ),
     );
   }

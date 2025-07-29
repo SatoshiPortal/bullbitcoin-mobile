@@ -14,7 +14,7 @@ abstract class ExchangeOrderRepository {
     required Network network,
   });
   Future<BuyOrder> confirmBuyOrder(String orderId);
-  Future<BuyOrder> refreshBuyOrder(String orderId);
+  Future<Order> refreshOrder(String orderId);
   Future<BuyOrder> accelerateBuyOrder(String orderId);
   Future<Order> getOrder(String orderId);
   Future<Order?> getOrderByTxId(String txId);

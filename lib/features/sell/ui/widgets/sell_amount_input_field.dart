@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,21 +13,15 @@ class SellAmountInputField extends StatelessWidget {
   const SellAmountInputField({
     super.key,
     required TextEditingController amountController,
-    required int amountSat,
-    required double amountFiat,
     required bool isFiatCurrencyInput,
     FiatCurrency? fiatCurrency,
     required void Function(bool isFiat) onIsFiatCurrencyInputChanged,
   }) : _amountController = amountController,
-       _amountSat = amountSat,
-       _amountFiat = amountFiat,
        _isFiatCurrencyInput = isFiatCurrencyInput,
        _fiatCurrency = fiatCurrency,
        _onIsFiatCurrencyInputChanged = onIsFiatCurrencyInputChanged;
 
   final TextEditingController _amountController;
-  final int _amountSat;
-  final double _amountFiat;
   final bool _isFiatCurrencyInput;
   final FiatCurrency? _fiatCurrency;
   final void Function(bool isFiat) _onIsFiatCurrencyInputChanged;
@@ -40,18 +33,18 @@ class SellAmountInputField extends StatelessWidget {
     );
     final bitcoinUnit = context.select((SellBloc bloc) {
       final state = bloc.state;
-      if (state is SellAmountState) return state.bitcoinUnit;
-      if (state is SellPayoutMethodState) return state.bitcoinUnit;
+      if (state is SellAmountInputState) return state.bitcoinUnit;
+      if (state is SellWalletSelectionState) return state.bitcoinUnit;
       return BitcoinUnit.btc;
     });
     final fiatCurrency =
         _fiatCurrency ??
         context.select((SellBloc bloc) {
           final state = bloc.state;
-          if (state is SellAmountState) {
+          if (state is SellAmountInputState) {
             return FiatCurrency.fromCode(state.userSummary.currency ?? 'CAD');
           }
-          if (state is SellPayoutMethodState) {
+          if (state is SellWalletSelectionState) {
             return state.fiatCurrency;
           }
           return FiatCurrency.cad;
@@ -168,17 +161,10 @@ class SellAmountInputField extends StatelessWidget {
                         ),
                       ),
                       const Gap(8.0),
-                      CurrencyText(
-                        _amountSat,
-                        showFiat: !_isFiatCurrencyInput,
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.outline,
-                        ),
-                        fiatCurrency: fiatCurrency!.code,
-                        fiatAmount: !_isFiatCurrencyInput ? _amountFiat : null,
-                      ),
                       Text(
-                        ' approx.',
+                        _isFiatCurrencyInput
+                            ? bitcoinUnit.code
+                            : fiatCurrency!.code,
                         style: context.font.bodyMedium?.copyWith(
                           color: context.colour.outline,
                         ),

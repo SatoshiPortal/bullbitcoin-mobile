@@ -6,32 +6,42 @@ sealed class SellState with _$SellState {
     ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
   }) = SellInitialState;
-  const factory SellState.amount({
+  const factory SellState.amountInput({
     required UserSummary userSummary,
-    required double userRate,
     required BitcoinUnit bitcoinUnit,
-    @Default(false) bool isConfirmingAmount,
-  }) = SellAmountState;
-  const factory SellState.payoutMethod({
+  }) = SellAmountInputState;
+  const factory SellState.walletSelection({
     required UserSummary userSummary,
-    required double userRate,
     required BitcoinUnit bitcoinUnit,
     required OrderAmount orderAmount,
     required FiatCurrency fiatCurrency,
-    @Default(false) bool isConfirmingPayoutMethod,
+    @Default(false) bool isCreatingSellOrder,
     SellError? error,
-  }) = SellPayoutMethodState;
+  }) = SellWalletSelectionState;
+  const factory SellState.payment({
+    required UserSummary userSummary,
+    required BitcoinUnit bitcoinUnit,
+    required OrderAmount orderAmount,
+    required FiatCurrency fiatCurrency,
+    Wallet? selectedWallet,
+    required SellOrder sellOrder,
+    @Default(false) bool isConfirmingPayment,
+    SellError? error,
+  }) = SellPaymentState;
+  const factory SellState.inProgress({required SellOrder sellOrder}) =
+      SellInProgressState;
+  const factory SellState.success({required SellOrder sellOrder}) =
+      SellSuccessState;
   const SellState._();
 }
 
-extension SellAmountStateX on SellAmountState {
-  SellPayoutMethodState toPayoutMethodState({
+extension SellAmountInputStateX on SellAmountInputState {
+  SellWalletSelectionState toWalletSelectionState({
     required OrderAmount orderAmount,
     required FiatCurrency fiatCurrency,
   }) {
-    return SellPayoutMethodState(
+    return SellWalletSelectionState(
       userSummary: userSummary,
-      userRate: userRate,
       bitcoinUnit: bitcoinUnit,
       orderAmount: orderAmount,
       fiatCurrency: fiatCurrency,
@@ -39,12 +49,58 @@ extension SellAmountStateX on SellAmountState {
   }
 }
 
-extension SellPayoutMethodStateX on SellPayoutMethodState {
-  SellAmountState toAmountState() {
-    return SellAmountState(
+extension SellWalletSelectionStateX on SellWalletSelectionState {
+  SellAmountInputState toAmountInputState() {
+    return SellAmountInputState(
       userSummary: userSummary,
-      userRate: userRate,
       bitcoinUnit: bitcoinUnit,
     );
+  }
+
+  SellPaymentState toSendPaymentState({
+    required Wallet selectedWallet,
+    required SellOrder createdSellOrder,
+  }) {
+    return SellPaymentState(
+      userSummary: userSummary,
+      bitcoinUnit: bitcoinUnit,
+      orderAmount: orderAmount,
+      fiatCurrency: fiatCurrency,
+      selectedWallet: selectedWallet,
+      sellOrder: createdSellOrder,
+    );
+  }
+
+  SellPaymentState toReceivePaymentState({
+    required SellOrder createdSellOrder,
+  }) {
+    return SellPaymentState(
+      userSummary: userSummary,
+      bitcoinUnit: bitcoinUnit,
+      orderAmount: orderAmount,
+      fiatCurrency: fiatCurrency,
+      sellOrder: createdSellOrder,
+    );
+  }
+}
+
+extension SellPaymentStateX on SellPaymentState {
+  SellWalletSelectionState toWalletSelectionState() {
+    return SellWalletSelectionState(
+      userSummary: userSummary,
+      bitcoinUnit: bitcoinUnit,
+      orderAmount: orderAmount,
+      fiatCurrency: fiatCurrency,
+    );
+  }
+
+  SellInProgressState toInProgressState() {
+    return SellInProgressState(sellOrder: sellOrder);
+  }
+}
+
+extension SellInProgressStateX on SellInProgressState {
+  SellSuccessState toSuccessState() {
+    return SellSuccessState(sellOrder: sellOrder);
   }
 }

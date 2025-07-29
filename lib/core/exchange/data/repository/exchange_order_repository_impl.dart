@@ -280,7 +280,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   }
 
   @override
-  Future<BuyOrder> refreshBuyOrder(String orderId) async {
+  Future<Order> refreshOrder(String orderId) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
         isTestnet: _isTestnet,
@@ -305,15 +305,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       final order = orderModel.toEntity(isTestnet: _isTestnet);
 
-      if (order is! BuyOrder) {
-        throw Exception(
-          'Expected BuyOrder but received a different order type',
-        );
-      }
-
       return order;
     } catch (e) {
-      throw Exception('Failed to refresh buy order: $e');
+      throw Exception('Failed to refresh order: $e');
     }
   }
 

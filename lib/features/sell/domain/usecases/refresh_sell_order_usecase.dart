@@ -3,12 +3,12 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
-class RefreshBuyOrderUsecase {
+class RefreshSellOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
 
-  RefreshBuyOrderUsecase({
+  RefreshSellOrderUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
     required SettingsRepository settingsRepository,
@@ -16,7 +16,7 @@ class RefreshBuyOrderUsecase {
        _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _settingsRepository = settingsRepository;
 
-  Future<BuyOrder> execute({required String orderId}) async {
+  Future<SellOrder> execute({required String orderId}) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -25,19 +25,19 @@ class RefreshBuyOrderUsecase {
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
       final order = await repo.refreshOrder(orderId);
-      return order as BuyOrder;
+      return order as SellOrder;
     } catch (e) {
-      log.severe('Error in RefreshBuyOrderUsecase: $e');
-      throw RefreshBuyOrderException('$e');
+      log.severe('Error in RefreshSellOrderUsecase: $e');
+      throw RefreshSellOrderException('$e');
     }
   }
 }
 
-class RefreshBuyOrderException implements Exception {
+class RefreshSellOrderException implements Exception {
   final String message;
 
-  RefreshBuyOrderException(this.message);
+  RefreshSellOrderException(this.message);
 
   @override
-  String toString() => '[RefreshBuyOrderUsecase]: $message';
+  String toString() => '[RefreshSellOrderUsecase]: $message';
 }

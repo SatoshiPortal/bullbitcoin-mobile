@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class SellInvoiceScreen extends StatelessWidget {
-  const SellInvoiceScreen({super.key});
+class SellReceivePaymentScreen extends StatelessWidget {
+  const SellReceivePaymentScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
