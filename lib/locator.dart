@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dar
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
+import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
@@ -62,6 +63,7 @@ class AppLocator {
     SwapLocator.setup();
     ExchangeLocator.setup();
     BuyLocator.setup();
+    SellLocator.setup();
     FundExchangeLocator.setup();
     AutoSwapLocator.setup();
     AddressViewLocator.setup();
