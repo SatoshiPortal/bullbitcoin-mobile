@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/buy/domain/buy_error.dart';
 
 class CreateBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;

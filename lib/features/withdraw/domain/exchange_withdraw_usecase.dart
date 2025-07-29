@@ -1,15 +1,15 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
-class CreateSellOrderUsecase {
+class CreateWithdrawalOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
 
-  CreateSellOrderUsecase({
+  CreateWithdrawalOrderUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
     required SettingsRepository settingsRepository,
@@ -17,10 +17,10 @@ class CreateSellOrderUsecase {
        _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _settingsRepository = settingsRepository;
 
-  Future<SellOrder> execute({
-    required OrderAmount orderAmount,
-    required FiatCurrency currency,
-    required bool isLiquid,
+  Future<WithdrawOrder> execute({
+    required double fiatAmount,
+    required String recipientId,
+    required String paymentProcessor,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -29,18 +29,17 @@ class CreateSellOrderUsecase {
           isTestnet
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
-      final network = isLiquid ? Network.liquid : Network.bitcoin;
-      final order = await repo.placeSellOrder(
-        orderAmount: orderAmount,
-        currency: currency,
-        network: network,
+      final order = await repo.placeWithdrawalOrder(
+        fiatAmount: fiatAmount,
+        recipientId: recipientId,
+        paymentProcessor: paymentProcessor,
       );
       return order;
-    } on SellError {
+    } on WithdrawError {
       rethrow;
     } catch (e) {
-      log.severe('Error in CreateSellOrderUsecase: $e');
-      throw SellError.unexpected(message: '$e');
+      log.severe('Error in CreateWithdrawalOrderUsecase: $e');
+      throw WithdrawError.unexpected(message: '$e');
     }
   }
 }
