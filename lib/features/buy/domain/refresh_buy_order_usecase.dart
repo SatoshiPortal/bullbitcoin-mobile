@@ -3,12 +3,12 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
-class RefreshSellOrderUsecase {
+class RefreshBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
 
-  RefreshSellOrderUsecase({
+  RefreshBuyOrderUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
     required SettingsRepository settingsRepository,
@@ -16,7 +16,7 @@ class RefreshSellOrderUsecase {
        _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _settingsRepository = settingsRepository;
 
-  Future<SellOrder> execute({required String orderId}) async {
+  Future<BuyOrder> execute({required String orderId}) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -24,20 +24,20 @@ class RefreshSellOrderUsecase {
           isTestnet
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
-      final order = await repo.refreshOrder(orderId);
-      return order as SellOrder;
+      final order = await repo.refreshBuyOrder(orderId);
+      return order;
     } catch (e) {
-      log.severe('Error in RefreshSellOrderUsecase: $e');
-      throw RefreshSellOrderException('$e');
+      log.severe('Error in RefreshBuyOrderUsecase: $e');
+      throw RefreshBuyOrderException('$e');
     }
   }
 }
 
-class RefreshSellOrderException implements Exception {
+class RefreshBuyOrderException implements Exception {
   final String message;
 
-  RefreshSellOrderException(this.message);
+  RefreshBuyOrderException(this.message);
 
   @override
-  String toString() => '[RefreshSellOrderUsecase]: $message';
+  String toString() => '[RefreshBuyOrderUsecase]: $message';
 }

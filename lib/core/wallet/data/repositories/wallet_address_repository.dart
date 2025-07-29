@@ -48,7 +48,7 @@ class WalletAddressRepository {
       // Since lwk doesn't increment the index until funds are received on an address,
       //  we need to check for address re-use ourselves, as the user might have
       //  already seen and shared the address without having received funds on it yet.
-      final addressInHistory = await _walletAddressHistoryDatasource.get(
+      final addressInHistory = await _walletAddressHistoryDatasource.fetch(
         addressInfo.confidential,
       );
 
@@ -82,7 +82,7 @@ class WalletAddressRepository {
 
     // Store the address in the wallet address history so we don't generate it again
     // and so we can track its usage.
-    await _walletAddressHistoryDatasource.create(walletAddressModel);
+    await _walletAddressHistoryDatasource.store(walletAddressModel);
 
     final walletAddress = WalletAddressMapper.toEntity(walletAddressModel);
 
@@ -235,7 +235,7 @@ class WalletAddressRepository {
     // Store all missing addresses
     await Future.wait(
       missingAddresses.map(
-        (model) => _walletAddressHistoryDatasource.create(model),
+        (model) => _walletAddressHistoryDatasource.store(model),
       ),
     );
 
@@ -305,9 +305,7 @@ class WalletAddressRepository {
             nrOfTransactions: transactions.length,
             updatedAt: DateTime.now(),
           );
-          // It is important to use `update` instead of `create` here,
-          // as we are updating an existing address in the history.
-          await _walletAddressHistoryDatasource.update(addressModel);
+          await _walletAddressHistoryDatasource.store(addressModel);
         }
 
         // TODO: Get labels for the addresses

@@ -13,8 +13,21 @@ abstract class ExchangeOrderRepository {
     required FiatCurrency currency,
     required Network network,
   });
+  Future<FiatPaymentOrder> placePayOrder({
+    required OrderAmount orderAmount,
+    required String recipientId,
+    required String paymentProcessor,
+    required Network network,
+  });
+  Future<WithdrawOrder> placeWithdrawalOrder({
+    required double fiatAmount,
+    required String recipientId,
+    required String paymentProcessor,
+  });
   Future<BuyOrder> confirmBuyOrder(String orderId);
-  Future<Order> refreshOrder(String orderId);
+  Future<WithdrawOrder> confirmWithdrawOrder(String orderId);
+  Future<BuyOrder> refreshBuyOrder(String orderId);
+  Future<SellOrder> refreshSellOrder(String orderId);
   Future<BuyOrder> accelerateBuyOrder(String orderId);
   Future<Order> getOrder(String orderId);
   Future<Order?> getOrderByTxId(String txId);

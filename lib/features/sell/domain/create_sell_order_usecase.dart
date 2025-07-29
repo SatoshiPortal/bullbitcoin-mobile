@@ -1,15 +1,15 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/buy/domain/buy_error.dart';
 
-class CreateBuyOrderUsecase {
+class CreateSellOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
 
-  CreateBuyOrderUsecase({
+  CreateSellOrderUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
     required SettingsRepository settingsRepository,
@@ -17,12 +17,10 @@ class CreateBuyOrderUsecase {
        _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _settingsRepository = settingsRepository;
 
-  Future<BuyOrder> execute({
-    required String toAddress,
+  Future<SellOrder> execute({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required bool isLiquid,
-    required bool isOwner,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -32,19 +30,17 @@ class CreateBuyOrderUsecase {
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
       final network = isLiquid ? Network.liquid : Network.bitcoin;
-      final order = await repo.placeBuyOrder(
-        toAddress: toAddress,
+      final order = await repo.placeSellOrder(
         orderAmount: orderAmount,
         currency: currency,
         network: network,
-        isOwner: isOwner,
       );
       return order;
-    } on BuyError {
+    } on SellError {
       rethrow;
     } catch (e) {
-      log.severe('Error in CreateBuyOrderUsecase: $e');
-      throw BuyError.unexpected(message: '$e');
+      log.severe('Error in CreateSellOrderUsecase: $e');
+      throw SellError.unexpected(message: '$e');
     }
   }
 }

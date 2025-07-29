@@ -1,14 +1,15 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
-class RefreshBuyOrderUsecase {
+class CreateBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
 
-  RefreshBuyOrderUsecase({
+  CreateBuyOrderUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
     required SettingsRepository settingsRepository,
@@ -16,7 +17,13 @@ class RefreshBuyOrderUsecase {
        _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _settingsRepository = settingsRepository;
 
-  Future<BuyOrder> execute({required String orderId}) async {
+  Future<BuyOrder> execute({
+    required String toAddress,
+    required OrderAmount orderAmount,
+    required FiatCurrency currency,
+    required bool isLiquid,
+    required bool isOwner,
+  }) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -24,20 +31,20 @@ class RefreshBuyOrderUsecase {
           isTestnet
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
-      final order = await repo.refreshOrder(orderId);
-      return order as BuyOrder;
+      final network = isLiquid ? Network.liquid : Network.bitcoin;
+      final order = await repo.placeBuyOrder(
+        toAddress: toAddress,
+        orderAmount: orderAmount,
+        currency: currency,
+        network: network,
+        isOwner: isOwner,
+      );
+      return order;
+    } on BuyError {
+      rethrow;
     } catch (e) {
-      log.severe('Error in RefreshBuyOrderUsecase: $e');
-      throw RefreshBuyOrderException('$e');
+      log.severe('Error in CreateBuyOrderUsecase: $e');
+      throw BuyError.unexpected(message: '$e');
     }
   }
-}
-
-class RefreshBuyOrderException implements Exception {
-  final String message;
-
-  RefreshBuyOrderException(this.message);
-
-  @override
-  String toString() => '[RefreshBuyOrderUsecase]: $message';
 }

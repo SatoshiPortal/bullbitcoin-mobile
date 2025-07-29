@@ -8,36 +8,22 @@ class WalletAddressHistoryDatasource {
 
   WalletAddressHistoryDatasource({required SqliteDatabase db}) : _db = db;
 
-  Future<void> create(WalletAddressModel walletAddress) async {
+  /// Insert a wallet address in the database.
+  ///
+  /// If the address already exists, it will be updated (upsert).
+  Future<void> store(WalletAddressModel walletAddress) async {
     final addressHistoryRow = WalletAddressMapper.toSqliteCompanion(
       walletAddress,
     );
-    await _db.into(_db.walletAddressHistory).insert(addressHistoryRow);
+    await _db
+        .into(_db.walletAddresses)
+        .insertOnConflictUpdate(addressHistoryRow);
   }
 
-  Future<void> update(WalletAddressModel walletAddress) async {
-    final addressHistoryRow = WalletAddressMapper.toSqliteCompanion(
-      walletAddress,
-    );
-
-    final updatedRows = await (_db.update(_db.walletAddressHistory)..where(
-      (t) =>
-          t.walletId.equals(walletAddress.walletId) &
-          t.index.equals(walletAddress.index) &
-          t.isChange.equals(walletAddress.isChange),
-    )).write(addressHistoryRow);
-
-    if (updatedRows == 0) {
-      throw StateError(
-        'No address found for walletId: ${walletAddress.walletId}, '
-        'index: ${walletAddress.index}, isChange: ${walletAddress.isChange}',
-      );
-    }
-  }
-
-  Future<WalletAddressModel?> get(String address) async {
+  /// Select a wallet address from the database.
+  Future<WalletAddressModel?> fetch(String address) async {
     final walletAddress =
-        await _db.managers.walletAddressHistory
+        await _db.managers.walletAddresses
             .filter((t) => t.address(address))
             .getSingleOrNull();
 
@@ -57,7 +43,7 @@ class WalletAddressHistoryDatasource {
   }) async {
     // We want to fetch them in descending order by index
     final query =
-        _db.select(_db.walletAddressHistory)
+        _db.select(_db.walletAddresses)
           ..where(
             (t) =>
                 t.walletId.equals(walletId) &
@@ -75,9 +61,7 @@ class WalletAddressHistoryDatasource {
                     : OrderingTerm.asc(t.index),
           ]);
 
-    if (limit != null) {
-      query.limit(limit);
-    }
+    if (limit != null) query.limit(limit);
 
     final rows = await query.get();
 

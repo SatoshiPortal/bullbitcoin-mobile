@@ -5354,23 +5354,12 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
   }
 }
 
-class WalletAddressHistory extends Table
-    with TableInfo<WalletAddressHistory, WalletAddressHistoryData> {
+class WalletAddresses extends Table
+    with TableInfo<WalletAddresses, WalletAddressesData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  WalletAddressHistory(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
+  WalletAddresses(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<String> address = GeneratedColumn<String>(
     'address',
     aliasedName,
@@ -5432,7 +5421,6 @@ class WalletAddressHistory extends Table
   );
   @override
   List<GeneratedColumn> get $columns => [
-    id,
     address,
     walletId,
     index,
@@ -5446,21 +5434,13 @@ class WalletAddressHistory extends Table
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'wallet_address_history';
+  static const String $name = 'wallet_addresses';
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {address};
   @override
-  WalletAddressHistoryData map(
-    Map<String, dynamic> data, {
-    String? tablePrefix,
-  }) {
+  WalletAddressesData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return WalletAddressHistoryData(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}id'],
-          )!,
+    return WalletAddressesData(
       address:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
@@ -5505,14 +5485,13 @@ class WalletAddressHistory extends Table
   }
 
   @override
-  WalletAddressHistory createAlias(String alias) {
-    return WalletAddressHistory(attachedDatabase, alias);
+  WalletAddresses createAlias(String alias) {
+    return WalletAddresses(attachedDatabase, alias);
   }
 }
 
-class WalletAddressHistoryData extends DataClass
-    implements Insertable<WalletAddressHistoryData> {
-  final int id;
+class WalletAddressesData extends DataClass
+    implements Insertable<WalletAddressesData> {
   final String address;
   final String walletId;
   final int index;
@@ -5521,8 +5500,7 @@ class WalletAddressHistoryData extends DataClass
   final int nrOfTransactions;
   final DateTime createdAt;
   final DateTime updatedAt;
-  const WalletAddressHistoryData({
-    required this.id,
+  const WalletAddressesData({
     required this.address,
     required this.walletId,
     required this.index,
@@ -5535,7 +5513,6 @@ class WalletAddressHistoryData extends DataClass
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
     map['address'] = Variable<String>(address);
     map['wallet_id'] = Variable<String>(walletId);
     map['index'] = Variable<int>(index);
@@ -5547,9 +5524,8 @@ class WalletAddressHistoryData extends DataClass
     return map;
   }
 
-  WalletAddressHistoryCompanion toCompanion(bool nullToAbsent) {
-    return WalletAddressHistoryCompanion(
-      id: Value(id),
+  WalletAddressesCompanion toCompanion(bool nullToAbsent) {
+    return WalletAddressesCompanion(
       address: Value(address),
       walletId: Value(walletId),
       index: Value(index),
@@ -5561,13 +5537,12 @@ class WalletAddressHistoryData extends DataClass
     );
   }
 
-  factory WalletAddressHistoryData.fromJson(
+  factory WalletAddressesData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return WalletAddressHistoryData(
-      id: serializer.fromJson<int>(json['id']),
+    return WalletAddressesData(
       address: serializer.fromJson<String>(json['address']),
       walletId: serializer.fromJson<String>(json['walletId']),
       index: serializer.fromJson<int>(json['index']),
@@ -5582,7 +5557,6 @@ class WalletAddressHistoryData extends DataClass
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
       'address': serializer.toJson<String>(address),
       'walletId': serializer.toJson<String>(walletId),
       'index': serializer.toJson<int>(index),
@@ -5594,8 +5568,7 @@ class WalletAddressHistoryData extends DataClass
     };
   }
 
-  WalletAddressHistoryData copyWith({
-    int? id,
+  WalletAddressesData copyWith({
     String? address,
     String? walletId,
     int? index,
@@ -5604,8 +5577,7 @@ class WalletAddressHistoryData extends DataClass
     int? nrOfTransactions,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) => WalletAddressHistoryData(
-    id: id ?? this.id,
+  }) => WalletAddressesData(
     address: address ?? this.address,
     walletId: walletId ?? this.walletId,
     index: index ?? this.index,
@@ -5615,11 +5587,8 @@ class WalletAddressHistoryData extends DataClass
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
-  WalletAddressHistoryData copyWithCompanion(
-    WalletAddressHistoryCompanion data,
-  ) {
-    return WalletAddressHistoryData(
-      id: data.id.present ? data.id.value : this.id,
+  WalletAddressesData copyWithCompanion(WalletAddressesCompanion data) {
+    return WalletAddressesData(
       address: data.address.present ? data.address.value : this.address,
       walletId: data.walletId.present ? data.walletId.value : this.walletId,
       index: data.index.present ? data.index.value : this.index,
@@ -5637,8 +5606,7 @@ class WalletAddressHistoryData extends DataClass
 
   @override
   String toString() {
-    return (StringBuffer('WalletAddressHistoryData(')
-          ..write('id: $id, ')
+    return (StringBuffer('WalletAddressesData(')
           ..write('address: $address, ')
           ..write('walletId: $walletId, ')
           ..write('index: $index, ')
@@ -5653,7 +5621,6 @@ class WalletAddressHistoryData extends DataClass
 
   @override
   int get hashCode => Object.hash(
-    id,
     address,
     walletId,
     index,
@@ -5666,8 +5633,7 @@ class WalletAddressHistoryData extends DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is WalletAddressHistoryData &&
-          other.id == this.id &&
+      (other is WalletAddressesData &&
           other.address == this.address &&
           other.walletId == this.walletId &&
           other.index == this.index &&
@@ -5678,9 +5644,7 @@ class WalletAddressHistoryData extends DataClass
           other.updatedAt == this.updatedAt);
 }
 
-class WalletAddressHistoryCompanion
-    extends UpdateCompanion<WalletAddressHistoryData> {
-  final Value<int> id;
+class WalletAddressesCompanion extends UpdateCompanion<WalletAddressesData> {
   final Value<String> address;
   final Value<String> walletId;
   final Value<int> index;
@@ -5689,8 +5653,8 @@ class WalletAddressHistoryCompanion
   final Value<int> nrOfTransactions;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  const WalletAddressHistoryCompanion({
-    this.id = const Value.absent(),
+  final Value<int> rowid;
+  const WalletAddressesCompanion({
     this.address = const Value.absent(),
     this.walletId = const Value.absent(),
     this.index = const Value.absent(),
@@ -5699,9 +5663,9 @@ class WalletAddressHistoryCompanion
     this.nrOfTransactions = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
-  WalletAddressHistoryCompanion.insert({
-    this.id = const Value.absent(),
+  WalletAddressesCompanion.insert({
     required String address,
     required String walletId,
     required int index,
@@ -5710,6 +5674,7 @@ class WalletAddressHistoryCompanion
     required int nrOfTransactions,
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.rowid = const Value.absent(),
   }) : address = Value(address),
        walletId = Value(walletId),
        index = Value(index),
@@ -5718,8 +5683,7 @@ class WalletAddressHistoryCompanion
        nrOfTransactions = Value(nrOfTransactions),
        createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
-  static Insertable<WalletAddressHistoryData> custom({
-    Expression<int>? id,
+  static Insertable<WalletAddressesData> custom({
     Expression<String>? address,
     Expression<String>? walletId,
     Expression<int>? index,
@@ -5728,9 +5692,9 @@ class WalletAddressHistoryCompanion
     Expression<int>? nrOfTransactions,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
       if (address != null) 'address': address,
       if (walletId != null) 'wallet_id': walletId,
       if (index != null) 'index': index,
@@ -5739,11 +5703,11 @@ class WalletAddressHistoryCompanion
       if (nrOfTransactions != null) 'nr_of_transactions': nrOfTransactions,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
-  WalletAddressHistoryCompanion copyWith({
-    Value<int>? id,
+  WalletAddressesCompanion copyWith({
     Value<String>? address,
     Value<String>? walletId,
     Value<int>? index,
@@ -5752,9 +5716,9 @@ class WalletAddressHistoryCompanion
     Value<int>? nrOfTransactions,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<int>? rowid,
   }) {
-    return WalletAddressHistoryCompanion(
-      id: id ?? this.id,
+    return WalletAddressesCompanion(
       address: address ?? this.address,
       walletId: walletId ?? this.walletId,
       index: index ?? this.index,
@@ -5763,15 +5727,13 @@ class WalletAddressHistoryCompanion
       nrOfTransactions: nrOfTransactions ?? this.nrOfTransactions,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
     if (address.present) {
       map['address'] = Variable<String>(address.value);
     }
@@ -5796,13 +5758,15 @@ class WalletAddressHistoryCompanion
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('WalletAddressHistoryCompanion(')
-          ..write('id: $id, ')
+    return (StringBuffer('WalletAddressesCompanion(')
           ..write('address: $address, ')
           ..write('walletId: $walletId, ')
           ..write('index: $index, ')
@@ -5810,7 +5774,8 @@ class WalletAddressHistoryCompanion
           ..write('balanceSat: $balanceSat, ')
           ..write('nrOfTransactions: $nrOfTransactions, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -5827,9 +5792,7 @@ class DatabaseAtV4 extends GeneratedDatabase {
   late final ElectrumServers electrumServers = ElectrumServers(this);
   late final Swaps swaps = Swaps(this);
   late final AutoSwap autoSwap = AutoSwap(this);
-  late final WalletAddressHistory walletAddressHistory = WalletAddressHistory(
-    this,
-  );
+  late final WalletAddresses walletAddresses = WalletAddresses(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5844,7 +5807,7 @@ class DatabaseAtV4 extends GeneratedDatabase {
     electrumServers,
     swaps,
     autoSwap,
-    walletAddressHistory,
+    walletAddresses,
   ];
   @override
   int get schemaVersion => 4;
