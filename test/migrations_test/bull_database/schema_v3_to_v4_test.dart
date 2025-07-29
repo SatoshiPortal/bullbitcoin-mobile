@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -225,7 +226,7 @@ void main() {
     });
   });
 
-  group('v3 to v4: wallet_address_history', () {
+  group('v3 to v4: delete wallet_address_history', () {
     test('wallet_addresses created', () async {
       // Get schema at version 3
       final schema = await verifier.schemaAt(3);
@@ -239,6 +240,41 @@ void main() {
       final newDb = v4.DatabaseAtV4(schema.newConnection());
 
       expect(await newDb.select(newDb.walletAddresses).get(), []);
+    });
+
+    test('ensure no duplicate can be created in wallet_addresses', () async {
+      final addressA = v4.WalletAddressesData(
+        address: 'A',
+        walletId: '1',
+        index: 0,
+        isChange: false,
+        balanceSat: 0,
+        nrOfTransactions: 0,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      // Get schema at version 3
+      final schema = await verifier.schemaAt(3);
+
+      // Run the migration to v4
+      final db = SqliteDatabase(schema.newConnection());
+      await verifier.migrateAndValidate(db, 4);
+      await db.close();
+
+      // Verify the migrated data using v4 schema
+      final newDb = v4.DatabaseAtV4(schema.newConnection());
+
+      await newDb.into(newDb.walletAddresses).insert(addressA);
+
+      // expect the second insert to throw
+      expect(
+        () async => await newDb.into(newDb.walletAddresses).insert(addressA),
+        throwsA(isA<SqliteException>()),
+      );
+
+      // there is a single value in the table
+      expect(await newDb.select(newDb.walletAddresses).get(), [addressA]);
     });
   });
 }
