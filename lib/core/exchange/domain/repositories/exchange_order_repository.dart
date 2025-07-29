@@ -25,7 +25,9 @@ abstract class ExchangeOrderRepository {
     required String paymentProcessor,
   });
   Future<BuyOrder> confirmBuyOrder(String orderId);
+  Future<WithdrawOrder> confirmWithdrawOrder(String orderId);
   Future<BuyOrder> refreshBuyOrder(String orderId);
+  Future<SellOrder> refreshSellOrder(String orderId);
   Future<BuyOrder> accelerateBuyOrder(String orderId);
   Future<Order> getOrder(String orderId);
   Future<Order?> getOrderByTxId(String txId);

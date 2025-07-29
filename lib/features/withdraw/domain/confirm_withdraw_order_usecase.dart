@@ -4,12 +4,12 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
-class CreateWithdrawalOrderUsecase {
+class ConfirmWithdrawOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
 
-  CreateWithdrawalOrderUsecase({
+  ConfirmWithdrawOrderUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
     required SettingsRepository settingsRepository,
@@ -17,11 +17,7 @@ class CreateWithdrawalOrderUsecase {
        _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _settingsRepository = settingsRepository;
 
-  Future<WithdrawOrder> execute({
-    required double fiatAmount,
-    required String recipientId,
-    required String paymentProcessor,
-  }) async {
+  Future<WithdrawOrder> execute({required String orderId}) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -29,11 +25,7 @@ class CreateWithdrawalOrderUsecase {
           isTestnet
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
-      final order = await repo.placeWithdrawalOrder(
-        fiatAmount: fiatAmount,
-        recipientId: recipientId,
-        paymentProcessor: paymentProcessor,
-      );
+      final order = await repo.confirmWithdrawOrder(orderId);
       return order;
     } on WithdrawError {
       rethrow;
