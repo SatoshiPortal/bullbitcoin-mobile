@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -28,16 +29,10 @@ class RefreshSellOrderUsecase {
       return order;
     } catch (e) {
       log.severe('Error in RefreshSellOrderUsecase: $e');
-      throw RefreshSellOrderException('$e');
+      if (e is SellError) {
+        rethrow;
+      }
+      throw SellError.unexpected(message: '$e');
     }
   }
-}
-
-class RefreshSellOrderException implements Exception {
-  final String message;
-
-  RefreshSellOrderException(this.message);
-
-  @override
-  String toString() => '[RefreshSellOrderUsecase]: $message';
 }

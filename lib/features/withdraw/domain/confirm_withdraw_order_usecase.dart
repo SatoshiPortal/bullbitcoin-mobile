@@ -27,21 +27,11 @@ class ConfirmWithdrawOrderUsecase {
               : _mainnetExchangeOrderRepository;
       final order = await repo.confirmWithdrawOrder(orderId);
       return order;
+    } on WithdrawError {
+      rethrow;
     } catch (e) {
-      log.severe('Error in ConfirmWithdrawOrderUsecase: $e');
-      if (e is WithdrawError) {
-        rethrow;
-      }
-      throw ConfirmWithdrawOrderException('$e');
+      log.severe('Error in CreateWithdrawalOrderUsecase: $e');
+      throw WithdrawError.unexpected(message: '$e');
     }
   }
-}
-
-class ConfirmWithdrawOrderException implements Exception {
-  final String message;
-
-  ConfirmWithdrawOrderException(this.message);
-
-  @override
-  String toString() => '[ConfirmWithdrawOrderUsecase]: $message';
 }
