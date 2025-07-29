@@ -6,19 +6,12 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-typedef Mnemonic =
-    ({
-      String label,
-      String passphrase,
-      List<String> words,
-      bip39.Language language,
-    });
+typedef Mnemonic = ({String label, String passphrase, List<String> words});
 
 class MnemonicWidget extends StatefulWidget {
   final bip39.Language language;
   final int initialLength;
-  final Function(({List<String> words, String passphrase, String label}))
-  onSubmit;
+  final Function(Mnemonic) onSubmit;
   final String submitLabel;
   final bool allowPassphrase;
   final bool allowLabel;
@@ -70,7 +63,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
           language: widget.language,
         ));
       } catch (e) {
-        _error = e as Exception;
+        _error = Exception(e.toString());
         setState(() {});
         return;
       }
