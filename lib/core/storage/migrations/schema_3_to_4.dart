@@ -11,40 +11,49 @@ import 'package:drift/drift.dart';
 ///   - others → 'none'
 class Schema3To4 {
   static Future<void> migrate(Migrator m, Schema4 schema4) async {
-    // Rename source column to signer
-    await m.database.customStatement(
-      'ALTER TABLE wallet_metadatas RENAME COLUMN source TO signer',
-    );
+    final schema3 = Schema3(database: m.database);
 
-    // Map old wallet_source values to new signer enum values
-    await m.database.customStatement('''
-    UPDATE wallet_metadatas
-    SET signer = CASE signer
-      WHEN 'mnemonic' THEN 'local'
-      WHEN 'descriptors' THEN 'remote'
-      ELSE 'none'
-    END''');
+    final metadatas = schema4.walletMetadatas;
 
-    // Add signerDevice column
-    await m.addColumn(
-      schema4.walletMetadatas,
-      GeneratedColumn(
-        'signer_device',
-        schema4.walletMetadatas.aliasedName,
-        true,
-        type: DriftSqlType.string,
+    await m.alterTable(
+      TableMigration(
+        metadatas,
+        columnTransformer: {
+          metadatas.id: CaseWhenExpression(
+            cases: [
+              CaseWhen(
+                metadatas.id.contains('/1667h/'),
+                then: metadatas.id.replace('/1667h/', '/1776h/'),
+              ),
+              CaseWhen(
+                metadatas.id.contains('/1668h/'),
+                then: metadatas.id.replace('/1668h/', '/1h/'),
+              ),
+            ],
+            orElse: metadatas.id,
+          ),
+          metadatas.signer: schema3.walletMetadatas.source.caseMatch(
+            when: {
+              const Constant('mnemonic'): const Constant('local'),
+              const Constant('descriptors'): const Constant('remote'),
+            },
+            orElse: const Constant('none'),
+          ),
+        },
+        newColumns: [metadatas.signerDevice],
       ),
     );
 
-    // Replace 1667h by 1776h and 1668h by 1h in the id column
-    await m.database.customStatement('''
-      UPDATE wallet_metadatas
-      SET id = REPLACE(id, '/1667h/', '/1776h/')
-      WHERE id LIKE '%/1667h/%';
+    // Delete table wallet_address_history
+    await m.deleteTable(schema3.walletAddressHistory.actualTableName);
 
-      UPDATE wallet_metadatas
-      SET id = REPLACE(id, '/1668h/', '/1h/')
-      WHERE id LIKE '%/1668h/%';
-      ''');
+    // Create table wallet_addresses
+    await m.createTable(schema4.walletAddresses);
+  }
+}
+
+extension on Expression<String> {
+  Expression<String> replace(String a, String b) {
+    return FunctionCallExpression('REPLACE', [this, Variable(a), Variable(b)]);
   }
 }
