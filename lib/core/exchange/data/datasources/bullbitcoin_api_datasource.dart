@@ -3,6 +3,7 @@ import 'dart:math' show pow;
 import 'package:bb_mobile/core/exchange/data/models/funding_details_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_request_params_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/recipient_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -358,6 +359,155 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       }
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+  }
+
+  Future<OrderModel> createPayOrder({
+    required String apiKey,
+    required OrderAmount orderAmount,
+    required String recipientId,
+    required String paymentProcessor,
+    required Network network,
+  }) async {
+    final params = <String, dynamic>{
+      'recipientId': recipientId,
+      'paymentProcessor': paymentProcessor,
+      'bitcoinNetwork': network.value,
+    };
+
+    if (orderAmount.isFiat) {
+      params['fiatAmount'] = orderAmount.amount;
+    } else if (orderAmount.isBitcoin) {
+      params['bitcoinAmount'] = orderAmount.amount;
+    }
+
+    final resp = await _http.post(
+      _ordersPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'sellToRecipient',
+        'params': params,
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    final statusCode = resp.statusCode;
+    final error = resp.data['error'];
+    if (statusCode != 200) {
+      throw Exception('Failed to create sell to recipient order');
+    }
+    if (error != null) {
+      final reason = error['data']['reason'];
+      final limitReason = reason['limit'];
+      if (limitReason != null) {
+        final isBelowLimit =
+            limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
+        final limitAmount = limitReason['amount'] as String;
+        final limitCurrency = limitReason['currencyCode'] as String;
+        if (isBelowLimit) {
+          throw BullBitcoinApiMinAmountException(
+            minAmount: double.parse(limitAmount),
+            currency: limitCurrency,
+          );
+        } else {
+          throw BullBitcoinApiMaxAmountException(
+            maxAmount: double.parse(limitAmount),
+            currency: limitCurrency,
+          );
+        }
+      }
+    }
+    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+  }
+
+  Future<OrderModel> createWithdrawalOrder({
+    required String apiKey,
+    required double fiatAmount,
+    required String recipientId,
+    required String paymentProcessor,
+  }) async {
+    final resp = await _http.post(
+      _ordersPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'createWithdrawalOrder',
+        'params': {
+          'fiatAmount': fiatAmount,
+          'recipientId': recipientId,
+          'paymentProcessor': paymentProcessor,
+        },
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    final statusCode = resp.statusCode;
+    final error = resp.data['error'];
+    if (statusCode != 200) throw Exception('Failed to create withdrawal order');
+    if (error != null) {
+      final reason = error['data']['reason'];
+      final limitReason = reason['limit'];
+      if (limitReason != null) {
+        final isBelowLimit =
+            limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
+        final limitAmount = limitReason['amount'] as String;
+        final limitCurrency = limitReason['currencyCode'] as String;
+        if (isBelowLimit) {
+          throw BullBitcoinApiMinAmountException(
+            minAmount: double.parse(limitAmount),
+            currency: limitCurrency,
+          );
+        } else {
+          throw BullBitcoinApiMaxAmountException(
+            maxAmount: double.parse(limitAmount),
+            currency: limitCurrency,
+          );
+        }
+      }
+    }
+    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+  }
+
+  Future<List<RecipientModel>> listRecipients({required String apiKey}) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'listRecipients',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to list recipients');
+    }
+    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    if (elements == null) return [];
+    return elements
+        .map((e) => RecipientModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<RecipientModel>> listRecipientsFiat({
+    required String apiKey,
+  }) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'listRecipientsFiat',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to list fiat recipients');
+    }
+    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    if (elements == null) return [];
+    return elements
+        .map((e) => RecipientModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }
 

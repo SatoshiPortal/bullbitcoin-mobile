@@ -1,8 +1,8 @@
+import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/buy/domain/buy_error.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_destination_input_fields.dart';

@@ -4,11 +4,13 @@ import 'package:bb_mobile/core/exchange/data/repository/exchange_api_key_reposit
 import 'package:bb_mobile/core/exchange/data/repository/exchange_funding_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/repository/exchange_recipient_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_funding_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
@@ -18,15 +20,18 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_det
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/list_recipients_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/buy/domain/usecases/accelerate_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/usecases/confirm_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/usecases/create_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/usecases/refresh_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
+import 'package:bb_mobile/features/withdraw/domain/exchange_withdraw_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
 
@@ -145,6 +150,27 @@ class ExchangeLocator {
         isTestnet: true,
       ),
       instanceName: 'testnetExchangeFundingRepository',
+    );
+
+    locator.registerLazySingleton<ExchangeRecipientRepository>(
+      () => ExchangeRecipientRepositoryImpl(
+        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'mainnetExchangeApiDatasource',
+        ),
+        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: false,
+      ),
+      instanceName: 'mainnetExchangeRecipientRepository',
+    );
+    locator.registerLazySingleton<ExchangeRecipientRepository>(
+      () => ExchangeRecipientRepositoryImpl(
+        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'testnetExchangeApiDatasource',
+        ),
+        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: true,
+      ),
+      instanceName: 'testnetExchangeRecipientRepository',
     );
   }
 
@@ -295,6 +321,20 @@ class ExchangeLocator {
       ),
     );
 
+    locator.registerFactory<ListRecipientsUsecase>(
+      () => ListRecipientsUsecase(
+        mainnetExchangeRecipientRepository:
+            locator<ExchangeRecipientRepository>(
+              instanceName: 'mainnetExchangeRecipientRepository',
+            ),
+        testnetExchangeRecipientRepository:
+            locator<ExchangeRecipientRepository>(
+              instanceName: 'testnetExchangeRecipientRepository',
+            ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
     locator.registerFactory<SaveUserPreferencesUsecase>(
       () => SaveUserPreferencesUsecase(
         mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
@@ -302,6 +342,30 @@ class ExchangeLocator {
         ),
         testnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'testnetExchangeUserRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<PlacePayOrderUsecase>(
+      () => PlacePayOrderUsecase(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<CreateWithdrawalOrderUsecase>(
+      () => CreateWithdrawalOrderUsecase(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
       ),

@@ -1,15 +1,15 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
-class CreateSellOrderUsecase {
+class PlacePayOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
 
-  CreateSellOrderUsecase({
+  PlacePayOrderUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
     required SettingsRepository settingsRepository,
@@ -17,9 +17,10 @@ class CreateSellOrderUsecase {
        _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _settingsRepository = settingsRepository;
 
-  Future<SellOrder> execute({
+  Future<FiatPaymentOrder> execute({
     required OrderAmount orderAmount,
-    required FiatCurrency currency,
+    required String recipientId,
+    required String paymentProcessor,
     required bool isLiquid,
   }) async {
     try {
@@ -30,17 +31,18 @@ class CreateSellOrderUsecase {
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
       final network = isLiquid ? Network.liquid : Network.bitcoin;
-      final order = await repo.placeSellOrder(
+      final order = await repo.placePayOrder(
         orderAmount: orderAmount,
-        currency: currency,
+        recipientId: recipientId,
+        paymentProcessor: paymentProcessor,
         network: network,
       );
       return order;
-    } on SellError {
+    } on PayError {
       rethrow;
     } catch (e) {
-      log.severe('Error in CreateSellOrderUsecase: $e');
-      throw SellError.unexpected(message: '$e');
+      log.severe('Error in PlacePayOrderUsecase: $e');
+      throw PayError.unexpected(message: '$e');
     }
   }
 }
