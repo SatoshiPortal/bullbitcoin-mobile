@@ -302,7 +302,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         );
       }
 
-      final orderModel = await _bullbitcoinApiDatasource.confirmBuyOrder(
+      final orderModel = await _bullbitcoinApiDatasource.confirmOrder(
         apiKey: apiKeyModel.key,
         orderId: orderId,
       );
@@ -318,6 +318,45 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } catch (e) {
       throw Exception('Failed to confirm buy order: $e');
+    }
+  }
+
+  @override
+  Future<WithdrawOrder> confirmWithdrawOrder(String orderId) async {
+    try {
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+
+      if (apiKeyModel == null) {
+        throw const WithdrawError.unauthenticated();
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw const WithdrawError.unauthenticated();
+      }
+
+      final orderModel = await _bullbitcoinApiDatasource.confirmOrder(
+        apiKey: apiKeyModel.key,
+        orderId: orderId,
+      );
+
+      final order = orderModel.toEntity(isTestnet: _isTestnet);
+
+      if (order is! WithdrawOrder) {
+        throw const WithdrawError.unexpected(
+          message: 'Expected WithdrawOrder but received a different order type',
+        );
+      }
+
+      return order;
+    } catch (e) {
+      if (e is WithdrawError) {
+        rethrow;
+      }
+      throw const WithdrawError.unexpected(
+        message: 'Failed to confirm withdraw order',
+      );
     }
   }
 
@@ -340,7 +379,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         );
       }
 
-      final orderModel = await _bullbitcoinApiDatasource.refreshOrderSummary(
+      final orderModel = await _bullbitcoinApiDatasource.refreshOrder(
         apiKey: apiKeyModel.key,
         orderId: orderId,
       );
@@ -356,6 +395,44 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } catch (e) {
       throw Exception('Failed to refresh buy order: $e');
+    }
+  }
+
+  @override
+  Future<SellOrder> refreshSellOrder(String orderId) async {
+    try {
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+
+      if (apiKeyModel == null) {
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw ApiKeyException(
+          'API key is inactive. Please login again to your Bull Bitcoin account.',
+        );
+      }
+
+      final orderModel = await _bullbitcoinApiDatasource.refreshOrder(
+        apiKey: apiKeyModel.key,
+        orderId: orderId,
+      );
+
+      final order = orderModel.toEntity(isTestnet: _isTestnet);
+
+      if (order is! SellOrder) {
+        throw const SellError.unexpected(
+          message: 'Expected SellOrder but received a different order type',
+        );
+      }
+
+      return order;
+    } catch (e) {
+      throw SellError.unexpected(message: 'Failed to refresh sell order: $e');
     }
   }
 

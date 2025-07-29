@@ -158,7 +158,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 
-  Future<OrderModel> confirmBuyOrder({
+  Future<OrderModel> confirmOrder({
     required String apiKey,
     required String orderId,
   }) async {
@@ -220,7 +220,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         .toList();
   }
 
-  Future<OrderModel> refreshOrderSummary({
+  Future<OrderModel> refreshOrder({
     required String apiKey,
     required String orderId,
   }) async {
