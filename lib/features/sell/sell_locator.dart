@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summar
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
@@ -47,6 +48,10 @@ class SellLocator {
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
+
+    locator.registerFactory<GetAddressAtIndexUsecase>(
+      () => GetAddressAtIndexUsecase(walletAddressRepository: locator()),
+    );
   }
 
   static void registerBlocs() {
@@ -71,6 +76,7 @@ class SellLocator {
             locator<CalculateBitcoinAbsoluteFeesUsecase>(),
         convertSatsToCurrencyAmountUsecase:
             locator<ConvertSatsToCurrencyAmountUsecase>(),
+        getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
       ),
     );
   }

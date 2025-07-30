@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -49,6 +50,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     calculateBitcoinAbsoluteFeesUsecase,
     required ConvertSatsToCurrencyAmountUsecase
     convertSatsToCurrencyAmountUsecase,
+    required GetAddressAtIndexUsecase getAddressAtIndexUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _getSettingsUsecase = getSettingsUsecase,
        _createSellOrderUsecase = createSellOrderUsecase,
@@ -64,6 +66,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
        _calculateBitcoinAbsoluteFeesUsecase =
            calculateBitcoinAbsoluteFeesUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
+       _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
        super(const SellState.initial()) {
     on<SellStarted>(_onStarted);
     on<SellAmountInputContinuePressed>(_onAmountInputContinuePressed);
@@ -88,6 +91,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
   final CalculateBitcoinAbsoluteFeesUsecase
   _calculateBitcoinAbsoluteFeesUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
 
   Future<void> _onStarted(SellStarted event, Emitter<SellState> emit) async {
     try {
@@ -185,12 +189,14 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     int absoluteFees = 0;
 
     try {
+      // Get address at index 0 from the wallet
+      final dummyAddressForFeeCalculation = await _getAddressAtIndexUsecase
+          .execute(walletId: event.wallet.id, index: 0);
+
       if (event.wallet.isLiquid) {
-        const dummyLiquidAddress =
-            'tlq1qqdg62056pgad5fkv86uflks8m8jzg2q04cf7znye9cn4d2k79jhz8wtnaussggpnxc9hxp5h3a95ha50a9p5vv62kgs9dgymk';
         final pset = await _prepareLiquidSendUsecase.execute(
           walletId: event.wallet.id,
-          address: dummyLiquidAddress,
+          address: dummyAddressForFeeCalculation.address,
           amountSat: requiredAmountSat,
           networkFee: const NetworkFee.relative(0.1),
         );
@@ -202,13 +208,10 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           isLiquid: false,
         );
         final fastestFee = bitcoinFees.fastest;
-        const dummyBitcoinAddress =
-            'tb1q6wethwwr65jt2gsnr6qrv0n7xsj3cqqvwk2gda';
 
         final preparedSend = await _prepareBitcoinSendUsecase.execute(
           walletId: event.wallet.id,
-          address:
-              dummyBitcoinAddress, // We'll get the address from the sell order
+          address: dummyAddressForFeeCalculation.address,
           amountSat: requiredAmountSat,
           networkFee: fastestFee,
         );
