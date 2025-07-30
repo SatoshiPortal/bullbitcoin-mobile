@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class MnemonicPage extends StatelessWidget {
   const MnemonicPage({super.key});
@@ -19,6 +20,7 @@ class MnemonicPage extends StatelessWidget {
         flexibleSpace: TopBar(
           title: 'Import Mnemonic',
           color: context.colour.secondaryFixed,
+          onBack: () => context.pop(),
         ),
       ),
       body: BlocConsumer<ImportMnemonicCubit, ImportMnemonicState>(
@@ -47,6 +49,7 @@ class MnemonicPage extends StatelessWidget {
                   MnemonicWidget(
                     initialLength: 12,
                     onSubmit: cubit.updateMnemonic,
+                    submitLabel: 'Continue',
                   ),
                 ],
               ),

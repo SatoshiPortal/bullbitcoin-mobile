@@ -30,7 +30,9 @@ class ImportMnemonicRouter {
         builder:
             (context, state) =>
                 BlocListener<ImportMnemonicCubit, ImportMnemonicState>(
-                  listenWhen: (previous, current) => current.mnemonic != null,
+                  listenWhen:
+                      (previous, current) =>
+                          previous.mnemonic == null && current.mnemonic != null,
                   listener: (context, state) {
                     context.goNamed(ImportMnemonicRoute.selectScriptType.name);
                   },
@@ -43,7 +45,9 @@ class ImportMnemonicRouter {
         path: ImportMnemonicRoute.selectScriptType.path,
         builder: (context, state) {
           return BlocListener<ImportMnemonicCubit, ImportMnemonicState>(
-            listenWhen: (previous, current) => current.wallet != null,
+            listenWhen:
+                (previous, current) =>
+                    previous.wallet == null && current.wallet != null,
             listener: (context, state) {
               context.goNamed(WalletRoute.walletHome.name);
             },

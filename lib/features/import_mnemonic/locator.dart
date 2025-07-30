@@ -12,7 +12,7 @@ class ImportMnemonicLocator {
   }
 
   static void registerCubit() {
-    locator.registerLazySingleton<ImportMnemonicCubit>(
+    locator.registerFactory<ImportMnemonicCubit>(
       () => ImportMnemonicCubit(
         importWalletUsecase: locator<ImportWalletUsecase>(),
         checkWalletUsecase: locator<TheDirtyUsecase>(),

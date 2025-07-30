@@ -5,9 +5,11 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class SelectScriptTypePage extends StatelessWidget {
   const SelectScriptTypePage({super.key});
@@ -21,6 +23,7 @@ class SelectScriptTypePage extends StatelessWidget {
         flexibleSpace: TopBar(
           title: 'Import Mnemonic',
           color: context.colour.secondaryFixed,
+          onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
       body: BlocConsumer<ImportMnemonicCubit, ImportMnemonicState>(

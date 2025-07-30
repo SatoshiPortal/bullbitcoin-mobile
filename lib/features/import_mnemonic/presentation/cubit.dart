@@ -37,19 +37,19 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
         state.mnemonic!,
         ScriptType.bip84,
       );
-      emit(state.copyWith(bip84Status: bip84Status));
+      if (!isClosed) emit(state.copyWith(bip84Status: bip84Status));
 
       final bip49Status = await _checkWalletUsecase(
         state.mnemonic!,
         ScriptType.bip49,
       );
-      emit(state.copyWith(bip49Status: bip49Status));
+      if (!isClosed) emit(state.copyWith(bip49Status: bip49Status));
 
       final bip44Status = await _checkWalletUsecase(
         state.mnemonic!,
         ScriptType.bip44,
       );
-      emit(state.copyWith(bip44Status: bip44Status));
+      if (!isClosed) emit(state.copyWith(bip44Status: bip44Status));
     } catch (e) {
       emit(state.copyWith(error: e as Exception));
     }
@@ -75,7 +75,7 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
       );
       emit(state.copyWith(wallet: wallet, isLoading: false));
     } catch (e) {
-      emit(state.copyWith(error: e as Exception, isLoading: false));
+      emit(state.copyWith(error: e, isLoading: false));
     }
   }
 }
