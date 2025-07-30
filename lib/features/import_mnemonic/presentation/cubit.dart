@@ -71,7 +71,12 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
       );
       emit(state.copyWith(wallet: wallet, isLoading: false));
     } catch (e) {
-      emit(state.copyWith(error: e, isLoading: false));
+      emit(
+        state.copyWith(
+          error: ImportMnemonicError(e.toString()),
+          isLoading: false,
+        ),
+      );
     }
   }
 }
