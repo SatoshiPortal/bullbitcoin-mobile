@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -26,21 +27,21 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       actionsPadding: const EdgeInsets.only(right: 16),
       actions: [
         IconButton(
-          padding: const EdgeInsets.only(right: 16),
           onPressed: () {
             context.pushNamed(TransactionsRoute.transactions.name);
           },
           visualDensity: VisualDensity.compact,
           color: context.colour.onPrimary,
-          iconSize: 24,
+          iconSize: 32,
           icon: const Icon(Icons.history),
         ),
+        const Gap(16),
         InkWell(
           onTap: () => context.pushNamed(SettingsRoute.settings.name),
           child: Image.asset(
             Assets.icons.settingsLine.path,
-            width: 24,
-            height: 24,
+            width: 32,
+            height: 32,
             color: context.colour.onPrimary,
           ),
         ),
