@@ -14,4 +14,7 @@ sealed class SellError with _$SellError {
       OrderAlreadyConfirmedSellError;
   const factory SellError.unexpected({required String message}) =
       UnexpectedSellError;
+  const factory SellError.insufficientBalance({
+    required int requiredAmountSat,
+  }) = InsufficientBalanceSellError;
 }

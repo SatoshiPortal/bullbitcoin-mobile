@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
@@ -14,6 +15,8 @@ import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -21,9 +24,9 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'sell_bloc.freezed.dart';
 part 'sell_event.dart';
 part 'sell_state.dart';
-part 'sell_bloc.freezed.dart';
 
 class SellBloc extends Bloc<SellEvent, SellState> {
   SellBloc({
@@ -40,6 +43,12 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     required BroadcastLiquidTransactionUsecase
     broadcastLiquidTransactionUsecase,
     required GetNetworkFeesUsecase getNetworkFeesUsecase,
+    required CalculateLiquidAbsoluteFeesUsecase
+    calculateLiquidAbsoluteFeesUsecase,
+    required CalculateBitcoinAbsoluteFeesUsecase
+    calculateBitcoinAbsoluteFeesUsecase,
+    required ConvertSatsToCurrencyAmountUsecase
+    convertSatsToCurrencyAmountUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _getSettingsUsecase = getSettingsUsecase,
        _createSellOrderUsecase = createSellOrderUsecase,
@@ -51,6 +60,10 @@ class SellBloc extends Bloc<SellEvent, SellState> {
        _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
        _broadcastLiquidTransactionUsecase = broadcastLiquidTransactionUsecase,
        _getNetworkFeesUsecase = getNetworkFeesUsecase,
+       _calculateLiquidAbsoluteFeesUsecase = calculateLiquidAbsoluteFeesUsecase,
+       _calculateBitcoinAbsoluteFeesUsecase =
+           calculateBitcoinAbsoluteFeesUsecase,
+       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
        super(const SellState.initial()) {
     on<SellStarted>(_onStarted);
     on<SellAmountInputContinuePressed>(_onAmountInputContinuePressed);
@@ -71,6 +84,10 @@ class SellBloc extends Bloc<SellEvent, SellState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
+  final CalculateBitcoinAbsoluteFeesUsecase
+  _calculateBitcoinAbsoluteFeesUsecase;
+  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
 
   Future<void> _onStarted(SellStarted event, Emitter<SellState> emit) async {
     try {
@@ -143,6 +160,87 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         // Unexpected state, do nothing
         return;
     }
+
+    // Convert order amount to sats, handling fiat conversion if needed
+    int requiredAmountSat;
+    if (walletSelectionState.orderAmount.isFiat) {
+      // Get exchange rate for the fiat currency
+      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: walletSelectionState.fiatCurrency.code,
+      );
+      // Convert fiat amount to sats
+      requiredAmountSat = ConvertAmount.fiatToSats(
+        walletSelectionState.orderAmount.amount,
+        exchangeRate,
+      );
+    } else {
+      // Bitcoin amount - convert to sats
+      requiredAmountSat =
+          walletSelectionState.bitcoinUnit == BitcoinUnit.btc
+              ? ConvertAmount.btcToSats(walletSelectionState.orderAmount.amount)
+              : walletSelectionState.orderAmount.amount.toInt();
+    }
+
+    // Prepare transaction and calculate absolute fees
+    int absoluteFees = 0;
+
+    try {
+      if (event.wallet.isLiquid) {
+        const dummyLiquidAddress =
+            'tlq1qqdg62056pgad5fkv86uflks8m8jzg2q04cf7znye9cn4d2k79jhz8wtnaussggpnxc9hxp5h3a95ha50a9p5vv62kgs9dgymk';
+        final pset = await _prepareLiquidSendUsecase.execute(
+          walletId: event.wallet.id,
+          address: dummyLiquidAddress,
+          amountSat: requiredAmountSat,
+          networkFee: const NetworkFee.relative(0.1),
+        );
+        absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
+          pset: pset,
+        );
+      } else {
+        final bitcoinFees = await _getNetworkFeesUsecase.execute(
+          isLiquid: false,
+        );
+        final fastestFee = bitcoinFees.fastest;
+        const dummyBitcoinAddress =
+            'tb1q6wethwwr65jt2gsnr6qrv0n7xsj3cqqvwk2gda';
+
+        final preparedSend = await _prepareBitcoinSendUsecase.execute(
+          walletId: event.wallet.id,
+          address:
+              dummyBitcoinAddress, // We'll get the address from the sell order
+          amountSat: requiredAmountSat,
+          networkFee: fastestFee,
+        );
+        absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
+          psbt: preparedSend.unsignedPsbt,
+          feeRate: fastestFee.value as double,
+        );
+      }
+
+      // Check if balance is sufficient including absolute fees
+      if (event.wallet.balanceSat.toInt() <
+          (requiredAmountSat + absoluteFees)) {
+        emit(
+          walletSelectionState.copyWith(
+            error: SellError.insufficientBalance(
+              requiredAmountSat: requiredAmountSat + absoluteFees,
+            ),
+          ),
+        );
+        return;
+      }
+    } catch (e) {
+      emit(
+        walletSelectionState.copyWith(
+          error: SellError.unexpected(
+            message: 'Failed to prepare transaction: $e',
+          ),
+        ),
+      );
+      return;
+    }
+
     emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
 
     // Now we can create the sell order with the selected wallet
@@ -153,11 +251,12 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         isLiquid: event.wallet.isLiquid,
       );
 
-      // Proceed to confirmation state
+      // Proceed to confirmation state with unsignedPsbt and absoluteFees
       emit(
         walletSelectionState.toSendPaymentState(
           selectedWallet: event.wallet,
           createdSellOrder: createdSellOrder,
+          absoluteFees: absoluteFees,
         ),
       );
     } on SellError catch (e) {

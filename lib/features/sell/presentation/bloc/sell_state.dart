@@ -27,6 +27,7 @@ sealed class SellState with _$SellState {
     required SellOrder sellOrder,
     @Default(false) bool isConfirmingPayment,
     SellError? error,
+    int? absoluteFees,
   }) = SellPaymentState;
   const factory SellState.inProgress({required SellOrder sellOrder}) =
       SellInProgressState;
@@ -60,6 +61,7 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
   SellPaymentState toSendPaymentState({
     required Wallet selectedWallet,
     required SellOrder createdSellOrder,
+    int? absoluteFees,
   }) {
     return SellPaymentState(
       userSummary: userSummary,
@@ -68,6 +70,7 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
       fiatCurrency: fiatCurrency,
       selectedWallet: selectedWallet,
       sellOrder: createdSellOrder,
+      absoluteFees: absoluteFees,
     );
   }
 

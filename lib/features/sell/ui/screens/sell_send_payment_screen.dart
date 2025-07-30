@@ -152,7 +152,20 @@ class SellSendPaymentScreen extends StatelessWidget {
               },
             ),
             // TODO: Implement fee selection
-            const _DetailRow(title: 'Network fees', value: '1000 sats'),
+            _DetailRow(
+              title: 'Network fees',
+              value: context.select((SellBloc bloc) {
+                final state = bloc.state;
+                if (state is SellPaymentState && state.absoluteFees != null) {
+                  return bitcoinUnit == BitcoinUnit.btc
+                      ? FormatAmount.btc(
+                        ConvertAmount.satsToBtc(state.absoluteFees!),
+                      )
+                      : FormatAmount.sats(state.absoluteFees!);
+                }
+                return 'Calculating...';
+              }),
+            ),
             const Spacer(),
             _BottomButtons(
               onContinuePressed: () {

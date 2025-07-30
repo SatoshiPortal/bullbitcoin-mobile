@@ -88,6 +88,11 @@ class _SellError extends StatelessWidget {
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
+        InsufficientBalanceSellError _ => Text(
+          'Insufficient balance in the selected wallet to complete this sell order.',
+          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          textAlign: TextAlign.center,
+        ),
         _ => const SizedBox.shrink(),
       },
     );
