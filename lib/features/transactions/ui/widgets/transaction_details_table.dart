@@ -187,6 +187,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
@@ -248,6 +249,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
@@ -312,6 +314,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
 
                 DetailsTableItem(
@@ -368,6 +371,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
@@ -421,6 +425,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
@@ -481,6 +486,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
@@ -541,6 +547,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
@@ -601,6 +608,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',

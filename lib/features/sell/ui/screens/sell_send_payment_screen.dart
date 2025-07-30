@@ -8,10 +8,12 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
@@ -129,6 +131,7 @@ class SellSendPaymentScreen extends StatelessWidget {
             _DetailRow(
               title: 'Order number',
               value: order?.orderNumber.toString(),
+              copyValue: order?.orderNumber.toString(),
             ),
             const _Divider(),
             _DetailRow(
@@ -172,9 +175,14 @@ class _DetailRow extends StatelessWidget {
   final String title;
   final String? value;
   final void Function()? onTap;
+  final String? copyValue;
 
-  const _DetailRow({required this.title, required this.value, this.onTap})
-    : super();
+  const _DetailRow({
+    required this.title,
+    required this.value,
+    this.onTap,
+    this.copyValue,
+  }) : super();
 
   @override
   Widget build(BuildContext context) {
@@ -198,13 +206,36 @@ class _DetailRow extends StatelessWidget {
                   Expanded(
                     child:
                         onTap == null
-                            ? Text(
-                              value!,
-                              textAlign: TextAlign.end,
-                              maxLines: 2,
-                              style: context.font.bodyMedium?.copyWith(
-                                color: valueColor,
-                              ),
+                            ? Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    value!,
+                                    textAlign: TextAlign.end,
+                                    maxLines: 2,
+                                    style: context.font.bodyMedium?.copyWith(
+                                      color: valueColor,
+                                    ),
+                                  ),
+                                ),
+                                if (copyValue != null) ...[
+                                  const Gap(8),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Clipboard.setData(
+                                        ClipboardData(text: copyValue!),
+                                      );
+                                      SnackBarUtils.showCopiedSnackBar(context);
+                                    },
+                                    child: Icon(
+                                      Icons.copy,
+                                      color: context.colour.primary,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ],
+                              ],
                             )
                             : GestureDetector(
                               onTap: onTap,
