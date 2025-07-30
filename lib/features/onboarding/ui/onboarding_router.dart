@@ -3,7 +3,6 @@ import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.
 import 'package:bb_mobile/features/onboarding/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/fetched_backup_info_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
-import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_recovery_success.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/recover_options.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -20,8 +19,7 @@ enum OnboardingRoute {
   chooseRecoverProvider('choose-recover-provider'),
   retrievedBackupInfo('retrieved-backup-info'),
   recoverFromEncrypted('recover-from-encrypted'),
-  recoverFromPhysical('recover-from-physical'),
-  recoverSuccess('recover-success');
+  recoverFromPhysical('recover-from-physical');
 
   final String path;
 
@@ -103,11 +101,6 @@ class OnboardingRouter {
                 name: OnboardingRoute.chooseRecoverProvider.name,
                 path: OnboardingRoute.chooseRecoverProvider.path,
                 builder: (context, state) => const ChooseVaultProviderScreen(),
-              ),
-              GoRoute(
-                name: OnboardingRoute.recoverSuccess.name,
-                path: OnboardingRoute.recoverSuccess.path,
-                builder: (context, state) => const OnboardingRecoverySuccess(),
               ),
             ],
           ),

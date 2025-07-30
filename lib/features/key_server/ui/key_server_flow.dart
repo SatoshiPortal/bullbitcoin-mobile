@@ -9,10 +9,10 @@ import 'package:bb_mobile/features/key_server/ui/screens/enter_screen.dart';
 import 'package:bb_mobile/features/key_server/ui/screens/recover_with_backup_key_screen.dart';
 import 'package:bb_mobile/features/key_server/ui/screens/recover_with_secret_screen.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
@@ -218,7 +218,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
   ) {
     if (state.onboardingStepStatus == OnboardingStepStatus.success) {
       context.read<WalletBloc>().add(const WalletStarted());
-      context.goNamed(OnboardingRoute.recoverSuccess.name);
+      context.goNamed(WalletRoute.walletHome.name);
     }
   }
 
