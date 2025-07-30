@@ -20,7 +20,6 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
        super(ImportWatchOnlyState(watchOnlyWallet: watchOnlyWallet));
 
   void init() {
-    // TODO: ?
     if (state.watchOnlyWallet != null) {
       emit(state.copyWith(watchOnlyWallet: state.watchOnlyWallet));
     }
@@ -59,12 +58,13 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     }
   }
 
-  Future<void> parsePastedInput(String value) async {
-    emit(state.copyWith(input: value.trim()));
+  Future<void> parsePastedInput(String input) async {
+    final value = input.trim();
+    emit(state.copyWith(input: value));
     if (value.length >= 111) {
       try {
         final entity = await WatchOnlyWalletEntity.parse(value);
-        emit(state.copyWith(watchOnlyWallet: entity, input: value));
+        emit(state.copyWith(watchOnlyWallet: entity));
       } catch (e) {
         log.info(e.toString());
         emit(state.copyWith(error: 'Invalid watch only format'));
@@ -78,12 +78,16 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
   }
 
-  void onSignerDeviceChanged(SignerDeviceEntity? value) {
+  void onSignerDeviceChanged(SignerDeviceEntity? device) {
     if (state.watchOnlyWallet == null) return;
     if (state.watchOnlyWallet is! WatchOnlyDescriptorEntity) return;
 
     final entity = state.watchOnlyWallet! as WatchOnlyDescriptorEntity;
-    final watchOnlyWallet = entity.copyWith(signerDevice: value);
+
+    final watchOnlyWallet = entity.copyWith(
+      signerDevice: device,
+      signer: device == null ? SignerEntity.none : SignerEntity.remote,
+    );
     emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
   }
 }
