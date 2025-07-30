@@ -190,6 +190,16 @@ class SellBloc extends Bloc<SellEvent, SellState> {
               : walletSelectionState.orderAmount.amount.toInt();
     }
 
+    if (event.wallet.balanceSat.toInt() < requiredAmountSat) {
+      emit(
+        walletSelectionState.copyWith(
+          error: SellError.insufficientBalance(
+            requiredAmountSat: requiredAmountSat,
+          ),
+        ),
+      );
+      return;
+    }
     // Prepare transaction and calculate absolute fees
     int absoluteFees = 0;
 
@@ -225,19 +235,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           feeRate: fastestFee.value as double,
         );
       }
-
-      // Check if balance is sufficient including absolute fees
-      if (event.wallet.balanceSat.toInt() <
-          (requiredAmountSat + absoluteFees)) {
-        emit(
-          walletSelectionState.copyWith(
-            error: SellError.insufficientBalance(
-              requiredAmountSat: requiredAmountSat + absoluteFees,
-            ),
-          ),
-        );
-        return;
-      }
     } catch (e) {
       emit(
         walletSelectionState.copyWith(
@@ -267,9 +264,19 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           absoluteFees: absoluteFees,
         ),
       );
-    } on SellError catch (e) {
+    } on PrepareLiquidSendException catch (e) {
+      emit(
+        walletSelectionState.copyWith(
+          error: SellError.unexpected(message: e.message),
+        ),
+      );
+    } on PrepareBitcoinSendException catch (e) {
       // Handle SellError and emit error state
-      emit(walletSelectionState.copyWith(error: e));
+      emit(
+        walletSelectionState.copyWith(
+          error: SellError.unexpected(message: e.message),
+        ),
+      );
     } catch (e) {
       // Log unexpected errors
       log.severe('Unexpected error in SellBloc: $e');

@@ -107,6 +107,26 @@ class _SellError extends StatelessWidget {
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
+        UnauthenticatedSellError _ => Text(
+          'You are not authenticated. Please log in to continue.',
+          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          textAlign: TextAlign.center,
+        ),
+        OrderNotFoundSellError _ => Text(
+          'The sell order was not found. Please try again.',
+          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          textAlign: TextAlign.center,
+        ),
+        OrderAlreadyConfirmedSellError _ => Text(
+          'This sell order has already been confirmed.',
+          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          textAlign: TextAlign.center,
+        ),
+        UnexpectedSellError _ => Text(
+          sellError.message,
+          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          textAlign: TextAlign.center,
+        ),
         _ => const SizedBox.shrink(),
       },
     );
