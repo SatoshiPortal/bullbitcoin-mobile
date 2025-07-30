@@ -100,6 +100,49 @@ extension SellPaymentStateX on SellPaymentState {
   SellInProgressState toInProgressState() {
     return SellInProgressState(sellOrder: sellOrder);
   }
+
+  String get bip21InvoiceData {
+    final order = sellOrder;
+    String invoiceString = '';
+
+    switch (order.payinMethod) {
+      case OrderPaymentMethod.bitcoin:
+        if (order.bitcoinAddress != null) {
+          final amountBtc = order.payinAmount;
+          final address = order.bitcoinAddress!;
+
+          final bip21Uri = Uri(
+            scheme: 'bitcoin',
+            path: address,
+            queryParameters: {'amount': amountBtc.toString()},
+          );
+          invoiceString = bip21Uri.toString();
+        }
+      case OrderPaymentMethod.liquid:
+        if (order.liquidAddress != null) {
+          final amountBtc = order.payinAmount;
+          final address = order.liquidAddress!;
+
+          final bip21Uri = Uri(
+            scheme: 'liquidnetwork',
+            path: address,
+            queryParameters: {
+              'amount': amountBtc.toString(),
+              'assetid': AssetConstants.lbtcMainnet,
+            },
+          );
+          invoiceString = bip21Uri.toString();
+        }
+      case OrderPaymentMethod.lnInvoice:
+        if (order.lightningInvoice != null) {
+          invoiceString = order.lightningInvoice!;
+        }
+      default:
+        break;
+    }
+
+    return invoiceString;
+  }
 }
 
 extension SellInProgressStateX on SellInProgressState {

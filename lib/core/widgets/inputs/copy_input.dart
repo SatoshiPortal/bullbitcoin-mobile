@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,16 +52,19 @@ class CopyInput extends StatelessWidget {
                         _onShowValueModal(context, canCopy: canCopy);
                       }
                       : null,
-              child:
-                  isValueLoading
-                      ? const LoadingLineContent()
-                      : BBText(
-                        text,
-                        style: context.font.bodyLarge,
-                        color: context.colour.secondary,
-                        maxLines: maxLines,
-                        overflow: overflow,
-                      ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child:
+                    isValueLoading
+                        ? const LoadingLineContent()
+                        : BBText(
+                          text,
+                          style: context.font.bodyLarge,
+                          color: context.colour.secondary,
+                          maxLines: maxLines,
+                          overflow: overflow,
+                        ),
+              ),
             ),
           ),
           if (canShowValueModal && !isValueLoading)
@@ -83,6 +87,7 @@ class CopyInput extends StatelessWidget {
               icon: Icon(Icons.copy_sharp, color: context.colour.secondary),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: clipboardText ?? text));
+                SnackBarUtils.showCopiedSnackBar(context);
               },
             ),
           const Gap(8),
