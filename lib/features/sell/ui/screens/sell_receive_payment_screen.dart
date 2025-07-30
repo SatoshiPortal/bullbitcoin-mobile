@@ -102,14 +102,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
             if (order == null)
               const LoadingLineContent()
             else
-              CopyInput(
-                text: switch (order.payinMethod) {
-                  OrderPaymentMethod.bitcoin => order.bitcoinAddress ?? '',
-                  OrderPaymentMethod.liquid => order.liquidAddress ?? '',
-                  OrderPaymentMethod.lnInvoice => order.lightningInvoice ?? '',
-                  _ => '',
-                },
-              ),
+              _buildPaymentInput(context, order),
             const Gap(32),
             Container(
               height: 1,
@@ -265,5 +258,23 @@ class SellReceivePaymentScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildPaymentInput(BuildContext context, SellOrder order) {
+    final fullText = switch (order.payinMethod) {
+      OrderPaymentMethod.bitcoin => order.bitcoinAddress ?? '',
+      OrderPaymentMethod.liquid => order.liquidAddress ?? '',
+      OrderPaymentMethod.lnInvoice => order.lightningInvoice ?? '',
+      _ => '',
+    };
+
+    if (order.payinMethod == OrderPaymentMethod.lnInvoice &&
+        fullText.length > 20) {
+      final displayText =
+          '${fullText.substring(0, 36)}...${fullText.substring(fullText.length - 30)}';
+      return CopyInput(text: displayText, clipboardText: fullText);
+    }
+
+    return CopyInput(text: fullText);
   }
 }

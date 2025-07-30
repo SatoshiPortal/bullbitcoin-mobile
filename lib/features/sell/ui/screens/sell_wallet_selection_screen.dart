@@ -35,7 +35,7 @@ class SellWalletSelectionScreen extends StatelessWidget {
             Expanded(
               child: ScrollableColumn(
                 children: [
-                  const Gap(40.0),
+                  const Gap(24.0),
                   Text(
                     'Which wallet do you want to sell from?',
                     style: context.font.labelMedium?.copyWith(

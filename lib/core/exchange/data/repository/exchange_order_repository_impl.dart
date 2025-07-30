@@ -167,7 +167,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required Network network,
+    required OrderBitcoinNetwork network,
     required bool isOwner,
   }) async {
     try {
@@ -208,7 +208,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   Future<SellOrder> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required Network network,
+    required OrderBitcoinNetwork network,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
@@ -247,7 +247,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required OrderAmount orderAmount,
     required String recipientId,
     required String paymentProcessor,
-    required Network network,
+    required OrderBitcoinNetwork network,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(

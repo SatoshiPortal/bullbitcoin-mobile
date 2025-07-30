@@ -14,7 +14,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
@@ -253,7 +253,10 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       final createdSellOrder = await _createSellOrderUsecase.execute(
         orderAmount: walletSelectionState.orderAmount,
         currency: walletSelectionState.fiatCurrency,
-        isLiquid: event.wallet.isLiquid,
+        network:
+            event.wallet.isLiquid
+                ? OrderBitcoinNetwork.liquid
+                : OrderBitcoinNetwork.bitcoin,
       );
 
       // Proceed to confirmation state with unsignedPsbt and absoluteFees
@@ -316,9 +319,9 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       final createdSellOrder = await _createSellOrderUsecase.execute(
         orderAmount: walletSelectionState.orderAmount,
         currency: walletSelectionState.fiatCurrency,
-        isLiquid: event.network == OrderPaymentMethod.liquid,
+        network: event.network,
       );
-
+      log.info('createdSellOrder: $createdSellOrder');
       // Proceed to confirmation state
       emit(
         walletSelectionState.toReceivePaymentState(

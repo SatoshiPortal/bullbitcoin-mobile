@@ -20,7 +20,7 @@ class CreateSellOrderUsecase {
   Future<SellOrder> execute({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required bool isLiquid,
+    required OrderBitcoinNetwork network,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -29,7 +29,6 @@ class CreateSellOrderUsecase {
           isTestnet
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
-      final network = isLiquid ? Network.liquid : Network.bitcoin;
       final order = await repo.placeSellOrder(
         orderAmount: orderAmount,
         currency: currency,

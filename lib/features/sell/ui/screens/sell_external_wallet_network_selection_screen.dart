@@ -22,69 +22,74 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Select Network')),
       body: SafeArea(
-        child: ScrollableColumn(
+        child: Column(
           children: [
-            const Gap(40.0),
-            Text(
-              'How do you want to pay this invoice?',
-              style: context.font.labelMedium?.copyWith(color: Colors.black),
+            FadingLinearProgress(
+              height: 3,
+              trigger: isCreatingSellOrder,
+              backgroundColor: context.colour.onPrimary,
+              foregroundColor: context.colour.primary,
             ),
-            const Gap(24.0),
-            ListTile(
-              tileColor: context.colour.onPrimary,
-              shape: const Border(),
-              title: const Text('Bitcoin on-chain'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap:
-                  isCreatingSellOrder
-                      ? null
-                      : () => context.read<SellBloc>().add(
-                        const SellEvent.externalWalletNetworkSelected(
-                          network: OrderPaymentMethod.bitcoin,
-                        ),
-                      ),
-            ),
-            const Gap(24.0),
-            ListTile(
-              tileColor: context.colour.onPrimary,
-              shape: const Border(),
-              title: const Text('Lightning Network'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap:
-                  isCreatingSellOrder
-                      ? null
-                      : () => context.read<SellBloc>().add(
-                        const SellEvent.externalWalletNetworkSelected(
-                          network: OrderPaymentMethod.lnInvoice,
-                        ),
-                      ),
-            ),
-            const Gap(24.0),
-            ListTile(
-              tileColor: context.colour.onPrimary,
-              shape: const Border(),
-              title: const Text('Liquid Network'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap:
-                  isCreatingSellOrder
-                      ? null
-                      : () => context.read<SellBloc>().add(
-                        const SellEvent.externalWalletNetworkSelected(
-                          network: OrderPaymentMethod.liquid,
-                        ),
-                      ),
-            ),
-            const Gap(24.0),
-            if (isCreatingSellOrder) ...[
-              FadingLinearProgress(
-                height: 3,
-                trigger: isCreatingSellOrder,
-                backgroundColor: context.colour.onPrimary,
-                foregroundColor: context.colour.primary,
+            Expanded(
+              child: ScrollableColumn(
+                children: [
+                  const Gap(24.0),
+                  Text(
+                    'How do you want to pay this invoice?',
+                    style: context.font.labelMedium?.copyWith(
+                      color: Colors.black,
+                    ),
+                  ),
+                  const Gap(24.0),
+                  ListTile(
+                    tileColor: context.colour.onPrimary,
+                    shape: const Border(),
+                    title: const Text('Bitcoin on-chain'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap:
+                        isCreatingSellOrder
+                            ? null
+                            : () => context.read<SellBloc>().add(
+                              const SellEvent.externalWalletNetworkSelected(
+                                network: OrderBitcoinNetwork.bitcoin,
+                              ),
+                            ),
+                  ),
+                  const Gap(24.0),
+                  ListTile(
+                    tileColor: context.colour.onPrimary,
+                    shape: const Border(),
+                    title: const Text('Lightning Network'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap:
+                        isCreatingSellOrder
+                            ? null
+                            : () => context.read<SellBloc>().add(
+                              const SellEvent.externalWalletNetworkSelected(
+                                network: OrderBitcoinNetwork.lightning,
+                              ),
+                            ),
+                  ),
+                  const Gap(24.0),
+                  ListTile(
+                    tileColor: context.colour.onPrimary,
+                    shape: const Border(),
+                    title: const Text('Liquid Network'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap:
+                        isCreatingSellOrder
+                            ? null
+                            : () => context.read<SellBloc>().add(
+                              const SellEvent.externalWalletNetworkSelected(
+                                network: OrderBitcoinNetwork.liquid,
+                              ),
+                            ),
+                  ),
+                  const Gap(24.0),
+                  const _SellError(),
+                ],
               ),
-              const Gap(16.0),
-            ],
-            const _SellError(),
+            ),
           ],
         ),
       ),
