@@ -446,7 +446,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
                 (length) => DropdownMenuItem(
                   value: length,
                   child: BBText(
-                    '$length length',
+                    '$length words',
                     style: context.font.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: context.colour.secondary,

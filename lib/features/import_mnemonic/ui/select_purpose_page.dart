@@ -41,6 +41,10 @@ class SelectScriptTypePage extends StatelessWidget {
           final cubit = context.read<ImportMnemonicCubit>();
           final scriptType = cubit.state.scriptType;
 
+          if (!state.hasCheckedWallets && state.mnemonic != null) {
+            cubit.checkWalletsStatusDirty();
+          }
+
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -51,24 +55,21 @@ class SelectScriptTypePage extends StatelessWidget {
                     children: [
                       _WalletTypeCard(
                         title: 'Segwit',
-                        balance: '0',
-                        transactions: '0',
+                        status: state.bip84Status,
                         isSelected: scriptType == ScriptType.bip84,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip84),
                       ),
                       const Gap(16),
                       _WalletTypeCard(
                         title: 'Nested Segwit',
-                        balance: '0',
-                        transactions: '0',
+                        status: state.bip49Status,
                         isSelected: scriptType == ScriptType.bip49,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip49),
                       ),
                       const Gap(16),
                       _WalletTypeCard(
                         title: 'Legacy',
-                        balance: '0',
-                        transactions: '0',
+                        status: state.bip44Status,
                         isSelected: scriptType == ScriptType.bip44,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip44),
                       ),
@@ -95,15 +96,13 @@ class SelectScriptTypePage extends StatelessWidget {
 
 class _WalletTypeCard extends StatelessWidget {
   final String title;
-  final String balance;
-  final String transactions;
+  final ({BigInt satoshis, int transactions})? status;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _WalletTypeCard({
     required this.title,
-    required this.balance,
-    required this.transactions,
+    required this.status,
     required this.isSelected,
     required this.onTap,
   });
@@ -137,20 +136,27 @@ class _WalletTypeCard extends StatelessWidget {
                       color: context.colour.secondary,
                     ),
                   ),
-                  const Gap(8),
-                  BBText(
-                    'Balance: $balance',
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.surface,
+
+                  if (status != null) ...[
+                    const Gap(8),
+                    BBText(
+                      'Balance: ${status?.satoshis.toString() ?? '0'}',
+                      style: context.font.bodyMedium?.copyWith(
+                        color: context.colour.surface,
+                      ),
                     ),
-                  ),
-                  const Gap(4),
-                  BBText(
-                    'Transactions: $transactions',
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.surface,
+                    const Gap(4),
+                    BBText(
+                      'Transactions: ${status?.transactions.toString() ?? '0'}',
+                      style: context.font.bodyMedium?.copyWith(
+                        color: context.colour.surface,
+                      ),
                     ),
-                  ),
+                  ],
+                  if (status == null) ...[
+                    const Gap(8),
+                    const Center(child: CircularProgressIndicator()),
+                  ],
                 ],
               ),
             ),
