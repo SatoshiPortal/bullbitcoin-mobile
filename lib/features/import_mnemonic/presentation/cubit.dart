@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/check_wallet_status_usecase.dart';
+import 'package:bb_mobile/features/import_mnemonic/errors.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,20 +20,17 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
 
   void reset() => emit(const ImportMnemonicState());
 
-  void updateMnemonic(Mnemonic mnemonic) =>
-      emit(state.copyWith(mnemonic: mnemonic));
+  void updateMnemonic(Mnemonic mnemonic) {
+    if (mnemonic.label.isEmpty) throw EmptyMnemonicLabelError();
+    emit(state.copyWith(mnemonic: mnemonic));
+  }
 
   Future<void> checkWalletsStatusDirty() async {
-    if (state.mnemonic == null) {
-      emit(state.copyWith(error: Exception('Mnemonic is null')));
-      return;
-    }
-
-    clearError();
-
-    emit(state.copyWith(hasCheckedWallets: true));
-
     try {
+      if (state.mnemonic == null) throw MnemonicIsNullError();
+
+      emit(state.copyWith(hasCheckedWallets: true, error: null));
+
       final bip84Status = await _checkWalletUsecase(
         state.mnemonic!,
         ScriptType.bip84,
@@ -59,14 +57,12 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
       emit(state.copyWith(scriptType: scriptType));
 
   Future<void> import() async {
-    if (state.mnemonic == null) {
-      emit(state.copyWith(error: Exception('Mnemonic or script type is null')));
-      return;
-    }
-
     try {
+      if (state.mnemonic == null) throw MnemonicIsNullError();
+
+      emit(state.copyWith(isLoading: true, error: null));
+
       final mnemonic = state.mnemonic!;
-      emit(state.copyWith(isLoading: true));
       final wallet = await _importWalletUsecase.execute(
         mnemonicWords: mnemonic.words,
         label: mnemonic.label,

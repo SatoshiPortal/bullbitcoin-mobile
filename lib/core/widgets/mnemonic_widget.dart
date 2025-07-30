@@ -6,7 +6,13 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-typedef Mnemonic = ({String label, String passphrase, List<String> words});
+typedef Mnemonic =
+    ({
+      String label,
+      String passphrase,
+      List<String> words,
+      bip39.Language language,
+    });
 
 class MnemonicWidget extends StatefulWidget {
   final bip39.Language language;
@@ -63,12 +69,24 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
           language: widget.language,
         ));
       } catch (e) {
-        _error = Exception(e.toString());
+        if (e is bip39.MnemonicWordNotFoundException) {
+          _error = InvalidMnemonicWordsError(e.message);
+        } else if (e is bip39.MnemonicUnexpectedSentenceLengthException) {
+          _error = InvalidMnemonicLengthError(words.length);
+        } else if (e is bip39.MnemonicInvalidChecksumException) {
+          _error = InvalidMnemonicChecksumError();
+        } else if (e is bip39.MnemonicUnexpectedEntropyLengthException ||
+            e is bip39.MnemonicUnexpectedInitialEntropyLengthException ||
+            e is bip39.MnemonicIndexesLengthException) {
+          _error = InvalidEntropyLengthError();
+        } else {
+          _error = MnemonicException(e.toString());
+        }
         setState(() {});
         return;
       }
     } else {
-      setState(() => _error = Exception('Please fill all words'));
+      setState(() => _error = EmptyMnemonicWordsError());
     }
   }
 
@@ -546,4 +564,38 @@ class SingleLineTextWidget extends StatelessWidget {
       ],
     );
   }
+}
+
+class MnemonicException implements Exception {
+  final String message;
+
+  MnemonicException(this.message);
+
+  @override
+  String toString() => message;
+}
+
+// User-friendly errors that extend MnemonicException for specific bip39 errors
+class InvalidMnemonicWordsError extends MnemonicException {
+  InvalidMnemonicWordsError(super.message);
+}
+
+class InvalidMnemonicLengthError extends MnemonicException {
+  InvalidMnemonicLengthError(int length)
+    : super(
+        'Your mnemonic has $length words, but it must be exactly 12, 15, 18, 21, or 24 words long.',
+      );
+}
+
+class InvalidMnemonicChecksumError extends MnemonicException {
+  InvalidMnemonicChecksumError()
+    : super('This mnemonic has an invalid checksum');
+}
+
+class InvalidEntropyLengthError extends MnemonicException {
+  InvalidEntropyLengthError() : super('Invalid mnemonic format');
+}
+
+class EmptyMnemonicWordsError extends MnemonicException {
+  EmptyMnemonicWordsError() : super('Enter all words of your mnemonic');
 }
