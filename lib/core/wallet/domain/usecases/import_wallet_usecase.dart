@@ -42,7 +42,7 @@ class ImportWalletUsecase {
         network: bitcoinNetwork,
         scriptType: scriptType,
         isDefault: false,
-        sync: true,
+        sync: false,
         label: label,
       );
 
