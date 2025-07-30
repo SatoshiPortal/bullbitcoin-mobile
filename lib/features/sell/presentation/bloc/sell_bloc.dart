@@ -289,7 +289,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           address: sellPaymentState.sellOrder.liquidAddress!,
           amountSat: payinAmountSat,
           // TODO: use the real fee
-          networkFee: const NetworkFee.absolute(200),
+          networkFee: const NetworkFee.relative(0.1),
         );
         final signedPset = await _signLiquidTxUsecase.execute(
           pset: pset,

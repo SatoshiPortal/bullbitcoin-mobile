@@ -239,6 +239,7 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
               ];
             } else if (order is SellOrder) {
+              final payinAmountSat = ConvertAmount.btcToSats(order.payinAmount);
               return [
                 DetailsTableItem(
                   label: 'Order Type',
@@ -251,7 +252,11 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Payin amount',
                   displayValue:
-                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                      bitcoinUnit == BitcoinUnit.sats
+                          ? FormatAmount.sats(payinAmountSat).toUpperCase()
+                          : FormatAmount.btc(
+                            ConvertAmount.satsToBtc(payinAmountSat),
+                          ).toUpperCase(),
                 ),
                 DetailsTableItem(
                   label: 'Payout amount',
