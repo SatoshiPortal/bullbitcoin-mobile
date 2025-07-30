@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -38,6 +39,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     broadcastBitcoinTransactionUsecase,
     required BroadcastLiquidTransactionUsecase
     broadcastLiquidTransactionUsecase,
+    required GetNetworkFeesUsecase getNetworkFeesUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _getSettingsUsecase = getSettingsUsecase,
        _createSellOrderUsecase = createSellOrderUsecase,
@@ -48,6 +50,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
        _signLiquidTxUsecase = signLiquidTxUsecase,
        _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
        _broadcastLiquidTransactionUsecase = broadcastLiquidTransactionUsecase,
+       _getNetworkFeesUsecase = getNetworkFeesUsecase,
        super(const SellState.initial()) {
     on<SellStarted>(_onStarted);
     on<SellAmountInputContinuePressed>(_onAmountInputContinuePressed);
@@ -67,6 +70,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
   final SignLiquidTxUsecase _signLiquidTxUsecase;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
+  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
 
   Future<void> _onStarted(SellStarted event, Emitter<SellState> emit) async {
     try {
@@ -297,12 +301,15 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
         await _broadcastLiquidTransactionUsecase.execute(signedPset);
       } else {
+        final bitcoinFees = await _getNetworkFeesUsecase.execute(
+          isLiquid: false,
+        );
+        final fastestFee = bitcoinFees.fastest;
         final preparedSend = await _prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
           address: sellPaymentState.sellOrder.bitcoinAddress!,
           amountSat: payinAmountSat,
-          // TODO: use the real fee
-          networkFee: const NetworkFee.absolute(200),
+          networkFee: fastestFee,
         );
         final signedTx = await _signBitcoinTxUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
