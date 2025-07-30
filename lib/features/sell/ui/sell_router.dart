@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_external_wallet_network_selection_screen.dart';
-import 'package:bb_mobile/features/sell/ui/screens/sell_in_progress_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_receive_payment_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_send_payment_screen.dart';
@@ -17,7 +16,6 @@ enum SellRoute {
   sellExternalWalletNetworkSelection('external-wallet-network-selection'),
   sellExternalWalletReceivePayment('external-wallet-receive-payment'),
   sellSendPayment('send-payment'),
-  sellInProgress('in-progress'),
   sellSuccess('success');
 
   final String path;
@@ -89,9 +87,9 @@ class SellRouter {
                   listenWhen:
                       (previous, current) =>
                           previous is SellPaymentState &&
-                          current is SellInProgressState,
+                          current is SellSuccessState,
                   listener: (context, state) {
-                    context.pushNamed(SellRoute.sellInProgress.name);
+                    context.pushNamed(SellRoute.sellSuccess.name);
                   },
                   child: const SellSendPaymentScreen(),
                 ),
@@ -122,28 +120,14 @@ class SellRouter {
                   listenWhen:
                       (previous, current) =>
                           previous is SellPaymentState &&
-                          current is SellInProgressState,
+                          current is SellSuccessState,
                   listener: (context, state) {
-                    context.pushNamed(SellRoute.sellInProgress.name);
+                    context.pushNamed(SellRoute.sellSuccess.name);
                   },
                   child: const SellReceivePaymentScreen(),
                 ),
           ),
-          GoRoute(
-            name: SellRoute.sellInProgress.name,
-            path: SellRoute.sellInProgress.path,
-            builder:
-                (context, state) => BlocListener<SellBloc, SellState>(
-                  listenWhen:
-                      (previous, current) =>
-                          previous is SellPaymentState &&
-                          current is SellInProgressState,
-                  listener: (context, state) {
-                    context.pushNamed(SellRoute.sellInProgress.name);
-                  },
-                  child: const SellInProgressScreen(),
-                ),
-          ),
+
           GoRoute(
             name: SellRoute.sellSuccess.name,
             path: SellRoute.sellSuccess.path,

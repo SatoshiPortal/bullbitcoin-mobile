@@ -29,8 +29,6 @@ sealed class SellState with _$SellState {
     SellError? error,
     int? absoluteFees,
   }) = SellPaymentState;
-  const factory SellState.inProgress({required SellOrder sellOrder}) =
-      SellInProgressState;
   const factory SellState.success({required SellOrder sellOrder}) =
       SellSuccessState;
   const SellState._();
@@ -97,8 +95,8 @@ extension SellPaymentStateX on SellPaymentState {
     );
   }
 
-  SellInProgressState toInProgressState() {
-    return SellInProgressState(sellOrder: sellOrder);
+  SellSuccessState toSuccessState({required SellOrder sellOrder}) {
+    return SellSuccessState(sellOrder: sellOrder);
   }
 
   String get bip21InvoiceData {
@@ -142,11 +140,5 @@ extension SellPaymentStateX on SellPaymentState {
     }
 
     return invoiceString;
-  }
-}
-
-extension SellInProgressStateX on SellInProgressState {
-  SellSuccessState toSuccessState() {
-    return SellSuccessState(sellOrder: sellOrder);
   }
 }

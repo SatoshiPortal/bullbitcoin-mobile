@@ -56,27 +56,24 @@ class SellQrBottomSheet extends StatelessWidget {
           ),
           const Gap(24),
           Center(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final maxWidth = constraints.maxWidth;
-                final qrSize = (maxWidth * 0.7).clamp(200.0, 320.0);
-
-                return Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                  child: QrImageView(data: bip21InvoiceData, size: qrSize),
-                );
-              },
+                ],
+              ),
+              child: SizedBox(
+                width: 280,
+                height: 280,
+                child: QrImageView(data: bip21InvoiceData, size: 280),
+              ),
             ),
           ),
           const Gap(16),

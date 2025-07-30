@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
@@ -23,40 +24,53 @@ class SellWalletSelectionScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Select Wallet')),
       body: SafeArea(
-        child: ScrollableColumn(
+        child: Column(
           children: [
-            const Gap(40.0),
-            Text(
-              'Which wallet do you want to sell from?',
-              style: context.font.labelMedium?.copyWith(color: Colors.black),
+            FadingLinearProgress(
+              height: 3,
+              trigger: isCreatingSellOrder,
+              backgroundColor: context.colour.onPrimary,
+              foregroundColor: context.colour.primary,
             ),
-            const Gap(24.0),
-            WalletCards(
-              padding: EdgeInsets.zero,
-              onTap:
-                  isCreatingSellOrder
-                      ? null
-                      : (wallet) => context.read<SellBloc>().add(
-                        SellEvent.walletSelected(wallet: wallet),
-                      ),
+            Expanded(
+              child: ScrollableColumn(
+                children: [
+                  const Gap(40.0),
+                  Text(
+                    'Which wallet do you want to sell from?',
+                    style: context.font.labelMedium?.copyWith(
+                      color: Colors.black,
+                    ),
+                  ),
+                  const Gap(24.0),
+                  WalletCards(
+                    padding: EdgeInsets.zero,
+                    onTap:
+                        isCreatingSellOrder
+                            ? null
+                            : (wallet) => context.read<SellBloc>().add(
+                              SellEvent.walletSelected(wallet: wallet),
+                            ),
+                  ),
+                  const Gap(24.0),
+                  ListTile(
+                    tileColor: context.colour.onPrimary,
+                    shape: const Border(),
+                    title: const Text('External wallet'),
+                    subtitle: const Text('Sell from another Bitcoin wallet'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap:
+                        isCreatingSellOrder
+                            ? null
+                            : () => context.pushNamed(
+                              SellRoute.sellExternalWalletNetworkSelection.name,
+                            ),
+                  ),
+                  const Gap(24.0),
+                  const _SellError(),
+                ],
+              ),
             ),
-            const Gap(24.0),
-            ListTile(
-              tileColor: context.colour.onPrimary,
-              shape: const Border(),
-              title: const Text('External wallet'),
-              subtitle: const Text('Sell from another Bitcoin wallet'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap:
-                  isCreatingSellOrder
-                      ? null
-                      : () => context.pushNamed(
-                        SellRoute.sellExternalWalletNetworkSelection.name,
-                      ),
-            ),
-            const Gap(24.0),
-            if (isCreatingSellOrder) const CircularProgressIndicator(),
-            const _SellError(),
           ],
         ),
       ),

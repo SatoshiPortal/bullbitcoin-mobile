@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -52,6 +53,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     required ConvertSatsToCurrencyAmountUsecase
     convertSatsToCurrencyAmountUsecase,
     required GetAddressAtIndexUsecase getAddressAtIndexUsecase,
+    required GetOrderUsecase getOrderUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _getSettingsUsecase = getSettingsUsecase,
        _createSellOrderUsecase = createSellOrderUsecase,
@@ -68,6 +70,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
            calculateBitcoinAbsoluteFeesUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
        _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
+       _getOrderUsecase = getOrderUsecase,
        super(const SellState.initial()) {
     on<SellStarted>(_onStarted);
     on<SellAmountInputContinuePressed>(_onAmountInputContinuePressed);
@@ -93,6 +96,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
   _calculateBitcoinAbsoluteFeesUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
+  final GetOrderUsecase _getOrderUsecase;
 
   Future<void> _onStarted(SellStarted event, Emitter<SellState> emit) async {
     try {
@@ -424,18 +428,48 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
       }
 
-      emit(sellPaymentState.toInProgressState());
-    } on SellError catch (e) {
+      // Get the latest order before transitioning to success state
+      final latestOrder = await _getOrderUsecase.execute(
+        orderId: sellPaymentState.sellOrder.orderId,
+      );
+
+      if (latestOrder is! SellOrder) {
+        throw const SellError.unexpected(
+          message: 'Expected SellOrder but received a different order type',
+        );
+      }
+
+      emit(sellPaymentState.toSuccessState(sellOrder: latestOrder));
+    } on PrepareLiquidSendException catch (e) {
+      emit(
+        sellPaymentState.copyWith(
+          error: SellError.unexpected(message: e.message),
+        ),
+      );
+    } on PrepareBitcoinSendException catch (e) {
+      emit(
+        sellPaymentState.copyWith(
+          error: SellError.unexpected(message: e.toString()),
+        ),
+      );
+    } on SignLiquidTxException catch (e) {
+      emit(
+        sellPaymentState.copyWith(
+          error: SellError.unexpected(message: e.toString()),
+        ),
+      );
+    } on SignBitcoinTxException catch (e) {
       // Handle SellError and emit error state
-      emit(sellPaymentState.copyWith(error: e));
+      emit(
+        sellPaymentState.copyWith(
+          error: SellError.unexpected(message: e.toString()),
+        ),
+      );
     } catch (e) {
       // Log unexpected errors
       log.severe('Unexpected error in SellBloc: $e');
-    } finally {
-      // Reset the isConfirmingPayment flag if any error occured
-      if (state is SellPaymentState) {
-        emit((state as SellPaymentState).copyWith(isConfirmingPayment: false));
-      }
+      // Reset the isConfirmingPayment flag on error
+      emit(sellPaymentState.copyWith(isConfirmingPayment: false));
     }
   }
 }

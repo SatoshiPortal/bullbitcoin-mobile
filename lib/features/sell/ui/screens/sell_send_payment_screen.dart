@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -6,6 +7,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -22,6 +24,11 @@ class SellSendPaymentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isConfirmingPayment = context.select(
+      (SellBloc bloc) =>
+          bloc.state is SellPaymentState &&
+          (bloc.state as SellPaymentState).isConfirmingPayment,
+    );
     final wallet = context.select(
       (SellBloc bloc) =>
           bloc.state is SellPaymentState
@@ -52,6 +59,12 @@ class SellSendPaymentScreen extends StatelessWidget {
         child: ScrollableColumn(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           children: [
+            FadingLinearProgress(
+              height: 3,
+              trigger: isConfirmingPayment,
+              backgroundColor: context.colour.onPrimary,
+              foregroundColor: context.colour.primary,
+            ),
             const Gap(24.0),
             Text(
               'Confirm payment',
@@ -84,6 +97,23 @@ class SellSendPaymentScreen extends StatelessWidget {
 
             const Gap(8.0),
             _DetailRow(
+              title: 'Order number',
+              value: order?.orderNumber.toString(),
+              copyValue: order?.orderNumber.toString(),
+            ),
+            _DetailRow(
+              title: 'Payout recipient',
+              value: switch (order?.payoutMethod) {
+                OrderPaymentMethod.cadBalance => 'CAD Balance',
+                OrderPaymentMethod.crcBalance => 'CRC Balance',
+                OrderPaymentMethod.eurBalance => 'EUR Balance',
+                OrderPaymentMethod.usdBalance => 'USD Balance',
+                OrderPaymentMethod.mxnBalance => 'MXN Balance',
+                _ => order?.payoutMethod.name,
+              },
+            ),
+            const _Divider(),
+            _DetailRow(
               title: 'Payin amount',
               value:
                   order == null
@@ -94,7 +124,6 @@ class SellSendPaymentScreen extends StatelessWidget {
                         ConvertAmount.btcToSats(order.payinAmount),
                       ),
             ),
-            const _Divider(),
             _DetailRow(
               title: 'Payout amount',
               value:
@@ -118,23 +147,6 @@ class SellSendPaymentScreen extends StatelessWidget {
             ),
             const _Divider(),
             _DetailRow(
-              title: 'Payout recipient',
-              value: switch (order?.payoutMethod) {
-                OrderPaymentMethod.cadBalance => 'CAD Balance',
-                OrderPaymentMethod.crcBalance => 'CRC Balance',
-                OrderPaymentMethod.eurBalance => 'EUR Balance',
-                OrderPaymentMethod.usdBalance => 'USD Balance',
-                OrderPaymentMethod.mxnBalance => 'MXN Balance',
-                _ => order?.payoutMethod.name,
-              },
-            ),
-            _DetailRow(
-              title: 'Order number',
-              value: order?.orderNumber.toString(),
-              copyValue: order?.orderNumber.toString(),
-            ),
-            const _Divider(),
-            _DetailRow(
               title: 'Pay from wallet',
               value:
                   wallet?.label ??
@@ -144,13 +156,15 @@ class SellSendPaymentScreen extends StatelessWidget {
                           : 'Secure Bitcoin wallet'
                       : ''),
             ),
-            _DetailRow(
-              title: 'Fee Priority',
-              value: 'Fastest',
-              onTap: () {
-                debugPrint('Tapped Fee Priority');
-              },
-            ),
+            if (wallet != null && !wallet.isLiquid) ...[
+              _DetailRow(
+                title: 'Fee Priority',
+                value: 'Fastest',
+                onTap: () {
+                  debugPrint('Tapped Fee Priority');
+                },
+              ),
+            ],
             // TODO: Implement fee selection
             _DetailRow(
               title: 'Network fees',
@@ -302,22 +316,27 @@ class _BottomButtons extends StatelessWidget {
           bloc.state is SellPaymentState &&
           (bloc.state as SellPaymentState).isConfirmingPayment,
     );
+    final wallet = context.select(
+      (SellBloc bloc) =>
+          bloc.state is SellPaymentState
+              ? (bloc.state as SellPaymentState).selectedWallet
+              : null,
+    );
 
     return Column(
       children: [
-        if (isConfirmingPayment) ...[
-          const CircularProgressIndicator(),
-          const Gap(24.0),
+        const _SellError(),
+        if (wallet != null && !wallet.isLiquid) ...[
+          BBButton.big(
+            label: 'Advanced Settings',
+            onPressed: () {},
+            bgColor: Colors.transparent,
+            textColor: context.colour.secondary,
+            outlined: true,
+            borderColor: context.colour.secondary,
+          ),
+          const Gap(16),
         ],
-        BBButton.big(
-          label: 'Advanced Settings',
-          onPressed: () {},
-          bgColor: Colors.transparent,
-          textColor: context.colour.secondary,
-          outlined: true,
-          borderColor: context.colour.secondary,
-        ),
-        const Gap(16),
         BBButton.big(
           label: 'Continue',
           disabled: isConfirmingPayment,
@@ -326,6 +345,66 @@ class _BottomButtons extends StatelessWidget {
           textColor: context.colour.onSecondary,
         ),
       ],
+    );
+  }
+}
+
+class _SellError extends StatelessWidget {
+  const _SellError();
+
+  @override
+  Widget build(BuildContext context) {
+    final sellError = context.select(
+      (SellBloc bloc) =>
+          bloc.state is SellPaymentState
+              ? (bloc.state as SellPaymentState).error
+              : null,
+    );
+
+    return Center(
+      child: switch (sellError) {
+        AboveMaxAmountSellError _ => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          child: Text(
+            'You are trying to sell above the maximum amount that can be sold with this wallet.',
+            style: context.font.bodyMedium?.copyWith(
+              color: context.colour.error,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        BelowMinAmountSellError _ => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          child: Text(
+            'You are trying to sell below the minimum amount that can be sold with this wallet.',
+            style: context.font.bodyMedium?.copyWith(
+              color: context.colour.error,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        InsufficientBalanceSellError _ => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          child: Text(
+            'Insufficient balance in the selected wallet to complete this sell order.',
+            style: context.font.bodyMedium?.copyWith(
+              color: context.colour.error,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        UnexpectedSellError(:final message) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          child: Text(
+            message,
+            style: context.font.bodyMedium?.copyWith(
+              color: context.colour.error,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        _ => const SizedBox.shrink(),
+      },
     );
   }
 }
