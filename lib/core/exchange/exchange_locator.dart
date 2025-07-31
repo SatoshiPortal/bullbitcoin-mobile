@@ -32,8 +32,6 @@ import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/create_withdraw_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
 
@@ -263,18 +261,6 @@ class ExchangeLocator {
       ),
     );
 
-    locator.registerFactory<ConfirmWithdrawOrderUsecase>(
-      () => ConfirmWithdrawOrderUsecase(
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
     locator.registerFactory<RefreshBuyOrderUsecase>(
       () => RefreshBuyOrderUsecase(
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
@@ -375,18 +361,6 @@ class ExchangeLocator {
 
     locator.registerFactory<PlacePayOrderUsecase>(
       () => PlacePayOrderUsecase(
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
-    locator.registerFactory<CreateWithdrawalOrderUsecase>(
-      () => CreateWithdrawalOrderUsecase(
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'mainnetExchangeOrderRepository',
         ),

@@ -2,26 +2,44 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
-import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_currency_dropdown.dart';
-import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_field.dart';
+import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_amount_input_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SellScreen extends StatefulWidget {
-  const SellScreen({super.key});
+class WithdrawAmountScreen extends StatefulWidget {
+  const WithdrawAmountScreen({super.key});
 
   @override
-  State<SellScreen> createState() => _SellScreenState();
+  State<WithdrawAmountScreen> createState() => _WithdrawAmountScreenState();
 }
 
-class _SellScreenState extends State<SellScreen> {
+class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController = TextEditingController();
-  bool _isFiatCurrencyInput = true;
-  FiatCurrency? _fiatCurrency;
+  late FiatCurrency _fiatCurrency;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the fiat currency based on the user summary
+    final bloc = context.read<WithdrawBloc>();
+    final state = bloc.state;
+    switch (state) {
+      case WithdrawAmountInputState():
+        _fiatCurrency = FiatCurrency.fromCode(
+          state.userSummary.currency ?? 'CAD',
+        );
+      case WithdrawRecipientInputState():
+        _fiatCurrency = FiatCurrency.fromCode(
+          state.userSummary.currency ?? 'CAD',
+        );
+      default:
+        _fiatCurrency = FiatCurrency.cad;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +49,14 @@ class _SellScreenState extends State<SellScreen> {
         // route of a shellroute and so no back button is provided by default.
         leading:
             context.canPop()
-                ? BackButton(
+                ? IconButton(
+                  icon: const Icon(Icons.arrow_back),
                   onPressed: () {
                     context.pop();
                   },
                 )
                 : null,
-        title: const Text('Sell Bitcoin'),
+        title: const Text('Withdraw fiat'),
       ),
       body: SafeArea(
         child: Form(
@@ -46,22 +65,12 @@ class _SellScreenState extends State<SellScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Gap(40.0),
-              SellAmountInputField(
+              WithdrawAmountInputFields(
                 amountController: _amountController,
                 fiatCurrency: _fiatCurrency,
-                isFiatCurrencyInput: _isFiatCurrencyInput,
-                onIsFiatCurrencyInputChanged: (bool isFiat) {
+                onFiatCurrencyChanged: (FiatCurrency fiatCurrency) {
                   setState(() {
-                    _isFiatCurrencyInput = isFiat;
-                  });
-                },
-              ),
-              const Gap(16.0),
-              SellAmountCurrencyDropdown(
-                selectedCurrency: _fiatCurrency?.code,
-                onCurrencyChanged: (String currencyCode) {
-                  setState(() {
-                    _fiatCurrency = FiatCurrency.fromCode(currencyCode);
+                    _fiatCurrency = fiatCurrency;
                   });
                 },
               ),
@@ -70,21 +79,10 @@ class _SellScreenState extends State<SellScreen> {
                 label: 'Continue',
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    final sellBloc = context.read<SellBloc>();
-                    final sellState = sellBloc.state;
-                    sellBloc.add(
-                      SellEvent.amountInputContinuePressed(
+                    context.read<WithdrawBloc>().add(
+                      WithdrawEvent.amountInputContinuePressed(
                         amountInput: _amountController.text,
-                        isFiatCurrencyInput: _isFiatCurrencyInput,
-                        fiatCurrency:
-                            _fiatCurrency ??
-                            ((sellState is SellAmountInputState)
-                                ? FiatCurrency.fromCode(
-                                  sellState.userSummary.currency ?? 'CAD',
-                                )
-                                : sellState is SellWalletSelectionState
-                                ? sellState.fiatCurrency
-                                : FiatCurrency.cad),
+                        fiatCurrency: _fiatCurrency,
                       ),
                     );
                   }

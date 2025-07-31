@@ -164,6 +164,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         // Unexpected state, do nothing
         return;
     }
+    emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
 
     // Convert order amount to sats, handling fiat conversion if needed
     int requiredAmountSat;
@@ -243,8 +244,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       );
       return;
     }
-
-    emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
 
     // Now we can create the sell order with the selected wallet
     try {

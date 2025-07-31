@@ -159,6 +159,37 @@ enum OrderPayoutStatus {
   }
 }
 
+enum WithdrawalPaymentProcessor {
+  cvu(code: 'CVU', currencyCode: 'ARS'),
+  interacEmail(code: 'INTERAC_EMAIL', currencyCode: 'CAD'),
+  billPayment(code: 'BILL_PAYMENT', currencyCode: 'CAD'),
+  electronicFundsTransfer(
+    code: 'ELECTRONIC_FUNDS_TRANSFER',
+    currencyCode: 'CAD',
+  ),
+  sepaInstant(code: 'SEPA_INSTANT', currencyCode: 'EUR'),
+  sepaRegular(code: 'SEPA_REGULAR', currencyCode: 'EUR'),
+  spei(code: 'SPEI', currencyCode: 'MXN'),
+  ibanUsd(code: 'IBAN_USD', currencyCode: 'USD'),
+  ibanCrc(code: 'IBAN_CRC', currencyCode: 'CRC'),
+  sinpe(code: 'SINPE', currencyCode: 'CRC');
+
+  final String code;
+  final String currencyCode;
+  const WithdrawalPaymentProcessor({
+    required this.code,
+    required this.currencyCode,
+  });
+
+  static WithdrawalPaymentProcessor fromCode(String code) {
+    return WithdrawalPaymentProcessor.values.firstWhere(
+      (e) => e.code == code,
+      orElse:
+          () => throw Exception('Unknown WithdrawalPaymentProcessor: $code'),
+    );
+  }
+}
+
 enum OrderPaymentMethod {
   eTransfer('E-Transfer'),
   billPayment('Bill payment'),

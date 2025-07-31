@@ -136,10 +136,10 @@ class SellRouter {
                 (context, state) => BlocListener<SellBloc, SellState>(
                   listenWhen:
                       (previous, current) =>
-                          previous is SellPaymentState &&
-                          current is SellInProgressState,
+                          previous is SellInProgressState &&
+                          current is SellSuccessState,
                   listener: (context, state) {
-                    context.pushNamed(SellRoute.sellInProgress.name);
+                    context.pushNamed(SellRoute.sellSuccess.name);
                   },
                   child: const SellInProgressScreen(),
                 ),

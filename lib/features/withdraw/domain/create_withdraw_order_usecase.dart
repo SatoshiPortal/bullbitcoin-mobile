@@ -4,12 +4,12 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
-class CreateWithdrawalOrderUsecase {
+class CreateWithdrawOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
 
-  CreateWithdrawalOrderUsecase({
+  CreateWithdrawOrderUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
     required SettingsRepository settingsRepository,

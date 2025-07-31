@@ -462,6 +462,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
           );
         }
       }
+      throw Exception('Failed to create withdrawal order: $reason');
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }

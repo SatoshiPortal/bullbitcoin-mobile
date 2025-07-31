@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -58,16 +57,16 @@ class _BBSegmentFullState extends State<BBSegmentFull> {
           ),
           children: {
             for (final item in widget.items)
-              item: BBText(
+              item: Text(
                 item,
                 style:
                     item == selectedSegment
-                        ? context.font.labelLarge
-                        : context.font.labelMedium,
-                color:
-                    item == selectedSegment
-                        ? context.colour.primary
-                        : context.colour.outline,
+                        ? context.font.labelLarge?.copyWith(
+                          color: context.colour.primary,
+                        )
+                        : context.font.labelMedium?.copyWith(
+                          color: context.colour.outline,
+                        ),
               ),
           },
         ),
