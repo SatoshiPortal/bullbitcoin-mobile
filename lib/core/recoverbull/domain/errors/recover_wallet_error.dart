@@ -9,6 +9,14 @@ sealed class RecoverWalletError with _$RecoverWalletError implements Exception {
 
   const factory RecoverWalletError.walletMismatch() = WalletMismatchError;
 
+  const factory RecoverWalletError.backupCorrupted() = BackupCorruptedError;
+
+  const factory RecoverWalletError.backupMissingDerivationPath() =
+      BackupMissingDerivationPathError;
+
+  const factory RecoverWalletError.backupKeyDerivationFailed() =
+      BackupKeyDerivationFailedError;
+
   @override
   String toString() {
     return when(
@@ -16,6 +24,11 @@ sealed class RecoverWalletError with _$RecoverWalletError implements Exception {
           () => 'RecoverWalletError: This wallet already exists.',
       walletMismatch:
           () => 'RecoverWalletError: Backup does not match the default wallet.',
+      backupCorrupted: () => 'RecoverWalletError: Backup is corrupted.',
+      backupMissingDerivationPath:
+          () => 'RecoverWalletError: Backup is missing derivation path.',
+      backupKeyDerivationFailed:
+          () => 'RecoverWalletError: Backup key derivation failed.',
     );
   }
 }
