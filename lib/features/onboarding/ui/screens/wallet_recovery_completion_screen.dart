@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
@@ -34,43 +35,63 @@ class WalletRecoveryCompletionScreen extends StatelessWidget {
           title: const Text('Recovered Wallets'),
           forceMaterialTransparency: true,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              BBText(
-                'The following wallets were successfully recovered',
-                style: context.font.bodySmall,
-              ),
-              const Gap(16),
+        body: BlocBuilder<OnboardingBloc, OnboardingState>(
+          builder: (context, state) {
+            return (state.onboardingStepStatus == OnboardingStepStatus.loading)
+                ? FadingLinearProgress(
+                  height: 3,
+                  trigger:
+                      state.onboardingStepStatus ==
+                      OnboardingStepStatus.loading,
+                  backgroundColor: context.colour.primary,
 
-              Expanded(
-                child: RecoveredWalletCards(wallets: recoveredWallets.$2),
-              ),
-              const Gap(16),
-              BBButton.big(
-                label: 'Try Another',
-                bgColor: Colors.transparent,
-                outlined: true,
-                textColor: context.colour.secondary,
-                onPressed: () {
-                  context.goNamed(OnboardingRoute.chooseRecoverProvider.name);
-                },
-              ),
-              const Gap(8),
-              BBButton.big(
-                label: 'Done',
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onPrimary,
-                onPressed: () {
-                  context.read<OnboardingBloc>().add(
-                    PersistRecoveredWallets(mnemonic: recoveredWallets.$1),
-                  );
-                },
-              ),
-            ],
-          ),
+                  foregroundColor: context.colour.secondary,
+                )
+                : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      BBText(
+                        'The following wallets were successfully recovered',
+                        style: context.font.bodySmall,
+                      ),
+                      const Gap(16),
+
+                      Expanded(
+                        child: RecoveredWalletCards(
+                          wallets: recoveredWallets.$2,
+                        ),
+                      ),
+                      const Gap(16),
+                      BBButton.big(
+                        label: 'Try Another',
+                        bgColor: Colors.transparent,
+                        outlined: true,
+                        textColor: context.colour.secondary,
+                        onPressed: () {
+                          context.goNamed(
+                            OnboardingRoute.chooseRecoverProvider.name,
+                          );
+                        },
+                      ),
+                      const Gap(8),
+                      BBButton.big(
+                        label: 'Done',
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onPrimary,
+                        onPressed: () {
+                          context.read<OnboardingBloc>().add(
+                            PersistRecoveredWallets(
+                              mnemonic: recoveredWallets.$1,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                );
+          },
         ),
       ),
     );
