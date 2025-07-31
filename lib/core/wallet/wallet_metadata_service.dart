@@ -15,12 +15,10 @@ class WalletMetadataService {
     String networkPath;
     if (network.isBitcoin && network.isMainnet) {
       networkPath = "0h";
-    } else if (network.isBitcoin && network.isTestnet) {
-      networkPath = "1h";
     } else if (network.isLiquid && network.isMainnet) {
-      networkPath = "1667h";
-    } else if (network.isLiquid && network.isTestnet) {
-      networkPath = "1668h";
+      networkPath = "1776h";
+    } else if (network.isTestnet) {
+      networkPath = "1h";
     } else {
       throw 'Unexpected network path';
     }
@@ -79,11 +77,16 @@ class WalletMetadataService {
       case '0h':
         network = Network.bitcoinMainnet;
       case '1h':
-        network = Network.bitcoinTestnet;
-      case '1667h':
+        if (origin.contains('elwpkh(') ||
+            origin.contains('elsh(wpkh(') ||
+            origin.contains('elpkh(')) {
+          network = Network.liquidTestnet;
+        } else {
+          network = Network.bitcoinTestnet;
+        }
+      case '1776h':
         network = Network.liquidMainnet;
-      case '1668h':
-        network = Network.liquidTestnet;
+
       default:
         throw 'Unknown script: $matchingNetwork';
     }

@@ -2,14 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
-import 'package:path_provider/path_provider.dart';
 
 export 'package:logging_colorful/logging_colorful.dart';
 
 // DONE: add a String encryptionKey to the Logger
 // Update the log method to take optional write to file param; if it is true it will write to a file. if an encryptionKey exists, it will encrypt the file.
 
-late Logger log;
+Logger log = Logger.init();
 
 class Logger {
   final session = <String>[];
@@ -57,22 +56,20 @@ class Logger {
     });
   }
 
-  static Future<Logger> init({
+  Logger.init({
     String? encryptionKey,
     String name = 'Logger',
-  }) async {
-    final dir = await getApplicationDocumentsDirectory();
-    // android dir: "/data/user/0/com.bullbitcoin.mobile/app_flutter"
-    // ios dir: "/var/mobile/Library/Application Support/com.bullbitcoin.mobile/app_flutter"
-
-    return Logger._(
-      encryptionKey,
-      dir,
-      // iOS emulator doesn't support colors –> https://github.com/flutter/flutter/issues/20663
-      // We don't want colors in release mode either
-      dep.LoggerColorful(name, disabledColors: Platform.isIOS || kReleaseMode),
-    );
-  }
+    Directory? directory,
+  }) : this._(
+         encryptionKey,
+         directory ?? Directory.current,
+         // iOS emulator doesn't support colors –> https://github.com/flutter/flutter/issues/20663
+         // We don't want colors in release mode either
+         dep.LoggerColorful(
+           name,
+           disabledColors: Platform.isIOS || kReleaseMode,
+         ),
+       );
 
   Future<void> dumpSessionToFile() async {
     await sessionLogs.writeAsString(session.join('\n'));

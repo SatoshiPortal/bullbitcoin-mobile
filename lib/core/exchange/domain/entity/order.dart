@@ -4,17 +4,24 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'order.freezed.dart';
 
 enum FiatCurrency {
-  cad('CAD'),
-  eur('EUR'),
-  mxn('MXN');
+  usd('USD', decimals: 2),
+  cad('CAD', decimals: 2),
+  crc('CRC', decimals: 2),
+  eur('EUR', decimals: 2),
+  mxn('MXN', decimals: 2);
 
-  const FiatCurrency(this.code);
+  const FiatCurrency(this.code, {required this.decimals});
   final String code;
+  final int decimals;
 
   static FiatCurrency fromCode(String code) {
     switch (code.toUpperCase()) {
+      case 'USD':
+        return FiatCurrency.usd;
       case 'CAD':
         return FiatCurrency.cad;
+      case 'CRC':
+        return FiatCurrency.crc;
       case 'EUR':
         return FiatCurrency.eur;
       case 'MXN':
@@ -95,7 +102,7 @@ class BitcoinAmount extends OrderAmount {
 
 enum OrderStatus {
   canceled('Canceled'),
-  expired('Expired'),
+  expired('Payment deadline expired'),
   inProgress('In progress'),
   awaitingConfirmation('Awaiting confirmation'),
   completed('Completed'),

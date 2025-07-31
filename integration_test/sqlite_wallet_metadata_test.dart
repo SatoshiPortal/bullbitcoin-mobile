@@ -4,16 +4,17 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/widgets.dart';
+import 'package:bb_mobile/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  locator.registerLazySingleton<SqliteDatabase>(() => SqliteDatabase());
+Future<void> main({bool isInitialized = false}) async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  if (!isInitialized) await Bull.init();
+
   final sqlite = locator<SqliteDatabase>();
 
   group('WalletMetadata Sqlite Integration Tests', () {
-    test('', () async {
+    test('can store and fetch a wallet metadata', () async {
       const fingerprint = 'master';
       const scriptType = ScriptType.bip84;
 

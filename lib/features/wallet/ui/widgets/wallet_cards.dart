@@ -42,8 +42,8 @@ class HomeWalletCards extends StatelessWidget {
           for (final w in wallets) ...[
             WalletCard(
               tagColor: cardDetails(context, w),
-              title: w.getLabel() ?? '',
-              description: w.getWalletTypeString(),
+              title: w.displayLabel,
+              description: w.walletTypeString,
               wallet: w,
               isSyncing: syncStatus[w.id] ?? false,
               onTap: () {

@@ -21,10 +21,10 @@ packages:
     dependency: transitive
     description:
       name: analyzer
-      sha256: b1ade5707ab7a90dfd519eaac78a7184341d19adb6096c68d499b59c7c6cf880
+      sha256: "974859dc0ff5f37bc4313244b3218c791810d03ab3470a579580279ba971a48d"
       url: "https://pub.dev"
     source: hosted
-    version: "7.7.0"
+    version: "7.7.1"
   ansicolor:
     dependency: transitive
     description:
@@ -94,10 +94,10 @@ packages:
     dependency: "direct main"
     description:
       name: bip21_uri
-      sha256: "026868e6f7768f00f72b1560c55ee9c3c1692aab1b2204ec5d2aff76225319e3"
+      sha256: "18fd73646958ae126651164d2b622e56f818a35f0c017340d290aa909d5915f3"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.1.1"
   bip32_keys:
     dependency: "direct main"
     description:
@@ -271,10 +271,10 @@ packages:
     dependency: transitive
     description:
       name: camera_avfoundation
-      sha256: b389be4a325742a3950e50475067d95a3de2fb32ba3f31bfcc62b0b6d19907a6
+      sha256: cabc6cbdeadca9cbcac178110c9d5e87bde5c646c3b8c9c4c2747fc500a12432
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.20+4"
+    version: "0.9.20+5"
   camera_platform_interface:
     dependency: transitive
     description:
@@ -1470,7 +1470,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "4558f4bb3fb22044a643a09df2be7f365c4bf0d5"
+      resolved-ref: "9c69f4408f9f4e6b471ad2b180e006aea40e7d5a"
       url: "https://github.com/ethicnology/dart-satoshifier.git"
     source: git
     version: "0.0.1"
@@ -1603,18 +1603,18 @@ packages:
     dependency: transitive
     description:
       name: sqlite3
-      sha256: "608b56d594e4c8498c972c8f1507209f9fd74939971b948ddbbfbfd1c9cb3c15"
+      sha256: dd806fff004a0aeb01e208b858dbc649bc72104670d425a81a6dd17698535f6e
       url: "https://pub.dev"
     source: hosted
-    version: "2.7.7"
+    version: "2.8.0"
   sqlite3_flutter_libs:
     dependency: transitive
     description:
       name: sqlite3_flutter_libs
-      sha256: "60464aa06f3f6f6fba9abd7564e315526c1fee6d6a77d6ee52a1f7f48a9107f6"
+      sha256: fd996da5515a73aacd0a04ae7063db5fe8df42670d974df4c3ee538c652eef2e
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.37"
+    version: "0.5.38"
   sqlparser:
     dependency: transitive
     description:

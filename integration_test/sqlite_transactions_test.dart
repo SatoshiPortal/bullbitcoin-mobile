@@ -1,22 +1,31 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/electrum/data/datasources/electrum_remote_datasource.dart';
+import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/transaction/data/electrum_service.dart';
-import 'package:bb_mobile/core/transaction/data/models/transaction_mapper.dart';
 import 'package:bb_mobile/core/transaction/data/transaction_repository.dart';
+import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/widgets.dart';
+import 'package:bb_mobile/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  locator.registerLazySingleton<SqliteDatabase>(() => SqliteDatabase());
+Future<void> main({bool isInitialized = false}) async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  if (!isInitialized) await Bull.init();
 
   final sqlite = locator<SqliteDatabase>();
+  final electrumDatasource = ElectrumRemoteDatasource(
+    server: const ElectrumServerModel(
+      url: ApiServiceConstants.bbElectrumUrl,
+      isTestnet: false,
+      isLiquid: false,
+    ),
+  );
+  final transactionRepository = TransactionRepository(
+    electrumRemoteDatasource: electrumDatasource,
+  );
 
-  // final sqlite = locator<SqliteDatabase>();
-  final electrum = ElectrumService(host: 'wes.bullbitcoin.com', port: 50002);
   const txid =
       'ff47a0a1dfdcf68327242d2cbfb229a5ba7e3e67572c2d4f390c51b1a89d56e5';
 
@@ -33,9 +42,9 @@ void main() {
       expect(sqliteTx, isNull);
 
       // Fetch the transaction from electrum
-      final txBytes = await electrum.getTransaction(txid);
+      final txBytes = await electrumDatasource.getTransaction(txid);
       // Converts the bytes into entity
-      final txEntity = await TransactionMapper.fromBytes(txBytes);
+      final txEntity = await RawBitcoinTxEntity.fromBytes(txBytes);
 
       // Store the transaction into sqlite
       await sqlite.managers.transactions.create(
@@ -60,8 +69,6 @@ void main() {
     });
 
     test('Ensure the repository works', () async {
-      final transactionRepository = TransactionRepository();
-
       // Ensure the tx does not exists in sqlite
       var sqliteTx =
           await sqlite.managers.transactions

@@ -1,15 +1,20 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
+import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_key_warning.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
+import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
@@ -40,43 +45,85 @@ class _Screen extends StatelessWidget {
     final isSuperuser = context.select(
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
     );
-    return BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
-      listener: (context, state) {
-        // Add global state handling if needed
-      },
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            forceMaterialTransparency: true,
-            automaticallyImplyLeading: false,
-            flexibleSpace: TopBar(
-              title: context.loc.backupSettingsScreenTitle,
-              onBack: () => context.pop(),
-            ),
-          ),
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Gap(20),
-                  const _BackupTestStatusWidget(),
-                  const Gap(30),
-                  if (state.lastEncryptedBackup != null ||
-                      state.lastPhysicalBackup != null)
-                    const _TestBackupButton(),
-                  const Gap(5),
-                  const _StartBackupButton(),
-                  const Spacer(),
-                  if (state.lastEncryptedBackup != null && isSuperuser)
-                    const _KeyServerStatusWidget(),
-                ],
+
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<BackupSettingsCubit, BackupSettingsState>(
+          listenWhen:
+              (previous, current) =>
+                  previous.downloadedBackupFile !=
+                      current.downloadedBackupFile &&
+                  current.downloadedBackupFile != null,
+          listener: (context, state) {
+            Clipboard.setData(ClipboardData(text: state.downloadedBackupFile!));
+            log.info('Vault exported and copied to clipboard');
+            context.read<BackupSettingsCubit>().clearDownloadedData();
+          },
+        ),
+        BlocListener<BackupSettingsCubit, BackupSettingsState>(
+          listenWhen:
+              (previous, current) =>
+                  previous.error != current.error && current.error != null,
+          listener: (context, state) {
+            if (state.derivedBackupKey == null &&
+                state.error is BackupKeyDerivationFailedError) {
+              context.pushNamed(
+                KeyServerRoute.keyServerFlow.name,
+                extra: (
+                  state.downloadedBackupFile ?? '',
+                  CurrentKeyServerFlow.recovery.name,
+                  false,
+                ),
+              );
+              context.read<BackupSettingsCubit>().clearDownloadedData();
+            } else {
+              log.severe('Backup settings error: ${state.error}');
+            }
+          },
+        ),
+      ],
+      child: BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              forceMaterialTransparency: true,
+              automaticallyImplyLeading: false,
+              flexibleSpace: TopBar(
+                title: context.loc.backupSettingsScreenTitle,
+                onBack: () => context.pop(),
               ),
             ),
-          ),
-        );
-      },
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Gap(20),
+                    const _BackupTestStatusWidget(),
+                    const Gap(30),
+                    if (state.lastEncryptedBackup != null && isSuperuser) ...[
+                      const _ExportVaultButton(),
+                      const Gap(10),
+                      _ViewVaultKeyButton(),
+                      const Gap(10),
+                    ],
+                    if (state.lastEncryptedBackup != null ||
+                        state.lastPhysicalBackup != null)
+                      const _TestBackupButton(),
+                    const Gap(5),
+                    const _StartBackupButton(),
+
+                    const Spacer(),
+                    if (state.lastEncryptedBackup != null && isSuperuser)
+                      const _KeyServerStatusWidget(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -222,6 +269,69 @@ class _StartBackupButton extends StatelessWidget {
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
       ),
+    );
+  }
+}
+
+class _ExportVaultButton extends StatelessWidget {
+  const _ExportVaultButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
+      builder: (context, state) {
+        return BBButton.big(
+          label:
+              state.status == BackupSettingsStatus.exporting
+                  ? 'Exporting...'
+                  : 'Export Vault',
+          onPressed:
+              state.status == BackupSettingsStatus.exporting
+                  ? () {}
+                  : () => context.read<BackupSettingsCubit>().exportVault(),
+          bgColor: Colors.transparent,
+          disabled: state.status == BackupSettingsStatus.exporting,
+          textColor: context.colour.secondary,
+          borderColor: context.colour.secondary,
+          outlined: true,
+        );
+      },
+    );
+  }
+}
+
+class _ViewVaultKeyButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
+      builder: (context, state) {
+        return BBButton.big(
+          label:
+              state.status == BackupSettingsStatus.viewingKey
+                  ? 'Revealing...'
+                  : 'View Backup Key',
+          onPressed:
+              state.status == BackupSettingsStatus.viewingKey
+                  ? () {}
+                  : () async {
+                    final confirmed = await BackupKeyWarningBottomSheet.show(
+                      context,
+                    );
+                    if (confirmed == true) {
+                      if (!context.mounted) return;
+                      // Navigate to provider selection screen
+                      await context.pushNamed(
+                        BackupSettingsSubroute.chooseVaultProvider.name,
+                      );
+                    }
+                  },
+          bgColor: Colors.transparent,
+          disabled: state.status == BackupSettingsStatus.viewingKey,
+          textColor: context.colour.secondary,
+          borderColor: context.colour.secondary,
+          outlined: true,
+        );
+      },
     );
   }
 }

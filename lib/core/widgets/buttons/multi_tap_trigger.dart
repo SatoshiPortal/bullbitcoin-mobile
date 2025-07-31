@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 
 class MultiTapTrigger extends StatefulWidget {
@@ -59,7 +60,7 @@ class _MultiTapTriggerState extends State<MultiTapTrigger> {
     messenger.clearSnackBars();
     messenger.showSnackBar(
       SnackBar(
-        content: Text(
+        content: BBText(
           message,
           textAlign: TextAlign.center,
           style: TextStyle(

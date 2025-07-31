@@ -7,6 +7,8 @@ sealed class BuyEvent with _$BuyEvent {
       _BuyAmountInputChanged;
   const factory BuyEvent.currencyInputChanged(String currencyCode) =
       _BuyCurrencyInputChanged;
+  const factory BuyEvent.fiatCurrencyInputToggled() =
+      _BuyFiatCurrencyInputToggled;
   const factory BuyEvent.selectedWalletChanged(Wallet? wallet) =
       _BuySelectedWalletChanged;
   const factory BuyEvent.bitcoinAddressInputChanged(String bitcoinAddress) =

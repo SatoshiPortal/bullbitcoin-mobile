@@ -117,8 +117,19 @@ abstract class Wallet with _$Wallet {
   const Wallet._();
 
   String get id => origin;
+  String get addressType {
+    if (isLiquid) {
+      return 'Confidential Segwit';
+    }
 
-  String getWalletTypeString() {
+    return switch (scriptType) {
+      ScriptType.bip84 => 'Native Segwit',
+      ScriptType.bip49 => 'Nested Segwit',
+      ScriptType.bip44 => 'Legacy',
+    };
+  }
+
+  String get walletTypeString {
     String name = switch (network) {
       Network.bitcoinMainnet || Network.bitcoinTestnet => 'Bitcoin network',
       Network.liquidMainnet ||
@@ -128,8 +139,17 @@ abstract class Wallet with _$Wallet {
     return name;
   }
 
-  String? getLabel() {
-    if (!isDefault) return label;
+  String get networkString {
+    return switch (network) {
+      Network.bitcoinMainnet => 'Bitcoin Network',
+      Network.bitcoinTestnet => 'Bitcoin Testnet',
+      Network.liquidMainnet => 'Liquid Network',
+      Network.liquidTestnet => 'Liquid Testnet',
+    };
+  }
+
+  String get displayLabel {
+    if (!isDefault) return label ?? origin;
 
     return switch (network) {
       Network.bitcoinMainnet || Network.bitcoinTestnet => 'Secure Bitcoin',
