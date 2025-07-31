@@ -12,7 +12,6 @@ import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
@@ -216,9 +215,12 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     BuildContext context,
     OnboardingState state,
   ) {
-    if (state.onboardingStepStatus == OnboardingStepStatus.success) {
-      context.read<WalletBloc>().add(const WalletStarted());
-      context.goNamed(OnboardingRoute.recoverSuccess.name);
+    if (state.onboardingStepStatus == OnboardingStepStatus.success &&
+        state.recoveredWallets.$2.isNotEmpty) {
+      context.goNamed(
+        OnboardingRoute.walletRecoveryCompletion.name,
+        extra: state.recoveredWallets,
+      );
     }
   }
 
