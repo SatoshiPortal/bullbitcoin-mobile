@@ -99,7 +99,7 @@ class TestWalletBackupBloc
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          backupInfo: BackupInfo(backupFile: encryptedBackup),
+          backupInfo: encryptedBackup.backupInfo,
         ),
       );
     } catch (e) {
@@ -139,7 +139,7 @@ class TestWalletBackupBloc
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          backupInfo: BackupInfo(backupFile: encryptedBackup),
+          backupInfo: encryptedBackup.backupInfo,
         ),
       );
     } catch (e) {
@@ -201,7 +201,7 @@ class TestWalletBackupBloc
         state.copyWith(
           status: TestWalletBackupStatus.error,
           statusError:
-              'Failed to test backup: ${BackupInfo(backupFile: event.backupFile).id}',
+              'Failed to test backup: ${event.backupFile.backupInfo.id}',
         ),
       );
     }

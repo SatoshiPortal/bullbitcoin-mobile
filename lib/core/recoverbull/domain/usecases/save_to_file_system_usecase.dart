@@ -13,7 +13,7 @@ class SaveToFileSystemUsecase {
     try {
       final now = DateTime.now();
       final formattedDate = now.millisecondsSinceEpoch;
-      final backupInfo = BackupInfo(backupFile: content);
+      final backupInfo = content.backupInfo;
       final filename = '${formattedDate}_${backupInfo.id}.json';
 
       final backupDir = await Directory(path).create(recursive: true);

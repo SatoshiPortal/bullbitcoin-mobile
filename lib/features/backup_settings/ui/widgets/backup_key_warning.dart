@@ -60,7 +60,7 @@ class BackupKeyWarningBottomSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     BBText(
-                      'Warning: The backup key gives access to your Bitcoin. Anyone with this key can steal all your funds.',
+                      'Warning: Be careful where you save the backup key.',
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.secondary,
                         fontWeight: FontWeight.bold,
@@ -69,14 +69,14 @@ class BackupKeyWarningBottomSheet extends StatelessWidget {
                     ),
                     const Gap(24),
                     BBText(
-                      'Never save the backup key on the same device or in the same location as your backup file. Store them separately and securely.',
+                      'It is critically important that you do not save the backup key at the same place where you save your backup file. Always store them on separate devices or separate cloud providers.',
                       maxLines: 4,
                       style: context.font.bodyMedium,
                     ),
                     const Gap(16),
                     BBText(
-                      'Only download the backup key if you understand the security implications and have a secure storage plan.',
-                      maxLines: 4,
+                      'For example, if you used Google Drive for your backup file, do not use Google Drive for your backup key.',
+                      maxLines: 3,
                       style: context.font.bodyMedium,
                     ),
                     const Gap(32),

@@ -24,6 +24,12 @@ class _FadingLinearProgressState extends State<FadingLinearProgress> {
   bool isVisible = false;
 
   @override
+  void initState() {
+    super.initState();
+    isVisible = widget.trigger;
+  }
+
+  @override
   void didUpdateWidget(FadingLinearProgress oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.trigger != oldWidget.trigger) {
