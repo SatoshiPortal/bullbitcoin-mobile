@@ -124,17 +124,11 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     SellAmountInputContinuePressed event,
     Emitter<SellState> emit,
   ) async {
-    // We should be on a SellAmountInputState or SellWalletSelectionState and
-    //  return to a clean SellWalletSelectionState state
-    SellAmountInputState amountInputState;
-    switch (state) {
-      case SellAmountInputState _:
-        amountInputState = state as SellAmountInputState;
-      case final SellWalletSelectionState walletSelectionState:
-        amountInputState = walletSelectionState.toAmountInputState();
-      default:
-        // Unexpected state, do nothing
-        return;
+    // We should be on a clean SellWalletSelectionState state here
+    final amountInputState = state.toCleanAmountInputState;
+    if (amountInputState == null) {
+      log.severe('Expected to be on SellAmountInputState but on: $state');
+      return;
     }
     emit(amountInputState);
 
@@ -161,15 +155,10 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     SellWalletSelected event,
     Emitter<SellState> emit,
   ) async {
-    SellWalletSelectionState walletSelectionState;
-    switch (state) {
-      case SellWalletSelectionState _:
-        walletSelectionState = state as SellWalletSelectionState;
-      case final SellPaymentState paymentState:
-        walletSelectionState = paymentState.toWalletSelectionState();
-      default:
-        // Unexpected state, do nothing
-        return;
+    final walletSelectionState = state.toCleanWalletSelectionState;
+    if (walletSelectionState == null) {
+      log.severe('Expected to be on SellWalletSelectionState but on: $state');
+      return;
     }
 
     int requiredAmountSat;
@@ -241,7 +230,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       return;
     }
 
-    emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
+    emit(walletSelectionState.copyWith(isCreatingSellOrder: true));
 
     try {
       final createdSellOrder = await _createSellOrderUsecase.execute(
@@ -294,17 +283,12 @@ class SellBloc extends Bloc<SellEvent, SellState> {
   ) async {
     // We should be on a SellWalletSelection or SellPaymentState and return
     //  to a clean SellWalletSelectionState state
-    SellWalletSelectionState walletSelectionState;
-    switch (state) {
-      case SellWalletSelectionState _:
-        walletSelectionState = state as SellWalletSelectionState;
-      case final SellPaymentState paymentState:
-        walletSelectionState = paymentState.toWalletSelectionState();
-      default:
-        // Unexpected state, do nothing
-        return;
+    final walletSelectionState = state.toCleanWalletSelectionState;
+    if (walletSelectionState == null) {
+      log.severe('Expected to be on SellWalletSelectionState but on: $state');
+      return;
     }
-    emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
+    emit(walletSelectionState.copyWith(isCreatingSellOrder: true));
 
     try {
       final createdSellOrder = await _createSellOrderUsecase.execute(
@@ -341,15 +325,11 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     Emitter<SellState> emit,
   ) async {
     // We should be on a SellPaymentState
-    SellPaymentState paymentState;
-    switch (state) {
-      case SellPaymentState _:
-        paymentState = state as SellPaymentState;
-      default:
-        // Unexpected state, do nothing
-        return;
+    final paymentState = state.toCleanPaymentState;
+    if (paymentState == null) {
+      log.severe('Expected to be on SellPaymentState but on: $state');
+      return;
     }
-    emit(paymentState.copyWith(error: null));
 
     try {
       final refreshedOrder = await _refreshSellOrderUsecase.execute(
@@ -369,16 +349,13 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     Emitter<SellState> emit,
   ) async {
     // We should be on a SellPaymentState
-    SellPaymentState sellPaymentState;
-    switch (state) {
-      case SellPaymentState _:
-        sellPaymentState = state as SellPaymentState;
-      default:
-        // Unexpected state, do nothing
-        return;
+    final sellPaymentState = state.toCleanPaymentState;
+    if (sellPaymentState == null) {
+      log.severe('Expected to be on SellPaymentState but on: $state');
+      return;
     }
 
-    emit(sellPaymentState.copyWith(isConfirmingPayment: true, error: null));
+    emit(sellPaymentState.copyWith(isConfirmingPayment: true));
     try {
       final wallet = sellPaymentState.selectedWallet;
       if (wallet == null) {
@@ -469,8 +446,10 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     } catch (e) {
       // Log unexpected errors
       log.severe('Unexpected error in SellBloc: $e');
-      // Reset the isConfirmingPayment flag on error
-      emit(sellPaymentState.copyWith(isConfirmingPayment: false));
+    } finally {
+      if (state is SellPaymentState) {
+        emit((state as SellPaymentState).copyWith(isConfirmingPayment: false));
+      }
     }
   }
 
