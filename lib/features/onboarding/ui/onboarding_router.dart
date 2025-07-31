@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/available_google_backups_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/choose_encrypted_vault_provider_screen.dart';
@@ -7,6 +8,7 @@ import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_rec
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_recovery_success.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/recover_options.dart';
+import 'package:bb_mobile/features/onboarding/ui/screens/wallet_recovery_completion_screen.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -23,7 +25,8 @@ enum OnboardingRoute {
   fetchedBackupInfo('fetched-backup-info'),
   recoverFromEncrypted('recover-from-encrypted'),
   recoverFromPhysical('recover-from-physical'),
-  recoverSuccess('recover-success');
+  recoverSuccess('recover-success'),
+  walletRecoveryCompletion('wallet-recovery-completion');
 
   final String path;
 
@@ -118,6 +121,17 @@ class OnboardingRouter {
                 name: OnboardingRoute.recoverSuccess.name,
                 path: OnboardingRoute.recoverSuccess.path,
                 builder: (context, state) => const OnboardingRecoverySuccess(),
+              ),
+              GoRoute(
+                name: OnboardingRoute.walletRecoveryCompletion.name,
+                path: OnboardingRoute.walletRecoveryCompletion.path,
+                builder: (context, state) {
+                  final recoveredWallets =
+                      state.extra! as (List<String>, List<Wallet>);
+                  return WalletRecoveryCompletionScreen(
+                    recoveredWallets: recoveredWallets,
+                  );
+                },
               ),
             ],
           ),

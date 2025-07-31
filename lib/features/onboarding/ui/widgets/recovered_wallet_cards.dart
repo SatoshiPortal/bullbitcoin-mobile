@@ -1,17 +1,15 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_card.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class RecoveredWalletCards extends StatelessWidget {
-  const RecoveredWalletCards({super.key});
+  final List<Wallet> wallets;
 
-  static Color cardDetails(BuildContext context, Wallet wallet) {
+  const RecoveredWalletCards({required this.wallets, super.key});
+
+  Color _cardDetails(BuildContext context, Wallet wallet) {
     final isTestnet = wallet.isTestnet;
     final isLiquid = wallet.isLiquid;
     final isWatchOnly = wallet.isWatchOnly;
@@ -23,11 +21,6 @@ class RecoveredWalletCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallets = context.select((WalletBloc bloc) => bloc.state.wallets);
-    final syncStatus = context.select(
-      (WalletBloc bloc) => bloc.state.syncStatus,
-    );
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 13.0),
       child: Column(
@@ -35,17 +28,12 @@ class RecoveredWalletCards extends StatelessWidget {
         children: [
           for (final w in wallets) ...[
             WalletCard(
-              tagColor: cardDetails(context, w),
+              tagColor: _cardDetails(context, w),
               title: w.getLabel() ?? '',
               description: w.getWalletTypeString(),
               wallet: w,
-              isSyncing: syncStatus[w.id] ?? false,
-              onTap: () {
-                context.pushNamed(
-                  WalletRoute.walletDetail.name,
-                  pathParameters: {'walletId': w.id},
-                );
-              },
+              isSyncing: false,
+              onTap: () {},
             ),
             const Gap(8),
           ],
