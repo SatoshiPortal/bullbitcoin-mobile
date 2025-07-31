@@ -29,8 +29,8 @@ class RecoveredWalletCards extends StatelessWidget {
           for (final w in wallets) ...[
             WalletCard(
               tagColor: _cardDetails(context, w),
-              title: w.getLabel() ?? '',
-              description: w.getWalletTypeString(),
+              title: w.label ?? '',
+              description: w.walletTypeString,
               wallet: w,
               isSyncing: false,
               onTap: () {},
