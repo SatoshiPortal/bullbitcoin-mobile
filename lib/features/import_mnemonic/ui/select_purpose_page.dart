@@ -42,7 +42,7 @@ class SelectScriptTypePage extends StatelessWidget {
         },
         builder: (context, state) {
           final cubit = context.read<ImportMnemonicCubit>();
-          final scriptType = cubit.state.scriptType;
+          final scriptType = state.scriptType;
 
           if (!state.hasCheckedWallets && state.mnemonic != null) {
             cubit.checkWalletsStatusDirty();

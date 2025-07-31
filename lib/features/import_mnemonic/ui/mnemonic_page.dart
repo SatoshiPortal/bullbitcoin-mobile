@@ -23,7 +23,7 @@ class MnemonicPage extends StatelessWidget {
           onBack: () => context.pop(),
         ),
       ),
-      body: BlocConsumer<ImportMnemonicCubit, ImportMnemonicState>(
+      body: BlocListener<ImportMnemonicCubit, ImportMnemonicState>(
         listener: (context, state) {
           if (state.error != null) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -37,25 +37,21 @@ class MnemonicPage extends StatelessWidget {
             );
           }
         },
-        builder: (context, state) {
-          final cubit = context.read<ImportMnemonicCubit>();
-
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  MnemonicWidget(
-                    initialLength: 12,
-                    onSubmit: cubit.updateMnemonic,
-                    submitLabel: 'Continue',
-                  ),
-                ],
-              ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                MnemonicWidget(
+                  initialLength: 12,
+                  onSubmit: context.read<ImportMnemonicCubit>().updateMnemonic,
+                  submitLabel: 'Continue',
+                ),
+              ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
