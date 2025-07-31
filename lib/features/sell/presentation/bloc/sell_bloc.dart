@@ -534,7 +534,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
 
   void _startPolling() {
     _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       add(const SellEvent.pollOrderStatus());
     });
   }
