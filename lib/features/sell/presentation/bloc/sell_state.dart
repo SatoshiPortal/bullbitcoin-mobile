@@ -72,6 +72,10 @@ sealed class SellState with _$SellState {
         isPolling,
         error,
         absoluteFees,
+        _,
+        _,
+        _,
+        _,
       ) {
         return SellAmountInputState(
           userSummary: userSummary,
@@ -110,6 +114,10 @@ sealed class SellState with _$SellState {
             isPolling,
             error,
             absoluteFees,
+            _,
+            _,
+            _,
+            _,
           ) => SellWalletSelectionState(
             userSummary: userSummary,
             bitcoinUnit: bitcoinUnit,
@@ -132,6 +140,10 @@ sealed class SellState with _$SellState {
         isPolling,
         error,
         absoluteFees,
+        _,
+        _,
+        _,
+        _,
       ) {
         return SellPaymentState(
           userSummary: userSummary,
@@ -173,6 +185,10 @@ sealed class SellState with _$SellState {
             isPolling,
             error,
             absoluteFees,
+            _,
+            _,
+            _,
+            _,
           ) => fiatCurrency,
       success:
           (bitcoinUnit, sellOrder) =>
@@ -205,6 +221,10 @@ sealed class SellState with _$SellState {
             isPolling,
             error,
             absoluteFees,
+            _,
+            _,
+            _,
+            _,
           ) => bitcoinUnit,
       success: (bitcoinUnit, sellOrder) => bitcoinUnit,
     );
