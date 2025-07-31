@@ -296,10 +296,10 @@ extension SellPaymentStateX on SellPaymentState {
           final amountBtc = order.payinAmount;
           final address = order.bitcoinAddress!;
 
-          final bip21Uri = Uri(
+          final bip21Uri = Bip21Uri(
             scheme: 'bitcoin',
-            path: address,
-            queryParameters: {'amount': amountBtc.toString()},
+            address: address,
+            amount: amountBtc,
           );
           invoiceString = bip21Uri.toString();
         }
@@ -308,13 +308,11 @@ extension SellPaymentStateX on SellPaymentState {
           final amountBtc = order.payinAmount;
           final address = order.liquidAddress!;
 
-          final bip21Uri = Uri(
+          final bip21Uri = Bip21Uri(
             scheme: 'liquidnetwork',
-            path: address,
-            queryParameters: {
-              'amount': amountBtc.toString(),
-              'assetid': AssetConstants.lbtcMainnet,
-            },
+            address: address,
+            amount: amountBtc,
+            options: {'assetid': AssetConstants.lbtcMainnet},
           );
           invoiceString = bip21Uri.toString();
         }

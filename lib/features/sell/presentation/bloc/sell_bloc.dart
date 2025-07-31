@@ -28,6 +28,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_use
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
+import 'package:bip21_uri/bip21_uri.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -146,8 +147,8 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     } else {
       final amountBtc =
           amountInputState.bitcoinUnit == BitcoinUnit.sats
-              ? double.parse(event.amountInput)
-              : int.parse(event.amountInput) / 1e8;
+              ? ConvertAmount.satsToBtc(int.parse(event.amountInput))
+              : double.parse(event.amountInput);
       orderAmount = BitcoinAmount(amountBtc);
     }
 

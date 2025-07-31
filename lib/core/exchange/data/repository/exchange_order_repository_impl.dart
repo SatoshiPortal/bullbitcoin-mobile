@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
 class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
@@ -193,12 +194,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } on BullBitcoinApiMinAmountException catch (e) {
       final minAmountBtc = e.minAmount;
-      final minAmountSat = minAmountBtc * 1e8; // Convert BTC
-      throw BuyError.belowMinAmount(minAmountSat: minAmountSat.toInt());
+      final minAmountSat = ConvertAmount.btcToSats(minAmountBtc);
+      throw BuyError.belowMinAmount(minAmountSat: minAmountSat);
     } on BullBitcoinApiMaxAmountException catch (e) {
       final maxAmountBtc = e.maxAmount;
-      final maxAmountSat = maxAmountBtc * 1e8; // Convert BTC
-      throw BuyError.aboveMaxAmount(maxAmountSat: maxAmountSat.toInt());
+      final maxAmountSat = ConvertAmount.btcToSats(maxAmountBtc);
+      throw BuyError.aboveMaxAmount(maxAmountSat: maxAmountSat);
     } catch (e) {
       throw Exception('Failed to place buy order: $e');
     }
@@ -231,12 +232,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } on BullBitcoinApiMinAmountException catch (e) {
       final minAmountBtc = e.minAmount;
-      final minAmountSat = minAmountBtc * 1e8; // Convert BTC
-      throw SellError.belowMinAmount(minAmountSat: minAmountSat.toInt());
+      final minAmountSat = ConvertAmount.btcToSats(minAmountBtc);
+      throw SellError.belowMinAmount(minAmountSat: minAmountSat);
     } on BullBitcoinApiMaxAmountException catch (e) {
       final maxAmountBtc = e.maxAmount;
-      final maxAmountSat = maxAmountBtc * 1e8; // Convert BTC
-      throw SellError.aboveMaxAmount(maxAmountSat: maxAmountSat.toInt());
+      final maxAmountSat = ConvertAmount.btcToSats(maxAmountBtc);
+      throw SellError.aboveMaxAmount(maxAmountSat: maxAmountSat);
     } catch (e) {
       throw Exception('Failed to place sell order: $e');
     }
@@ -272,12 +273,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } on BullBitcoinApiMinAmountException catch (e) {
       final minAmountBtc = e.minAmount;
-      final minAmountSat = minAmountBtc * 1e8; // Convert BTC
-      throw PayError.belowMinAmount(minAmountSat: minAmountSat.toInt());
+      final minAmountSat = ConvertAmount.btcToSats(minAmountBtc);
+      throw PayError.belowMinAmount(minAmountSat: minAmountSat);
     } on BullBitcoinApiMaxAmountException catch (e) {
       final maxAmountBtc = e.maxAmount;
-      final maxAmountSat = maxAmountBtc * 1e8; // Convert BTC
-      throw PayError.aboveMaxAmount(maxAmountSat: maxAmountSat.toInt());
+      final maxAmountSat = ConvertAmount.btcToSats(maxAmountBtc);
+      throw PayError.aboveMaxAmount(maxAmountSat: maxAmountSat);
     } catch (e) {
       throw Exception('Failed to place pay order: $e');
     }
@@ -495,12 +496,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } on BullBitcoinApiMinAmountException catch (e) {
       final minAmountBtc = e.minAmount;
-      final minAmountSat = minAmountBtc * 1e8; // Convert BTC
-      throw WithdrawError.belowMinAmount(minAmountSat: minAmountSat.toInt());
+      final minAmountSat = ConvertAmount.btcToSats(minAmountBtc);
+      throw WithdrawError.belowMinAmount(minAmountSat: minAmountSat);
     } on BullBitcoinApiMaxAmountException catch (e) {
       final maxAmountBtc = e.maxAmount;
-      final maxAmountSat = maxAmountBtc * 1e8; // Convert BTC
-      throw WithdrawError.aboveMaxAmount(maxAmountSat: maxAmountSat.toInt());
+      final maxAmountSat = ConvertAmount.btcToSats(maxAmountBtc);
+      throw WithdrawError.aboveMaxAmount(maxAmountSat: maxAmountSat);
     } catch (e) {
       throw Exception('Failed to create withdrawal order: $e');
     }
