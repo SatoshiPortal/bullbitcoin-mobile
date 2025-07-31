@@ -26,6 +26,7 @@ sealed class SellState with _$SellState {
     Wallet? selectedWallet,
     required SellOrder sellOrder,
     @Default(false) bool isConfirmingPayment,
+    @Default(false) bool isPolling,
     SellError? error,
     int? absoluteFees,
   }) = SellPaymentState;

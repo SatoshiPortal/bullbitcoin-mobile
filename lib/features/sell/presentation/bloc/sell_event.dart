@@ -18,4 +18,5 @@ sealed class SellEvent with _$SellEvent {
     required FeeSelection feeSelection,
     NetworkFee? customFee,
   }) = SellSendPaymentConfirmed;
+  const factory SellEvent.pollOrderStatus() = SellPollOrderStatus;
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
@@ -78,6 +80,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     on<SellExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
     on<SellOrderRefreshTimePassed>(_onOrderRefreshTimePassed);
     on<SellSendPaymentConfirmed>(_onSendPaymentConfirmed);
+    on<SellPollOrderStatus>(_onPollOrderStatus);
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
@@ -97,6 +100,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
   final GetOrderUsecase _getOrderUsecase;
+  Timer? _pollingTimer;
 
   Future<void> _onStarted(SellStarted event, Emitter<SellState> emit) async {
     try {
@@ -328,6 +332,9 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           createdSellOrder: createdSellOrder,
         ),
       );
+
+      // Start polling for order status updates
+      _startPolling();
     } on SellError catch (e) {
       // Handle SellError and emit error state
       emit(walletSelectionState.copyWith(error: e));
@@ -481,5 +488,62 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       // Reset the isConfirmingPayment flag on error
       emit(sellPaymentState.copyWith(isConfirmingPayment: false));
     }
+  }
+
+  Future<void> _onPollOrderStatus(
+    SellPollOrderStatus event,
+    Emitter<SellState> emit,
+  ) async {
+    if (state is! SellPaymentState) return;
+
+    final sellPaymentState = state as SellPaymentState;
+
+    try {
+      final latestOrder = await _getOrderUsecase.execute(
+        orderId: sellPaymentState.sellOrder.orderId,
+      );
+
+      if (latestOrder is! SellOrder) {
+        log.severe('Expected SellOrder but received a different order type');
+        return;
+      }
+
+      final payinStatus = latestOrder.payinStatus;
+
+      if (payinStatus == OrderPayinStatus.inProgress ||
+          payinStatus == OrderPayinStatus.awaitingConfirmation ||
+          payinStatus == OrderPayinStatus.completed) {
+        _stopPolling();
+        emit(
+          sellPaymentState
+              .copyWith(sellOrder: latestOrder, isPolling: false)
+              .toSuccessState(sellOrder: latestOrder),
+        );
+      } else {
+        emit(
+          sellPaymentState.copyWith(sellOrder: latestOrder, isPolling: true),
+        );
+      }
+    } catch (e) {
+      log.severe('Error polling order status: $e');
+    }
+  }
+
+  void _startPolling() {
+    _pollingTimer?.cancel();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      add(const SellEvent.pollOrderStatus());
+    });
+  }
+
+  void _stopPolling() {
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
+  }
+
+  @override
+  Future<void> close() {
+    _stopPolling();
+    return super.close();
   }
 }
