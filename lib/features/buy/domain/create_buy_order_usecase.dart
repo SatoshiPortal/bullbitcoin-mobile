@@ -31,7 +31,8 @@ class CreateBuyOrderUsecase {
           isTestnet
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
-      final network = isLiquid ? Network.liquid : Network.bitcoin;
+      final network =
+          isLiquid ? OrderBitcoinNetwork.liquid : OrderBitcoinNetwork.bitcoin;
       final order = await repo.placeBuyOrder(
         toAddress: toAddress,
         orderAmount: orderAmount,

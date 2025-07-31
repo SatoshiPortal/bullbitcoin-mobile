@@ -323,4 +323,38 @@ class WalletAddressRepository {
   }) async {
     return [];
   }
+
+  Future<WalletAddress> getAddressAtIndex({
+    required String walletId,
+    required int index,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+
+    if (metadata == null) {
+      throw WalletError.notFound(walletId);
+    }
+
+    final walletModel = WalletModel.fromMetadata(metadata);
+    String address;
+
+    if (walletModel is PublicBdkWalletModel) {
+      address = await _bdkWallet.getAddressByIndex(index, wallet: walletModel);
+    } else {
+      final addressInfo = await _lwkWallet.getAddressByIndex(
+        index,
+        wallet: walletModel,
+      );
+      address = addressInfo.confidential;
+    }
+
+    final walletAddressModel = WalletAddressModel(
+      walletId: walletId,
+      index: index,
+      address: address,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    return WalletAddressMapper.toEntity(walletAddressModel);
+  }
 }

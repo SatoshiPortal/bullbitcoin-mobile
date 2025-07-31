@@ -253,7 +253,7 @@ class TestWalletBackupBloc
         state.copyWith(
           status: TestWalletBackupStatus.error,
           statusError:
-              'Failed to test backup: ${BackupInfo(backupFile: event.backupFile).id}',
+              'Failed to test backup: ${event.backupFile.backupInfo.id}',
         ),
       );
     }

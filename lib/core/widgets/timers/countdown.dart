@@ -37,6 +37,27 @@ class _CountdownState extends State<Countdown> {
     timer = Timer.periodic(const Duration(seconds: 1), _updateTimer);
   }
 
+  @override
+  void didUpdateWidget(Countdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.until != widget.until) {
+      // Cancel the old timer
+      timer?.cancel();
+
+      // Recalculate remaining time with new deadline
+      remainingTime = _calculateRemainingTime();
+
+      if (remainingTime.isNegative) {
+        remainingTime = Duration.zero;
+        widget.onTimeout();
+        return;
+      }
+
+      // Start a new timer
+      timer = Timer.periodic(const Duration(seconds: 1), _updateTimer);
+    }
+  }
+
   Duration _calculateRemainingTime() {
     // Calculate the remaining time always from the deadline time and the current time
     // to ensure it updates correctly instead of just subtracting a second each time which

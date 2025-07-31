@@ -13,7 +13,7 @@ class WalletCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.wallet,
-    required this.onTap,
+    this.onTap,
     this.isSyncing = false,
   });
 
@@ -22,12 +22,12 @@ class WalletCard extends StatelessWidget {
   final String description;
   final Wallet wallet;
   final bool isSyncing;
-  final Function onTap;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => onTap(),
+      onTap: onTap,
       child: Material(
         elevation: 2,
         color: context.colour.onPrimary,

@@ -12,7 +12,7 @@ class DeriveBackupKeyFromDefaultWalletUsecase {
 
   Future<String> execute({required String backupFile}) async {
     try {
-      final backupInfo = BackupInfo(backupFile: backupFile);
+      final backupInfo = backupFile.backupInfo;
       if (backupInfo.isCorrupted) {
         throw const KeyServerError.invalidBackupFile();
       }

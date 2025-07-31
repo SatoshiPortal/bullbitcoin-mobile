@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
@@ -85,6 +86,7 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                             Clipboard.setData(
                               ClipboardData(text: widget.copyValue!),
                             );
+                            SnackBarUtils.showCopiedSnackBar(context);
                           },
                           child: Icon(
                             Icons.copy_outlined,

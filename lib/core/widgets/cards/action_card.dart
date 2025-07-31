@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
+import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -74,10 +75,14 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.dollar.path,
               label: 'Sell',
               onPressed: () {
-                ComingSoonBottomSheet.show(
-                  context,
-                  description: 'Sell Bitcoin to fiat',
-                );
+                if (isSuperuser) {
+                  context.pushNamed(SellRoute.sell.name);
+                } else {
+                  ComingSoonBottomSheet.show(
+                    context,
+                    description: 'Sell Bitcoin to fiat',
+                  );
+                }
               },
               position: _ButtonPosition.middle,
               disabled: false,
