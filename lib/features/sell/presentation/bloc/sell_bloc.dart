@@ -161,8 +161,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     SellWalletSelected event,
     Emitter<SellState> emit,
   ) async {
-    // We should be on a SellWalletSelection or SellPaymentState and return
-    //  to a clean SellWalletSelectionState state
     SellWalletSelectionState walletSelectionState;
     switch (state) {
       case SellWalletSelectionState _:
@@ -174,20 +172,16 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         return;
     }
 
-    // Convert order amount to sats, handling fiat conversion if needed
     int requiredAmountSat;
     if (walletSelectionState.orderAmount.isFiat) {
-      // Get exchange rate for the fiat currency
       final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: walletSelectionState.fiatCurrency.code,
       );
-      // Convert fiat amount to sats
       requiredAmountSat = ConvertAmount.fiatToSats(
         walletSelectionState.orderAmount.amount,
         exchangeRate,
       );
     } else {
-      // Bitcoin amount - convert to sats
       requiredAmountSat =
           walletSelectionState.bitcoinUnit == BitcoinUnit.btc
               ? ConvertAmount.btcToSats(walletSelectionState.orderAmount.amount)
@@ -204,11 +198,8 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       );
       return;
     }
-    // Prepare transaction and calculate absolute fees
     int absoluteFees = 0;
-
     try {
-      // Get address at index 0 from the wallet
       final dummyAddressForFeeCalculation = await _getAddressAtIndexUsecase
           .execute(walletId: event.wallet.id, index: 0);
 
@@ -252,7 +243,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
 
     emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
 
-    // Now we can create the sell order with the selected wallet
     try {
       final createdSellOrder = await _createSellOrderUsecase.execute(
         orderAmount: walletSelectionState.orderAmount,
@@ -263,7 +253,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
                 : OrderBitcoinNetwork.bitcoin,
       );
 
-      // Proceed to confirmation state with unsignedPsbt and absoluteFees
       emit(
         walletSelectionState.toSendPaymentState(
           selectedWallet: event.wallet,
@@ -271,6 +260,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           absoluteFees: absoluteFees,
         ),
       );
+      _startPolling();
     } on PrepareLiquidSendException catch (e) {
       emit(
         walletSelectionState.copyWith(
@@ -278,22 +268,17 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         ),
       );
     } on PrepareBitcoinSendException catch (e) {
-      // Handle SellError and emit error state
       emit(
         walletSelectionState.copyWith(
           error: SellError.unexpected(message: e.message),
         ),
       );
     } on SellError catch (e) {
-      // Handle SellError and emit error state
       emit(walletSelectionState.copyWith(error: e));
     } catch (e) {
-      // Log unexpected errors
       log.severe('Unexpected error in SellBloc: $e');
     } finally {
-      // Reset the isCreatingSellOrder flag if any error occured
       if (state is SellWalletSelectionState) {
-        // Reset the isCreatingSellOrder flag
         emit(
           (state as SellWalletSelectionState).copyWith(
             isCreatingSellOrder: false,
@@ -321,7 +306,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     }
     emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
 
-    // Now we can create the sell order with the selected wallet
     try {
       final createdSellOrder = await _createSellOrderUsecase.execute(
         orderAmount: walletSelectionState.orderAmount,
@@ -335,19 +319,14 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           createdSellOrder: createdSellOrder,
         ),
       );
-
-      // Start polling for order status updates
       _startPolling();
     } on SellError catch (e) {
-      // Handle SellError and emit error state
       emit(walletSelectionState.copyWith(error: e));
     } catch (e) {
       // Log unexpected errors
       log.severe('Unexpected error in SellBloc: $e');
     } finally {
-      // Reset the isCreatingSellOrder flag if any error occured
       if (state is SellWalletSelectionState) {
-        // Reset the isCreatingSellOrder flag
         emit(
           (state as SellWalletSelectionState).copyWith(
             isCreatingSellOrder: false,
@@ -377,13 +356,10 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         orderId: paymentState.sellOrder.orderId,
       );
 
-      // Update the state with the refreshed order
       emit(paymentState.copyWith(sellOrder: refreshedOrder));
     } on SellError catch (e) {
-      // Handle SellError and emit error state
       emit(paymentState.copyWith(error: e));
     } catch (e) {
-      // Log unexpected errors
       log.severe('Unexpected error in SellBloc: $e');
     }
   }
@@ -419,7 +395,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           walletId: wallet.id,
           address: sellPaymentState.sellOrder.liquidAddress!,
           amountSat: payinAmountSat,
-          // TODO: use the real fee
           networkFee: const NetworkFee.relative(0.1),
         );
         final signedPset = await _signLiquidTxUsecase.execute(
@@ -428,16 +403,20 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
         await _broadcastLiquidTransactionUsecase.execute(signedPset);
       } else {
-        final bitcoinFees = await _getNetworkFeesUsecase.execute(
-          isLiquid: false,
-        );
-        final fastestFee = bitcoinFees.fastest;
+        final absoluteFees = sellPaymentState.absoluteFees;
+        if (absoluteFees == null) {
+          throw const SellError.unexpected(
+            message: 'Transaction fees not calculated. Please try again.',
+          );
+        }
+
         final preparedSend = await _prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
           address: sellPaymentState.sellOrder.bitcoinAddress!,
           amountSat: payinAmountSat,
-          networkFee: fastestFee,
+          networkFee: NetworkFee.absolute(absoluteFees),
         );
+
         final signedTx = await _signBitcoinTxUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
           walletId: wallet.id,
@@ -447,8 +426,8 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           isPsbt: true,
         );
       }
-
-      // Get the latest order before transitioning to success state
+      // 5s delay gives backend time to register the 0 conf
+      await Future.delayed(const Duration(seconds: 3));
       final latestOrder = await _getOrderUsecase.execute(
         orderId: sellPaymentState.sellOrder.orderId,
       );
@@ -459,7 +438,9 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
       }
 
-      emit(sellPaymentState.toSuccessState(sellOrder: latestOrder));
+      emit(
+        sellPaymentState.toSuccessState(sellOrder: sellPaymentState.sellOrder),
+      );
     } on PrepareLiquidSendException catch (e) {
       emit(
         sellPaymentState.copyWith(

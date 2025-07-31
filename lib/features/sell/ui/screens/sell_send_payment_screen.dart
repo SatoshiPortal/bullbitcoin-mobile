@@ -316,27 +316,22 @@ class _BottomButtons extends StatelessWidget {
           bloc.state is SellPaymentState &&
           (bloc.state as SellPaymentState).isConfirmingPayment,
     );
-    final wallet = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).selectedWallet
-              : null,
-    );
 
     return Column(
       children: [
         const _SellError(),
-        if (wallet != null && !wallet.isLiquid) ...[
-          BBButton.big(
-            label: 'Advanced Settings',
-            onPressed: () {},
-            bgColor: Colors.transparent,
-            textColor: context.colour.secondary,
-            outlined: true,
-            borderColor: context.colour.secondary,
-          ),
-          const Gap(16),
-        ],
+        // TODO: Re-enable advanced settings for Bitcoin wallet
+        // if (wallet != null && !wallet.isLiquid) ...[
+        //   BBButton.big(
+        //     label: 'Advanced Settings',
+        //     onPressed: () {},
+        //     bgColor: Colors.transparent,
+        //     textColor: context.colour.secondary,
+        //     outlined: true,
+        //     borderColor: context.colour.secondary,
+        //   ),
+        //   const Gap(16),
+        // ],
         BBButton.big(
           label: 'Continue',
           disabled: isConfirmingPayment,
