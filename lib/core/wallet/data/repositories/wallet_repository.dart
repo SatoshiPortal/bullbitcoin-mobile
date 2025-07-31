@@ -61,6 +61,7 @@ class WalletRepository {
     String? label,
     bool isDefault = false,
     bool sync = false,
+    bool persist = true,
   }) async {
     // Derive and store the wallet metadata
     final walletLabel =
@@ -91,7 +92,10 @@ class WalletRepository {
       }
     }
 
-    await _walletMetadataDatasource.store(metadata);
+    if (persist) {
+      await _walletMetadataDatasource.store(metadata);
+    }
+
     final balance = await _getBalance(metadata, sync: sync);
 
     return Wallet(

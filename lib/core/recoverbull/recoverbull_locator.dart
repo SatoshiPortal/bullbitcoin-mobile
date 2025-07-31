@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repositor
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_cloud_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/create_preview_wallets_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
@@ -16,6 +17,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vau
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/tor/data/repository/tor_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -83,7 +85,13 @@ class RecoverbullLocator {
         walletRepository: locator<WalletRepository>(),
       ),
     );
-
+    locator.registerFactory<CreatePreviewWalletsUsecase>(
+      () => CreatePreviewWalletsUsecase(
+        seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
+      ),
+    );
     locator.registerFactory<FetchBackupFromFileSystemUsecase>(
       () => FetchBackupFromFileSystemUsecase(),
     );
@@ -92,6 +100,7 @@ class RecoverbullLocator {
       () => RestoreEncryptedVaultFromBackupKeyUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
         walletRepository: locator<WalletRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
