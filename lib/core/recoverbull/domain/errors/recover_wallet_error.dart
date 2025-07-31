@@ -1,30 +1,21 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class RecoverWalletError implements Exception {
-  const RecoverWalletError(this.message);
+part 'recover_wallet_error.freezed.dart';
 
-  final String message;
+@freezed
+sealed class RecoverWalletError with _$RecoverWalletError implements Exception {
+  const factory RecoverWalletError.defaultWalletExists() =
+      DefaultWalletExistsError;
+
+  const factory RecoverWalletError.walletMismatch() = WalletMismatchError;
 
   @override
   String toString() {
-    return 'RecoverWalletError: $message';
+    return when(
+      defaultWalletExists:
+          () => 'RecoverWalletError: This wallet already exists.',
+      walletMismatch:
+          () => 'RecoverWalletError: Backup does not match the default wallet.',
+    );
   }
-}
-
-class DefaultWalletExistsError extends RecoverWalletError {
-  final RecoverBullWallet wallet;
-  const DefaultWalletExistsError(this.wallet)
-    : super('This wallet already exists.');
-}
-
-class WalletMismatchError extends RecoverWalletError {
-  const WalletMismatchError()
-    : super(
-        'A different default wallet already exists. You can only have one default wallet.',
-      );
-}
-
-class WalletAlreadyExistsError extends RecoverWalletError {
-  const WalletAlreadyExistsError()
-    : super('A wallet with this fingerprint already exists.');
 }
