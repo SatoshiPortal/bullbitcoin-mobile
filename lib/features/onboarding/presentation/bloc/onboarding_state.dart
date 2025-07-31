@@ -13,10 +13,11 @@ sealed class OnboardingState with _$OnboardingState {
     @Default(OnboardingStepStatus.none)
     OnboardingStepStatus onboardingStepStatus,
     @Default(VaultProvider.googleDrive()) VaultProvider vaultProvider,
-    @Default('') String statusError,
-    @Default(false) bool transitioning,
     @Default(<DriveFile>[]) List<DriveFile> availableCloudBackups,
     @Default(BackupInfo.empty()) BackupInfo selectedBackup,
+    @Default(([], [])) (List<String>, List<Wallet>) recoveredWallets,
+    @Default('') String statusError,
+    @Default(false) bool transitioning,
   }) = _OnboardingState;
   const OnboardingState._();
 

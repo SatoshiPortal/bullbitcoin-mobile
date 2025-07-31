@@ -18,6 +18,7 @@ class OnboardingLocator {
     locator.registerFactory<OnboardingBloc>(
       () => OnboardingBloc(
         createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
+        createPreviewWalletsUsecase: locator<CreatePreviewWalletsUsecase>(),
         findMnemonicWordsUsecase: locator<FindMnemonicWordsUsecase>(),
         fetchBackupFromFileSystemUsecase:
             locator<FetchBackupFromFileSystemUsecase>(),

@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_cloud_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/create_preview_wallets_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_google_drive_backups_usecase.dart';
@@ -15,8 +15,8 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vau
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -43,6 +43,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     fetchAllGoogleDriveBackupsUsecase,
     required FetchGoogleDriveBackupContentUsecase
     fetchGoogleDriveBackupContentUsecase,
+    required CreatePreviewWalletsUsecase createPreviewWalletsUsecase,
   }) : _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
 
        _findMnemonicWordsUsecase = findMnemonicWordsUsecase,
@@ -58,6 +59,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
        _completeCloudBackupVerificationUsecase =
            completeCloudBackupVerificationUsecase,
        _fetchAllGoogleDriveBackupsUsecase = fetchAllGoogleDriveBackupsUsecase,
+       _createPreviewWalletsUsecase = createPreviewWalletsUsecase,
        super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoveryWordChanged>(_onRecoveryWordChanged);
@@ -71,7 +73,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<StartWalletRecovery>(_onStartWalletRecovery);
     on<FetchAllGoogleDriveBackups>(_onFetchAllGoogleDriveBackups);
     on<SelectCloudBackupToFetch>(_onSelectCloudBackupToFetch);
-
+    on<PersistRecoveredWallets>(_onPersistRecoveredWallets);
     on<StartTransitioning>((event, emit) {
       emit(state.copyWith(transitioning: true));
     });
@@ -87,7 +89,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
   final RestoreEncryptedVaultFromBackupKeyUsecase
   _restoreEncryptedVaultFromBackupKeyUsecase;
-
   final FetchBackupFromFileSystemUsecase _fetchBackupFromFileSystemUsecase;
   final FetchGoogleDriveBackupContentUsecase
   _fetchGoogleDriveBackupContentUsecase;
@@ -95,6 +96,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   _completePhysicalBackupVerificationUsecase;
   final CompleteCloudBackupVerificationUsecase
   _completeCloudBackupVerificationUsecase;
+  final CreatePreviewWalletsUsecase _createPreviewWalletsUsecase;
   final FetchAllGoogleDriveBackupsUsecase _fetchAllGoogleDriveBackupsUsecase;
   Future<void> _handleError(String error, Emitter<OnboardingState> emit) async {
     log.severe('Error: $error');
@@ -180,68 +182,28 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         statusError: '',
       ),
     );
-    RecoverBullWallet? recoverBullWallet;
-    try {
-      // Attempt to decrypt backup
-      recoverBullWallet = await _restoreEncryptedVaultFromBackupKeyUsecase
-          .execute(backupFile: event.backupFile, backupKey: event.backupKey);
-    } on DefaultWalletExistsError catch (e) {
-      // Default wallet already exists; import as non-default using payload
-      try {
-        await _importWalletUsecase.execute(mnemonicWords: e.wallet.mnemonic);
-        await _completeCloudBackupVerificationUsecase.execute();
-        emit(
-          state.copyWith(
-            onboardingStepStatus: OnboardingStepStatus.success,
-            step: OnboardingStep.recover,
-          ),
-        );
-      } catch (e) {
-        log.severe('Failed to import wallet: $e');
-        final errMsg =
-            e is RecoverWalletError ? e.message : 'Failed to import wallet: $e';
-        emit(
-          state.copyWith(
-            onboardingStepStatus: OnboardingStepStatus.error,
-            statusError: errMsg,
-          ),
-        );
-      }
-      return;
-    } on WalletAlreadyExistsError {
-      emit(
-        state.copyWith(
-          onboardingStepStatus: OnboardingStepStatus.error,
-          statusError: 'A wallet with this fingerprint already exists',
-        ),
-      );
-      return;
-    } catch (e) {
-      await _handleError(
-        'Failed to decrypt backup: ${BackupInfo(backupFile: event.backupFile).id}',
-        emit,
-      );
-      return;
-    }
 
-    // First-time default recovery
     try {
-      await _createDefaultWalletsUsecase.execute(
+      final recoverBullWallet = await _restoreEncryptedVaultFromBackupKeyUsecase
+          .execute(backupFile: event.backupFile, backupKey: event.backupKey);
+      final recoverdWalletPreviews = await _createPreviewWalletsUsecase.execute(
         mnemonicWords: recoverBullWallet.mnemonic,
       );
-      await _completeCloudBackupVerificationUsecase.execute();
       emit(
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.success,
           step: OnboardingStep.recover,
+          recoveredWallets: (
+            recoverBullWallet.mnemonic,
+            recoverdWalletPreviews,
+          ),
         ),
       );
+    } on DefaultWalletExistsError catch (e) {
+      await _handleError(e.toString(), emit);
     } catch (e) {
       log.severe('Failed to create wallet: $e');
-      await _handleError(
-        'Failed to create wallet: ${BackupInfo(backupFile: event.backupFile).id}',
-        emit,
-      );
+      await _handleError('Failed to recover backup', emit);
     }
   }
 
@@ -328,6 +290,22 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       );
     } catch (e) {
       await _handleError('Failed to fetch backup content: $e', emit);
+    }
+  }
+
+  Future<void> _onPersistRecoveredWallets(
+    PersistRecoveredWallets event,
+    Emitter<OnboardingState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.loading));
+
+      await _createDefaultWalletsUsecase.execute(mnemonicWords: event.mnemonic);
+
+      await _completeCloudBackupVerificationUsecase.execute();
+      emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
+    } catch (e) {
+      await _handleError(e.toString(), emit);
     }
   }
 }

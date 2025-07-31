@@ -43,6 +43,11 @@ class StartWalletRecovery extends OnboardingEvent {
   final String backupFile;
 }
 
+class PersistRecoveredWallets extends OnboardingEvent {
+  const PersistRecoveredWallets({required this.mnemonic});
+  final List<String> mnemonic;
+}
+
 class StartTransitioning extends OnboardingEvent {
   const StartTransitioning();
 }
