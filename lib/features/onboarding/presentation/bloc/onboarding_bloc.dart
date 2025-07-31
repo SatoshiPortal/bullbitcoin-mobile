@@ -27,7 +27,6 @@ part 'onboarding_state.dart';
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   OnboardingBloc({
     required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
-    required ImportWalletUsecase importWalletUsecase,
     required FindMnemonicWordsUsecase findMnemonicWordsUsecase,
     required SelectFileFromPathUsecase selectFileFromPathUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
@@ -45,7 +44,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     required FetchGoogleDriveBackupContentUsecase
     fetchGoogleDriveBackupContentUsecase,
   }) : _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
-       _importWalletUsecase = importWalletUsecase,
+
        _findMnemonicWordsUsecase = findMnemonicWordsUsecase,
        _selectFileFromPathUsecase = selectFileFromPathUsecase,
        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
@@ -83,7 +82,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   }
 
   final CreateDefaultWalletsUsecase _createDefaultWalletsUsecase;
-  final ImportWalletUsecase _importWalletUsecase;
   final FindMnemonicWordsUsecase _findMnemonicWordsUsecase;
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
