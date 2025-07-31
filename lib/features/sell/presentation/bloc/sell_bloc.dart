@@ -444,7 +444,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
       }
       // 5s delay gives backend time to register the 0 conf
-      await Future.delayed(const Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 5));
       final latestOrder = await _getOrderUsecase.execute(
         orderId: sellPaymentState.sellOrder.orderId,
       );
