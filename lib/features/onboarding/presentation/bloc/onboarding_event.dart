@@ -23,7 +23,15 @@ class OnboardingRecoveryWordChanged extends OnboardingEvent {
 }
 
 class OnboardingRecoverWalletClicked extends OnboardingEvent {
-  const OnboardingRecoverWalletClicked();
+  const OnboardingRecoverWalletClicked({required this.mnemonic});
+
+  final ({
+    List<String> words,
+    String passphrase,
+    String label,
+    bip39.Language language,
+  })
+  mnemonic;
 }
 
 class SelectGoogleDriveRecovery extends OnboardingEvent {

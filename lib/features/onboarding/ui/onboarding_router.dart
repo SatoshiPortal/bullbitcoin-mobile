@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/onboarding/ui/screens/available_google_backup
 import 'package:bb_mobile/features/onboarding/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/fetched_backup_info_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
-import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_recovery_success.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/recover_options.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/wallet_recovery_completion_screen.dart';
@@ -25,7 +24,6 @@ enum OnboardingRoute {
   fetchedBackupInfo('fetched-backup-info'),
   recoverFromEncrypted('recover-from-encrypted'),
   recoverFromPhysical('recover-from-physical'),
-  recoverSuccess('recover-success'),
   walletRecoveryCompletion('wallet-recovery-completion');
 
   final String path;
@@ -117,11 +115,7 @@ class OnboardingRouter {
                   return AvailableGoogleBackupsScreen(backups: backups);
                 },
               ),
-              GoRoute(
-                name: OnboardingRoute.recoverSuccess.name,
-                path: OnboardingRoute.recoverSuccess.path,
-                builder: (context, state) => const OnboardingRecoverySuccess(),
-              ),
+
               GoRoute(
                 name: OnboardingRoute.walletRecoveryCompletion.name,
                 path: OnboardingRoute.walletRecoveryCompletion.path,
