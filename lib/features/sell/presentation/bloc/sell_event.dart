@@ -19,4 +19,9 @@ sealed class SellEvent with _$SellEvent {
     NetworkFee? customFee,
   }) = SellSendPaymentConfirmed;
   const factory SellEvent.pollOrderStatus() = SellPollOrderStatus;
+  const factory SellEvent.replaceByFeeChanged({required bool replaceByFee}) =
+      SellReplaceByFeeChanged;
+  const factory SellEvent.utxoSelected({required WalletUtxo utxo}) =
+      SellUtxoSelected;
+  const factory SellEvent.loadUtxos() = SellLoadUtxos;
 }

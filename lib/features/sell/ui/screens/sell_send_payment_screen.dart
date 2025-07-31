@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/sell/ui/widgets/sell_advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -316,22 +317,38 @@ class _BottomButtons extends StatelessWidget {
           bloc.state is SellPaymentState &&
           (bloc.state as SellPaymentState).isConfirmingPayment,
     );
-
+    final wallet = context.select(
+      (SellBloc bloc) =>
+          bloc.state is SellPaymentState
+              ? (bloc.state as SellPaymentState).selectedWallet
+              : null,
+    );
     return Column(
       children: [
         const _SellError(),
-        // TODO: Re-enable advanced settings for Bitcoin wallet
-        // if (wallet != null && !wallet.isLiquid) ...[
-        //   BBButton.big(
-        //     label: 'Advanced Settings',
-        //     onPressed: () {},
-        //     bgColor: Colors.transparent,
-        //     textColor: context.colour.secondary,
-        //     outlined: true,
-        //     borderColor: context.colour.secondary,
-        //   ),
-        //   const Gap(16),
-        // ],
+        if (wallet != null && !wallet.isLiquid) ...[
+          BBButton.big(
+            label: 'Advanced Settings',
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: context.colour.secondaryFixed,
+                useSafeArea: true,
+                builder:
+                    (BuildContext buildContext) => BlocProvider.value(
+                      value: context.read<SellBloc>(),
+                      child: const SellAdvancedOptionsBottomSheet(),
+                    ),
+              );
+            },
+            bgColor: Colors.transparent,
+            textColor: context.colour.secondary,
+            outlined: true,
+            borderColor: context.colour.secondary,
+          ),
+          const Gap(16),
+        ],
         BBButton.big(
           label: 'Continue',
           disabled: isConfirmingPayment,
