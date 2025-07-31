@@ -39,7 +39,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
             if (state.onboardingStepStatus == OnboardingStepStatus.loading ||
                 state.selectedBackup.backupFile.isEmpty) {
               return FadingLinearProgress(
-                height: 5,
+                height: 3,
                 trigger: true,
                 backgroundColor: context.colour.primary,
                 foregroundColor: context.colour.secondary,
