@@ -532,7 +532,6 @@ class SingleLineTextWidget extends StatelessWidget {
         ),
         const Gap(8),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: context.colour.onPrimary,
             borderRadius: BorderRadius.circular(2.76),
