@@ -284,6 +284,9 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           error: SellError.unexpected(message: e.message),
         ),
       );
+    } on SellError catch (e) {
+      // Handle SellError and emit error state
+      emit(walletSelectionState.copyWith(error: e));
     } catch (e) {
       // Log unexpected errors
       log.severe('Unexpected error in SellBloc: $e');
