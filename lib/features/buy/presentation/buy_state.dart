@@ -43,7 +43,7 @@ sealed class BuyState with _$BuyState {
 
   int? get maxAmountSat =>
       balance != null && exchangeRate > 0
-          ? (balance! / exchangeRate * 1e8).round()
+          ? ConvertAmount.btcToSats(balance! / exchangeRate)
           : null;
 
   double? get amount =>
@@ -74,7 +74,7 @@ sealed class BuyState with _$BuyState {
       !isFiatCurrencyInput && bitcoinUnit == BitcoinUnit.sats
           ? int.tryParse(amountInput.trim())
           : amountBtc != null
-          ? (amountBtc! * 1e8).round()
+          ? ConvertAmount.btcToSats(amountBtc!)
           : null;
 
   FiatCurrency? get currency =>

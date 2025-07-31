@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/not_logged_in_bottom_sheet.dart';
+import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/ui/components/settings/settings_entry_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

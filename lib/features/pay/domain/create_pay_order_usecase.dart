@@ -30,7 +30,8 @@ class PlacePayOrderUsecase {
           isTestnet
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
-      final network = isLiquid ? Network.liquid : Network.bitcoin;
+      final network =
+          isLiquid ? OrderBitcoinNetwork.liquid : OrderBitcoinNetwork.bitcoin;
       final order = await repo.placePayOrder(
         orderAmount: orderAmount,
         recipientId: recipientId,

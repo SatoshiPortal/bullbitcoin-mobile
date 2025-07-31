@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/auto_swap_fee_warning.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
@@ -39,26 +40,33 @@ class WalletHomeScreen extends StatelessWidget {
           }
         }
       },
-      child: const Column(
+      child: Column(
         children: [
-          WalletHomeTopSection(),
+          const WalletHomeTopSection(),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  HomeWarnings(),
-                  AutoSwapFeeWarning(),
-                  HomeWalletCards(),
+                  const HomeWarnings(),
+                  const AutoSwapFeeWarning(),
+                  WalletCards(
+                    onTap: (w) {
+                      context.pushNamed(
+                        WalletRoute.walletDetail.name,
+                        pathParameters: {'walletId': w.id},
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
           ),
-          Padding(
+          const Padding(
             padding: EdgeInsets.symmetric(horizontal: 13.0),
             child: WalletBottomButtons(),
           ),
-          Gap(16),
+          const Gap(16),
         ],
       ),
     );

@@ -4,15 +4,16 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'order.freezed.dart';
 
 enum FiatCurrency {
-  usd('USD', decimals: 2),
-  cad('CAD', decimals: 2),
-  crc('CRC', decimals: 2),
-  eur('EUR', decimals: 2),
-  mxn('MXN', decimals: 2);
+  usd('USD', decimals: 2, symbol: '\$'),
+  cad('CAD', decimals: 2, symbol: '\$'),
+  crc('CRC', decimals: 2, symbol: '₡'),
+  eur('EUR', decimals: 2, symbol: '€'),
+  mxn('MXN', decimals: 2, symbol: '\$');
 
-  const FiatCurrency(this.code, {required this.decimals});
+  const FiatCurrency(this.code, {required this.decimals, required this.symbol});
   final String code;
   final int decimals;
+  final String symbol;
 
   static FiatCurrency fromCode(String code) {
     switch (code.toUpperCase()) {
@@ -53,33 +54,22 @@ enum OrderType {
   }
 }
 
-enum Network {
-  lightning,
-  bitcoin,
-  liquid;
+enum OrderBitcoinNetwork {
+  bitcoin('bitcoin'),
+  liquid('liquid'),
+  lightning('lightning');
 
-  String get value {
-    switch (this) {
-      case Network.lightning:
-        return 'lightning';
-      case Network.bitcoin:
-        return 'bitcoin';
-      case Network.liquid:
-        return 'liquid';
-    }
-  }
+  final String value;
+  const OrderBitcoinNetwork(this.value);
 
-  static Network fromValue(String value) {
-    switch (value.toLowerCase()) {
-      case 'lightning':
-        return Network.lightning;
-      case 'bitcoin':
-        return Network.bitcoin;
-      case 'liquid':
-        return Network.liquid;
-      default:
-        throw Exception('Unknown Network: $value');
-    }
+  @override
+  String toString() => value;
+
+  static OrderBitcoinNetwork fromValue(String value) {
+    return OrderBitcoinNetwork.values.firstWhere(
+      (e) => e.value == value,
+      orElse: () => throw Exception('Unknown OrderBitcoinNetwork: $value'),
+    );
   }
 }
 

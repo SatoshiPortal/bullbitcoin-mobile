@@ -111,7 +111,14 @@ abstract class TransactionsState with _$TransactionsState {
                   SwapStatus.failed,
                 ].contains(tx.swap?.status);
 
-            if (isReceivePayjoinWithoutRequest || isExpiredOrFailedSwap) {
+            final isExpiredAndNotStartedOrder =
+                tx.isOrder &&
+                (tx.order?.orderStatus == OrderStatus.expired &&
+                    tx.order?.payinStatus == OrderPayinStatus.notStarted);
+
+            if (isReceivePayjoinWithoutRequest ||
+                isExpiredOrFailedSwap ||
+                isExpiredAndNotStartedOrder) {
               return false;
             }
 
