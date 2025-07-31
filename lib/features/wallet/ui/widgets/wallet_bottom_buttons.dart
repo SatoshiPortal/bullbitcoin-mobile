@@ -4,9 +4,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,10 +15,6 @@ class WalletBottomButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
-
     return Row(
       // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -52,12 +46,14 @@ class WalletBottomButtons extends StatelessWidget {
             iconData: Icons.crop_free,
             label: 'Send',
             iconFirst: true,
-            onPressed: () {
-              context.pushNamed(SendRoute.send.name, extra: wallet);
-            },
+            onPressed:
+                () => context.pushNamed(
+                  SendRoute.requestIdentifier.name,
+                  extra: wallet,
+                ),
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,
-            disabled: wallet?.signer == SignerEntity.none && !isSuperuser,
+            disabled: wallet?.signer == SignerEntity.none,
           ),
         ),
       ],

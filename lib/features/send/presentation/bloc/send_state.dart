@@ -13,53 +13,60 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'send_state.freezed.dart';
 
-enum SendType {
+enum SendAddressType {
   bitcoin,
   lightning,
   liquid;
 
-  static SendType from(PaymentRequest paymentRequest) {
+  static SendAddressType from(PaymentRequest paymentRequest) {
     switch (paymentRequest) {
       case BitcoinPaymentRequest():
-        return SendType.bitcoin;
+        return SendAddressType.bitcoin;
       case LiquidPaymentRequest():
-        return SendType.liquid;
+        return SendAddressType.liquid;
       case Bolt11PaymentRequest():
       case LnAddressPaymentRequest():
-        return SendType.lightning;
+        return SendAddressType.lightning;
       case Bip21PaymentRequest():
         if (paymentRequest.network.isBitcoin) {
-          return SendType.bitcoin;
+          return SendAddressType.bitcoin;
         } else {
-          return SendType.liquid;
+          return SendAddressType.liquid;
         }
       case PsbtPaymentRequest():
-        return SendType.bitcoin; //TODO(azad): nop
+        return SendAddressType.bitcoin; //TODO(azad): nop
     }
   }
 
   String get displayName {
     switch (this) {
-      case SendType.bitcoin:
+      case SendAddressType.bitcoin:
         return 'Bitcoin';
-      case SendType.lightning:
+      case SendAddressType.lightning:
         return 'Lightning';
-      case SendType.liquid:
+      case SendAddressType.liquid:
         return 'Liquid';
     }
   }
 }
 
-enum SendStep { address, amount, confirm, sending, success }
+enum SendStep { amount, confirm, sending, success }
+
+enum SendProcess {
+  bitcoinOnchain,
+  bitcoinOnchainPayjoin,
+  liquidOnchain,
+  lbtcLn,
+  btcLn,
+  btcLbtcChain,
+  lbtcBtcChain,
+}
 
 @freezed
 abstract class SendState with _$SendState {
   const factory SendState({
-    @Default(SendStep.address) SendStep step,
-    @Default(SendType.lightning) SendType sendType,
-    @Default('') String scannedRawPaymentRequest,
-    @Default('') String copiedRawPaymentRequest,
-    PaymentRequest? paymentRequest,
+    @Default(SendStep.amount) SendStep step,
+    required PaymentRequest paymentRequest,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
     @Default('') String amount,
@@ -99,12 +106,16 @@ abstract class SendState with _$SendState {
     @Default(false) bool signingTransaction,
     @Default(false) bool broadcastingTransaction,
     @Default('') String balanceApproximatedAmount,
+    // exceptions
     SwapCreationException? swapCreationException,
     InsufficientBalanceException? insufficientBalanceException,
     InvalidBitcoinStringException? invalidBitcoinStringException,
     SwapLimitsException? swapLimitsException,
     BuildTransactionException? buildTransactionException,
     ConfirmTransactionException? confirmTransactionException,
+    ExchangeApiException? exchangeApiException,
+    FeesException? feesException,
+    LoadWalletException? loadWalletException,
 
     // swapLimits
     SwapLimits? bitcoinLnSwapLimits,
@@ -125,46 +136,22 @@ abstract class SendState with _$SendState {
     return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
   }
 
-  /// Whether we have a valid payment request
-  bool get hasValidPaymentRequest => paymentRequest != null;
-
   String get paymentRequestAddress {
-    if (paymentRequest == null) {
-      return copiedRawPaymentRequest.isNotEmpty
-          ? copiedRawPaymentRequest
-          : scannedRawPaymentRequest;
+    switch (paymentRequest) {
+      case final Bip21PaymentRequest bip21Request:
+        if (invoiceHasMrh) return 'MRH'; // TODO: MRH
+        return bip21Request.address;
+      case final Bolt11PaymentRequest bolt11Request:
+        return bolt11Request.invoice;
+      case final LnAddressPaymentRequest lnAddressRequest:
+        return lnAddressRequest.address;
+      case final BitcoinPaymentRequest bitcoinRequest:
+        return bitcoinRequest.address;
+      case final LiquidPaymentRequest liquidRequest:
+        return liquidRequest.address;
+      case final PsbtPaymentRequest psbtRequest:
+        return psbtRequest.psbt;
     }
-
-    if (paymentRequest!.isBip21) {
-      if (invoiceHasMrh) {
-        // Return the raw string instead of the payment request
-        return copiedRawPaymentRequest.isNotEmpty
-            ? copiedRawPaymentRequest
-            : scannedRawPaymentRequest;
-      }
-      final bip21PaymentRequest = paymentRequest! as Bip21PaymentRequest;
-      return bip21PaymentRequest.address;
-    }
-    if (paymentRequest!.isBolt11) {
-      final bolt11PaymentRequest = paymentRequest! as Bolt11PaymentRequest;
-      return bolt11PaymentRequest.invoice;
-    }
-    if (paymentRequest!.isLnAddress) {
-      final lnAddressPaymentRequest =
-          paymentRequest! as LnAddressPaymentRequest;
-      return lnAddressPaymentRequest.address;
-    }
-    if (paymentRequest!.isBitcoinAddress) {
-      final bitcoinPaymentRequest = paymentRequest! as BitcoinPaymentRequest;
-      return bitcoinPaymentRequest.address;
-    }
-    if (paymentRequest!.isLiquidAddress) {
-      final liquidPaymentRequest = paymentRequest! as LiquidPaymentRequest;
-      return liquidPaymentRequest.address;
-    }
-    return copiedRawPaymentRequest.isNotEmpty
-        ? copiedRawPaymentRequest
-        : scannedRawPaymentRequest;
   }
 
   bool get isInputAmountFiat =>
@@ -305,17 +292,19 @@ abstract class SendState with _$SendState {
           : inputAmountSat <= selectedWallet!.balanceSat.toInt();
 
   String sendTypeName() {
-    switch (sendType) {
-      case SendType.bitcoin:
+    switch (sendAddressType) {
+      case SendAddressType.bitcoin:
         return 'Send';
-      case SendType.lightning:
+      case SendAddressType.lightning:
         return 'Swap';
-      case SendType.liquid:
+      case SendAddressType.liquid:
         return 'Send';
     }
   }
 
-  bool get isLightning => sendType == SendType.lightning;
+  SendAddressType get sendAddressType => SendAddressType.from(paymentRequest);
+
+  bool get isLightning => sendAddressType == SendAddressType.lightning;
   bool get isLightningBitcoinSwap =>
       isLightning && selectedWallet!.network.isBitcoin;
 
@@ -361,8 +350,10 @@ abstract class SendState with _$SendState {
 
   bool get requireChainSwap {
     if (selectedWallet == null) return false;
-    return (selectedWallet!.network.isBitcoin && sendType == SendType.liquid) ||
-        (selectedWallet!.network.isLiquid && sendType == SendType.bitcoin);
+    return (selectedWallet!.network.isBitcoin &&
+            sendAddressType == SendAddressType.liquid) ||
+        (selectedWallet!.network.isLiquid &&
+            sendAddressType == SendAddressType.bitcoin);
   }
 
   NetworkFee? get selectedFee {
@@ -385,9 +376,15 @@ abstract class SendState with _$SendState {
     }
   }
 
-  bool get isChainSwap =>
-      (sendType == SendType.liquid && !selectedWallet!.isLiquid) ||
-      sendType == SendType.bitcoin && selectedWallet!.isLiquid;
+  bool get isChainSwap => chainSwap != null;
+
+  bool get isNormalOnchainSend {
+    if (selectedWallet == null) return false;
+    return (selectedWallet!.isLiquid &&
+            sendAddressType == SendAddressType.liquid) ||
+        (selectedWallet!.network.isBitcoin &&
+            sendAddressType == SendAddressType.bitcoin);
+  }
 
   FeeOptions? get feeOptions =>
       selectedWallet == null
@@ -498,4 +495,37 @@ class ConfirmTransactionException implements Exception {
   String toString() => message;
 
   String get title => 'Confirmation Failed';
+}
+
+class ExchangeApiException implements Exception {
+  final String message;
+
+  ExchangeApiException(this.message);
+
+  @override
+  String toString() => message;
+
+  String get title => 'Exchange Api Failed';
+}
+
+class FeesException implements Exception {
+  final String message;
+
+  FeesException(this.message);
+
+  @override
+  String toString() => message;
+
+  String get title => 'Fees Api Failed';
+}
+
+class LoadWalletException implements Exception {
+  final String message;
+
+  LoadWalletException(this.message);
+
+  @override
+  String toString() => message;
+
+  String get title => 'Loading Wallet Failed';
 }
