@@ -38,18 +38,13 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
       if (state.watchOnlyWallet is WatchOnlyDescriptorEntity) {
         final entity = state.watchOnlyWallet! as WatchOnlyDescriptorEntity;
         final importedWallet = await _importWatchOnlyDescriptorUsecase(
-          descriptor: entity.watchOnlyDescriptor.descriptor.combined,
-          label: entity.label,
+          watchOnlyDescriptor: entity,
         );
         emit(state.copyWith(importedWallet: importedWallet));
       } else if (state.watchOnlyWallet is WatchOnlyXpubEntity) {
         final entity = state.watchOnlyWallet! as WatchOnlyXpubEntity;
-
         final importedWallet = await _importWatchOnlyXpubUsecase(
-          xpub: entity.pubkey,
-          network: entity.network,
-          scriptType: entity.scriptType,
-          label: entity.label,
+          watchOnlyXpub: entity,
         );
         emit(state.copyWith(importedWallet: importedWallet));
       }

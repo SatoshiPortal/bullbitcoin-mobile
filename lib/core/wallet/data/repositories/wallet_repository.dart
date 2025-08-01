@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:rxdart/transformers.dart';
 
 class WalletRepository {
@@ -111,13 +112,11 @@ class WalletRepository {
   }
 
   Future<Wallet> importDescriptor({
-    required String descriptor,
-    required String label,
+    required WatchOnlyDescriptorEntity watchOnlyDescriptor,
     bool sync = false,
   }) async {
     final metadata = await WalletMetadataService.fromDescriptor(
-      descriptor: descriptor,
-      label: label,
+      watchOnlyDescriptor,
     );
 
     await _walletMetadataDatasource.store(metadata);

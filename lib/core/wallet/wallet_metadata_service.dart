@@ -217,13 +217,9 @@ class WalletMetadataService {
     );
   }
 
-  static Future<WalletMetadataModel> fromDescriptor({
-    required String descriptor,
-    String? label,
-  }) async {
-    final entity = await WatchOnlyWalletEntity.parse(descriptor);
-    if (entity is! WatchOnlyDescriptorEntity) throw 'Unsupported descriptor';
-
+  static Future<WalletMetadataModel> fromDescriptor(
+    WatchOnlyDescriptorEntity entity,
+  ) async {
     return WalletMetadataModel(
       id: WalletMetadataService.encodeOrigin(
         fingerprint: entity.masterFingerprint,
@@ -243,7 +239,7 @@ class WalletMetadataService {
       isDefault: false,
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
-      label: label,
+      label: entity.label,
     );
   }
 }
