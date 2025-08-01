@@ -813,8 +813,9 @@ class _BottomButtons extends StatelessWidget {
             const Gap(12),
           ],
           if (wallet != null &&
-              wallet.signer == SignerEntity.remote &&
-              isSuperuser)
+              isSuperuser &&
+              (wallet.signer == SignerEntity.remote ||
+                  wallet.signer == SignerEntity.none))
             const ShowPsbtButton()
           else
             const ConfirmSendButton(),

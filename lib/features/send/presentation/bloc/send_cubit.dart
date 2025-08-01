@@ -1070,7 +1070,8 @@ class SendCubit extends Cubit<SendState> {
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
 
-        if (state.selectedWallet!.signer == SignerEntity.remote) {
+        if (state.selectedWallet!.signer == SignerEntity.remote ||
+            state.selectedWallet!.signer == SignerEntity.none) {
           emit(
             state.copyWith(
               unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
