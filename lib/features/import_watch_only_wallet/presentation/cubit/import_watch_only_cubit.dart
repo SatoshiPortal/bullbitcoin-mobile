@@ -32,9 +32,12 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   }
 
   Future<void> import() async {
-    if (state.watchOnlyWallet == null) return;
+    emit(state.copyWith(error: ''));
 
     try {
+      if (state.watchOnlyWallet == null) throw 'No watch-only wallet';
+      if (state.watchOnlyWallet!.label.isEmpty) throw 'Label required';
+
       if (state.watchOnlyWallet is WatchOnlyDescriptorEntity) {
         final entity = state.watchOnlyWallet! as WatchOnlyDescriptorEntity;
         final importedWallet = await _importWatchOnlyDescriptorUsecase(

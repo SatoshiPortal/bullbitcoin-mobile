@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
@@ -46,6 +47,9 @@ class ImportWatchOnlyScreen extends StatelessWidget {
           listener: (context, state) {
             if (state.importedWallet != null) {
               context.goNamed(WalletRoute.walletHome.name);
+            }
+            if (state.error.isNotEmpty) {
+              SnackBarUtils.showSnackBar(context, state.error);
             }
           },
           builder: (context, state) {
