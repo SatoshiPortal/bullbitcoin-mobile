@@ -226,7 +226,7 @@ abstract class ReceiveState with _$ReceiveState {
   bool get isPayjoinLoading {
     if (type == ReceiveType.bitcoin) {
       return wallet != null &&
-          !wallet!.isWatchOnly &&
+          wallet!.signsLocally &&
           !isAddressOnly &&
           payjoin == null &&
           receivePayjoinException == null;
@@ -237,7 +237,7 @@ abstract class ReceiveState with _$ReceiveState {
   bool get isPayjoinAvailable {
     if (type == ReceiveType.bitcoin) {
       return wallet != null &&
-          !wallet!.isWatchOnly &&
+          wallet!.signsLocally &&
           !isAddressOnly &&
           payjoin != null;
     }

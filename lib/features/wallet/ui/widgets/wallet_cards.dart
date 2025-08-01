@@ -15,12 +15,12 @@ class WalletCards extends StatelessWidget {
   static Color cardDetails(BuildContext context, Wallet wallet) {
     final isTestnet = wallet.isTestnet;
     final isLiquid = wallet.isLiquid;
-    final isWatchOnly = wallet.isWatchOnly;
+    final watchOrSignsRemotely = wallet.isWatchOnly || wallet.signsRemotely;
 
     final watchonlyColor = context.colour.secondary;
 
-    if (isWatchOnly && !isTestnet) return watchonlyColor;
-    if (isWatchOnly && isTestnet) return watchonlyColor;
+    if (watchOrSignsRemotely && !isTestnet) return watchonlyColor;
+    if (watchOrSignsRemotely && isTestnet) return watchonlyColor;
 
     if (isLiquid) return context.colour.tertiary;
 
