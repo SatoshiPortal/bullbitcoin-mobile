@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/import_watch_only_screen.dart';
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/scan_watch_only_screen.dart';
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_screen.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/presentation/scan_watch_only_screen.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:go_router/go_router.dart';
 
 enum ImportWatchOnlyRoutes {
@@ -11,7 +11,7 @@ enum ImportWatchOnlyRoutes {
   const ImportWatchOnlyRoutes(this.path);
 }
 
-class ImportWatchOnlyRouterConfig {
+class ImportWatchOnlyRouter {
   static final route = ShellRoute(
     builder: (context, state, child) => child,
     routes: [
