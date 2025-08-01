@@ -59,13 +59,6 @@ class AllSettingsScreen extends StatelessWidget {
                   },
                 ),
                 SettingsEntryItem(
-                  icon: Icons.language,
-                  title: 'Language',
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.language.name);
-                  },
-                ),
-                SettingsEntryItem(
                   icon: Icons.attach_money,
                   title: 'Currency',
                   onTap: () {
