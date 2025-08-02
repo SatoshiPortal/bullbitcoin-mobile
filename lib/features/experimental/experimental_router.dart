@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_router.dart';
+import 'package:bb_mobile/features/experimental/mnemonic_translate/mnemonic_translate_router.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/psbt_router.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,6 +11,7 @@ class ExperimentalRouterConfig {
       ImportWatchOnlyRouterConfig.route,
       PsbtRouterConfig.route,
       BroadcastSignedTxRouter.route,
+      MnemonicTranslateRouterConfig.route,
     ],
   );
 }

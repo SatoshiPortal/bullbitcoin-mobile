@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/router.dart';
+import 'package:bb_mobile/features/experimental/mnemonic_translate/mnemonic_translate_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,6 +38,18 @@ class ExperimentalSettingsScreen extends StatelessWidget {
                         BroadcastSignedTxRoute.broadcastHome.name,
                       ),
                   trailing: const Icon(Icons.broadcast_on_home),
+                ),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
+                  title: const Text('Mnemonic Translator'),
+                  onTap:
+                      () => context.pushNamed(
+                        MnemonicTranslateRoutes.translator.name,
+                      ),
+                  trailing: const Icon(Icons.translate),
                 ),
               ],
             ),
