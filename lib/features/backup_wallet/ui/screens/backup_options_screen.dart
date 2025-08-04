@@ -52,7 +52,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                       'Without a backup, you will eventually lose access to your money. It is critically important to do a backup.',
                       textAlign: TextAlign.center,
                       style: context.font.bodyLarge,
-                      maxLines: 2,
+                      maxLines: 5,
                     ),
                     const Gap(16),
                     if (isSuperuser) ...[
