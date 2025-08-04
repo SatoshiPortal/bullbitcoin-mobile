@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -60,45 +59,8 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         Row(
           children: [
             SizedBox(
-              width: 100,
-              child: BBText('Signer', style: context.font.titleMedium),
-            ),
-            SizedBox(
-              width: 200,
-              child: DropdownButtonFormField<SignerEntity>(
-                alignment: Alignment.centerLeft,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
-                ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
-                ),
-                value: entity.signer,
-                items:
-                    [SignerEntity.remote, SignerEntity.none]
-                        .map(
-                          (value) => DropdownMenuItem<SignerEntity>(
-                            value: value,
-                            child: BBText(
-                              value.displayName,
-                              style: context.font.headlineSmall,
-                            ),
-                          ),
-                        )
-                        .toList(),
-                onChanged: cubit.onSignerChanged,
-              ),
-            ),
-          ],
-        ),
-        const Gap(24),
-        Row(
-          children: [
-            SizedBox(
-              width: 100,
-              child: BBText('Signer Device', style: context.font.titleMedium),
+              width: 150,
+              child: BBText('Signing Device', style: context.font.titleMedium),
             ),
             SizedBox(
               width: 200,
@@ -119,7 +81,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                           (value) => DropdownMenuItem<SignerDeviceEntity?>(
                             value: value,
                             child: BBText(
-                              value?.displayName ?? 'None',
+                              value?.displayName ?? 'Not supported',
                               style: context.font.headlineSmall,
                             ),
                           ),
@@ -171,28 +133,6 @@ class _XpubDetailsWidget extends StatelessWidget {
         BBText(
           entity.extendedPubkey.derivation.label,
           style: context.font.bodyMedium,
-        ),
-        const Gap(24),
-        Row(
-          children: [
-            SizedBox(
-              width: 100,
-              child: BBText('Signer', style: context.font.titleMedium),
-            ),
-            SizedBox(
-              width: 200,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24.0,
-                  vertical: 16.0,
-                ),
-                child: BBText(
-                  entity.signer.name,
-                  style: context.font.headlineSmall,
-                ),
-              ),
-            ),
-          ],
         ),
         const Gap(24),
         BBText('Label', style: context.font.titleMedium),
