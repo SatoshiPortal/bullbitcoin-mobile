@@ -33,6 +33,7 @@ import 'package:bb_mobile/features/settings/ui/screens/language/language_setting
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -190,11 +191,10 @@ class SettingsRouter {
                 listeners: [
                   BlocListener<WalletBloc, WalletState>(
                     listenWhen: (previous, current) {
-                      // Listen for wallet deletion to go back to the wallet list
                       return previous.wallets.length > current.wallets.length;
                     },
                     listener: (context, state) {
-                      context.pop();
+                      context.goNamed(WalletRoute.walletHome.name);
                     },
                   ),
                   BlocListener<WalletBloc, WalletState>(
