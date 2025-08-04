@@ -22,6 +22,7 @@ class MnemonicWidget extends StatefulWidget {
   final bool allowPassphrase;
   final bool allowLabel;
   final bool allowMultipleMnemonicLength;
+  final bool allowAutoFillWords;
 
   const MnemonicWidget({
     super.key,
@@ -32,6 +33,7 @@ class MnemonicWidget extends StatefulWidget {
     this.allowPassphrase = true,
     this.allowLabel = true,
     this.allowMultipleMnemonicLength = true,
+    this.allowAutoFillWords = true,
   });
 
   @override
@@ -129,6 +131,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
             words: words,
             language: widget.language,
             onWordChanged: updateMnemonic,
+            allowAutoFillWords: widget.allowAutoFillWords,
           ),
 
           if (widget.allowPassphrase) ...[
@@ -278,12 +281,14 @@ class MnemonicSentenceWidget extends StatefulWidget {
   final List<String> words;
   final bip39.Language language;
   final Function(({int index, String word})) onWordChanged;
+  final bool allowAutoFillWords;
 
   const MnemonicSentenceWidget({
     super.key,
     required this.words,
     required this.language,
     required this.onWordChanged,
+    this.allowAutoFillWords = true,
   });
 
   @override
@@ -353,6 +358,12 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     final hints = widget.language.list.where(
       (word) => word.startsWith(widget.words[_focusedDisplayIndex]),
     );
+
+    if (widget.allowAutoFillWords && hints.length == 1) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _onHintTap(hints.first),
+      );
+    }
 
     if (hints.length == 1 &&
         hints.first == widget.words[_focusedDisplayIndex]) {
