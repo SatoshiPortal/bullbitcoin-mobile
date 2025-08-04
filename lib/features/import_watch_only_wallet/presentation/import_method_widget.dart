@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -34,6 +35,17 @@ class ImportMethodWidget extends StatelessWidget {
                 textColor: context.colour.secondary,
                 iconData: Icons.nfc,
                 disabled: true,
+              ),
+              const Gap(12),
+              BBButton.big(
+                label: 'Mnemonic',
+                onPressed:
+                    () => context.pushNamed(
+                      ImportMnemonicRoute.importMnemonicHome.name,
+                    ),
+                bgColor: context.colour.onPrimary,
+                textColor: context.colour.secondary,
+                iconData: Icons.abc,
               ),
               const Gap(12),
               BBButton.big(

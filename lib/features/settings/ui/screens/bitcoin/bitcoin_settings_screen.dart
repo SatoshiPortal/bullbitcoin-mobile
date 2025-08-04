@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/autoswap/ui/autoswap_settings_router.dart';
 import 'package:bb_mobile/features/electrum_settings/ui/electrum_settings_router.dart';
-import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -64,22 +63,12 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   ),
                 if (isSuperuser)
                   SettingsEntryItem(
-                    icon: Icons.qr_code_2,
-                    title: 'Import watch-only',
+                    icon: Icons.wallet,
+                    title: 'Import wallet',
                     isSuperUser: true,
                     onTap:
                         () => context.pushNamed(
                           ImportWatchOnlyRoutes.import.name,
-                        ),
-                  ),
-                if (isSuperuser)
-                  SettingsEntryItem(
-                    icon: Icons.import_contacts,
-                    title: 'Import mnemonic',
-                    isSuperUser: true,
-                    onTap:
-                        () => context.pushNamed(
-                          ImportMnemonicRoute.importMnemonicHome.name,
                         ),
                   ),
                 if (isSuperuser && kDebugMode)
