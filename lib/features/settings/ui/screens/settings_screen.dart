@@ -127,15 +127,15 @@ class SettingsScreen extends StatelessWidget {
                     onTap: null,
                     trailing: const TestnetModeSwitch(),
                   ),
-                if (isSuperuser)
-                  SettingsEntryItem(
-                    icon: Icons.language,
-                    title: context.loc.languageSettingsLabel,
-                    isSuperUser: true,
-                    onTap: () {
-                      context.pushNamed(SettingsRoute.language.name);
-                    },
-                  ),
+                // if (isSuperuser)
+                //   SettingsEntryItem(
+                //     icon: Icons.language,
+                //     title: context.loc.languageSettingsLabel,
+                //     isSuperUser: true,
+                //     onTap: () {
+                //       context.pushNamed(SettingsRoute.language.name);
+                //     },
+                //   ),
                 if (isSuperuser)
                   SettingsEntryItem(
                     icon: Icons.qr_code_2,
