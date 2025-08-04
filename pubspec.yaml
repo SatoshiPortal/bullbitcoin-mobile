@@ -89,14 +89,14 @@ dependencies:
   dart_bbqr:
     git:
       url: https://github.com/SatoshiPortal/bbqr-dart.git
-      ref: main
+      ref: 348feb8db3dd00260f17da9f7d850301cb899a87
   sliver_tools: ^0.2.12
   logging_colorful: ^1.2.2
   timelines_plus: ^1.0.7
   satoshifier:
     git:
       url: https://github.com/ethicnology/dart-satoshifier.git
-      ref: main
+      ref: 9c69f4408f9f4e6b471ad2b180e006aea40e7d5a
   flutter_nfc_kit: ^3.6.0
 
 dev_dependencies:

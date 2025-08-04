@@ -263,10 +263,10 @@ packages:
     dependency: transitive
     description:
       name: camera_android_camerax
-      sha256: "4b6c1bef4270c39df96402c4d62f2348c3bb2bbaefd0883b9dbd58f426306ad0"
+      sha256: "58b8fe843a3c83fd1273c00cb35f5a8ae507f6cc9b2029bcf7e2abba499e28d8"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.19"
+    version: "0.6.19+1"
   camera_avfoundation:
     dependency: transitive
     description:
@@ -423,7 +423,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: "348feb8db3dd00260f17da9f7d850301cb899a87"
       resolved-ref: "348feb8db3dd00260f17da9f7d850301cb899a87"
       url: "https://github.com/SatoshiPortal/bbqr-dart.git"
     source: git
@@ -753,10 +753,10 @@ packages:
     dependency: "direct main"
     description:
       name: font_awesome_flutter
-      sha256: d3a89184101baec7f4600d58840a764d2ef760fe1c5a20ef9e6b0e9b24a07a3a
+      sha256: f50ce90dbe26d977415b9540400d6778bef00894aced6358ae578abd92b14b10
       url: "https://pub.dev"
     source: hosted
-    version: "10.8.0"
+    version: "10.9.0"
   freezed:
     dependency: "direct main"
     description:
@@ -830,10 +830,10 @@ packages:
     dependency: "direct main"
     description:
       name: google_fonts
-      sha256: b1ac0fe2832c9cc95e5e88b57d627c5e68c223b9657f4b96e1487aa9098c7b82
+      sha256: df9763500dadba0155373e9cb44e202ce21bd9ed5de6bdbd05c5854e86839cb8
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.1"
+    version: "6.3.0"
   google_identity_services_web:
     dependency: transitive
     description:
@@ -1469,7 +1469,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: "9c69f4408f9f4e6b471ad2b180e006aea40e7d5a"
       resolved-ref: "9c69f4408f9f4e6b471ad2b180e006aea40e7d5a"
       url: "https://github.com/ethicnology/dart-satoshifier.git"
     source: git
@@ -1949,10 +1949,10 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter_platform_interface
-      sha256: f0dc2dc3a2b1e3a6abdd6801b9355ebfeb3b8f6cde6b9dc7c9235909c4a1f147
+      sha256: "63d26ee3aca7256a83ccb576a50272edd7cfc80573a4305caa98985feb493ee0"
       url: "https://pub.dev"
     source: hosted
-    version: "2.13.1"
+    version: "2.14.0"
   webview_flutter_wkwebview:
     dependency: "direct main"
     description:
