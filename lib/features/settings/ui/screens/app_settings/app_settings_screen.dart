@@ -23,13 +23,6 @@ class AppSettingsScreen extends StatelessWidget {
                     context.pushNamed(SettingsRoute.logs.name);
                   },
                 ),
-                SettingsEntryItem(
-                  icon: Icons.palette,
-                  title: 'Theme',
-                  onTap: () {
-                    // TODO: Implement theme settings
-                  },
-                ),
               ],
             ),
           ),
