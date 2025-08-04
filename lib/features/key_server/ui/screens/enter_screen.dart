@@ -30,7 +30,6 @@ class EnterScreen extends StatelessWidget {
         ),
       ),
       body: StackedPage(
-        bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
         bottomChild: const ConfirmButton(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
