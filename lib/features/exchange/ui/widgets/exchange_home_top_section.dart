@@ -2,8 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/cards/action_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -15,6 +13,13 @@ class ExchangeHomeTopSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.theme;
 
+    final balances = context.select(
+      (ExchangeCubit cubit) => cubit.state.userSummary?.displayBalances ?? [],
+    );
+    final balanceTextStyle =
+        balances.length > 1
+            ? theme.textTheme.displaySmall
+            : theme.textTheme.displayMedium;
     return SizedBox(
       height: 264 + 78 + 46,
       child: Stack(
@@ -33,49 +38,14 @@ class ExchangeHomeTopSection extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Gap(46),
-                        BlocBuilder<ExchangeCubit, ExchangeState>(
-                          buildWhen: (previous, current) {
-                            final prevBalances =
-                                previous.userSummary?.displayBalances ?? [];
-                            final currentBalances =
-                                current.userSummary?.displayBalances ?? [];
-                            return prevBalances.length !=
-                                    currentBalances.length ||
-                                !listEquals(
-                                  prevBalances
-                                      .map(
-                                        (b) => '${b.amount}${b.currencyCode}',
-                                      )
-                                      .toList(),
-                                  currentBalances
-                                      .map(
-                                        (b) => '${b.amount}${b.currencyCode}',
-                                      )
-                                      .toList(),
-                                );
-                          },
-                          builder: (context, state) {
-                            final userSummary = state.userSummary;
-                            final balances = userSummary?.displayBalances ?? [];
-                            final balanceTextStyle =
-                                balances.length > 1
-                                    ? theme.textTheme.displaySmall
-                                    : theme.textTheme.displayMedium;
-                            return Column(
-                              children:
-                                  balances
-                                      .map(
-                                        (b) => BBText(
-                                          '${b.amount} ${b.currencyCode}',
-                                          style: balanceTextStyle?.copyWith(
-                                            color: theme.colorScheme.onPrimary,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      )
-                                      .toList(),
-                            );
-                          },
+                        ...balances.map(
+                          (b) => BBText(
+                            '${b.amount} ${b.currencyCode}',
+                            style: balanceTextStyle?.copyWith(
+                              color: theme.colorScheme.onPrimary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ],
                     ),
