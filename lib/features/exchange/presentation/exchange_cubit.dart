@@ -23,6 +23,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
        _deleteExchangeApiKeyUsecase = deleteExchangeApiKeyUsecase,
        super(const ExchangeState());
 
+  Timer? _pollingTimer;
+
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final SaveExchangeApiKeyUsecase _saveExchangeApiKeyUsecase;
   final SaveUserPreferencesUsecase _saveUserPreferencesUsecase;
@@ -30,7 +32,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   Future<void> fetchUserSummary() async {
     try {
-      // Clear any previous exceptions
+      log.info('Fetching user summary');
+
       emit(
         state.copyWith(apiKeyException: null, getUserSummaryException: null),
       );
@@ -40,28 +43,43 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       emit(state.copyWith(userSummary: userSummary));
       emit(state.copyWith(selectedLanguage: userSummary.language));
       emit(state.copyWith(selectedCurrency: userSummary.currency));
+
+      startPolling();
     } catch (e) {
       log.severe('Error during init: $e');
       if (e is ApiKeyException) {
         emit(state.copyWith(apiKeyException: e));
+        // Stop polling if API key is invalid
+        stopPolling();
       } else if (e is GetExchangeUserSummaryException) {
         emit(state.copyWith(getUserSummaryException: e));
       }
     }
   }
 
+  void startPolling() {
+    _pollingTimer?.cancel();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (!state.notLoggedIn) {
+        fetchUserSummary();
+      }
+    });
+  }
+
+  void stopPolling() {
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
+  }
+
   Future<void> storeApiKey(Map<String, dynamic> apiKeyData) async {
     try {
       log.info('Storing API key: $apiKeyData');
 
-      // Clear any previous exceptions
       emit(state.copyWith(saveApiKeyException: null));
 
       await _saveExchangeApiKeyUsecase.execute(apiKeyResponseData: apiKeyData);
       log.fine('API key successfully stored');
 
-      // Now that the API key is stored, we can try to fetch the user summary
-      //  again.
       await fetchUserSummary();
     } catch (e) {
       log.severe('Error in storeApiKey: $e');
@@ -103,11 +121,11 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     try {
       log.info('Logging out from exchange');
 
-      // Clear any previous exceptions
+      stopPolling();
+
       emit(state.copyWith(deleteApiKeyException: null));
       await _deleteExchangeApiKeyUsecase.execute();
 
-      // Clear WebView data and API key
       final webviewController = WebViewController();
       final cookieManager = WebviewCookieManager();
       await Future.wait([
@@ -116,7 +134,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         cookieManager.clearCookies(),
       ]);
 
-      // Clear the user summary and selected preferences
       emit(
         state.copyWith(
           userSummary: null,
@@ -132,5 +149,11 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         emit(state.copyWith(deleteApiKeyException: e));
       }
     }
+  }
+
+  @override
+  Future<void> close() {
+    stopPolling();
+    return super.close();
   }
 }

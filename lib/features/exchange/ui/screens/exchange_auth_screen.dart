@@ -62,8 +62,10 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
               setState(() => _isGeneratingApiKey = true);
 
               final apiKeyData = await _generateApiKey();
-              log.info('Generated API key: $apiKeyData');
-
+              if (apiKeyData['error'] != null) {
+                setState(() => _isGeneratingApiKey = false);
+                return;
+              }
               // Save the API key so it can be used for future requests
               if (!mounted) return;
               await context.read<ExchangeCubit>().storeApiKey(apiKeyData);
