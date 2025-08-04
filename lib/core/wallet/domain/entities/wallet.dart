@@ -135,7 +135,8 @@ abstract class Wallet with _$Wallet {
       Network.liquidMainnet ||
       Network.liquidTestnet => 'Liquid and Lightning network',
     };
-    if (signer == SignerEntity.none) name = 'Watch-only';
+    if (isWatchOnly) name = 'Watch-Only';
+    if (isWatchSigner) name = 'Watch-Signer';
     return name;
   }
 
@@ -198,4 +199,7 @@ abstract class Wallet with _$Wallet {
   }
 
   bool get isWatchOnly => signer == SignerEntity.none;
+  bool get isWatchSigner => signer == SignerEntity.remote;
+  bool get signsLocally => signer == SignerEntity.local;
+  bool get signsRemotely => isWatchSigner;
 }

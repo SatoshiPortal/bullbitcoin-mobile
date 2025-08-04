@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
@@ -32,24 +32,22 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   }
 
   Future<void> import() async {
-    if (state.watchOnlyWallet == null) return;
+    emit(state.copyWith(error: ''));
 
     try {
+      if (state.watchOnlyWallet == null) throw 'No watch-only wallet';
+      if (state.watchOnlyWallet!.label.isEmpty) throw 'Label required';
+
       if (state.watchOnlyWallet is WatchOnlyDescriptorEntity) {
         final entity = state.watchOnlyWallet! as WatchOnlyDescriptorEntity;
         final importedWallet = await _importWatchOnlyDescriptorUsecase(
-          descriptor: entity.watchOnlyDescriptor.descriptor.combined,
-          label: entity.label,
+          watchOnlyDescriptor: entity,
         );
         emit(state.copyWith(importedWallet: importedWallet));
       } else if (state.watchOnlyWallet is WatchOnlyXpubEntity) {
         final entity = state.watchOnlyWallet! as WatchOnlyXpubEntity;
-
         final importedWallet = await _importWatchOnlyXpubUsecase(
-          xpub: entity.pubkey,
-          network: entity.network,
-          scriptType: entity.scriptType,
-          label: entity.label,
+          watchOnlyXpub: entity,
         );
         emit(state.copyWith(importedWallet: importedWallet));
       }

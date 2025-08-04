@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -812,9 +811,7 @@ class _BottomButtons extends StatelessWidget {
             ),
             const Gap(12),
           ],
-          if (wallet != null &&
-              wallet.signer == SignerEntity.remote &&
-              isSuperuser)
+          if (wallet != null && isSuperuser && wallet.signsRemotely)
             const ShowPsbtButton()
           else
             const ConfirmSendButton(),

@@ -10,9 +10,9 @@ part 'watch_only_wallet_entity.freezed.dart';
 abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
   const factory WatchOnlyWalletEntity.descriptor({
     required satoshifier.WatchOnlyDescriptor watchOnlyDescriptor,
-    @Default(SignerEntity.none) SignerEntity signer,
+    @Default(SignerEntity.remote) SignerEntity signer,
     @Default('') String label,
-    @Default(null) SignerDeviceEntity? signerDevice,
+    @Default(SignerDeviceEntity.coldcardQ) SignerDeviceEntity? signerDevice,
   }) = WatchOnlyDescriptorEntity;
 
   const factory WatchOnlyWalletEntity.xpub({

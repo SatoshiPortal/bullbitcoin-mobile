@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 
 class ImportWatchOnlyXpubUsecase {
   final WalletRepository _wallet;
@@ -7,18 +8,13 @@ class ImportWatchOnlyXpubUsecase {
   ImportWatchOnlyXpubUsecase({required WalletRepository walletRepository})
     : _wallet = walletRepository;
 
-  Future<Wallet> call({
-    required String xpub,
-    required Network network,
-    required ScriptType scriptType,
-    String label = '',
-  }) async {
+  Future<Wallet> call({required WatchOnlyXpubEntity watchOnlyXpub}) async {
     try {
       final wallet = await _wallet.importWatchOnlyXpub(
-        xpub: xpub,
-        network: network,
-        scriptType: scriptType,
-        label: label,
+        xpub: watchOnlyXpub.pubkey,
+        network: watchOnlyXpub.network,
+        scriptType: watchOnlyXpub.scriptType,
+        label: watchOnlyXpub.label,
       );
 
       return wallet;

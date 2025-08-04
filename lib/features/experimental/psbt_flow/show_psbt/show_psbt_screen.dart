@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/experimental/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/show_bbqr/show_bbqr_widget.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/show_psbt/show_psbt_cubit.dart';
@@ -29,9 +30,9 @@ class _ShowPsbtView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PSBT'),
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(title: 'BBQR PSBT', onBack: () => context.pop()),
       ),
       body: BlocBuilder<ShowPsbtCubit, ShowPsbtState>(
         builder: (context, state) {
