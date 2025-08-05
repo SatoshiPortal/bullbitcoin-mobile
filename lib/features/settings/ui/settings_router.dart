@@ -86,6 +86,7 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.exchangeSettings.name,
         path: SettingsRoute.exchangeSettings.path,
+
         builder: (context, state) => const ExchangeSettingsScreen(),
       ),
       GoRoute(
