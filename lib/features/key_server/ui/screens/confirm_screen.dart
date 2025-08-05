@@ -36,7 +36,7 @@ class ConfirmScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Gap(100),
+              const Gap(50),
               BBText(
                 'Enter your ${state.authInputType == AuthInputType.pin ? 'PIN' : 'Password'} again to continue.',
                 textAlign: TextAlign.center,
@@ -45,7 +45,7 @@ class ConfirmScreen extends StatelessWidget {
                 ),
                 maxLines: 2,
               ),
-              const Gap(50),
+              const Gap(25),
               if (state.authInputType == AuthInputType.password)
                 BBText(
                   'Password',

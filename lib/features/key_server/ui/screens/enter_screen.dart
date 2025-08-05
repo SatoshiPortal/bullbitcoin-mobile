@@ -44,7 +44,7 @@ class EnterScreen extends StatelessWidget {
                 ),
                 maxLines: 3,
               ),
-              const Gap(120),
+              const Gap(60),
               if (state.authInputType == AuthInputType.password)
                 BBText(
                   'Password',
