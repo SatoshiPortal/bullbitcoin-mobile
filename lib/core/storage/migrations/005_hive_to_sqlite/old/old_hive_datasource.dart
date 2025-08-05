@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_storage_keys.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:bb_mobile/core/storage/secure_storage.dart';
 import 'package:hive/hive.dart' show Box, Hive, HiveAesCipher;
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory;
@@ -14,7 +14,8 @@ class OldHiveDatasource {
   static Future<Box> getBox() async {
     final dir = await getApplicationDocumentsDirectory();
     Hive.init(dir.path);
-    final password = await const FlutterSecureStorage().read(
+    final secureStorage = SecureStorage.init();
+    final password = await secureStorage.read(
       key: OldStorageKeys.hiveEncryption.name,
     );
 

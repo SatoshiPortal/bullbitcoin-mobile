@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_seed.dart';
+import 'package:bb_mobile/core/storage/secure_storage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class MigrationSecureStorageDatasource {
   final FlutterSecureStorage _storage;
 
-  MigrationSecureStorageDatasource() : _storage = const FlutterSecureStorage();
+  MigrationSecureStorageDatasource() : _storage = SecureStorage.init();
 
   Future<void> store({required String key, required String value}) async {
     await _storage.write(key: key, value: value);
