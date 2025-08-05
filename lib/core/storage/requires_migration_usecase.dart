@@ -24,8 +24,7 @@ class RequiresMigrationUsecase {
     }
     if (fromVersion.startsWith('0.1') ||
         fromVersion.startsWith('0.2') ||
-        fromVersion.startsWith('0.3') ||
-        fromVersion.startsWith('0.4')) {
+        fromVersion.startsWith('0.3')) {
       return MigrationRequired.v4;
     }
 
@@ -33,7 +32,7 @@ class RequiresMigrationUsecase {
       onlyDefaults: true,
       environment: Environment.mainnet,
     );
-    if (newMainnetDefaultWallets.length < 2) {
+    if (newMainnetDefaultWallets.length < 2 && fromVersion.startsWith('0.4')) {
       return MigrationRequired.v5;
     }
     return null;
