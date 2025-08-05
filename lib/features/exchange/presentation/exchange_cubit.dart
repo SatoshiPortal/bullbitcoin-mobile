@@ -9,7 +9,6 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class ExchangeCubit extends Cubit<ExchangeState> {
   ExchangeCubit({
