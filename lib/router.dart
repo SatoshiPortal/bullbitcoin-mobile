@@ -37,43 +37,45 @@ class AppRouter {
           final tabIndex =
               location.startsWith(ExchangeRoute.exchangeHome.path) ? 1 : 0;
 
-          return Scaffold(
-            // The app bar of the exchange tab is done with a sliver app bar
-            // on the ExchangeHomeScreen itself.
-            appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
-            extendBodyBehindAppBar: true,
-            body: child,
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: tabIndex,
-              onTap: (index) {
-                // Only supersusers can navigate to the exchange tab
-                final isSuperuser =
-                    context.read<SettingsCubit>().state.isSuperuser ?? false;
-                if (index == 1 && !isSuperuser) {
-                  ComingSoonBottomSheet.show(
-                    context,
-                    description: 'Link your BullBitcoin Account',
-                  );
-                  return;
-                }
+          return SafeArea(
+            child: Scaffold(
+              // The app bar of the exchange tab is done with a sliver app bar
+              // on the ExchangeHomeScreen itself.
+              appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
+              extendBodyBehindAppBar: true,
+              body: child,
+              bottomNavigationBar: BottomNavigationBar(
+                currentIndex: tabIndex,
+                onTap: (index) {
+                  // Only supersusers can navigate to the exchange tab
+                  final isSuperuser =
+                      context.read<SettingsCubit>().state.isSuperuser ?? false;
+                  if (index == 1 && !isSuperuser) {
+                    ComingSoonBottomSheet.show(
+                      context,
+                      description: 'Link your BullBitcoin Account',
+                    );
+                    return;
+                  }
 
-                final goNamed =
-                    index == 0
-                        ? WalletRoute.walletHome.name
-                        : ExchangeRoute.exchangeHome.name;
+                  final goNamed =
+                      index == 0
+                          ? WalletRoute.walletHome.name
+                          : ExchangeRoute.exchangeHome.name;
 
-                context.goNamed(goNamed);
-              },
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.currency_bitcoin),
-                  label: 'Wallet',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.attach_money),
-                  label: 'Exchange',
-                ),
-              ],
+                  context.goNamed(goNamed);
+                },
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.currency_bitcoin),
+                    label: 'Wallet',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.attach_money),
+                    label: 'Exchange',
+                  ),
+                ],
+              ),
             ),
           );
         },
