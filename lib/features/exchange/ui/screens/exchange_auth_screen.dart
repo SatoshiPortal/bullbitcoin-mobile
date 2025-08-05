@@ -6,9 +6,11 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -26,6 +28,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   late final WebviewCookieManager _cookieManager = WebviewCookieManager();
   late final String _bbAuthUrl;
   bool _isGeneratingApiKey = false;
+  bool _isClosing = false;
 
   @override
   void initState() {
@@ -40,8 +43,73 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..addJavaScriptChannel(
+        'Flutter',
+        onMessageReceived: (JavaScriptMessage message) {
+          if (message.message == 'close') {
+            if (!_isClosing && mounted) {
+              _isClosing = true;
+              // Navigate immediately
+              context.goNamed(WalletRoute.walletHome.name);
+            }
+          }
+        },
+      )
       ..setNavigationDelegate(
         NavigationDelegate(
+          onPageFinished: (String url) {
+            // Direct JavaScript to handle "Back to App" button
+            _controller.runJavaScript('''
+              (function() {
+                function handleBackToApp() {
+                  // NOTE : NEXT JS MAY CHANGE THE NAME OF THIS DIV!!!
+                  
+                  // Method 1: Direct click on the specific div structure
+                  const backDiv = document.querySelector('div.css-70qvj9');
+                  if (backDiv && !backDiv.hasAttribute('data-handled')) {
+                    backDiv.setAttribute('data-handled', 'true');
+                    backDiv.addEventListener('click', function(e) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      Flutter.postMessage('close');
+                      return false;
+                    });
+                  }
+                  
+                  // Method 2: Click on parent div
+                  // const parentDiv = document.querySelector('div.css-17lzdhk');
+                  // if (parentDiv && !parentDiv.hasAttribute('data-handled')) {
+                  //   parentDiv.setAttribute('data-handled', 'true');
+                  //   parentDiv.addEventListener('click', function(e) {
+                  //     e.preventDefault();
+                  //     e.stopPropagation();
+                  //     Flutter.postMessage('close');
+                  //     return false;
+                  //   });
+                  // }
+                }
+                
+                // Run immediately
+                handleBackToApp();
+                
+                // Run after delays to catch dynamic content
+                setTimeout(handleBackToApp, 500);
+                setTimeout(handleBackToApp, 1000);
+                setTimeout(handleBackToApp, 2000);
+                setTimeout(handleBackToApp, 5000);
+                
+                // Watch for DOM changes
+                const observer = new MutationObserver(function(mutations) {
+                  handleBackToApp();
+                });
+                
+                observer.observe(document.body, {
+                  childList: true,
+                  subtree: true
+                });
+              })();
+            ''');
+          },
           onUrlChange: (UrlChange change) async {
             final url = change.url;
             if (url == null) return;
@@ -188,11 +256,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   }
 
   Future<void> _clearCacheAndCookies() async {
-    await Future.wait([
-      _controller.clearCache(),
-      _controller.clearLocalStorage(),
-      _cookieManager.clearCookies(),
-    ]);
+    // Only clear cookies, not cache to avoid blank screen issues
+    await _cookieManager.clearCookies();
   }
 
   Future<void> _handleLoginError() async {
@@ -218,5 +283,11 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             ],
           ),
     );
+  }
+
+  @override
+  void dispose() {
+    _isClosing = true;
+    super.dispose();
   }
 }
