@@ -320,6 +320,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     if (oldWidget.words.length != widget.words.length) {
       _disposeFocusNodes();
       _initializeFocusNodes();
+      _focusedDisplayIndex = 0;
     }
   }
 
