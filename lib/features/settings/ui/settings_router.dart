@@ -3,6 +3,9 @@ import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/experimental/experimental_router.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
 import 'package:bb_mobile/features/legacy_seed_view/ui/legacy_seed_view_screen.dart';
@@ -87,7 +90,17 @@ class SettingsRouter {
         name: SettingsRoute.exchangeSettings.name,
         path: SettingsRoute.exchangeSettings.path,
 
-        builder: (context, state) => const ExchangeSettingsScreen(),
+        builder:
+            (context, state) => BlocListener<ExchangeCubit, ExchangeState>(
+              listenWhen:
+                  (previous, current) =>
+                      !previous.notLoggedIn && current.notLoggedIn,
+              listener: (context, state) {
+                // Redirect to auth screen if the user logged out
+                context.goNamed(ExchangeRoute.exchangeAuth.name);
+              },
+              child: const ExchangeSettingsScreen(),
+            ),
       ),
       GoRoute(
         name: SettingsRoute.exchangeAccountInfo.name,

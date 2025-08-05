@@ -15,13 +15,6 @@ class ExchangeSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.select((ExchangeCubit cubit) => cubit.state);
 
-    // Redirect to exchange auth if user is not logged in
-    if (state.notLoggedIn) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.goNamed(ExchangeRoute.exchangeAuth.name);
-      });
-    }
-
     return Scaffold(
       appBar: AppBar(title: const Text('Exchange Settings')),
       body: SafeArea(
@@ -135,22 +128,31 @@ class ExchangeSettingsScreen extends StatelessWidget {
                     }
                   },
                 ),
-                SettingsEntryItem(
-                  icon: Icons.logout,
-                  title: 'Log Out',
-                  onTap: () {
-                    if (state.notLoggedIn) {
-                      NotLoggedInBottomSheet.show(context);
-                    } else {
-                      LogoutConfirmationBottomSheet.show(
-                        context,
-                        onConfirm: () async {
-                          await context.read<ExchangeCubit>().logout();
-                        },
-                      );
-                    }
-                  },
-                ),
+                if (state.notLoggedIn)
+                  SettingsEntryItem(
+                    icon: Icons.login,
+                    title: 'Log In',
+                    onTap: () {
+                      context.goNamed(ExchangeRoute.exchangeAuth.name);
+                    },
+                  ),
+                if (!state.notLoggedIn)
+                  SettingsEntryItem(
+                    icon: Icons.logout,
+                    title: 'Log Out',
+                    onTap: () {
+                      if (state.notLoggedIn) {
+                        NotLoggedInBottomSheet.show(context);
+                      } else {
+                        LogoutConfirmationBottomSheet.show(
+                          context,
+                          onConfirm: () async {
+                            await context.read<ExchangeCubit>().logout();
+                          },
+                        );
+                      }
+                    },
+                  ),
               ],
             ),
           ),
