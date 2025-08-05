@@ -256,11 +256,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   }
 
   Future<void> _clearCacheAndCookies() async {
-    await Future.wait([
-      _controller.clearCache(),
-      _controller.clearLocalStorage(),
-      _cookieManager.clearCookies(),
-    ]);
+    // Only clear cookies, not cache to avoid blank screen issues
+    await _cookieManager.clearCookies();
   }
 
   Future<void> _handleLoginError() async {

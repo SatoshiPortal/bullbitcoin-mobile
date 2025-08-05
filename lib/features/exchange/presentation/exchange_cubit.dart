@@ -126,13 +126,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       emit(state.copyWith(deleteApiKeyException: null));
       await _deleteExchangeApiKeyUsecase.execute();
 
-      final webviewController = WebViewController();
       final cookieManager = WebviewCookieManager();
-      await Future.wait([
-        webviewController.clearCache(),
-        webviewController.clearLocalStorage(),
-        cookieManager.clearCookies(),
-      ]);
+      await cookieManager.clearCookies();
 
       emit(
         state.copyWith(
