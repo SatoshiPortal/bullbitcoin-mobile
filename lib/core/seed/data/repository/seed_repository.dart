@@ -2,9 +2,9 @@ import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
+import 'package:bb_mobile/core/storage/secure_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SeedRepository {
   final SeedDatasource _source;
@@ -52,9 +52,7 @@ class _IsolateParams {
 Future<Seed> _getSeedInIsolate(_IsolateParams params) async {
   try {
     BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootToken);
-    final secureStorage = SecureStorageDatasourceImpl(
-      const FlutterSecureStorage(),
-    );
+    final secureStorage = SecureStorageDatasourceImpl(SecureStorage.init());
     final seedDatasource = SeedDatasource(secureStorage: secureStorage);
     final model = await seedDatasource.get(params.fingerprint);
     return model.toEntity();
