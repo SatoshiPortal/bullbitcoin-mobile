@@ -270,6 +270,15 @@ class MnemonicWordState extends State<MnemonicWord> {
               ),
             ),
           ),
+          if (_controller.text.isNotEmpty || isValidWord)
+            IconButton(
+              onPressed: () {
+                _controller.clear();
+                widget.onWordChanged((index: widget.index, word: ''));
+              },
+              icon: const Icon(Icons.close, size: 24),
+              padding: EdgeInsets.zero,
+            ),
         ],
       ),
     );
