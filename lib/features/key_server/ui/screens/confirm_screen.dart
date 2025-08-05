@@ -45,7 +45,7 @@ class ConfirmScreen extends StatelessWidget {
                 ),
                 maxLines: 2,
               ),
-              const Gap(25),
+              const Gap(47),
               if (state.authInputType == AuthInputType.password)
                 BBText(
                   'Password',
@@ -73,7 +73,7 @@ class ConfirmScreen extends StatelessWidget {
                   }
                 },
               ),
-              const Gap(50),
+              const Gap(72),
               BBButton.big(
                 label:
                     'Use ${state.authInputType == AuthInputType.pin ? 'password' : 'PIN'} instead >>',

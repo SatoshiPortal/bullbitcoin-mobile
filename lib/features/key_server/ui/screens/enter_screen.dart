@@ -91,7 +91,7 @@ class EnterScreen extends StatelessWidget {
                 )
               else
                 const SizedBox.shrink(),
-              const Gap(50),
+              const Gap(72),
               BBButton.small(
                 label:
                     'Pick a ${state.authInputType == AuthInputType.pin ? 'password' : 'pin'} instead >>',

@@ -78,7 +78,7 @@ class RecoverWithSecretScreen extends StatelessWidget {
                   }
                 },
               ),
-              const Gap(50),
+              const Gap(72),
               BBButton.small(
                 label:
                     'Pick ${state.authInputType == AuthInputType.pin ? 'password' : 'PIN'} instead >>',
