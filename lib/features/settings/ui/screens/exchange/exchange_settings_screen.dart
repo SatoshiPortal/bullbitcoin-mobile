@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/not_logged_in_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -127,22 +128,31 @@ class ExchangeSettingsScreen extends StatelessWidget {
                     }
                   },
                 ),
-                SettingsEntryItem(
-                  icon: Icons.logout,
-                  title: 'Log Out',
-                  onTap: () {
-                    if (state.notLoggedIn) {
-                      NotLoggedInBottomSheet.show(context);
-                    } else {
-                      LogoutConfirmationBottomSheet.show(
-                        context,
-                        onConfirm: () async {
-                          await context.read<ExchangeCubit>().logout();
-                        },
-                      );
-                    }
-                  },
-                ),
+                if (state.notLoggedIn)
+                  SettingsEntryItem(
+                    icon: Icons.login,
+                    title: 'Log In',
+                    onTap: () {
+                      context.goNamed(ExchangeRoute.exchangeAuth.name);
+                    },
+                  ),
+                if (!state.notLoggedIn)
+                  SettingsEntryItem(
+                    icon: Icons.logout,
+                    title: 'Log Out',
+                    onTap: () {
+                      if (state.notLoggedIn) {
+                        NotLoggedInBottomSheet.show(context);
+                      } else {
+                        LogoutConfirmationBottomSheet.show(
+                          context,
+                          onConfirm: () async {
+                            await context.read<ExchangeCubit>().logout();
+                          },
+                        );
+                      }
+                    },
+                  ),
               ],
             ),
           ),
