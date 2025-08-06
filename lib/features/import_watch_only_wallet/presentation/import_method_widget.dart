@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_ro
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ImportMethodWidget extends StatelessWidget {
   const ImportMethodWidget({super.key});
@@ -66,11 +67,15 @@ class ImportMethodWidget extends StatelessWidget {
               children: [
                 BBButton.big(
                   label: 'Buy a device',
-                  onPressed: () {},
+                  onPressed:
+                      () => launchUrl(
+                        Uri.parse(
+                          'https://store.coinkite.com/promo/BULLBITCOIN',
+                        ),
+                      ),
                   bgColor: context.colour.onPrimary,
                   textColor: context.colour.secondary,
                   iconData: Icons.shopping_cart,
-                  disabled: true,
                 ),
                 const Gap(12),
                 BBButton.big(
