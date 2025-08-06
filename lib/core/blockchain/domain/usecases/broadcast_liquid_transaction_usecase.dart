@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
+import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 
 class BroadcastLiquidTransactionUsecase {
@@ -25,10 +26,4 @@ class BroadcastLiquidTransactionUsecase {
       throw BroadcastTransactionException(e.toString());
     }
   }
-}
-
-class BroadcastTransactionException implements Exception {
-  final String message;
-
-  BroadcastTransactionException(this.message);
 }
