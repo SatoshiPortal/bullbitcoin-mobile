@@ -80,11 +80,13 @@ class ImportMethodWidget extends StatelessWidget {
                 const Gap(12),
                 BBButton.big(
                   label: 'Wallet guides',
-                  onPressed: () {},
+                  onPressed:
+                      () => launchUrl(
+                        Uri.parse('https://docs.bull.ethicnology.com'),
+                      ),
                   bgColor: context.colour.onPrimary,
                   textColor: context.colour.secondary,
                   iconData: Icons.lightbulb_outline,
-                  disabled: true,
                 ),
               ],
             ),
