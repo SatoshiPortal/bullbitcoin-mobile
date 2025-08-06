@@ -14,7 +14,7 @@ class ExperimentalSettingsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Experimental / Danger Zone',
+          title: 'Broadcast Transaction',
           color: context.colour.secondaryFixed,
           onBack: context.pop,
         ),

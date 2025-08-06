@@ -3,12 +3,12 @@ import 'package:bb_mobile/features/import_watch_only_wallet/presentation/scan_wa
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:go_router/go_router.dart';
 
-enum ImportWatchOnlyRoutes {
+enum ImportWalletRoutes {
   import('/import-watch-only'),
   scan('/import-watch-only-scanner');
 
   final String path;
-  const ImportWatchOnlyRoutes(this.path);
+  const ImportWalletRoutes(this.path);
 }
 
 class ImportWatchOnlyRouter {
@@ -16,16 +16,16 @@ class ImportWatchOnlyRouter {
     builder: (context, state, child) => child,
     routes: [
       GoRoute(
-        name: ImportWatchOnlyRoutes.import.name,
-        path: ImportWatchOnlyRoutes.import.path,
+        name: ImportWalletRoutes.import.name,
+        path: ImportWalletRoutes.import.path,
         builder: (context, state) {
           final watchOnlyWallet = state.extra as WatchOnlyWalletEntity?;
           return ImportWatchOnlyScreen(watchOnlyWallet: watchOnlyWallet);
         },
       ),
       GoRoute(
-        name: ImportWatchOnlyRoutes.scan.name,
-        path: ImportWatchOnlyRoutes.scan.path,
+        name: ImportWalletRoutes.scan.name,
+        path: ImportWalletRoutes.scan.path,
         builder: (context, state) => const ScanWatchOnlyScreen(),
       ),
     ],
