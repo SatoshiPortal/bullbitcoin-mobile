@@ -7,9 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class WalletCards extends StatelessWidget {
-  const WalletCards({super.key, this.padding, this.onTap});
+  const WalletCards({
+    super.key,
+    this.padding,
+    this.onTap,
+    this.localSignersOnly = false,
+  });
 
   final EdgeInsetsGeometry? padding;
+  final bool localSignersOnly;
   final Function(Wallet wallet)? onTap;
 
   static Color cardDetails(BuildContext context, Wallet wallet) {
@@ -30,7 +36,12 @@ class WalletCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallets = context.select((WalletBloc bloc) => bloc.state.wallets);
+    final wallets = context.select(
+      (WalletBloc bloc) =>
+          localSignersOnly
+              ? bloc.state.wallets.where((w) => w.signsLocally)
+              : bloc.state.wallets,
+    );
     final syncStatus = context.select(
       (WalletBloc bloc) => bloc.state.syncStatus,
     );
