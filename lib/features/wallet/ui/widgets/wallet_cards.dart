@@ -11,11 +11,11 @@ class WalletCards extends StatelessWidget {
     super.key,
     this.padding,
     this.onTap,
-    this.hideWatchOnly = false,
+    this.localSignersOnly = false,
   });
 
   final EdgeInsetsGeometry? padding;
-  final bool hideWatchOnly;
+  final bool localSignersOnly;
   final Function(Wallet wallet)? onTap;
 
   static Color cardDetails(BuildContext context, Wallet wallet) {
@@ -38,11 +38,9 @@ class WalletCards extends StatelessWidget {
   Widget build(BuildContext context) {
     final wallets = context.select(
       (WalletBloc bloc) =>
-          bloc.state.wallets
-              .where(
-                (w) => !hideWatchOnly || (!w.isWatchOnly && !w.signsRemotely),
-              )
-              .toList(),
+          localSignersOnly
+              ? bloc.state.wallets.where((w) => w.signsLocally)
+              : bloc.state.wallets,
     );
     final syncStatus = context.select(
       (WalletBloc bloc) => bloc.state.syncStatus,

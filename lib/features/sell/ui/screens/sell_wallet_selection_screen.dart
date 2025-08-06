@@ -49,7 +49,7 @@ class SellWalletSelectionScreen extends StatelessWidget {
                             : (wallet) => context.read<SellBloc>().add(
                               SellEvent.walletSelected(wallet: wallet),
                             ),
-                    hideWatchOnly: true,
+                    localSignersOnly: true,
                   ),
                   /*const Gap(24.0),
                   ListTile(
