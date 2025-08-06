@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 5.3.0+68
+version: 5.4.0+77
 
 environment:
   sdk: ">=3.7.0 <4.0.0"
@@ -22,7 +22,7 @@ dependencies:
   gap: ^3.0.1
   go_router: ^14.0.2
   google_fonts: ^6.2.1
-  flutter_secure_storage: ^9.1.0
+  flutter_secure_storage: ^9.2.4
   path_provider: ^2.0.15
   payjoin_flutter:
     git:
@@ -59,7 +59,7 @@ dependencies:
   bip85: ^2.0.0
   bip21_uri: ^2.0.1
   bip32_keys: ^3.0.1
-  bip39_mnemonic: ^3.0.9
+  bip39_mnemonic: ^4.0.0
   bs58check: ^1.0.2
   gif: ^2.3.0
   custom_sliding_segmented_control: ^1.8.5
@@ -89,14 +89,15 @@ dependencies:
   dart_bbqr:
     git:
       url: https://github.com/SatoshiPortal/bbqr-dart.git
-      ref: main
+      ref: 348feb8db3dd00260f17da9f7d850301cb899a87
   sliver_tools: ^0.2.12
   logging_colorful: ^1.2.2
   timelines_plus: ^1.0.7
   satoshifier:
     git:
       url: https://github.com/ethicnology/dart-satoshifier.git
-      ref: main
+      ref: 9c69f4408f9f4e6b471ad2b180e006aea40e7d5a
+  flutter_nfc_kit: ^3.6.0
 
 dev_dependencies:
   build_runner: ^2.4.15
@@ -118,25 +119,18 @@ flutter:
 
   assets:
     - .env
-    - assets/images/
     - assets/
     - assets/icons/
-    - assets/images2/
-    # - assets/textlogo.png
-    # - assets/nfc_scan.png
-    # - assets/cc-logo.png
-    # - assets/bb-logo2.png
-    # - assets/bb-white.png
-    # - assets/arrow_down.png
-    # - assets/arrow_down_white.png
-    # - assets/request-payment.svg
-    # - assets/new-address.svg
+    - assets/logos/
+    - assets/backgrounds/
+    - assets/animations/
+    - assets/misc/
 
 flutter_native_splash:
-  background_image: "assets/splash.png"
+  background_image: "assets/logos/bb-logo-white-splash.png"
   android_12:
     color: "#C50909"
-    image: assets/bb-logo-white-splash.png
+    image: assets/logos/bb-logo-white-splash.png
     # icon_background_color: "#C50909"
     icon_background_color: "#C50909"
 
@@ -145,7 +139,7 @@ flutter_native_splash:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/iconnew.png"
+  image_path: "assets/misc/iconnew.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
   adaptive_icon_background: "#FBFBFB"
-  adaptive_icon_foreground: "assets/iconnew-red.png"
+  adaptive_icon_foreground: "assets/misc/iconnew-red.png"

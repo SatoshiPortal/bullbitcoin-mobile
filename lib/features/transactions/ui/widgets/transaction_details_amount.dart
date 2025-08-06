@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,7 +20,8 @@ class TransactionDetailsAmount extends StatelessWidget {
         isOrder &&
         (tx!.order is FiatPaymentOrder ||
             tx.order is BalanceAdjustmentOrder ||
-            tx.order is WithdrawOrder);
+            tx.order is WithdrawOrder ||
+            tx.order is FundingOrder);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

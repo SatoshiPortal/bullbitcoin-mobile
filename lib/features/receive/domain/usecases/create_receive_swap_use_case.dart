@@ -2,24 +2,24 @@ import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_new_receive_address_use_case.dart';
 
 class CreateReceiveSwapUsecase {
   final WalletRepository _walletRepository;
-  final SwapRepository _swapRepository;
-  final SwapRepository _swapRepositoryTestnet;
+  final BoltzSwapRepository _swapRepository;
+  final BoltzSwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
   final GetNewReceiveAddressUsecase _getNewAddressUsecase;
   final LabelRepository _labelRepository;
 
   CreateReceiveSwapUsecase({
     required WalletRepository walletRepository,
-    required SwapRepository swapRepository,
-    required SwapRepository swapRepositoryTestnet,
+    required BoltzSwapRepository swapRepository,
+    required BoltzSwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
     required GetNewReceiveAddressUsecase getNewAddressUsecase,
     required LabelRepository labelRepository,
@@ -96,7 +96,6 @@ class CreateReceiveSwapUsecase {
           return await swapRepository.createLightningToBitcoinSwap(
             walletId: walletId,
             amountSat: amountSat,
-            isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic,
             electrumUrl: btcElectrumUrl,
             claimAddress: claimAddress.address,
@@ -107,7 +106,6 @@ class CreateReceiveSwapUsecase {
           return await swapRepository.createLightningToLiquidSwap(
             walletId: walletId,
             amountSat: amountSat,
-            isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic,
             electrumUrl: lbtcElectrumUrl,
             claimAddress: claimAddress.address,

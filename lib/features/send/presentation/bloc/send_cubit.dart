@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/errors/send_errors.dart'
+    show BroadcastTransactionException;
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -1069,7 +1071,7 @@ class SendCubit extends Cubit<SendState> {
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
 
-        if (state.selectedWallet!.isWatchOnly) {
+        if (state.selectedWallet!.signsRemotely) {
           emit(
             state.copyWith(
               unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
@@ -1253,6 +1255,22 @@ class SendCubit extends Cubit<SendState> {
       emit(
         state.copyWith(broadcastingTransaction: false, step: SendStep.success),
       );
+    } on GetWalletException catch (e) {
+      emit(
+        state.copyWith(
+          confirmTransactionException: ConfirmTransactionException(e.message),
+          broadcastingTransaction: false,
+        ),
+      );
+    } on BroadcastTransactionException catch (_) {
+      emit(
+        state.copyWith(
+          confirmTransactionException: ConfirmTransactionException(
+            'Failed to broadcast transaction. Check your network connection and try again.',
+          ),
+          broadcastingTransaction: false,
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
@@ -1287,8 +1305,6 @@ class SendCubit extends Cubit<SendState> {
         walletId: state.selectedWallet!.id,
         txId: state.txId!,
       );
-      // Sync the wallet so the transaction is picked up by the watcher
-      await _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
     } catch (e) {
       emit(state.copyWith(step: SendStep.confirm));
       log.severe(e.toString());

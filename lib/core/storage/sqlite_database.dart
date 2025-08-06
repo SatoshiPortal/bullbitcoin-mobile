@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_3_to_4.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
@@ -7,7 +9,7 @@ import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
 import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_address_history_table.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_addresses_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -27,7 +29,7 @@ part 'sqlite_database.g.dart';
     ElectrumServers,
     Swaps,
     AutoSwap,
-    WalletAddressHistory,
+    WalletAddresses,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
@@ -35,12 +37,24 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
       name: 'bullbitcoin_sqlite',
-      native: const DriftNativeOptions(),
+      native: DriftNativeOptions(
+        /// When using a shared instance, stream queries synchronize across the two
+        /// isolates. Also, drift then manages concurrent access to the database,
+        /// preventing "database is locked" errors due to concurrent transactions.
+        shareAcrossIsolates: true,
+        setup: (database) {
+          // This is important, as accessing the database across threads otherwise
+          // causes "database locked" errors.
+          // With write-ahead logging (WAL) enabled, a single writer and multiple
+          // readers can operate on the database in parallel.
+          database.execute('pragma journal_mode = WAL;');
+        },
+      ),
     );
   }
 
@@ -62,18 +76,18 @@ class SqliteDatabase extends _$SqliteDatabase {
           _seedDefaultAutoSwap(),
         ]);
       },
-      onUpgrade: (Migrator m, int from, int to) async {
-        if (from < 2) {
+      onUpgrade: stepByStep(
+        from1To2: (m, schema) async {
           // Create AutoSwap table and seed it
           await m.createTable(autoSwap);
           await _seedDefaultAutoSwap();
-        }
-        if (from < 3) {
+        },
+        from2To3: (m, schema) async {
           // Create WalletAddressHistory table
-          await m.createTable(walletAddressHistory);
-          // TODO: Should we seed this table with already generated addresses here?
-        }
-      },
+          await m.createTable(schema.walletAddressHistory);
+        },
+        from3To4: Schema3To4.migrate,
+      ),
     );
   }
 

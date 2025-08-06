@@ -1,16 +1,14 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/widgets/share_logs_widget.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppStartupWidget extends StatefulWidget {
@@ -83,63 +81,6 @@ class AppStartupListener extends StatelessWidget {
   }
 }
 
-Future<void> _shareLogs(BuildContext context) async {
-  try {
-    final logFile = log.migrationLogs;
-
-    if (!await logFile.exists()) {
-      // ignore: use_build_context_synchronously
-      final theme = Theme.of(context);
-      ScaffoldMessenger.of(
-        // ignore: use_build_context_synchronously
-        context,
-      ).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'No log file found.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: Colors.white),
-          ),
-          duration: const Duration(seconds: 2),
-          backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
-          behavior: SnackBarBehavior.floating,
-          elevation: 4,
-          margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-      );
-      return;
-    }
-
-    await SharePlus.instance.share(ShareParams(files: [XFile(logFile.path)]));
-  } catch (e) {
-    // ignore: use_build_context_synchronously
-    final theme = Theme.of(context);
-    ScaffoldMessenger.of(
-      // ignore: use_build_context_synchronously
-      context,
-    ).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Error sharing logs: $e',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 14, color: Colors.white),
-        ),
-        duration: const Duration(seconds: 2),
-        backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
-        behavior: SnackBarBehavior.floating,
-        elevation: 4,
-        margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
-    );
-  }
-}
-
 class AppStartupFailureScreen extends StatelessWidget {
   const AppStartupFailureScreen({super.key});
 
@@ -172,14 +113,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              BBButton.big(
-                onPressed: () async => await _shareLogs(context),
-                label: 'Share Logs',
-                borderColor: context.colour.secondary,
-                outlined: true,
-                bgColor: Colors.transparent,
-                textColor: context.colour.secondary,
-              ),
+              const ShareLogsWidget(migrationLogs: true, sessionLogs: true),
             ],
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -90,7 +91,7 @@ class SelectBestWalletUsecase {
     for (final w in wallets) {
       if (w.isDefault &&
           w.network == network &&
-          w.source == WalletSource.mnemonic &&
+          w.signer == SignerEntity.local &&
           w.balanceSat.toInt() > satoshis &&
           w.balanceSat.toInt() != 0) {
         return w;
@@ -101,15 +102,14 @@ class SelectBestWalletUsecase {
     for (final w in wallets) {
       if (w.network == network &&
           w.balanceSat.toInt() > satoshis &&
-          w.source == WalletSource.mnemonic) {
+          w.signer == SignerEntity.local) {
         return w;
       }
     }
     // Any wallet
     // Any wallet with enough funds from the same network
     for (final w in wallets) {
-      if (w.balanceSat.toInt() >= satoshis &&
-          w.source == WalletSource.mnemonic) {
+      if (w.balanceSat.toInt() >= satoshis && w.signer == SignerEntity.local) {
         return w;
       }
     }

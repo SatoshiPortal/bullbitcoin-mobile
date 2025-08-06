@@ -1,11 +1,11 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/themes/fonts.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/create_wallet_button.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/recover_backup_button.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/superuser_tap_unlocker.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
-import 'package:bb_mobile/ui/themes/fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -26,7 +26,10 @@ class OnboardingSplash extends StatelessWidget {
               children: [
                 const Spacer(flex: 2),
                 SuperuserTapUnlocker(
-                  child: Image.asset(Assets.bbLogoWhite.path, height: 127),
+                  child: Image.asset(
+                    Assets.logos.bbLogoWhite.path,
+                    height: 127,
+                  ),
                 ),
                 const Gap(36),
                 BBText(
@@ -121,7 +124,7 @@ class _BG extends StatelessWidget {
         Opacity(
           opacity: 0.1,
           child: Image.asset(
-            Assets.images2.bgLong.path,
+            Assets.backgrounds.bgLong.path,
             fit: BoxFit.cover,
             height: double.infinity,
             width: double.infinity,

@@ -1,7 +1,7 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/experimental/scanner/scanner_widget.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -47,7 +47,7 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          ScannerWidget(onScanned: _onScanned),
+          QrScannerWidget(onScanned: _onScanned),
           if (data.$1.isNotEmpty)
             Positioned(
               bottom: MediaQuery.of(context).size.height * 0.25,

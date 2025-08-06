@@ -93,12 +93,13 @@ class TestWalletBackupBloc
       await _connectToGoogleDriveUsecase.execute();
       emit(state.copyWith(vaultProvider: const VaultProvider.googleDrive()));
 
-      final encryptedBackup =
+      final (content: encryptedBackup, fileName: _) =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
+
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          backupInfo: BackupInfo(backupFile: encryptedBackup),
+          backupInfo: encryptedBackup.backupInfo,
         ),
       );
     } catch (e) {
@@ -138,7 +139,7 @@ class TestWalletBackupBloc
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          backupInfo: BackupInfo(backupFile: encryptedBackup),
+          backupInfo: encryptedBackup.backupInfo,
         ),
       );
     } catch (e) {
@@ -200,7 +201,7 @@ class TestWalletBackupBloc
         state.copyWith(
           status: TestWalletBackupStatus.error,
           statusError:
-              'Failed to test backup: ${BackupInfo(backupFile: event.backupFile).id}',
+              'Failed to test backup: ${event.backupFile.backupInfo.id}',
         ),
       );
     }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
@@ -89,17 +90,6 @@ enum ScriptType {
   }
 }
 
-enum WalletSource {
-  mnemonic,
-  xpub,
-  descriptors,
-  coldcard;
-
-  static WalletSource fromName(String name) {
-    return WalletSource.values.firstWhere((source) => source.name == name);
-  }
-}
-
 @freezed
 abstract class Wallet with _$Wallet {
   const factory Wallet({
@@ -114,7 +104,7 @@ abstract class Wallet with _$Wallet {
     required String xpub,
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
-    required WalletSource source,
+    required SignerEntity signer,
     required BigInt balanceSat,
     @Default(false) bool isEncryptedVaultTested,
     @Default(false) bool isPhysicalBackupTested,
@@ -127,21 +117,40 @@ abstract class Wallet with _$Wallet {
   const Wallet._();
 
   String get id => origin;
+  String get addressType {
+    if (isLiquid) {
+      return 'Confidential Segwit';
+    }
 
-  String getWalletTypeString() {
+    return switch (scriptType) {
+      ScriptType.bip84 => 'Native Segwit',
+      ScriptType.bip49 => 'Nested Segwit',
+      ScriptType.bip44 => 'Legacy',
+    };
+  }
+
+  String get walletTypeString {
     String name = switch (network) {
       Network.bitcoinMainnet || Network.bitcoinTestnet => 'Bitcoin network',
       Network.liquidMainnet ||
       Network.liquidTestnet => 'Liquid and Lightning network',
     };
-    if (source == WalletSource.xpub || source == WalletSource.coldcard) {
-      name = 'Watch-only';
-    }
+    if (isWatchOnly) name = 'Watch-Only';
+    if (isWatchSigner) name = 'Watch-Signer';
     return name;
   }
 
-  String? getLabel() {
-    if (!isDefault) return label;
+  String get networkString {
+    return switch (network) {
+      Network.bitcoinMainnet => 'Bitcoin Network',
+      Network.bitcoinTestnet => 'Bitcoin Testnet',
+      Network.liquidMainnet => 'Liquid Network',
+      Network.liquidTestnet => 'Liquid Testnet',
+    };
+  }
+
+  String get displayLabel {
+    if (!isDefault) return label ?? origin;
 
     return switch (network) {
       Network.bitcoinMainnet || Network.bitcoinTestnet => 'Secure Bitcoin',
@@ -158,8 +167,39 @@ abstract class Wallet with _$Wallet {
     return network == Network.liquidMainnet || network == Network.liquidTestnet;
   }
 
-  bool get isWatchOnly => switch (source) {
-    WalletSource.xpub || WalletSource.coldcard => true,
-    _ => false,
-  };
+  String get derivationPath {
+    // Find the content between [ and ]
+    final startBracket = externalPublicDescriptor.indexOf('[');
+    final endBracket = externalPublicDescriptor.indexOf(']');
+
+    if (startBracket == -1 || endBracket == -1 || startBracket >= endBracket) {
+      // Fallback to hardcoded path if descriptor doesn't contain path info
+      return "m / ${scriptType.purpose}' / ${network.coinType}' / 0'";
+    }
+
+    // Extract fingerprint/path portion
+    final keyOrigin = externalPublicDescriptor.substring(
+      startBracket + 1,
+      endBracket,
+    );
+
+    // Split by / to separate fingerprint from path
+    final parts = keyOrigin.split('/');
+
+    if (parts.length < 2) {
+      // Invalid format, use fallback
+      return "m / ${scriptType.purpose}' / ${network.coinType}' / 0'";
+    }
+
+    // Skip first part (fingerprint) and join the rest
+    final pathParts = parts.skip(1).toList();
+
+    // Construct the derivation path from the parts
+    return "m / ${pathParts.join(' / ')}";
+  }
+
+  bool get isWatchOnly => signer == SignerEntity.none;
+  bool get isWatchSigner => signer == SignerEntity.remote;
+  bool get signsLocally => signer == SignerEntity.local;
+  bool get signsRemotely => isWatchSigner;
 }

@@ -98,3 +98,6 @@ app.*.map.json
 .fvm/
 
 today.md
+
+CLAUDE.md
+.zed/

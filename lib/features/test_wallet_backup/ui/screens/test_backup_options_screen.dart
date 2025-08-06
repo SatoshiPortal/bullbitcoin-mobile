@@ -1,11 +1,12 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/cards/backup_option_card.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/ui/components/cards/backup_option_card.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -47,7 +48,7 @@ class _TestBackupOptionsScreenState extends State<TestBackupOptionsScreen> {
                     const Gap(20),
                     BBText(
                       'Without a backup, you will eventually lose access to your money. It is critically important to do a backup.',
-                      maxLines: 2,
+                      maxLines: 5,
                       textAlign: TextAlign.center,
                       style: context.font.bodyLarge,
                     ),
@@ -55,7 +56,7 @@ class _TestBackupOptionsScreenState extends State<TestBackupOptionsScreen> {
                     if (isSuperuser) ...[
                       BackupOptionCard(
                         icon: Image.asset(
-                          'assets/encrypted_vault.png',
+                          Assets.misc.encryptedVault.path,
                           width: 36,
                           height: 45,
                           fit: BoxFit.cover,
@@ -78,7 +79,7 @@ class _TestBackupOptionsScreenState extends State<TestBackupOptionsScreen> {
                     ],
                     BackupOptionCard(
                       icon: Image.asset(
-                        'assets/physical_backup.png',
+                        Assets.misc.physicalBackup.path,
                         width: 36,
                         height: 45,
                         fit: BoxFit.cover,

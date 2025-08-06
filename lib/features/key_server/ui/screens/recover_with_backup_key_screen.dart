@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/inputs/text_input.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,7 +45,6 @@ class _RecoverWithBackupKeyScreenState
   Widget build(BuildContext context) {
     return BlocListener<KeyServerCubit, KeyServerState>(
       listener: (context, state) {
-        log.info('KeyServerState backupKey: ${state.backupKey}');
         if (state.status == const KeyServerOperationStatus.success() &&
             state.backupKey.isNotEmpty) {
           _controller.text = state.backupKey;

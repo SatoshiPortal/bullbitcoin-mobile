@@ -1,9 +1,7 @@
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/cards/action_card.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/ui/components/cards/action_card.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -14,16 +12,9 @@ class ExchangeHomeTopSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    final defaultCurrency = context.select(
-      (SettingsCubit settings) => settings.state.currencyCode,
-    );
+
     final balances = context.select(
-      (ExchangeCubit cubit) =>
-          cubit.state.balances.isNotEmpty
-              ? cubit.state.balances
-              : (defaultCurrency != null
-                  ? [UserBalance(amount: 0, currencyCode: defaultCurrency)]
-                  : []),
+      (ExchangeCubit cubit) => cubit.state.userSummary?.displayBalances ?? [],
     );
     final balanceTextStyle =
         balances.length > 1

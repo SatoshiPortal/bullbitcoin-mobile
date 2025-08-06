@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -71,7 +71,8 @@ class TxListItem extends StatelessWidget {
         isOrderType &&
         (tx.order is FiatPaymentOrder ||
             tx.order is BalanceAdjustmentOrder ||
-            tx.order is WithdrawOrder);
+            tx.order is WithdrawOrder ||
+            tx.order is FundingOrder);
     return InkWell(
       onTap: () {
         if (tx.walletTransaction != null) {
@@ -191,7 +192,35 @@ class TxListItem extends StatelessWidget {
                   ),
                 ),
                 const Gap(4.0),
-                if (date != null)
+                if (isOrderType && tx.order!.isCompleted() && date != null)
+                  Row(
+                    children: [
+                      BBText(
+                        date,
+                        style: context.font.labelSmall?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
+                      const Gap(4.0),
+                      Icon(
+                        Icons.check_circle,
+                        size: 12.0,
+                        color: context.colour.inverseSurface,
+                      ),
+                    ],
+                  )
+                else if (isOrderType)
+                  Row(
+                    children: [
+                      BBText(
+                        tx.order!.orderStatus.value,
+                        style: context.font.labelSmall?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
+                    ],
+                  )
+                else if (date != null)
                   Row(
                     children: [
                       BBText(

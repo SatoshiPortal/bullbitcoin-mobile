@@ -1,6 +1,5 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,7 +55,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText('Select wallet', style: context.font.bodyMedium),
+        Text('Select wallet', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -85,11 +84,11 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                             : secureBitcoinWalletLabel);
                     return DropdownMenuItem(
                       value: w.id,
-                      child: BBText(label, style: context.font.headlineSmall),
+                      child: Text(label, style: context.font.headlineSmall),
                     );
                   }),
                   DropdownMenuItem(
-                    child: BBText(
+                    child: Text(
                       // To not show the external wallet label before the wallets
                       //  are loaded return an empty string if not started up.
                       !isStarted ? '' : externalBitcoinWalletLabel,
@@ -113,7 +112,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
         // bitcoin address manually.
         if (isStarted && selectedWallet == null) ...[
           const Gap(16.0),
-          BBText('Enter bitcoin address', style: context.font.bodyMedium),
+          Text('Enter bitcoin address', style: context.font.bodyMedium),
           const Gap(4.0),
           SizedBox(
             height: 56,

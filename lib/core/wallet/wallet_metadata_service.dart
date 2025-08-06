@@ -1,9 +1,10 @@
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 
 class WalletMetadataService {
   static String encodeOrigin({
@@ -14,12 +15,10 @@ class WalletMetadataService {
     String networkPath;
     if (network.isBitcoin && network.isMainnet) {
       networkPath = "0h";
-    } else if (network.isBitcoin && network.isTestnet) {
-      networkPath = "1h";
     } else if (network.isLiquid && network.isMainnet) {
-      networkPath = "1667h";
-    } else if (network.isLiquid && network.isTestnet) {
-      networkPath = "1668h";
+      networkPath = "1776h";
+    } else if (network.isTestnet) {
+      networkPath = "1h";
     } else {
       throw 'Unexpected network path';
     }
@@ -78,11 +77,16 @@ class WalletMetadataService {
       case '0h':
         network = Network.bitcoinMainnet;
       case '1h':
-        network = Network.bitcoinTestnet;
-      case '1667h':
+        if (origin.contains('elwpkh(') ||
+            origin.contains('elsh(wpkh(') ||
+            origin.contains('elpkh(')) {
+          network = Network.liquidTestnet;
+        } else {
+          network = Network.bitcoinTestnet;
+        }
+      case '1776h':
         network = Network.liquidMainnet;
-      case '1668h':
-        network = Network.liquidTestnet;
+
       default:
         throw 'Unknown script: $matchingNetwork';
     }
@@ -149,7 +153,8 @@ class WalletMetadataService {
       ),
       masterFingerprint: seed.masterFingerprint,
       xpubFingerprint: xpub.fingerprintHex,
-      source: WalletSource.mnemonic,
+      signer: Signer.local,
+      signerDevice: null,
       xpub: xpub.convert(scriptType.getXpubType(network)),
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: changeDescriptor,
@@ -199,7 +204,8 @@ class WalletMetadataService {
         scriptType: scriptType,
       ),
       xpubFingerprint: bip32Xpub.fingerprintHex,
-      source: WalletSource.xpub,
+      signer: Signer.none,
+      signerDevice: null,
       xpub: bip32Xpub.convert(scriptType.getXpubType(network)),
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: changeDescriptor,
@@ -211,13 +217,9 @@ class WalletMetadataService {
     );
   }
 
-  static Future<WalletMetadataModel> fromDescriptor({
-    required String descriptor,
-    String? label,
-  }) async {
-    final entity = await WatchOnlyWalletEntity.parse(descriptor);
-    if (entity is! WatchOnlyDescriptorEntity) throw 'Unsupported descriptor';
-
+  static Future<WalletMetadataModel> fromDescriptor(
+    WatchOnlyDescriptorEntity entity,
+  ) async {
     return WalletMetadataModel(
       id: WalletMetadataService.encodeOrigin(
         fingerprint: entity.masterFingerprint,
@@ -226,14 +228,18 @@ class WalletMetadataService {
       ),
       masterFingerprint: entity.masterFingerprint,
       xpubFingerprint: entity.pubkeyFingerprint,
-      source: entity.source,
+      signer: Signer.fromEntity(entity.signer),
+      signerDevice:
+          entity.signerDevice != null
+              ? SignerDevice.fromEntity(entity.signerDevice!)
+              : null,
       xpub: entity.pubkey,
       externalPublicDescriptor: entity.descriptor.external,
       internalPublicDescriptor: entity.descriptor.internal,
       isDefault: false,
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
-      label: label,
+      label: entity.label,
     );
   }
 }

@@ -1,15 +1,13 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/app_bar.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/inputs/seed_word.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class OnboardingPhysicalRecovery extends StatefulWidget {
@@ -41,26 +39,31 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
           listener: (context, state) {
             if (state.step == OnboardingStep.recover &&
                 state.onboardingStepStatus == OnboardingStepStatus.success) {
-              context.goNamed(OnboardingRoute.recoverSuccess.name);
+              context.goNamed(WalletRoute.walletHome.name);
             }
           },
-          child: const Scaffold(
-            appBar: OnboardingAppBar(),
+          child: Scaffold(
+            appBar: const OnboardingAppBar(),
             body: SafeArea(
               child: Padding(
-                padding: EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.only(bottom: 16),
                 child: SingleChildScrollView(
                   reverse: true,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Gap(40),
-                      _WordGrid(),
-                      Gap(8),
-                      HintsList(),
-                      Gap(8),
-                      _Button(),
-                      Gap(20),
+                      MnemonicWidget(
+                        initialLength: bip39.MnemonicLength.words12,
+                        allowMultipleMnemonicLength: false,
+                        allowLabel: false,
+                        allowPassphrase: false,
+                        submitLabel: 'Recover',
+                        onSubmit: (mnemonic) {
+                          context.read<OnboardingBloc>().add(
+                            OnboardingRecoverWalletClicked(mnemonic: mnemonic),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -69,70 +72,6 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
           ),
         );
       },
-    );
-  }
-}
-
-class _WordGrid extends StatelessWidget {
-  const _WordGrid();
-
-  @override
-  Widget build(BuildContext context) {
-    final hintWords = context.select(
-      (OnboardingBloc onboardingBloc) => onboardingBloc.state.hintWords,
-    );
-    final validWords = context.select(
-      (OnboardingBloc onboardingBloc) => onboardingBloc.state.validWords,
-    );
-    return SeedWordsGrid(
-      wordCount: 12,
-      validWords: validWords,
-      hintWords: hintWords,
-      onWordChanged: (wordChange) {
-        context.read<OnboardingBloc>().add(
-          OnboardingRecoveryWordChanged(
-            index: wordChange.index,
-            word: wordChange.word,
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _Button extends StatelessWidget {
-  const _Button();
-
-  @override
-  Widget build(BuildContext context) {
-    final hasAllValidWords = context.select(
-      (OnboardingBloc onboardingBloc) => onboardingBloc.state.hasAllValidWords,
-    );
-
-    final loading = context.select(
-      (OnboardingBloc onboardingBloc) =>
-          onboardingBloc.state.onboardingStepStatus ==
-          OnboardingStepStatus.loading,
-    );
-
-    if (loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBButton.big(
-        label: 'Recover',
-        onPressed: () {
-          if (hasAllValidWords) {
-            context.read<OnboardingBloc>().add(
-              const OnboardingRecoverWalletClicked(),
-            );
-          }
-        },
-        bgColor: context.colour.secondary,
-        textColor: context.colour.onPrimary,
-      ),
     );
   }
 }

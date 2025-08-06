@@ -1,3 +1,5 @@
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+
 enum BackupProviderType { googleDrive, iCloud, custom }
 
 extension BackupProviderTypeX on BackupProviderType {
@@ -15,11 +17,11 @@ extension BackupProviderTypeX on BackupProviderType {
   String get iconPath {
     switch (this) {
       case BackupProviderType.googleDrive:
-        return 'assets/google_drive.png';
+        return Assets.misc.googleDrive.path;
       case BackupProviderType.iCloud:
-        return 'assets/icloud.png';
+        return Assets.misc.icloud.path;
       case BackupProviderType.custom:
-        return 'assets/custom_location.png';
+        return Assets.misc.customLocation.path;
     }
   }
 

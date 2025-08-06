@@ -2,18 +2,18 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/mempool_url.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/widgets/tables/details_table.dart';
+import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_notes_table_item.dart';
-import 'package:bb_mobile/ui/components/tables/details_table.dart';
-import 'package:bb_mobile/ui/components/tables/details_table_item.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -187,15 +187,31 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
                   displayValue:
-                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                      order.payinCurrency == 'LBTC' ||
+                              order.payinCurrency == 'BTC'
+                          ? bitcoinUnit == BitcoinUnit.sats
+                              ? FormatAmount.sats(
+                                ConvertAmount.btcToSats(order.payinAmount),
+                              )
+                              : FormatAmount.btc(order.payinAmount)
+                          : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
                 ),
                 DetailsTableItem(
                   label: 'Payout amount',
-                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayValue:
+                      order.payoutCurrency == 'LBTC' ||
+                              order.payoutCurrency == 'BTC'
+                          ? bitcoinUnit == BitcoinUnit.sats
+                              ? FormatAmount.sats(
+                                ConvertAmount.btcToSats(order.payoutAmount),
+                              )
+                              : FormatAmount.btc(order.payoutAmount)
+                          : '${order.payoutAmount} ${order.payoutCurrency}',
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
@@ -239,6 +255,7 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
               ];
             } else if (order is SellOrder) {
+              final payinAmountSat = ConvertAmount.btcToSats(order.payinAmount);
               return [
                 DetailsTableItem(
                   label: 'Order Type',
@@ -247,11 +264,16 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
                   displayValue:
-                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                      bitcoinUnit == BitcoinUnit.sats
+                          ? FormatAmount.sats(payinAmountSat).toUpperCase()
+                          : FormatAmount.btc(
+                            ConvertAmount.satsToBtc(payinAmountSat),
+                          ).toUpperCase(),
                 ),
                 DetailsTableItem(
                   label: 'Payout amount',
@@ -307,6 +329,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
 
                 DetailsTableItem(
@@ -363,6 +386,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
@@ -416,6 +440,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
@@ -476,6 +501,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
@@ -536,6 +562,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',
@@ -596,6 +623,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: 'Order Number',
                   displayValue: order.orderNumber.toString(),
+                  copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
                   label: 'Payin amount',

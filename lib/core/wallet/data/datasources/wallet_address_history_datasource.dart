@@ -8,18 +8,22 @@ class WalletAddressHistoryDatasource {
 
   WalletAddressHistoryDatasource({required SqliteDatabase db}) : _db = db;
 
+  /// Insert a wallet address in the database.
+  ///
+  /// If the address already exists, it will be updated (upsert).
   Future<void> store(WalletAddressModel walletAddress) async {
     final addressHistoryRow = WalletAddressMapper.toSqliteCompanion(
       walletAddress,
     );
     await _db
-        .into(_db.walletAddressHistory)
+        .into(_db.walletAddresses)
         .insertOnConflictUpdate(addressHistoryRow);
   }
 
-  Future<WalletAddressModel?> get(String address) async {
+  /// Select a wallet address from the database.
+  Future<WalletAddressModel?> fetch(String address) async {
     final walletAddress =
-        await _db.managers.walletAddressHistory
+        await _db.managers.walletAddresses
             .filter((t) => t.address(address))
             .getSingleOrNull();
 
@@ -33,15 +37,22 @@ class WalletAddressHistoryDatasource {
   Future<List<WalletAddressModel>> getByWalletId(
     String walletId, {
     int? limit,
-    int? offset,
+    int? fromIndex,
     bool isChange = false,
     required bool descending,
   }) async {
     // We want to fetch them in descending order by index
     final query =
-        _db.select(_db.walletAddressHistory)
+        _db.select(_db.walletAddresses)
           ..where(
-            (t) => t.walletId.equals(walletId) & t.isChange.equals(isChange),
+            (t) =>
+                t.walletId.equals(walletId) &
+                t.isChange.equals(isChange) &
+                (fromIndex != null
+                    ? descending
+                        ? t.index.isSmallerOrEqualValue(fromIndex)
+                        : t.index.isBiggerOrEqualValue(fromIndex)
+                    : const Constant(true)),
           )
           ..orderBy([
             (t) =>
@@ -50,9 +61,7 @@ class WalletAddressHistoryDatasource {
                     : OrderingTerm.asc(t.index),
           ]);
 
-    if (limit != null) {
-      query.limit(limit, offset: offset);
-    }
+    if (limit != null) query.limit(limit);
 
     final rows = await query.get();
 

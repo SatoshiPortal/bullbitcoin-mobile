@@ -1,20 +1,20 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CreateChainSwapUsecase {
   final WalletRepository _walletRepository;
-  final SwapRepository _swapRepository;
-  final SwapRepository _swapRepositoryTestnet;
+  final BoltzSwapRepository _swapRepository;
+  final BoltzSwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
 
   CreateChainSwapUsecase({
     required WalletRepository walletRepository,
-    required SwapRepository swapRepository,
-    required SwapRepository swapRepositoryTestnet,
+    required BoltzSwapRepository swapRepository,
+    required BoltzSwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
@@ -75,7 +75,6 @@ class CreateChainSwapUsecase {
             sendWalletId: bitcoinWalletId,
             receiveWalletId: liquidWalletId,
             amountSat: amountSat!,
-            isTestnet: isTestnet,
             btcElectrumUrl: btcElectrumUrl,
             lbtcElectrumUrl: lbtcElectrumUrl,
           );
@@ -85,7 +84,6 @@ class CreateChainSwapUsecase {
             sendWalletId: liquidWalletId,
             receiveWalletId: bitcoinWalletId,
             amountSat: amountSat!,
-            isTestnet: isTestnet,
             btcElectrumUrl: btcElectrumUrl,
             lbtcElectrumUrl: lbtcElectrumUrl,
           );
@@ -93,7 +91,7 @@ class CreateChainSwapUsecase {
           throw Exception('Swap Type provided is not a chain swap!');
       }
     } catch (e) {
-      throw e.toString();
+      throw Exception('Failed to create chain swap: $e');
     }
   }
 }

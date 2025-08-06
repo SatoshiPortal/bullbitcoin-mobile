@@ -5,6 +5,8 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -20,12 +22,13 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_rep
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_address_list_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_new_receive_address_use_case.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
@@ -146,6 +149,22 @@ class WalletLocator {
         walletRepository: locator<WalletRepository>(),
       ),
     );
+
+    locator.registerFactory<DeleteWalletUsecase>(
+      () => DeleteWalletUsecase(
+        walletRepository: locator<WalletRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+        mainnetSwapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        testnetSwapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
+        ),
+      ),
+    );
     locator.registerLazySingleton<GetWalletUtxosUsecase>(
       () => GetWalletUtxosUsecase(
         utxoRepository: locator<WalletUtxoRepository>(),
@@ -174,9 +193,11 @@ class WalletLocator {
         walletRepository: locator<WalletRepository>(),
       ),
     );
-    locator.registerFactory<GetAddressListUsecase>(
-      () => GetAddressListUsecase(
-        walletAddressRepository: locator<WalletAddressRepository>(),
+    locator.registerFactory<ImportWalletUsecase>(
+      () => ImportWalletUsecase(
+        walletRepository: locator<WalletRepository>(),
+        seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }

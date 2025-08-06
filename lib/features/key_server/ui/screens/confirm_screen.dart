@@ -1,13 +1,13 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
+import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/template/screen_template.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
-import 'package:bb_mobile/ui/components/inputs/text_input.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/template/screen_template.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -30,14 +30,13 @@ class ConfirmScreen extends StatelessWidget {
         ),
       ),
       body: StackedPage(
-        bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
         bottomChild: const ConfirmButton(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Gap(100),
+              const Gap(50),
               BBText(
                 'Enter your ${state.authInputType == AuthInputType.pin ? 'PIN' : 'Password'} again to continue.',
                 textAlign: TextAlign.center,
@@ -46,7 +45,7 @@ class ConfirmScreen extends StatelessWidget {
                 ),
                 maxLines: 2,
               ),
-              const Gap(50),
+              const Gap(47),
               if (state.authInputType == AuthInputType.password)
                 BBText(
                   'Password',
@@ -74,7 +73,7 @@ class ConfirmScreen extends StatelessWidget {
                   }
                 },
               ),
-              const Gap(50),
+              const Gap(72),
               BBButton.big(
                 label:
                     'Use ${state.authInputType == AuthInputType.pin ? 'password' : 'PIN'} instead >>',
@@ -90,6 +89,7 @@ class ConfirmScreen extends StatelessWidget {
               ),
               if (state.authInputType == AuthInputType.pin)
                 DialPad(
+                  disableFeedback: true,
                   onNumberPressed:
                       (e) => context.read<KeyServerCubit>().enterKey(e),
                   onBackspacePressed:

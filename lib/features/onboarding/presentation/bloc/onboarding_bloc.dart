@@ -8,9 +8,9 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -21,7 +21,6 @@ part 'onboarding_state.dart';
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   OnboardingBloc({
     required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
-    required FindMnemonicWordsUsecase findMnemonicWordsUsecase,
     required SelectFileFromPathUsecase selectFileFromPathUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
     required RestoreEncryptedVaultFromBackupKeyUsecase
@@ -32,7 +31,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     required CompletePhysicalBackupVerificationUsecase
     completePhysicalBackupVerificationUsecase,
   }) : _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
-       _findMnemonicWordsUsecase = findMnemonicWordsUsecase,
        _selectFileFromPathUsecase = selectFileFromPathUsecase,
        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
        _restoreEncryptedVaultFromBackupKeyUsecase =
@@ -44,7 +42,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
            completePhysicalBackupVerificationUsecase,
        super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
-    on<OnboardingRecoveryWordChanged>(_onRecoveryWordChanged);
     on<OnboardingRecoverWalletClicked>(_onRecoverWalletClicked);
 
     on<OnboardingGoBack>((event, emit) {
@@ -64,7 +61,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   }
 
   final CreateDefaultWalletsUsecase _createDefaultWalletsUsecase;
-  final FindMnemonicWordsUsecase _findMnemonicWordsUsecase;
 
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
@@ -106,26 +102,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     }
   }
 
-  Future<void> _onRecoveryWordChanged(
-    OnboardingRecoveryWordChanged event,
-    Emitter<OnboardingState> emit,
-  ) async {
-    final wordIndex = event.index;
-    final word = event.word;
-    final validWords = Map<int, String>.from(state.validWords);
-    final hintWords = Map<int, List<String>>.from(state.hintWords);
-
-    hintWords[wordIndex] = _findMnemonicWordsUsecase.execute(word);
-
-    if (hintWords[wordIndex]?.contains(word) == true) {
-      validWords[event.index] = event.word;
-    } else {
-      validWords.remove(event.index);
-    }
-
-    emit(state.copyWith(validWords: validWords, hintWords: hintWords));
-  }
-
   Future<void> _onRecoverWalletClicked(
     OnboardingRecoverWalletClicked event,
     Emitter<OnboardingState> emit,
@@ -137,10 +113,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           step: OnboardingStep.recover,
         ),
       );
-      emit(state.copyWith(hintWords: {}));
-
       await _createDefaultWalletsUsecase.execute(
-        mnemonicWords: state.validWords.values.toList(),
+        mnemonicWords: event.mnemonic.words,
       );
       await _completePhysicalBackupVerificationUsecase.execute();
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
@@ -156,14 +130,16 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       final encryptedBackup = await switch (state.vaultProvider) {
         FileSystem(:final fileAsString) => _fetchBackupFromFileSystemUsecase
             .execute(fileAsString),
-        GoogleDrive() => _fetchLatestGoogleDriveBackupUsecase.execute(),
+        GoogleDrive() => _fetchLatestGoogleDriveBackupUsecase.execute().then(
+          (result) => result.content,
+        ),
         ICloud() => Future<String>.error('iCloud backup not implemented'),
       };
 
       emit(
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.success,
-          backupInfo: BackupInfo(backupFile: encryptedBackup),
+          backupInfo: encryptedBackup.backupInfo,
         ),
       );
     } catch (e) {
@@ -190,7 +166,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       return;
     } catch (e) {
       await _handleError(
-        'Failed recover the wallet: ${BackupInfo(backupFile: event.backupFile).id}',
+        'Failed recover the wallet: ${event.backupFile.backupInfo.id}',
         emit,
       );
       return;

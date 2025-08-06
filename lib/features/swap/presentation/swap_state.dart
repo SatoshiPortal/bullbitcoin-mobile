@@ -122,14 +122,12 @@ abstract class SwapState with _$SwapState {
 
   List<({String id, String label})> get fromWalletDropdownItems {
     if (fromWallets.isEmpty) return [];
-    return fromWallets
-        .map((w) => (id: w.id, label: w.getLabel() ?? ''))
-        .toList();
+    return fromWallets.map((w) => (id: w.id, label: w.displayLabel)).toList();
   }
 
   List<({String id, String label})> get toWalletDropdownItems {
     if (toWallets.isEmpty) return [];
-    return toWallets.map((w) => (id: w.id, label: w.getLabel() ?? '')).toList();
+    return toWallets.map((w) => (id: w.id, label: w.displayLabel)).toList();
   }
 
   Wallet? get fromWallet {
@@ -149,12 +147,12 @@ abstract class SwapState with _$SwapState {
 
   String get fromWalletLabel {
     if (fromWallet == null) return '';
-    return fromWallet!.getLabel() ?? '';
+    return fromWallet!.displayLabel;
   }
 
   String get toWalletLabel {
     if (toWallet == null) return '';
-    return toWallet!.getLabel() ?? '';
+    return toWallet!.displayLabel;
   }
 
   String formattedFromWalletBalance() {

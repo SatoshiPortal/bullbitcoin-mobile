@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -13,12 +13,12 @@ class WalletDetailBalanceCard extends StatelessWidget {
     super.key,
     required this.balanceSat,
     required this.isLiquid,
-    required this.walletSource,
+    required this.signer,
   });
 
   final int balanceSat;
   final bool isLiquid;
-  final WalletSource walletSource;
+  final SignerEntity signer;
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +30,12 @@ class WalletDetailBalanceCard extends StatelessWidget {
         image: DecorationImage(
           image: AssetImage(
             isLiquid
-                ? Assets.images2.bgInstantWallet.path
-                : Assets.images2.bgSecureWallet.path,
+                ? Assets.backgrounds.bgInstantWallet.path
+                : Assets.backgrounds.bgSecureWallet.path,
           ),
           fit: BoxFit.cover,
           colorFilter:
-              walletSource == WalletSource.xpub ||
-                      walletSource == WalletSource.coldcard
+              signer == SignerEntity.none
                   ? ColorFilter.mode(
                     context.theme.secondaryHeaderColor,
                     BlendMode.color,
@@ -46,9 +45,9 @@ class WalletDetailBalanceCard extends StatelessWidget {
         border: Border(
           bottom: BorderSide(
             color:
-                isLiquid && walletSource == WalletSource.mnemonic
+                isLiquid && signer == SignerEntity.local
                     ? theme.colorScheme.tertiary
-                    : !isLiquid && walletSource == WalletSource.mnemonic
+                    : !isLiquid && signer == SignerEntity.local
                     ? theme.colorScheme.onTertiary
                     : theme.colorScheme.secondary,
             width: 9,

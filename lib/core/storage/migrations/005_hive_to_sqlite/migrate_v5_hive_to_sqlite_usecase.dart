@@ -9,8 +9,8 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entitie
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -23,20 +23,20 @@ class MigrateToV5HiveToSqliteToUsecase {
   final OldSeedRepository _oldSeedRepository;
   final OldWalletRepository _oldWalletRepository;
   final MigrationSecureStorageDatasource _secureStorage;
-  final SwapRepository _mainnetSwapRepository;
+  final BoltzSwapRepository _mainnetBoltzSwapRepository;
   MigrateToV5HiveToSqliteToUsecase({
     required SeedRepository newSeedRepository,
     required OldSeedRepository oldSeedRepository,
     required OldWalletRepository oldWalletRepository,
     required WalletRepository newWalletRepository,
     required MigrationSecureStorageDatasource secureStorage,
-    required SwapRepository mainnetSwapRepository,
+    required BoltzSwapRepository mainnetBoltzSwapRepository,
   }) : _newSeedRepository = newSeedRepository,
        _oldSeedRepository = oldSeedRepository,
        _oldWalletRepository = oldWalletRepository,
        _newWalletRepository = newWalletRepository,
        _secureStorage = secureStorage,
-       _mainnetSwapRepository = mainnetSwapRepository;
+       _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository;
   // true : successful migration
   // false: migration was not required / success
   // throw: errors
@@ -159,7 +159,10 @@ class MigrateToV5HiveToSqliteToUsecase {
               finalWatchOnlyCount,
         },
       );
-
+      await _secureStorage.store(
+        key: OldStorageKeys.version.name,
+        value: '0.5.0',
+      );
       return true;
     } catch (e) {
       await log.migration(
@@ -397,17 +400,12 @@ class MigrateToV5HiveToSqliteToUsecase {
           OldScriptType.bip44 => ScriptType.bip44,
         };
 
-        final source = switch (oldWatchOnlyWallet.type) {
-          OldBBWalletType.main => WalletSource.mnemonic,
-          OldBBWalletType.coldcard => WalletSource.coldcard,
-          OldBBWalletType.xpub => WalletSource.xpub,
-          OldBBWalletType.words => WalletSource.mnemonic,
-          OldBBWalletType.descriptors => WalletSource.descriptors,
-        };
         final xpubFromDescriptor = fullKeyFromDescriptor(
           oldWatchOnlyWallet.internalPublicDescriptor,
         );
-        if (source == WalletSource.coldcard || source == WalletSource.xpub) {
+
+        if (oldWatchOnlyWallet.type == OldBBWalletType.coldcard ||
+            oldWatchOnlyWallet.type == OldBBWalletType.xpub) {
           try {
             await _newWalletRepository.importWatchOnlyXpub(
               xpub: xpubFromDescriptor,
@@ -490,7 +488,7 @@ class MigrateToV5HiveToSqliteToUsecase {
             await _secureStorage.store(key: key, value: jsonSwap);
             // SwapModel
             final receiveAddress = swap.claimAddress;
-            await _mainnetSwapRepository.migrateOldSwap(
+            await _mainnetBoltzSwapRepository.migrateOldSwap(
               primaryWalletId: item.walletIdMapping.newWalletId,
               swapId: swap.id,
               swapType:
@@ -513,7 +511,7 @@ class MigrateToV5HiveToSqliteToUsecase {
             final jsonSwap = await sdkSwapClass.toJson();
             await _secureStorage.store(key: key, value: jsonSwap);
             final receiveAddress = swap.claimAddress;
-            await _mainnetSwapRepository.migrateOldSwap(
+            await _mainnetBoltzSwapRepository.migrateOldSwap(
               primaryWalletId: item.walletIdMapping.newWalletId,
               swapId: swap.id,
               swapType:
@@ -548,7 +546,7 @@ class MigrateToV5HiveToSqliteToUsecase {
             final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
             final jsonSwap = await sdkSwapClass.toJson();
             await _secureStorage.store(key: key, value: jsonSwap);
-            await _mainnetSwapRepository.migrateOldSwap(
+            await _mainnetBoltzSwapRepository.migrateOldSwap(
               primaryWalletId: item.walletIdMapping.newWalletId,
               swapId: swap.id,
               swapType:

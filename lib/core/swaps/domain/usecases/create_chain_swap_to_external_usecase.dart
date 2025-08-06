@@ -1,20 +1,20 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CreateChainSwapToExternalUsecase {
   final WalletRepository _walletRepository;
-  final SwapRepository _swapRepository;
-  final SwapRepository _swapRepositoryTestnet;
+  final BoltzSwapRepository _swapRepository;
+  final BoltzSwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
 
   CreateChainSwapToExternalUsecase({
     required WalletRepository walletRepository,
-    required SwapRepository swapRepository,
-    required SwapRepository swapRepositoryTestnet,
+    required BoltzSwapRepository swapRepository,
+    required BoltzSwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
@@ -63,7 +63,6 @@ class CreateChainSwapToExternalUsecase {
             sendWalletMnemonic: sendWalletMnemonic.mnemonicWords.join(' '),
             sendWalletId: sendWalletId,
             amountSat: amountSat,
-            isTestnet: isTestnet,
             btcElectrumUrl: btcElectrumUrl,
             lbtcElectrumUrl: lbtcElectrumUrl,
             externalRecipientAddress: receiveAddress,
@@ -78,7 +77,6 @@ class CreateChainSwapToExternalUsecase {
             sendWalletMnemonic: sendWalletMnemonic.mnemonicWords.join(' '),
             sendWalletId: sendWalletId,
             amountSat: amountSat,
-            isTestnet: isTestnet,
             btcElectrumUrl: btcElectrumUrl,
             lbtcElectrumUrl: lbtcElectrumUrl,
             externalRecipientAddress: receiveAddress,
@@ -89,7 +87,7 @@ class CreateChainSwapToExternalUsecase {
           );
       }
     } catch (e) {
-      throw e.toString();
+      throw Exception('Failed to create chain swap to external: $e');
     }
   }
 }

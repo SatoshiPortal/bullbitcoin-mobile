@@ -14,14 +14,14 @@ sealed class BitcoinPriceState with _$BitcoinPriceState {
 
   String? calculateFiatPrice(int satAmount) {
     if (bitcoinPrice == null) return null;
-    final p = bitcoinPrice! * (satAmount / 100000000);
+    final p = bitcoinPrice! * ConvertAmount.satsToBtc(satAmount);
     if (currency == null) return null;
     return '${_fiatFormatting(p.toStringAsFixed(2))} ${currency!}';
   }
 
   String? displayBTCAmount(int satsAmount, BitcoinUnit unit) {
     if (unit == BitcoinUnit.btc) {
-      final btcAmount = (satsAmount / 100000000).toStringAsFixed(8);
+      final btcAmount = ConvertAmount.satsToBtc(satsAmount).toStringAsFixed(8);
       return '${_removeTrailingBTCZeros(btcAmount)} BTC';
     } else {
       return '${_displaySatsAmount(satsAmount)} sats';

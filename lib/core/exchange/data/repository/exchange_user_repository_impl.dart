@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/mappers/user_summary_mapper.dart';
+import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -36,7 +37,6 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
           apiKey.key,
         );
         if (userSummaryModel == null) {
-          log.info('User summary not found for API key: ${apiKey.key}');
           return null;
         }
         final userSummary = UserSummaryMapper.fromModelToEntity(
@@ -52,6 +52,44 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
         rethrow;
       } else {
         throw Exception('Failed to fetch user summary: $e');
+      }
+    }
+  }
+
+  @override
+  Future<void> saveUserPreference({
+    String? language,
+    String? currency,
+    String? dcaEnabled,
+    String? autoBuyEnabled,
+  }) async {
+    try {
+      final apiKey = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+      if (apiKey == null) {
+        log.severe('No API key found');
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      final params = UserPreferencePayloadModel(
+        language: language,
+        currencyCode: currency,
+        dcaEnabled: dcaEnabled,
+        autoBuyEnabled: autoBuyEnabled,
+      );
+
+      await _bullbitcoinApiDatasource.saveUserPreference(
+        apiKey: apiKey.key,
+        params: params,
+      );
+    } catch (e) {
+      if (e is ApiKeyException) {
+        rethrow;
+      } else {
+        throw Exception('Failed to save user preferences: $e');
       }
     }
   }

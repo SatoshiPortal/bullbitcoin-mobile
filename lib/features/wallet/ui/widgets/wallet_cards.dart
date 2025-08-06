@@ -1,25 +1,32 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/widgets/cards/wallet_card.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/ui/components/cards/wallet_card.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
-class HomeWalletCards extends StatelessWidget {
-  const HomeWalletCards({super.key});
+class WalletCards extends StatelessWidget {
+  const WalletCards({
+    super.key,
+    this.padding,
+    this.onTap,
+    this.localSignersOnly = false,
+  });
+
+  final EdgeInsetsGeometry? padding;
+  final bool localSignersOnly;
+  final Function(Wallet wallet)? onTap;
 
   static Color cardDetails(BuildContext context, Wallet wallet) {
     final isTestnet = wallet.isTestnet;
     final isLiquid = wallet.isLiquid;
-    final isWatchOnly = wallet.isWatchOnly;
+    final watchOrSignsRemotely = wallet.isWatchOnly || wallet.signsRemotely;
 
     final watchonlyColor = context.colour.secondary;
 
-    if (isWatchOnly && !isTestnet) return watchonlyColor;
-    if (isWatchOnly && isTestnet) return watchonlyColor;
+    if (watchOrSignsRemotely && !isTestnet) return watchonlyColor;
+    if (watchOrSignsRemotely && isTestnet) return watchonlyColor;
 
     if (isLiquid) return context.colour.tertiary;
 
@@ -29,29 +36,29 @@ class HomeWalletCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallets = context.select((WalletBloc bloc) => bloc.state.wallets);
+    final wallets = context.select(
+      (WalletBloc bloc) =>
+          localSignersOnly
+              ? bloc.state.wallets.where((w) => w.signsLocally)
+              : bloc.state.wallets,
+    );
     final syncStatus = context.select(
       (WalletBloc bloc) => bloc.state.syncStatus,
     );
 
     return Padding(
-      padding: const EdgeInsets.all(13.0),
+      padding: padding ?? const EdgeInsets.all(13.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (final w in wallets) ...[
             WalletCard(
               tagColor: cardDetails(context, w),
-              title: w.getLabel() ?? '',
-              description: w.getWalletTypeString(),
+              title: w.displayLabel,
+              description: w.walletTypeString,
               wallet: w,
               isSyncing: syncStatus[w.id] ?? false,
-              onTap: () {
-                context.pushNamed(
-                  WalletRoute.walletDetail.name,
-                  pathParameters: {'walletId': w.id},
-                );
-              },
+              onTap: () => onTap?.call(w),
             ),
             const Gap(8),
           ],

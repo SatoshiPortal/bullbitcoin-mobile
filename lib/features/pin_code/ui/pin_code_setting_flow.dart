@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/widgets/loading/status_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/choose_pin_code_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/confirm_pin_code_screen.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/ui/components/loading/status_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

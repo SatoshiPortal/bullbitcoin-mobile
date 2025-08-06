@@ -8,15 +8,17 @@ sealed class BuyState with _$BuyState {
     ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
     @Default('') String amountInput,
+    @Default(true) bool isFiatCurrencyInput,
+    @Default(BitcoinUnit.btc) BitcoinUnit bitcoinUnit,
     @Default('') String currencyInput,
-    double? exchangeRate,
+    @Default(0.0) double exchangeRate,
     @Default([]) List<Wallet> wallets,
     GetWalletsException? getWalletsException,
     Wallet? selectedWallet,
     @Default('') String bitcoinAddressInput,
     GetNewReceiveAddressException? getNewReceiveAddressException,
     @Default(false) bool isCreatingOrder,
-    CreateBuyOrderException? createBuyOrderException,
+    BuyError? createOrderBuyError,
     @Default(false) bool isRefreshingOrder,
     RefreshBuyOrderException? refreshBuyOrderException,
     @Default(false) bool isConfirmingOrder,
@@ -39,16 +41,55 @@ sealed class BuyState with _$BuyState {
 
   double? get balance => balances[currencyInput];
 
-  double? get amount => double.tryParse(amountInput);
+  int? get maxAmountSat =>
+      balance != null && exchangeRate > 0
+          ? ConvertAmount.btcToSats(balance! / exchangeRate)
+          : null;
 
-  FiatCurrency get currency => FiatCurrency.fromCode(currencyInput);
+  double? get amount =>
+      isFiatCurrencyInput
+          ? _truncateToDecimals(
+            double.tryParse(amountInput.replaceAll(',', '.').trim()) ?? 0,
+            currency?.decimals ?? 2,
+          )
+          : amountBtc != null
+          ? _truncateToDecimals(
+            amountBtc! * exchangeRate,
+            currency?.decimals ?? 2,
+          )
+          : null;
+
+  double? get amountBtc =>
+      isFiatCurrencyInput
+          ? amount != null && exchangeRate > 0
+              ? amount! / exchangeRate
+              : null
+          : bitcoinUnit == BitcoinUnit.btc
+          ? double.tryParse(amountInput.replaceAll(',', '.').trim())
+          : amountSat != null
+          ? amountSat! * 1e-8
+          : null;
+
+  int? get amountSat =>
+      !isFiatCurrencyInput && bitcoinUnit == BitcoinUnit.sats
+          ? int.tryParse(amountInput.trim())
+          : amountBtc != null
+          ? ConvertAmount.btcToSats(amountBtc!)
+          : null;
+
+  FiatCurrency? get currency =>
+      currencyInput.isNotEmpty ? FiatCurrency.fromCode(currencyInput) : null;
 
   bool get isAmountTooLow {
     return amount == null || amount! <= 0;
   }
 
   bool get isBalanceTooLow {
-    return balance == null || (amount ?? 0) > balance!;
+    return balance != null &&
+        ((amount ?? 0) > balance! ||
+            maxAmountSat != null &&
+                amountSat != null &&
+                amountSat! > maxAmountSat!);
   }
 
   bool get isValidDestination {
@@ -57,5 +98,10 @@ sealed class BuyState with _$BuyState {
 
   bool get canCreateOrder {
     return !isAmountTooLow && !isBalanceTooLow && isValidDestination;
+  }
+
+  double _truncateToDecimals(double value, int decimals) {
+    final factor = math.pow(10, decimals);
+    return (value * factor).truncate() / factor;
   }
 }

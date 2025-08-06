@@ -1,13 +1,13 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
+import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart' show TopBar;
+import 'package:bb_mobile/core/widgets/template/screen_template.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart' show BBText;
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
-import 'package:bb_mobile/ui/components/inputs/text_input.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart' show TopBar;
-import 'package:bb_mobile/ui/components/template/screen_template.dart';
-import 'package:bb_mobile/ui/components/text/text.dart' show BBText;
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -30,7 +30,6 @@ class EnterScreen extends StatelessWidget {
         ),
       ),
       body: StackedPage(
-        bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
         bottomChild: const ConfirmButton(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -45,7 +44,7 @@ class EnterScreen extends StatelessWidget {
                 ),
                 maxLines: 3,
               ),
-              const Gap(120),
+              const Gap(60),
               if (state.authInputType == AuthInputType.password)
                 BBText(
                   'Password',
@@ -92,7 +91,7 @@ class EnterScreen extends StatelessWidget {
                 )
               else
                 const SizedBox.shrink(),
-              const Gap(50),
+              const Gap(72),
               BBButton.small(
                 label:
                     'Pick a ${state.authInputType == AuthInputType.pin ? 'password' : 'pin'} instead >>',
@@ -108,6 +107,7 @@ class EnterScreen extends StatelessWidget {
               ),
               if (state.authInputType == AuthInputType.pin)
                 DialPad(
+                  disableFeedback: true,
                   onNumberPressed:
                       (e) => context.read<KeyServerCubit>().enterKey(e),
                   onBackspacePressed:

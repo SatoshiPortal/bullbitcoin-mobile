@@ -20,3 +20,18 @@ class TestFlowWalletMismatchError extends RecoverWalletError {
         'A different default wallet already exists. You can only have one default wallet.',
       );
 }
+
+class BackupKeyDerivationFailedError extends RecoverWalletError {
+  const BackupKeyDerivationFailedError()
+    : super('Local backup key derivation failed.');
+}
+
+class BackupVaultCorruptedError extends RecoverWalletError {
+  const BackupVaultCorruptedError()
+    : super('Selected backup file is corrupted.');
+}
+
+class BackupVaultMissingDerivationPathError extends RecoverWalletError {
+  const BackupVaultMissingDerivationPathError()
+    : super('Backup file missing derivation path.');
+}

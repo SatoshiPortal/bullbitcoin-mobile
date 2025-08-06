@@ -2,7 +2,18 @@ import 'dart:math' as math;
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
+import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
+import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
+import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
+import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -14,18 +25,6 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/cards/info_card.dart';
-import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
-import 'package:bb_mobile/ui/components/inputs/text_input.dart';
-import 'package:bb_mobile/ui/components/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/price_input/balance_row.dart';
-import 'package:bb_mobile/ui/components/price_input/price_input.dart';
-import 'package:bb_mobile/ui/components/segment/segmented_full.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -784,7 +783,6 @@ class _BottomButtons extends StatelessWidget {
     final isSuperuser = context.select(
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
     );
-    final isSuperuserDebug = isSuperuser && kDebugMode;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -813,7 +811,7 @@ class _BottomButtons extends StatelessWidget {
             ),
             const Gap(12),
           ],
-          if (wallet != null && wallet.isWatchOnly && isSuperuserDebug)
+          if (wallet != null && isSuperuser && wallet.signsRemotely)
             const ShowPsbtButton()
           else
             const ConfirmSendButton(),
@@ -887,7 +885,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'From',
             details: BBText(
-              selectedWallet!.getLabel() ?? '',
+              selectedWallet!.displayLabel,
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -1058,7 +1056,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'From',
             details: BBText(
-              selectedWallet!.getLabel() ?? '',
+              selectedWallet!.displayLabel,
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -1274,7 +1272,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'From',
             details: BBText(
-              selectedWallet!.getLabel() ?? '',
+              selectedWallet!.displayLabel,
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -1463,7 +1461,7 @@ class SendSendingScreen extends StatelessWidget {
               Gif(
                 autostart: Autostart.loop,
                 height: 123,
-                image: AssetImage(Assets.images2.cubesLoading.path),
+                image: AssetImage(Assets.animations.cubesLoading.path),
               ),
               if (!isLnSwap) ...[
                 const Gap(8),

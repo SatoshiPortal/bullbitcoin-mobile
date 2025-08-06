@@ -1,8 +1,8 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/ui/screens/full_screen_scanner_page.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -18,7 +18,7 @@ class OpenTheCameraWidget extends StatelessWidget {
       child: Column(
         children: [
           const Gap(30),
-          Image.asset(Assets.qRPlaceholder.path, height: 221, width: 221),
+          Image.asset(Assets.misc.qRPlaceholder.path, height: 110, width: 110),
           const Gap(24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 48),

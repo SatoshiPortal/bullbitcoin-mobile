@@ -60,3 +60,14 @@ class ConfirmTransactionException implements Exception {
 
   String get title => 'Confirmation Failed';
 }
+
+class BroadcastTransactionException implements Exception {
+  final String message;
+
+  BroadcastTransactionException(this.message);
+
+  @override
+  String toString() => message;
+
+  String get title => 'Broadcast Failed';
+}

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
@@ -13,7 +14,6 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:bip85/bip85.dart';
 import 'package:boltz/boltz.dart';
 import 'package:dart_bbqr/bbqr.dart';
@@ -21,27 +21,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:lwk/lwk.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
+
+class Bull {
+  static Future<void> init() async {
+    await Future.wait([
+      LibLwk.init(),
+      BoltzCore.init(),
+      LibBip85.init(),
+      PConfig.initializeApp(),
+      dotenv.load(isOptional: true),
+      LibBbqr.init(),
+    ]);
+
+    final logDirectory = await getApplicationDocumentsDirectory();
+    log = Logger.init(directory: logDirectory);
+
+    // The Locator setup might depend on the initialization of the libraries above
+    //  so it's important to call it after the initialization
+    await AppLocator.setup();
+    Bloc.observer = AppBlocObserver();
+  }
+}
 
 Future main() async {
   await runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
-
-      await Future.wait([
-        LibLwk.init(),
-        BoltzCore.init(),
-        LibBip85.init(),
-        PConfig.initializeApp(),
-        dotenv.load(isOptional: true),
-        LibBbqr.init(),
-      ]);
-      log = await Logger.init();
-
-      // The Locator setup might depend on the initialization of the libraries above
-      //  so it's important to call it after the initialization
-      await AppLocator.setup();
-      Bloc.observer = AppBlocObserver();
+      await Bull.init();
       runApp(const BullBitcoinWalletApp());
     },
     (error, stack) {
