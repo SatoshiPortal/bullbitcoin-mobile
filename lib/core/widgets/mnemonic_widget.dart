@@ -16,7 +16,7 @@ typedef Mnemonic =
 
 class MnemonicWidget extends StatefulWidget {
   final bip39.Language language;
-  final int initialLength;
+  final bip39.MnemonicLength initialLength;
   final Function(Mnemonic) onSubmit;
   final String submitLabel;
   final bool allowPassphrase;
@@ -42,7 +42,7 @@ class MnemonicWidget extends StatefulWidget {
 
 class _MnemonicWidgetState extends State<MnemonicWidget> {
   Exception? _error;
-  late int length;
+  late bip39.MnemonicLength length;
   late List<String> words;
   String passphrase = '';
   String label = '';
@@ -51,7 +51,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   void initState() {
     super.initState();
     length = widget.initialLength;
-    words = List<String>.filled(length, '');
+    words = List<String>.filled(length.words, '');
   }
 
   void onSubmit() {
@@ -71,6 +71,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
           language: widget.language,
         ));
       } catch (e) {
+        // if checksum is invalid, clear the last word
+        if (e is bip39.MnemonicInvalidChecksumException) words.last = '';
         setState(() => _error = MnemonicException(e.toString()));
         return;
       }
@@ -94,9 +96,9 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
     setState(() {});
   }
 
-  void changeMnemonicLength(int newWordCount) {
-    length = newWordCount;
-    words = List<String>.filled(length, '');
+  void changeMnemonicLength(bip39.MnemonicLength length) {
+    this.length = length;
+    words = List<String>.filled(length.words, '');
     setState(() {});
   }
 
@@ -446,8 +448,8 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
 }
 
 class MnemonicLengthDropdown extends StatelessWidget {
-  final int value;
-  final Function(int) onChanged;
+  final bip39.MnemonicLength value;
+  final Function(bip39.MnemonicLength) onChanged;
 
   const MnemonicLengthDropdown({
     super.key,
@@ -457,7 +459,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<int>(
+    return DropdownButton<bip39.MnemonicLength>(
       value: value,
       underline: const SizedBox(),
       style: context.font.bodyMedium?.copyWith(
@@ -467,12 +469,12 @@ class MnemonicLengthDropdown extends StatelessWidget {
       dropdownColor: context.colour.onPrimary,
       borderRadius: BorderRadius.circular(4),
       items:
-          [12, 15, 18, 21, 24]
+          bip39.MnemonicLength.values
               .map(
                 (length) => DropdownMenuItem(
                   value: length,
                   child: BBText(
-                    '$length words',
+                    '${length.words} words',
                     style: context.font.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: context.colour.secondary,
@@ -481,7 +483,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
                 ),
               )
               .toList(),
-      onChanged: (newValue) => onChanged(newValue ?? 12),
+      onChanged: (v) => onChanged(v ?? bip39.MnemonicLength.words12),
     );
   }
 }
