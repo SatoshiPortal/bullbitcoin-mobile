@@ -3,12 +3,10 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
-import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class SellWalletSelectionScreen extends StatelessWidget {
   const SellWalletSelectionScreen({super.key});
@@ -51,8 +49,9 @@ class SellWalletSelectionScreen extends StatelessWidget {
                             : (wallet) => context.read<SellBloc>().add(
                               SellEvent.walletSelected(wallet: wallet),
                             ),
+                    hideWatchOnly: true,
                   ),
-                  const Gap(24.0),
+                  /*const Gap(24.0),
                   ListTile(
                     tileColor: context.colour.onPrimary,
                     shape: const Border(),
@@ -65,7 +64,7 @@ class SellWalletSelectionScreen extends StatelessWidget {
                             : () => context.pushNamed(
                               SellRoute.sellExternalWalletNetworkSelection.name,
                             ),
-                  ),
+                  ),*/
                   const Gap(24.0),
                   const _SellError(),
                 ],
