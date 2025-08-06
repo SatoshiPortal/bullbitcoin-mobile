@@ -72,8 +72,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   Future<void> storeApiKey(Map<String, dynamic> apiKeyData) async {
     try {
-      log.info('Storing API key: $apiKeyData');
-
       emit(state.copyWith(saveApiKeyException: null));
 
       await _saveExchangeApiKeyUsecase.execute(apiKeyResponseData: apiKeyData);

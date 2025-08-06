@@ -123,7 +123,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
             // If the bb_session cookie is found, the user is logged in and
             //  we can proceed to try to generate and save the API key.
-            log.info('Found bb_session cookie: $bbSessionCookie');
+            log.info('Found bb_session cookie');
 
             try {
               // Set the flag to indicate that we are generating the API key
