@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_ro
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ImportMethodWidget extends StatelessWidget {
   const ImportMethodWidget({super.key});
@@ -60,27 +61,33 @@ class ImportMethodWidget extends StatelessWidget {
             ],
           ),
 
-          const Center(
+          Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // BBButton.big(
-                //   label: 'Buy a device',
-                //   onPressed: () {},
-                //   bgColor: context.colour.onPrimary,
-                //   textColor: context.colour.secondary,
-                //   iconData: Icons.shopping_cart,
-                //   disabled: true,
-                // ),
-                // const Gap(12),
-                // BBButton.big(
-                //   label: 'Wallet guides',
-                //   onPressed: () {},
-                //   bgColor: context.colour.onPrimary,
-                //   textColor: context.colour.secondary,
-                //   iconData: Icons.lightbulb_outline,
-                //   disabled: true,
-                // ),
+                BBButton.big(
+                  label: 'Buy a device',
+                  onPressed:
+                      () => launchUrl(
+                        Uri.parse(
+                          'https://store.coinkite.com/promo/BULLBITCOIN',
+                        ),
+                      ),
+                  bgColor: context.colour.onPrimary,
+                  textColor: context.colour.secondary,
+                  iconData: Icons.shopping_cart,
+                ),
+                const Gap(12),
+                BBButton.big(
+                  label: 'Wallet guides',
+                  onPressed:
+                      () => launchUrl(
+                        Uri.parse('https://docs.bull.ethicnology.com'),
+                      ),
+                  bgColor: context.colour.onPrimary,
+                  textColor: context.colour.secondary,
+                  iconData: Icons.lightbulb_outline,
+                ),
               ],
             ),
           ),
