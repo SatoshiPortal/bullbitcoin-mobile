@@ -164,11 +164,16 @@ class WalletAddressRepository {
             : completeHistory;
 
     // Enrich addresses with balance and transaction data in parallel
-    return _enrichAddresses(
+    /*final enrichedAddresses = await _enrichAddresses(
       addressHistory: trimmedHistory,
       walletModel: walletModel,
       isBdkWallet: isBdkWallet,
-    );
+    );*/
+
+    // Return the enriched addresses
+    return trimmedHistory.map((model) {
+      return WalletAddressMapper.toEntity(model);
+    }).toList();
   }
 
   Future<List<WalletAddressModel>> _fillAddressGaps({
@@ -266,6 +271,7 @@ class WalletAddressRepository {
     );
   }
 
+  // ignore: unused_element
   Future<List<WalletAddress>> _enrichAddresses({
     required List<WalletAddressModel> addressHistory,
     required WalletModel walletModel,

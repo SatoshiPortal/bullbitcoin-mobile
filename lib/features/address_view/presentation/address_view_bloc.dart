@@ -36,22 +36,17 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
 
     try {
       // Fetch initial receive and change addresses
-      final (receiveAddresses, changeAddresses) =
-          await (
-            _getAddressListUseCase.execute(walletId: _walletId, limit: _limit),
-            _getAddressListUseCase.execute(
-              walletId: _walletId,
-              isChange: true,
-              limit: _limit,
-            ),
-          ).wait;
+      final receiveAddresses = await _getAddressListUseCase.execute(
+        walletId: _walletId,
+        limit: _limit,
+      );
 
       emit(
         state.copyWith(
           receiveAddresses: receiveAddresses,
-          changeAddresses: changeAddresses,
+          //changeAddresses: changeAddresses,
           hasReachedEndOfReceiveAddresses: receiveAddresses.length < _limit,
-          hasReachedEndOfChangeAddresses: changeAddresses.length < _limit,
+          //hasReachedEndOfChangeAddresses: changeAddresses.length < _limit,
         ),
       );
     } on WalletError catch (error) {
