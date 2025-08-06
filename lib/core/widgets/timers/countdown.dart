@@ -62,7 +62,7 @@ class _CountdownState extends State<Countdown> {
     // Calculate the remaining time always from the deadline time and the current time
     // to ensure it updates correctly instead of just subtracting a second each time which
     // could lead to inaccuracies when the app is paused or resumed or other asynchronous events occur.
-    return widget.until.difference(DateTime.now());
+    return widget.until.difference(DateTime.now().toUtc());
   }
 
   void _updateTimer(Timer timer) {
