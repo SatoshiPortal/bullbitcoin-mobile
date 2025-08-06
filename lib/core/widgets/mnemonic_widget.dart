@@ -77,6 +77,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
           _error = InvalidMnemonicLengthError(words.length);
         } else if (e is bip39.MnemonicInvalidChecksumException) {
           _error = InvalidMnemonicChecksumError();
+          words[words.length - 1] = '';
         } else if (e is bip39.MnemonicUnexpectedEntropyLengthException ||
             e is bip39.MnemonicUnexpectedInitialEntropyLengthException ||
             e is bip39.MnemonicIndexesLengthException) {
