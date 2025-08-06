@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/screens/logs_viewer_screen.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -17,6 +20,10 @@ class ShareLogsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
+
     return Column(
       children: [
         if (sessionLogs)
@@ -39,6 +46,23 @@ class ShareLogsWidget extends StatelessWidget {
             title: const Text('Share migration logs'),
             onTap: () => _shareLegacyMigrationLogs(context),
             trailing: const Icon(Icons.share),
+          ),
+        const Gap(16),
+        if (isSuperuser)
+          ListTile(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(2),
+            ),
+            tileColor: Colors.transparent,
+            title: const Text('View session logs'),
+            onTap:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LogsViewerScreen(),
+                  ),
+                ),
+            trailing: const Icon(Icons.list_alt),
           ),
       ],
     );
