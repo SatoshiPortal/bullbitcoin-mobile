@@ -71,21 +71,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
           language: widget.language,
         ));
       } catch (e) {
-        if (e is bip39.MnemonicWordNotFoundException) {
-          _error = InvalidMnemonicWordsError(e.message);
-        } else if (e is bip39.MnemonicUnexpectedSentenceLengthException) {
-          _error = InvalidMnemonicLengthError(words.length);
-        } else if (e is bip39.MnemonicInvalidChecksumException) {
-          _error = InvalidMnemonicChecksumError();
-          words[words.length - 1] = '';
-        } else if (e is bip39.MnemonicUnexpectedEntropyLengthException ||
-            e is bip39.MnemonicUnexpectedInitialEntropyLengthException ||
-            e is bip39.MnemonicIndexesLengthException) {
-          _error = InvalidEntropyLengthError();
-        } else {
-          _error = MnemonicException(e.toString());
-        }
-        setState(() {});
+        setState(() => _error = MnemonicException(e.toString()));
         return;
       }
     } else {
@@ -594,27 +580,6 @@ class MnemonicException implements Exception {
 
   @override
   String toString() => message;
-}
-
-// User-friendly errors that extend MnemonicException for specific bip39 errors
-class InvalidMnemonicWordsError extends MnemonicException {
-  InvalidMnemonicWordsError(super.message);
-}
-
-class InvalidMnemonicLengthError extends MnemonicException {
-  InvalidMnemonicLengthError(int length)
-    : super(
-        'Your mnemonic has $length words, but it must be exactly 12, 15, 18, 21, or 24 words long.',
-      );
-}
-
-class InvalidMnemonicChecksumError extends MnemonicException {
-  InvalidMnemonicChecksumError()
-    : super('This mnemonic has an invalid checksum');
-}
-
-class InvalidEntropyLengthError extends MnemonicException {
-  InvalidEntropyLengthError() : super('Invalid mnemonic format');
 }
 
 class EmptyMnemonicWordsError extends MnemonicException {
