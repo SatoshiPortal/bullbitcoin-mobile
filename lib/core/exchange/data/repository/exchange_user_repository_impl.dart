@@ -37,7 +37,6 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
           apiKey.key,
         );
         if (userSummaryModel == null) {
-          log.info('User summary not found for API key: ${apiKey.key}');
           return null;
         }
         final userSummary = UserSummaryMapper.fromModelToEntity(

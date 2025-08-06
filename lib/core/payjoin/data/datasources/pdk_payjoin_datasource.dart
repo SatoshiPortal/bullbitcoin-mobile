@@ -769,7 +769,7 @@ class InMemoryReceiverPersister {
   }
 
   Future<Receiver> load({required ReceiverToken token}) async {
-    logger.log.info('LOADING RECEIVER ${token.toBytes()}');
+    logger.log.info('LOADING RECEIVER');
     final receiver = _store[token.toBytes().toString()];
     if (receiver == null) {
       throw Exception('Receiver not found for the provided token.');
@@ -783,13 +783,13 @@ class InMemorySenderPersister implements DartSenderPersister {
 
   Future<SenderToken> save({required Sender sender}) async {
     final token = sender.key();
-    logger.log.info('TOKEN SAVE: ${token.toBytes()}');
+    logger.log.info('TOKEN SAVE}');
     _store[token.toBytes().toString()] = sender;
     return token;
   }
 
   Future<Sender> load({required SenderToken token}) async {
-    logger.log.info('TOKEN LOAD: ${token.toBytes()}');
+    logger.log.info('TOKEN LOAD}');
     final sender = _store[token.toBytes().toString()];
     if (sender == null) {
       throw Exception('Sender not found for the provided token.');

@@ -358,7 +358,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         }
       }
     }
-    log.info('resp.data: ${resp.data}');
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 
