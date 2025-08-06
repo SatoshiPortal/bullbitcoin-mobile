@@ -36,7 +36,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                 if (watchOnly is WatchOnlyDescriptor) {
                   if (!context.mounted) return;
                   context.replaceNamed(
-                    ImportWatchOnlyRoutes.import.name,
+                    ImportWalletRoutes.import.name,
                     extra: WatchOnlyWalletEntity.descriptor(
                       watchOnlyDescriptor: watchOnly,
                     ),
@@ -46,7 +46,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                 if (watchOnly is WatchOnlyXpub) {
                   if (!context.mounted) return;
                   context.replaceNamed(
-                    ImportWatchOnlyRoutes.import.name,
+                    ImportWalletRoutes.import.name,
                     extra: WatchOnlyWalletEntity.xpub(watchOnlyXpub: watchOnly),
                   );
                 }

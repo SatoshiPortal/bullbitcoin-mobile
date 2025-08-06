@@ -35,10 +35,16 @@ class BroadcastSignedTxPage extends StatelessWidget {
             child: Column(
               children: [
                 if (state.transaction == null) ...[
-                  PasteInput(
-                    text: state.transaction?.data ?? '',
-                    hint: 'Paste a PSBT or transaction HEX',
-                    onChanged: cubit.tryParseTransaction,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
+                    child: PasteInput(
+                      text: state.transaction?.data ?? '',
+                      hint: 'Paste a PSBT or transaction HEX',
+                      onChanged: cubit.tryParseTransaction,
+                    ),
                   ),
                   const Gap(32),
                   Padding(

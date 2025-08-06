@@ -19,24 +19,24 @@ class ImportMethodWidget extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              BBButton.big(
-                label: 'Upload file',
-                onPressed: () {},
-                bgColor: context.colour.onPrimary,
-                textColor: context.colour.secondary,
-                iconData: Icons.upload_file,
-                disabled: true,
-              ),
-              const Gap(12),
-              BBButton.big(
-                label: 'Activate NFC',
-                onPressed: () {},
-                bgColor: context.colour.onPrimary,
-                textColor: context.colour.secondary,
-                iconData: Icons.nfc,
-                disabled: true,
-              ),
-              const Gap(12),
+              // BBButton.big(
+              //   label: 'Upload file',
+              //   onPressed: () {},
+              //   bgColor: context.colour.onPrimary,
+              //   textColor: context.colour.secondary,
+              //   iconData: Icons.upload_file,
+              //   disabled: true,
+              // ),
+              // const Gap(12),
+              // BBButton.big(
+              //   label: 'Activate NFC',
+              //   onPressed: () {},
+              //   bgColor: context.colour.onPrimary,
+              //   textColor: context.colour.secondary,
+              //   iconData: Icons.nfc,
+              //   disabled: true,
+              // ),
+              // const Gap(12),
               BBButton.big(
                 label: 'Mnemonic',
                 onPressed:
@@ -51,7 +51,7 @@ class ImportMethodWidget extends StatelessWidget {
               BBButton.big(
                 label: 'Scan QR',
                 onPressed:
-                    () => context.replaceNamed(ImportWatchOnlyRoutes.scan.name),
+                    () => context.replaceNamed(ImportWalletRoutes.scan.name),
                 bgColor: context.colour.onPrimary,
                 textColor: context.colour.secondary,
                 iconData: Icons.qr_code_scanner,
@@ -60,27 +60,27 @@ class ImportMethodWidget extends StatelessWidget {
             ],
           ),
 
-          Center(
+          const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                BBButton.big(
-                  label: 'Buy a device',
-                  onPressed: () {},
-                  bgColor: context.colour.onPrimary,
-                  textColor: context.colour.secondary,
-                  iconData: Icons.shopping_cart,
-                  disabled: true,
-                ),
-                const Gap(12),
-                BBButton.big(
-                  label: 'Wallet guides',
-                  onPressed: () {},
-                  bgColor: context.colour.onPrimary,
-                  textColor: context.colour.secondary,
-                  iconData: Icons.lightbulb_outline,
-                  disabled: true,
-                ),
+                // BBButton.big(
+                //   label: 'Buy a device',
+                //   onPressed: () {},
+                //   bgColor: context.colour.onPrimary,
+                //   textColor: context.colour.secondary,
+                //   iconData: Icons.shopping_cart,
+                //   disabled: true,
+                // ),
+                // const Gap(12),
+                // BBButton.big(
+                //   label: 'Wallet guides',
+                //   onPressed: () {},
+                //   bgColor: context.colour.onPrimary,
+                //   textColor: context.colour.secondary,
+                //   iconData: Icons.lightbulb_outline,
+                //   disabled: true,
+                // ),
               ],
             ),
           ),

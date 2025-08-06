@@ -14,7 +14,7 @@ import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart'
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/experimental_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/broadcast_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
