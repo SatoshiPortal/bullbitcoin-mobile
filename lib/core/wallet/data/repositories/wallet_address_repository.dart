@@ -281,20 +281,15 @@ class WalletAddressRepository {
         isBdkWallet
             ? await _bdkWallet.getTransactions(wallet: walletModel)
             : await _lwkWallet.getTransactions(wallet: walletModel);
+    final addressBalances =
+        isBdkWallet
+            ? await _bdkWallet.getAddressBalancesSat(wallet: walletModel)
+            : await _lwkWallet.getAddressBalancesSat(wallet: walletModel);
 
     final enrichedAddresses = await Future.wait(
       addressHistory.map((addressModel) async {
         // Fetch balance and transactions in parallel
-        final balanceSat =
-            isBdkWallet
-                ? await _bdkWallet.getAddressBalanceSat(
-                  addressModel.address,
-                  wallet: walletModel,
-                )
-                : await _lwkWallet.getAddressBalanceSat(
-                  addressModel.address,
-                  wallet: walletModel,
-                );
+        final balanceSat = addressBalances[addressModel.address] ?? BigInt.zero;
 
         final transactions =
             allTransactions
