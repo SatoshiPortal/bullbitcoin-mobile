@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
+import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:convert/convert.dart';
 
@@ -35,10 +36,4 @@ class BroadcastBitcoinTransactionUsecase {
       throw BroadcastTransactionException(e.toString());
     }
   }
-}
-
-class BroadcastTransactionException implements Exception {
-  final String message;
-
-  BroadcastTransactionException(this.message);
 }
