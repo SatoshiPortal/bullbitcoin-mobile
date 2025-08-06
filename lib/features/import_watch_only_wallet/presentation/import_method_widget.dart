@@ -61,7 +61,7 @@ class ImportMethodWidget extends StatelessWidget {
             ],
           ),
 
-          const Center(
+          Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
