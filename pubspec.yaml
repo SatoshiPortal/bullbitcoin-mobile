@@ -59,7 +59,7 @@ dependencies:
   bip85: ^2.0.0
   bip21_uri: ^2.0.1
   bip32_keys: ^3.0.1
-  bip39_mnemonic: ^3.0.10
+  bip39_mnemonic: ^4.0.0
   bs58check: ^1.0.2
   gif: ^2.3.0
   custom_sliding_segmented_control: ^1.8.5

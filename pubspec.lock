@@ -110,10 +110,10 @@ packages:
     dependency: "direct main"
     description:
       name: bip39_mnemonic
-      sha256: e280b785d40dda3f70186d5a51126c5d3ae2c3b9a1bafdbd20a94b50c8253fb3
+      sha256: aa3057ec72fe9e5fd13ecdc0322127b6630298d0d63eea95932ba81b5671d5d0
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.10"
+    version: "4.0.0"
   bip85:
     dependency: "direct main"
     description:
@@ -1046,10 +1046,10 @@ packages:
     dependency: transitive
     description:
       name: image_size_getter
-      sha256: "9a299e3af2ebbcfd1baf21456c3c884037ff524316c97d8e56035ea8fdf35653"
+      sha256: "7c26937e0ae341ca558b7556591fd0cc456fcc454583b7cb665d2f03e93e590f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.0"
+    version: "2.4.1"
   integration_test:
     dependency: "direct dev"
     description: flutter
@@ -1611,10 +1611,10 @@ packages:
     dependency: transitive
     description:
       name: sqlite3_flutter_libs
-      sha256: fd996da5515a73aacd0a04ae7063db5fe8df42670d974df4c3ee538c652eef2e
+      sha256: "2b03273e71867a8a4d030861fc21706200debe5c5858a4b9e58f4a1c129586a4"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.38"
+    version: "0.5.39"
   sqlparser:
     dependency: transitive
     description:
