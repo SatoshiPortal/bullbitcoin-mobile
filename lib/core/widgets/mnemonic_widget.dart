@@ -99,7 +99,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   void changeMnemonicLength(bip39.MnemonicLength length) {
     this.length = length;
     words = List<String>.filled(length.words, '');
-    setState(() {});
+    setState(() => _error = null);
   }
 
   @override
