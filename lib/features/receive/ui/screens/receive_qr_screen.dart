@@ -79,6 +79,7 @@ class ReceiveQRDetails extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 42),
             padding: const EdgeInsets.all(16),
+            constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
             decoration: BoxDecoration(
               color: context.colour.onPrimary,
               borderRadius: BorderRadius.circular(12),
