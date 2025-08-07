@@ -19,11 +19,9 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   }) : _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
        super(BroadcastSignedTxState(bbqr: Bbqr()));
 
-  void clear() => emit(state.copyWith(error: null, transaction: null));
-
   Future<void> onQrScanned(String payload) async {
     try {
-      clear();
+      emit(state.copyWith(error: null));
       final tx = await state.bbqr.scanTransaction(payload);
       if (tx != null) emit(state.copyWith(transaction: tx));
     } catch (e) {
@@ -32,7 +30,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   }
 
   Future<void> onNfcScanned(NFCTag tag) async {
-    clear();
+    emit(state.copyWith(error: null));
     try {
       final ndefRecords = await FlutterNfcKit.readNDEFRecords();
 
