@@ -59,7 +59,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         Row(
           children: [
             SizedBox(
-              width: 150,
+              width: 120,
               child: BBText('Signing Device', style: context.font.titleMedium),
             ),
             SizedBox(
