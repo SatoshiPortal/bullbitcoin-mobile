@@ -97,9 +97,9 @@ class SqliteDatabase extends _$SqliteDatabase {
       SettingsRow(
         id: 1,
         environment: Environment.mainnet.name,
-        bitcoinUnit: BitcoinUnit.btc.name,
+        bitcoinUnit: BitcoinUnit.sats.name,
         language: Language.unitedStatesEnglish.name,
-        currency: 'USD',
+        currency: 'CAD',
         hideAmounts: false,
         isSuperuser: false,
       ),
