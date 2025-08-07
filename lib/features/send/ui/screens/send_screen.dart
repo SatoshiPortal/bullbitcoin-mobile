@@ -15,7 +15,7 @@ import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/experimental/psbt_flow/psbt_router.dart';
+import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';

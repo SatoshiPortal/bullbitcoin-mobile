@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
@@ -8,6 +9,7 @@ import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
+import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
@@ -94,6 +96,8 @@ class AppRouter {
       KeyServerRouter.route,
       ImportMnemonicRouter.route,
       ImportWatchOnlyRouter.route,
+      BroadcastSignedTxRouter.route,
+      PsbtRouterConfig.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );

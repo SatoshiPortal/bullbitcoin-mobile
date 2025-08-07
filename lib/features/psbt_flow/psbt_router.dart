@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/experimental/psbt_flow/show_psbt/show_psbt_screen.dart';
+import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_screen.dart';
 import 'package:go_router/go_router.dart';
 
 enum PsbtFlowRoutes {
