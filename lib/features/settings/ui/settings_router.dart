@@ -6,7 +6,6 @@ import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/experimental/experimental_router.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
 import 'package:bb_mobile/features/legacy_seed_view/ui/legacy_seed_view_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
@@ -14,7 +13,6 @@ import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart'
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/broadcast_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
@@ -264,12 +262,6 @@ class SettingsRouter {
         path: SettingsRoute.currency.path,
         name: SettingsRoute.currency.name,
         builder: (context, state) => const CurrencySettingsScreen(),
-      ),
-      GoRoute(
-        path: SettingsRoute.experimental.path,
-        name: SettingsRoute.experimental.name,
-        builder: (context, state) => const ExperimentalSettingsScreen(),
-        routes: [ExperimentalRouterConfig.route],
       ),
     ],
   );

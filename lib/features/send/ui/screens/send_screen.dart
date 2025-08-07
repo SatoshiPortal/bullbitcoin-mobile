@@ -15,13 +15,12 @@ import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/experimental/psbt_flow/psbt_router.dart';
+import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -780,9 +779,6 @@ class _BottomButtons extends StatelessWidget {
     final wallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -811,7 +807,7 @@ class _BottomButtons extends StatelessWidget {
             ),
             const Gap(12),
           ],
-          if (wallet != null && isSuperuser && wallet.signsRemotely)
+          if (wallet != null && wallet.signsRemotely)
             const ShowPsbtButton()
           else
             const ConfirmSendButton(),

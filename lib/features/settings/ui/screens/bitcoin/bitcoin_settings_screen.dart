@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/autoswap/ui/autoswap_settings_router.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/ui/electrum_settings_router.dart';
-import 'package:bb_mobile/features/experimental/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';

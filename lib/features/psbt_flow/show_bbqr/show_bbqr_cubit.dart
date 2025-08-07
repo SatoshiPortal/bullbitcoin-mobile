@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/experimental/psbt_flow/show_bbqr/show_bbqr_state.dart';
+import 'package:bb_mobile/features/psbt_flow/show_bbqr/show_bbqr_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ShowBbqrCubit extends Cubit<ShowBbqrState> {

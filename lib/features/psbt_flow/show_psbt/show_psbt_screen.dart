@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/features/experimental/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/features/experimental/psbt_flow/show_bbqr/show_bbqr_widget.dart';
-import 'package:bb_mobile/features/experimental/psbt_flow/show_psbt/show_psbt_cubit.dart';
-import 'package:bb_mobile/features/experimental/psbt_flow/show_psbt/show_psbt_state.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
+import 'package:bb_mobile/features/psbt_flow/show_bbqr/show_bbqr_widget.dart';
+import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_cubit.dart';
+import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
