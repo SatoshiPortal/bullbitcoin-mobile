@@ -17,7 +17,7 @@ class WalletHomeTopSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final topSectionHeight = screenHeight * 0.52;
+    final topSectionHeight = screenHeight * 0.46;
     final uiHeight = screenHeight * 0.38;
     final cardHeight = screenHeight * 0.14;
 
@@ -30,7 +30,7 @@ class WalletHomeTopSection extends StatelessWidget {
             children: [SizedBox(height: uiHeight, child: const _UI())],
           ),
           Positioned(
-            bottom: cardHeight * 0.4,
+            bottom: 0,
             left: 0,
             right: 0,
             child: SizedBox(

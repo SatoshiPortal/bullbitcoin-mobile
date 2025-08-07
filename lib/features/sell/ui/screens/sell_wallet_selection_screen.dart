@@ -42,7 +42,6 @@ class SellWalletSelectionScreen extends StatelessWidget {
                   ),
                   const Gap(24.0),
                   WalletCards(
-                    padding: EdgeInsets.zero,
                     onTap:
                         isCreatingSellOrder
                             ? null
