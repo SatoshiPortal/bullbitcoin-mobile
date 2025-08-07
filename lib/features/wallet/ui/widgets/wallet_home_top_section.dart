@@ -16,28 +16,31 @@ class WalletHomeTopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      height: 264 + 78 + 46,
+    final screenHeight = MediaQuery.of(context).size.height;
+    final topSectionHeight = screenHeight * 0.52;
+    final uiHeight = screenHeight * 0.38;
+    final cardHeight = screenHeight * 0.14;
+
+    return SizedBox(
+      height: topSectionHeight,
       child: Stack(
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: 264 + 78,
-                // color: Colors.red,
-                child: _UI(),
-              ),
-              // const Gap(40),
-            ],
+            children: [SizedBox(height: uiHeight, child: const _UI())],
           ),
           Positioned(
-            bottom: 0,
+            bottom: cardHeight * 0.4,
             left: 0,
             right: 0,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.0),
-              child: ActionCard(),
+            child: SizedBox(
+              height: cardHeight,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.035,
+                ),
+                child: const ActionCard(),
+              ),
             ),
           ),
         ],
@@ -79,26 +82,32 @@ class _Amounts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final screenHeight = MediaQuery.of(context).size.height;
+    final topGap = screenHeight * 0.04;
+    final middleGap = screenHeight * 0.015;
+    final smallGap = screenHeight * 0.01;
+    final sideGap = screenHeight * 0.02;
+
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Gap(32),
+        Gap(topGap),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Spacer(),
-            Gap(31),
-            Gap(32),
-            _BtcTotalAmt(),
-            Gap(16),
-            EyeToggle(),
-            Spacer(),
+            const Spacer(),
+            Gap(sideGap),
+            Gap(sideGap),
+            const _BtcTotalAmt(),
+            Gap(sideGap * 0.8),
+            const EyeToggle(),
+            const Spacer(),
           ],
         ),
-        Gap(12),
-        _FiatAmt(),
-        Gap(8),
-        _UnconfirmedIncomingBalance(),
+        Gap(middleGap),
+        const _FiatAmt(),
+        Gap(smallGap),
+        const _UnconfirmedIncomingBalance(),
       ],
     );
   }
