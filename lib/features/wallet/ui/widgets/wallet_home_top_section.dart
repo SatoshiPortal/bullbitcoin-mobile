@@ -58,7 +58,7 @@ class _UIState extends State<_UI> {
 
   @override
   void initState() {
-    image = Image.asset(Assets.backgrounds.bgRed.path, fit: BoxFit.fitWidth);
+    image = Image.asset(Assets.backgrounds.bgRed.path, fit: BoxFit.fill);
     super.initState();
   }
 
