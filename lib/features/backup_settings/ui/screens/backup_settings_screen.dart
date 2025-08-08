@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_key_warning.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -42,10 +41,6 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
-
     return MultiBlocListener(
       listeners: [
         BlocListener<BackupSettingsCubit, BackupSettingsState>(
@@ -102,7 +97,7 @@ class _Screen extends StatelessWidget {
                     const Gap(20),
                     const _BackupTestStatusWidget(),
                     const Gap(30),
-                    if (state.lastEncryptedBackup != null && isSuperuser) ...[
+                    if (state.lastEncryptedBackup != null) ...[
                       const _ExportVaultButton(),
                       const Gap(10),
                       _ViewVaultKeyButton(),
@@ -115,7 +110,7 @@ class _Screen extends StatelessWidget {
                     const _StartBackupButton(),
 
                     const Spacer(),
-                    if (state.lastEncryptedBackup != null && isSuperuser)
+                    if (state.lastEncryptedBackup != null)
                       const _KeyServerStatusWidget(),
                   ],
                 ),
@@ -185,9 +180,6 @@ class _BackupTestStatusWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
     return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
       builder: (context, state) {
         return Column(
@@ -197,13 +189,11 @@ class _BackupTestStatusWidget extends StatelessWidget {
               label: 'Physical Backup',
               isTested: state.isDefaultPhysicalBackupTested,
             ),
-            if (isSuperuser) ...[
-              const Gap(15),
-              _StatusRow(
-                label: 'Encrypted Vault',
-                isTested: state.isDefaultEncryptedBackupTested,
-              ),
-            ],
+            const Gap(15),
+            _StatusRow(
+              label: 'Encrypted Vault',
+              isTested: state.isDefaultEncryptedBackupTested,
+            ),
           ],
         );
       },
@@ -309,7 +299,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
           label:
               state.status == BackupSettingsStatus.viewingKey
                   ? 'Revealing...'
-                  : 'View Backup Key',
+                  : 'View Vault Key',
           onPressed:
               state.status == BackupSettingsStatus.viewingKey
                   ? () {}

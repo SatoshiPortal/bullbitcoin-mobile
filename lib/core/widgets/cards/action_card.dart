@@ -3,11 +3,9 @@ import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -44,9 +42,6 @@ class _ActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
     return Material(
       elevation: 2,
       color: Colors.transparent,
@@ -58,14 +53,7 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.btc.path,
               label: 'Buy',
               onPressed: () {
-                if (isSuperuser) {
-                  context.pushNamed(BuyRoute.buy.name);
-                } else {
-                  ComingSoonBottomSheet.show(
-                    context,
-                    description: 'Buy Bitcoin with CAD, CRC, EUR or MXN',
-                  );
-                }
+                context.pushNamed(BuyRoute.buy.name);
               },
               position: _ButtonPosition.first,
               disabled: false,
@@ -75,14 +63,7 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.dollar.path,
               label: 'Sell',
               onPressed: () {
-                if (isSuperuser) {
-                  context.pushNamed(SellRoute.sell.name);
-                } else {
-                  ComingSoonBottomSheet.show(
-                    context,
-                    description: 'Sell Bitcoin to fiat',
-                  );
-                }
+                context.pushNamed(SellRoute.sell.name);
               },
               position: _ButtonPosition.middle,
               disabled: false,
