@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/widgets/cards/backup_option_card.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
@@ -23,9 +22,6 @@ class TestBackupOptionsScreen extends StatefulWidget {
 class _TestBackupOptionsScreenState extends State<TestBackupOptionsScreen> {
   @override
   Widget build(BuildContext context) {
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -53,30 +49,28 @@ class _TestBackupOptionsScreenState extends State<TestBackupOptionsScreen> {
                       style: context.font.bodyLarge,
                     ),
                     const Gap(16),
-                    if (isSuperuser) ...[
-                      BackupOptionCard(
-                        icon: Image.asset(
-                          Assets.misc.encryptedVault.path,
-                          width: 36,
-                          height: 45,
-                          fit: BoxFit.cover,
-                        ),
-                        title: 'Encrypted vault',
-                        description:
-                            'Anonymous backup with strong encryption using your cloud.',
-                        tag: 'Easy and simple (1 minute)',
-                        onTap:
-                            () => {
-                              context.read<KeyServerCubit>().checkConnection(),
-                              context.pushNamed(
-                                TestWalletBackupSubroute
-                                    .chooseBackupTestProvider
-                                    .name,
-                              ),
-                            },
+                    BackupOptionCard(
+                      icon: Image.asset(
+                        Assets.misc.encryptedVault.path,
+                        width: 36,
+                        height: 45,
+                        fit: BoxFit.cover,
                       ),
-                      const Gap(16),
-                    ],
+                      title: 'Encrypted vault',
+                      description:
+                          'Anonymous backup with strong encryption using your cloud.',
+                      tag: 'Easy and simple (1 minute)',
+                      onTap:
+                          () => {
+                            context.read<KeyServerCubit>().checkConnection(),
+                            context.pushNamed(
+                              TestWalletBackupSubroute
+                                  .chooseBackupTestProvider
+                                  .name,
+                            ),
+                          },
+                    ),
+                    const Gap(16),
                     BackupOptionCard(
                       icon: Image.asset(
                         Assets.misc.physicalBackup.path,

@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
-import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
@@ -13,14 +12,12 @@ import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 /// The main router of the app. It is the root of the routing tree and contains
@@ -48,17 +45,6 @@ class AppRouter {
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: tabIndex,
               onTap: (index) {
-                // Only supersusers can navigate to the exchange tab
-                final isSuperuser =
-                    context.read<SettingsCubit>().state.isSuperuser ?? false;
-                if (index == 1 && !isSuperuser) {
-                  ComingSoonBottomSheet.show(
-                    context,
-                    description: 'Link your BullBitcoin Account',
-                  );
-                  return;
-                }
-
                 final goNamed =
                     index == 0
                         ? WalletRoute.walletHome.name
