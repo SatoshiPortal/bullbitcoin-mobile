@@ -793,6 +793,7 @@ class _BottomButtons extends StatelessWidget {
                   context: context,
                   isScrollControlled: true,
                   backgroundColor: context.colour.secondaryFixed,
+                  constraints: const BoxConstraints(maxWidth: double.infinity),
                   builder:
                       (BuildContext buildContext) => BlocProvider.value(
                         value: context.read<SendCubit>(),
@@ -1002,6 +1003,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: context.colour.onSecondary,
+      constraints: const BoxConstraints(maxWidth: double.infinity),
       builder:
           (BuildContext buildContext) =>
               BlocProvider.value(value: sendCubit, child: FeeOptionsModal()),
