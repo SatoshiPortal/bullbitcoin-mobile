@@ -253,6 +253,8 @@ class SwapCubit extends Cubit<SwapState> {
     final liquidWallets = wallets.where((w) => w.isLiquid).toList();
     final bitcoinWallets =
         wallets.where((w) => !w.isLiquid && w.signsLocally).toList();
+    final watchOnlyBitcoinWallets =
+        wallets.where((w) => !w.isLiquid && !w.signsLocally).toList();
     final defaultBitcoinWallet = bitcoinWallets.firstWhere(
       (w) => w.isDefault,
       orElse: () => bitcoinWallets.first,
@@ -287,10 +289,10 @@ class SwapCubit extends Cubit<SwapState> {
       state.copyWith(
         fromWallets: liquidWallets,
         toWallets: bitcoinWallets,
+        watchOnlyWallets: watchOnlyBitcoinWallets,
         loadingWallets: false,
         fiatCurrencyCodes: currencies,
         fiatCurrencyCode: selectedFiatCurrencyCode,
-
         exchangeRate: exchangeRate,
       ),
     );
