@@ -269,17 +269,14 @@ class ReceiveInfoDetails extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   if (!isLn)
-                    Expanded(
-                      child: IconButton(
-                        onPressed: () async {
-                          await ReceiveEnterNote.showBottomSheet(context);
-                        },
-                        visualDensity: VisualDensity.compact,
-                        iconSize: 20,
-                        icon: const Icon(Icons.edit),
-                      ),
+                    IconButton(
+                      onPressed: () async {
+                        await ReceiveEnterNote.showBottomSheet(context);
+                      },
+                      visualDensity: VisualDensity.compact,
+                      iconSize: 20,
+                      icon: const Icon(Icons.edit),
                     ),
                 ],
               ),
