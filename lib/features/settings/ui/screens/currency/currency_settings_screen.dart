@@ -33,6 +33,7 @@ class CurrencySettingsScreen extends StatelessWidget {
         context: context,
         isScrollControlled: true,
         backgroundColor: context.colour.secondaryFixedDim,
+        constraints: const BoxConstraints(maxWidth: double.infinity),
         builder: (context) {
           return CurrencyBottomSheet(
             availableCurrencies: availableCurrencies,

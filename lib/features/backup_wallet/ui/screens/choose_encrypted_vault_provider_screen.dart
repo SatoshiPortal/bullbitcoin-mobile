@@ -171,6 +171,7 @@ class _Screen extends StatelessWidget {
                   context: context,
                   isScrollControlled: true,
                   backgroundColor: Colors.transparent,
+                  constraints: const BoxConstraints(maxWidth: double.infinity),
                   builder: (context) {
                     return Stack(
                       children: [

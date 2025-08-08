@@ -76,6 +76,7 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
                 context: context,
                 isScrollControlled: true,
                 backgroundColor: context.colour.secondaryFixed,
+                constraints: const BoxConstraints(maxWidth: double.infinity),
                 useSafeArea: true,
                 builder:
                     (BuildContext buildContext) => BlocProvider.value(

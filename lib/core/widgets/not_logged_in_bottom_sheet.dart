@@ -15,6 +15,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: theme.colorScheme.onPrimary,
       useRootNavigator: true,
+      constraints: const BoxConstraints(maxWidth: double.infinity),
       builder: (context) => const NotLoggedInBottomSheet(),
     );
   }

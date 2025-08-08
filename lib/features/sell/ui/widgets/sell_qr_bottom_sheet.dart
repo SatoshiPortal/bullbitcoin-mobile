@@ -17,6 +17,7 @@ class SellQrBottomSheet extends StatelessWidget {
       context: context,
       useRootNavigator: true,
       backgroundColor: context.colour.onPrimary,
+      constraints: const BoxConstraints(maxWidth: double.infinity),
       isScrollControlled: true,
       builder: (context) {
         return SellQrBottomSheet(bip21InvoiceData: bip21InvoiceData);

@@ -94,6 +94,9 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                         showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,
+                          constraints: const BoxConstraints(
+                            maxWidth: double.infinity,
+                          ),
                           backgroundColor: Colors.transparent,
                           builder: (context) {
                             return Stack(
