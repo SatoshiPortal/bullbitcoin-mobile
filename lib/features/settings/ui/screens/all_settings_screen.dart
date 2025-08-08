@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -21,6 +22,9 @@ class AllSettingsScreen extends StatelessWidget {
     final appVersion = context.select(
       (SettingsCubit cubit) => cubit.state.appVersion,
     );
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
@@ -34,7 +38,14 @@ class AllSettingsScreen extends StatelessWidget {
                   icon: Icons.account_balance_wallet,
                   title: 'Exchange Settings',
                   onTap: () {
-                    context.pushNamed(SettingsRoute.exchangeSettings.name);
+                    if (!isSuperuser) {
+                      ComingSoonBottomSheet.show(
+                        context,
+                        description: 'Exchange features coming soon.',
+                      );
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeSettings.name);
+                    }
                   },
                 ),
                 SettingsEntryItem(
