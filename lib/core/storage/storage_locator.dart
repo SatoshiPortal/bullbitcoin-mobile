@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/data/repository/secure_storage_repository.dart';
+import 'package:bb_mobile/core/storage/domain/usecase/get_all_secure_storage_values_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
@@ -37,6 +39,13 @@ class StorageLocator {
     locator.registerLazySingleton<OldWalletRepository>(
       () => OldWalletRepository(locator<OldHiveDatasource>()),
     );
+    locator.registerLazySingleton<SecureStorageRepository>(
+      () => SecureStorageRepository(
+        locator<KeyValueStorageDatasource<String>>(
+          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
+        ),
+      ),
+    );
   }
 
   static void registerUsecases() {
@@ -67,6 +76,10 @@ class StorageLocator {
         locator<MigrationSecureStorageDatasource>(),
         locator<WalletRepository>(),
       ),
+    );
+    locator.registerFactory<GetAllSecureStorageValuesUsecase>(
+      () =>
+          GetAllSecureStorageValuesUsecase(locator<SecureStorageRepository>()),
     );
   }
 }

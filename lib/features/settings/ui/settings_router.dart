@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/app_settings/secure_storage_view_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
@@ -66,7 +67,8 @@ enum SettingsRoute {
   exchangeReferrals('exchange-referrals'),
   exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
-  appSettings('app-settings');
+  appSettings('app-settings'),
+  secureStorageView('secure-storage-view');
 
   final String path;
 
@@ -262,6 +264,11 @@ class SettingsRouter {
         path: SettingsRoute.currency.path,
         name: SettingsRoute.currency.name,
         builder: (context, state) => const CurrencySettingsScreen(),
+      ),
+      GoRoute(
+        path: SettingsRoute.secureStorageView.path,
+        name: SettingsRoute.secureStorageView.name,
+        builder: (context, state) => const SecureStorageViewScreen(),
       ),
     ],
   );
