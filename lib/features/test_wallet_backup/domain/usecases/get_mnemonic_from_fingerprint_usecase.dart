@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -23,6 +24,10 @@ class GetMnemonicFromFingerprintUsecase {
 
       return (mnemonicWords, passphrase);
     } catch (e) {
+      if (e is SeedNotFoundException) {
+        log.severe('GetMnemonicFromFingerprintUsecase: ${e.message}');
+        rethrow;
+      }
       log.severe('GetMnemonicFromFingerprintUsecase: $e');
       rethrow;
     }
