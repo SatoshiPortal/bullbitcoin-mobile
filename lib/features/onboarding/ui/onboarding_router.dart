@@ -1,10 +1,13 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/features/onboarding/ui/screens/available_google_backups_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/fetched_backup_info_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/recover_options.dart';
+import 'package:bb_mobile/features/onboarding/ui/screens/wallet_recovery_completion_screen.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -17,9 +20,11 @@ enum OnboardingRoute {
   splash('splash'),
   recoverOptions('recover-options'),
   chooseRecoverProvider('choose-recover-provider'),
-  retrievedBackupInfo('retrieved-backup-info'),
+  availableGoogleBackupsForRecovery('available-google-backups-for-recovery'),
+  fetchedBackupInfo('fetched-backup-info'),
   recoverFromEncrypted('recover-from-encrypted'),
-  recoverFromPhysical('recover-from-physical');
+  recoverFromPhysical('recover-from-physical'),
+  walletRecoveryCompletion('wallet-recovery-completion');
 
   final String path;
 
@@ -90,17 +95,37 @@ class OnboardingRouter {
                 builder: (context, state) => const OnboardingRecoverOptions(),
               ),
               GoRoute(
-                name: OnboardingRoute.retrievedBackupInfo.name,
-                path: OnboardingRoute.retrievedBackupInfo.path,
+                name: OnboardingRoute.fetchedBackupInfo.name,
+                path: OnboardingRoute.fetchedBackupInfo.path,
                 builder: (context, state) {
-                  final backupInfo = state.extra! as BackupInfo;
-                  return FetchedBackupInfoScreen(encryptedInfo: backupInfo);
+                  final backupFileId = state.extra! as String;
+                  return FetchedBackupInfoScreen(backupFileId: backupFileId);
                 },
               ),
               GoRoute(
                 name: OnboardingRoute.chooseRecoverProvider.name,
                 path: OnboardingRoute.chooseRecoverProvider.path,
                 builder: (context, state) => const ChooseVaultProviderScreen(),
+              ),
+              GoRoute(
+                name: OnboardingRoute.availableGoogleBackupsForRecovery.name,
+                path: OnboardingRoute.availableGoogleBackupsForRecovery.path,
+                builder: (context, state) {
+                  final backups = state.extra! as List<DriveFile>;
+                  return AvailableGoogleBackupsScreen(backups: backups);
+                },
+              ),
+
+              GoRoute(
+                name: OnboardingRoute.walletRecoveryCompletion.name,
+                path: OnboardingRoute.walletRecoveryCompletion.path,
+                builder: (context, state) {
+                  final recoveredWallets =
+                      state.extra! as (List<String>, List<Wallet>);
+                  return WalletRecoveryCompletionScreen(
+                    recoveredWallets: recoveredWallets,
+                  );
+                },
               ),
             ],
           ),

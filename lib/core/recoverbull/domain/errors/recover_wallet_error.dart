@@ -1,37 +1,34 @@
-class RecoverWalletError implements Exception {
-  const RecoverWalletError(this.message);
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  final String message;
+part 'recover_wallet_error.freezed.dart';
+
+@freezed
+sealed class RecoverWalletError with _$RecoverWalletError implements Exception {
+  const factory RecoverWalletError.defaultWalletExists() =
+      DefaultWalletExistsError;
+
+  const factory RecoverWalletError.walletMismatch() = WalletMismatchError;
+
+  const factory RecoverWalletError.backupCorrupted() = BackupCorruptedError;
+
+  const factory RecoverWalletError.backupMissingDerivationPath() =
+      BackupMissingDerivationPathError;
+
+  const factory RecoverWalletError.backupKeyDerivationFailed() =
+      BackupKeyDerivationFailedError;
 
   @override
   String toString() {
-    return 'RecoverWalletError: $message';
+    return when(
+      defaultWalletExists:
+          () => 'RecoverWalletError: This wallet already exists.',
+      walletMismatch:
+          () => 'RecoverWalletError: Backup does not match the default wallet.',
+      backupCorrupted: () => 'RecoverWalletError: Backup is corrupted.',
+      backupMissingDerivationPath:
+          () => 'RecoverWalletError: Backup is missing derivation path.',
+      backupKeyDerivationFailed:
+          () => 'RecoverWalletError: Backup key derivation failed.',
+    );
   }
-}
-
-class TestFlowDefaultWalletAlreadyExistsError extends RecoverWalletError {
-  const TestFlowDefaultWalletAlreadyExistsError()
-    : super('This wallet already exists.');
-}
-
-class TestFlowWalletMismatchError extends RecoverWalletError {
-  const TestFlowWalletMismatchError()
-    : super(
-        'A different default wallet already exists. You can only have one default wallet.',
-      );
-}
-
-class BackupKeyDerivationFailedError extends RecoverWalletError {
-  const BackupKeyDerivationFailedError()
-    : super('Local backup key derivation failed.');
-}
-
-class BackupVaultCorruptedError extends RecoverWalletError {
-  const BackupVaultCorruptedError()
-    : super('Selected backup file is corrupted.');
-}
-
-class BackupVaultMissingDerivationPathError extends RecoverWalletError {
-  const BackupVaultMissingDerivationPathError()
-    : super('Backup file missing derivation path.');
 }

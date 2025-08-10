@@ -51,10 +51,24 @@ class StartWalletRecovery extends OnboardingEvent {
   final String backupFile;
 }
 
+class PersistRecoveredWallets extends OnboardingEvent {
+  const PersistRecoveredWallets({required this.mnemonic});
+  final List<String> mnemonic;
+}
+
 class StartTransitioning extends OnboardingEvent {
   const StartTransitioning();
 }
 
 class EndTransitioning extends OnboardingEvent {
   const EndTransitioning();
+}
+
+class FetchAllGoogleDriveBackups extends OnboardingEvent {
+  const FetchAllGoogleDriveBackups();
+}
+
+class SelectCloudBackupToFetch extends OnboardingEvent {
+  const SelectCloudBackupToFetch({required this.id});
+  final String id;
 }

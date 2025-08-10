@@ -1,38 +1,28 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
-class CreateDefaultWalletsUsecase {
+class CreatePreviewWalletsUsecase {
   final SeedRepository _seedRepository;
   final SettingsRepository _settingsRepository;
-  final MnemonicGenerator _mnemonicGenerator;
+
   final WalletRepository _wallet;
 
-  CreateDefaultWalletsUsecase({
+  CreatePreviewWalletsUsecase({
     required SeedRepository seedRepository,
     required SettingsRepository settingsRepository,
-    required MnemonicGenerator mnemonicGenerator,
     required WalletRepository walletRepository,
   }) : _seedRepository = seedRepository,
        _settingsRepository = settingsRepository,
-       _mnemonicGenerator = mnemonicGenerator,
        _wallet = walletRepository;
 
-  Future<List<Wallet>> execute({
-    List<String>? mnemonicWords,
-    String? passphrase,
-  }) async {
+  Future<List<Wallet>> execute({required List<String> mnemonicWords}) async {
     try {
-      // Generate a mnemonic seed if the user creates a new wallet
-      //  or use the provided mnemonic words in case of recovery.
-      final mnemonic = mnemonicWords ?? await _mnemonicGenerator.generate();
       // Create and store the seed
       final seed = await _seedRepository.createFromMnemonic(
-        mnemonicWords: mnemonic,
-        passphrase: passphrase,
+        mnemonicWords: mnemonicWords,
       );
 
       // The current default script type for the wallets is BIP84
@@ -48,25 +38,26 @@ class CreateDefaultWalletsUsecase {
       final liquidNetwork =
           environment.isMainnet ? Network.liquidMainnet : Network.liquidTestnet;
 
-      // The default wallets should be 1 Bitcoin and 1 Liquid wallet.
-      final defaultWallets = await Future.wait([
+      final previewWallets = await Future.wait([
         _wallet.createWallet(
           seed: seed,
           network: bitcoinNetwork,
           scriptType: scriptType,
           isDefault: true,
+          persist: false,
+          sync: true,
         ),
         _wallet.createWallet(
           seed: seed,
           network: liquidNetwork,
           scriptType: scriptType,
           isDefault: true,
+          persist: false,
+          sync: true,
         ),
       ]);
 
-      log.fine('Default wallets created');
-
-      return defaultWallets;
+      return previewWallets;
     } catch (e) {
       log.severe('Failed to create default wallets: $e');
       throw CreateDefaultWalletsException(e.toString());

@@ -31,9 +31,14 @@ class _ChooseVaultProviderScreenState extends State<ChooseVaultProviderScreen> {
   }
 }
 
-class _Screen extends StatelessWidget {
+class _Screen extends StatefulWidget {
   const _Screen();
 
+  @override
+  State<_Screen> createState() => _ScreenState();
+}
+
+class _ScreenState extends State<_Screen> {
   void onProviderSelected(BuildContext context, BackupProviderType provider) {
     switch (provider) {
       case BackupProviderType.googleDrive:
@@ -57,23 +62,24 @@ class _Screen extends StatelessWidget {
               current.status != previous.status ||
               current.statusError != previous.statusError,
       listener: (context, state) {
-        if (state.status == TestWalletBackupStatus.success &&
-            !state.backupInfo.isCorrupted) {
-          // Mark that we're starting navigation
+        if (state.status == TestWalletBackupStatus.success) {
           context.read<TestWalletBackupBloc>().add(const StartTransitioning());
-
-          // Capture the bloc before the async gap
           final bloc = context.read<TestWalletBackupBloc>();
 
-          context
-              .pushNamed(
-                TestWalletBackupSubroute.testBackupInfo.name,
-                extra: state.backupInfo,
-              )
-              .then((_) {
-                // When we return from the route, end the navigation state
-                bloc.add(const EndTransitioning());
-              });
+          if (state.availableCloudBackups.isNotEmpty) {
+            context
+                .pushNamed(
+                  TestWalletBackupSubroute.selectBackupForTest.name,
+                  extra: state.availableCloudBackups,
+                )
+                .then((_) {
+                  if (mounted) {
+                    bloc.add(const EndTransitioning());
+                  }
+                });
+          } else {
+            bloc.add(const EndTransitioning());
+          }
         }
       },
       child: BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(

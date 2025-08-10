@@ -2,13 +2,19 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file.dart';
+import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_cloud_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/create_preview_wallets_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_google_drive_backups_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_google_drive_backup_content_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,21 +31,32 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
     required RestoreEncryptedVaultFromBackupKeyUsecase
     restoreEncryptedVaultFromBackupKeyUsecase,
-    required FetchLatestGoogleDriveBackupUsecase
-    fetchLatestGoogleDriveBackupUsecase,
+
     required FetchBackupFromFileSystemUsecase fetchBackupFromFileSystemUsecase,
+
     required CompletePhysicalBackupVerificationUsecase
     completePhysicalBackupVerificationUsecase,
+    required CompleteCloudBackupVerificationUsecase
+    completeCloudBackupVerificationUsecase,
+    required FetchAllGoogleDriveBackupsUsecase
+    fetchAllGoogleDriveBackupsUsecase,
+    required FetchGoogleDriveBackupContentUsecase
+    fetchGoogleDriveBackupContentUsecase,
+    required CreatePreviewWalletsUsecase createPreviewWalletsUsecase,
   }) : _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
        _selectFileFromPathUsecase = selectFileFromPathUsecase,
        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
        _restoreEncryptedVaultFromBackupKeyUsecase =
            restoreEncryptedVaultFromBackupKeyUsecase,
-       _fetchLatestGoogleDriveBackupUsecase =
-           fetchLatestGoogleDriveBackupUsecase,
+       _fetchGoogleDriveBackupContentUsecase =
+           fetchGoogleDriveBackupContentUsecase,
        _fetchBackupFromFileSystemUsecase = fetchBackupFromFileSystemUsecase,
        _completePhysicalBackupVerificationUsecase =
            completePhysicalBackupVerificationUsecase,
+       _completeCloudBackupVerificationUsecase =
+           completeCloudBackupVerificationUsecase,
+       _fetchAllGoogleDriveBackupsUsecase = fetchAllGoogleDriveBackupsUsecase,
+       _createPreviewWalletsUsecase = createPreviewWalletsUsecase,
        super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoverWalletClicked>(_onRecoverWalletClicked);
@@ -50,7 +67,9 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<SelectGoogleDriveRecovery>(_onSelectGoogleDriveRecovery);
     on<SelectFileSystemRecovery>(_onSelectFileSystemRecovery);
     on<StartWalletRecovery>(_onStartWalletRecovery);
-
+    on<FetchAllGoogleDriveBackups>(_onFetchAllGoogleDriveBackups);
+    on<SelectCloudBackupToFetch>(_onSelectCloudBackupToFetch);
+    on<PersistRecoveredWallets>(_onPersistRecoveredWallets);
     on<StartTransitioning>((event, emit) {
       emit(state.copyWith(transitioning: true));
     });
@@ -61,16 +80,19 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   }
 
   final CreateDefaultWalletsUsecase _createDefaultWalletsUsecase;
-
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
   final RestoreEncryptedVaultFromBackupKeyUsecase
   _restoreEncryptedVaultFromBackupKeyUsecase;
-  final FetchLatestGoogleDriveBackupUsecase
-  _fetchLatestGoogleDriveBackupUsecase;
   final FetchBackupFromFileSystemUsecase _fetchBackupFromFileSystemUsecase;
+  final FetchGoogleDriveBackupContentUsecase
+  _fetchGoogleDriveBackupContentUsecase;
   final CompletePhysicalBackupVerificationUsecase
   _completePhysicalBackupVerificationUsecase;
+  final CompleteCloudBackupVerificationUsecase
+  _completeCloudBackupVerificationUsecase;
+  final CreatePreviewWalletsUsecase _createPreviewWalletsUsecase;
+  final FetchAllGoogleDriveBackupsUsecase _fetchAllGoogleDriveBackupsUsecase;
   Future<void> _handleError(String error, Emitter<OnboardingState> emit) async {
     log.severe('Error: $error');
     emit(
@@ -123,53 +145,38 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     }
   }
 
-  Future<void> _fetchBackup(Emitter<OnboardingState> emit) async {
-    try {
-      emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.loading));
-
-      final encryptedBackup = await switch (state.vaultProvider) {
-        FileSystem(:final fileAsString) => _fetchBackupFromFileSystemUsecase
-            .execute(fileAsString),
-        GoogleDrive() => _fetchLatestGoogleDriveBackupUsecase.execute().then(
-          (result) => result.content,
-        ),
-        ICloud() => Future<String>.error('iCloud backup not implemented'),
-      };
-
-      emit(
-        state.copyWith(
-          onboardingStepStatus: OnboardingStepStatus.success,
-          backupInfo: encryptedBackup.backupInfo,
-        ),
-      );
-    } catch (e) {
-      await _handleError('Failed to fetch backup: $e', emit);
-    }
-  }
-
   Future<void> _onStartWalletRecovery(
     StartWalletRecovery event,
     Emitter<OnboardingState> emit,
   ) async {
+    emit(
+      state.copyWith(
+        onboardingStepStatus: OnboardingStepStatus.loading,
+        statusError: '',
+      ),
+    );
+
     try {
-      emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.loading));
-      await _restoreEncryptedVaultFromBackupKeyUsecase.execute(
-        backupFile: event.backupFile,
-        backupKey: event.backupKey,
+      final recoverBullWallet = await _restoreEncryptedVaultFromBackupKeyUsecase
+          .execute(backupFile: event.backupFile, backupKey: event.backupKey);
+      final recoverdWalletPreviews = await _createPreviewWalletsUsecase.execute(
+        mnemonicWords: recoverBullWallet.mnemonic,
       );
       emit(
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.success,
           step: OnboardingStep.recover,
+          recoveredWallets: (
+            recoverBullWallet.mnemonic,
+            recoverdWalletPreviews,
+          ),
         ),
       );
-      return;
+    } on DefaultWalletExistsError catch (e) {
+      await _handleError(e.toString(), emit);
     } catch (e) {
-      await _handleError(
-        'Failed recover the wallet: ${event.backupFile.backupInfo.id}',
-        emit,
-      );
-      return;
+      log.severe('Failed to create wallet: $e');
+      await _handleError('Failed to recover backup', emit);
     }
   }
 
@@ -181,7 +188,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.loading,
-          vaultProvider: const VaultProvider.fileSystem(""),
+          vaultProvider: const VaultProvider.fileSystem(''),
         ),
       );
 
@@ -190,12 +197,15 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         throw Exception('No file selected');
       }
 
-      emit(
-        state.copyWith(vaultProvider: VaultProvider.fileSystem(selectedFile)),
+      final encryptedBackup = await _fetchBackupFromFileSystemUsecase.execute(
+        selectedFile,
       );
-
-      // Then start the recover process
-      await _fetchBackup(emit);
+      emit(
+        state.copyWith(
+          onboardingStepStatus: OnboardingStepStatus.success,
+          selectedBackup: encryptedBackup,
+        ),
+      );
     } catch (e) {
       await _handleError('Failed to fetch backup: $e', emit);
     }
@@ -206,13 +216,69 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     Emitter<OnboardingState> emit,
   ) async {
     try {
-      emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.loading));
-
+      emit(
+        state.copyWith(
+          onboardingStepStatus: OnboardingStepStatus.loading,
+          vaultProvider: const VaultProvider.googleDrive(),
+        ),
+      );
       await _connectToGoogleDriveUsecase.execute();
-      emit(state.copyWith(vaultProvider: const VaultProvider.googleDrive()));
-      await _fetchBackup(emit);
+      add(const FetchAllGoogleDriveBackups());
     } catch (e) {
       await _handleError('Failed to fetch backup: $e', emit);
+    }
+  }
+
+  Future<void> _onFetchAllGoogleDriveBackups(
+    FetchAllGoogleDriveBackups event,
+    Emitter<OnboardingState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.loading));
+      final driveFiles = await _fetchAllGoogleDriveBackupsUsecase.execute();
+      emit(
+        state.copyWith(
+          onboardingStepStatus: OnboardingStepStatus.success,
+          availableCloudBackups: driveFiles,
+        ),
+      );
+    } catch (e) {
+      await _handleError('Failed to fetch backups: $e', emit);
+    }
+  }
+
+  Future<void> _onSelectCloudBackupToFetch(
+    SelectCloudBackupToFetch event,
+    Emitter<OnboardingState> emit,
+  ) async {
+    emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.loading));
+    try {
+      final encryptedBackup = await _fetchGoogleDriveBackupContentUsecase
+          .execute(event.id);
+      emit(
+        state.copyWith(
+          onboardingStepStatus: OnboardingStepStatus.success,
+          selectedBackup: encryptedBackup,
+        ),
+      );
+    } catch (e) {
+      await _handleError('Failed to fetch backup content: $e', emit);
+    }
+  }
+
+  Future<void> _onPersistRecoveredWallets(
+    PersistRecoveredWallets event,
+    Emitter<OnboardingState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.loading));
+
+      await _createDefaultWalletsUsecase.execute(mnemonicWords: event.mnemonic);
+
+      await _completeCloudBackupVerificationUsecase.execute();
+      emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
+    } catch (e) {
+      await _handleError(e.toString(), emit);
     }
   }
 }
