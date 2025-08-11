@@ -16,6 +16,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
+enum ServerType {
+  defaultServer('Default'),
+  custom('Custom');
+
+  const ServerType(this.label);
+  final String label;
+}
+
 class ElectrumServerSettingsBottomSheet extends StatelessWidget {
   const ElectrumServerSettingsBottomSheet({super.key});
 
@@ -328,13 +336,16 @@ class ServerTypeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedOption = state.isCustomServerSelected ? 'Custom' : 'Default';
+    final selectedOption =
+        state.isCustomServerSelected
+            ? ServerType.custom.label
+            : ServerType.defaultServer.label;
 
     return BBSegmentFull(
-      items: const {'Default', 'Custom'},
+      items: {ServerType.defaultServer.label, ServerType.custom.label},
       initialValue: selectedOption,
       onSelected: (selected) {
-        final isCustom = selected == 'Custom';
+        final isCustom = selected == ServerType.custom.label;
         context.read<ElectrumSettingsBloc>().add(
           ToggleCustomServer(isCustomSelected: isCustom),
         );
