@@ -153,9 +153,7 @@ class _SaveButton extends StatelessWidget {
       PrivacyNoticeBottomSheet.show(context).then((result) {
         if (result == true) {
           bloc.add(const SaveElectrumServerChanges());
-          if (context.mounted) {
-            context.pop();
-          }
+          if (context.mounted) context.pop();
         }
       });
     } else {
@@ -167,11 +165,9 @@ class _SaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasChanges = state.hasPendingChanges;
-
     bool disableSave = state.status == ElectrumSettingsStatus.loading;
 
-    if (state.isCustomServerSelected && hasChanges) {
+    if (state.isCustomServerSelected) {
       final mainnetNetwork =
           state.isSelectedNetworkLiquid
               ? Network.liquidMainnet
@@ -200,19 +196,16 @@ class _SaveButton extends StatelessWidget {
       final testnetUrlEmpty =
           testnetServer == null || testnetServer.url.trim().isEmpty;
 
-      disableSave = disableSave || mainnetUrlEmpty || testnetUrlEmpty;
+      disableSave = mainnetUrlEmpty && testnetUrlEmpty;
     }
 
     return BBButton.big(
       label: 'Save',
-      onPressed:
-          hasChanges && !disableSave ? () => _handleSave(context) : () {},
-      bgColor:
-          (hasChanges && !disableSave)
-              ? context.colour.secondary
-              : context.colour.surfaceContainer,
+      onPressed: () => _handleSave(context),
+      disabled: disableSave,
       textStyle: context.font.headlineLarge,
       textColor: context.colour.onSecondary,
+      bgColor: context.colour.secondary,
     );
   }
 }
