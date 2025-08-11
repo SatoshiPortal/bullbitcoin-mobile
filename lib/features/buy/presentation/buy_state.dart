@@ -32,6 +32,9 @@ sealed class BuyState with _$BuyState {
   }) = _BuyState;
   const BuyState._();
 
+  bool get isFullyVerifiedKycLevel =>
+      userSummary?.isFullyVerifiedKycLevel == true;
+
   Map<String, double> get balances =>
       userSummary?.balances.fold<Map<String, double>>({}, (map, balance) {
         map[balance.currencyCode] = balance.amount;

@@ -37,7 +37,10 @@ class FundExchangeRouter {
   static final route = ShellRoute(
     builder: (context, state, child) {
       return BlocProvider(
-        create: (_) => locator<FundExchangeBloc>(),
+        create:
+            (_) =>
+                locator<FundExchangeBloc>()
+                  ..add(const FundExchangeEvent.started()),
         child: child,
       );
     },
