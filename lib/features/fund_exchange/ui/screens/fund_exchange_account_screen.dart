@@ -76,8 +76,8 @@ class FundExchangeAccountScreen extends StatelessWidget {
                   InfoCard(
                     title: 'KYC ID Verification Pending',
                     description: 'You must complete ID Verification first',
-                    bgColor: context.colour.primary.withValues(alpha: 0.1),
-                    tagColor: context.colour.primary,
+                    bgColor: context.colour.tertiary.withValues(alpha: 0.1),
+                    tagColor: context.colour.onTertiary,
                   ),
                   const Gap(16.0),
                   BBButton.big(
