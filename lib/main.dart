@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/secure_storage_backup.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -37,6 +38,13 @@ class Bull {
 
     final logDirectory = await getApplicationDocumentsDirectory();
     log = Logger.init(directory: logDirectory);
+
+    // Backup secure storage data
+    try {
+      await SecureStorageBackup.backupAllData();
+    } catch (e) {
+      log.warning('Secure storage backup failed: $e');
+    }
 
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
