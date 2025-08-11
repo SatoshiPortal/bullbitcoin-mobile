@@ -45,8 +45,9 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
 
             final isKyc = url.path.startsWith('/kyc');
             final isLogin = url.path.contains('/login');
+            final isEmailVerification = url.path.contains('/verification');
 
-            final allow = isKyc || isLogin;
+            final allow = isKyc || isLogin || isEmailVerification;
             log.info('UrlChange: ${url.path} → allow: $allow');
 
             // Anything that is not a KYC or login URL should not be allowed and
@@ -70,8 +71,9 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             final isBBLogo = url.path.contains('/bb-logo');
             final isLogin = url.path.contains('/login');
             final isKyc = url.path.contains('/kyc');
+            final isEmailVerification = url.path.contains('/verification');
 
-            final allow = isKyc || isLogin || isBBLogo;
+            final allow = isKyc || isLogin || isBBLogo || isEmailVerification;
 
             if (allow) {
               return NavigationDecision.navigate;
@@ -123,7 +125,10 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
                 })()
               ''');
 
-              final isRendered = result.toString() == '-1';
+              final isRendered = result.toString() != '0';
+              log.info(
+                'Flutter WebView ${isRendered ? 'rendered' : 'not rendered'} for url: $url with result: $result',
+              );
               log.info('Flutter Web rendered based on tabindex: $isRendered');
 
               if (!isRendered) {
