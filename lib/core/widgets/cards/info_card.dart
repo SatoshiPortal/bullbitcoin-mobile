@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -49,19 +48,21 @@ class InfoCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (title != null && title!.isNotEmpty) ...[
-                            BBText(
+                            Text(
                               title!,
-                              style: context.font.bodyLarge,
-                              color: tagColor,
+                              style: context.font.bodyLarge?.copyWith(
+                                color: tagColor,
+                              ),
                             ),
                             const Gap(4),
                           ],
                           Container(
                             constraints: const BoxConstraints(maxWidth: 280),
-                            child: BBText(
+                            child: Text(
                               description,
-                              style: context.font.bodyMedium,
-                              color: context.colour.secondary,
+                              style: context.font.bodyMedium?.copyWith(
+                                color: context.colour.secondary,
+                              ),
                               maxLines: 5,
                             ),
                           ),

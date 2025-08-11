@@ -1,11 +1,13 @@
 import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_destination_input_fields.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -30,8 +32,8 @@ class BuyInputScreen extends StatelessWidget {
       final error = bloc.state.createOrderBuyError;
       return error is AboveMaxAmountBuyError ? error : null;
     });
-    final insufficientFunds = context.select(
-      (BuyBloc bloc) => bloc.state.isBalanceTooLow,
+    final showInsufficientBalanceError = context.select(
+      (BuyBloc bloc) => bloc.state.showInsufficientBalanceError,
     );
 
     return Scaffold(
@@ -87,23 +89,37 @@ class BuyInputScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                if (insufficientFunds)
-                  Text(
-                    'You do not have enough balance to create this order.',
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.error,
-                    ),
-                  ),
+
                 const Gap(16),
-                BBButton.big(
-                  label: 'Continue',
-                  disabled: !canCreateOrder || isCreatingOrder,
-                  onPressed: () {
-                    context.read<BuyBloc>().add(const BuyEvent.createOrder());
-                  },
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onSecondary,
-                ),
+                if (showInsufficientBalanceError) ...[
+                  InfoCard(
+                    title: 'Insufficient balance',
+                    description:
+                        'You do not have enough balance to create this order.',
+                    bgColor: context.colour.primary.withValues(alpha: 0.1),
+                    tagColor: context.colour.primary,
+                  ),
+                  const Gap(16.0),
+                  BBButton.big(
+                    label: 'Fund your account',
+                    onPressed: () {
+                      context.pushReplacementNamed(
+                        FundExchangeRoute.fundExchangeAccount.name,
+                      );
+                    },
+                    bgColor: context.colour.primary,
+                    textColor: context.colour.onPrimary,
+                  ),
+                ] else
+                  BBButton.big(
+                    label: 'Continue',
+                    disabled: !canCreateOrder || isCreatingOrder,
+                    onPressed: () {
+                      context.read<BuyBloc>().add(const BuyEvent.createOrder());
+                    },
+                    bgColor: context.colour.secondary,
+                    textColor: context.colour.onSecondary,
+                  ),
                 const Gap(16.0),
               ],
             ),
