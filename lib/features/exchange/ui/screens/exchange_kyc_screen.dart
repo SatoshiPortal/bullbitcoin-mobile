@@ -113,7 +113,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             //  Flutter web app has been rendered successfully.
             // If it is still 0, it means that the Flutter web app has not been
             //  rendered correctly, and we should reload the WebView.
-            await Future.delayed(const Duration(seconds: 5));
+            await Future.delayed(const Duration(seconds: 30));
 
             try {
               final result = await _controller.runJavaScriptReturningResult('''
