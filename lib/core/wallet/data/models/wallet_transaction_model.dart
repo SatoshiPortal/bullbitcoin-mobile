@@ -15,6 +15,7 @@ sealed class WalletTransactionModel with _$WalletTransactionModel {
     required List<TransactionOutputModel> outputs,
     required bool isLiquid,
     required bool isTestnet,
+    required bool isRbf,
     int? confirmationTimestamp,
     String? unblindedUrl,
     @Default(false) bool isToSelf,

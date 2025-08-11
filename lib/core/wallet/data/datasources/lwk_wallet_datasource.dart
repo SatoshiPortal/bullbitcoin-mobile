@@ -401,6 +401,7 @@ class LwkWalletDatasource {
             isLiquid: true,
             isTestnet: wallet.isTestnet,
             unblindedUrl: tx.unblindedUrl,
+            isRbf: false,
           );
         }),
       );
