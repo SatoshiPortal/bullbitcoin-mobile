@@ -690,7 +690,7 @@ class BdkWalletDatasource {
     return '${dir.path}/$dbName';
   }
 
-  Future<String> bumpFee({
+  Future<String> createUnsignedReplaceByFeePsbt({
     required String txid,
     required double feeRate,
     required WalletModel wallet,

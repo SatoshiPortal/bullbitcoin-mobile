@@ -145,11 +145,12 @@ class BitcoinWalletRepository {
     required double newFeeRate,
   }) async {
     final wallet = await getPrivateWallet(walletId: walletId);
-    final psbt = await _bdkWallet.bumpFee(
+    final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(
       wallet: wallet,
       txid: txid,
       feeRate: newFeeRate,
     );
-    return psbt;
+    final signedPsbt = await signPsbt(psbt, walletId: walletId);
+    return signedPsbt;
   }
 }
