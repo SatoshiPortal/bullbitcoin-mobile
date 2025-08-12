@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
+import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/swap_progress_indicator.dart';
@@ -33,7 +34,11 @@ class TransactionDetailsScreen extends StatelessWidget {
     final tx = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
     );
+    final wallet = context.select(
+      (TransactionDetailsCubit bloc) => bloc.state.wallet,
+    );
 
+    final isOutgoing = tx?.isOutgoing;
     final isIncoming = tx?.isIncoming;
     final isOngoingSwap = tx?.isOngoingSwap;
     final isOrderType = tx?.isOrder == true;
@@ -158,6 +163,23 @@ class TransactionDetailsScreen extends StatelessWidget {
                     borderColor: theme.colorScheme.secondary,
                   ),
                 const Gap(16),
+                if (isOutgoing == true &&
+                    walletTransaction?.isConfirmed == false &&
+                    walletTransaction?.isRbf == true &&
+                    walletTransaction?.isBitcoin == true &&
+                    wallet?.signsLocally == true &&
+                    tx?.txId != null)
+                  BBButton.big(
+                    label: 'Bump fees',
+                    onPressed: () {
+                      context.pushNamed(
+                        ReplaceByFeeRoute.replaceByFeeFlow.name,
+                        extra: walletTransaction,
+                      );
+                    },
+                    bgColor: theme.colorScheme.primary,
+                    textColor: theme.colorScheme.onPrimary,
+                  ),
               ],
             ),
           ),
