@@ -34,7 +34,7 @@ class WalletTransactionMapper {
       isLiquid: walletTransaction.network.isLiquid,
       unblindedUrl: walletTransaction.unblindedUrl,
       isRbf: walletTransaction.isRbf,
-      bytes: walletTransaction.bytes,
+      vsize: walletTransaction.vsize,
     );
   }
 
@@ -75,7 +75,7 @@ class WalletTransactionMapper {
       outputs: outputs,
       unblindedUrl: walletTransactionModel.unblindedUrl,
       isRbf: isRbf,
-      bytes: walletTransactionModel.bytes,
+      vsize: walletTransactionModel.vsize,
     );
   }
 }

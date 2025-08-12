@@ -372,6 +372,7 @@ class BdkWalletDatasource {
           isIncoming: tx.received > tx.sent,
           amountSat: netAmountSat.toInt(),
           feeSat: tx.fee?.toInt() ?? 0,
+          vsize: tx.transaction?.vsize().toInt() ?? 0,
           confirmationTimestamp: tx.confirmationTime?.timestamp.toInt(),
           isToSelf: isToSelf,
           inputs: inputModels,
@@ -379,7 +380,6 @@ class BdkWalletDatasource {
           isLiquid: false,
           isTestnet: wallet.isTestnet,
           isRbf: tx.transaction?.isExplicitlyRbf() ?? false,
-          bytes: tx.transaction?.serialize(),
         );
       }),
     );
@@ -688,6 +688,17 @@ class BdkWalletDatasource {
   Future<String> _getDbPath(String dbName) async {
     final dir = await getApplicationDocumentsDirectory();
     return '${dir.path}/$dbName';
+  }
+
+  Future<String> bumpFee({
+    required String txid,
+    required double feeRate,
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await _createWallet(wallet);
+    final tx = bdk.BumpFeeTxBuilder(txid: txid, feeRate: feeRate);
+    final (psbt, _) = await tx.finish(bdkWallet);
+    return psbt.toString();
   }
 }
 

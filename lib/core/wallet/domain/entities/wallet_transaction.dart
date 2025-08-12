@@ -33,6 +33,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     required String txId,
     required int amountSat,
     required int feeSat,
+    required int vsize,
     required List<TransactionInput> inputs,
     required List<TransactionOutput> outputs,
     required bool isRbf,
@@ -40,7 +41,6 @@ sealed class WalletTransaction with _$WalletTransaction {
     @Default(false) bool isToSelf,
     @Default([]) List<String> labels,
     String? unblindedUrl,
-    Uint8List? bytes,
   }) = _WalletTransaction;
 
   const WalletTransaction._();
