@@ -39,8 +39,8 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
           : transaction?.isOngoingPayjoinSender == true
           ? 'Payjoin requested'
           : transaction?.isIncoming == true
-          ? 'Payment received'
-          : 'Payment sent',
+          ? 'Receive'
+          : 'Send',
       style: context.font.headlineLarge?.copyWith(
         color:
             swap != null &&
