@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -29,50 +28,58 @@ class InfoCard extends StatelessWidget {
           color: bgColor,
           borderRadius: BorderRadius.circular(2),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(width: 4, height: 75, color: tagColor),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.info_outline_rounded, size: 24, color: tagColor),
-                    const Gap(12),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (title != null && title!.isNotEmpty) ...[
-                            BBText(
-                              title!,
-                              style: context.font.bodyLarge,
-                              color: tagColor,
-                            ),
-                            const Gap(4),
-                          ],
-                          Container(
-                            constraints: const BoxConstraints(maxWidth: 280),
-                            child: BBText(
-                              description,
-                              style: context.font.bodyMedium,
-                              color: context.colour.secondary,
-                              maxLines: 5,
-                            ),
-                          ),
-                        ],
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(width: 4, color: tagColor),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.info_outline_rounded,
+                        size: 24,
+                        color: tagColor,
                       ),
-                    ),
-                  ],
+                      const Gap(12),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (title != null && title!.isNotEmpty) ...[
+                              Text(
+                                title!,
+                                style: context.font.bodyLarge?.copyWith(
+                                  color: tagColor,
+                                ),
+                              ),
+                              const Gap(4),
+                            ],
+                            Container(
+                              constraints: const BoxConstraints(maxWidth: 280),
+                              child: Text(
+                                description,
+                                style: context.font.bodyMedium?.copyWith(
+                                  color: context.colour.secondary,
+                                ),
+                                maxLines: 5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

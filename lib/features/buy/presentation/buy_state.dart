@@ -32,6 +32,9 @@ sealed class BuyState with _$BuyState {
   }) = _BuyState;
   const BuyState._();
 
+  bool get isFullyVerifiedKycLevel =>
+      userSummary?.isFullyVerifiedKycLevel == true;
+
   Map<String, double> get balances =>
       userSummary?.balances.fold<Map<String, double>>({}, (map, balance) {
         map[balance.currencyCode] = balance.amount;
@@ -80,11 +83,11 @@ sealed class BuyState with _$BuyState {
   FiatCurrency? get currency =>
       currencyInput.isNotEmpty ? FiatCurrency.fromCode(currencyInput) : null;
 
-  bool get isAmountTooLow {
-    return amount == null || amount! <= 0;
+  bool get isPositiveAmount {
+    return amount != null && amount! > 0;
   }
 
-  bool get isBalanceTooLow {
+  bool get showInsufficientBalanceError {
     return balance != null &&
         ((amount ?? 0) > balance! ||
             maxAmountSat != null &&
@@ -92,12 +95,12 @@ sealed class BuyState with _$BuyState {
                 amountSat! > maxAmountSat!);
   }
 
-  bool get isValidDestination {
+  bool get hasDestination {
     return selectedWallet != null || bitcoinAddressInput.isNotEmpty;
   }
 
   bool get canCreateOrder {
-    return !isAmountTooLow && !isBalanceTooLow && isValidDestination;
+    return isPositiveAmount && hasDestination;
   }
 
   double _truncateToDecimals(double value, int decimals) {

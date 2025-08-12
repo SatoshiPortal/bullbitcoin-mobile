@@ -229,6 +229,79 @@ sealed class SellState with _$SellState {
       success: (bitcoinUnit, sellOrder) => bitcoinUnit,
     );
   }
+
+  bool get isLimitedKycLevel {
+    return when(
+      initial: (apiKeyException, getUserSummaryException) => false,
+      amountInput: (userSummary, bitcoinUnit) => userSummary.isLimitedKycLevel,
+      walletSelection:
+          (
+            userSummary,
+            bitcoinUnit,
+            orderAmount,
+            fiatCurrency,
+            isCreatingSellOrder,
+            error,
+          ) => userSummary.isLimitedKycLevel,
+      payment:
+          (
+            userSummary,
+            bitcoinUnit,
+            orderAmount,
+            fiatCurrency,
+            selectedWallet,
+            sellOrder,
+            isConfirmingPayment,
+            isPolling,
+            error,
+            absoluteFees,
+            _,
+            _,
+            _,
+            _,
+          ) => userSummary.isLimitedKycLevel,
+      success:
+          (bitcoinUnit, sellOrder) =>
+              true, // Success state implies KYC was sufficient
+    );
+  }
+
+  bool get isFullyVerifiedKycLevel {
+    return when(
+      initial: (apiKeyException, getUserSummaryException) => false,
+      amountInput:
+          (userSummary, bitcoinUnit) => userSummary.isFullyVerifiedKycLevel,
+      walletSelection:
+          (
+            userSummary,
+            bitcoinUnit,
+            orderAmount,
+            fiatCurrency,
+            isCreatingSellOrder,
+            error,
+          ) => userSummary.isFullyVerifiedKycLevel,
+      payment:
+          (
+            userSummary,
+            bitcoinUnit,
+            orderAmount,
+            fiatCurrency,
+            selectedWallet,
+            sellOrder,
+            isConfirmingPayment,
+            isPolling,
+            error,
+            absoluteFees,
+            _,
+            _,
+            _,
+            _,
+          ) => userSummary.isFullyVerifiedKycLevel,
+      success:
+          (bitcoinUnit, sellOrder) =>
+              true, // Success state implies KYC was sufficient
+    );
+  }
 }
 
 extension SellAmountInputStateX on SellAmountInputState {
