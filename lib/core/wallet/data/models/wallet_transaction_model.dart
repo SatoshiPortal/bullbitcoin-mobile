@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -16,6 +18,7 @@ sealed class WalletTransactionModel with _$WalletTransactionModel {
     required bool isLiquid,
     required bool isTestnet,
     required bool isRbf,
+    Uint8List? bytes,
     int? confirmationTimestamp,
     String? unblindedUrl,
     @Default(false) bool isToSelf,

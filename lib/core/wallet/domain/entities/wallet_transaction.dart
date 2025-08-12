@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -38,6 +40,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     @Default(false) bool isToSelf,
     @Default([]) List<String> labels,
     String? unblindedUrl,
+    Uint8List? bytes,
   }) = _WalletTransaction;
 
   const WalletTransaction._();

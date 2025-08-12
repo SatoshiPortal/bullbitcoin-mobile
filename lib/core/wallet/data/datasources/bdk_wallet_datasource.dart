@@ -379,6 +379,7 @@ class BdkWalletDatasource {
           isLiquid: false,
           isTestnet: wallet.isTestnet,
           isRbf: tx.transaction?.isExplicitlyRbf() ?? false,
+          bytes: tx.transaction?.serialize(),
         );
       }),
     );

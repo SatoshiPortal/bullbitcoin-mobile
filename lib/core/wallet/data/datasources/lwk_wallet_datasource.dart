@@ -402,6 +402,7 @@ class LwkWalletDatasource {
             isTestnet: wallet.isTestnet,
             unblindedUrl: tx.unblindedUrl,
             isRbf: false,
+            bytes: null, // we do not have access to the transaction bytes
           );
         }),
       );
