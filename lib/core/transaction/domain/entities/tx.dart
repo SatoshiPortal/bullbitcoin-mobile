@@ -13,6 +13,7 @@ abstract class RawBitcoinTxEntity with _$RawBitcoinTxEntity {
     required int version,
     required BigInt size,
     required BigInt vsize,
+    required BigInt weight,
     required int locktime,
     required List<TxVin> vin,
     required List<TxVout> vout,
@@ -23,11 +24,6 @@ abstract class RawBitcoinTxEntity with _$RawBitcoinTxEntity {
   static Future<RawBitcoinTxEntity> fromBytes(List<int> bytes) async {
     final bdkTx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
 
-    final txid = bdkTx.txid();
-    final version = bdkTx.version();
-    final vsize = bdkTx.vsize();
-    final size = bdkTx.size();
-    final locktime = bdkTx.lockTime().field0;
     final inputs = bdkTx.input();
     final outputs = bdkTx.output();
 
@@ -38,11 +34,12 @@ abstract class RawBitcoinTxEntity with _$RawBitcoinTxEntity {
     }
 
     return RawBitcoinTxEntity(
-      txid: txid,
-      version: version,
-      size: size,
-      vsize: vsize,
-      locktime: locktime,
+      txid: bdkTx.txid(),
+      version: bdkTx.version(),
+      size: bdkTx.size(),
+      vsize: bdkTx.vsize(),
+      weight: bdkTx.weight(),
+      locktime: bdkTx.lockTime().field0,
       vin: inputs.map(_mapInput).toList(),
       vout: vout,
     );

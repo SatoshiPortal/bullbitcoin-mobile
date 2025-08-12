@@ -53,6 +53,7 @@ Future<void> main({bool isInitialized = false}) async {
           version: txEntity.version,
           size: txEntity.size.toString(),
           vsize: txEntity.vsize.toString(),
+          weight: txEntity.weight.toString(),
           locktime: txEntity.locktime,
           vin: json.encode(txEntity.vin.map((e) => e.toJson()).toList()),
           vout: json.encode(txEntity.vout.map((e) => e.toJson()).toList()),

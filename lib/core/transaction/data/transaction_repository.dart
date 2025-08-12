@@ -36,6 +36,7 @@ class TransactionRepository {
         version: tx.version,
         size: tx.size.toString(),
         vsize: tx.vsize.toString(),
+        weight: tx.weight.toString(),
         locktime: tx.locktime,
         vin: json.encode(tx.vin.map((e) => e.toJson()).toList()),
         vout: json.encode(tx.vout.map((e) => e.toJson()).toList()),

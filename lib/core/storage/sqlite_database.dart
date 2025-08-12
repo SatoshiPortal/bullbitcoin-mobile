@@ -37,7 +37,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -87,6 +87,10 @@ class SqliteDatabase extends _$SqliteDatabase {
           await m.createTable(schema.walletAddressHistory);
         },
         from3To4: Schema3To4.migrate,
+        from4To5: (m, schema) async {
+          // Add weight column to transactions table
+          await m.addColumn(schema.transactions, schema.transactions.weight);
+        },
       ),
     );
   }

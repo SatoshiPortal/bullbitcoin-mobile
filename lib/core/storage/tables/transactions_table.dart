@@ -13,6 +13,7 @@ class Transactions extends Table {
   IntColumn get version => integer()();
   TextColumn get size => text()();
   TextColumn get vsize => text()();
+  TextColumn get weight => text()();
   IntColumn get locktime => integer()();
 
   TextColumn get vin => text()();
@@ -35,6 +36,7 @@ extension TransactionModelExtension on TransactionModel {
       version: row.version,
       size: BigInt.parse(row.size),
       vsize: BigInt.parse(row.vsize),
+      weight: BigInt.parse(row.weight),
       locktime: row.locktime,
       vin:
           (json.decode(row.vin) as List)
