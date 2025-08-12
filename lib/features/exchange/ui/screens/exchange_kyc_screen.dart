@@ -45,8 +45,9 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
 
             final isKyc = url.path.startsWith('/kyc');
             final isLogin = url.path.contains('/login');
+            final isEmailVerification = url.path.contains('/verification');
 
-            final allow = isKyc || isLogin;
+            final allow = isKyc || isLogin || isEmailVerification;
             log.info('UrlChange: ${url.path} → allow: $allow');
 
             // Anything that is not a KYC or login URL should not be allowed and
@@ -70,8 +71,9 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             final isBBLogo = url.path.contains('/bb-logo');
             final isLogin = url.path.contains('/login');
             final isKyc = url.path.contains('/kyc');
+            final isEmailVerification = url.path.contains('/verification');
 
-            final allow = isKyc || isLogin || isBBLogo;
+            final allow = isKyc || isLogin || isBBLogo || isEmailVerification;
 
             if (allow) {
               return NavigationDecision.navigate;
@@ -108,12 +110,12 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             //  web app has been rendered successfully. If the tabindex is -1,
             //  it indicates that the Flutter web app is ready and rendered.
 
-            // Wait 5 seconds for Flutter to render and then check if the
+            // Wait 10 seconds for Flutter to render and then check if the
             //  flutter-view tabindex is -1, which indicates that the
             //  Flutter web app has been rendered successfully.
             // If it is still 0, it means that the Flutter web app has not been
             //  rendered correctly, and we should reload the WebView.
-            await Future.delayed(const Duration(seconds: 5));
+            await Future.delayed(const Duration(seconds: 10));
 
             try {
               final result = await _controller.runJavaScriptReturningResult('''
@@ -123,7 +125,10 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
                 })()
               ''');
 
-              final isRendered = result.toString() == '-1';
+              final isRendered = result.toString() != '0';
+              log.info(
+                'Flutter WebView ${isRendered ? 'rendered' : 'not rendered'} for url: $url with result: $result',
+              );
               log.info('Flutter Web rendered based on tabindex: $isRendered');
 
               if (!isRendered) {
