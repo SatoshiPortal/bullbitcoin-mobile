@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
