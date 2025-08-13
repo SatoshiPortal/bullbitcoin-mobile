@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
@@ -55,8 +56,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             final isEmailVerification = url.path.contains('/verification');
             final isIncodeSmile = url.host.contains('incodesmile.com');
 
-            final allow =
-                isKyc || isLogin || isEmailVerification || isIncodeSmile;
+            final allow = isKyc || isLogin || isEmailVerification;
             log.info('UrlChange: ${url.path} → allow: $allow');
 
             // Anything that is not a KYC or login URL should not be allowed and
@@ -64,11 +64,17 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             //  after completing it or by trying to close the KYC flow from
             //  within the WebView.
             if (!allow) {
-              // Fetch the user summary to update the exchange state before
-              // going back, since the user might have completed the KYC
-              // process and the exchange state needs to be updated accordingly.
-              context.read<ExchangeCubit>().fetchUserSummary();
-              GoRouter.of(context).pop();
+              if (isIncodeSmile) {
+                // If the URL is from inCodeSmile, we allow it to be opened in
+                //  an in-app browser view.
+                launchUrl(url, mode: LaunchMode.inAppBrowserView);
+              } else {
+                // Fetch the user summary to update the exchange state before
+                // going back, since the user might have completed the KYC
+                // process and the exchange state needs to be updated accordingly.
+                context.read<ExchangeCubit>().fetchUserSummary();
+                GoRouter.of(context).pop();
+              }
             }
           },
           onNavigationRequest: (NavigationRequest request) {
@@ -83,17 +89,15 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             final isEmailVerification = url.path.contains('/verification');
             final isIncodeSmile = url.host.contains('incodesmile.com');
 
-            final allow =
-                isKyc ||
-                isLogin ||
-                isBBLogo ||
-                isEmailVerification ||
-                isIncodeSmile;
+            final allow = isKyc || isLogin || isBBLogo || isEmailVerification;
 
             if (allow) {
               return NavigationDecision.navigate;
             } else {
               log.warning('Navigation blocked: ${url.path}');
+              if (isIncodeSmile) {
+                launchUrl(url, mode: LaunchMode.inAppBrowserView);
+              }
               return NavigationDecision.prevent;
             }
           },
