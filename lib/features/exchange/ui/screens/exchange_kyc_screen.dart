@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
@@ -25,23 +24,6 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
   late final WebViewController _controller = WebViewController();
   late final String _bbKycUrl;
 
-  Future<void> _requestCameraPermission() async {
-    try {
-      var status = await Permission.camera.status;
-      if (status.isDenied) {
-        status = await Permission.camera.request();
-      }
-
-      if (status.isPermanentlyDenied) {
-        await openAppSettings();
-      }
-
-      log.info('Camera permission status: $status');
-    } catch (e) {
-      log.severe('Error requesting camera permission: $e');
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -53,29 +35,13 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             ? ApiServiceConstants.bbKycTestUrl
             : ApiServiceConstants.bbKycUrl;
 
-    _requestCameraPermission();
-
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel(
         'Camera',
-        onMessageReceived: (JavaScriptMessage message) async {
+        onMessageReceived: (JavaScriptMessage message) {
           log.info('Camera request from webview: ${message.message}');
-
-          try {
-            var status = await Permission.camera.status;
-            if (status.isDenied) {
-              status = await Permission.camera.request();
-            }
-
-            if (status.isPermanentlyDenied) {
-              await openAppSettings();
-            }
-
-            log.info('Camera permission status: $status');
-          } catch (e) {
-            log.severe('Error handling camera permission: $e');
-          }
+          log.info('Camera access will be handled by the webview directly');
         },
       )
       ..setNavigationDelegate(
