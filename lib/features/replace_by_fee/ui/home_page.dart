@@ -25,10 +25,7 @@ class ReplaceByFeeHomePage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
         ),
       ),
-      body: BlocConsumer<ReplaceByFeeCubit, ReplaceByFeeState>(
-        listener: (context, state) {
-          // Handle side effects here if needed
-        },
+      body: BlocBuilder<ReplaceByFeeCubit, ReplaceByFeeState>(
         builder: (context, state) {
           final cubit = context.read<ReplaceByFeeCubit>();
 
