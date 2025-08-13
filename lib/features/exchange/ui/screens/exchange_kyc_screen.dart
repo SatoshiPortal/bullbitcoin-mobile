@@ -46,8 +46,10 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             final isKyc = url.path.startsWith('/kyc');
             final isLogin = url.path.contains('/login');
             final isEmailVerification = url.path.contains('/verification');
+            final isIncodeSmile = url.host.contains('incodesmile.com');
 
-            final allow = isKyc || isLogin || isEmailVerification;
+            final allow =
+                isKyc || isLogin || isEmailVerification || isIncodeSmile;
             log.info('UrlChange: ${url.path} → allow: $allow');
 
             // Anything that is not a KYC or login URL should not be allowed and
@@ -72,8 +74,14 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             final isLogin = url.path.contains('/login');
             final isKyc = url.path.contains('/kyc');
             final isEmailVerification = url.path.contains('/verification');
+            final isIncodeSmile = url.host.contains('incodesmile.com');
 
-            final allow = isKyc || isLogin || isBBLogo || isEmailVerification;
+            final allow =
+                isKyc ||
+                isLogin ||
+                isBBLogo ||
+                isEmailVerification ||
+                isIncodeSmile;
 
             if (allow) {
               return NavigationDecision.navigate;
