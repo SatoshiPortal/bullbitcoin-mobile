@@ -28,10 +28,14 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
       type: FeeType.fastest,
       feeRate: fees.fastest.value.toDouble(),
     );
+    final recommendedBumpRate = FeeEntity(
+      type: FeeType.custom,
+      feeRate: (originalTransaction.feeSat / originalTransaction.vsize) + 1,
+    );
     emit(
       state.copyWith(
         fastestFeeRate: fastestFeeRate,
-        newFeeRate: fastestFeeRate,
+        newFeeRate: recommendedBumpRate,
       ),
     );
   }
