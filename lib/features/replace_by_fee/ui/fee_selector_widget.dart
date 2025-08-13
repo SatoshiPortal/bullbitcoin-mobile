@@ -5,37 +5,35 @@ import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class FeeSelectorWidget extends StatefulWidget {
-  const FeeSelectorWidget({
+class BumpFeeSelectorWidget extends StatefulWidget {
+  const BumpFeeSelectorWidget({
     super.key,
     required this.fastestFeeRate,
     required this.selected,
     required this.txSize,
-    required this.exchangeRate,
-    required this.fiatCurrencyCode,
     required this.onChanged,
   });
 
   final FeeEntity fastestFeeRate;
   final FeeEntity selected;
   final int txSize;
-  final double exchangeRate;
-  final String fiatCurrencyCode;
   final void Function(FeeEntity fee) onChanged;
 
   @override
-  State<FeeSelectorWidget> createState() => _FeeSelectorWidgetState();
+  State<BumpFeeSelectorWidget> createState() => _FeeSelectorWidgetState();
 }
 
-class _FeeSelectorWidgetState extends State<FeeSelectorWidget> {
-  late TextEditingController _controller;
-  double _feeRate = 0;
+class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
+  final _controller = TextEditingController();
+
+  double _customFeeRate = 0;
+  String get _customFeeRateString => _customFeeRate.toStringAsFixed(1);
 
   @override
   void initState() {
     super.initState();
-    _feeRate = widget.selected.feeRate;
-    _controller = TextEditingController(text: _feeRate.toString());
+    _customFeeRate = widget.selected.feeRate;
+    _controller.text = _customFeeRateString;
   }
 
   @override
@@ -47,18 +45,14 @@ class _FeeSelectorWidgetState extends State<FeeSelectorWidget> {
   void _onCustomChanged(String text) {
     final parsed = num.tryParse(text);
     if (parsed != null) {
-      _feeRate = parsed.toDouble();
-      widget.onChanged(FeeEntity(type: FeeType.custom, feeRate: _feeRate));
+      _customFeeRate = parsed.toDouble();
+      widget.onChanged(
+        FeeEntity(type: FeeType.custom, feeRate: _customFeeRate),
+      );
     } else {
-      _feeRate = 0;
+      _customFeeRate = 0;
       _controller.text = '';
     }
-    setState(() {});
-  }
-
-  void _resetCustomFee() {
-    _feeRate = 0;
-    _controller.text = '';
     setState(() {});
   }
 
@@ -69,8 +63,6 @@ class _FeeSelectorWidgetState extends State<FeeSelectorWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Gap(16),
-            BBText('Select network fee', style: context.font.headlineMedium),
             const Gap(16),
             _buildFastestSection(widget.selected.type == FeeType.fastest),
             const Gap(16),
@@ -84,10 +76,7 @@ class _FeeSelectorWidgetState extends State<FeeSelectorWidget> {
   Widget _buildFastestSection(bool isSelected) {
     return InkWell(
       radius: 2,
-      onTap: () {
-        widget.onChanged(widget.fastestFeeRate);
-        _resetCustomFee();
-      },
+      onTap: () => widget.onChanged(widget.fastestFeeRate),
       child: Material(
         elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
@@ -118,7 +107,6 @@ class _FeeSelectorWidgetState extends State<FeeSelectorWidget> {
                   ],
                 ),
               ),
-              const Gap(8),
               Icon(
                 Icons.radio_button_checked_outlined,
                 color:
@@ -138,7 +126,7 @@ class _FeeSelectorWidgetState extends State<FeeSelectorWidget> {
       radius: 2,
       onTap:
           () => widget.onChanged(
-            FeeEntity(type: FeeType.custom, feeRate: _feeRate),
+            FeeEntity(type: FeeType.custom, feeRate: _customFeeRate),
           ),
       child: Material(
         elevation: isSelected ? 4 : 1,
@@ -152,22 +140,10 @@ class _FeeSelectorWidgetState extends State<FeeSelectorWidget> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        BBText('Custom Fee', style: context.font.headlineLarge),
-                        const Gap(4),
-                        BBText(
-                          'Estimated delivery ~ 10 minutes',
-                          style: context.font.labelMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Gap(8),
+                  BBText('Custom Fee', style: context.font.headlineLarge),
                   Icon(
                     Icons.radio_button_checked_outlined,
                     color:
