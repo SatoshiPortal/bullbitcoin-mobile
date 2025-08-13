@@ -162,6 +162,12 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
               return NavigationDecision.navigate;
             }
 
+            if (request.url.startsWith('https://www.bullbitcoin.com') &&
+                (request.url.contains('terms') ||
+                    request.url.contains('privacy'))) {
+              return NavigationDecision.navigate;
+            }
+
             log.info('blocking navigation to ${request.url}');
             return NavigationDecision.prevent;
           },

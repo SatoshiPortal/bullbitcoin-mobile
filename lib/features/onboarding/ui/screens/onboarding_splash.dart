@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/onboarding/ui/widgets/recover_backup_button.d
 import 'package:bb_mobile/features/settings/ui/widgets/superuser_tap_unlocker.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
@@ -16,64 +17,67 @@ class OnboardingSplash extends StatelessWidget {
   final bool loading;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          const _BG(),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                const Spacer(flex: 2),
-                SuperuserTapUnlocker(
-                  child: Image.asset(
-                    Assets.logos.bbLogoWhite.path,
-                    height: 127,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            const _BG(),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Spacer(flex: 2),
+                  SuperuserTapUnlocker(
+                    child: Image.asset(
+                      Assets.logos.bbLogoWhite.path,
+                      height: 127,
+                    ),
                   ),
-                ),
-                const Gap(36),
-                BBText(
-                  'Bull Bitcoin',
-                  style: AppFonts.textTitleTheme.textStyle.copyWith(
-                    fontSize: 54,
-                    fontWeight: FontWeight.w500,
-                    color: context.colour.onPrimary,
-                    height: 1,
+                  const Gap(36),
+                  BBText(
+                    'Bull Bitcoin',
+                    style: AppFonts.textTitleTheme.textStyle.copyWith(
+                      fontSize: 54,
+                      fontWeight: FontWeight.w500,
+                      color: context.colour.onPrimary,
+                      height: 1,
+                    ),
                   ),
-                ),
-                BBText(
-                  'Own your Money',
-                  style: AppFonts.textTitleTheme.textStyle.copyWith(
-                    fontSize: 40,
-                    fontWeight: FontWeight.w500,
-                    color: context.colour.secondary,
-                    height: 1,
+                  BBText(
+                    'Own your Money',
+                    style: AppFonts.textTitleTheme.textStyle.copyWith(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w500,
+                      color: context.colour.secondary,
+                      height: 1,
+                    ),
                   ),
-                ),
-                const Gap(10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 48),
-                  child: BBText(
-                    'Sovereign self custody Bitcoin wallet and Bitcoin-only exchange service.',
-                    style: context.font.labelSmall,
-                    color: context.colour.onPrimary,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
+                  const Gap(10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 48),
+                    child: BBText(
+                      'Sovereign self custody Bitcoin wallet and Bitcoin-only exchange service.',
+                      style: context.font.labelSmall,
+                      color: context.colour.onPrimary,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                    ),
                   ),
-                ),
-                const Spacer(flex: 2),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    bottom: 40,
+                  const Spacer(flex: 2),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      bottom: 40,
+                    ),
+                    child: _Actions(loading: loading),
                   ),
-                  child: _Actions(loading: loading),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

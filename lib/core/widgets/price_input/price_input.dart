@@ -162,6 +162,7 @@ class _PriceInputState extends State<PriceInput> {
       context: context,
       isScrollControlled: true,
       backgroundColor: context.colour.secondaryFixedDim,
+      constraints: const BoxConstraints(maxWidth: double.infinity),
       builder: (context) {
         return CurrencyBottomSheet(
           availableCurrencies: widget.availableCurrencies,

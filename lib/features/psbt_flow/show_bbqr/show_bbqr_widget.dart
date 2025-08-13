@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/experimental/psbt_flow/show_bbqr/show_bbqr_cubit.dart';
-import 'package:bb_mobile/features/experimental/psbt_flow/show_bbqr/show_bbqr_state.dart';
+import 'package:bb_mobile/features/psbt_flow/show_bbqr/show_bbqr_cubit.dart';
+import 'package:bb_mobile/features/psbt_flow/show_bbqr/show_bbqr_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_flutter/qr_flutter.dart';

@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/widgets/cards/backup_option_card.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -21,9 +20,6 @@ class OnboardingRecoverOptions extends StatefulWidget {
 class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
   @override
   Widget build(BuildContext context) {
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -44,32 +40,29 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Gap(16),
-
-                    if (isSuperuser) ...[
-                      BackupOptionCard(
-                        icon: Image.asset(
-                          Assets.misc.encryptedVault.path,
-                          width: 36,
-                          height: 45,
-                          fit: BoxFit.cover,
-                        ),
-                        title: 'Encrypted vault',
-                        description:
-                            'Recover your backup via cloud using your PIN.',
-
-                        onTap:
-                            () => {
-                              context.read<KeyServerCubit>().checkConnection(),
-                              context.pushNamed(
-                                OnboardingRoute
-                                    .chooseRecoverProvider
-                                    .name, // ChooseVaultProviderScreen
-                                extra: true,
-                              ),
-                            },
+                    BackupOptionCard(
+                      icon: Image.asset(
+                        Assets.misc.encryptedVault.path,
+                        width: 36,
+                        height: 45,
+                        fit: BoxFit.cover,
                       ),
-                      const Gap(16),
-                    ],
+                      title: 'Encrypted vault',
+                      description:
+                          'Recover your backup via cloud using your PIN.',
+
+                      onTap:
+                          () => {
+                            context.read<KeyServerCubit>().checkConnection(),
+                            context.pushNamed(
+                              OnboardingRoute
+                                  .chooseRecoverProvider
+                                  .name, // ChooseVaultProviderScreen
+                              extra: true,
+                            ),
+                          },
+                    ),
+                    const Gap(16),
                     BackupOptionCard(
                       icon: Image.asset(
                         Assets.misc.physicalBackup.path,

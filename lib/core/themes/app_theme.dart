@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/colours.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 enum AppThemeType { light, dark }
 
@@ -48,14 +49,16 @@ class AppTheme {
        */
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
-        // foregroundColor: colours.primary,
+        systemOverlayStyle:
+            themeType == AppThemeType.dark
+                ? SystemUiOverlayStyle.light
+                : SystemUiOverlayStyle.dark,
         elevation: 0,
         scrolledUnderElevation: 32,
         titleTextStyle: fonts.textTheme.headlineMedium!.copyWith(
           color: colours.secondary,
         ),
         centerTitle: true,
-        // shadowColor: colours.secondaryFixed,
       ),
       actionIconTheme: ActionIconThemeData(
         backButtonIconBuilder: (context) => const Icon(Icons.arrow_back),

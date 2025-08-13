@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
-import 'package:bb_mobile/features/experimental/broadcast_signed_tx/errors.dart';
-import 'package:bb_mobile/features/experimental/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/errors.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
@@ -19,11 +19,9 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   }) : _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
        super(BroadcastSignedTxState(bbqr: Bbqr()));
 
-  void clear() => emit(state.copyWith(error: null, transaction: null));
-
   Future<void> onQrScanned(String payload) async {
     try {
-      clear();
+      emit(state.copyWith(error: null));
       final tx = await state.bbqr.scanTransaction(payload);
       if (tx != null) emit(state.copyWith(transaction: tx));
     } catch (e) {
@@ -32,7 +30,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   }
 
   Future<void> onNfcScanned(NFCTag tag) async {
-    clear();
+    emit(state.copyWith(error: null));
     try {
       final ndefRecords = await FlutterNfcKit.readNDEFRecords();
 
