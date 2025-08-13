@@ -38,13 +38,6 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
 
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..addJavaScriptChannel(
-        'Camera',
-        onMessageReceived: (JavaScriptMessage message) {
-          log.info('Camera request from webview: ${message.message}');
-          log.info('Camera access will be handled by the webview directly');
-        },
-      )
       ..setNavigationDelegate(
         NavigationDelegate(
           onUrlChange: (UrlChange change) {
@@ -176,7 +169,6 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
       final platformController = _controller.platform;
       if (platformController is AndroidWebViewController) {
         platformController.setMediaPlaybackRequiresUserGesture(false);
-        platformController.setGeolocationEnabled(true);
       }
     } else if (Platform.isIOS) {
       final platformController = _controller.platform;
