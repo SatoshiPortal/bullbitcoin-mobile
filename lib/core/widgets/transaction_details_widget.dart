@@ -95,7 +95,6 @@ class TransactionDetailsWidget extends StatelessWidget {
           _buildInfoRow(context, 'Version', tx.version.toString()),
           _buildInfoRow(context, 'Size', '${tx.size} bytes'),
           _buildInfoRow(context, 'Virtual Size', '${tx.vsize} vbytes'),
-          _buildInfoRow(context, 'Weight', tx.weight.toString()),
           _buildInfoRow(context, 'Locktime', tx.locktime.toString()),
         ],
       ),
