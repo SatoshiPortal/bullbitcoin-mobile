@@ -61,7 +61,11 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
 
       emit(state.copyWith(txid: txid));
     } catch (e) {
-      emit(state.copyWith(error: ReplaceByFeeError(e.toString())));
+      if (e is ReplaceByFeeError) {
+        emit(state.copyWith(error: e));
+      } else {
+        emit(state.copyWith(error: ReplaceByFeeError(e.toString())));
+      }
     }
   }
 
