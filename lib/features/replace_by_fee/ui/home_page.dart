@@ -43,32 +43,12 @@ class ReplaceByFeeHomePage extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Current fees',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 8),
-                          Text('Fee: ${tx.feeSat} sats'),
-                          Text(
-                            'Fee Rate: ${originalFeeRate.toStringAsFixed(1)} sat/vbyte',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  _buildOriginalTransaction(context, originalFeeRate),
                   const Gap(16),
-                  FeeSelectorWidget(
+                  BumpFeeSelectorWidget(
                     fastestFeeRate: state.fastestFeeRate!,
                     selected: state.newFeeRate!,
                     txSize: tx.vsize,
-                    exchangeRate: 1,
-                    fiatCurrencyCode: 'USD',
                     onChanged: cubit.onChangeFee,
                   ),
                   if (state.error != null) ...[
@@ -78,10 +58,11 @@ class ReplaceByFeeHomePage extends StatelessWidget {
                       style: context.font.bodyMedium,
                       color: context.colour.error,
                     ),
+                    const Gap(16),
                   ],
 
                   BBButton.big(
-                    label: 'broadcast',
+                    label: 'Broadcast',
                     onPressed: cubit.broadcast,
                     bgColor: context.theme.colorScheme.secondary,
                     textColor: context.theme.colorScheme.onSecondary,
@@ -91,6 +72,33 @@ class ReplaceByFeeHomePage extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildOriginalTransaction(
+    BuildContext context,
+    double originalFeeRate,
+  ) {
+    return Material(
+      elevation: 1,
+      borderRadius: BorderRadius.circular(2),
+      clipBehavior: Clip.hardEdge,
+      color: context.colour.onSecondary,
+      shadowColor: context.colour.secondary,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BBText('Original transaction', style: context.font.headlineLarge),
+            const Gap(16),
+            BBText(
+              '${originalFeeRate.toStringAsFixed(1)} sat/vbyte',
+              style: context.font.labelMedium,
+            ),
+          ],
+        ),
       ),
     );
   }

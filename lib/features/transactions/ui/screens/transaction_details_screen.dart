@@ -177,8 +177,8 @@ class TransactionDetailsScreen extends StatelessWidget {
                         extra: walletTransaction,
                       );
                     },
-                    bgColor: theme.colorScheme.primary,
-                    textColor: theme.colorScheme.onPrimary,
+                    bgColor: theme.colorScheme.secondary,
+                    textColor: theme.colorScheme.onSecondary,
                   ),
               ],
             ),
