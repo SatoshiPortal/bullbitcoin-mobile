@@ -44,7 +44,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>This app needs access to your camera to scan QR codes</string>
+	<string>This app needs access to your camera to scan QR codes and complete KYC verification by taking photos of your identity documents</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to your files to export and import wallet files like psbts, xpubs and recovery files</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

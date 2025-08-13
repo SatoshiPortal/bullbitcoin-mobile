@@ -37,6 +37,12 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
 
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..addJavaScriptChannel(
+        'Camera',
+        onMessageReceived: (JavaScriptMessage message) {
+          log.info('Camera request from webview: ${message.message}');
+        },
+      )
       ..setNavigationDelegate(
         NavigationDelegate(
           onUrlChange: (UrlChange change) {
