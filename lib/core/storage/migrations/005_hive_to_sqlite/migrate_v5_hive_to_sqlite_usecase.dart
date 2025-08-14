@@ -55,7 +55,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           level: Level.INFO,
           message: 'Migration Not Required: 2 Default Wallets Exist.',
         );
-        return true; // Return true to indicate successful completion, not failure
+        return true;
       }
 
       final oldMainnetDefaultWallets =
@@ -98,15 +98,6 @@ class MigrateToV5HiveToSqliteToUsecase {
 
       final oldMainnetSignerWallets =
           oldMainnetDefaultWallets + oldMainnetExternalSignerWallets;
-
-      // Double-check: if we already have the required wallets, don't proceed
-      if (newMainnetDefaultWallets.length == 2) {
-        await log.migration(
-          level: Level.INFO,
-          message: 'Migration Already Complete: Skipping seed migration.',
-        );
-        return true;
-      }
 
       final seedsImported = await _storeNewSeeds(oldMainnetSignerWallets);
 
