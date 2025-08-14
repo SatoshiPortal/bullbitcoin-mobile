@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usec
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_encrypted_vault_verification_usecase.dart.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
@@ -31,6 +32,12 @@ class TestWalletBackupLocator {
     locator.registerLazySingleton<GetMnemonicFromFingerprintUsecase>(
       () => GetMnemonicFromFingerprintUsecase(
         seedRepository: locator<SeedRepository>(),
+      ),
+    );
+    locator.registerFactory<CheckBackupUsecase>(
+      () => CheckBackupUsecase(
+        walletRepository: locator<WalletRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     // Blocs

@@ -12,5 +12,8 @@ sealed class AppStartupState with _$AppStartupState {
     @Default(false) bool isPinCodeSet,
     @Default(false) bool hasDefaultWallets,
   }) = AppStartupSuccess;
-  const factory AppStartupState.failure(Object? e) = AppStartupFailure;
+  const factory AppStartupState.failure(
+    Object? e, {
+    @Default(false) bool hasBackup,
+  }) = AppStartupFailure;
 }
