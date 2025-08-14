@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
@@ -51,6 +52,10 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       // emit(const AppStartupState.failure(null));
       // return;
       final migrationRequired = await _requiresMigrationUsecase.execute();
+      await log.migration(
+        level: Level.INFO,
+        message: 'Migration Required: $migrationRequired',
+      );
       if (migrationRequired == null) {
         emit(const AppStartupState.loadingInProgress());
       } else {
