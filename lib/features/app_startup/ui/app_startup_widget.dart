@@ -1,7 +1,8 @@
+import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/share_logs_widget.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
@@ -9,6 +10,7 @@ import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart'
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppStartupWidget extends StatefulWidget {
@@ -39,7 +41,10 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
               // return const HomeScreen();
               return widget.app;
             } else if (state is AppStartupFailure) {
-              return const AppStartupFailureScreen();
+              return AppStartupFailureScreen(
+                hasBackup: state.hasBackup,
+                e: state.e,
+              );
             }
 
             // TODO: remove this when all states are handled and return the
@@ -82,7 +87,10 @@ class AppStartupListener extends StatelessWidget {
 }
 
 class AppStartupFailureScreen extends StatelessWidget {
-  const AppStartupFailureScreen({super.key});
+  const AppStartupFailureScreen({super.key, this.e, required this.hasBackup});
+
+  final Object? e;
+  final bool hasBackup;
 
   @override
   Widget build(BuildContext context) {
@@ -94,23 +102,51 @@ class AppStartupFailureScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              BBText(
-                'Something went wrong during startup.',
-                textAlign: TextAlign.center,
-                style: context.font.headlineMedium,
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(2.0),
+                ),
+                tileColor: context.colour.error.withValues(alpha: 0.1),
+                title: Row(
+                  children: [
+                    Icon(Icons.error_outline, color: context.colour.error),
+                    const Gap(8),
+                    Text(
+                      'Startup Error',
+                      style: context.font.headlineLarge?.copyWith(
+                        color: context.colour.error,
+                      ),
+                    ),
+                  ],
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    e is SeedNotFoundException
+                        ? hasBackup
+                            ? 'Since v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. You will have to delete this app and reinstall it with your backed up seed.'
+                            : 'Since v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. It is CRITICAL that you DO NOT RECIEVE ANY MORE FUNDS INTO THIS WALLET and contact our support team.'
+                        : e.toString(),
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.colour.secondary.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ),
               ),
-
               const SizedBox(height: 24),
-              GestureDetector(
-                onTap: () {
+              BBButton.big(
+                onPressed: () {
                   final url = Uri.parse(SettingsConstants.telegramSupportLink);
                   // ignore: deprecated_member_use
                   launchUrl(url, mode: LaunchMode.externalApplication);
                 },
-                child: BBText(
-                  'Contact Support',
-                  style: context.font.headlineLarge,
-                ),
+                label: 'Contact Support',
+                bgColor: context.colour.primary,
+                textColor: context.colour.onPrimary,
               ),
               const SizedBox(height: 24),
               const ShareLogsWidget(migrationLogs: true, sessionLogs: true),
