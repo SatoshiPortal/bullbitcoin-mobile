@@ -20,7 +20,6 @@ import 'package:dart_bbqr/bbqr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lwk/lwk.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
@@ -38,11 +37,7 @@ class Bull {
 
     final logDirectory = await getApplicationDocumentsDirectory();
     log = Logger.init(directory: logDirectory);
-    // read old Secure Storage withour encryptionSharedPreferences and dump to a file
-    FlutterSecureStorage? oldSecureStorage = const FlutterSecureStorage();
-    final oldSecureStorageKeys = await oldSecureStorage.readAll();
-    log.fine('oldSecureStorageKeys: $oldSecureStorageKeys');
-    oldSecureStorage = null;
+
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
     await AppLocator.setup();
