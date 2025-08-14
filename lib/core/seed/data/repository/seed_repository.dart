@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class SeedRepository {
   final SeedDatasource _source;
@@ -12,26 +13,64 @@ class SeedRepository {
     required List<String> mnemonicWords,
     String? passphrase,
   }) async {
-    final model = SeedModel.mnemonic(
-      mnemonicWords: mnemonicWords,
-      passphrase: passphrase,
-    );
-    await _source.store(fingerprint: model.masterFingerprint, seed: model);
-    return model.toEntity() as MnemonicSeed;
+    try {
+      final model = SeedModel.mnemonic(
+        mnemonicWords: mnemonicWords,
+        passphrase: passphrase,
+      );
+      await _source.store(fingerprint: model.masterFingerprint, seed: model);
+      return model.toEntity() as MnemonicSeed;
+    } catch (e, stackTrace) {
+      log.info(
+        'Failed to create seed from mnemonic: $e',
+        error: e,
+        trace: stackTrace,
+      );
+      rethrow;
+    }
   }
 
   Future<Seed> createFromBytes({required Uint8List bytes}) async {
-    final model = SeedModel.bytes(bytes: bytes);
-    await _source.store(fingerprint: model.masterFingerprint, seed: model);
-    return model.toEntity();
+    try {
+      final model = SeedModel.bytes(bytes: bytes);
+      await _source.store(fingerprint: model.masterFingerprint, seed: model);
+      return model.toEntity();
+    } catch (e, stackTrace) {
+      log.info(
+        'Failed to create seed from bytes: $e',
+        error: e,
+        trace: stackTrace,
+      );
+      rethrow;
+    }
   }
 
   Future<Seed> get(String fingerprint) async {
-    final model = await _source.get(fingerprint);
-    return model.toEntity();
+    try {
+      final model = await _source.get(fingerprint);
+      return model.toEntity();
+    } catch (e, stackTrace) {
+      log.info(
+        'Failed to get seed with fingerprint $fingerprint: $e',
+        error: e,
+        trace: stackTrace,
+      );
+      rethrow;
+    }
   }
 
-  Future<bool> exists(String fingerprint) => _source.exists(fingerprint);
+  Future<bool> exists(String fingerprint) async {
+    try {
+      return await _source.exists(fingerprint);
+    } catch (e, stackTrace) {
+      log.info(
+        'Failed to check if seed exists with fingerprint $fingerprint: $e',
+        error: e,
+        trace: stackTrace,
+      );
+      rethrow;
+    }
+  }
 
   Future<void> delete(String fingerprint) => _source.delete(fingerprint);
 }
