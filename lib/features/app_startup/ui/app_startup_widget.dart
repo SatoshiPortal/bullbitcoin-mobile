@@ -129,7 +129,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                     e is SeedNotFoundException
                         ? hasBackup
                             ? 'On v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. You will have to delete this app and reinstall it with your backed up seed.'
-                            : 'On v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. It is CRITICAL that you DO NOT RECIEVE ANY MORE FUNDS INTO THIS WALLET and contact our support team.'
+                            : 'On v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. Contact our support team.'
                         : e.toString(),
                     style: context.font.bodyMedium?.copyWith(
                       color: context.colour.secondary.withValues(alpha: 0.7),
