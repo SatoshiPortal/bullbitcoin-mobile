@@ -17,7 +17,8 @@
         android:label="BULL"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
-        android:enableOnBackInvokedCallback="true">
+        android:enableOnBackInvokedCallback="true"
+        android:allowBackup="false">
         <activity
             android:name="com.bullbitcoin.mobile.MainActivity"
             android:exported="true"
