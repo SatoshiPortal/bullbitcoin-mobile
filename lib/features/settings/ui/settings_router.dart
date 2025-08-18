@@ -3,7 +3,9 @@ import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
-import 'package:bb_mobile/features/experimental/experimental_router.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
 import 'package:bb_mobile/features/legacy_seed_view/ui/legacy_seed_view_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
@@ -11,7 +13,6 @@ import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart'
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/experimental_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
@@ -33,6 +34,7 @@ import 'package:bb_mobile/features/settings/ui/screens/language/language_setting
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -85,7 +87,18 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.exchangeSettings.name,
         path: SettingsRoute.exchangeSettings.path,
-        builder: (context, state) => const ExchangeSettingsScreen(),
+
+        builder:
+            (context, state) => BlocListener<ExchangeCubit, ExchangeState>(
+              listenWhen:
+                  (previous, current) =>
+                      !previous.notLoggedIn && current.notLoggedIn,
+              listener: (context, state) {
+                // Redirect to auth screen if the user logged out
+                context.goNamed(ExchangeRoute.exchangeAuth.name);
+              },
+              child: const ExchangeSettingsScreen(),
+            ),
       ),
       GoRoute(
         name: SettingsRoute.exchangeAccountInfo.name,
@@ -190,11 +203,10 @@ class SettingsRouter {
                 listeners: [
                   BlocListener<WalletBloc, WalletState>(
                     listenWhen: (previous, current) {
-                      // Listen for wallet deletion to go back to the wallet list
                       return previous.wallets.length > current.wallets.length;
                     },
                     listener: (context, state) {
-                      context.pop();
+                      context.goNamed(WalletRoute.walletHome.name);
                     },
                   ),
                   BlocListener<WalletBloc, WalletState>(
@@ -250,12 +262,6 @@ class SettingsRouter {
         path: SettingsRoute.currency.path,
         name: SettingsRoute.currency.name,
         builder: (context, state) => const CurrencySettingsScreen(),
-      ),
-      GoRoute(
-        path: SettingsRoute.experimental.path,
-        name: SettingsRoute.experimental.name,
-        builder: (context, state) => const ExperimentalSettingsScreen(),
-        routes: [ExperimentalRouterConfig.route],
       ),
     ],
   );

@@ -11,11 +11,17 @@ sealed class SellEvent with _$SellEvent {
   const factory SellEvent.walletSelected({required Wallet wallet}) =
       SellWalletSelected;
   const factory SellEvent.externalWalletNetworkSelected({
-    required OrderPaymentMethod network,
+    required OrderBitcoinNetwork network,
   }) = SellExternalWalletNetworkSelected;
   const factory SellEvent.orderRefreshTimePassed() = SellOrderRefreshTimePassed;
   const factory SellEvent.sendPaymentConfirmed({
     required FeeSelection feeSelection,
     NetworkFee? customFee,
   }) = SellSendPaymentConfirmed;
+  const factory SellEvent.pollOrderStatus() = SellPollOrderStatus;
+  const factory SellEvent.replaceByFeeChanged({required bool replaceByFee}) =
+      SellReplaceByFeeChanged;
+  const factory SellEvent.utxoSelected({required WalletUtxo utxo}) =
+      SellUtxoSelected;
+  const factory SellEvent.loadUtxos() = SellLoadUtxos;
 }

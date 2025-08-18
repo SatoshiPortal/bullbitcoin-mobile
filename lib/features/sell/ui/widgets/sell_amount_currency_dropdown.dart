@@ -21,14 +21,7 @@ class SellAmountCurrencyDropdown extends StatelessWidget {
       (SellBloc bloc) => bloc.state is SellInitialState,
     );
     final fiatCurrency = context.select((SellBloc bloc) {
-      final state = bloc.state;
-      if (state is SellAmountInputState) {
-        return FiatCurrency.fromCode(state.userSummary.currency ?? 'CAD');
-      }
-      if (state is SellWalletSelectionState) {
-        return state.fiatCurrency;
-      }
-      return FiatCurrency.cad;
+      return bloc.state.fiatCurrency;
     });
 
     return ExchangeAmountCurrencyDropdown(

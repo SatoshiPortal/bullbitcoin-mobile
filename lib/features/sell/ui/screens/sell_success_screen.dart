@@ -41,26 +41,36 @@ class SellSuccessScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const Icon(Icons.check_circle, size: 100, color: Colors.green),
+                const SizedBox(height: 20),
+                Text('Order completed!', style: context.font.titleLarge),
+                const SizedBox(height: 10),
                 Text(
-                  'Order completed!',
-                  style: context.font.headlineLarge?.copyWith(
-                    color: context.colour.outlineVariant,
-                  ),
+                  'Your account balance will be credited after your transaction receives 1 confirmation onchain.',
+                  style: context.font.bodyMedium,
+                  textAlign: TextAlign.center,
                 ),
-                const Spacer(),
+              ],
+            ),
+          ),
+        ),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 if (order != null)
                   BBButton.big(
-                    label: 'Order details',
+                    label: 'View details',
                     onPressed: () {
                       context.pushNamed(
                         TransactionsRoute.orderTransactionDetails.name,
-                        pathParameters: {
-                          'orderId': order.orderId,
-                        }, // Replace with actual order ID
+                        pathParameters: {'orderId': order.orderId},
                       );
                     },
                     bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
+                    textColor: context.colour.onPrimary,
                   ),
               ],
             ),

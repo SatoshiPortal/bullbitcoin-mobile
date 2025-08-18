@@ -7,9 +7,9 @@ import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -39,9 +39,9 @@ class BuySuccessScreen extends StatelessWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
 
-        // Navigate to the exchange home screen when the user wants to exit the
+        // Navigate to the wallet home screen when the user wants to exit the
         // buy success screen.
-        context.goNamed(ExchangeRoute.exchangeHome.name);
+        context.goNamed(WalletRoute.walletHome.name);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -51,8 +51,8 @@ class BuySuccessScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.close),
               onPressed: () {
-                // Navigate to the exchange home screen after a successful buy
-                context.goNamed(ExchangeRoute.exchangeHome.name);
+                // Navigate to the wallet home screen after a successful buy
+                context.goNamed(WalletRoute.walletHome.name);
               },
             ),
           ],

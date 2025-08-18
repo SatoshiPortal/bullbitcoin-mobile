@@ -45,7 +45,7 @@ class _SellScreenState extends State<SellScreen> {
           child: ScrollableColumn(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Gap(40.0),
+              const Gap(24.0),
               SellAmountInputField(
                 amountController: _amountController,
                 fiatCurrency: _fiatCurrency,

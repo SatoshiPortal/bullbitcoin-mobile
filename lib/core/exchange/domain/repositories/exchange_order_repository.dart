@@ -5,19 +5,19 @@ abstract class ExchangeOrderRepository {
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required Network network,
+    required OrderBitcoinNetwork network,
     required bool isOwner,
   });
   Future<SellOrder> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required Network network,
+    required OrderBitcoinNetwork network,
   });
   Future<FiatPaymentOrder> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required String paymentProcessor,
-    required Network network,
+    required OrderBitcoinNetwork network,
   });
   Future<WithdrawOrder> placeWithdrawalOrder({
     required double fiatAmount,

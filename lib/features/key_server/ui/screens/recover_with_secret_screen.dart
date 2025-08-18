@@ -35,14 +35,13 @@ class RecoverWithSecretScreen extends StatelessWidget {
         ),
       ),
       body: StackedPage(
-        bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
         bottomChild: const RecoverButton(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (fromOnboarding) const Gap(100) else const Gap(10),
+              if (fromOnboarding) const Gap(50) else const Gap(5),
               BBText(
                 '${fromOnboarding ? 'Enter your' : 'Test to make sure you remember your backup '} ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'} ${fromOnboarding ? 'to continue' : ''}',
                 textAlign: TextAlign.center,
@@ -51,7 +50,7 @@ class RecoverWithSecretScreen extends StatelessWidget {
                 ),
                 maxLines: 3,
               ),
-              const Gap(120),
+              const Gap(60),
               if (state.authInputType == AuthInputType.password)
                 BBText(
                   'Password',
@@ -79,7 +78,7 @@ class RecoverWithSecretScreen extends StatelessWidget {
                   }
                 },
               ),
-              const Gap(50),
+              const Gap(72),
               BBButton.small(
                 label:
                     'Pick ${state.authInputType == AuthInputType.pin ? 'password' : 'PIN'} instead >>',

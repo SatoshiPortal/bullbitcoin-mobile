@@ -97,15 +97,15 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     try {
       emit(state.copyWith(status: BackupSettingsStatus.exporting, error: null));
       await _connectToGoogleDriveUsecase.execute();
-      final (content: content, fileName: fileName) =
+      final (content: content, fileName: _) =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
       final folderPath = await _selectFolderPathUsecase.execute();
       if (folderPath == null) {
         emit(state.copyWith(status: BackupSettingsStatus.initial));
         return;
       }
-      final filePath = '$folderPath/$fileName';
-      await _saveToFileSystemUsecase.execute(filePath, content);
+
+      await _saveToFileSystemUsecase.execute(folderPath, content);
       emit(
         state.copyWith(
           status: BackupSettingsStatus.success,
@@ -126,7 +126,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         state.copyWith(status: BackupSettingsStatus.viewingKey, error: null),
       );
 
-      final backupInfo = BackupInfo(backupFile: backupFile);
+      final backupInfo = backupFile.backupInfo;
       if (backupInfo.isCorrupted) {
         emit(
           state.copyWith(
@@ -166,7 +166,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       emit(
         state.copyWith(
           status: BackupSettingsStatus.success,
-
           derivedBackupKey: backupKey,
         ),
       );

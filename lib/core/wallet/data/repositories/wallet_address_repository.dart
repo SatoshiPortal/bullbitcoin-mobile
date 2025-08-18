@@ -164,11 +164,16 @@ class WalletAddressRepository {
             : completeHistory;
 
     // Enrich addresses with balance and transaction data in parallel
-    return _enrichAddresses(
+    final enrichedAddresses = await _enrichAddresses(
       addressHistory: trimmedHistory,
       walletModel: walletModel,
       isBdkWallet: isBdkWallet,
     );
+
+    // Return the enriched addresses
+    return enrichedAddresses.map((model) {
+      return WalletAddressMapper.toEntity(model);
+    }).toList();
   }
 
   Future<List<WalletAddressModel>> _fillAddressGaps({
@@ -266,36 +271,39 @@ class WalletAddressRepository {
     );
   }
 
-  Future<List<WalletAddress>> _enrichAddresses({
+  // ignore: unused_element
+  Future<List<WalletAddressModel>> _enrichAddresses({
     required List<WalletAddressModel> addressHistory,
     required WalletModel walletModel,
     required bool isBdkWallet,
   }) async {
+    final allTransactions =
+        isBdkWallet
+            ? await _bdkWallet.getTransactions(wallet: walletModel)
+            : await _lwkWallet.getTransactions(wallet: walletModel);
+
     final enrichedAddresses = await Future.wait(
       addressHistory.map((addressModel) async {
         // Fetch balance and transactions in parallel
-        final (balanceSat, transactions) =
+        final balanceSat =
             isBdkWallet
-                ? await (
-                  _bdkWallet.getAddressBalanceSat(
-                    addressModel.address,
-                    wallet: walletModel,
+                ? await _bdkWallet.getAddressBalanceSat(
+                  addressModel.address,
+                  wallet: walletModel,
+                )
+                : await _lwkWallet.getAddressBalanceSat(
+                  addressModel.address,
+                  wallet: walletModel,
+                );
+
+        final transactions =
+            allTransactions
+                .where(
+                  (tx) => tx.outputs.any(
+                    (element) => element.address == addressModel.address,
                   ),
-                  _bdkWallet.getTransactions(
-                    wallet: walletModel,
-                    toAddress: addressModel.address,
-                  ),
-                ).wait
-                : await (
-                  _lwkWallet.getAddressBalanceSat(
-                    addressModel.address,
-                    wallet: walletModel,
-                  ),
-                  _lwkWallet.getTransactions(
-                    wallet: walletModel,
-                    toAddress: addressModel.address,
-                  ),
-                ).wait;
+                )
+                .toList();
 
         // Update if balance or transaction count changed
         if (addressModel.balanceSat != balanceSat.toInt() ||
@@ -309,7 +317,7 @@ class WalletAddressRepository {
         }
 
         // TODO: Get labels for the addresses
-        return WalletAddressMapper.toEntity(addressModel, labels: <String>[]);
+        return addressModel;
       }),
     );
     return enrichedAddresses;

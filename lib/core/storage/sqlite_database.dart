@@ -42,7 +42,19 @@ class SqliteDatabase extends _$SqliteDatabase {
   static QueryExecutor _openConnection() {
     return driftDatabase(
       name: 'bullbitcoin_sqlite',
-      native: const DriftNativeOptions(),
+      native: DriftNativeOptions(
+        /// When using a shared instance, stream queries synchronize across the two
+        /// isolates. Also, drift then manages concurrent access to the database,
+        /// preventing "database is locked" errors due to concurrent transactions.
+        shareAcrossIsolates: true,
+        setup: (database) {
+          // This is important, as accessing the database across threads otherwise
+          // causes "database locked" errors.
+          // With write-ahead logging (WAL) enabled, a single writer and multiple
+          // readers can operate on the database in parallel.
+          database.execute('pragma journal_mode = WAL;');
+        },
+      ),
     );
   }
 
@@ -85,9 +97,9 @@ class SqliteDatabase extends _$SqliteDatabase {
       SettingsRow(
         id: 1,
         environment: Environment.mainnet.name,
-        bitcoinUnit: BitcoinUnit.btc.name,
+        bitcoinUnit: BitcoinUnit.sats.name,
         language: Language.unitedStatesEnglish.name,
-        currency: 'USD',
+        currency: 'CAD',
         hideAmounts: false,
         isSuperuser: false,
       ),

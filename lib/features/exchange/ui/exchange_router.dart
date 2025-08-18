@@ -22,7 +22,7 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeHome.name,
       path: ExchangeRoute.exchangeHome.path,
       redirect: (context, state) {
-        // Redirect to auth screen if API key is invalid
+        // Redirect to auth screen if the user is logged out
         final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
         if (notLoggedIn) {
           return ExchangeRoute.exchangeAuth.path;
@@ -32,16 +32,7 @@ class ExchangeRouter {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: BlocListener<ExchangeCubit, ExchangeState>(
-            listenWhen:
-                (previous, current) =>
-                    !previous.notLoggedIn && current.notLoggedIn,
-            listener: (context, state) {
-              // Redirect to auth screen if the API key becomes invalid
-              context.goNamed(ExchangeRoute.exchangeAuth.name);
-            },
-            child: const ExchangeHomeScreen(),
-          ),
+          child: const ExchangeHomeScreen(),
         );
       },
       routes: [

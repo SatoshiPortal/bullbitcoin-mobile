@@ -104,6 +104,7 @@ class BuyInputScreen extends StatelessWidget {
                   bgColor: context.colour.secondary,
                   textColor: context.colour.onSecondary,
                 ),
+                const Gap(16.0),
               ],
             ),
           ],

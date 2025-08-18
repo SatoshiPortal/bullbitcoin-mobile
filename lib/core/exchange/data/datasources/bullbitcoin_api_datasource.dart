@@ -104,7 +104,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required FiatCurrency fiatCurrency,
     required OrderAmount orderAmount,
-    required Network network,
+    required OrderBitcoinNetwork network,
     required bool isOwner,
     required String address,
   }) async {
@@ -311,7 +311,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required FiatCurrency fiatCurrency,
     required OrderAmount orderAmount,
-    required Network network,
+    required OrderBitcoinNetwork network,
   }) async {
     final params = <String, dynamic>{
       'fiatCurrency': fiatCurrency.code,
@@ -366,7 +366,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required OrderAmount orderAmount,
     required String recipientId,
     required String paymentProcessor,
-    required Network network,
+    required OrderBitcoinNetwork network,
   }) async {
     final params = <String, dynamic>{
       'recipientId': recipientId,

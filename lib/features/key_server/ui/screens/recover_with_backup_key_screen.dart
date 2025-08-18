@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -46,7 +45,6 @@ class _RecoverWithBackupKeyScreenState
   Widget build(BuildContext context) {
     return BlocListener<KeyServerCubit, KeyServerState>(
       listener: (context, state) {
-        log.info('KeyServerState backupKey: ${state.backupKey}');
         if (state.status == const KeyServerOperationStatus.success() &&
             state.backupKey.isNotEmpty) {
           _controller.text = state.backupKey;

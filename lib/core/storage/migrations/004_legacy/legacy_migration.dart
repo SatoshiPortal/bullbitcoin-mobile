@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migration01to02.dart';
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migration02to03.dart';
+import 'package:bb_mobile/core/storage/migrations/004_legacy/migration03to04.dart';
 
 Future<bool> legacyMigrateToV4(String fromVersion) async {
   if (fromVersion.startsWith('0.1')) {
@@ -19,5 +20,3 @@ Future<bool> legacyMigrateToV4(String fromVersion) async {
   }
   return false;
 }
-
-Future<void> doMigration0_3to0_4() async {}

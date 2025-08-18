@@ -71,7 +71,8 @@ class TxListItem extends StatelessWidget {
         isOrderType &&
         (tx.order is FiatPaymentOrder ||
             tx.order is BalanceAdjustmentOrder ||
-            tx.order is WithdrawOrder);
+            tx.order is WithdrawOrder ||
+            tx.order is FundingOrder);
     return InkWell(
       onTap: () {
         if (tx.walletTransaction != null) {

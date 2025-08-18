@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/autoswap/ui/autoswap_settings_router.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/ui/electrum_settings_router.dart';
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_router.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -61,25 +61,20 @@ class BitcoinSettingsScreen extends StatelessWidget {
                       context.pushNamed(SettingsRoute.legacySeeds.name);
                     },
                   ),
-                if (isSuperuser)
-                  SettingsEntryItem(
-                    icon: Icons.qr_code_2,
-                    title: 'Import watch-only',
-                    isSuperUser: true,
-                    onTap:
-                        () => context.pushNamed(
-                          ImportWatchOnlyRoutes.import.name,
-                        ),
-                  ),
-                if (isSuperuser && kDebugMode)
-                  SettingsEntryItem(
-                    icon: Icons.science,
-                    title: 'Experimental / Danger Zone',
-                    isSuperUser: true,
-                    onTap:
-                        () =>
-                            context.pushNamed(SettingsRoute.experimental.name),
-                  ),
+                SettingsEntryItem(
+                  icon: Icons.download,
+                  title: 'Import wallet',
+                  onTap:
+                      () => context.pushNamed(ImportWalletRoutes.import.name),
+                ),
+                SettingsEntryItem(
+                  icon: Icons.satellite_alt,
+                  title: 'Broadcast Transaction',
+                  onTap:
+                      () => context.pushNamed(
+                        BroadcastSignedTxRoute.broadcastHome.name,
+                      ),
+                ),
                 if (isSuperuser)
                   const SettingsEntryItem(
                     icon: Icons.science,

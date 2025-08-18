@@ -25,6 +25,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: theme.colorScheme.onPrimary,
+      constraints: const BoxConstraints(maxWidth: double.infinity),
       useRootNavigator: true,
       builder:
           (context) => ComingSoonBottomSheet(

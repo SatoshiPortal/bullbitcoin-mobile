@@ -27,23 +27,15 @@ class SellAmountInputField extends StatelessWidget {
     final isLoading = context.select(
       (SellBloc bloc) => bloc.state is SellInitialState,
     );
-    final bitcoinUnit = context.select((SellBloc bloc) {
-      final state = bloc.state;
-      if (state is SellAmountInputState) return state.bitcoinUnit;
-      if (state is SellWalletSelectionState) return state.bitcoinUnit;
-      return BitcoinUnit.btc;
-    });
+    final bitcoinUnit =
+        context.select((SellBloc bloc) {
+          return bloc.state.bitcoinUnit;
+        }) ??
+        BitcoinUnit.btc;
     final fiatCurrency =
         _fiatCurrency ??
         context.select((SellBloc bloc) {
-          final state = bloc.state;
-          if (state is SellAmountInputState) {
-            return FiatCurrency.fromCode(state.userSummary.currency ?? 'CAD');
-          }
-          if (state is SellWalletSelectionState) {
-            return state.fiatCurrency;
-          }
-          return FiatCurrency.cad;
+          return bloc.state.fiatCurrency;
         });
 
     return ExchangeAmountInputField(

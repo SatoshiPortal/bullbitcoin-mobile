@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/screens/logs_viewer_screen.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:share_plus/share_plus.dart';
 
-class ShareLogsWidget extends StatelessWidget {
+class ShareLogsWidget extends StatefulWidget {
   final bool migrationLogs;
   final bool sessionLogs;
 
@@ -16,10 +19,17 @@ class ShareLogsWidget extends StatelessWidget {
   });
 
   @override
+  State<ShareLogsWidget> createState() => _ShareLogsWidgetState();
+}
+
+class _ShareLogsWidgetState extends State<ShareLogsWidget> {
+  bool _showLogsInline = false;
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (sessionLogs)
+        if (widget.sessionLogs)
           ListTile(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(2),
@@ -30,7 +40,7 @@ class ShareLogsWidget extends StatelessWidget {
             trailing: const Icon(Icons.share_sharp),
           ),
         const Gap(16),
-        if (migrationLogs)
+        if (widget.migrationLogs)
           ListTile(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(2),
@@ -40,6 +50,100 @@ class ShareLogsWidget extends StatelessWidget {
             onTap: () => _shareLegacyMigrationLogs(context),
             trailing: const Icon(Icons.share),
           ),
+        const Gap(16),
+        ListTile(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+          tileColor: Colors.transparent,
+          title: const Text('View session logs'),
+          onTap: () {
+            final navigator = Navigator.maybeOf(context);
+            if (navigator != null) {
+              navigator.push(
+                MaterialPageRoute(
+                  builder: (context) => const LogsViewerScreen(),
+                ),
+              );
+            } else {
+              setState(() {
+                _showLogsInline = !_showLogsInline;
+              });
+            }
+          },
+          trailing: Icon(_showLogsInline ? Icons.expand_less : Icons.list_alt),
+        ),
+        if (_showLogsInline) ...[
+          const Gap(16),
+          Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.4,
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withValues(alpha: 0.1),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Session Logs', style: context.font.titleMedium),
+                      Text(
+                        '${log.session.length} entries',
+                        style: context.font.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    padding: const EdgeInsets.all(8),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: List.generate(log.session.length, (index) {
+                          final logLine = log.session[index];
+                          return Row(
+                            children: [
+                              IconButton(
+                                onPressed:
+                                    () => Clipboard.setData(
+                                      ClipboardData(text: logLine),
+                                    ),
+                                icon: const Icon(Icons.copy, size: 14),
+                                padding: const EdgeInsets.all(4),
+                                constraints: const BoxConstraints(),
+                              ),
+                              SelectableText(
+                                logLine.replaceAll('\t', ' | '),
+                                style: context.font.bodySmall?.copyWith(
+                                  fontFamily: 'monospace',
+                                  fontSize: 10,
+                                  color: context.colour.onSurface,
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }

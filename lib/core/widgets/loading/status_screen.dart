@@ -36,7 +36,6 @@ class StatusScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.colour.onSecondary,
       body: StackedPage(
-        bottomChildHeight: MediaQuery.of(context).size.height * 0.2,
         bottomChild:
             (!isLoading && onTap != null)
                 ? BBButton.big(

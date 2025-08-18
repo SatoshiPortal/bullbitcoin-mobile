@@ -10,8 +10,7 @@ class BdkBitcoinBlockchainDatasource {
     String finalizedPsbt, {
     required ElectrumServerModel electrumServer,
   }) async {
-    final blockchain =
-        await _createBlockchainFromElectrumServer(electrumServer);
+    final blockchain = await createBlockchainFromElectrumServer(electrumServer);
     final psbt = await bdk.PartiallySignedTransaction.fromString(finalizedPsbt);
     final tx = psbt.extractTx();
     final txId = await blockchain.broadcast(transaction: tx);
@@ -22,14 +21,13 @@ class BdkBitcoinBlockchainDatasource {
     Uint8List transaction, {
     required ElectrumServerModel electrumServer,
   }) async {
-    final blockchain =
-        await _createBlockchainFromElectrumServer(electrumServer);
+    final blockchain = await createBlockchainFromElectrumServer(electrumServer);
     final tx = await bdk.Transaction.fromBytes(transactionBytes: transaction);
     final txId = await blockchain.broadcast(transaction: tx);
     return txId;
   }
 
-  Future<bdk.Blockchain> _createBlockchainFromElectrumServer(
+  static Future<bdk.Blockchain> createBlockchainFromElectrumServer(
     ElectrumServerModel electrumServer,
   ) async {
     final blockchain = await bdk.Blockchain.create(

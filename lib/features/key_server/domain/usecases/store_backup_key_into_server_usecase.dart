@@ -23,7 +23,7 @@ class StoreBackupKeyIntoServerUsecase {
     required String backupKey,
   }) async {
     try {
-      final backupInfo = BackupInfo(backupFile: backupFile);
+      final backupInfo = backupFile.backupInfo;
       if (backupInfo.isCorrupted) {
         throw const KeyServerError.invalidBackupFile();
       }

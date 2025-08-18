@@ -159,7 +159,10 @@ class MigrateToV5HiveToSqliteToUsecase {
               finalWatchOnlyCount,
         },
       );
-
+      await _secureStorage.store(
+        key: OldStorageKeys.version.name,
+        value: '0.5.0',
+      );
       return true;
     } catch (e) {
       await log.migration(

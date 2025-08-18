@@ -189,7 +189,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // If the payjoin receiver is not set yet, we need to create it, but only
       //  if the wallet is not watch only. If the wallet is watch only, we shouldn't
       //  create a payjoin receiver since we can't sign proposals non-interactively.
-      if (state.payjoin == null && !wallet.isWatchOnly) {
+      if (state.payjoin == null && wallet.signsLocally) {
         PayjoinReceiver? payjoin;
         Object? error;
         try {
@@ -212,7 +212,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
                 error is ReceivePayjoinException ? error : null,
           ),
         );
-      } else if (state.payjoin != null && wallet.isWatchOnly) {
+      } else if (state.payjoin != null && !wallet.signsLocally) {
         // If the wallet is watch only, we need to clear the payjoin receiver
         //  since we can't sign proposals non-interactively.
         emit(state.copyWith(payjoin: null));
@@ -680,7 +680,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           Object? error;
           // If a new address is generated, we need to update the payjoin receiver as well,
           // but only if the wallet is not watch only.
-          if (!state.wallet!.isWatchOnly) {
+          if (state.wallet!.signsLocally) {
             try {
               payjoin = await _receiveWithPayjoinUsecase.execute(
                 walletId: walletId,

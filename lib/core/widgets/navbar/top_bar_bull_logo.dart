@@ -40,8 +40,8 @@ class _BullLogo extends StatelessWidget {
         onTap: onTap,
         child: Image.asset(
           Assets.logos.bbLogoSmall.path,
-          width: 32,
-          height: 32,
+          width: 40,
+          height: 40,
         ),
       ); //.animate(delay: 300.ms).fadeIn();
     }

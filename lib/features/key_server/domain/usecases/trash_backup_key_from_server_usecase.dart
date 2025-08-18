@@ -13,7 +13,7 @@ class TrashBackupKeyFromServerUsecase {
 
   Future<void> execute({required String password, required String backupFile}) {
     try {
-      final backupInfo = BackupInfo(backupFile: backupFile);
+      final backupInfo = backupFile.backupInfo;
       if (backupInfo.isCorrupted) {
         throw const KeyServerError.invalidBackupFile();
       }

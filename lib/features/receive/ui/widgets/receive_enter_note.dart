@@ -20,6 +20,7 @@ class ReceiveEnterNote extends StatelessWidget {
       useRootNavigator: true,
       backgroundColor: context.colour.onPrimary,
       isScrollControlled: true,
+      constraints: const BoxConstraints(maxWidth: double.infinity),
       builder: (context) {
         return BlocProvider.value(
           value: receive,

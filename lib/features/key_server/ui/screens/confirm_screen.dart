@@ -30,14 +30,13 @@ class ConfirmScreen extends StatelessWidget {
         ),
       ),
       body: StackedPage(
-        bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
         bottomChild: const ConfirmButton(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Gap(100),
+              const Gap(50),
               BBText(
                 'Enter your ${state.authInputType == AuthInputType.pin ? 'PIN' : 'Password'} again to continue.',
                 textAlign: TextAlign.center,
@@ -46,7 +45,7 @@ class ConfirmScreen extends StatelessWidget {
                 ),
                 maxLines: 2,
               ),
-              const Gap(50),
+              const Gap(47),
               if (state.authInputType == AuthInputType.password)
                 BBText(
                   'Password',
@@ -74,7 +73,7 @@ class ConfirmScreen extends StatelessWidget {
                   }
                 },
               ),
-              const Gap(50),
+              const Gap(72),
               BBButton.big(
                 label:
                     'Use ${state.authInputType == AuthInputType.pin ? 'password' : 'PIN'} instead >>',

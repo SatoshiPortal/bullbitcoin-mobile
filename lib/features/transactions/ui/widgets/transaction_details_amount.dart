@@ -20,7 +20,8 @@ class TransactionDetailsAmount extends StatelessWidget {
         isOrder &&
         (tx!.order is FiatPaymentOrder ||
             tx.order is BalanceAdjustmentOrder ||
-            tx.order is WithdrawOrder);
+            tx.order is WithdrawOrder ||
+            tx.order is FundingOrder);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

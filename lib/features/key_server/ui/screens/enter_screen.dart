@@ -30,7 +30,6 @@ class EnterScreen extends StatelessWidget {
         ),
       ),
       body: StackedPage(
-        bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
         bottomChild: const ConfirmButton(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -45,7 +44,7 @@ class EnterScreen extends StatelessWidget {
                 ),
                 maxLines: 3,
               ),
-              const Gap(120),
+              const Gap(60),
               if (state.authInputType == AuthInputType.password)
                 BBText(
                   'Password',
@@ -92,7 +91,7 @@ class EnterScreen extends StatelessWidget {
                 )
               else
                 const SizedBox.shrink(),
-              const Gap(50),
+              const Gap(72),
               BBButton.small(
                 label:
                     'Pick a ${state.authInputType == AuthInputType.pin ? 'password' : 'pin'} instead >>',
