@@ -501,10 +501,12 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
+    log.info('listRecipientsFiat: ${resp.data}');
     if (resp.statusCode != 200) {
       throw Exception('Failed to list fiat recipients');
     }
     final elements = resp.data['result']['elements'] as List<dynamic>?;
+
     if (elements == null) return [];
     return elements
         .map((e) => RecipientModel.fromJson(e as Map<String, dynamic>))

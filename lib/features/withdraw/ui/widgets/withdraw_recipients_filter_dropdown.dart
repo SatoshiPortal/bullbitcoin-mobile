@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -7,13 +8,17 @@ class WithdrawRecipientsFilterDropdown extends StatelessWidget {
     super.key,
     required this.selectedFilter,
     required this.onFilterChanged,
+    required this.recipients,
   });
 
-  final String selectedFilter;
+  final String? selectedFilter;
   final ValueChanged<String?> onFilterChanged;
+  final List<Recipient>? recipients;
 
   @override
   Widget build(BuildContext context) {
+    final filterOptions = _buildFilterOptions();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -27,7 +32,7 @@ class WithdrawRecipientsFilterDropdown extends StatelessWidget {
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
-                value: selectedFilter,
+                value: selectedFilter ?? filterOptions.first,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -37,7 +42,7 @@ class WithdrawRecipientsFilterDropdown extends StatelessWidget {
                   color: context.colour.secondary,
                 ),
                 items:
-                    <String>['All types']
+                    filterOptions
                         .map(
                           (filter) => DropdownMenuItem<String>(
                             value: filter,
@@ -49,16 +54,29 @@ class WithdrawRecipientsFilterDropdown extends StatelessWidget {
                         )
                         .toList(),
                 onChanged: (value) {
-                  if (value != null) {
-                    onFilterChanged(value);
-                  }
+                  onFilterChanged(value);
                 },
               ),
             ),
           ),
         ),
-        // Add your widgets here
       ],
     );
+  }
+
+  List<String> _buildFilterOptions() {
+    if (recipients == null || recipients!.isEmpty) {
+      return ['All types'];
+    }
+
+    // Get unique recipient types from the actual response
+    final existingTypes =
+        recipients!
+            .map((recipient) => recipient.recipientType.displayName)
+            .toSet()
+            .toList();
+
+    // Always include "All types" as the first option
+    return ['All types', ...existingTypes];
   }
 }

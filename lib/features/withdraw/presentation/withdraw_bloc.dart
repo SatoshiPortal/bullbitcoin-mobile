@@ -140,11 +140,11 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       final recipient = event.recipient;
       // TODO: GET CORRECT PAYMENT PROCESSORS
       // ignore: unused_local_variable
-      final paymentProcessor = recipient.paymentProcessors?.first;
+      final recipientTypeFiat = recipient.recipientType;
       final order = await _createWithdrawOrderUsecase.execute(
         fiatAmount: recipientInputState.amount.amount,
         recipientId: recipient.recipientId,
-        paymentProcessor: 'SEPA_INSTANT', //paymentProcessor ?? '',
+        paymentProcessor: recipientTypeFiat.value,
       );
       emit(
         recipientInputState.toConfirmationState(

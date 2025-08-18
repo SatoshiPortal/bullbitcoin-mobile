@@ -148,36 +148,40 @@ enum OrderPayoutStatus {
   }
 }
 
-enum WithdrawalPaymentProcessor {
-  cvu(code: 'CVU', currencyCode: 'ARS'),
-  interacEmail(code: 'INTERAC_EMAIL', currencyCode: 'CAD'),
-  billPayment(code: 'BILL_PAYMENT', currencyCode: 'CAD'),
-  electronicFundsTransfer(
-    code: 'ELECTRONIC_FUNDS_TRANSFER',
-    currencyCode: 'CAD',
-  ),
-  sepaInstant(code: 'SEPA_INSTANT', currencyCode: 'EUR'),
-  sepaRegular(code: 'SEPA_REGULAR', currencyCode: 'EUR'),
-  spei(code: 'SPEI', currencyCode: 'MXN'),
-  ibanUsd(code: 'IBAN_USD', currencyCode: 'USD'),
-  ibanCrc(code: 'IBAN_CRC', currencyCode: 'CRC'),
-  sinpe(code: 'SINPE', currencyCode: 'CRC');
+// enum WithdrawalPaymentProcessor {
+//   // CANADA
+//   interacEmailCad(code: 'INTERAC_EMAIL_CAD', currencyCode: 'CAD'),
+//   billPaymentCad(code: 'BILL_PAYMENT_CAD', currencyCode: 'CAD'),
+//   bankTransferCad(code: 'BANK_TRANSFER_CAD', currencyCode: 'CAD'),
 
-  final String code;
-  final String currencyCode;
-  const WithdrawalPaymentProcessor({
-    required this.code,
-    required this.currencyCode,
-  });
+//   // EUROPE
+//   sepaEur(code: 'SEPA_EUR', currencyCode: 'EUR'),
 
-  static WithdrawalPaymentProcessor fromCode(String code) {
-    return WithdrawalPaymentProcessor.values.firstWhere(
-      (e) => e.code == code,
-      orElse:
-          () => throw Exception('Unknown WithdrawalPaymentProcessor: $code'),
-    );
-  }
-}
+//   // MEXICO
+//   speiClabeMxn(code: 'SPEI_CLABE_MXN', currencyCode: 'MXN'),
+//   speiSmsMxn(code: 'SPEI_SMS_MXN', currencyCode: 'MXN'),
+//   speiCardMxn(code: 'SPEI_CARD_MXN', currencyCode: 'MXN'),
+
+//   // COSTA RICA
+//   sinpeIbanUsd(code: 'SINPE_IBAN_USD', currencyCode: 'USD'),
+//   sinpeIbanCrc(code: 'SINPE_IBAN_CRC', currencyCode: 'CRC'),
+//   sinpeMovilCrc(code: 'SINPE_MOVIL_CRC', currencyCode: 'CRC');
+
+//   final String code;
+//   final String currencyCode;
+//   const WithdrawalPaymentProcessor({
+//     required this.code,
+//     required this.currencyCode,
+//   });
+
+//   static WithdrawalPaymentProcessor fromCode(String code) {
+//     return WithdrawalPaymentProcessor.values.firstWhere(
+//       (e) => e.code == code,
+//       orElse:
+//           () => throw Exception('Unknown WithdrawalPaymentProcessor: $code'),
+//     );
+//   }
+// }
 
 enum OrderPaymentMethod {
   eTransfer('E-Transfer'),

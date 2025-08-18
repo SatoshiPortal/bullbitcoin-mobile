@@ -137,6 +137,24 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
     });
   }
 
+  void _onRecipientsChanged(List<Recipient>? newRecipients) {
+    // Reset filter if the selected type is no longer available
+    if (_filterRecipientType != null &&
+        _filterRecipientType != 'All types' &&
+        newRecipients != null) {
+      final availableTypes =
+          newRecipients
+              .map((recipient) => recipient.recipientType.displayName)
+              .toSet();
+
+      if (!availableTypes.contains(_filterRecipientType)) {
+        setState(() {
+          _filterRecipientType = null;
+        });
+      }
+    }
+  }
+
   void _onRecipientSelected(Recipient? recipient) {
     setState(() {
       _selectedRecipient = recipient;
@@ -161,20 +179,38 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
           break;
       }
 
-      return allRecipients;
-      // TODO: Filter recipients based on the selected filter and the currency
-      // ignore: dead_code
-      final paymentProcessorsForCurrency =
-          WithdrawalPaymentProcessor.values
-              .where((pp) => pp.currencyCode == currency?.code)
-              .toList();
-      return allRecipients
-          ?.where(
-            (recipient) => paymentProcessorsForCurrency.any(
-              (pp) => recipient.paymentProcessors?.contains(pp.code) == true,
-            ),
-          )
-          .toList();
+      if (allRecipients == null) return null;
+
+      // Filter recipients based on the selected filter and the currency
+      if (_filterRecipientType == null || _filterRecipientType == 'All types') {
+        // Show all recipients for the current currency
+        final paymentProcessorsForCurrency =
+            WithdrawRecipientType.values
+                .where((pp) => pp.currencyCode == currency?.code)
+                .toList();
+        return allRecipients
+            .where(
+              (recipient) => paymentProcessorsForCurrency.any(
+                (pp) => recipient.recipientType.code == pp.code,
+              ),
+            )
+            .toList();
+      } else {
+        // Filter by specific recipient type
+        final selectedType = WithdrawRecipientType.values.firstWhere(
+          (type) => type.displayName == _filterRecipientType,
+          orElse: () => WithdrawRecipientType.interacEmailCad,
+        );
+
+        return allRecipients
+            .where((recipient) => recipient.recipientType == selectedType)
+            .toList();
+      }
+    });
+
+    // Check if recipients changed and reset filter if needed
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onRecipientsChanged(recipients);
     });
 
     return Column(
@@ -184,8 +220,9 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
           child: Column(
             children: [
               WithdrawRecipientsFilterDropdown(
-                selectedFilter: _filterRecipientType ?? 'All types',
+                selectedFilter: _filterRecipientType,
                 onFilterChanged: _onFilterChanged,
+                recipients: recipients,
               ),
               const Gap(16.0),
             ],
