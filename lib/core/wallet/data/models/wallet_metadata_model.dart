@@ -26,6 +26,7 @@ abstract class WalletMetadataModel with _$WalletMetadataModel {
     String? label,
     DateTime? syncedAt,
     SignerDevice? signerDevice,
+    DateTime? birthday,
   }) = _WalletMetadataModel;
 
   const WalletMetadataModel._();
@@ -62,6 +63,7 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
     label: label ?? '',
     syncedAt: syncedAt,
     signerDevice: signerDevice,
+    birthday: birthday,
   );
 
   static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>
@@ -81,5 +83,6 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
         label: row.label,
         syncedAt: row.syncedAt,
         signerDevice: row.signerDevice,
+        birthday: row.birthday,
       );
 }
