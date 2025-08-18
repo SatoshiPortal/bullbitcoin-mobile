@@ -40,7 +40,7 @@ sealed class RecipientModel with _$RecipientModel {
     // New fields from API response
     String? ownerName,
     String? currency,
-    WithdrawRecipientType? recipientTypeFiat,
+    String? recipientTypeFiat,
     String? phoneNumber,
     String? defaultComment,
     String? payeeName,
@@ -57,8 +57,9 @@ sealed class RecipientModel with _$RecipientModel {
 
   Recipient toEntity() {
     if (recipientTypeFiat != null) {
+      final recipientType = WithdrawRecipientType.fromValue(recipientTypeFiat!);
       // Use the appropriate factory constructor based on recipientTypeFiat
-      switch (recipientTypeFiat!) {
+      switch (recipientType) {
         case WithdrawRecipientType.interacEmailCad:
           return Recipient.interacEmailCad(
             recipientId: recipientId,

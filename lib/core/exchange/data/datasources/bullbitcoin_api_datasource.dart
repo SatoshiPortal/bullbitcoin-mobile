@@ -501,7 +501,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-    log.info('listRecipientsFiat: ${resp.data}');
+
     if (resp.statusCode != 200) {
       throw Exception('Failed to list fiat recipients');
     }
