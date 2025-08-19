@@ -8,7 +8,7 @@ setup: clean deps build-runner l10n hooks ios-pod-update
 
 clean:
 	@echo "🧹 Clean and remove pubspec.lock and ios/Podfile.lock"
-	@flutter clean && rm pubspec.lock && rm ios/Podfile.lock
+	@flutter clean && rm -f pubspec.lock && rm -f ios/Podfile.lock
 
 deps:
 	@echo "🏃 Fetch dependencies"
@@ -62,7 +62,7 @@ feature:
 	echo "📁 Copying template folder..."; \
 	cp -r lib/features/template "$$FEATURE_DIR"; \
 	echo "🗑️ Removing _main.dart..."; \
-	rm "$$FEATURE_DIR/_main.dart"; \
+	rm -f "$$FEATURE_DIR/_main.dart"; \
 	echo "🔄 Replacing template references..."; \
 	FEATURE_NAME_PASCAL=$$(echo $$FEATURE_NAME | sed 's/_\([a-z]\)/\U\1/g' | sed 's/^\([a-z]\)/\U\1/'); \	find "$$FEATURE_DIR" -type f -name "*.dart" -exec sed -i '' "s/Template/$$FEATURE_NAME_PASCAL/g" {} \; \
 	2>/dev/null || find "$$FEATURE_DIR" -type f -name "*.dart" -exec sed -i "s/Template/$$FEATURE_NAME_PASCAL/g" {} \;; \
