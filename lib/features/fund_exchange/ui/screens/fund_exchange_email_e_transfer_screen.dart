@@ -52,10 +52,14 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Transfer code',
-                  value: details?.code,
+                  label: 'Secret question',
+                  value: details?.secretQuestion,
                 ),
                 const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Secret answer',
+                  value: details?.secretAnswer,
+                ),
               ],
             ],
           ),
