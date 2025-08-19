@@ -12,7 +12,6 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
   const factory FundingDetailsModel({
     required String code,
     String? userNbr,
-
     @JsonKey(name: 'BENEFICIARY NAME') String? beneficiaryName,
     @JsonKey(name: 'BENEFICIARY EMAIL') String? beneficiaryEmail,
     @JsonKey(name: 'BANK ACCOUNT DETAILS') String? bankAccountDetails,
@@ -43,7 +42,6 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
       case FundingMethod.emailETransfer:
         return FundingDetails.eTransfer(
           secretQuestion: code,
-          secretAnswer: userNbr?.toString() ?? '',
           beneficiaryName: beneficiaryName!,
           beneficiaryEmail: beneficiaryEmail!,
         );

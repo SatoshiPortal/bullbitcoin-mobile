@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+// ignore: unused_import
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_detail.dart';
@@ -16,6 +18,9 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final details = context.select(
       (FundExchangeBloc bloc) => bloc.state.fundingDetails,
+    );
+    final userSummary = context.select(
+      (FundExchangeBloc bloc) => bloc.state.userSummary,
     );
     final failedToLoadFundingDetails = context.select(
       (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
@@ -58,7 +63,7 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
                 const Gap(24.0),
                 FundExchangeDetail(
                   label: 'Secret answer',
-                  value: details?.secretAnswer,
+                  value: userSummary?.userNumber.toString() ?? '',
                 ),
               ],
             ],

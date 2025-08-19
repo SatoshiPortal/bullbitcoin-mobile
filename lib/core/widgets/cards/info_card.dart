@@ -29,12 +29,16 @@ class InfoCard extends StatelessWidget {
           color: bgColor,
           borderRadius: BorderRadius.circular(2),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: [
-            Container(width: 4, height: 75, color: tagColor),
-            Expanded(
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: Container(width: 4, color: tagColor),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Row(

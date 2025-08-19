@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:flutter/foundation.dart';
@@ -13,7 +15,9 @@ part 'fund_exchange_bloc.freezed.dart';
 class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   FundExchangeBloc({
     required GetExchangeFundingDetailsUsecase getExchangeFundingDetailsUseCase,
+    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUseCase,
   }) : _getExchangeFundingDetailsUseCase = getExchangeFundingDetailsUseCase,
+       _getExchangeUserSummaryUseCase = getExchangeUserSummaryUseCase,
        super(const FundExchangeState()) {
     on<FundExchangeJurisdictionChanged>(_onJurisdictionChanged);
     on<FundExchangeNoCoercionConfirmed>(_onNoCoercionConfirmed);
@@ -21,6 +25,7 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   }
 
   final GetExchangeFundingDetailsUsecase _getExchangeFundingDetailsUseCase;
+  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUseCase;
 
   void _onJurisdictionChanged(
     FundExchangeJurisdictionChanged event,
@@ -52,8 +57,12 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
         fundingMethod: event.fundingMethod,
         jurisdiction: state.jurisdiction,
       );
-
       emit(state.copyWith(fundingDetails: fundingDetails));
+
+      if (state.userSummary == null) {
+        final userSummary = await _getExchangeUserSummaryUseCase.execute();
+        emit(state.copyWith(userSummary: userSummary));
+      }
     } catch (e) {
       debugPrint('Error handling email e-transfer request: $e');
       if (e is GetExchangeFundingDetailsException) {
