@@ -94,7 +94,6 @@ class ExchangeHomeScreen extends StatelessWidget {
                     actionsPadding: const EdgeInsets.only(right: 16),
                     actions: [
                       IconButton(
-                        padding: const EdgeInsets.only(right: 16),
                         onPressed: () {
                           context.pushNamed(
                             TransactionsRoute.transactions.name,
@@ -102,22 +101,19 @@ class ExchangeHomeScreen extends StatelessWidget {
                         },
                         visualDensity: VisualDensity.compact,
                         color: context.colour.onPrimary,
-                        iconSize: 24,
+                        iconSize: 32,
                         icon: const Icon(Icons.history),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: InkWell(
-                          onTap:
-                              () => context.pushNamed(
-                                SettingsRoute.settings.name,
-                              ),
-                          child: Image.asset(
-                            Assets.icons.settingsLine.path,
-                            width: 24,
-                            height: 24,
-                            color: context.colour.onPrimary,
-                          ),
+                      const Gap(16),
+                      InkWell(
+                        onTap:
+                            () =>
+                                context.pushNamed(SettingsRoute.settings.name),
+                        child: Image.asset(
+                          Assets.icons.settingsLine.path,
+                          width: 32,
+                          height: 32,
+                          color: context.colour.onPrimary,
                         ),
                       ),
                     ],

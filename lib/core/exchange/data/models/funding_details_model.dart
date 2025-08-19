@@ -11,6 +11,7 @@ part 'funding_details_model.g.dart';
 sealed class FundingDetailsModel with _$FundingDetailsModel {
   const factory FundingDetailsModel({
     required String code,
+    String? userNbr,
     @JsonKey(name: 'BENEFICIARY NAME') String? beneficiaryName,
     @JsonKey(name: 'BENEFICIARY EMAIL') String? beneficiaryEmail,
     @JsonKey(name: 'BANK ACCOUNT DETAILS') String? bankAccountDetails,
@@ -40,7 +41,7 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
     switch (method) {
       case FundingMethod.emailETransfer:
         return FundingDetails.eTransfer(
-          code: code,
+          secretQuestion: code,
           beneficiaryName: beneficiaryName!,
           beneficiaryEmail: beneficiaryEmail!,
         );

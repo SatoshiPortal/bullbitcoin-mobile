@@ -274,12 +274,13 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
+    log.info('getFundingDetails: ${resp.data}');
     if (resp.statusCode != 200) {
       throw Exception('Failed to get funding details');
     }
 
     return FundingDetailsModel.fromJson(
-      resp.data['result']['element']['element'] as Map<String, dynamic>,
+      resp.data['result']['element'] as Map<String, dynamic>,
     );
   }
 

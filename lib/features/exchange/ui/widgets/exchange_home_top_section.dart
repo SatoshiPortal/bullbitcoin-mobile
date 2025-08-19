@@ -16,10 +16,14 @@ class ExchangeHomeTopSection extends StatelessWidget {
     final balances = context.select(
       (ExchangeCubit cubit) => cubit.state.userSummary?.displayBalances ?? [],
     );
-    final balanceTextStyle =
-        balances.length > 1
-            ? theme.textTheme.displaySmall
-            : theme.textTheme.displayMedium;
+    final balanceTextStyle = switch (balances.length) {
+      1 => theme.textTheme.displayMedium,
+      2 => theme.textTheme.displaySmall,
+      _ => theme.textTheme.headlineLarge,
+    };
+
+    final topGap = balances.length > 3 ? 32.0 : 46.0;
+
     return SizedBox(
       height: 264 + 78 + 46,
       child: Stack(
@@ -37,7 +41,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Gap(46),
+                        Gap(topGap),
                         ...balances.map(
                           (b) => BBText(
                             '${b.amount} ${b.currencyCode}',
