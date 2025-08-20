@@ -21,8 +21,8 @@ class Bip85DerivationModel {
     // Future applications may format the index differently.
     switch (application) {
       default:
-        final lastPart = derivation.split('/').last;
-        final index = int.parse(lastPart.replaceAll("'", ''));
+        final lastPart = derivation.replaceAll("'", "").split('/').last;
+        final index = int.parse(lastPart);
         return index;
     }
   }

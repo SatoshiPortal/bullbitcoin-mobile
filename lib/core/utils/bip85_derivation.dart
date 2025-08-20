@@ -5,18 +5,22 @@ import 'package:bip85/bip85.dart' as bip85;
 import 'package:hex/hex.dart';
 
 class Bip85Derivation {
-  static List<int> derive(String xprv, String path) {
-    final backupKey = bip85.derive(xprv: xprv, path: path);
-    return backupKey;
+  static int findApplicationNumber(String path) {
+    // Old format was using `m/` prefix, which was unnecessarirly added by rust-bip85 before I forked it.
+    final trimmed = path.replaceAll("'", "").replaceAll("m/", "");
+    return int.parse(trimmed.split('/').first);
   }
 
   static String generateBackupKeyPath() {
     final randomIndex = _randomIndex();
-    return "m/1608'/0'/$randomIndex";
+    final recoverbullApp = bip85.CustomApplication.fromNumber(1608);
+    return "${recoverbullApp.number}'/0'/$randomIndex";
   }
 
   static String deriveBackupKey(String xprv, String path) {
-    final derivation = Bip85Derivation.derive(xprv, path);
+    final applicationNumber = findApplicationNumber(path);
+    final application = bip85.CustomApplication.fromNumber(applicationNumber);
+    final derivation = bip85.Bip85Entropy.derive(xprv, application, path);
     final octets32 = derivation.sublist(0, 32);
     return HEX.encode(octets32);
   }
