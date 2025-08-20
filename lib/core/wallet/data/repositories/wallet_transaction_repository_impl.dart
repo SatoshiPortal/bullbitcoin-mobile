@@ -143,6 +143,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               inputs: inputs,
               outputs: outputs,
               labels: labels.map((model) => model.label).toList(),
+              isRbf: walletTransactionModel.isRbf,
             );
           }).toList(),
         );
