@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:bip85/bip85.dart' as bip85;
 import 'package:hex/hex.dart';
 
-class Bip85Derivation {
+class RecoverbullBip85Utils {
   static int findApplicationNumber(String path) {
     // Old format was using `m/` prefix, which was unnecessarirly added by rust-bip85 before I forked it.
     final trimmed = path.replaceAll("'", "").replaceAll("m/", "");
