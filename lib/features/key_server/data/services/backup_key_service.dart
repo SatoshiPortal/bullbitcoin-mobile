@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/bip85_derivation.dart';
+import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class BackupKeyService {
@@ -37,7 +37,7 @@ class BackupKeyService {
         defaultWallet.network,
       );
 
-      return Bip85Derivation.deriveBackupKey(xprv, path);
+      return RecoverbullBip85Utils.deriveBackupKey(xprv, path);
     } catch (e) {
       throw BackupKeyServiceException(e.toString());
     }
