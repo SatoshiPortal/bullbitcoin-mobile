@@ -15,8 +15,15 @@ class MigrateToV4LegacyUsecase {
       if (fromVersion == null) {
         return false;
       }
-      final isV4 = await legacyMigrateToV4(fromVersion);
-      return isV4;
+      if (fromVersion.startsWith('0.1') ||
+          fromVersion.startsWith('0.2') ||
+          fromVersion.startsWith('0.3') ||
+          fromVersion.startsWith('0.4')) {
+        final isV4 = await legacyMigrateToV4(fromVersion);
+        return isV4;
+      } else {
+        return false;
+      }
     } catch (e) {
       log.severe('legacy migration failed: $e');
       return false;

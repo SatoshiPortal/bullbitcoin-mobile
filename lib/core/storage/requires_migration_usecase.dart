@@ -22,17 +22,22 @@ class RequiresMigrationUsecase {
     if (fromVersion == null) {
       return null;
     }
+    final newMainnetDefaultWallets = await _newWalletRepository.getWallets(
+      onlyDefaults: true,
+      environment: Environment.mainnet,
+    );
+
+    if (newMainnetDefaultWallets.length >= 2) {
+      return null;
+    }
+
     if (fromVersion.startsWith('0.1') ||
         fromVersion.startsWith('0.2') ||
         fromVersion.startsWith('0.3')) {
       return MigrationRequired.v4;
     }
 
-    final newMainnetDefaultWallets = await _newWalletRepository.getWallets(
-      onlyDefaults: true,
-      environment: Environment.mainnet,
-    );
-    if (newMainnetDefaultWallets.length < 2 && fromVersion.startsWith('0.4')) {
+    if (fromVersion.startsWith('0.4')) {
       return MigrationRequired.v5;
     }
     return null;

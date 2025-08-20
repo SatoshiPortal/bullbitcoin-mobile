@@ -43,7 +43,7 @@ class MigrateToV5HiveToSqliteToUsecase {
   Future<bool> execute() async {
     try {
       final oldWallets = await _oldWalletRepository.fetch();
-      if (oldWallets.isEmpty) return false;
+      if (oldWallets.isEmpty) return true;
 
       final newMainnetDefaultWallets = await _newWalletRepository.getWallets(
         onlyDefaults: true,
@@ -55,7 +55,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           level: Level.INFO,
           message: 'Migration Not Required: 2 Default Wallets Exist.',
         );
-        return false;
+        return true;
       }
 
       final oldMainnetDefaultWallets =

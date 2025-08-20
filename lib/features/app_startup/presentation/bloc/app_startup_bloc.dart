@@ -56,6 +56,10 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       // emit(const AppStartupState.failure(null));
       // return;
       final migrationRequired = await _requiresMigrationUsecase.execute();
+      await log.migration(
+        level: Level.INFO,
+        message: 'Migration Required: $migrationRequired',
+      );
       if (migrationRequired == null) {
         emit(const AppStartupState.loadingInProgress());
       } else {
@@ -63,21 +67,29 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
 
         switch (migrationRequired) {
           case MigrationRequired.v4:
-            await _migrateToV4LegacyUsecase.execute();
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-              ),
-            );
-            await _migrateToV5HiveToSqliteUsecase.execute();
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-                v5MigrationComplete: true,
-              ),
-            );
+            final isv4 = await _migrateToV4LegacyUsecase.execute();
+            if (!isv4) {
+              throw Exception('Failed to migrate to v4');
+            }
+            if (isv4) {
+              emit(
+                const AppStartupState.loadingInProgress(
+                  requiresMigration: true,
+                  v4MigrationComplete: true,
+                ),
+              );
+              final isv5 = await _migrateToV5HiveToSqliteUsecase.execute();
+              if (!isv5) {
+                throw Exception('Failed to migrate to v5');
+              }
+              emit(
+                const AppStartupState.loadingInProgress(
+                  requiresMigration: true,
+                  v4MigrationComplete: true,
+                  v5MigrationComplete: true,
+                ),
+              );
+            }
           case MigrationRequired.v5:
             emit(
               const AppStartupState.loadingInProgress(
@@ -85,7 +97,10 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
                 v4MigrationComplete: true,
               ),
             );
-            await _migrateToV5HiveToSqliteUsecase.execute();
+            final isv5 = await _migrateToV5HiveToSqliteUsecase.execute();
+            if (!isv5) {
+              throw Exception('Failed to migrate to v5');
+            }
             emit(
               const AppStartupState.loadingInProgress(
                 requiresMigration: true,
