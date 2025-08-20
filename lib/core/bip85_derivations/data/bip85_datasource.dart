@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/bip85_derivations/bip85_utils.dart';
 import 'package:bb_mobile/core/bip85_derivations/data/bip85_derivation_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
@@ -10,8 +9,6 @@ import 'package:drift/drift.dart';
 
 class Bip85Datasource {
   final SqliteDatabase _sqlite;
-
-  static const prefix = "m/83696968'/";
 
   Bip85Datasource({required SqliteDatabase sqlite}) : _sqlite = sqlite;
 
@@ -29,13 +26,9 @@ class Bip85Datasource {
 
       // /!\ sensitive data: Construct the derivation path
       final derivationPath =
-          "${Bip85Datasource.prefix}${application.number}'/$length'/$index'";
+          "${bip85.Bip85Entropy.pathPrefix}/${application.number}'/$length'/$index'";
 
-      final bip85Hex = bip85.toHex(
-        xprv: xprv.toBase58(),
-        length: length,
-        index: index,
-      );
+      final bip85Hex = bip85.Bip85Entropy.deriveHex(xprvBase58, length, index);
 
       // store the derivation into sqlite
       await _store(
@@ -59,33 +52,23 @@ class Bip85Datasource {
     required bip39.MnemonicLength length,
     required int index,
     String? alias,
+    bip39.Language language = bip39.Language.english,
   }) async {
     try {
-      // TODO(azad): I need to rework bip85 crate/package to use all available languages.
-      const language = bip39.Language.english; // will be a param in the future
       const application = Bip85ApplicationColumn.bip39;
 
       // Ensure the xprv is valid.
       final xprv = bip32.Bip32Keys.fromBase58(xprvBase58);
 
-      // Convert the language and length to the corresponding BIP85 codes.
-      final languageCode = Bip85Utils.bip39LanguageToBip85Code(language);
-      final lengthCode = Bip85Utils.bip39LengthToBip85Code(length);
-
       // /!\ sensitive data: Construct the derivation path
       final derivationPath =
-          "${Bip85Datasource.prefix}${application.number}'/$languageCode'/$lengthCode'/$index'";
+          "${bip85.Bip85Entropy.pathPrefix}/${application.number}'/${language.toBip85Code()}'/${length.toBip85Code()}'/$index'";
 
-      final bip85Mnemonic = bip85.toMnemonic(
-        xprv: xprv.toBase58(),
-        wordCount: lengthCode,
-        index: index,
-      );
-
-      // Parse the bip85 generated mnemonic with bip39 mnemonic.
-      final bip39Mnemonic = bip39.Mnemonic.fromSentence(
-        bip85Mnemonic,
+      final bip85Mnemonic = bip85.Bip85Entropy.deriveMnemonic(
+        xprvBase58,
         language,
+        length,
+        index,
       );
 
       // store the derivation into sqlite
@@ -99,7 +82,7 @@ class Bip85Datasource {
         ),
       );
 
-      return (derivation: derivationPath, mnemonic: bip39Mnemonic);
+      return (derivation: derivationPath, mnemonic: bip85Mnemonic);
     } catch (e) {
       rethrow;
     }

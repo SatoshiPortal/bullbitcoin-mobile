@@ -91,18 +91,19 @@ Future<void> main({bool isInitialized = false}) async {
         // Get the xprv from the seed
         final xprv = Bip32Derivation.getXprvFromSeed(
           Uint8List.fromList(mnemonic.seed),
-          Network.bitcoinTestnet,
+          Network.bitcoinMainnet,
         );
 
         // Now generate the same derivation using BIP85 library directly
-        final directBip85Mnemonic = bip85.toMnemonic(
-          xprv: xprv,
-          wordCount: length.words,
-          index: index,
+        final directBip85Mnemonic = bip85.Bip85Entropy.deriveMnemonic(
+          xprv,
+          bip39.Language.english,
+          length,
+          index,
         );
 
         // Verify both results are identical
-        expect(result.mnemonic.sentence, equals(directBip85Mnemonic));
+        expect(result.mnemonic.sentence, directBip85Mnemonic.sentence);
       });
 
       test('Two derivations with index bump and different lengths', () async {
@@ -121,7 +122,7 @@ Future<void> main({bool isInitialized = false}) async {
         // Get the xprv from the seed
         final xprv = Bip32Derivation.getXprvFromSeed(
           Uint8List.fromList(mnemonic.seed),
-          Network.bitcoinTestnet,
+          Network.bitcoinMainnet,
         );
 
         // Verify database has both derivations stored
@@ -139,7 +140,12 @@ Future<void> main({bool isInitialized = false}) async {
         expect(first.application, equals(Bip85ApplicationColumn.bip39));
         expect(
           a.mnemonic.sentence,
-          bip85.toMnemonic(xprv: xprv, wordCount: 12, index: 0),
+          bip85.Bip85Entropy.deriveMnemonic(
+            xprv,
+            bip39.Language.english,
+            bip39.MnemonicLength.words12,
+            0,
+          ).sentence,
         );
 
         final second = storedDerivations.firstWhere((d) => d.index == 1);
@@ -149,7 +155,12 @@ Future<void> main({bool isInitialized = false}) async {
         expect(second.application, equals(Bip85ApplicationColumn.bip39));
         expect(
           b.mnemonic.sentence,
-          bip85.toMnemonic(xprv: xprv, wordCount: 24, index: 1),
+          bip85.Bip85Entropy.deriveMnemonic(
+            xprv,
+            bip39.Language.english,
+            bip39.MnemonicLength.words24,
+            1,
+          ).sentence,
         );
       });
     },
