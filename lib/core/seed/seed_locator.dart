@@ -3,8 +3,10 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/word_list_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/find_mnemonic_words_usecase.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/locator.dart';
 
 class SeedLocator {
@@ -38,6 +40,13 @@ class SeedLocator {
     locator.registerFactory<FindMnemonicWordsUsecase>(
       () => FindMnemonicWordsUsecase(
         wordListRepository: locator<WordListRepository>(),
+      ),
+    );
+
+    locator.registerFactory<GetDefaultSeedUsecase>(
+      () => GetDefaultSeedUsecase(
+        walletRepository: locator<WalletRepository>(),
+        seedRepository: locator<SeedRepository>(),
       ),
     );
   }
