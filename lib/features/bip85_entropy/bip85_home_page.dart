@@ -14,7 +14,7 @@ class Bip85HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('BIP85 Deterministic Entropy')),
+      appBar: AppBar(title: const Text('BIP85 Deterministic Entropies')),
       body: BlocBuilder<Bip85EntropyCubit, Bip85EntropyState>(
         builder: (context, state) {
           final cubit = context.read<Bip85EntropyCubit>();

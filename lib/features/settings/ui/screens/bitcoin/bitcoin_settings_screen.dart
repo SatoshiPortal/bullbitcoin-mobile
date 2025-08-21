@@ -86,7 +86,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
                 if (isSuperuser)
                   SettingsEntryItem(
                     icon: Icons.science,
-                    title: 'BIP85 DeriveEntropy',
+                    title: 'BIP85 Deterministic Entropies',
                     isSuperUser: isSuperuser,
                     onTap: () => context.pushNamed(Bip85EntropyRoute.home.name),
                   ),
