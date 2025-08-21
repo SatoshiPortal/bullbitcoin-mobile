@@ -59,7 +59,7 @@ dependencies:
   bip85:
     git:
       url: https://github.com/ethicnology/dart-bip85-entropy.git
-      ref: main
+      ref: a22acafcb2b0a5fc3979310aef4d34336120b7e5
   bip21_uri: ^2.0.1
   bip32_keys: ^3.0.1
   bip39_mnemonic: ^4.0.0

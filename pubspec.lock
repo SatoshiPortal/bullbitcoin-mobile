@@ -65,6 +65,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  base85:
+    dependency: transitive
+    description:
+      name: base85
+      sha256: "0bd3fce3c94c0991133930734cfd6312f82731bc716590546d317ead6ff58922"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   base_x:
     dependency: transitive
     description:
@@ -118,8 +126,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: beeb3c087988c2413cc17b7fdb3295061f1e6b9f
+      ref: a22acafcb2b0a5fc3979310aef4d34336120b7e5
+      resolved-ref: a22acafcb2b0a5fc3979310aef4d34336120b7e5
       url: "https://github.com/ethicnology/dart-bip85-entropy.git"
     source: git
     version: "1.0.0"
@@ -1741,7 +1749,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "440a2d2207da26683893bf8a2440499f4b43f019"
+      resolved-ref: "2d00862fe8fc8af60c6f8b799830834590232460"
       url: "https://github.com/Foundation-Devices/tor"
     source: git
     version: "0.0.9"
