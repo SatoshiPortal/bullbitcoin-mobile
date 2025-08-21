@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/bip85_derivations/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/features/bip85_entropy/errors.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

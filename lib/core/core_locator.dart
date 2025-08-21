@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/bip85_derivations/bip85_locator.dart';
+import 'package:bb_mobile/core/bip85/bip85_locator.dart';
 import 'package:bb_mobile/core/blockchain/blockchain_locator.dart';
 import 'package:bb_mobile/core/electrum/electrum_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';

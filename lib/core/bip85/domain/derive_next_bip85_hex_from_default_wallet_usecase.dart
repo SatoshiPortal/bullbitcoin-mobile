@@ -1,16 +1,15 @@
-import 'package:bb_mobile/core/bip85_derivations/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85_derivations/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
+import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
-class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
+class DeriveNextBip85HexFromDefaultWalletUsecase {
   final Bip85Repository _bip85Repository;
   final WalletRepository _walletRepository;
   final SeedRepository _seedRepository;
 
-  DeriveNextBip85MnemonicFromDefaultWalletUsecase({
+  DeriveNextBip85HexFromDefaultWalletUsecase({
     required Bip85Repository bip85Repository,
     required WalletRepository walletRepository,
     required SeedRepository seedRepository,
@@ -18,8 +17,8 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
        _walletRepository = walletRepository,
        _seedRepository = seedRepository;
 
-  Future<({String derivation, bip39.Mnemonic mnemonic})> execute({
-    bip39.MnemonicLength length = bip39.MnemonicLength.words12,
+  Future<({String derivation, String hex})> execute({
+    required int length,
     String? alias,
   }) async {
     final wallets = await _walletRepository.getWallets(
@@ -38,11 +37,12 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
       defaultWallet.network,
     );
 
-    const application = Bip85Application.bip39;
+    const application = Bip85Application.hex;
     final nextIndex = await _bip85Repository.fetchNextIndexForApplication(
       application,
     );
-    final bip85 = await _bip85Repository.deriveMnemonic(
+
+    final bip85 = await _bip85Repository.deriveHex(
       xprvBase58: xprv,
       length: length,
       index: nextIndex,

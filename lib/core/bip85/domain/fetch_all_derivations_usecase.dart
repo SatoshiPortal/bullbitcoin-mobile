@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/bip85_derivations/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85_derivations/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
+import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 
 class FetchAllBip85DerivationsUsecase {
   final Bip85Repository _bip85Repository;
