@@ -4,14 +4,14 @@ import 'package:drift/drift.dart';
 
 @DataClassName('Bip85DerivationRow')
 class Bip85Derivations extends Table {
-  TextColumn get derivation => text()();
+  TextColumn get path => text()();
   TextColumn get xprvFingerprint => text()();
   TextColumn get application => textEnum<Bip85ApplicationColumn>()();
   TextColumn get status => textEnum<Bip85StatusColumn>()();
   TextColumn get alias => text().nullable()();
 
   @override
-  Set<Column> get primaryKey => {derivation};
+  Set<Column> get primaryKey => {path};
 }
 
 enum Bip85StatusColumn {

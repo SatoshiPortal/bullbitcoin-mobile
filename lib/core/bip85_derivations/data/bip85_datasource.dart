@@ -30,7 +30,7 @@ class Bip85Datasource {
       // store the derivation into sqlite
       await _store(
         Bip85DerivationModel(
-          derivation: derivationPath,
+          path: derivationPath,
           xprvFingerprint: hex.encode(xprv.fingerprint),
           alias: alias,
           status: Bip85StatusColumn.active,
@@ -69,7 +69,7 @@ class Bip85Datasource {
       // store the derivation into sqlite
       await _store(
         Bip85DerivationModel(
-          derivation: derivationPath,
+          path: derivationPath,
           xprvFingerprint: hex.encode(xprv.fingerprint),
           alias: alias,
           status: Bip85StatusColumn.active,
@@ -83,10 +83,10 @@ class Bip85Datasource {
     }
   }
 
-  Future<Bip85DerivationModel?> fetch(String derivation) async {
+  Future<Bip85DerivationModel?> fetch(String path) async {
     final row =
         await _sqlite.managers.bip85Derivations
-            .filter((b) => b.derivation(derivation))
+            .filter((b) => b.path(path))
             .getSingleOrNull();
 
     return row != null ? Bip85DerivationModel.fromSqlite(row) : null;
@@ -120,10 +120,10 @@ class Bip85Datasource {
     }
   }
 
-  Future<void> revoke(String derivation) async {
+  Future<void> revoke(String path) async {
     try {
       await _sqlite.managers.bip85Derivations
-          .filter((b) => b.derivation(derivation))
+          .filter((b) => b.path(path))
           .update((b) => b(status: const Value(Bip85StatusColumn.revoked)));
     } catch (e) {
       rethrow;
@@ -135,7 +135,7 @@ class Bip85Datasource {
     try {
       await _sqlite.managers.bip85Derivations.create(
         (b) => b(
-          derivation: bip85.derivation,
+          path: bip85.path,
           xprvFingerprint: bip85.xprvFingerprint,
           alias: Value(bip85.alias),
           status: bip85.status,
