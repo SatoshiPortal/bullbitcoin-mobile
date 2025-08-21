@@ -134,7 +134,7 @@ Future<void> main({bool isInitialized = false}) async {
 
         // Verify aliases are stored correctly
         final first = storedDerivations.firstWhere((d) => d.index == 0);
-        expect(first.derivation, "39'/0'/12'/0'");
+        expect(first.path, "39'/0'/12'/0'");
         expect(first.index, 0);
         expect(first.alias, 'First derivation');
         expect(first.application, equals(Bip85ApplicationColumn.bip39));
@@ -149,7 +149,7 @@ Future<void> main({bool isInitialized = false}) async {
         );
 
         final second = storedDerivations.firstWhere((d) => d.index == 1);
-        expect(second.derivation, "39'/0'/24'/1'");
+        expect(second.path, "39'/0'/24'/1'");
         expect(second.index, 1);
         expect(second.alias, 'Second derivation');
         expect(second.application, equals(Bip85ApplicationColumn.bip39));

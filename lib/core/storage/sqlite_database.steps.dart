@@ -1828,6 +1828,7 @@ final class Schema5 extends i0.VersionedSchema {
     swaps,
     autoSwap,
     walletAddresses,
+    bip85Derivations,
   ];
   late final Shape0 transactions = Shape0(
     source: i0.VersionedTable(
@@ -2058,6 +2059,17 @@ final class Schema5 extends i0.VersionedSchema {
     ),
     alias: null,
   );
+  late final Shape13 bip85Derivations = Shape13(
+    source: i0.VersionedTable(
+      entityName: 'bip85_derivations',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(path)'],
+      columns: [_column_101, _column_102, _column_103, _column_69, _column_104],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
 }
 
 class Shape12 extends i0.VersionedTable {
@@ -2104,6 +2116,49 @@ i1.GeneratedColumn<DateTime> _column_100(String aliasedName) =>
       aliasedName,
       true,
       type: i1.DriftSqlType.dateTime,
+    );
+
+class Shape13 extends i0.VersionedTable {
+  Shape13({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get path =>
+      columnsByName['path']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get xprvFingerprint =>
+      columnsByName['xprv_fingerprint']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get application =>
+      columnsByName['application']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get status =>
+      columnsByName['status']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get alias =>
+      columnsByName['alias']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_101(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'path',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+    );
+i1.GeneratedColumn<String> _column_102(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'xprv_fingerprint',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+    );
+i1.GeneratedColumn<String> _column_103(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'application',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+    );
+i1.GeneratedColumn<String> _column_104(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'alias',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
     );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,

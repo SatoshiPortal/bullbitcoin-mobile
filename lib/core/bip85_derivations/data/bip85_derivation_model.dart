@@ -3,14 +3,14 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 
 class Bip85DerivationModel {
-  final String derivation;
+  final String path;
   final String xprvFingerprint;
   final String? alias;
   final Bip85StatusColumn status;
   final Bip85ApplicationColumn application;
 
   Bip85DerivationModel({
-    required this.derivation,
+    required this.path,
     required this.xprvFingerprint,
     required this.alias,
     required this.status,
@@ -21,7 +21,7 @@ class Bip85DerivationModel {
     // Future applications may format the index differently.
     switch (application) {
       default:
-        final lastPart = derivation.replaceAll("'", "").split('/').last;
+        final lastPart = path.replaceAll("'", "").split('/').last;
         final index = int.parse(lastPart);
         return index;
     }
@@ -29,7 +29,7 @@ class Bip85DerivationModel {
 
   factory Bip85DerivationModel.fromSqlite(Bip85DerivationRow row) {
     return Bip85DerivationModel(
-      derivation: row.derivation,
+      path: row.path,
       xprvFingerprint: row.xprvFingerprint,
       alias: row.alias,
       status: row.status,
@@ -39,7 +39,7 @@ class Bip85DerivationModel {
 
   factory Bip85DerivationModel.fromEntity(Bip85DerivationEntity entity) {
     return Bip85DerivationModel(
-      derivation: entity.derivation,
+      path: entity.path,
       xprvFingerprint: entity.xprvFingerprint,
       alias: entity.alias,
       status: Bip85StatusColumn.fromEntity(entity.status),
@@ -49,11 +49,12 @@ class Bip85DerivationModel {
 
   Bip85DerivationEntity toEntity() {
     return Bip85DerivationEntity(
-      derivation: derivation,
+      path: path,
       xprvFingerprint: xprvFingerprint,
       alias: alias,
       status: status.toEntity(),
       application: application.toEntity(),
+      index: index,
     );
   }
 }
