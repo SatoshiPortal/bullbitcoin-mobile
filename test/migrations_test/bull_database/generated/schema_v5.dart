@@ -5821,6 +5821,315 @@ class WalletAddressesCompanion extends UpdateCompanion<WalletAddressesData> {
   }
 }
 
+class Bip85Derivations extends Table
+    with TableInfo<Bip85Derivations, Bip85DerivationsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Bip85Derivations(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
+    'path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<String> xprvFingerprint = GeneratedColumn<String>(
+    'xprv_fingerprint',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<String> application = GeneratedColumn<String>(
+    'application',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<String> alias = GeneratedColumn<String>(
+    'alias',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    path,
+    xprvFingerprint,
+    application,
+    status,
+    alias,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'bip85_derivations';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {path};
+  @override
+  Bip85DerivationsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Bip85DerivationsData(
+      path:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}path'],
+          )!,
+      xprvFingerprint:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}xprv_fingerprint'],
+          )!,
+      application:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}application'],
+          )!,
+      status:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}status'],
+          )!,
+      alias: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}alias'],
+      ),
+    );
+  }
+
+  @override
+  Bip85Derivations createAlias(String alias) {
+    return Bip85Derivations(attachedDatabase, alias);
+  }
+}
+
+class Bip85DerivationsData extends DataClass
+    implements Insertable<Bip85DerivationsData> {
+  final String path;
+  final String xprvFingerprint;
+  final String application;
+  final String status;
+  final String? alias;
+  const Bip85DerivationsData({
+    required this.path,
+    required this.xprvFingerprint,
+    required this.application,
+    required this.status,
+    this.alias,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['path'] = Variable<String>(path);
+    map['xprv_fingerprint'] = Variable<String>(xprvFingerprint);
+    map['application'] = Variable<String>(application);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || alias != null) {
+      map['alias'] = Variable<String>(alias);
+    }
+    return map;
+  }
+
+  Bip85DerivationsCompanion toCompanion(bool nullToAbsent) {
+    return Bip85DerivationsCompanion(
+      path: Value(path),
+      xprvFingerprint: Value(xprvFingerprint),
+      application: Value(application),
+      status: Value(status),
+      alias:
+          alias == null && nullToAbsent ? const Value.absent() : Value(alias),
+    );
+  }
+
+  factory Bip85DerivationsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Bip85DerivationsData(
+      path: serializer.fromJson<String>(json['path']),
+      xprvFingerprint: serializer.fromJson<String>(json['xprvFingerprint']),
+      application: serializer.fromJson<String>(json['application']),
+      status: serializer.fromJson<String>(json['status']),
+      alias: serializer.fromJson<String?>(json['alias']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'path': serializer.toJson<String>(path),
+      'xprvFingerprint': serializer.toJson<String>(xprvFingerprint),
+      'application': serializer.toJson<String>(application),
+      'status': serializer.toJson<String>(status),
+      'alias': serializer.toJson<String?>(alias),
+    };
+  }
+
+  Bip85DerivationsData copyWith({
+    String? path,
+    String? xprvFingerprint,
+    String? application,
+    String? status,
+    Value<String?> alias = const Value.absent(),
+  }) => Bip85DerivationsData(
+    path: path ?? this.path,
+    xprvFingerprint: xprvFingerprint ?? this.xprvFingerprint,
+    application: application ?? this.application,
+    status: status ?? this.status,
+    alias: alias.present ? alias.value : this.alias,
+  );
+  Bip85DerivationsData copyWithCompanion(Bip85DerivationsCompanion data) {
+    return Bip85DerivationsData(
+      path: data.path.present ? data.path.value : this.path,
+      xprvFingerprint:
+          data.xprvFingerprint.present
+              ? data.xprvFingerprint.value
+              : this.xprvFingerprint,
+      application:
+          data.application.present ? data.application.value : this.application,
+      status: data.status.present ? data.status.value : this.status,
+      alias: data.alias.present ? data.alias.value : this.alias,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Bip85DerivationsData(')
+          ..write('path: $path, ')
+          ..write('xprvFingerprint: $xprvFingerprint, ')
+          ..write('application: $application, ')
+          ..write('status: $status, ')
+          ..write('alias: $alias')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(path, xprvFingerprint, application, status, alias);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Bip85DerivationsData &&
+          other.path == this.path &&
+          other.xprvFingerprint == this.xprvFingerprint &&
+          other.application == this.application &&
+          other.status == this.status &&
+          other.alias == this.alias);
+}
+
+class Bip85DerivationsCompanion extends UpdateCompanion<Bip85DerivationsData> {
+  final Value<String> path;
+  final Value<String> xprvFingerprint;
+  final Value<String> application;
+  final Value<String> status;
+  final Value<String?> alias;
+  final Value<int> rowid;
+  const Bip85DerivationsCompanion({
+    this.path = const Value.absent(),
+    this.xprvFingerprint = const Value.absent(),
+    this.application = const Value.absent(),
+    this.status = const Value.absent(),
+    this.alias = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  Bip85DerivationsCompanion.insert({
+    required String path,
+    required String xprvFingerprint,
+    required String application,
+    required String status,
+    this.alias = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : path = Value(path),
+       xprvFingerprint = Value(xprvFingerprint),
+       application = Value(application),
+       status = Value(status);
+  static Insertable<Bip85DerivationsData> custom({
+    Expression<String>? path,
+    Expression<String>? xprvFingerprint,
+    Expression<String>? application,
+    Expression<String>? status,
+    Expression<String>? alias,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (path != null) 'path': path,
+      if (xprvFingerprint != null) 'xprv_fingerprint': xprvFingerprint,
+      if (application != null) 'application': application,
+      if (status != null) 'status': status,
+      if (alias != null) 'alias': alias,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  Bip85DerivationsCompanion copyWith({
+    Value<String>? path,
+    Value<String>? xprvFingerprint,
+    Value<String>? application,
+    Value<String>? status,
+    Value<String?>? alias,
+    Value<int>? rowid,
+  }) {
+    return Bip85DerivationsCompanion(
+      path: path ?? this.path,
+      xprvFingerprint: xprvFingerprint ?? this.xprvFingerprint,
+      application: application ?? this.application,
+      status: status ?? this.status,
+      alias: alias ?? this.alias,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (path.present) {
+      map['path'] = Variable<String>(path.value);
+    }
+    if (xprvFingerprint.present) {
+      map['xprv_fingerprint'] = Variable<String>(xprvFingerprint.value);
+    }
+    if (application.present) {
+      map['application'] = Variable<String>(application.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (alias.present) {
+      map['alias'] = Variable<String>(alias.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Bip85DerivationsCompanion(')
+          ..write('path: $path, ')
+          ..write('xprvFingerprint: $xprvFingerprint, ')
+          ..write('application: $application, ')
+          ..write('status: $status, ')
+          ..write('alias: $alias, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV5 extends GeneratedDatabase {
   DatabaseAtV5(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
@@ -5833,6 +6142,7 @@ class DatabaseAtV5 extends GeneratedDatabase {
   late final Swaps swaps = Swaps(this);
   late final AutoSwap autoSwap = AutoSwap(this);
   late final WalletAddresses walletAddresses = WalletAddresses(this);
+  late final Bip85Derivations bip85Derivations = Bip85Derivations(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5848,6 +6158,7 @@ class DatabaseAtV5 extends GeneratedDatabase {
     swaps,
     autoSwap,
     walletAddresses,
+    bip85Derivations,
   ];
   @override
   int get schemaVersion => 5;
