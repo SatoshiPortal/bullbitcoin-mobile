@@ -20,7 +20,11 @@ class RecoverbullBip85Utils {
   static String deriveBackupKey(String xprv, String path) {
     final applicationNumber = findApplicationNumber(path);
     final application = bip85.CustomApplication.fromNumber(applicationNumber);
-    final derivation = bip85.Bip85Entropy.derive(xprv, application, path);
+    final derivation = bip85.Bip85Entropy.derive(
+      xprvBase58: xprv,
+      application: application,
+      path: path,
+    );
     final octets32 = derivation.sublist(0, 32);
     return HEX.encode(octets32);
   }

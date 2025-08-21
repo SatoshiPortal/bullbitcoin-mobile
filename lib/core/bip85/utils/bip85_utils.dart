@@ -11,17 +11,17 @@ class Bip85Utils {
       case Bip85Application.bip39:
         final path = bip85.MnemonicApplication.parsePath(derivation.path);
         return bip85.Bip85Entropy.deriveMnemonic(
-          xprvBase58,
-          path.language,
-          path.length,
-          path.index,
+          xprvBase58: xprvBase58,
+          language: path.language,
+          length: path.length,
+          index: path.index,
         ).sentence;
       case Bip85Application.hex:
         final path = bip85.HexApplication.parsePath(derivation.path);
         return bip85.Bip85Entropy.deriveHex(
-          xprvBase58,
-          path.numBytes,
-          path.index,
+          xprvBase58: xprvBase58,
+          numBytes: path.numBytes,
+          index: path.index,
         );
       default:
         throw Bip85EntropyError('Unhandled application');

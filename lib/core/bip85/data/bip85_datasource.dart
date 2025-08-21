@@ -25,7 +25,11 @@ class Bip85Datasource {
       // Ensure the xprv is valid.
       final xprv = bip32.Bip32Keys.fromBase58(xprvBase58);
 
-      final bip85Hex = bip85.Bip85Entropy.deriveHex(xprvBase58, length, index);
+      final bip85Hex = bip85.Bip85Entropy.deriveHex(
+        xprvBase58: xprvBase58,
+        numBytes: length,
+        index: index,
+      );
 
       // store the derivation into sqlite
       await _store(
@@ -60,10 +64,10 @@ class Bip85Datasource {
       final xprv = bip32.Bip32Keys.fromBase58(xprvBase58);
 
       final bip85Mnemonic = bip85.Bip85Entropy.deriveMnemonic(
-        xprvBase58,
-        language,
-        length,
-        index,
+        xprvBase58: xprvBase58,
+        language: language,
+        length: length,
+        index: index,
       );
 
       // store the derivation into sqlite
