@@ -126,8 +126,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: a22acafcb2b0a5fc3979310aef4d34336120b7e5
-      resolved-ref: a22acafcb2b0a5fc3979310aef4d34336120b7e5
+      ref: faea2849bdc67dd938fd7b4d179f362cdf8dc248
+      resolved-ref: faea2849bdc67dd938fd7b4d179f362cdf8dc248
       url: "https://github.com/ethicnology/dart-bip85-entropy.git"
     source: git
     version: "1.0.0"
