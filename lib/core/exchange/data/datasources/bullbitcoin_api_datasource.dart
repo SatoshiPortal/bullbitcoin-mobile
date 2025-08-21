@@ -162,6 +162,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required String orderId,
   }) async {
+    log.info('Confirm order request: $orderId');
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -172,6 +173,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
+    log.info('Confirm order response: ${resp.data}');
     if (resp.statusCode != 200) throw Exception('Failed to confirm order');
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
@@ -423,22 +425,25 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required double fiatAmount,
     required String recipientId,
-    required String paymentProcessor,
   }) async {
+    /**
+     *   "paymentProcessorData": {
+    "securityQuestion": "What is your favorite color?",
+    "securityAnswer": "Blue"
+  }
+  if e-transfer fails with 400 for security Q/A
+     */
     final resp = await _http.post(
       _ordersPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'createWithdrawalOrder',
-        'params': {
-          'fiatAmount': fiatAmount,
-          'recipientId': recipientId,
-          'paymentProcessor': paymentProcessor,
-        },
+        'params': {'fiatAmount': fiatAmount, 'recipientId': recipientId},
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
+    log.info('Create withdrawal order response: ${resp.data}');
     final statusCode = resp.statusCode;
     final error = resp.data['error'];
     if (statusCode != 200) throw Exception('Failed to create withdrawal order');

@@ -20,7 +20,6 @@ class CreateWithdrawOrderUsecase {
   Future<WithdrawOrder> execute({
     required double fiatAmount,
     required String recipientId,
-    required String paymentProcessor,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -32,7 +31,6 @@ class CreateWithdrawOrderUsecase {
       final order = await repo.placeWithdrawalOrder(
         fiatAmount: fiatAmount,
         recipientId: recipientId,
-        paymentProcessor: paymentProcessor,
       );
       return order;
     } on WithdrawError {

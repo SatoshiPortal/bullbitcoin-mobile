@@ -22,7 +22,6 @@ abstract class ExchangeOrderRepository {
   Future<WithdrawOrder> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
-    required String paymentProcessor,
   });
   Future<BuyOrder> confirmBuyOrder(String orderId);
   Future<WithdrawOrder> confirmWithdrawOrder(String orderId);
