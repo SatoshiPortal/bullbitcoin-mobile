@@ -74,7 +74,7 @@ Future<void> main({bool isInitialized = false}) async {
         final result = await usecase.execute(length: length, alias: 'test');
 
         // Verify the derivation path
-        expect(result.derivation, contains("m/83696968'/39'/0'/12'/0'"));
+        expect(result.derivation, "39'/0'/12'/0'");
         expect(result.mnemonic, isA<bip39.Mnemonic>());
         expect(result.mnemonic.length, equals(length));
 
@@ -134,7 +134,7 @@ Future<void> main({bool isInitialized = false}) async {
 
         // Verify aliases are stored correctly
         final first = storedDerivations.firstWhere((d) => d.index == 0);
-        expect(first.derivation, "m/83696968'/39'/0'/12'/0'");
+        expect(first.derivation, "39'/0'/12'/0'");
         expect(first.index, 0);
         expect(first.alias, 'First derivation');
         expect(first.application, equals(Bip85ApplicationColumn.bip39));
@@ -149,7 +149,7 @@ Future<void> main({bool isInitialized = false}) async {
         );
 
         final second = storedDerivations.firstWhere((d) => d.index == 1);
-        expect(second.derivation, "m/83696968'/39'/0'/24'/1'");
+        expect(second.derivation, "39'/0'/24'/1'");
         expect(second.index, 1);
         expect(second.alias, 'Second derivation');
         expect(second.application, equals(Bip85ApplicationColumn.bip39));

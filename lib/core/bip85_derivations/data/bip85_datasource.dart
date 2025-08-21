@@ -20,13 +20,10 @@ class Bip85Datasource {
   }) async {
     try {
       const application = Bip85ApplicationColumn.hex;
+      final derivationPath = "${application.number}'/$length'/$index'";
 
       // Ensure the xprv is valid.
       final xprv = bip32.Bip32Keys.fromBase58(xprvBase58);
-
-      // /!\ sensitive data: Construct the derivation path
-      final derivationPath =
-          "${bip85.Bip85Entropy.pathPrefix}/${application.number}'/$length'/$index'";
 
       final bip85Hex = bip85.Bip85Entropy.deriveHex(xprvBase58, length, index);
 
@@ -56,13 +53,11 @@ class Bip85Datasource {
   }) async {
     try {
       const application = Bip85ApplicationColumn.bip39;
+      final derivationPath =
+          "${application.number}'/${language.toBip85Code()}'/${length.toBip85Code()}'/$index'";
 
       // Ensure the xprv is valid.
       final xprv = bip32.Bip32Keys.fromBase58(xprvBase58);
-
-      // /!\ sensitive data: Construct the derivation path
-      final derivationPath =
-          "${bip85.Bip85Entropy.pathPrefix}/${application.number}'/${language.toBip85Code()}'/${length.toBip85Code()}'/$index'";
 
       final bip85Mnemonic = bip85.Bip85Entropy.deriveMnemonic(
         xprvBase58,
