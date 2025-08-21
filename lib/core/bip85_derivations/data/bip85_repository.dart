@@ -57,4 +57,13 @@ class Bip85Repository {
       rethrow;
     }
   }
+
+  Future<List<Bip85DerivationEntity>> fetchAll() async {
+    try {
+      final result = await _datasource.fetchAll();
+      return result.map((e) => e.toEntity()).toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
