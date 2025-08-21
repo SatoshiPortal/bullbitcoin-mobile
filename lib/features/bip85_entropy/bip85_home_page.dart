@@ -23,6 +23,27 @@ class Bip85HomePage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: ScrollableColumn(
               children: [
+                Container(
+                  margin: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.warning, color: Colors.orange),
+                      const Gap(8),
+                      Expanded(
+                        child: Text(
+                          'Experimental \nBackup your derivation paths manually',
+                          style: TextStyle(color: Colors.orange.shade800),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Gap(16),
                 if (state.derivations.isNotEmpty)
                   ...List.generate(state.derivations.length, (index) {
                     final derivation = state.derivations[index];

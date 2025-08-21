@@ -1,5 +1,5 @@
+import 'package:bb_mobile/features/bip85_entropy/bip85_home_page.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
-import 'package:bb_mobile/features/bip85_entropy/ui/bip85_home_page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
