@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/bip85_derivations/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/bip85_derivations/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85_derivations/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85_derivations/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/core/bip85_derivations/domain/fetch_all_derivations_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -34,6 +35,12 @@ class Bip85DerivationsLocator {
         bip85Repository: locator<Bip85Repository>(),
         walletRepository: locator<WalletRepository>(),
         seedRepository: locator<SeedRepository>(),
+      ),
+    );
+
+    locator.registerFactory<FetchAllBip85DerivationsUsecase>(
+      () => FetchAllBip85DerivationsUsecase(
+        bip85Repository: locator<Bip85Repository>(),
       ),
     );
   }
