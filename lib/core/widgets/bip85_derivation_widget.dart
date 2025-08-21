@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/bip85_derivations/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/bip85_derivations/utils/bip85_utils.dart';
+import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/core/bip85/utils/bip85_utils.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 
