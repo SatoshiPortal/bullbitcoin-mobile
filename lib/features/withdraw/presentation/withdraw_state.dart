@@ -18,6 +18,7 @@ sealed class WithdrawState with _$WithdrawState {
     required FiatCurrency currency,
     @Default(false) bool isCreatingWithdrawOrder,
     WithdrawError? error,
+    NewRecipient? newRecipient,
   }) = WithdrawRecipientInputState;
   /*onst factory WithdrawState.descriptionInput({
     required UserSummary userSummary,

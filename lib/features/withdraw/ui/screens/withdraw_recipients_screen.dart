@@ -2,10 +2,10 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bb_mobile/features/withdraw/ui/widgets/new_recipient_form.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_recipient_card.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_recipients_filter_dropdown.dart';
 import 'package:flutter/material.dart';
@@ -90,13 +90,6 @@ class _WithdrawRecipientsScreenState extends State<WithdrawRecipientsScreen> {
                         initialValue: _selectedTab.displayValue,
                         onSelected: (value) {
                           _onTabSelected(RecipientsTab.fromDisplayValue(value));
-                          if (value ==
-                              RecipientsTab.newRecipient.displayValue) {
-                            ComingSoonBottomSheet.show(
-                              context,
-                              description: 'Add a new recipient',
-                            );
-                          }
                         },
                       ),
                     ),
@@ -106,7 +99,7 @@ class _WithdrawRecipientsScreenState extends State<WithdrawRecipientsScreen> {
               ),
               Expanded(
                 child: switch (_selectedTab) {
-                  RecipientsTab.newRecipient => const SizedBox.shrink(),
+                  RecipientsTab.newRecipient => const NewRecipientForm(),
                   RecipientsTab.myRecipients => _WithdrawRecipientsTab(
                     key: ValueKey(_selectedTab),
                   ),

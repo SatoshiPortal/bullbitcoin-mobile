@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/new_recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/create_fiat_recipient_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_recipients_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
@@ -21,14 +23,18 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     required ListRecipientsUsecase listRecipientsUsecase,
     required CreateWithdrawOrderUsecase createWithdrawUsecase,
     required ConfirmWithdrawOrderUsecase confirmWithdrawUsecase,
+    required CreateFiatRecipientUsecase createFiatRecipientUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _listRecipientsUsecase = listRecipientsUsecase,
        _createWithdrawOrderUsecase = createWithdrawUsecase,
        _confirmWithdrawUsecase = confirmWithdrawUsecase,
+       _createFiatRecipientUsecase = createFiatRecipientUsecase,
        super(const WithdrawInitialState()) {
     on<WithdrawStarted>(_onStarted);
     on<WithdrawAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<WithdrawNewRecipientAdded>(_onNewRecipientAdded);
+    on<WithdrawUpdateNewRecipient>(_onUpdateNewRecipient);
+    on<WithdrawCreateNewRecipient>(_onCreateNewRecipient);
     on<WithdrawRecipientSelected>(_onRecipientSelected);
     /*on<WithdrawDescriptionInputContinuePressed>(
       _onDescriptionInputContinuePressed,
@@ -40,6 +46,7 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
   final ListRecipientsUsecase _listRecipientsUsecase;
   final CreateWithdrawOrderUsecase _createWithdrawOrderUsecase;
   final ConfirmWithdrawOrderUsecase _confirmWithdrawUsecase;
+  final CreateFiatRecipientUsecase _createFiatRecipientUsecase;
 
   Future<void> _onStarted(
     WithdrawStarted event,
@@ -116,6 +123,53 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     // TODO
   }
 
+  Future<void> _onUpdateNewRecipient(
+    WithdrawUpdateNewRecipient event,
+    Emitter<WithdrawState> emit,
+  ) async {
+    if (state is WithdrawRecipientInputState) {
+      final currentState = state as WithdrawRecipientInputState;
+      emit(currentState.copyWith(newRecipient: event.newRecipient));
+    }
+  }
+
+  Future<void> _onCreateNewRecipient(
+    WithdrawCreateNewRecipient event,
+    Emitter<WithdrawState> emit,
+  ) async {
+    if (state is WithdrawRecipientInputState) {
+      final currentState = state as WithdrawRecipientInputState;
+      if (currentState.newRecipient != null) {
+        try {
+          final createdRecipient = await _createFiatRecipientUsecase.execute(
+            currentState.newRecipient!,
+          );
+
+          // Add the new recipient to the list and update state
+          final updatedRecipients = [
+            ...currentState.recipients,
+            createdRecipient,
+          ];
+          emit(
+            currentState.copyWith(
+              recipients: updatedRecipients,
+              newRecipient: null,
+            ),
+          );
+        } catch (e) {
+          log.severe('Error creating new recipient: $e');
+          emit(
+            currentState.copyWith(
+              error: WithdrawError.unexpected(
+                message: 'Failed to create recipient: $e',
+              ),
+            ),
+          );
+        }
+      }
+    }
+  }
+
   Future<void> _onRecipientSelected(
     WithdrawRecipientSelected event,
     Emitter<WithdrawState> emit,
@@ -138,8 +192,7 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
 
     try {
       final recipient = event.recipient;
-      // TODO: GET CORRECT PAYMENT PROCESSORS
-      // ignore: unused_local_variable
+
       final order = await _createWithdrawOrderUsecase.execute(
         fiatAmount: recipientInputState.amount.amount,
         recipientId: recipient.recipientId,

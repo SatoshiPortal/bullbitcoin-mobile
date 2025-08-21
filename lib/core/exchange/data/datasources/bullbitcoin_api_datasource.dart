@@ -2,6 +2,7 @@ import 'dart:math' show pow;
 
 import 'package:bb_mobile/core/exchange/data/models/funding_details_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_request_params_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/new_recipient_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/recipient_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
@@ -516,6 +517,33 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     return elements
         .map((e) => RecipientModel.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  Future<RecipientModel> createFiatRecipient({
+    required NewRecipientModel recipient,
+    required String apiKey,
+  }) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'createRecipientFiat',
+        'params': {recipient.toApiParams()},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to create fiat recipient');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to create fiat recipient: $error');
+    }
+
+    return RecipientModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 }
 
