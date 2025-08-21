@@ -96,10 +96,10 @@ Future<void> main({bool isInitialized = false}) async {
 
         // Now generate the same derivation using BIP85 library directly
         final directBip85Mnemonic = bip85.Bip85Entropy.deriveMnemonic(
-          xprv,
-          bip39.Language.english,
-          length,
-          index,
+          xprvBase58: xprv,
+          language: bip39.Language.english,
+          length: length,
+          index: index,
         );
 
         // Verify both results are identical
@@ -141,10 +141,10 @@ Future<void> main({bool isInitialized = false}) async {
         expect(
           a.mnemonic.sentence,
           bip85.Bip85Entropy.deriveMnemonic(
-            xprv,
-            bip39.Language.english,
-            bip39.MnemonicLength.words12,
-            0,
+            xprvBase58: xprv,
+            language: bip39.Language.english,
+            length: bip39.MnemonicLength.words12,
+            index: 0,
           ).sentence,
         );
 
@@ -156,10 +156,10 @@ Future<void> main({bool isInitialized = false}) async {
         expect(
           b.mnemonic.sentence,
           bip85.Bip85Entropy.deriveMnemonic(
-            xprv,
-            bip39.Language.english,
-            bip39.MnemonicLength.words24,
-            1,
+            xprvBase58: xprv,
+            language: bip39.Language.english,
+            length: bip39.MnemonicLength.words24,
+            index: 1,
           ).sentence,
         );
       });
