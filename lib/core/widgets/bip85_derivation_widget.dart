@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/bip85/utils/bip85_utils.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bip85/bip85.dart';
 import 'package:flutter/material.dart';
 
 class Bip85DerivationWidget extends StatefulWidget {
@@ -22,9 +22,9 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final data = Bip85Utils.getDerivedData(
-      derivation: widget.derivation,
+    final data = Bip85Entropy.deriveFromPath(
       xprvBase58: widget.xprvBase58,
+      path: widget.derivation.path,
     );
 
     return Container(
