@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_r
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/create_fiat_recipient_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
@@ -32,8 +33,6 @@ import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/create_withdraw_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
 
@@ -263,18 +262,6 @@ class ExchangeLocator {
       ),
     );
 
-    locator.registerFactory<ConfirmWithdrawOrderUsecase>(
-      () => ConfirmWithdrawOrderUsecase(
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
     locator.registerFactory<RefreshBuyOrderUsecase>(
       () => RefreshBuyOrderUsecase(
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
@@ -385,14 +372,16 @@ class ExchangeLocator {
       ),
     );
 
-    locator.registerFactory<CreateWithdrawalOrderUsecase>(
-      () => CreateWithdrawalOrderUsecase(
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
+    locator.registerFactory<CreateFiatRecipientUsecase>(
+      () => CreateFiatRecipientUsecase(
+        mainnetExchangeRecipientRepository:
+            locator<ExchangeRecipientRepository>(
+              instanceName: 'mainnetExchangeRecipientRepository',
+            ),
+        testnetExchangeRecipientRepository:
+            locator<ExchangeRecipientRepository>(
+              instanceName: 'testnetExchangeRecipientRepository',
+            ),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );

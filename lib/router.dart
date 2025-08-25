@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
+import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -79,6 +80,7 @@ class AppRouter {
       ...BuyRouter.routes,
       FundExchangeRouter.route,
       SellRouter.route,
+      WithdrawRouter.route,
       KeyServerRouter.route,
       ImportMnemonicRouter.route,
       ImportWatchOnlyRouter.route,
