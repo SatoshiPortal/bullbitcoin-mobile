@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/bip85_derivation.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CreateBackupKeyFromDefaultSeedUsecase {
@@ -37,7 +37,7 @@ class CreateBackupKeyFromDefaultSeedUsecase {
         defaultWallet.network,
       );
 
-      final backupKey = Bip85Derivation.deriveBackupKey(
+      final backupKey = RecoverbullBip85Utils.deriveBackupKey(
         defaultXprv,
         derivationPath,
       );

@@ -5,8 +5,8 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/bip85_derivation.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CreateEncryptedVaultUsecase {
@@ -63,9 +63,9 @@ class CreateEncryptedVaultUsecase {
       );
       final plaintext = json.encode(toBackup.toJson());
       // Derive the backup key using BIP85
-      final derivationPath = Bip85Derivation.generateBackupKeyPath();
+      final derivationPath = RecoverbullBip85Utils.generateBackupKeyPath();
 
-      final backupKey = Bip85Derivation.deriveBackupKey(
+      final backupKey = RecoverbullBip85Utils.deriveBackupKey(
         defaultXprv,
         derivationPath,
       );
