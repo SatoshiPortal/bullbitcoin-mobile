@@ -57,7 +57,7 @@ dependencies:
     sdk: flutter
   intl: any
   bip85: ^2.0.0
-  bip21_uri: ^2.0.1
+  bip21_uri: ^2.1.2
   bip32_keys: ^3.0.1
   bip39_mnemonic: ^4.0.0
   bs58check: ^1.0.2
