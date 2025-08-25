@@ -753,51 +753,6 @@ class ElectrumSettingsBloc
 
       stagedServers = _updateServerActiveState(stagedServers);
 
-      if (state.isCustomServerSelected) {
-        for (final server in stagedServers.where(
-          (s) => s.electrumServerProvider is CustomElectrumServerProvider,
-        )) {
-          if (server.url.isEmpty) {
-            emit(
-              state.copyWith(
-                status: ElectrumSettingsStatus.error,
-                statusError: 'URL cannot be empty for ${server.network.name}',
-              ),
-            );
-            return;
-          }
-
-          // try {
-          //   final serverStatus = await _checkElectrumServerConnectivity.execute(
-          //     url: server.url,
-          //     timeout: server.timeout,
-          //   );
-
-          //   if (serverStatus == ElectrumServerStatus.offline) {
-          //     debugPrint('Server is offline: ${server.url}');
-          //     emit(
-          //       state.copyWith(
-          //         status: ElectrumSettingsStatus.error,
-          //         statusError:
-          //             'Cannot connect to ${server.url}. Please check the URL.',
-          //       ),
-          //     );
-          //     return;
-          //   }
-          // } catch (e) {
-          //   debugPrint('Server is offline: ${server.url}');
-          //   emit(
-          //     state.copyWith(
-          //       status: ElectrumSettingsStatus.error,
-          //       statusError:
-          //           'Cannot connect to ${server.url}. Please check the URL.',
-          //     ),
-          //   );
-          //   return;
-          // }
-        }
-      }
-
       bool allSaved = true;
 
       for (final stagedServer in stagedServers) {
@@ -830,9 +785,7 @@ class ElectrumSettingsBloc
             );
           }
 
-          if (!success) {
-            allSaved = false;
-          }
+          if (!success) allSaved = false;
           _updateInMemoryServer(originalServers, stagedServer);
         }
       }
