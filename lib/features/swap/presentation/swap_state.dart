@@ -23,6 +23,7 @@ abstract class SwapState with _$SwapState {
     @Default(true) bool loadingWallets,
     @Default([]) List<Wallet> fromWallets,
     @Default([]) List<Wallet> toWallets,
+    @Default([]) List<Wallet> watchOnlyWallets,
     @Default(WalletNetwork.liquid) WalletNetwork fromWalletNetwork,
     @Default(WalletNetwork.bitcoin) WalletNetwork toWalletNetwork,
     String? fromWalletId,
@@ -127,6 +128,15 @@ abstract class SwapState with _$SwapState {
 
   List<({String id, String label})> get toWalletDropdownItems {
     if (toWallets.isEmpty) return [];
+
+    // If the fromWallet is a Liquid wallet, include watch-only wallets in the dropdown
+    if (fromWallet != null && fromWallet!.isLiquid) {
+      final allToWallets = [...toWallets, ...watchOnlyWallets];
+      return allToWallets
+          .map((w) => (id: w.id, label: w.displayLabel))
+          .toList();
+    }
+
     return toWallets.map((w) => (id: w.id, label: w.displayLabel)).toList();
   }
 
@@ -137,6 +147,11 @@ abstract class SwapState with _$SwapState {
 
   Wallet? get toWallet {
     if (toWallets.isEmpty) return null;
+    // If the fromWallet is a Liquid wallet, also check watchOnlyWallets for an id match
+    if (fromWallet != null && fromWallet!.isLiquid) {
+      final allToWallets = [...toWallets, ...watchOnlyWallets];
+      return allToWallets.firstWhereOrNull((w) => w.id == toWalletId);
+    }
     return toWallets.firstWhereOrNull((w) => w.id == toWalletId);
   }
 
