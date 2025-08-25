@@ -1,30 +1,39 @@
-.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update drift-migrations docker-build docker-run test unit-test integration-test
+.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update drift-migrations docker-build docker-run test unit-test integration-test fvm-check
+
+fvm-check: 
+	@echo "🔍 Checking FVM"
+	@if ! command -v fvm >/dev/null 2>&1; then \
+		echo "❌ FVM is not installed. Please install FVM first:"; \
+		exit 1; \
+	fi
+	@echo "✅ FVM is installed"
+	@fvm install
 
 all: setup
 	@echo "✨ All tasks completed!"
 
-setup: clean deps build-runner l10n hooks ios-pod-update
+setup: fvm-check clean deps build-runner l10n hooks ios-pod-update
 	@echo "🚀 Setup complete!"
 
 clean:
 	@echo "🧹 Clean and remove pubspec.lock and ios/Podfile.lock"
-	@flutter clean && rm -f pubspec.lock && rm -f ios/Podfile.lock
+	@fvm flutter clean && rm -f pubspec.lock && rm -f ios/Podfile.lock
 
 deps:
 	@echo "🏃 Fetch dependencies"
-	@flutter pub get
+	@fvm flutter pub get
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
-	@dart run build_runner build --delete-conflicting-outputs
+	@fvm dart run build_runner build --delete-conflicting-outputs
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@dart run build_runner watch --delete-conflicting-outputs
+	@fvm dart run build_runner watch --delete-conflicting-outputs
 	
 l10n:
 	@echo "🌐 Generating translations files"
-	@flutter gen-l10n
+	@fvm flutter gen-l10n
 
 hooks:
 	@CURRENT_HOOKS_PATH=$$(git config --local core.hooksPath); \
@@ -37,10 +46,11 @@ hooks:
 
 drift-migrations:
 	@echo "🔄 Create schema and sum migrations"
-	dart run drift_dev make-migrations
+	fvm dart run drift_dev make-migrations
 
 ios-pod-update:
-	@echo " Fetch dependencies"
+	@echo " Fetching dependencies"
+	@fvm flutter precache --ios
 	@cd ios && pod install --repo-update && cd -
 
 ios-sqlite-update:
@@ -80,8 +90,8 @@ test: unit-test integration-test
 
 unit-test: 
 	@echo "🏃‍ running unit tests"
-	@flutter test test/ --reporter=compact
+	@fvm flutter test test/ --reporter=compact
 
 integration-test:
 	@echo "🧪 integration tests"
-	@flutter test integration_test/ --reporter=compact
+	@fvm flutter test integration_test/ --reporter=compact

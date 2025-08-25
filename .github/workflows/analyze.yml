@@ -19,18 +19,18 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+      
+      - name: Install FVM
+        run: |
+          curl -fsSL https://fvm.app/install.sh | bash
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: 3.29.3
-
+      - run: make fvm-check
       - run: make clean
       - run: make deps
       - run: make build-runner
       - run: make l10n
       
       - name: "${{ matrix.analyze_mode.name }}"
-        run: flutter analyze ${{ matrix.analyze_mode.mode }}
+        run: fvm flutter analyze ${{ matrix.analyze_mode.mode }}
         continue-on-error: ${{ matrix.analyze_mode.allow_failure }}
