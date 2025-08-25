@@ -442,8 +442,174 @@ sealed class NewRecipientModel with _$NewRecipientModel {
   }
 
   Map<String, dynamic> toApiParams() {
-    final entity = toEntity();
-    return {'element': entity.toJson()};
+    final recipientData = when(
+      interacEmailCad:
+          (
+            label,
+            email,
+            name,
+            securityQuestion,
+            securityAnswer,
+            isDefault,
+            isArchived,
+            isOwner,
+          ) => {
+            'recipientTypeFiat': recipientTypeFiat,
+            'label': label,
+            'email': email,
+            'name': name,
+            'securityQuestion': securityQuestion,
+            'securityAnswer': securityAnswer,
+            'isDefault': isDefault,
+            'isArchived': isArchived,
+            'isOwner': isOwner,
+          },
+      billPaymentCad:
+          (
+            label,
+            payeeName,
+            payeeCode,
+            payeeAccountNumber,
+            isDefault,
+            isArchived,
+            isOwner,
+          ) => {
+            'recipientTypeFiat': recipientTypeFiat,
+            'label': label,
+            'payeeName': payeeName,
+            'payeeCode': payeeCode,
+            'payeeAccountNumber': payeeAccountNumber,
+            'isDefault': isDefault,
+            'isArchived': isArchived,
+            'isOwner': isOwner,
+          },
+      bankTransferCad:
+          (
+            label,
+            institutionNumber,
+            transitNumber,
+            accountNumber,
+            name,
+            defaultComment,
+            isDefault,
+            isArchived,
+            isOwner,
+          ) => {
+            'recipientTypeFiat': recipientTypeFiat,
+            'label': label,
+            'institutionNumber': institutionNumber,
+            'transitNumber': transitNumber,
+            'accountNumber': accountNumber,
+            'name': name,
+            'defaultComment': defaultComment,
+            'isDefault': isDefault,
+            'isArchived': isArchived,
+            'isOwner': isOwner,
+          },
+      sepaEur:
+          (
+            label,
+            iban,
+            isCorporate,
+            firstname,
+            lastname,
+            corporateName,
+            isDefault,
+            isArchived,
+            isOwner,
+          ) => {
+            'recipientTypeFiat': recipientTypeFiat,
+            'label': label,
+            'iban': iban,
+            'isCorporate': isCorporate,
+            'firstname': firstname,
+            'lastname': lastname,
+            'corporateName': corporateName,
+            'isDefault': isDefault,
+            'isArchived': isArchived,
+            'isOwner': isOwner,
+          },
+      speiClabeMxn:
+          (label, clabe, name, isDefault, isArchived, isOwner) => {
+            'recipientTypeFiat': recipientTypeFiat,
+            'label': label,
+            'clabe': clabe,
+            'name': name,
+            'isDefault': isDefault,
+            'isArchived': isArchived,
+            'isOwner': isOwner,
+          },
+      speiSmsMxn:
+          (
+            label,
+            institutionCode,
+            phone,
+            name,
+            isDefault,
+            isArchived,
+            isOwner,
+          ) => {
+            'recipientTypeFiat': recipientTypeFiat,
+            'label': label,
+            'institutionCode': institutionCode,
+            'phone': phone,
+            'name': name,
+            'isDefault': isDefault,
+            'isArchived': isArchived,
+            'isOwner': isOwner,
+          },
+      speiCardMxn:
+          (
+            label,
+            institutionCode,
+            debitcard,
+            name,
+            isDefault,
+            isArchived,
+            isOwner,
+          ) => {
+            'recipientTypeFiat': recipientTypeFiat,
+            'label': label,
+            'institutionCode': institutionCode,
+            'debitcard': debitcard,
+            'name': name,
+            'isDefault': isDefault,
+            'isArchived': isArchived,
+            'isOwner': isOwner,
+          },
+      sinpeIbanUsd:
+          (label, iban, ownerName, isDefault, isArchived, isOwner) => {
+            'recipientTypeFiat': recipientTypeFiat,
+            'label': label,
+            'iban': iban,
+            'ownerName': ownerName,
+            'isDefault': isDefault,
+            'isArchived': isArchived,
+            'isOwner': isOwner,
+          },
+      sinpeIbanCrc:
+          (label, iban, ownerName, isDefault, isArchived, isOwner) => {
+            'recipientTypeFiat': recipientTypeFiat,
+            'label': label,
+            'iban': iban,
+            'ownerName': ownerName,
+            'isDefault': isDefault,
+            'isArchived': isArchived,
+            'isOwner': isOwner,
+          },
+      sinpeMovilCrc:
+          (label, phone, ownerName, isDefault, isArchived, isOwner) => {
+            'recipientTypeFiat': recipientTypeFiat,
+            'label': label,
+            'phoneNumber': phone,
+            'ownerName': ownerName,
+            'isDefault': isDefault,
+            'isArchived': isArchived,
+            'isOwner': isOwner,
+          },
+    );
+
+    return {'element': recipientData};
   }
 
   String get recipientTypeFiat {

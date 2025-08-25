@@ -26,13 +26,13 @@ class AccountOwnershipWidget extends StatelessWidget {
           ),
         ),
         const Gap(8),
-        _buildRadioOption(context, 'This is my account', 'isOwner', 'true'),
+        _buildRadioOption(context, 'This is my account', 'isOwner', true),
         const Gap(8),
         _buildRadioOption(
           context,
           "This is someone else's account",
           'isOwner',
-          'false',
+          false,
         ),
       ],
     );
@@ -42,12 +42,12 @@ class AccountOwnershipWidget extends StatelessWidget {
     BuildContext context,
     String label,
     String key,
-    String value,
+    bool value,
   ) {
     final isSelected = formData[key] == value;
 
     return InkWell(
-      onTap: () => onFormDataChanged(key, value),
+      onTap: () => onFormDataChanged(key, value.toString()),
       borderRadius: BorderRadius.circular(4),
       child: SizedBox(
         height: 56,
@@ -67,10 +67,10 @@ class AccountOwnershipWidget extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Radio<String>(
+                Radio<bool>(
                   value: value,
-                  groupValue: (formData[key] as String?) ?? '',
-                  onChanged: (_) => onFormDataChanged(key, value),
+                  groupValue: (formData[key] as String?) == 'true',
+                  onChanged: (_) => onFormDataChanged(key, value.toString()),
                   activeColor: context.colour.primary,
                 ),
                 const Gap(8),

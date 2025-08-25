@@ -57,7 +57,12 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
 
   @override
   Future<Recipient> createFiatRecipient(NewRecipient recipient) async {
+    log.info('🚀 createFiatRecipient called in repository');
+    log.info('📊 Recipient type: ${recipient.recipientTypeFiat}');
+    log.info('🌐 Is testnet: $_isTestnet');
+
     try {
+      log.info('🔑 Fetching API key...');
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
         isTestnet: _isTestnet,
       );
@@ -76,6 +81,7 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
 
       // Convert entity to model at datasource level
       final recipientModel = NewRecipientModel.fromEntity(recipient);
+      log.info('📊 Recipient model: $recipientModel');
       final createdRecipient = await _bullbitcoinApiDatasource
           .createFiatRecipient(
             recipient: recipientModel,

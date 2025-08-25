@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_r
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/create_fiat_recipient_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
@@ -367,6 +368,20 @@ class ExchangeLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<CreateFiatRecipientUsecase>(
+      () => CreateFiatRecipientUsecase(
+        mainnetExchangeRecipientRepository:
+            locator<ExchangeRecipientRepository>(
+              instanceName: 'mainnetExchangeRecipientRepository',
+            ),
+        testnetExchangeRecipientRepository:
+            locator<ExchangeRecipientRepository>(
+              instanceName: 'testnetExchangeRecipientRepository',
+            ),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );

@@ -1,10 +1,14 @@
+import 'package:bb_mobile/core/exchange/domain/entity/new_recipient_factory.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/withdraw/ui/widgets/payout_method_widgets.dart';
+import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bb_mobile/features/withdraw/ui/widgets/new_recipient_form.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class NewRecipientScreen extends StatefulWidget {
@@ -18,6 +22,7 @@ class _NewRecipientScreenState extends State<NewRecipientScreen> {
   String? selectedCountry;
   WithdrawRecipientType? selectedPayoutMethod;
   final Map<String, dynamic> formData = {};
+  late final WithdrawBloc _withdrawBloc;
 
   final List<Map<String, String>> countries = [
     {'code': 'CA', 'name': 'Canada', 'flag': '🇨🇦'},
@@ -25,6 +30,18 @@ class _NewRecipientScreenState extends State<NewRecipientScreen> {
     {'code': 'MX', 'name': 'Mexico', 'flag': '🇲🇽'},
     {'code': 'CR', 'name': 'Costa Rica', 'flag': '🇨🇷'},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _withdrawBloc = context.read<WithdrawBloc>();
+    _withdrawBloc.stream.listen((state) {
+      log.info('🔄 Bloc state changed to: ${state.runtimeType}');
+      if (state is WithdrawRecipientInputState) {
+        log.info('📊 NewRecipient in state: ${state.newRecipient != null}');
+      }
+    });
+  }
 
   List<WithdrawRecipientType> get payoutMethodsForCountry {
     if (selectedCountry == null) return [];
@@ -55,37 +72,98 @@ class _NewRecipientScreenState extends State<NewRecipientScreen> {
     });
   }
 
+  Future<void> _onContinuePressed() async {
+    log.info('🚀 _onContinuePressed called');
+    log.info('📊 canContinue: $canContinue');
+    log.info('🌍 selectedCountry: $selectedCountry');
+    log.info('💳 selectedPayoutMethod: $selectedPayoutMethod');
+    log.info('📝 formData: $formData');
+    log.info(
+      '📝 formData types: ${formData.map((key, value) => MapEntry(key, value.runtimeType))}',
+    );
+    log.info(
+      '📝 formData values: ${formData.map((key, value) => MapEntry(key, value.toString()))}',
+    );
+
+    if (!canContinue || selectedPayoutMethod == null) {
+      log.info('❌ Cannot continue - validation failed');
+      return;
+    }
+
+    try {
+      log.info('🏭 Creating NewRecipient from form data...');
+      final newRecipient = NewRecipientFactory.fromFormData(
+        selectedPayoutMethod!,
+        formData,
+      );
+      _withdrawBloc.add(WithdrawEvent.createNewRecipient(newRecipient));
+    } catch (e) {
+      log.severe('❌ Error in _onContinuePressed: $e');
+      log.severe('❌ Stack trace: ${StackTrace.current}');
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error creating recipient: $e')));
+    }
+  }
+
   bool get canContinue {
     if (selectedCountry == null || selectedPayoutMethod == null) return false;
 
     final requiredFields = _getRequiredFields(selectedPayoutMethod!);
-    return requiredFields.every(
+    final hasRequiredFields = requiredFields.every(
       (field) =>
           formData[field] != null && (formData[field] as String).isNotEmpty,
     );
+
+    if (!hasRequiredFields) return false;
+
+    // Additional validation for Interac e-Transfer
+    if (selectedPayoutMethod == WithdrawRecipientType.interacEmailCad) {
+      final securityQuestion = formData['securityQuestion'] as String?;
+      if (securityQuestion == null ||
+          securityQuestion.length < 10 ||
+          securityQuestion.length > 40) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   List<String> _getRequiredFields(WithdrawRecipientType method) {
     switch (method) {
       case WithdrawRecipientType.interacEmailCad:
-        return ['email', 'name'];
+        return [
+          'email',
+          'name',
+          'securityQuestion',
+          'securityAnswer',
+          'isOwner',
+        ];
       case WithdrawRecipientType.billPaymentCad:
-        return ['payeeName', 'payeeCode', 'payeeAccountNumber'];
+        return ['payeeName', 'payeeCode', 'payeeAccountNumber', 'isOwner'];
       case WithdrawRecipientType.bankTransferCad:
-        return ['institutionNumber', 'transitNumber', 'accountNumber'];
+        return [
+          'institutionNumber',
+          'transitNumber',
+          'accountNumber',
+          'name',
+          'isOwner',
+        ];
       case WithdrawRecipientType.sepaEur:
-        return ['iban', 'name'];
+        return ['iban', 'isCorporate', 'isOwner'];
       case WithdrawRecipientType.speiClabeMxn:
-        return ['clabe', 'institutionCode'];
+        return ['clabe', 'name', 'isOwner'];
       case WithdrawRecipientType.speiSmsMxn:
-        return ['phoneNumber', 'institutionCode'];
+        return ['phoneNumber', 'institutionCode', 'name', 'isOwner'];
       case WithdrawRecipientType.speiCardMxn:
-        return ['debitCard', 'institutionCode'];
+        return ['debitCard', 'institutionCode', 'name', 'isOwner'];
       case WithdrawRecipientType.sinpeIbanUsd:
       case WithdrawRecipientType.sinpeIbanCrc:
-        return ['iban'];
+        return ['iban', 'ownerName', 'isOwner'];
       case WithdrawRecipientType.sinpeMovilCrc:
-        return ['phoneNumber'];
+        return ['phoneNumber', 'ownerName', 'isOwner'];
     }
   }
 
@@ -283,12 +361,7 @@ class _NewRecipientScreenState extends State<NewRecipientScreen> {
       padding: const EdgeInsets.all(16),
       child: BBButton.big(
         label: 'Continue',
-        onPressed:
-            canContinue
-                ? () {
-                  // TODO: Handle continue action
-                }
-                : () {},
+        onPressed: canContinue ? _onContinuePressed : () {},
         bgColor: context.colour.secondary,
         textColor: context.colour.onPrimary,
         disabled: !canContinue,

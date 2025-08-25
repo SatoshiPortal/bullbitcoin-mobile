@@ -33,7 +33,6 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     on<WithdrawStarted>(_onStarted);
     on<WithdrawAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<WithdrawNewRecipientAdded>(_onNewRecipientAdded);
-    on<WithdrawUpdateNewRecipient>(_onUpdateNewRecipient);
     on<WithdrawCreateNewRecipient>(_onCreateNewRecipient);
     on<WithdrawRecipientSelected>(_onRecipientSelected);
     /*on<WithdrawDescriptionInputContinuePressed>(
@@ -123,49 +122,67 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     // TODO
   }
 
-  Future<void> _onUpdateNewRecipient(
-    WithdrawUpdateNewRecipient event,
-    Emitter<WithdrawState> emit,
-  ) async {
-    if (state is WithdrawRecipientInputState) {
-      final currentState = state as WithdrawRecipientInputState;
-      emit(currentState.copyWith(newRecipient: event.newRecipient));
-    }
-  }
-
   Future<void> _onCreateNewRecipient(
     WithdrawCreateNewRecipient event,
     Emitter<WithdrawState> emit,
   ) async {
+    log.info('🚀 _onCreateNewRecipient called');
+    log.info('📝 New recipient from event: ${event.newRecipient}');
+
     if (state is WithdrawRecipientInputState) {
       final currentState = state as WithdrawRecipientInputState;
-      if (currentState.newRecipient != null) {
-        try {
-          final createdRecipient = await _createFiatRecipientUsecase.execute(
-            currentState.newRecipient!,
-          );
 
-          // Add the new recipient to the list and update state
-          final updatedRecipients = [
-            ...currentState.recipients,
-            createdRecipient,
-          ];
-          emit(
-            currentState.copyWith(
-              recipients: updatedRecipients,
-              newRecipient: null,
+      // Use the recipient from the event directly
+      final newRecipient = event.newRecipient;
+      log.info('🏭 Executing createFiatRecipientUsecase...');
+      try {
+        final createdRecipient = await _createFiatRecipientUsecase.execute(
+          newRecipient,
+        );
+        log.info(
+          '✅ Recipient created successfully: ${createdRecipient.recipientId}',
+        );
+
+        // Add the new recipient to the list and update state
+        final updatedRecipients = [
+          ...currentState.recipients,
+          createdRecipient,
+        ];
+
+        // Update state with the new recipient list and clear the newRecipient
+        final updatedState = currentState.copyWith(
+          recipients: updatedRecipients,
+          newRecipient: null,
+        );
+        emit(updatedState);
+        log.info('✅ State updated with new recipient list');
+
+        // Now create the withdrawal order using the newly created recipient
+        log.info('🏭 Creating withdrawal order for new recipient...');
+        final order = await _createWithdrawOrderUsecase.execute(
+          fiatAmount: currentState.amount.amount,
+          recipientId: createdRecipient.recipientId,
+          recipientType: createdRecipient.recipientType,
+        );
+        log.info('✅ Withdrawal order created: ${order.orderId}');
+
+        // Transition to confirmation state
+        emit(
+          updatedState.toConfirmationState(
+            recipient: createdRecipient,
+            order: order,
+          ),
+        );
+        log.info('✅ Transitioned to confirmation state');
+      } catch (e) {
+        log.severe('Error creating new recipient: $e');
+        emit(
+          currentState.copyWith(
+            error: WithdrawError.unexpected(
+              message: 'Failed to create recipient: $e',
             ),
-          );
-        } catch (e) {
-          log.severe('Error creating new recipient: $e');
-          emit(
-            currentState.copyWith(
-              error: WithdrawError.unexpected(
-                message: 'Failed to create recipient: $e',
-              ),
-            ),
-          );
-        }
+          ),
+        );
       }
     }
   }
@@ -196,6 +213,7 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       final order = await _createWithdrawOrderUsecase.execute(
         fiatAmount: recipientInputState.amount.amount,
         recipientId: recipient.recipientId,
+        recipientType: recipient.recipientType,
       );
       emit(
         recipientInputState.toConfirmationState(

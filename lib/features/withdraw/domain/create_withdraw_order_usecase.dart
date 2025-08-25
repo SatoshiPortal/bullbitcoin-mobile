@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -20,6 +21,7 @@ class CreateWithdrawOrderUsecase {
   Future<WithdrawOrder> execute({
     required double fiatAmount,
     required String recipientId,
+    required WithdrawRecipientType recipientType,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -28,9 +30,12 @@ class CreateWithdrawOrderUsecase {
           isTestnet
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
+      final isETransfer =
+          recipientType == WithdrawRecipientType.interacEmailCad;
       final order = await repo.placeWithdrawalOrder(
         fiatAmount: fiatAmount,
         recipientId: recipientId,
+        isETransfer: isETransfer,
       );
       return order;
     } on WithdrawError {

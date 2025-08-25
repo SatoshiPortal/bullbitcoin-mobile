@@ -9,7 +9,7 @@ class NewRecipientFactory {
     final label = formData['label'] as String?;
     final isDefault = formData['isDefault'] as bool? ?? false;
     final isArchived = formData['isArchived'] as bool? ?? false;
-    final isOwner = formData['isOwner'] as bool? ?? false;
+    final isOwner = (formData['isOwner'] as String?) == 'true';
 
     switch (type) {
       case WithdrawRecipientType.interacEmailCad:
@@ -49,7 +49,7 @@ class NewRecipientFactory {
         );
 
       case WithdrawRecipientType.sepaEur:
-        final isCorporate = formData['isCorporate'] as bool? ?? false;
+        final isCorporate = (formData['isCorporate'] as String?) == 'true';
         return NewRecipient.sepaEur(
           label: label,
           iban: formData['iban'] as String,

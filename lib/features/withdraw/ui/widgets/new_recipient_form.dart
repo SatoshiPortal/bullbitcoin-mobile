@@ -126,9 +126,34 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
             const Gap(16),
           ],
           const Gap(16),
+          const Gap(24),
           _buildContinueButton(),
+          const Gap(32),
         ],
       ),
+    );
+  }
+
+  Widget _buildContinueButton() {
+    return BBButton.big(
+      label: 'Continue',
+      onPressed:
+          canContinue
+              ? () {
+                if (selectedPayoutMethod != null) {
+                  final newRecipient = NewRecipientFactory.fromFormData(
+                    selectedPayoutMethod!,
+                    formData,
+                  );
+                  context.read<WithdrawBloc>().add(
+                    WithdrawEvent.createNewRecipient(newRecipient),
+                  );
+                }
+              }
+              : () {},
+      bgColor: context.colour.secondary,
+      textColor: context.colour.onPrimary,
+      disabled: !canContinue,
     );
   }
 
@@ -303,29 +328,6 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
       onFormDataChanged: _onFormDataChanged,
     );
   }
-
-  Widget _buildContinueButton() {
-    return BBButton.big(
-      label: 'Continue',
-      onPressed:
-          canContinue
-              ? () {
-                if (selectedPayoutMethod != null) {
-                  final newRecipient = NewRecipientFactory.fromFormData(
-                    selectedPayoutMethod!,
-                    formData,
-                  );
-                  context.read<WithdrawBloc>().add(
-                    WithdrawEvent.updateNewRecipient(newRecipient),
-                  );
-                }
-              }
-              : () {},
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onPrimary,
-      disabled: !canContinue,
-    );
-  }
 }
 
 class PayoutMethodForm extends StatelessWidget {
@@ -419,7 +421,16 @@ class _InteracEmailForm extends StatelessWidget {
           onFormDataChanged,
         ),
         const Gap(12),
-
+        _buildSecurityQuestionField(context, formData, onFormDataChanged),
+        const Gap(12),
+        _buildInputField(
+          context,
+          'Security Answer',
+          'securityAnswer',
+          'Enter security answer',
+          formData,
+          onFormDataChanged,
+        ),
         const Gap(12),
         _buildInputField(
           context,
@@ -987,6 +998,56 @@ Widget _buildCheckboxField(
               ),
             ),
           ),
+        ],
+      ),
+    ],
+  );
+}
+
+Widget _buildSecurityQuestionField(
+  BuildContext context,
+  Map<String, dynamic> formData,
+  Function(String, String) onFormDataChanged,
+) {
+  final currentValue = (formData['securityQuestion'] as String?) ?? '';
+  final isValid = currentValue.length >= 10 && currentValue.length <= 40;
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      BBText(
+        'Security Question',
+        style: context.font.bodyLarge?.copyWith(
+          color: context.colour.secondary,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      const Gap(8),
+      BBInputText(
+        value: currentValue,
+        onChanged: (value) => onFormDataChanged('securityQuestion', value),
+        hint: 'Enter security question (10-40 characters)',
+        hintStyle: context.font.bodyMedium?.copyWith(
+          color: context.colour.outline,
+        ),
+      ),
+      const Gap(4),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          BBText(
+            '${currentValue.length}/40 characters',
+            style: context.font.bodySmall?.copyWith(
+              color: isValid ? context.colour.secondary : context.colour.error,
+            ),
+          ),
+          if (!isValid && currentValue.isNotEmpty)
+            BBText(
+              'Must be 10-40 characters',
+              style: context.font.bodySmall?.copyWith(
+                color: context.colour.error,
+              ),
+            ),
         ],
       ),
     ],

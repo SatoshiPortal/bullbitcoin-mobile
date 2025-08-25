@@ -426,6 +426,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required double fiatAmount,
     required String recipientId,
+    bool isETransfer = false,
   }) async {
     /**
      *   "paymentProcessorData": {
@@ -434,13 +435,25 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
   }
   if e-transfer fails with 400 for security Q/A
      */
+    final params = <String, dynamic>{
+      'fiatAmount': fiatAmount,
+      'recipientId': recipientId,
+    };
+
+    if (isETransfer) {
+      params['paymentProcessorData'] = {
+        'securityQuestion': 'What is your favorite color?',
+        'securityAnswer': 'Orange',
+      };
+    }
+
     final resp = await _http.post(
       _ordersPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'createWithdrawalOrder',
-        'params': {'fiatAmount': fiatAmount, 'recipientId': recipientId},
+        'params': params,
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
@@ -523,17 +536,18 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required NewRecipientModel recipient,
     required String apiKey,
   }) async {
+    log.info('Create fiat recipient request: ${recipient.toApiParams()}');
     final resp = await _http.post(
       _recipientsPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'createRecipientFiat',
-        'params': {recipient.toApiParams()},
+        'params': recipient.toApiParams(),
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-
+    log.info('Create fiat recipient response: ${resp.data}');
     if (resp.statusCode != 200) {
       throw Exception('Failed to create fiat recipient');
     }
@@ -543,7 +557,18 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       throw Exception('Failed to create fiat recipient: $error');
     }
 
-    return RecipientModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+    try {
+      final result = resp.data['result']['element'] as Map<String, dynamic>;
+      log.info('Element data: $result');
+      return RecipientModel.fromJson(result);
+    } catch (e, stackTrace) {
+      log.severe('Error parsing RecipientModel.fromJson: $e');
+      log.severe('Stack trace: $stackTrace');
+      log.severe(
+        'Element data that failed to parse: ${resp.data['result']['element']}',
+      );
+      rethrow;
+    }
   }
 }
 
