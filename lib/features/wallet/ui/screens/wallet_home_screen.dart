@@ -26,7 +26,7 @@ class WalletHomeScreen extends StatelessWidget {
     return GestureDetector(
       onPanEnd: (details) {
         // Only handle horizontal swipes with sufficient velocity
-        const minSwipeVelocity = 500.0;
+        final minSwipeVelocity = MediaQuery.of(context).size.width * 1.25;
         final velocity = details.velocity.pixelsPerSecond.dx;
 
         if (velocity.abs() > minSwipeVelocity) {
@@ -62,11 +62,13 @@ class WalletHomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 13.0),
-            child: WalletBottomButtons(),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.03,
+            ),
+            child: const WalletBottomButtons(),
           ),
-          const Gap(16),
+          Gap(MediaQuery.of(context).size.height * 0.02),
         ],
       ),
     );

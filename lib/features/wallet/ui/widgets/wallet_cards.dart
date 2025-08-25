@@ -4,17 +4,10 @@ import 'package:bb_mobile/core/widgets/cards/wallet_card.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 
 class WalletCards extends StatelessWidget {
-  const WalletCards({
-    super.key,
-    this.padding,
-    this.onTap,
-    this.localSignersOnly = false,
-  });
+  const WalletCards({super.key, this.onTap, this.localSignersOnly = false});
 
-  final EdgeInsetsGeometry? padding;
   final bool localSignersOnly;
   final Function(Wallet wallet)? onTap;
 
@@ -46,13 +39,21 @@ class WalletCards extends StatelessWidget {
       (WalletBloc bloc) => bloc.state.syncStatus,
     );
 
-    return Padding(
-      padding: padding ?? const EdgeInsets.all(13.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (final w in wallets) ...[
-            WalletCard(
+    final screenWidth = MediaQuery.of(context).size.width;
+    final responsivePadding = EdgeInsets.only(
+      left: screenWidth * 0.03,
+      right: screenWidth * 0.03,
+      top: screenWidth * 0.01,
+      bottom: screenWidth * 0.01,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final w in wallets) ...[
+          Padding(
+            padding: responsivePadding,
+            child: WalletCard(
               tagColor: cardDetails(context, w),
               title: w.displayLabel,
               description: w.walletTypeString,
@@ -60,10 +61,9 @@ class WalletCards extends StatelessWidget {
               isSyncing: syncStatus[w.id] ?? false,
               onTap: () => onTap?.call(w),
             ),
-            const Gap(8),
-          ],
+          ),
         ],
-      ),
+      ],
     );
   }
 }
