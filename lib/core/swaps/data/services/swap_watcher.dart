@@ -191,10 +191,16 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
+        final scriptPathTxSize = await _boltzRepo.getSwapRefundTxSize(
+          swapId: swap.id,
+          swapType: swap.type,
+          isCooperative: false,
+        );
+        final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
         refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
           swapId: swap.id,
           bitcoinAddress: address.address,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
           cooperate: false,
         );
       }
@@ -290,10 +296,16 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
+        final scriptPathTxSize = await _boltzRepo.getSwapRefundTxSize(
+          swapId: swap.id,
+          swapType: swap.type,
+          isCooperative: false,
+        );
+        final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
         refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
           swapId: swap.id,
           liquidAddress: address.address,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
           cooperate: false,
         );
       }
@@ -441,9 +453,16 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
+        final scriptPathTxSize = await _boltzRepo.getSwapRefundTxSize(
+          swapId: swap.id,
+          swapType: swap.type,
+          isCooperative: false,
+          refundAddressForChainSwaps: refundAddress.address,
+        );
+        final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
         refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
           bitcoinRefundAddress: refundAddress.address,
           cooperate: false,
         );
@@ -548,7 +567,6 @@ class SwapWatcherService {
           swapId: swap.id,
           absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
           liquidRefundAddress: refundAddress.address,
-          cooperate: false,
         );
       } catch (e, st) {
         log.severe(
@@ -556,9 +574,15 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
+        final scriptPathTxSize = await _boltzRepo.getSwapRefundTxSize(
+          swapId: swap.id,
+          swapType: swap.type,
+          isCooperative: false,
+        );
+        final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
         refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
           liquidRefundAddress: refundAddress.address,
           cooperate: false,
         );
