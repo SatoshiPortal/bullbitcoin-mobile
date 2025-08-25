@@ -53,6 +53,7 @@ class WalletMetadatas extends Table {
   BoolColumn get isDefault => boolean()();
   TextColumn get label => text().nullable()();
   DateTimeColumn get syncedAt => dateTime().nullable()();
+  DateTimeColumn get birthday => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
