@@ -56,10 +56,8 @@ class _ShowPsbtView extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                  height: 500,
-                  child: ShowBbqrWidget(parts: state.bbqrParts),
-                ),
+                ShowBbqrWidget(parts: state.bbqrParts),
+
                 BBButton.big(
                   label: 'Next',
                   bgColor: context.colour.secondary,

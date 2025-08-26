@@ -54,7 +54,18 @@ class Bbqr {
     try {
       final bdkPsbt = await bdk.PartiallySignedTransaction.fromString(psbt);
       final psbtBytes = bdkPsbt.serialize();
-      final bbqrOptions = await bbqr.SplitOptions.default_();
+
+      // The more we split the easier it is to scan the QR code.
+      final minSplitNumber = BigInt.from(psbtBytes.length ~/ 1000);
+
+      final defaultOptions = await bbqr.SplitOptions.default_();
+      final bbqrOptions = bbqr.SplitOptions.new(
+        minVersion: defaultOptions.minVersion,
+        maxVersion: defaultOptions.maxVersion,
+        encoding: defaultOptions.encoding,
+        maxSplitNumber: defaultOptions.maxSplitNumber,
+        minSplitNumber: minSplitNumber,
+      );
 
       final split = await bbqr.Split.tryFromData(
         bytes: psbtBytes,
