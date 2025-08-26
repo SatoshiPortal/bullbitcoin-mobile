@@ -33,13 +33,13 @@ class ImportWatchOnlyScreen extends StatelessWidget {
             importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
           )..init(),
       child: Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.colour.secondaryFixedDim,
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
           flexibleSpace: TopBar(
             title: 'Import watch-only',
-            color: context.colour.secondaryFixed,
+            color: context.colour.secondaryFixedDim,
             onBack: () => Navigator.of(context).pop(),
           ),
         ),
