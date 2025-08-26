@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
+import 'package:drift/drift.dart' show Value;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -46,22 +47,22 @@ extension WalletMetadataModelExtension on WalletMetadataModel {
 }
 
 extension WalletMetadataModelMapper on WalletMetadataModel {
-  WalletMetadataRow toSqlite() => WalletMetadataRow(
-    id: id,
-    masterFingerprint: masterFingerprint,
-    xpubFingerprint: xpubFingerprint,
-    isEncryptedVaultTested: isEncryptedVaultTested,
-    isPhysicalBackupTested: isPhysicalBackupTested,
-    latestEncryptedBackup: latestEncryptedBackup,
-    latestPhysicalBackup: latestPhysicalBackup,
-    xpub: xpub,
-    externalPublicDescriptor: externalPublicDescriptor,
-    internalPublicDescriptor: internalPublicDescriptor,
-    signer: signer.name,
-    isDefault: isDefault,
-    label: label ?? '',
-    syncedAt: syncedAt,
-    signerDevice: signerDevice,
+  WalletMetadatasCompanion toSqlite() => WalletMetadatasCompanion(
+    id: Value(id),
+    masterFingerprint: Value(masterFingerprint),
+    xpubFingerprint: Value(xpubFingerprint),
+    isEncryptedVaultTested: Value(isEncryptedVaultTested),
+    isPhysicalBackupTested: Value(isPhysicalBackupTested),
+    latestEncryptedBackup: Value(latestEncryptedBackup),
+    latestPhysicalBackup: Value(latestPhysicalBackup),
+    xpub: Value(xpub),
+    externalPublicDescriptor: Value(externalPublicDescriptor),
+    internalPublicDescriptor: Value(internalPublicDescriptor),
+    signer: Value(signer.name),
+    signerDevice: Value(signerDevice),
+    isDefault: Value(isDefault),
+    label: Value(label),
+    syncedAt: Value(syncedAt),
   );
 
   static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>

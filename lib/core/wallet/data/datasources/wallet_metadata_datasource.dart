@@ -8,9 +8,10 @@ class WalletMetadataDatasource {
     : _sqlite = sqliteDatasource;
 
   Future<void> store(WalletMetadataModel metadata) async {
+    final companion = metadata.toSqlite();
     await _sqlite
         .into(_sqlite.walletMetadatas)
-        .insertOnConflictUpdate(metadata.toSqlite());
+        .insertOnConflictUpdate(companion);
   }
 
   Future<WalletMetadataModel?> fetch(String walletId) async {
