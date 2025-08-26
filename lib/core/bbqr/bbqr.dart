@@ -9,6 +9,18 @@ import 'package:dart_bbqr/bbqr.dart' as bbqr;
 
 enum TxFormat { psbt, hex }
 
+class ScannedTransaction {
+  final TxFormat format;
+  final String data;
+  final RawBitcoinTxEntity tx;
+
+  ScannedTransaction({
+    required this.format,
+    required this.data,
+    required this.tx,
+  });
+}
+
 class Bbqr {
   final Map<int, String> parts = {};
   BbqrOptions? options;
@@ -17,35 +29,58 @@ class Bbqr {
 
   bool get isScanningBbqr => parts.isNotEmpty && options != null;
 
-  Future<({TxFormat format, String data, RawBitcoinTxEntity tx})?>
-  scanTransaction(String payload) async {
+  Future<(ScannedTransaction?, Bbqr)> scanTransaction(String payload) async {
     if (!BbqrOptions.isValid(payload)) {
       try {
         final tx = await RawBitcoinTxEntity.fromBytes(hex.decode(payload));
-        return (format: TxFormat.hex, data: payload, tx: tx);
+        return (
+          ScannedTransaction(format: TxFormat.hex, data: payload, tx: tx),
+          this,
+        );
       } catch (e) {
         log.severe('e: $e');
-        return null;
+        return (null, this);
       }
     } else {
-      options = BbqrOptions.decode(payload);
-      parts[options!.share] = payload;
-
-      if (options!.total < parts.length) {
+      final scannedOptions = BbqrOptions.decode(payload);
+      if (options != null && scannedOptions.total != options!.total) {
         // reset another state.bbqr
         // and expect the next scan to be a new BBQR
         parts.clear();
-        return null;
+        return (null, this);
       }
+
+      options = scannedOptions;
+      parts[options!.share] = payload;
 
       if (options!.total == parts.length) {
         final bbqrParts = parts.values.toList();
         final bbqrJoiner = await bbqr.Joined.tryFromParts(parts: bbqrParts);
-        final psbtBase64 = base64.encode(bbqrJoiner.data);
-        final tx = await RawBitcoinTxEntity.fromPsbt(psbtBase64);
-        return (format: TxFormat.psbt, data: psbtBase64, tx: tx);
+
+        try {
+          final tx = await RawBitcoinTxEntity.fromBytes(bbqrJoiner.data);
+          return (
+            ScannedTransaction(
+              format: TxFormat.hex,
+              data: hex.encode(bbqrJoiner.data),
+              tx: tx,
+            ),
+            this,
+          );
+        } catch (_) {}
+
+        try {
+          final psbtBase64 = base64.encode(bbqrJoiner.data);
+          final tx = await RawBitcoinTxEntity.fromPsbt(psbtBase64);
+          return (
+            ScannedTransaction(format: TxFormat.psbt, data: psbtBase64, tx: tx),
+            this,
+          );
+        } catch (_) {}
+
+        throw FailedToParseBbqr();
       } else {
-        return null;
+        return (null, this);
       }
     }
   }
@@ -78,4 +113,18 @@ class Bbqr {
       rethrow;
     }
   }
+}
+
+class BbqrError implements Exception {
+  final String message;
+
+  BbqrError(this.message);
+
+  @override
+  String toString() => message;
+}
+
+class FailedToParseBbqr extends BbqrError {
+  FailedToParseBbqr()
+    : super('The scanned transaction is neither a PSBT nor a hex string');
 }
