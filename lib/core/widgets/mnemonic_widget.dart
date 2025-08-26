@@ -130,6 +130,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
               hint: 'Optional Passphrase',
               value: passphrase,
               onChanged: updatePassphrase,
+              maxLines: 1,
             ),
           ],
 
@@ -140,6 +141,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
               hint: 'Required',
               value: label,
               onChanged: updateLabel,
+              maxLines: 1,
             ),
           ],
 

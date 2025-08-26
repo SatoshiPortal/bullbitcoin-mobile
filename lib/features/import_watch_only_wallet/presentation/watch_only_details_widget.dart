@@ -110,6 +110,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
           hint: 'Required',
           value: entity.label,
           onChanged: cubit.updateLabel,
+          maxLines: 1,
         ),
         const Gap(24),
         BBButton.big(
