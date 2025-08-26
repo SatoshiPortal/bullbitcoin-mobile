@@ -1,6 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
@@ -33,16 +31,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
             importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
           )..init(),
       child: Scaffold(
-        backgroundColor: context.colour.secondaryFixedDim,
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: 'Import watch-only',
-            color: context.colour.secondaryFixedDim,
-            onBack: () => Navigator.of(context).pop(),
-          ),
-        ),
+        appBar: AppBar(title: const Text('Import watch-only')),
         body: BlocConsumer<ImportWatchOnlyCubit, ImportWatchOnlyState>(
           listener: (context, state) {
             if (state.importedWallet != null) {

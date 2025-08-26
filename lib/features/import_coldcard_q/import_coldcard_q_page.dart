@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_coldcard_q/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
@@ -17,11 +16,7 @@ class ImportColdcardQPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: TopBar(title: 'Connect Coldcard Q', onBack: () => context.pop()),
-      ),
+      appBar: AppBar(title: const Text('Connect Coldcard Q')),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
