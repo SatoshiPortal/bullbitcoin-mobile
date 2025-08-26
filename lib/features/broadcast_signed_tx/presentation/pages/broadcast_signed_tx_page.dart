@@ -48,13 +48,24 @@ class BroadcastSignedTxPage extends StatelessWidget {
                       onChanged: cubit.tryParseTransaction,
                     ),
                   ),
-                  const Gap(32),
+                  if (state.error != null) ...[
+                    const Gap(16),
+                    BBText(
+                      state.error.toString(),
+                      style: context.font.bodyMedium,
+                      color: context.colour.error,
+                    ),
+                  ],
+
+                  const Gap(16),
                   BBButton.small(
                     label: 'Camera',
-                    onPressed:
-                        () => context.pushNamed(
-                          BroadcastSignedTxRoute.broadcastScanQr.name,
-                        ),
+                    onPressed: () {
+                      cubit.resetState();
+                      context.pushNamed(
+                        BroadcastSignedTxRoute.broadcastScanQr.name,
+                      );
+                    },
                     bgColor: context.colour.onPrimary,
                     textColor: context.colour.secondary,
                     iconData: Icons.qr_code_scanner,
@@ -74,15 +85,9 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                 ],
 
-                if (state.error != null)
-                  BBText(
-                    state.error.toString(),
-                    style: context.font.bodyMedium,
-                    color: context.colour.error,
-                  ),
-
                 // Broadcast button
-                if (state.transaction != null) ...[
+                if (state.transaction != null &&
+                    state.isBroadcasted == false) ...[
                   TransactionDetailsWidget(tx: state.transaction!.tx),
                 ],
 
