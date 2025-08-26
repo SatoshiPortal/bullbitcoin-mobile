@@ -91,7 +91,8 @@ class Bbqr {
       final psbtBytes = bdkPsbt.serialize();
 
       // The more we split the easier it is to scan the QR code.
-      final minSplitNumber = BigInt.from(psbtBytes.length ~/ 1000);
+      var minSplitNumber = BigInt.from(psbtBytes.length ~/ 1000);
+      if (minSplitNumber < BigInt.from(1)) minSplitNumber = BigInt.from(1);
 
       final defaultOptions = await bbqr.SplitOptions.default_();
       final bbqrOptions = bbqr.SplitOptions.new(
