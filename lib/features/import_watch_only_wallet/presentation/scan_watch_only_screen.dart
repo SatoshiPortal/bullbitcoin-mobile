@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -11,7 +12,9 @@ import 'package:go_router/go_router.dart';
 import 'package:satoshifier/satoshifier.dart';
 
 class ScanWatchOnlyScreen extends StatefulWidget {
-  const ScanWatchOnlyScreen({super.key});
+  final SignerDeviceEntity? signerDevice;
+
+  const ScanWatchOnlyScreen({super.key, this.signerDevice});
 
   @override
   State<ScanWatchOnlyScreen> createState() => _ScanWatchOnlyScreenState();
@@ -34,20 +37,27 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                 final watchOnly = await Satoshifier.parse(data);
 
                 if (watchOnly is WatchOnlyDescriptor) {
+                  final watchOnlyDescriptor = WatchOnlyWalletEntity.descriptor(
+                    watchOnlyDescriptor: watchOnly,
+                    signerDevice: widget.signerDevice,
+                  );
+
                   if (!context.mounted) return;
                   context.replaceNamed(
-                    ImportWalletRoutes.import.name,
-                    extra: WatchOnlyWalletEntity.descriptor(
-                      watchOnlyDescriptor: watchOnly,
-                    ),
+                    ImportWatchOnlyWalletRoutes.import.name,
+                    extra: watchOnlyDescriptor,
                   );
                 }
 
                 if (watchOnly is WatchOnlyXpub) {
+                  final watchOnlyXpub = WatchOnlyWalletEntity.xpub(
+                    watchOnlyXpub: watchOnly,
+                  );
+
                   if (!context.mounted) return;
                   context.replaceNamed(
-                    ImportWalletRoutes.import.name,
-                    extra: WatchOnlyWalletEntity.xpub(watchOnlyXpub: watchOnly),
+                    ImportWatchOnlyWalletRoutes.import.name,
+                    extra: watchOnlyXpub,
                   );
                 }
               } catch (e) {

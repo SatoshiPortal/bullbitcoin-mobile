@@ -4,7 +4,9 @@ import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
+import 'package:bb_mobile/features/import_coldcard_q/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
+import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
@@ -85,6 +87,8 @@ class AppRouter {
       ImportWatchOnlyRouter.route,
       BroadcastSignedTxRouter.route,
       PsbtRouterConfig.route,
+      ImportWalletRouter.route,
+      ImportColdcardRouter.route,
       ReplaceByFeeRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),

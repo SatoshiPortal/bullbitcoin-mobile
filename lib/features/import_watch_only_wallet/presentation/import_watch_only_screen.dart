@@ -38,7 +38,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
           flexibleSpace: TopBar(
-            title: 'Import wallet',
+            title: 'Import watch-only',
             color: context.colour.secondaryFixed,
             onBack: () => Navigator.of(context).pop(),
           ),
