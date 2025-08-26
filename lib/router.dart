@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
+import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -84,6 +85,7 @@ class AppRouter {
       ImportWatchOnlyRouter.route,
       BroadcastSignedTxRouter.route,
       PsbtRouterConfig.route,
+      ReplaceByFeeRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );

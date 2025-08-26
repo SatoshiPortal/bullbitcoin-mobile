@@ -389,11 +389,13 @@ class LwkWalletDatasource {
                   : isIncoming
                   ? finalBalance
                   : finalBalance.abs() - tx.fee.toInt();
+
           return WalletTransactionModel(
             txId: tx.txid,
             isIncoming: isIncoming,
             amountSat: netAmountSat,
             feeSat: tx.fee.toInt(),
+            vsize: tx.vsize.toInt(),
             confirmationTimestamp: tx.timestamp,
             isToSelf: isToSelf,
             inputs: inputs,
@@ -401,6 +403,7 @@ class LwkWalletDatasource {
             isLiquid: true,
             isTestnet: wallet.isTestnet,
             unblindedUrl: tx.unblindedUrl,
+            isRbf: false,
           );
         }),
       );
