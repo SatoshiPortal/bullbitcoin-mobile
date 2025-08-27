@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/backup_wallet/backup_wallet_locator.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/buy_locator.dart';
+import 'package:bb_mobile/features/dca/dca_locator.dart';
 import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_locator.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
@@ -69,5 +70,6 @@ class AppLocator {
     AutoSwapLocator.setup();
     AddressViewLocator.setup();
     ImportMnemonicLocator.setup();
+    DcaLocator.setup();
   }
 }

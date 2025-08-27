@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
+import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
@@ -29,6 +30,9 @@ class ExchangeHomeScreen extends StatelessWidget {
     final isFullyVerified = context.select(
       (ExchangeCubit cubit) => cubit.state.isFullyVerifiedKycLevel,
     );
+    final hasDcaActive = context.select(
+      (ExchangeCubit cubit) => cubit.state.hasDcaActive,
+    );
 
     if (isFetchingUserSummary || notLoggedIn) {
       return const Center(child: CircularProgressIndicator());
@@ -55,18 +59,27 @@ class ExchangeHomeScreen extends StatelessWidget {
                             const Gap(12),
                             if (!isFullyVerified) const ExchangeHomeKycCard(),
                             const Gap(12),
+                            SwitchListTile(
+                              value: hasDcaActive,
+                              onChanged: (value) {
+                                if (value) {
+                                  // Activate DCA
+                                  context.pushNamed(DcaRoute.dca.name);
+                                } else {
+                                  // Deactivate DCA
+                                  //context.read<ExchangeCubit>().deactivateDca();
+                                }
+                              },
+                              title: const Text('Activate recurring buy'),
+                            ),
                             /*
+                        const Gap(12),
                         SwitchListTile(
                           value: false,
                           onChanged: (value) {},
                           title: const Text('Activate auto-buy'),
                         ),
-                        const Gap(12),
-                        SwitchListTile(
-                          value: false,
-                          onChanged: (value) {},
-                          title: const Text('Activate recurring buy'),
-                        ),
+                        
                         const Gap(12),
                         ListTile(
                           title: const Text('View auto-sell address'),
