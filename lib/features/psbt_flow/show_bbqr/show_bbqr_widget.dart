@@ -37,17 +37,24 @@ class _ShowBbqrView extends StatelessWidget {
           );
         }
 
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            QrImageView(data: state.parts[state.currentIndex]),
-            Text(
-              'Part ${state.currentIndex + 1} of ${state.parts.length}',
-              style: context.font.bodyMedium?.copyWith(
-                color: context.colour.secondary,
-              ),
-            ),
-          ],
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              QrImageView(data: state.parts[state.currentIndex]),
+              if (state.parts.length > 1)
+                Text(
+                  'Part ${state.currentIndex + 1} of ${state.parts.length}',
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.colour.secondary,
+                  ),
+                ),
+            ],
+          ),
         );
       },
     );

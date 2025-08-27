@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_tran
 import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/errors.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
@@ -22,12 +23,15 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   Future<void> onQrScanned(String payload) async {
     try {
       emit(state.copyWith(error: null));
-      final tx = await state.bbqr.scanTransaction(payload);
+      final (tx, bbqr) = await state.bbqr.scanTransaction(payload);
+      emit(state.copyWith(bbqr: bbqr));
       if (tx != null) emit(state.copyWith(transaction: tx));
     } catch (e) {
       emit(state.copyWith(error: UnexpectedError(e)));
     }
   }
+
+  Future<void> resetState() async => emit(BroadcastSignedTxState(bbqr: Bbqr()));
 
   Future<void> onNfcScanned(NFCTag tag) async {
     emit(state.copyWith(error: null));
@@ -89,7 +93,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       final tx = await RawBitcoinTxEntity.fromPsbt(input);
       emit(
         state.copyWith(
-          transaction: (format: TxFormat.psbt, data: input, tx: tx),
+          transaction: ParsedTx(format: TxFormat.psbt, data: input, tx: tx),
         ),
       );
     } catch (e) {
@@ -97,7 +101,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
         final tx = await RawBitcoinTxEntity.fromBytes(hex.decode(input));
         emit(
           state.copyWith(
-            transaction: (format: TxFormat.hex, data: input, tx: tx),
+            transaction: ParsedTx(format: TxFormat.hex, data: input, tx: tx),
           ),
         );
       } catch (e) {

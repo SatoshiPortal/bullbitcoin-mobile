@@ -15,12 +15,13 @@ class MnemonicPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: context.colour.secondaryFixedDim,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: 'Import Mnemonic',
-          color: context.colour.secondaryFixed,
+          color: context.colour.secondaryFixedDim,
           onBack: () => context.pop(),
         ),
       ),

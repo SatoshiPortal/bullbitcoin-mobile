@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -105,6 +106,7 @@ abstract class Wallet with _$Wallet {
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
     required SignerEntity signer,
+    required SignerDeviceEntity? signerDevice,
     required BigInt balanceSat,
     @Default(false) bool isEncryptedVaultTested,
     @Default(false) bool isPhysicalBackupTested,

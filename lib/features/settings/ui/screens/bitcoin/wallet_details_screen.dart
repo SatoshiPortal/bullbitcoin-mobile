@@ -96,6 +96,17 @@ class WalletDetailsScreen extends StatelessWidget {
                       label: 'Derivation Path',
                       value: wallet.derivationPath,
                     ),
+                    const SizedBox(height: 18),
+                    _InfoField(
+                      label: 'Signer',
+                      value: wallet.signer.displayName,
+                    ),
+                    const SizedBox(height: 18),
+                    _InfoField(
+                      label: 'Signer Device',
+                      value:
+                          wallet.signerDevice?.displayName ?? 'Not supported',
+                    ),
                   ],
                 ),
       ),

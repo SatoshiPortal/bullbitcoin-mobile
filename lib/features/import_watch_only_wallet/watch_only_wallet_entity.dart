@@ -12,7 +12,7 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
     required satoshifier.WatchOnlyDescriptor watchOnlyDescriptor,
     @Default(SignerEntity.remote) SignerEntity signer,
     @Default('') String label,
-    @Default(SignerDeviceEntity.coldcardQ) SignerDeviceEntity? signerDevice,
+    @Default(null) SignerDeviceEntity? signerDevice,
   }) = WatchOnlyDescriptorEntity;
 
   const factory WatchOnlyWalletEntity.xpub({

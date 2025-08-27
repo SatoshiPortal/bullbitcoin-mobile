@@ -8,9 +8,11 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_si
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
 class BroadcastSignedTxPage extends StatelessWidget {
@@ -23,7 +25,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Broadcast Signed Transaction',
+          title: 'Broadcast signed transaction',
           onBack: () => context.pop(),
         ),
       ),
@@ -46,46 +48,46 @@ class BroadcastSignedTxPage extends StatelessWidget {
                       onChanged: cubit.tryParseTransaction,
                     ),
                   ),
-                  const Gap(32),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 100, right: 100),
-                    child: BBButton.big(
-                      label: 'QR (BBQR / Hex)',
-                      onPressed:
-                          () => context.pushNamed(
-                            BroadcastSignedTxRoute.broadcastScanQr.name,
-                          ),
-                      bgColor: context.colour.onPrimary,
-                      textColor: context.colour.secondary,
-                      iconData: Icons.qr_code_scanner,
+                  if (state.error != null) ...[
+                    const Gap(16),
+                    BBText(
+                      state.error.toString(),
+                      style: context.font.bodyMedium,
+                      color: context.colour.error,
                     ),
+                  ],
+
+                  const Gap(16),
+                  BBButton.small(
+                    label: 'Camera',
+                    onPressed: () {
+                      cubit.resetState();
+                      context.pushNamed(
+                        BroadcastSignedTxRoute.broadcastScanQr.name,
+                      );
+                    },
+                    bgColor: context.colour.onPrimary,
+                    textColor: context.colour.secondary,
+                    iconData: Icons.qr_code_scanner,
+                    outlined: true,
                   ),
                   const Gap(32),
-
-                  Padding(
-                    padding: const EdgeInsets.only(left: 100, right: 100),
-                    child: BBButton.big(
-                      label: 'NFC (PushTx)',
-                      onPressed:
-                          () => context.pushNamed(
-                            BroadcastSignedTxRoute.broadcastScanNfc.name,
-                          ),
-                      bgColor: context.colour.onPrimary,
-                      textColor: context.colour.secondary,
-                      iconData: Icons.nfc,
-                    ),
+                  BBButton.small(
+                    label: 'PushTx',
+                    onPressed:
+                        () => context.pushNamed(
+                          BroadcastSignedTxRoute.broadcastScanNfc.name,
+                        ),
+                    bgColor: context.colour.onPrimary,
+                    textColor: context.colour.secondary,
+                    iconData: Icons.nfc,
+                    outlined: true,
                   ),
                 ],
 
-                if (state.error != null)
-                  BBText(
-                    state.error.toString(),
-                    style: context.font.bodyMedium,
-                    color: context.colour.error,
-                  ),
-
                 // Broadcast button
-                if (state.transaction != null) ...[
+                if (state.transaction != null &&
+                    state.isBroadcasted == false) ...[
                   TransactionDetailsWidget(tx: state.transaction!.tx),
                 ],
 
@@ -122,6 +124,12 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
 
                 if (state.isBroadcasted == true) ...[
+                  Gif(
+                    image: AssetImage(Assets.animations.successTick.path),
+                    autostart: Autostart.once,
+                    height: 200,
+                    width: 200,
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(left: 100, right: 100),
                     child: BBButton.big(
