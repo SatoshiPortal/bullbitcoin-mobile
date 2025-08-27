@@ -62,6 +62,7 @@ class WalletRepository {
     String? label,
     bool isDefault = false,
     bool sync = false,
+    DateTime? birthday,
   }) async {
     // Derive and store the wallet metadata
     final walletLabel =
@@ -81,6 +82,7 @@ class WalletRepository {
       scriptType: scriptType,
       label: walletLabel,
       isDefault: isDefault,
+      birthday: birthday,
     );
 
     if (isDefault) {
