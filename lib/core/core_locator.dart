@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/bip85/bip85_locator.dart';
 import 'package:bb_mobile/core/blockchain/blockchain_locator.dart';
 import 'package:bb_mobile/core/electrum/electrum_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';
@@ -33,6 +34,7 @@ class CoreLocator {
     await WalletLocator.registerDatasourceres();
     LabelsLocator.registerDatasources();
     await SettingsLocator.registerDatasources();
+    await Bip85DerivationsLocator.registerDatasources();
   }
 
   static Future<void> registerRepositories() async {
@@ -49,6 +51,7 @@ class CoreLocator {
     await SettingsLocator.registerRepositories();
     SwapsLocator.registerRepositories();
     WalletLocator.registerRepositories();
+    await Bip85DerivationsLocator.registerRepositories();
   }
 
   static void registerServices() {
@@ -70,5 +73,6 @@ class CoreLocator {
     SwapsLocator.registerUsecases();
     TorLocator.registerUsecases();
     WalletLocator.registerUsecases();
+    Bip85DerivationsLocator.registerUsecases();
   }
 }

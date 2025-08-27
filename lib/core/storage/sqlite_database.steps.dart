@@ -1828,6 +1828,7 @@ final class Schema5 extends i0.VersionedSchema {
     swaps,
     autoSwap,
     walletAddresses,
+    bip85Derivations,
   ];
   late final Shape0 transactions = Shape0(
     source: i0.VersionedTable(
@@ -2020,7 +2021,7 @@ final class Schema5 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape8 autoSwap = Shape8(
+  late final Shape13 autoSwap = Shape13(
     source: i0.VersionedTable(
       entityName: 'auto_swap',
       withoutRowId: false,
@@ -2033,6 +2034,7 @@ final class Schema5 extends i0.VersionedSchema {
         _column_89,
         _column_90,
         _column_91,
+        _column_101,
       ],
       attachedDatabase: database,
     ),
@@ -2054,6 +2056,17 @@ final class Schema5 extends i0.VersionedSchema {
         _column_96,
         _column_97,
       ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape14 bip85Derivations = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'bip85_derivations',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(path)'],
+      columns: [_column_102, _column_103, _column_104, _column_69, _column_105],
       attachedDatabase: database,
     ),
     alias: null,
@@ -2104,6 +2117,75 @@ i1.GeneratedColumn<DateTime> _column_100(String aliasedName) =>
       aliasedName,
       true,
       type: i1.DriftSqlType.dateTime,
+    );
+
+class Shape13 extends i0.VersionedTable {
+  Shape13({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<bool> get enabled =>
+      columnsByName['enabled']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<int> get balanceThresholdSats =>
+      columnsByName['balance_threshold_sats']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get feeThresholdPercent =>
+      columnsByName['fee_threshold_percent']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<bool> get blockTillNextExecution =>
+      columnsByName['block_till_next_execution']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<bool> get alwaysBlock =>
+      columnsByName['always_block']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<String> get recipientWalletId =>
+      columnsByName['recipient_wallet_id']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_101(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'recipient_wallet_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+    );
+
+class Shape14 extends i0.VersionedTable {
+  Shape14({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get path =>
+      columnsByName['path']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get xprvFingerprint =>
+      columnsByName['xprv_fingerprint']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get application =>
+      columnsByName['application']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get status =>
+      columnsByName['status']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get alias =>
+      columnsByName['alias']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_102(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'path',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+    );
+i1.GeneratedColumn<String> _column_103(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'xprv_fingerprint',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+    );
+i1.GeneratedColumn<String> _column_104(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'application',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+    );
+i1.GeneratedColumn<String> _column_105(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'alias',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
     );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,

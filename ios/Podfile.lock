@@ -11,8 +11,6 @@ PODS:
     - PromisesObjC (~> 2.4)
   - bdk_flutter (0.31.3):
     - Flutter
-  - bip85 (0.0.1):
-    - Flutter
   - boltz (0.1.6)
   - camera_avfoundation (0.0.1):
     - Flutter
@@ -148,7 +146,6 @@ PODS:
 
 DEPENDENCIES:
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
-  - bip85 (from `.symlinks/plugins/bip85/ios`)
   - boltz (from `.symlinks/plugins/boltz/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - dart_bbqr (from `.symlinks/plugins/dart_bbqr/ios`)
@@ -192,8 +189,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   bdk_flutter:
     :path: ".symlinks/plugins/bdk_flutter/ios"
-  bip85:
-    :path: ".symlinks/plugins/bip85/ios"
   boltz:
     :path: ".symlinks/plugins/boltz/ios"
   camera_avfoundation:
@@ -245,7 +240,6 @@ SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
   bdk_flutter: cef9180019b4c6b67a3e3dfb74611683fe140107
-  bip85: 3059e217a3a606a100dd244f21d2fc61b0a1aa83
   boltz: 6388ec2412f3753b63a9e65c97f87ea26f43bddc
   camera_avfoundation: be3be85408cd4126f250386828e9b1dfa40ab436
   dart_bbqr: bfd89cc8a74538d94ef6d87d11e4a2ad55578e7d
@@ -281,6 +275,6 @@ SPEC CHECKSUMS:
   webview_cookie_manager: d63a76cabdf42a7ea3d92768ac67d4853a1367f8
   webview_flutter_wkwebview: 1821ceac936eba6f7984d89a9f3bcb4dea99ebb2
 
-PODFILE CHECKSUM: b6fce51d85d6bfea5dd6ff4c1b945437a9e9dfa9
+PODFILE CHECKSUM: 3402bb9f9a69470d12a30feec0fd288c203ab3f5
 
 COCOAPODS: 1.16.2

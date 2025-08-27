@@ -65,6 +65,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  base85:
+    dependency: transitive
+    description:
+      name: base85
+      sha256: "0bd3fce3c94c0991133930734cfd6312f82731bc716590546d317ead6ff58922"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   base_x:
     dependency: transitive
     description:
@@ -117,11 +125,12 @@ packages:
   bip85:
     dependency: "direct main"
     description:
-      name: bip85
-      sha256: "23bc20b70f67a803bd70a4f37d78938cf576d1cd02a94393d8b52785f188f15e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
+      path: "."
+      ref: "01fac31dff26bc0269b9895540262dca75a7f911"
+      resolved-ref: "01fac31dff26bc0269b9895540262dca75a7f911"
+      url: "https://github.com/ethicnology/dart-bip85-entropy.git"
+    source: git
+    version: "1.0.0"
   bitcoin_utils:
     dependency: "direct main"
     description:
