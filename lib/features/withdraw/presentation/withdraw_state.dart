@@ -40,8 +40,6 @@ sealed class WithdrawState with _$WithdrawState {
     @Default(false) bool isConfirmingWithdrawal,
     WithdrawError? error,
   }) = WithdrawConfirmationState;
-  const factory WithdrawState.inProgress({required WithdrawOrder order}) =
-      WithdrawInProgressState;
   const factory WithdrawState.success({required WithdrawOrder order}) =
       WithdrawSuccessState;
   const WithdrawState._();
@@ -138,13 +136,7 @@ extension WithdrawConfirmationStateX on WithdrawConfirmationState {
     );
   }*/
 
-  WithdrawInProgressState toInProgressState({required WithdrawOrder order}) {
-    return WithdrawInProgressState(order: order);
-  }
-}
-
-extension WithdrawInProgressStateX on WithdrawInProgressState {
-  WithdrawSuccessState toSuccessState() {
+  WithdrawSuccessState toSuccessState({required WithdrawOrder order}) {
     return WithdrawSuccessState(order: order);
   }
 }

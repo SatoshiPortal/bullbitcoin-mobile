@@ -43,9 +43,7 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
       case FiatCurrency.crc:
         return 'CR';
       case FiatCurrency.usd:
-        return 'CR'; // USD is used in Costa Rica
-      default:
-        return 'CA'; // Default fallback
+        return 'CR'; // Default fallback
     }
   }
 

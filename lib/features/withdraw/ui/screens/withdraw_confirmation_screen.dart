@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
@@ -38,47 +39,64 @@ class WithdrawConfirmationScreen extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: ScrollableColumn(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
           children: [
-            const Gap(24.0),
-            Text(
-              'Confirm withdrawal',
-              style: context.font.headlineMedium?.copyWith(
-                color: context.colour.secondary,
+            FadingLinearProgress(
+              height: 3,
+              trigger: context.select<WithdrawBloc, bool>(
+                (bloc) =>
+                    bloc.state is WithdrawConfirmationState &&
+                    (bloc.state as WithdrawConfirmationState)
+                        .isConfirmingWithdrawal,
+              ),
+              backgroundColor: context.colour.onPrimary,
+              foregroundColor: context.colour.primary,
+            ),
+            Expanded(
+              child: ScrollableColumn(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                children: [
+                  const Gap(24.0),
+                  Text(
+                    'Confirm withdrawal',
+                    style: context.font.headlineMedium?.copyWith(
+                      color: context.colour.secondary,
+                    ),
+                  ),
+                  const Gap(4.0),
+                  const Gap(8.0),
+                  _DetailRow(
+                    title: 'Recipient name',
+                    value: recipient?.getRecipientFullName(),
+                  ),
+                  const _Divider(),
+                  _DetailRow(
+                    title: _getRecipientInfoLabel(recipient),
+                    value: _getRecipientInfoValue(recipient),
+                  ),
+                  const _Divider(),
+                  _DetailRow(
+                    title: 'Amount',
+                    value:
+                        order == null
+                            ? null
+                            : FormatAmount.fiat(
+                              order.payoutAmount,
+                              order.payoutCurrency,
+                            ),
+                  ),
+                  const Spacer(),
+                  _ConfirmButton(
+                    onConfirmPressed: () {
+                      context.read<WithdrawBloc>().add(
+                        const WithdrawEvent.confirmed(),
+                      );
+                    },
+                  ),
+                  const Gap(24.0),
+                ],
               ),
             ),
-            const Gap(4.0),
-            const Gap(8.0),
-            _DetailRow(
-              title: 'Recipient name',
-              value: recipient?.getRecipientFullName(),
-            ),
-            const _Divider(),
-            _DetailRow(
-              title: _getRecipientInfoLabel(recipient),
-              value: _getRecipientInfoValue(recipient),
-            ),
-            const _Divider(),
-            _DetailRow(
-              title: 'Amount',
-              value:
-                  order == null
-                      ? null
-                      : FormatAmount.fiat(
-                        order.payoutAmount,
-                        order.payoutCurrency,
-                      ),
-            ),
-            const Spacer(),
-            _ConfirmButton(
-              onConfirmPressed: () {
-                context.read<WithdrawBloc>().add(
-                  const WithdrawEvent.confirmed(),
-                );
-              },
-            ),
-            const Gap(24.0),
           ],
         ),
       ),
@@ -602,10 +620,6 @@ class _ConfirmButton extends StatelessWidget {
 
     return Column(
       children: [
-        if (isConfirmingWithdrawal) ...[
-          const CircularProgressIndicator(),
-          const Gap(24.0),
-        ],
         if (withdrawError != null) ...[
           Text(
             'Error: $withdrawError',

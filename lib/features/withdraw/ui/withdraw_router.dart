@@ -2,7 +2,6 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_confirmation_screen.dart';
-import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_in_progress_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_recipients_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_success_screen.dart';
 import 'package:bb_mobile/locator.dart';
@@ -12,9 +11,7 @@ import 'package:go_router/go_router.dart';
 enum WithdrawRoute {
   withdraw('/withdraw'),
   withdrawRecipients('recipients'),
-  //withdrawDescription('description'),
   withdrawConfirmation('confirmation'),
-  withdrawInProgress('in-progress'),
   withdrawSuccess('success');
 
   final String path;
@@ -95,30 +92,15 @@ class WithdrawRouter {
                 listenWhen:
                     (previous, current) =>
                         previous is WithdrawConfirmationState &&
-                        current is WithdrawInProgressState,
+                        current is WithdrawSuccessState,
                 listener: (context, state) {
-                  context.pushNamed(WithdrawRoute.withdrawInProgress.name);
+                  context.pushNamed(WithdrawRoute.withdrawSuccess.name);
                 },
                 child: const WithdrawConfirmationScreen(),
               );
             },
           ),
-          GoRoute(
-            path: WithdrawRoute.withdrawInProgress.path,
-            name: WithdrawRoute.withdrawInProgress.name,
-            builder: (context, state) {
-              return BlocListener<WithdrawBloc, WithdrawState>(
-                listenWhen:
-                    (previous, current) =>
-                        previous is WithdrawInProgressState &&
-                        current is WithdrawSuccessState,
-                listener: (context, state) {
-                  context.pushNamed(WithdrawRoute.withdrawSuccess.name);
-                },
-                child: const WithdrawInProgressScreen(),
-              );
-            },
-          ),
+
           GoRoute(
             path: WithdrawRoute.withdrawSuccess.path,
             name: WithdrawRoute.withdrawSuccess.name,

@@ -304,7 +304,7 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       final order = await _confirmWithdrawUsecase.execute(
         orderId: confirmationState.order.orderId,
       );
-      emit(confirmationState.toInProgressState(order: order));
+      emit(confirmationState.toSuccessState(order: order));
     } on WithdrawError catch (e) {
       emit(confirmationState.copyWith(error: e));
     } finally {
