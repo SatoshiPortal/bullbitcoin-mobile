@@ -143,3 +143,9 @@ flutter_launcher_icons:
   min_sdk_android: 21 # android min sdk min:16, default 21
   adaptive_icon_background: "#FBFBFB"
   adaptive_icon_foreground: "assets/misc/iconnew-red.png"
+
+dependency_overrides:
+  tor:
+    git:
+      url: https://github.com/Foundation-Devices/tor
+      ref: 440a2d2207da26683893bf8a2440499f4b43f019
