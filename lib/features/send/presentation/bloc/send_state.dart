@@ -302,7 +302,8 @@ abstract class SendState with _$SendState {
       // ignore: avoid_bool_literals_in_conditional_expressions
       selectedWallet == null
           ? false
-          : inputAmountSat <= selectedWallet!.balanceSat.toInt();
+          : (inputAmountSat <= selectedWallet!.balanceSat.toInt()) &&
+              (inputAmountSat > 0);
 
   String sendTypeName() {
     switch (sendType) {
