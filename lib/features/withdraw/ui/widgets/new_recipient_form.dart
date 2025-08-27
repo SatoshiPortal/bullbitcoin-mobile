@@ -987,7 +987,7 @@ Widget _buildCheckboxField(
       Row(
         children: [
           Checkbox(
-            value: (formData[key] as bool?) ?? false,
+            value: _parseBoolValue(formData[key]),
             onChanged: (value) => onFormDataChanged(key, value.toString()),
           ),
           Expanded(
@@ -1052,4 +1052,13 @@ Widget _buildSecurityQuestionField(
       ),
     ],
   );
+}
+
+bool _parseBoolValue(dynamic value) {
+  if (value == null) return false;
+  if (value is bool) return value;
+  if (value is String) {
+    return value.toLowerCase() == 'true';
+  }
+  return false;
 }
