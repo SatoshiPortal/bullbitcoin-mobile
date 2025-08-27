@@ -185,6 +185,7 @@ enum OrderPayoutStatus {
 
 enum OrderPaymentMethod {
   eTransfer('E-Transfer'),
+  eTransferArs('E-Transfer ARS'),
   billPayment('Bill payment'),
   bankTransfer('Bank transfer'),
   loadhub('Loadhub'),
@@ -196,6 +197,7 @@ enum OrderPaymentMethod {
   mxnBalance('MXN Balance'),
   crcBalance('CRC Balance'),
   usdBalance('USD Balance'),
+  arsBalance('ARS Balance'),
   bitcoin('Bitcoin'),
   liquid('Liquid'),
   lnAddress('Lightning address'),
