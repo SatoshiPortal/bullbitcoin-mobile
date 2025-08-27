@@ -131,7 +131,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         emit(
           state.copyWith(
             status: BackupSettingsStatus.error,
-            error: const BackupVaultCorruptedError(),
+            error: const BackupCorruptedError(),
           ),
         );
         return;
@@ -142,7 +142,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         emit(
           state.copyWith(
             status: BackupSettingsStatus.error,
-            error: const BackupVaultMissingDerivationPathError(),
+            error: const BackupMissingDerivationPathError(),
           ),
         );
         return;
@@ -193,10 +193,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     return await _selectFileFromPathUsecase.execute();
   }
 
-  Future<String> readBackupFile(String filePath) async {
-    return await _fetchBackupFromFileSystemUsecase.execute(filePath);
-  }
-
   Future<void> selectGoogleDriveProvider() async {
     try {
       emit(state.copyWith(status: BackupSettingsStatus.loading, error: null));
@@ -237,7 +233,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       emit(
         state.copyWith(
           status: BackupSettingsStatus.success,
-          selectedBackupFile: content,
+          selectedBackupFile: content.backupFile,
         ),
       );
     } catch (e) {

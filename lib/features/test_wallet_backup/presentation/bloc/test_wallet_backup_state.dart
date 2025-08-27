@@ -61,10 +61,12 @@ abstract class TestWalletBackupState with _$TestWalletBackupState {
     testMnemonicOrder,
     @Default('') String passphrase,
     @Default(TestWalletBackupStatus.none) TestWalletBackupStatus status,
-    @Default('') String statusError,
     @Default(VaultProvider.googleDrive()) VaultProvider vaultProvider,
-    @Default(BackupInfo.empty()) BackupInfo backupInfo,
+    @Default(BackupInfo.empty()) BackupInfo selectedBackup,
+    @Default(<DriveFile>[]) List<DriveFile> availableCloudBackups,
     @Default(false) bool transitioning,
+
+    @Default('') String statusError,
   }) = _TestWalletBackupState;
   const TestWalletBackupState._();
 

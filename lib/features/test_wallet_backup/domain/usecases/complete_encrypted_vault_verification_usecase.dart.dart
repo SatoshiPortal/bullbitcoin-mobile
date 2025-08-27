@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 
 class CompleteEncryptedVaultVerificationUsecase {
   final WalletRepository _walletRepository;
@@ -14,7 +15,7 @@ class CompleteEncryptedVaultVerificationUsecase {
         environment: Environment.mainnet,
       );
       if (defaultWallets.isEmpty) {
-        throw Exception('No default wallet found');
+        throw const NoDefaultWalletFoundError();
       }
 
       for (final defaultWallet in defaultWallets) {

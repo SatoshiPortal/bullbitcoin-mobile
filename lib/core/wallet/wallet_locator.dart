@@ -125,6 +125,7 @@ class WalletLocator {
         walletRepository: locator<WalletRepository>(),
       ),
     );
+
     locator.registerFactory<GetWalletUsecase>(
       () => GetWalletUsecase(walletRepository: locator<WalletRepository>()),
     );

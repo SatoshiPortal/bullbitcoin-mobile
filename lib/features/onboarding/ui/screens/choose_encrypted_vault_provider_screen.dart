@@ -56,26 +56,19 @@ class _ScreenState extends State<_Screen> {
       listenWhen:
           (previous, current) =>
               current.onboardingStepStatus != previous.onboardingStepStatus,
-      listener: (context, state) {
-        if (state.onboardingStepStatus == OnboardingStepStatus.success &&
-            !state.backupInfo.isCorrupted) {
-          // Mark that we're starting navigation
+      listener: (context, state) async {
+        if (state.onboardingStepStatus == OnboardingStepStatus.success) {
           context.read<OnboardingBloc>().add(const StartTransitioning());
-
-          // Capture the bloc before the async gap
           final bloc = context.read<OnboardingBloc>();
-
-          context
-              .pushNamed(
-                OnboardingRoute.retrievedBackupInfo.name,
-                extra: state.backupInfo,
-              )
-              .then((_) {
-                // When we return from the route, end the navigation state
-                if (mounted) {
-                  bloc.add(const EndTransitioning());
-                }
-              });
+          if (state.availableCloudBackups.isNotEmpty) {
+            await context.pushNamed(
+              OnboardingRoute.availableGoogleBackupsForRecovery.name,
+              extra: state.availableCloudBackups,
+            );
+          }
+          if (mounted) {
+            bloc.add(const EndTransitioning());
+          }
         }
       },
       child: BlocBuilder<OnboardingBloc, OnboardingState>(
