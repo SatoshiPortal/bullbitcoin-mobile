@@ -54,16 +54,35 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
     // Preselect country based on currency from bloc
     final withdrawBloc = context.read<WithdrawBloc>();
     final currentState = withdrawBloc.state;
+
+    // Try to get currency from current state or fallback to default
+    FiatCurrency? currency;
     if (currentState is WithdrawRecipientInputState) {
-      selectedCountry = _getCountryCodeFromCurrency(currentState.currency);
+      currency = currentState.currency;
+    } else if (currentState is WithdrawConfirmationState) {
+      currency = currentState.currency;
+    } else if (currentState is WithdrawAmountInputState) {
+      currency =
+          currentState.userSummary.currency != null
+              ? FiatCurrency.fromCode(currentState.userSummary.currency!)
+              : null;
+    }
+
+    // Set selectedCountry based on available currency or use default
+    if (currency != null) {
+      selectedCountry = _getCountryCodeFromCurrency(currency);
       log.info(
-        '🌍 Preselected country: $selectedCountry for currency: ${currentState.currency.code}',
+        '🌍 Preselected country: $selectedCountry for currency: ${currency.code}',
       );
 
       // Auto-select SEPA for Europe since it's the only option
       if (selectedCountry == 'EU') {
         selectedPayoutMethod = WithdrawRecipientType.sepaEur;
       }
+    } else {
+      // Fallback to default currency (CAD)
+      selectedCountry = 'CA';
+      log.info('🌍 Using default country: $selectedCountry');
     }
 
     // Listen to bloc state changes
@@ -84,6 +103,42 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
         }
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Ensure country is set when dependencies change (e.g., when navigating back)
+    if (selectedCountry == null) {
+      final withdrawBloc = context.read<WithdrawBloc>();
+      final currentState = withdrawBloc.state;
+
+      FiatCurrency? currency;
+      if (currentState is WithdrawRecipientInputState) {
+        currency = currentState.currency;
+      } else if (currentState is WithdrawConfirmationState) {
+        currency = currentState.currency;
+      } else if (currentState is WithdrawAmountInputState) {
+        currency =
+            currentState.userSummary.currency != null
+                ? FiatCurrency.fromCode(currentState.userSummary.currency!)
+                : null;
+      }
+
+      if (currency != null) {
+        setState(() {
+          selectedCountry = _getCountryCodeFromCurrency(currency!);
+          if (selectedCountry == 'EU') {
+            selectedPayoutMethod = WithdrawRecipientType.sepaEur;
+          }
+        });
+      } else {
+        setState(() {
+          selectedCountry = 'CA';
+        });
+      }
+    }
   }
 
   List<WithdrawRecipientType> get payoutMethodsForCountry {

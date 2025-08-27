@@ -17,6 +17,7 @@ sealed class WithdrawState with _$WithdrawState {
     required FiatAmount amount,
     required FiatCurrency currency,
     @Default(false) bool isCreatingWithdrawOrder,
+    @Default(false) bool isCreatingNewRecipient,
     WithdrawError? error,
     NewRecipient? newRecipient,
   }) = WithdrawRecipientInputState;
@@ -67,6 +68,8 @@ extension WithdrawAmountInputStateX on WithdrawAmountInputState {
       recipients: recipients,
       amount: amount,
       currency: currency,
+      isCreatingWithdrawOrder: false,
+      isCreatingNewRecipient: false,
     );
   }
 }
@@ -124,6 +127,8 @@ extension WithdrawConfirmationStateX on WithdrawConfirmationState {
       recipients: recipients,
       amount: amount,
       currency: currency,
+      isCreatingWithdrawOrder: false,
+      isCreatingNewRecipient: false,
     );
   }
   /*WithdrawDescriptionInputState toDescriptionInputState() {

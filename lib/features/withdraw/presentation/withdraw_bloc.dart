@@ -132,6 +132,9 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     if (state is WithdrawRecipientInputState) {
       final currentState = state as WithdrawRecipientInputState;
 
+      // Set loading state for new recipient creation
+      emit(currentState.copyWith(isCreatingNewRecipient: true));
+
       // Use the recipient from the event directly
       final newRecipient = event.newRecipient;
       log.info('🏭 Executing createFiatRecipientUsecase...');
@@ -150,9 +153,11 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
         ];
 
         // Update state with the new recipient list and clear the newRecipient
+        // Keep isCreatingNewRecipient true for the order creation phase
         final updatedState = currentState.copyWith(
           recipients: updatedRecipients,
           newRecipient: null,
+          isCreatingNewRecipient: true,
         );
         emit(updatedState);
         log.info('✅ State updated with new recipient list');
@@ -181,6 +186,7 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
             error: WithdrawError.unexpected(
               message: 'Failed to create recipient: $e',
             ),
+            isCreatingNewRecipient: false, // Reset loading state on error
           ),
         );
       }

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
@@ -63,51 +64,72 @@ class _WithdrawRecipientsScreenState extends State<WithdrawRecipientsScreen> {
                 : null,
         scrolledUnderElevation: 0,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [
-              ColoredBox(
-                color: Theme.of(context).scaffoldBackgroundColor,
+      body: Column(
+        children: [
+          FadingLinearProgress(
+            height: 3,
+            trigger: context.select<WithdrawBloc, bool>((bloc) {
+              final state = bloc.state;
+              if (state is WithdrawRecipientInputState) {
+                return state.isCreatingWithdrawOrder ||
+                    state.isCreatingNewRecipient;
+              }
+              return false;
+            }),
+            backgroundColor: context.colour.onPrimary,
+            foregroundColor: context.colour.primary,
+          ),
+          Expanded(
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
                   children: [
-                    const Gap(40.0),
-                    Text(
-                      'Where and how should we send the money?',
-                      style: context.font.labelMedium?.copyWith(
-                        color: Colors.black,
+                    ColoredBox(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      child: Column(
+                        children: [
+                          const Gap(40.0),
+                          Text(
+                            'Where and how should we send the money?',
+                            style: context.font.labelMedium?.copyWith(
+                              color: Colors.black,
+                            ),
+                          ),
+                          const Gap(16.0),
+                          SizedBox(
+                            width: double.infinity,
+                            child: BBSegmentFull(
+                              items: {
+                                RecipientsTab.newRecipient.displayValue,
+                                RecipientsTab.myRecipients.displayValue,
+                              },
+                              initialValue: _selectedTab.displayValue,
+                              onSelected: (value) {
+                                _onTabSelected(
+                                  RecipientsTab.fromDisplayValue(value),
+                                );
+                              },
+                            ),
+                          ),
+                          const Gap(16.0),
+                        ],
                       ),
                     ),
-                    const Gap(16.0),
-                    SizedBox(
-                      width: double.infinity,
-                      child: BBSegmentFull(
-                        items: {
-                          RecipientsTab.newRecipient.displayValue,
-                          RecipientsTab.myRecipients.displayValue,
-                        },
-                        initialValue: _selectedTab.displayValue,
-                        onSelected: (value) {
-                          _onTabSelected(RecipientsTab.fromDisplayValue(value));
-                        },
-                      ),
+                    Expanded(
+                      child: switch (_selectedTab) {
+                        RecipientsTab.newRecipient => const NewRecipientForm(),
+                        RecipientsTab.myRecipients => _WithdrawRecipientsTab(
+                          key: ValueKey(_selectedTab),
+                        ),
+                      },
                     ),
-                    const Gap(16.0),
                   ],
                 ),
               ),
-              Expanded(
-                child: switch (_selectedTab) {
-                  RecipientsTab.newRecipient => const NewRecipientForm(),
-                  RecipientsTab.myRecipients => _WithdrawRecipientsTab(
-                    key: ValueKey(_selectedTab),
-                  ),
-                },
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -289,8 +311,6 @@ class _ContinueButton extends StatelessWidget {
       color: context.theme.scaffoldBackgroundColor,
       child: Column(
         children: [
-          if (isCreatingWithdrawOrder)
-            const Center(child: CircularProgressIndicator()),
           const Gap(16.0),
           BBButton.big(
             label: 'Continue',
