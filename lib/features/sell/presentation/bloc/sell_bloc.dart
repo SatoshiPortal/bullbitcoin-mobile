@@ -169,6 +169,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       log.severe('Expected to be on SellWalletSelectionState but on: $state');
       return;
     }
+    emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
 
     int requiredAmountSat;
     final exchangeRateEstimate = await _convertSatsToCurrencyAmountUsecase
@@ -238,9 +239,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       );
       return;
     }
-
     emit(walletSelectionState.copyWith(isCreatingSellOrder: true));
-
     try {
       final createdSellOrder = await _createSellOrderUsecase.execute(
         orderAmount: walletSelectionState.orderAmount,

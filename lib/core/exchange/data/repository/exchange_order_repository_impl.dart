@@ -473,7 +473,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   Future<WithdrawOrder> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
-    required String paymentProcessor,
+    bool isETransfer = false,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
@@ -488,7 +488,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         apiKey: apiKeyModel.key,
         fiatAmount: fiatAmount,
         recipientId: recipientId,
-        paymentProcessor: paymentProcessor,
+        isETransfer: isETransfer,
       );
 
       final order = orderModel.toEntity(isTestnet: _isTestnet) as WithdrawOrder;

@@ -127,7 +127,6 @@ class SellRouter {
                   child: const SellReceivePaymentScreen(),
                 ),
           ),
-
           GoRoute(
             name: SellRoute.sellSuccess.name,
             path: SellRoute.sellSuccess.path,

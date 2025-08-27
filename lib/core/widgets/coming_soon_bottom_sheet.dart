@@ -4,18 +4,21 @@ import 'package:flutter/material.dart';
 class ComingSoonBottomSheet extends StatelessWidget {
   final String description;
   final String? icon;
+  final void Function()? onDismissed;
 
   const ComingSoonBottomSheet({
     super.key,
     this.description =
         'This feature is currently under development and will be available soon.',
     this.icon,
+    this.onDismissed,
   });
 
   static Future<void> show(
     BuildContext context, {
     String? description,
     String? icon,
+    void Function()? onDismissed,
   }) {
     final theme = Theme.of(context);
     return showModalBottomSheet<void>(
@@ -30,6 +33,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
                 description ??
                 'This feature is currently under development and will be available soon.',
             icon: icon,
+            onDismissed: onDismissed,
           ),
     );
   }
@@ -85,7 +89,10 @@ class ComingSoonBottomSheet extends StatelessWidget {
               const SizedBox(height: 24),
               BBButton.big(
                 label: 'OK',
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  onDismissed?.call();
+                },
                 bgColor: theme.colorScheme.secondary,
                 textColor: theme.colorScheme.onPrimary,
               ),
