@@ -81,8 +81,8 @@ class SqliteDatabase extends _$SqliteDatabase {
       },
       onUpgrade: stepByStep(
         from1To2: (m, schema) async {
-          // Create AutoSwap table and seed it
-          await m.createTable(autoSwap);
+          // Create AutoSwap table (without recipientWalletId column) and seed it
+          await m.createTable(schema.autoSwap);
           await _seedDefaultAutoSwap();
         },
         from2To3: (m, schema) async {
