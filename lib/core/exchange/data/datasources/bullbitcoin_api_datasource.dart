@@ -446,7 +446,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'securityAnswer': 'Orange',
       };
     }
-
+    log.info('Create withdrawal order request: $params');
     final resp = await _http.post(
       _ordersPath,
       data: {

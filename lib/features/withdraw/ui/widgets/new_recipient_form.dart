@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/exchange/domain/entity/new_recipient_factory.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -29,25 +31,69 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
     {'code': 'CR', 'name': 'Costa Rica', 'flag': '🇨🇷'},
   ];
 
+  // Map currency to country code
+  String _getCountryCodeFromCurrency(FiatCurrency currency) {
+    switch (currency) {
+      case FiatCurrency.cad:
+        return 'CA';
+      case FiatCurrency.eur:
+        return 'EU';
+      case FiatCurrency.mxn:
+        return 'MX';
+      case FiatCurrency.crc:
+        return 'CR';
+      case FiatCurrency.usd:
+        return 'CR'; // USD is used in Costa Rica
+      default:
+        return 'CA'; // Default fallback
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Preselect country based on currency from bloc
+    final withdrawBloc = context.read<WithdrawBloc>();
+    final currentState = withdrawBloc.state;
+    if (currentState is WithdrawRecipientInputState) {
+      selectedCountry = _getCountryCodeFromCurrency(currentState.currency);
+      log.info(
+        '🌍 Preselected country: $selectedCountry for currency: ${currentState.currency.code}',
+      );
+
+      // Auto-select SEPA for Europe since it's the only option
+      if (selectedCountry == 'EU') {
+        selectedPayoutMethod = WithdrawRecipientType.sepaEur;
+      }
+    }
+
+    // Listen to bloc state changes
+    withdrawBloc.stream.listen((state) {
+      if (state is WithdrawRecipientInputState) {
+        final newCountry = _getCountryCodeFromCurrency(state.currency);
+        if (newCountry != selectedCountry) {
+          setState(() {
+            selectedCountry = newCountry;
+            selectedPayoutMethod = null;
+            formData.clear();
+
+            // Auto-select SEPA for Europe
+            if (newCountry == 'EU') {
+              selectedPayoutMethod = WithdrawRecipientType.sepaEur;
+            }
+          });
+        }
+      }
+    });
+  }
+
   List<WithdrawRecipientType> get payoutMethodsForCountry {
     if (selectedCountry == null) return [];
 
     return WithdrawRecipientType.values.where((type) {
       return type.countryCode == selectedCountry;
     }).toList();
-  }
-
-  void _onCountryChanged(String? countryCode) {
-    setState(() {
-      selectedCountry = countryCode;
-      // Auto-select SEPA for Europe since it's the only option
-      if (countryCode == 'EU') {
-        selectedPayoutMethod = WithdrawRecipientType.sepaEur;
-      } else {
-        selectedPayoutMethod = null;
-      }
-      formData.clear();
-    });
   }
 
   void _onPayoutMethodChanged(WithdrawRecipientType? method) {
@@ -158,53 +204,69 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
   }
 
   Widget _buildCountryDropdown() {
+    if (selectedCountry == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BBText(
+            'Country',
+            style: context.font.bodyLarge?.copyWith(
+              color: context.colour.secondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const Gap(8),
+          Container(
+            height: 56,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: context.colour.onPrimary,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: context.colour.outline),
+            ),
+            child: Center(
+              child: BBText(
+                'Loading...',
+                style: context.font.headlineSmall?.copyWith(
+                  color: context.colour.outline,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    final country = countries.firstWhere((c) => c['code'] == selectedCountry);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          'Select country',
+          'Country',
           style: context.font.bodyLarge?.copyWith(
             color: context.colour.secondary,
             fontWeight: FontWeight.w500,
           ),
         ),
         const Gap(8),
-        SizedBox(
+        Container(
           height: 56,
-          child: Material(
-            elevation: 4,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
             color: context.colour.onPrimary,
             borderRadius: BorderRadius.circular(4),
-            child: Center(
-              child: DropdownButtonFormField<String>(
-                value: selectedCountry,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
-                ),
-                items:
-                    countries.map((country) {
-                      return DropdownMenuItem<String>(
-                        value: country['code'],
-                        child: BBText(
-                          '${country['flag']} ${country['name']}',
-                          style: context.font.headlineSmall,
-                        ),
-                      );
-                    }).toList(),
-                onChanged: _onCountryChanged,
-                hint: BBText(
-                  'Select a country',
-                  style: context.font.headlineSmall?.copyWith(
-                    color: context.colour.outline,
-                  ),
-                ),
+            border: Border.all(color: context.colour.outline),
+          ),
+          child: Row(
+            children: [
+              BBText(
+                '${country['flag']} ${country['name']}',
+                style: context.font.headlineSmall,
               ),
-            ),
+              const Spacer(),
+              Icon(Icons.lock, color: context.colour.outline, size: 20),
+            ],
           ),
         ),
       ],
