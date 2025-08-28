@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vaul
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_backups_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
@@ -115,6 +116,9 @@ class RecoverbullLocator {
       () => CompletePhysicalBackupVerificationUsecase(
         walletRepository: locator<WalletRepository>(),
       ),
+    );
+    locator.registerFactory<FetchAllDriveBackupsUsecase>(
+      () => FetchAllDriveBackupsUsecase(locator<GoogleDriveRepository>()),
     );
   }
 }
