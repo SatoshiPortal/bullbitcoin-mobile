@@ -58,7 +58,7 @@ class _Screen extends StatelessWidget {
               current.statusError != previous.statusError,
       listener: (context, state) {
         if (state.status == TestWalletBackupStatus.success &&
-            !state.backupInfo.isCorrupted) {
+            state.bullBackup != null) {
           // Mark that we're starting navigation
           context.read<TestWalletBackupBloc>().add(const StartTransitioning());
 
@@ -68,7 +68,7 @@ class _Screen extends StatelessWidget {
           context
               .pushNamed(
                 TestWalletBackupSubroute.testBackupInfo.name,
-                extra: state.backupInfo,
+                extra: state.bullBackup,
               )
               .then((_) {
                 // When we return from the route, end the navigation state

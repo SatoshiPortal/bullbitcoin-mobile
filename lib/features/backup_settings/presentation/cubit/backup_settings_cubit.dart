@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
@@ -126,8 +126,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         state.copyWith(status: BackupSettingsStatus.viewingKey, error: null),
       );
 
-      final backupInfo = backupFile.backupInfo;
-      if (backupInfo.isCorrupted) {
+      if (!BullBackup.isValid(backupFile)) {
         emit(
           state.copyWith(
             status: BackupSettingsStatus.error,
@@ -137,20 +136,13 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         return;
       }
 
-      final path = backupInfo.path;
-      if (path == null) {
-        emit(
-          state.copyWith(
-            status: BackupSettingsStatus.error,
-            error: const BackupVaultMissingDerivationPathError(),
-          ),
-        );
-        return;
-      }
+      final backup = BullBackup(backupFile: backupFile);
 
       String? backupKey;
       try {
-        backupKey = await _createBackupKeyFromDefaultSeedUsecase.execute(path);
+        backupKey = await _createBackupKeyFromDefaultSeedUsecase.execute(
+          backup.derivationPath,
+        );
       } catch (e) {
         log.severe('Local backup key derivation failed: $e');
         emit(

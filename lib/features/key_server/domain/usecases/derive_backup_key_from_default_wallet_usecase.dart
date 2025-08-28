@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/key_server/data/services/backup_key_service.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
@@ -12,13 +12,14 @@ class DeriveBackupKeyFromDefaultWalletUsecase {
 
   Future<String> execute({required String backupFile}) async {
     try {
-      final backupInfo = backupFile.backupInfo;
-      if (backupInfo.isCorrupted) {
+      if (!BullBackup.isValid(backupFile)) {
         throw const KeyServerError.invalidBackupFile();
       }
 
+      final backup = BullBackup(backupFile: backupFile);
+
       return await _backupKeyService.deriveBackupKeyFromDefaultSeed(
-        path: backupInfo.path,
+        path: backup.derivationPath,
       );
     } catch (e) {
       log.severe('$DeriveBackupKeyFromDefaultWalletUsecase: $e');

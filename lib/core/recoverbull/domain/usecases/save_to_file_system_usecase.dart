@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
 class SaveToFileSystemUsecase {
@@ -13,8 +13,9 @@ class SaveToFileSystemUsecase {
     try {
       final now = DateTime.now();
       final formattedDate = now.millisecondsSinceEpoch;
-      final backupInfo = content.backupInfo;
-      final filename = '${formattedDate}_${backupInfo.id}.json';
+      final backup = BullBackup(backupFile: content);
+      // TODO(azad): filename
+      final filename = '${formattedDate}_${backup.id}.json';
 
       final backupDir = await Directory(path).create(recursive: true);
       final file = File('${backupDir.path}/$filename');

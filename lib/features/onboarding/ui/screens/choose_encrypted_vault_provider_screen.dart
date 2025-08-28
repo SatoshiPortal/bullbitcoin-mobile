@@ -58,7 +58,7 @@ class _ScreenState extends State<_Screen> {
               current.onboardingStepStatus != previous.onboardingStepStatus,
       listener: (context, state) {
         if (state.onboardingStepStatus == OnboardingStepStatus.success &&
-            !state.backupInfo.isCorrupted) {
+            state.bullBackup != null) {
           // Mark that we're starting navigation
           context.read<OnboardingBloc>().add(const StartTransitioning());
 
@@ -68,7 +68,7 @@ class _ScreenState extends State<_Screen> {
           context
               .pushNamed(
                 OnboardingRoute.retrievedBackupInfo.name,
-                extra: state.backupInfo,
+                extra: state.bullBackup,
               )
               .then((_) {
                 // When we return from the route, end the navigation state

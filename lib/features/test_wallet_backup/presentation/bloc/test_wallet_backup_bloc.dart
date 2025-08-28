@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
@@ -93,13 +93,13 @@ class TestWalletBackupBloc
       await _connectToGoogleDriveUsecase.execute();
       emit(state.copyWith(vaultProvider: const VaultProvider.googleDrive()));
 
-      final (content: encryptedBackup, fileName: _) =
+      final (content: backupFile, fileName: _) =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
 
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          backupInfo: encryptedBackup.backupInfo,
+          bullBackup: BullBackup(backupFile: backupFile),
         ),
       );
     } catch (e) {
@@ -133,13 +133,13 @@ class TestWalletBackupBloc
         state.copyWith(vaultProvider: VaultProvider.fileSystem(selectedFile)),
       );
 
-      final encryptedBackup = await _fetchBackupFromFileSystemUsecase.execute(
+      final backupFile = await _fetchBackupFromFileSystemUsecase.execute(
         selectedFile,
       );
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          backupInfo: encryptedBackup.backupInfo,
+          bullBackup: BullBackup(backupFile: backupFile),
         ),
       );
     } catch (e) {
@@ -200,8 +200,7 @@ class TestWalletBackupBloc
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.error,
-          statusError:
-              'Failed to test backup: ${event.backupFile.backupInfo.id}',
+          statusError: 'Failed to test backup: $e',
         ),
       );
     }

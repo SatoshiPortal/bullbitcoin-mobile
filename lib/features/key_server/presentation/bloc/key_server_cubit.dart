@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -134,9 +134,9 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   Future<void> autoFetchKey() async {
     try {
       emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
-      final backupInfo = state.backupFile.backupInfo;
+      final backup = BullBackup(backupFile: state.backupFile);
       final backupKey = await createBackupKeyFromDefaultSeedUsecase.execute(
-        backupInfo.path ?? '',
+        backup.derivationPath,
       );
 
       if (backupKey.isNotEmpty) {

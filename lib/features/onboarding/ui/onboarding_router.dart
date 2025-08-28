@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/fetched_backup_info_screen.dart';
@@ -93,8 +93,8 @@ class OnboardingRouter {
                 name: OnboardingRoute.retrievedBackupInfo.name,
                 path: OnboardingRoute.retrievedBackupInfo.path,
                 builder: (context, state) {
-                  final backupInfo = state.extra! as BackupInfo;
-                  return FetchedBackupInfoScreen(encryptedInfo: backupInfo);
+                  final bullBackup = state.extra! as BullBackup;
+                  return FetchedBackupInfoScreen(bullBackup: bullBackup);
                 },
               ),
               GoRoute(

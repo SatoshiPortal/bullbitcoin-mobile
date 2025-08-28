@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/choose_encrypted_vault_provider_screen.dart';
 // import 'package:bb_mobile/features/test_wallet_backup/ui/screens/choose_encrypted_vault_provider_screen.dart';
@@ -30,8 +30,8 @@ class TestWalletBackupRouter {
       name: TestWalletBackupSubroute.testBackupInfo.name,
       path: TestWalletBackupSubroute.testBackupInfo.path,
       builder: (context, state) {
-        final backupInfo = state.extra! as BackupInfo;
-        return FetchedBackupInfoScreen(encryptedInfo: backupInfo);
+        final bullBackup = state.extra! as BullBackup;
+        return FetchedBackupInfoScreen(bullBackup: bullBackup);
       },
     ),
     GoRoute(

@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/key_server/data/services/backup_key_service.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart'
     show KeyServerError;
-import 'package:recoverbull/recoverbull.dart';
+import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
 /// Stores a backup key on the server with password protection
 class StoreBackupKeyIntoServerUsecase {
@@ -23,13 +23,14 @@ class StoreBackupKeyIntoServerUsecase {
     required String backupKey,
   }) async {
     try {
-      final backupInfo = backupFile.backupInfo;
-      if (backupInfo.isCorrupted) {
+      if (!BullBackup.isValid(backupFile)) {
         throw const KeyServerError.invalidBackupFile();
       }
 
+      final backup = BullBackup(backupFile: backupFile);
+
       final derivedKey = await _backupKeyService.deriveBackupKeyFromDefaultSeed(
-        path: backupInfo.path,
+        path: backup.derivationPath,
       );
 
       if (backupKey != derivedKey) {
@@ -37,12 +38,12 @@ class StoreBackupKeyIntoServerUsecase {
       }
 
       await _recoverBullRepository.storeBackupKey(
-        backupInfo.id,
+        backup.id,
         password,
-        backupInfo.salt,
+        backup.salt,
         backupKey,
       );
-    } on KeyServerException catch (e) {
+    } on recoverbull.KeyServerException catch (e) {
       log.severe('$StoreBackupKeyIntoServerUsecase: $e');
       throw KeyServerError.fromException(e);
     } catch (e) {

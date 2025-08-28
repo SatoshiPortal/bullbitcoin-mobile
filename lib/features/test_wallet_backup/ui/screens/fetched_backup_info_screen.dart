@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -11,8 +11,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class FetchedBackupInfoScreen extends StatelessWidget {
-  final BackupInfo encryptedInfo;
-  const FetchedBackupInfoScreen({super.key, required this.encryptedInfo});
+  final BullBackup bullBackup;
+  const FetchedBackupInfoScreen({super.key, required this.bullBackup});
 
   @override
   Widget build(BuildContext context) {
@@ -45,13 +45,13 @@ class FetchedBackupInfoScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _KeyValueRow(label: 'Backup ID:', value: encryptedInfo.id),
+                  _KeyValueRow(label: 'Backup ID:', value: bullBackup.id),
                   const Gap(8),
                   _KeyValueRow(
                     label: 'Created at:',
                     value: DateFormat(
                       "yyyy-MMM-dd, HH:mm:ss",
-                    ).format(encryptedInfo.createdAt.toLocal()),
+                    ).format(bullBackup.createdAt.toLocal()),
                   ),
                 ],
               ),
@@ -64,7 +64,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                     () => context.push(
                       KeyServerRoute.keyServerFlow.path,
                       extra: (
-                        encryptedInfo.backupFile,
+                        bullBackup.file,
                         CurrentKeyServerFlow.recoveryWithBackupKey.name,
                         false,
                       ),
@@ -81,7 +81,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                   () => context.pushNamed(
                     KeyServerRoute.keyServerFlow.name,
                     extra: (
-                      encryptedInfo.backupFile,
+                      bullBackup.file,
                       CurrentKeyServerFlow.recovery.name,
                       false,
                     ),

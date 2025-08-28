@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -29,8 +29,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
     required String backupKey,
   }) async {
     try {
-      final backupInfo = backupFile.backupInfo;
-      if (backupInfo.isCorrupted) {
+      if (!BullBackup.isValid(backupFile)) {
         throw const KeyServerError.invalidBackupFile();
       }
 

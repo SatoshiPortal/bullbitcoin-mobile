@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
@@ -127,7 +127,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     try {
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.loading));
 
-      final encryptedBackup = await switch (state.vaultProvider) {
+      final backupFile = await switch (state.vaultProvider) {
         FileSystem(:final fileAsString) => _fetchBackupFromFileSystemUsecase
             .execute(fileAsString),
         GoogleDrive() => _fetchLatestGoogleDriveBackupUsecase.execute().then(
@@ -139,7 +139,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.success,
-          backupInfo: encryptedBackup.backupInfo,
+          bullBackup: BullBackup(backupFile: backupFile),
         ),
       );
     } catch (e) {
@@ -165,10 +165,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       );
       return;
     } catch (e) {
-      await _handleError(
-        'Failed recover the wallet: ${event.backupFile.backupInfo.id}',
-        emit,
-      );
+      await _handleError('Failed recover the wallet', emit);
       return;
     }
   }
