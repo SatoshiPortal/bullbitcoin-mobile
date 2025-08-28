@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
 class DriveFileMetadataModel {
@@ -24,8 +24,8 @@ class DriveFileMetadataModel {
     );
   }
 
-  DriveFile toDomain() {
-    return DriveFile(id: id, name: name, createdTime: createdTime);
+  DriveFileMetadata toEntity() {
+    return DriveFileMetadata(id: id, name: name, createdTime: createdTime);
   }
 }
 
