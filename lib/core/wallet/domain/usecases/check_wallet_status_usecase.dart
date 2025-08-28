@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
+// This usecase has to be reworked, it has been implemented this way because of deadline
 class TheDirtyUsecase {
   TheDirtyUsecase(this._settingsRepository, this._electrumServerRepository);
   final SettingsRepository _settingsRepository;
