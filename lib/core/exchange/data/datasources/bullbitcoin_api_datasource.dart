@@ -522,8 +522,10 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     );
 
     if (resp.statusCode != 200) {
+      log.info('List fiat recipients error: ${resp.data}');
       throw Exception('Failed to list fiat recipients');
     }
+    log.info('List fiat recipients response: ${resp.data}');
     final elements = resp.data['result']['elements'] as List<dynamic>?;
 
     if (elements == null) return [];
@@ -549,6 +551,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     );
     log.info('Create fiat recipient response: ${resp.data}');
     if (resp.statusCode != 200) {
+      log.info('Create fiat recipient error: ${resp.data}');
       throw Exception('Failed to create fiat recipient');
     }
 
