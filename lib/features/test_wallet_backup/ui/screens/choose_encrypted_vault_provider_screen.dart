@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/selectors/backup_provider_selector.dart';
+import 'package:bb_mobile/core/widgets/selectors/recoverbull_vault_provider_selector.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -156,7 +156,7 @@ class _Screen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: BackupProviderSelector(
+        child: RecoverbullVaultProviderSelector(
           description:
               'Test to make sure you can retrieve your encrypted vault.',
           onProviderSelected:

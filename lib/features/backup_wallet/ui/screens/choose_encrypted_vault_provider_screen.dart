@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/selectors/backup_provider_selector.dart';
+import 'package:bb_mobile/core/widgets/selectors/recoverbull_vault_provider_selector.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
@@ -160,7 +160,7 @@ class _Screen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BackupProviderSelector(
+            RecoverbullVaultProviderSelector(
               onProviderSelected:
                   (provider) => onProviderSelected(context, provider),
             ),
