@@ -12,13 +12,13 @@ class GoogleDriveRepository {
 
   Future<void> disconnect() => _dataSource.disconnect();
 
-  Future<List<DriveFileMetadata>> fetchBackupFiles() async {
-    final files = await _dataSource.fetchAll();
+  Future<List<DriveFileMetadata>> fetchAllMetadata() async {
+    final files = await _dataSource.fetchAllMetadata();
     return files.map((file) => file.toEntity()).toList();
   }
 
   Future<String> fetchBackupContent(String fileId) async {
-    final bytes = await _dataSource.fetchContent(fileId);
+    final bytes = await _dataSource.fetchFileContent(fileId);
     return utf8.decode(bytes);
   }
 

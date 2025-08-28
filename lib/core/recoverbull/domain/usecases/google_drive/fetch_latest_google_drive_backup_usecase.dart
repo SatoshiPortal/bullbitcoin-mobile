@@ -7,7 +7,7 @@ class FetchLatestGoogleDriveBackupUsecase {
 
   Future<({String content, String fileName})> execute() async {
     try {
-      final availableBackups = await _repository.fetchBackupFiles();
+      final availableBackups = await _repository.fetchAllMetadata();
       final latestBackup = availableBackups.reduce((a, b) {
         final aTime = a.createdTime;
         final bTime = b.createdTime;

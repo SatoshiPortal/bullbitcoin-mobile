@@ -39,7 +39,7 @@ class GoogleDriveAppDatasource {
     _driveApi = null;
   }
 
-  Future<List<DriveFileMetadataModel>> fetchAll() async {
+  Future<List<DriveFileMetadataModel>> fetchAllMetadata() async {
     _checkConnection();
     final response = await _driveApi!.files.list(
       spaces: 'appDataFolder',
@@ -53,7 +53,7 @@ class GoogleDriveAppDatasource {
         [];
   }
 
-  Future<List<int>> fetchContent(String fileId) async {
+  Future<List<int>> fetchFileContent(String fileId) async {
     _checkConnection();
     final media =
         await _driveApi!.files.get(
