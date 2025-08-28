@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:bb_mobile/core/recoverbull/data/models/drive_file_metadata_model.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -38,7 +39,7 @@ class GoogleDriveAppDatasource {
     _driveApi = null;
   }
 
-  Future<List<drive.File>> fetchAll() async {
+  Future<List<DriveFileMetadataModel>> fetchAll() async {
     _checkConnection();
     final response = await _driveApi!.files.list(
       spaces: 'appDataFolder',
@@ -46,7 +47,10 @@ class GoogleDriveAppDatasource {
       $fields: 'files(id, name, createdTime)',
       orderBy: 'createdTime desc',
     );
-    return response.files ?? [];
+    return response.files
+            ?.map((file) => DriveFileMetadataModel.fromDriveFile(file))
+            .toList() ??
+        [];
   }
 
   Future<List<int>> fetchContent(String fileId) async {
