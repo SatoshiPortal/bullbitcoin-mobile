@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/widgets/transaction_details_widget.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,9 +30,6 @@ class BroadcastSignedTxPage extends StatelessWidget {
       body: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
         builder: (context, state) {
           final cubit = context.read<BroadcastSignedTxCubit>();
-          final isSuperuser = context.select(
-            (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-          );
 
           return SingleChildScrollView(
             child: Column(
@@ -66,20 +62,19 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                   const Gap(32),
 
-                  if (isSuperuser)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 100, right: 100),
-                      child: BBButton.big(
-                        label: 'NFC (PushTx)',
-                        onPressed:
-                            () => context.pushNamed(
-                              BroadcastSignedTxRoute.broadcastScanNfc.name,
-                            ),
-                        bgColor: context.colour.onPrimary,
-                        textColor: context.colour.secondary,
-                        iconData: Icons.nfc,
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 100, right: 100),
+                    child: BBButton.big(
+                      label: 'NFC (PushTx)',
+                      onPressed:
+                          () => context.pushNamed(
+                            BroadcastSignedTxRoute.broadcastScanNfc.name,
+                          ),
+                      bgColor: context.colour.onPrimary,
+                      textColor: context.colour.secondary,
+                      iconData: Icons.nfc,
                     ),
+                  ),
                 ],
 
                 if (state.error != null)
