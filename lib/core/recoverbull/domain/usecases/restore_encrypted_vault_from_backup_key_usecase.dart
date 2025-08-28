@@ -29,7 +29,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
     required String backupKey,
   }) async {
     try {
-      if (!BullBackup.isValid(backupFile)) {
+      if (!BullBackupEntity.isValid(backupFile)) {
         throw const KeyServerError.invalidBackupFile();
       }
 

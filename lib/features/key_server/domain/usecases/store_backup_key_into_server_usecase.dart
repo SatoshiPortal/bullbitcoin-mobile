@@ -23,11 +23,11 @@ class StoreBackupKeyIntoServerUsecase {
     required String backupKey,
   }) async {
     try {
-      if (!BullBackup.isValid(backupFile)) {
+      if (!BullBackupEntity.isValid(backupFile)) {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final backup = BullBackup(backupFile: backupFile);
+      final backup = BullBackupEntity(backupFile: backupFile);
 
       final derivedKey = await _backupKeyService.deriveBackupKeyFromDefaultSeed(
         path: backup.derivationPath,

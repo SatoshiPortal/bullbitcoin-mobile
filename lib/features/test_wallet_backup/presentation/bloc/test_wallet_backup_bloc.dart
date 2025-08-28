@@ -99,7 +99,7 @@ class TestWalletBackupBloc
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          bullBackup: BullBackup(backupFile: backupFile),
+          bullBackup: BullBackupEntity(backupFile: backupFile),
         ),
       );
     } catch (e) {
@@ -139,7 +139,7 @@ class TestWalletBackupBloc
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          bullBackup: BullBackup(backupFile: backupFile),
+          bullBackup: BullBackupEntity(backupFile: backupFile),
         ),
       );
     } catch (e) {

@@ -11,11 +11,8 @@ class SaveToFileSystemUsecase {
 
   Future<void> execute(String path, String content) async {
     try {
-      final now = DateTime.now();
-      final formattedDate = now.millisecondsSinceEpoch;
-      final backup = BullBackup(backupFile: content);
-      // TODO(azad): filename
-      final filename = '${formattedDate}_${backup.id}.json';
+      final backup = BullBackupEntity(backupFile: content);
+      final filename = backup.filename;
 
       final backupDir = await Directory(path).create(recursive: true);
       final file = File('${backupDir.path}/$filename');

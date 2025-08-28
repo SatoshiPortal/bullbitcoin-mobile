@@ -139,7 +139,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.success,
-          bullBackup: BullBackup(backupFile: backupFile),
+          bullBackup: BullBackupEntity(backupFile: backupFile),
         ),
       );
     } catch (e) {

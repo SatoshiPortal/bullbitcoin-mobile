@@ -11,7 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class FetchedBackupInfoScreen extends StatelessWidget {
-  final BullBackup bullBackup;
+  final BullBackupEntity bullBackup;
   const FetchedBackupInfoScreen({super.key, required this.bullBackup});
 
   @override
@@ -64,7 +64,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                     () => context.push(
                       KeyServerRoute.keyServerFlow.path,
                       extra: (
-                        bullBackup.file,
+                        bullBackup.toFile(),
                         CurrentKeyServerFlow.recoveryWithBackupKey.name,
                         true,
                       ),
@@ -81,7 +81,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                   () => context.pushNamed(
                     KeyServerRoute.keyServerFlow.name,
                     extra: (
-                      bullBackup.file,
+                      bullBackup.toFile(),
                       CurrentKeyServerFlow.recovery.name,
                       true,
                     ),

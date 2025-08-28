@@ -1,14 +1,14 @@
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
-class BullBackup {
+class BullBackupEntity {
   late recoverbull.BullBackup backup;
 
-  BullBackup({required String backupFile}) {
+  BullBackupEntity({required String backupFile}) {
     backup = recoverbull.BullBackup.fromJson(backupFile);
   }
 
-  String get file => backup.toJson();
+  String toFile() => backup.toJson();
 
   static bool isValid(String backupFile) =>
       recoverbull.BullBackup.isValid(backupFile);
@@ -24,6 +24,8 @@ class BullBackup {
 
   DateTime get createdAt =>
       DateTime.fromMillisecondsSinceEpoch(backup.createdAt);
+
+  String get filename => '${createdAt.toIso8601String()}_$id.json';
 }
 
 class BullBackupException implements Exception {

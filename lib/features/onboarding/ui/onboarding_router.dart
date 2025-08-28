@@ -93,7 +93,7 @@ class OnboardingRouter {
                 name: OnboardingRoute.retrievedBackupInfo.name,
                 path: OnboardingRoute.retrievedBackupInfo.path,
                 builder: (context, state) {
-                  final bullBackup = state.extra! as BullBackup;
+                  final bullBackup = state.extra! as BullBackupEntity;
                   return FetchedBackupInfoScreen(bullBackup: bullBackup);
                 },
               ),

@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:bb_mobile/core/recoverbull/data/models/drive_file_metadata_model.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
-import 'package:recoverbull/recoverbull.dart';
 
 class GoogleDriveAppDatasource {
   static final _google = GoogleSignIn(
@@ -85,17 +85,15 @@ class GoogleDriveAppDatasource {
 
   Future<void> store(String content) async {
     _checkConnection();
-    final backup = BullBackup.fromJson(content);
-    final filename =
-        '${DateTime.now().millisecondsSinceEpoch}_${backup.id}.json';
+    final backup = BullBackupEntity(backupFile: content);
+    final filename = backup.filename;
+    final jsonBackup = backup.toFile();
 
     final file =
         drive.File()
           ..name = filename
           ..mimeType = 'application/json'
           ..parents = ['appDataFolder'];
-
-    final jsonBackup = backup.toJson();
 
     await _driveApi!.files.create(
       file,

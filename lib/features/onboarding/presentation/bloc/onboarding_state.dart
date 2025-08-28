@@ -11,7 +11,7 @@ sealed class OnboardingState with _$OnboardingState {
     @Default(OnboardingStepStatus.none)
     OnboardingStepStatus onboardingStepStatus,
     @Default(VaultProvider.googleDrive()) VaultProvider vaultProvider,
-    @Default(null) BullBackup? bullBackup,
+    @Default(null) BullBackupEntity? bullBackup,
     @Default('') String statusError,
     @Default(false) bool transitioning,
   }) = _OnboardingState;
