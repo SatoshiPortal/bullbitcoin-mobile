@@ -280,10 +280,10 @@ packages:
     dependency: transitive
     description:
       name: camera_avfoundation
-      sha256: e4aca5bccaf897b70cac87e5fdd789393310985202442837922fd40325e2733b
+      sha256: "951ef122d01ebba68b7a54bfe294e8b25585635a90465c311b2f875ae72c412f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.21+1"
+    version: "0.9.21+2"
   camera_platform_interface:
     dependency: transitive
     description:
@@ -839,10 +839,10 @@ packages:
     dependency: "direct main"
     description:
       name: google_fonts
-      sha256: df9763500dadba0155373e9cb44e202ce21bd9ed5de6bdbd05c5854e86839cb8
+      sha256: ebc94ed30fd13cefd397cb1658b593f21571f014b7d1197eeb41fb95f05d899a
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.0"
+    version: "6.3.1"
   google_identity_services_web:
     dependency: transitive
     description:
@@ -1461,8 +1461,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "334b5402d8b7b80b4736663861f7952020312831"
-      resolved-ref: "334b5402d8b7b80b4736663861f7952020312831"
+      ref: "48b7af3cc6a856d9c1f7fbdb9374071fea11342b"
+      resolved-ref: "48b7af3cc6a856d9c1f7fbdb9374071fea11342b"
       url: "https://github.com/SatoshiPortal/recoverbull-client-dart.git"
     source: git
     version: "1.0.0"
@@ -1745,10 +1745,10 @@ packages:
     source: hosted
     version: "1.0.2"
   tor:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "."
-      ref: "440a2d2207da26683893bf8a2440499f4b43f019"
+      ref: "440a2d2"
       resolved-ref: "440a2d2207da26683893bf8a2440499f4b43f019"
       url: "https://github.com/Foundation-Devices/tor"
     source: git
