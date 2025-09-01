@@ -25,7 +25,19 @@ class DcaRouter {
     builder: (context, state) {
       return BlocProvider<DcaBloc>(
         create: (_) => locator<DcaBloc>()..add(const DcaEvent.started()),
-        child: const DcaScreen(),
+        child: BlocListener<DcaBloc, DcaState>(
+          listenWhen:
+              (previous, current) =>
+                  previous is DcaBuyInputState &&
+                  current is DcaWalletSelectionState,
+          listener: (context, state) {
+            context.pushNamed(
+              DcaRoute.dcaWalletSelection.name,
+              extra: context.read<DcaBloc>(),
+            );
+          },
+          child: const DcaScreen(),
+        ),
       );
     },
     routes: [
@@ -36,7 +48,19 @@ class DcaRouter {
           final dcaBloc = state.extra! as DcaBloc;
           return BlocProvider.value(
             value: dcaBloc,
-            child: const DcaWalletSelectionScreen(),
+            child: BlocListener<DcaBloc, DcaState>(
+              listenWhen:
+                  (previous, current) =>
+                      previous is DcaWalletSelectionState &&
+                      current is DcaConfirmationState,
+              listener: (context, state) {
+                context.pushNamed(
+                  DcaRoute.dcaConfirmation.name,
+                  extra: context.read<DcaBloc>(),
+                );
+              },
+              child: const DcaWalletSelectionScreen(),
+            ),
           );
         },
       ),
@@ -47,7 +71,19 @@ class DcaRouter {
           final dcaBloc = state.extra! as DcaBloc;
           return BlocProvider.value(
             value: dcaBloc,
-            child: const DcaConfirmationScreen(),
+            child: BlocListener<DcaBloc, DcaState>(
+              listenWhen:
+                  (previous, current) =>
+                      previous is DcaConfirmationState &&
+                      current is DcaSuccessState,
+              listener: (context, state) {
+                context.pushNamed(
+                  DcaRoute.dcaSuccess.name,
+                  extra: context.read<DcaBloc>(),
+                );
+              },
+              child: const DcaConfirmationScreen(),
+            ),
           );
         },
       ),

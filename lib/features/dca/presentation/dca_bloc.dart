@@ -5,7 +5,8 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
+import 'package:bb_mobile/features/dca/domain/dca_buy_frequency.dart';
+import 'package:bb_mobile/features/dca/domain/dca_wallet_type.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -20,7 +21,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
 
        super(const DcaState.initial()) {
     on<DcaStarted>(_onStarted);
-    on<DcaAmountInputContinuePressed>(_onAmountInputContinuePressed);
+    on<DcaBuyInputContinuePressed>(_onBuyInputContinuePressed);
     on<DcaWalletSelected>(_onWalletSelected);
     on<DcaConfirmed>(_onConfirmed);
   }
@@ -31,7 +32,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     try {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
-      emit(DcaState.amountInput(userSummary: userSummary));
+      emit(DcaState.buyInput(userSummary: userSummary));
     } on ApiKeyException catch (e) {
       emit(DcaState.initial(apiKeyException: e));
     } on GetExchangeUserSummaryException catch (e) {
@@ -39,12 +40,12 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     }
   }
 
-  Future<void> _onAmountInputContinuePressed(
-    DcaAmountInputContinuePressed event,
+  Future<void> _onBuyInputContinuePressed(
+    DcaBuyInputContinuePressed event,
     Emitter<DcaState> emit,
   ) async {
     // We should be on a clean DcaWalletSelectionState state here
-    final amountInputState = state.toCleanAmountInputState;
+    final amountInputState = state.toCleanBuyInputState;
     if (amountInputState == null) {
       log.severe('Expected to be on DcaAmountInputState but on: $state');
       return;
@@ -55,6 +56,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
       amountInputState.toWalletSelectionState(
         amount: double.parse(event.amountInput),
         currency: event.currency,
+        frequency: event.frequency,
       ),
     );
   }
@@ -68,6 +70,15 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
       log.severe('Expected to be on DcaWalletSelectionState but on: $state');
       return;
     }
+    emit(walletSelectionState);
+
+    emit(
+      walletSelectionState.toConfirmationState(
+        selectedWallet: event.wallet,
+        lightningAddress: event.lightningAddress,
+        isDefaultLightningAddress: event.useDefaultLightningAddress ?? false,
+      ),
+    );
   }
 
   Future<void> _onConfirmed(DcaConfirmed event, Emitter<DcaState> emit) async {
@@ -79,7 +90,14 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     }
 
     emit(dcaConfirmationState.copyWith(isConfirmingDca: true));
-    try {} catch (e) {
+    try {
+      // TODO: fetch user summary to be sure dca was set and set success state
+      emit(
+        dcaConfirmationState.toSuccessState(
+          userSummary: dcaConfirmationState.userSummary,
+        ),
+      );
+    } catch (e) {
       // Log unexpected errors
       log.severe('Unexpected error in DcaBloc: $e');
     } finally {
