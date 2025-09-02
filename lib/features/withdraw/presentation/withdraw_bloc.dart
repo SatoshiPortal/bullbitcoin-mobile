@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/cad_biller.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/new_recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
@@ -6,6 +7,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_fiat_recipient_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_recipients_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
@@ -24,17 +26,20 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     required CreateWithdrawOrderUsecase createWithdrawUsecase,
     required ConfirmWithdrawOrderUsecase confirmWithdrawUsecase,
     required CreateFiatRecipientUsecase createFiatRecipientUsecase,
+    required ListCadBillersUsecase listCadBillersUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _listRecipientsUsecase = listRecipientsUsecase,
        _createWithdrawOrderUsecase = createWithdrawUsecase,
        _confirmWithdrawUsecase = confirmWithdrawUsecase,
        _createFiatRecipientUsecase = createFiatRecipientUsecase,
+       _listCadBillersUsecase = listCadBillersUsecase,
        super(const WithdrawInitialState()) {
     on<WithdrawStarted>(_onStarted);
     on<WithdrawAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<WithdrawNewRecipientAdded>(_onNewRecipientAdded);
     on<WithdrawCreateNewRecipient>(_onCreateNewRecipient);
     on<WithdrawRecipientSelected>(_onRecipientSelected);
+    on<WithdrawGetCadBillers>(_onGetCadBillers);
     /*on<WithdrawDescriptionInputContinuePressed>(
       _onDescriptionInputContinuePressed,
     );*/
@@ -46,6 +51,7 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
   final CreateWithdrawOrderUsecase _createWithdrawOrderUsecase;
   final ConfirmWithdrawOrderUsecase _confirmWithdrawUsecase;
   final CreateFiatRecipientUsecase _createFiatRecipientUsecase;
+  final ListCadBillersUsecase _listCadBillersUsecase;
 
   Future<void> _onStarted(
     WithdrawStarted event,
@@ -319,6 +325,37 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
         emit(
           (state as WithdrawConfirmationState).copyWith(
             isConfirmingWithdrawal: false,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _onGetCadBillers(
+    WithdrawGetCadBillers event,
+    Emitter<WithdrawState> emit,
+  ) async {
+    if (state is WithdrawRecipientInputState) {
+      final currentState = state as WithdrawRecipientInputState;
+
+      emit(currentState.copyWith(isLoadingCadBillers: true));
+
+      try {
+        final cadBillers = await _listCadBillersUsecase.execute();
+        emit(
+          currentState.copyWith(
+            cadBillers: cadBillers,
+            isLoadingCadBillers: false,
+          ),
+        );
+      } catch (e) {
+        log.severe('Error fetching CAD billers: $e');
+        emit(
+          currentState.copyWith(
+            isLoadingCadBillers: false,
+            error: WithdrawError.unexpected(
+              message: 'Failed to load billers: $e',
+            ),
           ),
         );
       }

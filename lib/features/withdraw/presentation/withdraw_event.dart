@@ -12,6 +12,7 @@ sealed class WithdrawEvent with _$WithdrawEvent {
     required String amountInput,
     required FiatCurrency fiatCurrency,
   }) = WithdrawAmountInputContinuePressed;
+  const factory WithdrawEvent.getCadBillers() = WithdrawGetCadBillers;
   /*const factory WithdrawEvent.descriptionInputContinuePressed(
     String description,
   ) = WithdrawDescriptionInputContinuePressed;*/

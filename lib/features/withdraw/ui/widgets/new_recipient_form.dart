@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/cad_biller.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/new_recipient_factory.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
@@ -565,7 +566,7 @@ class _InteracEmailForm extends StatelessWidget {
   }
 }
 
-class _BillPaymentForm extends StatelessWidget {
+class _BillPaymentForm extends StatefulWidget {
   const _BillPaymentForm({
     required this.formData,
     required this.onFormDataChanged,
@@ -575,49 +576,232 @@ class _BillPaymentForm extends StatelessWidget {
   final Function(String, String) onFormDataChanged;
 
   @override
+  State<_BillPaymentForm> createState() => _BillPaymentFormState();
+}
+
+class _BillPaymentFormState extends State<_BillPaymentForm> {
+  final TextEditingController _searchController = TextEditingController();
+  List<CadBiller> _filteredBillers = [];
+  CadBiller? _selectedBiller;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+
+    // Load CAD billers when form is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WithdrawBloc>().add(const WithdrawEvent.getCadBillers());
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    final query = _searchController.text.toLowerCase();
+    final currentState = context.read<WithdrawBloc>().state;
+
+    if (currentState is WithdrawRecipientInputState) {
+      setState(() {
+        if (query.isEmpty) {
+          _filteredBillers = currentState.cadBillers;
+        } else {
+          _filteredBillers =
+              currentState.cadBillers
+                  .where(
+                    (biller) => biller.payeeName.toLowerCase().contains(query),
+                  )
+                  .toList();
+        }
+      });
+    }
+  }
+
+  void _selectBiller(CadBiller biller) {
+    setState(() {
+      _selectedBiller = biller;
+      _searchController.text = biller.payeeName;
+    });
+
+    // Update form data with selected biller
+    widget.onFormDataChanged('payeeName', biller.payeeName);
+    widget.onFormDataChanged('payeeCode', biller.payeeCode);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    return BlocBuilder<WithdrawBloc, WithdrawState>(
+      builder: (context, state) {
+        if (state is WithdrawRecipientInputState) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Biller Type Dropdown
+              _buildDropdownField(
+                context,
+                'Biller Type',
+                'billerType',
+                'Standard Biller',
+                ['Standard Biller'],
+                widget.formData,
+                widget.onFormDataChanged,
+              ),
+              const Gap(12),
+
+              // Biller Search Field
+              _buildSearchField(context),
+              const Gap(12),
+
+              // Biller Name (Read-only)
+              _buildReadOnlyField(
+                context,
+                'Biller Name',
+                'payeeName',
+                _selectedBiller?.payeeName ?? '',
+                widget.formData,
+              ),
+              const Gap(12),
+
+              // Payee Account Number
+              _buildInputField(
+                context,
+                'Payee Account Number',
+                'payeeAccountNumber',
+                'Enter account number',
+                widget.formData,
+                widget.onFormDataChanged,
+              ),
+              const Gap(12),
+
+              // Label (optional)
+              _buildInputField(
+                context,
+                'Label (optional)',
+                'label',
+                'Enter a label for this recipient',
+                widget.formData,
+                widget.onFormDataChanged,
+              ),
+              const Gap(12),
+
+              AccountOwnershipWidget(
+                formData: widget.formData,
+                onFormDataChanged: widget.onFormDataChanged,
+              ),
+            ],
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _buildSearchField(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildInputField(
-          context,
-          'Payee Name',
-          'payeeName',
-          'Enter payee name',
-          formData,
-          onFormDataChanged,
+        TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: 'Enter first 3 letters of biller name',
+            prefixIcon: const Icon(Icons.search),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+          ),
+          onChanged: (value) {
+            // Search is handled by the listener
+          },
         ),
-        const Gap(12),
-        _buildInputField(
-          context,
-          'Payee Code',
-          'payeeCode',
-          'Enter payee code',
-          formData,
-          onFormDataChanged,
+        if (_filteredBillers.isNotEmpty && _searchController.text.isNotEmpty)
+          Container(
+            margin: const EdgeInsets.only(top: 4),
+            decoration: BoxDecoration(
+              color: context.colour.surface,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: context.colour.outline),
+              boxShadow: [
+                BoxShadow(
+                  color: context.colour.shadow.withValues(alpha: 0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount:
+                  _filteredBillers.length > 5 ? 5 : _filteredBillers.length,
+              itemBuilder: (context, index) {
+                final biller = _filteredBillers[index];
+                return ListTile(
+                  title: BBText(
+                    biller.payeeName,
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.colour.secondary,
+                    ),
+                  ),
+                  onTap: () => _selectBiller(biller),
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildReadOnlyField(
+    BuildContext context,
+    String label,
+    String key,
+    String value,
+    Map<String, dynamic> formData,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BBText(
+          label,
+          style: context.font.bodyLarge?.copyWith(
+            color: context.colour.secondary,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-        const Gap(12),
-        _buildInputField(
-          context,
-          'Account Number',
-          'payeeAccountNumber',
-          'Enter account number',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
-        _buildInputField(
-          context,
-          'Label (optional)',
-          'label',
-          'Enter a label for this recipient',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
+        const Gap(8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: context.colour.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: context.colour.outline),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: BBText(
+                  value.isEmpty ? 'Select a biller' : value,
+                  style: context.font.bodyMedium?.copyWith(
+                    color:
+                        value.isEmpty
+                            ? context.colour.onSurfaceVariant
+                            : context.colour.secondary,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.copy,
+                color: context.colour.onSurfaceVariant,
+                size: 20,
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -1176,4 +1360,53 @@ bool _parseBoolValue(dynamic value) {
     return value.toLowerCase() == 'true';
   }
   return false;
+}
+
+Widget _buildDropdownField(
+  BuildContext context,
+  String label,
+  String key,
+  String defaultValue,
+  List<String> options,
+  Map<String, dynamic> formData,
+  Function(String, String) onFormDataChanged,
+) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      BBText(
+        label,
+        style: context.font.bodyLarge?.copyWith(
+          color: context.colour.secondary,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      const Gap(8),
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: BBText(
+                (formData[key] as String?) ?? defaultValue,
+                style: context.font.bodyMedium?.copyWith(
+                  color: context.colour.secondary,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.keyboard_arrow_down,
+              color: Colors.grey.shade600,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }
