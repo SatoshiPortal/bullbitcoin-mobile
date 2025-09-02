@@ -1,5 +1,6 @@
 import 'dart:math' show pow;
 
+import 'package:bb_mobile/core/exchange/data/models/cad_biller_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_request_params_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/new_recipient_model.dart';
@@ -572,6 +573,27 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       );
       rethrow;
     }
+  }
+
+  Future<List<CadBillerModel>> listCadBillers({required String apiKey}) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'listAplBillers',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to list CAD billers');
+    }
+    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    if (elements == null) return [];
+    return elements
+        .map((e) => CadBillerModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }
 
