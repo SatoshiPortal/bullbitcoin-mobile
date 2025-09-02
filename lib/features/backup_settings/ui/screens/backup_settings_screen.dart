@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_key_warning.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
-import 'package:bb_mobile/features/recoverbull_select_vault/router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -311,7 +310,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
                       if (!context.mounted) return;
                       // Navigate to provider selection screen
                       await context.pushNamed(
-                        RecoverBullSelectVault.selectProvider.name,
+                        BackupSettingsSubroute.chooseVaultProvider.name,
                       );
                     }
                   },
