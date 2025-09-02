@@ -12,11 +12,11 @@ class DeriveBackupKeyFromDefaultWalletUsecase {
 
   Future<String> execute({required String backupFile}) async {
     try {
-      if (!BullBackupEntity.isValid(backupFile)) {
+      if (!EncryptedVault.isValid(backupFile)) {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final backup = BullBackupEntity(backupFile: backupFile);
+      final backup = EncryptedVault(backupFile: backupFile);
 
       return await _backupKeyService.deriveBackupKeyFromDefaultSeed(
         path: backup.derivationPath,

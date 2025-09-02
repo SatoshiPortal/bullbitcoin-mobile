@@ -85,7 +85,7 @@ class GoogleDriveAppDatasource {
 
   Future<void> store(String content) async {
     _checkConnection();
-    final backup = BullBackupEntity(backupFile: content);
+    final backup = EncryptedVault(backupFile: content);
     final filename = backup.filename;
     final jsonBackup = backup.toFile();
 

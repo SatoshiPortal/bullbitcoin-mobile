@@ -11,7 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class FetchedBackupInfoScreen extends StatelessWidget {
-  final BullBackupEntity bullBackup;
+  final EncryptedVault bullBackup;
   const FetchedBackupInfoScreen({super.key, required this.bullBackup});
 
   @override

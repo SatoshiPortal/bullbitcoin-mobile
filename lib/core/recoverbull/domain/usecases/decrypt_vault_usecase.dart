@@ -12,7 +12,7 @@ class DecryptVaultUsecase {
     : _recoverBull = recoverBullRepository;
 
   RecoverBullWallet execute({
-    required BullBackupEntity backupFile,
+    required EncryptedVault backupFile,
     required String backupKey,
   }) {
     try {

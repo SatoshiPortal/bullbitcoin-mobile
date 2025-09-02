@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecoverBullVaultRecoveryCubit
     extends Cubit<RecoverBullVaultRecoveryState> {
-  final BullBackupEntity _backup;
+  final EncryptedVault _backup;
   final String _backupKey;
 
   final DecryptVaultUsecase _decryptVaultUsecase;
@@ -18,7 +18,7 @@ class RecoverBullVaultRecoveryCubit
   final TheDirtyUsecase _checkWalletStatusUsecase;
 
   RecoverBullVaultRecoveryCubit({
-    required BullBackupEntity backup,
+    required EncryptedVault backup,
     required String backupKey,
     required TheDirtyUsecase checkWalletStatusUsecase,
     required DecryptVaultUsecase decryptVaultUsecase,

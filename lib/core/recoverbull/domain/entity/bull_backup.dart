@@ -1,10 +1,10 @@
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
-class BullBackupEntity {
+class EncryptedVault {
   late recoverbull.BullBackup backup;
 
-  BullBackupEntity({required String backupFile}) {
+  EncryptedVault({required String backupFile}) {
     backup = recoverbull.BullBackup.fromJson(backupFile);
   }
 
@@ -16,7 +16,7 @@ class BullBackupEntity {
   String get salt => HEX.encode(backup.salt);
 
   String get derivationPath {
-    if (backup.path == null) throw BullBackupMissingPath();
+    if (backup.path == null) throw EncryptedVaultMissingPath();
     return backup.path!;
   }
 
@@ -28,15 +28,16 @@ class BullBackupEntity {
   String get filename => '${createdAt.toIso8601String()}_$id.json';
 }
 
-class BullBackupException implements Exception {
+class EncryptedVaultException implements Exception {
   final String message;
 
-  BullBackupException(this.message);
+  EncryptedVaultException(this.message);
 
   @override
   String toString() => message;
 }
 
-class BullBackupMissingPath extends BullBackupException {
-  BullBackupMissingPath() : super('Bull backup derivationPath is missing path');
+class EncryptedVaultMissingPath extends EncryptedVaultException {
+  EncryptedVaultMissingPath()
+    : super('Encrypted vault derivationPath is missing path');
 }

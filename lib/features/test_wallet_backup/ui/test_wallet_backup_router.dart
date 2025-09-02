@@ -30,7 +30,7 @@ class TestWalletBackupRouter {
       name: TestWalletBackupSubroute.testBackupInfo.name,
       path: TestWalletBackupSubroute.testBackupInfo.path,
       builder: (context, state) {
-        final bullBackup = state.extra! as BullBackupEntity;
+        final bullBackup = state.extra! as EncryptedVault;
         return FetchedBackupInfoScreen(bullBackup: bullBackup);
       },
     ),

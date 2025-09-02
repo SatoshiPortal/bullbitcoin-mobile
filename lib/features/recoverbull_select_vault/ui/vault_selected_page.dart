@@ -14,7 +14,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class VaultSelectedPage extends StatelessWidget {
-  final BullBackupEntity backup;
+  final EncryptedVault backup;
 
   const VaultSelectedPage({super.key, required this.backup});
 
@@ -50,7 +50,7 @@ class VaultSelectedPage extends StatelessWidget {
 }
 
 class BullBackupWidget extends StatelessWidget {
-  final BullBackupEntity backup;
+  final EncryptedVault backup;
   const BullBackupWidget({super.key, required this.backup});
 
   @override

@@ -126,7 +126,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         state.copyWith(status: BackupSettingsStatus.viewingKey, error: null),
       );
 
-      if (!BullBackupEntity.isValid(backupFile)) {
+      if (!EncryptedVault.isValid(backupFile)) {
         emit(
           state.copyWith(
             status: BackupSettingsStatus.error,
@@ -136,7 +136,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         return;
       }
 
-      final backup = BullBackupEntity(backupFile: backupFile);
+      final backup = EncryptedVault(backupFile: backupFile);
 
       String? backupKey;
       try {

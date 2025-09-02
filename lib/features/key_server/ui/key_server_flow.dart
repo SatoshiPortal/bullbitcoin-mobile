@@ -228,7 +228,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     final testWalletBackupState = context.read<TestWalletBackupBloc>().state;
 
     if (widget.fromOnboarding) {
-      final bullBackup = BullBackupEntity(backupFile: state.backupFile);
+      final bullBackup = EncryptedVault(backupFile: state.backupFile);
       context.pushNamed(
         RecoverBullVaultRecovery.recoverbullVaultRecovery.name,
         extra: (backup: bullBackup, backupKey: state.backupKey),

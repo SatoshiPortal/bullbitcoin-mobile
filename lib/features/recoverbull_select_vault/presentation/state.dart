@@ -13,7 +13,7 @@ sealed class RecoverBullSelectVaultState with _$RecoverBullSelectVaultState {
     @Default(false) bool isLoading,
     RecoverBullSelectVaultError? error,
     @Default([]) List<DriveFileMetadata> driveMetadata,
-    @Default(null) BullBackupEntity? selectedBackup,
+    @Default(null) EncryptedVault? selectedBackup,
     @Default(null) ({BigInt satoshis, int transactions})? walletStatus,
   }) = _RecoverBullSelectVaultState;
 

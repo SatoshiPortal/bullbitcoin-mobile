@@ -24,7 +24,7 @@ class RecoverBullVaultRecoveryRouter {
     path: RecoverBullVaultRecovery.recoverbullVaultRecovery.path,
     builder: (context, state) {
       final (backup: backup, backupKey: backupKey) =
-          state.extra! as ({BullBackupEntity backup, String backupKey});
+          state.extra! as ({EncryptedVault backup, String backupKey});
 
       return BlocProvider(
         create:

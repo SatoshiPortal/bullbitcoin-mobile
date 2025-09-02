@@ -11,7 +11,7 @@ class SaveToFileSystemUsecase {
 
   Future<void> execute(String path, String content) async {
     try {
-      final backup = BullBackupEntity(backupFile: content);
+      final backup = EncryptedVault(backupFile: content);
       final filename = backup.filename;
 
       final backupDir = await Directory(path).create(recursive: true);

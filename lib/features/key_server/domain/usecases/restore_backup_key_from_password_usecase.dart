@@ -15,11 +15,11 @@ class RestoreBackupKeyFromPasswordUsecase {
     required String password,
   }) async {
     try {
-      if (!BullBackupEntity.isValid(backupFile)) {
+      if (!EncryptedVault.isValid(backupFile)) {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final backup = BullBackupEntity(backupFile: backupFile);
+      final backup = EncryptedVault(backupFile: backupFile);
       final backupKey = await recoverBullRepository.fetchBackupKey(
         backup.id,
         password,

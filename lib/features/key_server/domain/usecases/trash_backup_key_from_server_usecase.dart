@@ -13,11 +13,11 @@ class TrashBackupKeyFromServerUsecase {
 
   Future<void> execute({required String password, required String backupFile}) {
     try {
-      if (!BullBackupEntity.isValid(backupFile)) {
+      if (!EncryptedVault.isValid(backupFile)) {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final backup = BullBackupEntity(backupFile: backupFile);
+      final backup = EncryptedVault(backupFile: backupFile);
 
       return _recoverBullRepository.trashBackupKey(
         backup.id,
