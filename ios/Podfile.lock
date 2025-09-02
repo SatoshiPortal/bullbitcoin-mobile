@@ -11,8 +11,6 @@ PODS:
     - PromisesObjC (~> 2.4)
   - bdk_flutter (0.31.3):
     - Flutter
-  - bip85 (0.0.1):
-    - Flutter
   - boltz (0.1.6)
   - camera_avfoundation (0.0.1):
     - Flutter
@@ -105,9 +103,9 @@ PODS:
   - payjoin_flutter (0.20.0)
   - PromisesObjC (2.4.0)
   - ScreenProtectorKit (1.3.1)
-  - SDWebImage (5.21.1):
-    - SDWebImage/Core (= 5.21.1)
-  - SDWebImage/Core (5.21.1)
+  - SDWebImage (5.21.2):
+    - SDWebImage/Core (= 5.21.2)
+  - SDWebImage/Core (5.21.2)
   - share_plus (0.0.1):
     - Flutter
   - sqlite3 (3.50.4):
@@ -148,7 +146,6 @@ PODS:
 
 DEPENDENCIES:
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
-  - bip85 (from `.symlinks/plugins/bip85/ios`)
   - boltz (from `.symlinks/plugins/boltz/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - dart_bbqr (from `.symlinks/plugins/dart_bbqr/ios`)
@@ -192,8 +189,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   bdk_flutter:
     :path: ".symlinks/plugins/bdk_flutter/ios"
-  bip85:
-    :path: ".symlinks/plugins/bip85/ios"
   boltz:
     :path: ".symlinks/plugins/boltz/ios"
   camera_avfoundation:
@@ -245,7 +240,6 @@ SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
   bdk_flutter: 86c9ba59ee282dee08c3a29599abe867d10a8b10
-  bip85: f656a7e6b23afda4960efb11c87d51d68e8be3db
   boltz: 6388ec2412f3753b63a9e65c97f87ea26f43bddc
   camera_avfoundation: adb0207d868b2d873e895371d88448399ab78d87
   dart_bbqr: 10143a83ef3919f9ac06974e3bbe23cac4abc39b
@@ -271,7 +265,7 @@ SPEC CHECKSUMS:
   payjoin_flutter: 6397d7b698cdad6453be4949ab6aca1863f6c5e5
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
-  SDWebImage: f29024626962457f3470184232766516dee8dfea
+  SDWebImage: 9f177d83116802728e122410fb25ad88f5c7608a
   share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
   sqlite3: 73513155ec6979715d3904ef53a8d68892d4032b
   sqlite3_flutter_libs: 86f82662868ee26ff3451f73cac9c5fc2a1f57fa
@@ -281,6 +275,6 @@ SPEC CHECKSUMS:
   webview_cookie_manager: eaf920722b493bd0f7611b5484771ca53fed03f7
   webview_flutter_wkwebview: a4af96a051138e28e29f60101d094683b9f82188
 
-PODFILE CHECKSUM: b6fce51d85d6bfea5dd6ff4c1b945437a9e9dfa9
+PODFILE CHECKSUM: 3402bb9f9a69470d12a30feec0fd288c203ab3f5
 
 COCOAPODS: 1.16.2

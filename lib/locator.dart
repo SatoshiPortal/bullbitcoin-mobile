@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/backup_wallet/backup_wallet_locator.dart';
+import 'package:bb_mobile/features/bip85_entropy/locator.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/buy_locator.dart';
@@ -19,6 +20,7 @@ import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dar
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
+import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
@@ -71,5 +73,7 @@ class AppLocator {
     AddressViewLocator.setup();
     ImportMnemonicLocator.setup();
     DcaLocator.setup();
+    ReplaceByFeeLocator.setup();
+    Bip85EntropyLocator.setup();
   }
 }

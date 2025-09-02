@@ -16,6 +16,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
+enum ServerType {
+  defaultServer('Default'),
+  custom('Custom');
+
+  const ServerType(this.label);
+  final String label;
+}
+
 class ElectrumServerSettingsBottomSheet extends StatelessWidget {
   const ElectrumServerSettingsBottomSheet({super.key});
 
@@ -145,9 +153,7 @@ class _SaveButton extends StatelessWidget {
       PrivacyNoticeBottomSheet.show(context).then((result) {
         if (result == true) {
           bloc.add(const SaveElectrumServerChanges());
-          if (context.mounted) {
-            context.pop();
-          }
+          if (context.mounted) context.pop();
         }
       });
     } else {
@@ -159,11 +165,9 @@ class _SaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasChanges = state.hasPendingChanges;
-
     bool disableSave = state.status == ElectrumSettingsStatus.loading;
 
-    if (state.isCustomServerSelected && hasChanges) {
+    if (state.isCustomServerSelected) {
       final mainnetNetwork =
           state.isSelectedNetworkLiquid
               ? Network.liquidMainnet
@@ -192,19 +196,16 @@ class _SaveButton extends StatelessWidget {
       final testnetUrlEmpty =
           testnetServer == null || testnetServer.url.trim().isEmpty;
 
-      disableSave = disableSave || mainnetUrlEmpty || testnetUrlEmpty;
+      disableSave = mainnetUrlEmpty && testnetUrlEmpty;
     }
 
     return BBButton.big(
       label: 'Save',
-      onPressed:
-          hasChanges && !disableSave ? () => _handleSave(context) : () {},
-      bgColor:
-          (hasChanges && !disableSave)
-              ? context.colour.secondary
-              : context.colour.surfaceContainer,
+      onPressed: () => _handleSave(context),
+      disabled: disableSave,
       textStyle: context.font.headlineLarge,
       textColor: context.colour.onSecondary,
+      bgColor: context.colour.secondary,
     );
   }
 }
@@ -328,13 +329,16 @@ class ServerTypeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedOption = state.isCustomServerSelected ? 'Custom' : 'Default';
+    final selectedOption =
+        state.isCustomServerSelected
+            ? ServerType.custom.label
+            : ServerType.defaultServer.label;
 
     return BBSegmentFull(
-      items: const {'Default', 'Custom'},
+      items: {ServerType.defaultServer.label, ServerType.custom.label},
       initialValue: selectedOption,
       onSelected: (selected) {
-        final isCustom = selected == 'Custom';
+        final isCustom = selected == ServerType.custom.label;
         context.read<ElectrumSettingsBloc>().add(
           ToggleCustomServer(isCustomSelected: isCustom),
         );

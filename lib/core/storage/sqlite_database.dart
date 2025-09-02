@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_3_to_4.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_4_to_5.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
+import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
@@ -30,6 +32,7 @@ part 'sqlite_database.g.dart';
     Swaps,
     AutoSwap,
     WalletAddresses,
+    Bip85Derivations,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
@@ -37,7 +40,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -78,8 +81,8 @@ class SqliteDatabase extends _$SqliteDatabase {
       },
       onUpgrade: stepByStep(
         from1To2: (m, schema) async {
-          // Create AutoSwap table and seed it
-          await m.createTable(autoSwap);
+          // Create AutoSwap table (without recipientWalletId column) and seed it
+          await m.createTable(schema.autoSwap);
           await _seedDefaultAutoSwap();
         },
         from2To3: (m, schema) async {
@@ -87,6 +90,7 @@ class SqliteDatabase extends _$SqliteDatabase {
           await m.createTable(schema.walletAddressHistory);
         },
         from3To4: Schema3To4.migrate,
+        from4To5: Schema4To5.migrate,
       ),
     );
   }

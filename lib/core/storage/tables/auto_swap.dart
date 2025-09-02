@@ -9,4 +9,5 @@ class AutoSwap extends Table {
   BoolColumn get blockTillNextExecution =>
       boolean().withDefault(const Constant(false))();
   BoolColumn get alwaysBlock => boolean().withDefault(const Constant(false))();
+  TextColumn get recipientWalletId => text().nullable()();
 }

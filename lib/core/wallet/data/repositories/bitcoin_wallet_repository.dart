@@ -67,32 +67,8 @@ class BitcoinWalletRepository {
   }
 
   Future<String> signPsbt(String psbt, {required String walletId}) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
-
-    final seed =
-        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
-    final mnemonic = seed.mnemonicWords.join(' ');
-
-    final wallet =
-        WalletModel.privateBdk(
-              id: metadata.id,
-              mnemonic: mnemonic,
-              passphrase: seed.passphrase,
-              scriptType: metadata.scriptType,
-              isTestnet: metadata.isTestnet,
-            )
-            as PrivateBdkWalletModel;
-
+    final wallet = await getPrivateWallet(walletId: walletId);
     final signedPsbt = await _bdkWallet.signPsbt(wallet: wallet, psbt);
-
     return signedPsbt;
   }
 
@@ -132,5 +108,49 @@ class BitcoinWalletRepository {
   Future<int> getTxFeeAmount({required String psbt}) async {
     final feeAbsolute = await _bdkWallet.getFeeAmount(psbt);
     return feeAbsolute;
+  }
+
+  Future<PrivateBdkWalletModel> getPrivateWallet({
+    required String walletId,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+
+    final seed =
+        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
+    final mnemonic = seed.mnemonicWords.join(' ');
+
+    final wallet =
+        WalletModel.privateBdk(
+              id: metadata.id,
+              mnemonic: mnemonic,
+              passphrase: seed.passphrase,
+              scriptType: metadata.scriptType,
+              isTestnet: metadata.isTestnet,
+            )
+            as PrivateBdkWalletModel;
+    return wallet;
+  }
+
+  Future<String> bumpFee({
+    required String walletId,
+    required String txid,
+    required double newFeeRate,
+  }) async {
+    final wallet = await getPrivateWallet(walletId: walletId);
+    final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(
+      wallet: wallet,
+      txid: txid,
+      feeRate: newFeeRate,
+    );
+    final signedPsbt = await signPsbt(psbt, walletId: walletId);
+    return signedPsbt;
   }
 }
