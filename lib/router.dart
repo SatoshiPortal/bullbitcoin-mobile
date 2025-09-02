@@ -11,6 +11,8 @@ import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
+import 'package:bb_mobile/features/recoverbull_select_vault/router.dart';
+import 'package:bb_mobile/features/recoverbull_vault_recovery/router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
@@ -88,6 +90,8 @@ class AppRouter {
       PsbtRouterConfig.route,
       ReplaceByFeeRouter.route,
       Bip85EntropyRouter.route,
+      RecoverBullSelectVaultRouter.route,
+      RecoverBullVaultRecoveryRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );

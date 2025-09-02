@@ -67,7 +67,9 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
   void clearError() =>
       _emitOperationStatus(const KeyServerOperationStatus.initial());
+
   void clearSensitive() => updateKeyServerState(password: '');
+
   Future<void> confirmKey() async {
     if (!state.canProceed) return;
 
@@ -180,6 +182,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
           );
           return;
         }
+
         try {
           await checkConnection();
           final backupKey = await _handleServerOperation(

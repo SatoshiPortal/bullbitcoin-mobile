@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
     show CurrentKeyServerFlow, SecretStatus;
 import 'package:bb_mobile/core/widgets/loading/status_screen.dart';
@@ -9,6 +10,7 @@ import 'package:bb_mobile/features/key_server/ui/screens/enter_screen.dart';
 import 'package:bb_mobile/features/key_server/ui/screens/recover_with_backup_key_screen.dart';
 import 'package:bb_mobile/features/key_server/ui/screens/recover_with_secret_screen.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/features/recoverbull_vault_recovery/router.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -223,16 +225,13 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
   }
 
   void _handleRecoverySuccess(BuildContext context, KeyServerState state) {
-    final onBoardingState = context.read<OnboardingBloc>().state;
     final testWalletBackupState = context.read<TestWalletBackupBloc>().state;
 
-    if (widget.fromOnboarding &&
-        onBoardingState.onboardingStepStatus == OnboardingStepStatus.none) {
-      context.read<OnboardingBloc>().add(
-        StartWalletRecovery(
-          backupKey: state.backupKey,
-          backupFile: state.backupFile,
-        ),
+    if (widget.fromOnboarding) {
+      final bullBackup = BullBackupEntity(backupFile: state.backupFile);
+      context.pushNamed(
+        RecoverBullVaultRecovery.recoverbullVaultRecovery.name,
+        extra: (backup: bullBackup, backupKey: state.backupKey),
       );
     } else if (!(testWalletBackupState.status ==
             TestWalletBackupStatus.success) &&

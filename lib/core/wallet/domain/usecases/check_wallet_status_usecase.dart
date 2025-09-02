@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/electrum/data/repository/electrum_server_reposito
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
@@ -15,16 +14,10 @@ class TheDirtyUsecase {
   final ElectrumServerRepository _electrumServerRepository;
 
   Future<({BigInt satoshis, int transactions})> call(
-    Mnemonic mnemonic,
+    bip39.Mnemonic mnemonic,
     ScriptType scriptType,
   ) async {
     try {
-      final bip39Mnemonic = bip39.Mnemonic.fromWords(
-        words: mnemonic.words,
-        passphrase: mnemonic.passphrase,
-        language: mnemonic.language,
-      );
-
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
       final network = Network.fromEnvironment(
@@ -35,12 +28,12 @@ class TheDirtyUsecase {
       final bdkNetwork =
           environment.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
-      final bdkMnemonic = await bdk.Mnemonic.fromEntropy(bip39Mnemonic.entropy);
+      final bdkMnemonic = await bdk.Mnemonic.fromEntropy(mnemonic.entropy);
 
       final descriptorSecretKey = await bdk.DescriptorSecretKey.create(
         mnemonic: bdkMnemonic,
         network: bdkNetwork,
-        password: bip39Mnemonic.passphrase,
+        password: mnemonic.passphrase,
       );
 
       bdk.Descriptor? external;

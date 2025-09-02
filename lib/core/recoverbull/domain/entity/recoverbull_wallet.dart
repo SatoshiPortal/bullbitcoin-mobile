@@ -7,6 +7,7 @@ part 'recoverbull_wallet.g.dart';
 abstract class RecoverBullWallet with _$RecoverBullWallet {
   const factory RecoverBullWallet({
     @Default([]) List<String> mnemonic,
+    // TODO(azad): masterFingerprint should be computed from mnemonic
     @Default('') String masterFingerprint,
     @Default(false) bool isEncryptedVaultTested,
     @Default(false) bool isPhysicalBackupTested,
