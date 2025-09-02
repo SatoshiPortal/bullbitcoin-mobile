@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/recoverbull_vault_recovery/presentation/state
 import 'package:bb_mobile/features/recoverbull_vault_recovery/ui/wallet_status_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 
 class RecoverBullVaultRecoveryPage extends StatelessWidget {
   const RecoverBullVaultRecoveryPage({super.key});
@@ -33,19 +34,23 @@ class RecoverBullVaultRecoveryPage extends StatelessWidget {
           final cubit = context.read<RecoverBullVaultRecoveryCubit>();
           final status = state.bip84Status;
 
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              WalletStatusWidget(status: status),
-
-              BBButton.big(
-                onPressed: cubit.importWallet,
-                label: 'Continue',
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onPrimary,
-                disabled: state.decryptedVault == null || state.isImported,
-              ),
-            ],
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                WalletStatusWidget(status: status),
+                const Spacer(),
+                BBButton.big(
+                  onPressed: cubit.importWallet,
+                  label: 'Continue',
+                  bgColor: context.colour.secondary,
+                  textColor: context.colour.onPrimary,
+                  disabled: state.decryptedVault == null || state.isImported,
+                ),
+                const Gap(20),
+              ],
+            ),
           );
         },
       ),
