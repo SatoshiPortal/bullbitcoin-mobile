@@ -1,11 +1,11 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'recoverbull_wallet.freezed.dart';
-part 'recoverbull_wallet.g.dart';
+part 'decrypted_vault.freezed.dart';
+part 'decrypted_vault.g.dart';
 
 @freezed
-abstract class RecoverBullWallet with _$RecoverBullWallet {
-  const factory RecoverBullWallet({
+abstract class DecryptedVault with _$DecryptedVault {
+  const factory DecryptedVault({
     @Default([]) List<String> mnemonic,
     // TODO(azad): masterFingerprint should be computed from mnemonic
     @Default('') String masterFingerprint,
@@ -13,8 +13,8 @@ abstract class RecoverBullWallet with _$RecoverBullWallet {
     @Default(false) bool isPhysicalBackupTested,
     DateTime? latestEncryptedBackup,
     DateTime? latestPhysicalBackup,
-  }) = _RecoverBullWallet;
+  }) = _DecryptedVault;
 
-  factory RecoverBullWallet.fromJson(Map<String, dynamic> json) =>
-      _$RecoverBullWalletFromJson(json);
+  factory DecryptedVault.fromJson(Map<String, dynamic> json) =>
+      _$DecryptedVaultFromJson(json);
 }

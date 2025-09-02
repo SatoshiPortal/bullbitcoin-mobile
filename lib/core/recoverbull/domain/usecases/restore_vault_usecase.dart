@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -21,7 +21,7 @@ class RestoreVaultUsecase {
   }) : _walletRepository = walletRepository,
        _createDefaultWallets = createDefaultWalletsUsecase;
 
-  Future<void> execute({required RecoverBullWallet decryptedVault}) async {
+  Future<void> execute({required DecryptedVault decryptedVault}) async {
     try {
       final mnemonic = bip39.Mnemonic.fromWords(
         words: decryptedVault.mnemonic,
