@@ -1,0 +1,21 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
+import 'package:bb_mobile/features/recoverbull_select_vault/errors.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'state.freezed.dart';
+
+@freezed
+sealed class RecoverBullSelectVaultState with _$RecoverBullSelectVaultState {
+  const factory RecoverBullSelectVaultState({
+    @Default(null) BackupProviderType? selectedProvider,
+    @Default(false) bool isLoading,
+    RecoverBullSelectVaultError? error,
+    @Default([]) List<DriveFileMetadata> driveMetadata,
+    @Default(null) BullBackupEntity? selectedBackup,
+    @Default(null) ({BigInt satoshis, int transactions})? walletStatus,
+  }) = _RecoverBullSelectVaultState;
+
+  const RecoverBullSelectVaultState._();
+}
