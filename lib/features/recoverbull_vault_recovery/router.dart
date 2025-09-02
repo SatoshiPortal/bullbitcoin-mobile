@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';

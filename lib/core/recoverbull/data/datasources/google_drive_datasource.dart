@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:bb_mobile/core/recoverbull/data/models/drive_file_metadata_model.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';

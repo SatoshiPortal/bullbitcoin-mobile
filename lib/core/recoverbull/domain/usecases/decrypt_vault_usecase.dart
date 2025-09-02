@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
 class DecryptVaultUsecase {

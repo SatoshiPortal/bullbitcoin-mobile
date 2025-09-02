@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_backups_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';

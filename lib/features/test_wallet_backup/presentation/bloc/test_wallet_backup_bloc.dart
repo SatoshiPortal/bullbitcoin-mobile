@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/bull_backup.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/errors.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
