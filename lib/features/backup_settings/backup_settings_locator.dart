@@ -24,7 +24,7 @@ class BackupSettingsLocator {
         fetchEncryptedVaultFromFileSystemUsecase:
             locator<FetchEncryptedVaultFromFileSystemUsecase>(),
         fetchLatestGoogleDriveBackupUsecase:
-            locator<FetchLatestGoogleDriveBackupUsecase>(),
+            locator<FetchLatestGoogleDriveVaultUsecase>(),
         connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
       ),
     );

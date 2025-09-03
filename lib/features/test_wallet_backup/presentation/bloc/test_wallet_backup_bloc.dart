@@ -25,9 +25,9 @@ class TestWalletBackupBloc
   TestWalletBackupBloc({
     required SelectFileFromPathUsecase selectFileFromPathUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
-    required RestoreEncryptedVaultFromBackupKeyUsecase
+    required RestoreEncryptedVaultFromVaultKeyUsecase
     restoreEncryptedVaultFromBackupKeyUsecase,
-    required FetchLatestGoogleDriveBackupUsecase
+    required FetchLatestGoogleDriveVaultUsecase
     fetchLatestGoogleDriveBackupUsecase,
     required FetchEncryptedVaultFromFileSystemUsecase
     fetchBackupFromFileSystemUsecase,
@@ -72,10 +72,9 @@ class TestWalletBackupBloc
 
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
-  final RestoreEncryptedVaultFromBackupKeyUsecase
+  final RestoreEncryptedVaultFromVaultKeyUsecase
   _restoreEncryptedVaultFromBackupKeyUsecase;
-  final FetchLatestGoogleDriveBackupUsecase
-  _fetchLatestGoogleDriveBackupUsecase;
+  final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveBackupUsecase;
   final FetchEncryptedVaultFromFileSystemUsecase
   _fetchBackupFromFileSystemUsecase;
   final CompleteEncryptedVaultVerificationUsecase
@@ -95,13 +94,13 @@ class TestWalletBackupBloc
       await _connectToGoogleDriveUsecase.execute();
       emit(state.copyWith(vaultProvider: const VaultProvider.googleDrive()));
 
-      final (content: backupFile, fileName: _) =
+      final (content: fileContent, fileName: _) =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
 
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          encryptedVault: EncryptedVault(file: backupFile),
+          encryptedVault: EncryptedVault(file: fileContent),
         ),
       );
     } catch (e) {
@@ -163,8 +162,8 @@ class TestWalletBackupBloc
 
       try {
         await _restoreEncryptedVaultFromBackupKeyUsecase.execute(
-          backupFile: event.backupFile,
-          backupKey: event.backupKey,
+          vault: event.vault,
+          vaultKey: event.vaultKey,
         );
         // If we get here, something went wrong because we expect DefaultWalletAlreadyExistsError
         emit(

@@ -80,9 +80,9 @@ class RecoverbullLocator {
       () => DisconnectFromGoogleDriveUsecase(locator<GoogleDriveRepository>()),
     );
 
-    locator.registerFactory<FetchLatestGoogleDriveBackupUsecase>(
+    locator.registerFactory<FetchLatestGoogleDriveVaultUsecase>(
       () =>
-          FetchLatestGoogleDriveBackupUsecase(locator<GoogleDriveRepository>()),
+          FetchLatestGoogleDriveVaultUsecase(locator<GoogleDriveRepository>()),
     );
 
     locator.registerFactory<CreateVaultKeyFromDefaultSeedUsecase>(
@@ -96,8 +96,8 @@ class RecoverbullLocator {
       () => FetchEncryptedVaultFromFileSystemUsecase(),
     );
 
-    locator.registerFactory<RestoreEncryptedVaultFromBackupKeyUsecase>(
-      () => RestoreEncryptedVaultFromBackupKeyUsecase(
+    locator.registerFactory<RestoreEncryptedVaultFromVaultKeyUsecase>(
+      () => RestoreEncryptedVaultFromVaultKeyUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
         walletRepository: locator<WalletRepository>(),
         createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),

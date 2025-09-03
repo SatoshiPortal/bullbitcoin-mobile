@@ -14,9 +14,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class VaultSelectedPage extends StatelessWidget {
-  final EncryptedVault backup;
+  final EncryptedVault vault;
 
-  const VaultSelectedPage({super.key, required this.backup});
+  const VaultSelectedPage({super.key, required this.vault});
 
   @override
   Widget build(BuildContext context) {
@@ -43,15 +43,15 @@ class VaultSelectedPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(children: [BullBackupWidget(backup: backup)]),
+        child: Column(children: [EncryptedVaultWidget(vault: vault)]),
       ),
     );
   }
 }
 
-class BullBackupWidget extends StatelessWidget {
-  final EncryptedVault backup;
-  const BullBackupWidget({super.key, required this.backup});
+class EncryptedVaultWidget extends StatelessWidget {
+  final EncryptedVault vault;
+  const EncryptedVaultWidget({super.key, required this.vault});
 
   @override
   Widget build(BuildContext context) {
@@ -77,11 +77,11 @@ class BullBackupWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(backup.id, style: context.font.headlineMedium),
+                BBText(vault.id, style: context.font.headlineMedium),
                 BBText(
                   DateFormat(
                     "yyyy-MMM-dd, HH:mm:ss",
-                  ).format(backup.createdAt.toLocal()),
+                  ).format(vault.createdAt.toLocal()),
                   style: context.font.headlineMedium,
                 ),
               ],
@@ -94,7 +94,7 @@ class BullBackupWidget extends StatelessWidget {
                 () => context.push(
                   KeyServerRoute.keyServerFlow.path,
                   extra: (
-                    backup.toFile(),
+                    vault,
                     CurrentKeyServerFlow.recoveryWithBackupKey.name,
                     true,
                   ),
@@ -110,11 +110,7 @@ class BullBackupWidget extends StatelessWidget {
             onPressed:
                 () => context.pushNamed(
                   KeyServerRoute.keyServerFlow.name,
-                  extra: (
-                    backup.toFile(),
-                    CurrentKeyServerFlow.recovery.name,
-                    true,
-                  ),
+                  extra: (vault, CurrentKeyServerFlow.recovery.name, true),
                 ),
             bgColor: context.colour.secondary,
             textColor: context.colour.onSecondary,

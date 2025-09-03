@@ -27,7 +27,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     required SelectFileFromPathUsecase selectFileFromPathUsecase,
     required FetchEncryptedVaultFromFileSystemUsecase
     fetchEncryptedVaultFromFileSystemUsecase,
-    required FetchLatestGoogleDriveBackupUsecase
+    required FetchLatestGoogleDriveVaultUsecase
     fetchLatestGoogleDriveBackupUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
@@ -52,8 +52,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
   final FetchEncryptedVaultFromFileSystemUsecase
   _fetchEncryptedVaultFromFileSystemUsecase;
-  final FetchLatestGoogleDriveBackupUsecase
-  _fetchLatestGoogleDriveBackupUsecase;
+  final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveBackupUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
 
   Future<void> checkBackupStatus() async {
@@ -123,27 +122,15 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
-  Future<void> viewVaultKey(String backupFile) async {
+  Future<void> viewVaultKey(EncryptedVault vault) async {
     try {
       emit(
         state.copyWith(status: BackupSettingsStatus.viewingKey, error: null),
       );
 
-      if (!EncryptedVault.isValid(backupFile)) {
-        emit(
-          state.copyWith(
-            status: BackupSettingsStatus.error,
-            error: const BackupVaultCorruptedError(),
-          ),
-        );
-        return;
-      }
-
-      final vault = EncryptedVault(file: backupFile);
-
-      String? backupKey;
+      String? vaultKey;
       try {
-        backupKey = await _createBackupKeyFromDefaultSeedUsecase.execute(
+        vaultKey = await _createBackupKeyFromDefaultSeedUsecase.execute(
           vault.derivationPath,
         );
       } catch (e) {
@@ -161,7 +148,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       emit(
         state.copyWith(
           status: BackupSettingsStatus.success,
-          derivedBackupKey: backupKey,
+          derivedBackupKey: vaultKey,
         ),
       );
     } catch (e) {

@@ -9,39 +9,33 @@ import 'package:recoverbull/recoverbull.dart' as recoverbull;
 /// Stores a backup key on the server with password protection
 class StoreBackupKeyIntoServerUsecase {
   final RecoverBullRepository _recoverBullRepository;
-  final BackupKeyService _backupKeyService;
+  final VaultKeyService _backupKeyService;
 
   StoreBackupKeyIntoServerUsecase({
     required RecoverBullRepository recoverBullRepository,
-    required BackupKeyService backupService,
+    required VaultKeyService backupService,
   }) : _recoverBullRepository = recoverBullRepository,
        _backupKeyService = backupService;
 
   Future<void> execute({
     required String password,
-    required String backupFile,
-    required String backupKey,
+    required EncryptedVault vault,
+    required String vaultKey,
   }) async {
     try {
-      if (!EncryptedVault.isValid(backupFile)) {
-        throw const KeyServerError.invalidBackupFile();
-      }
-
-      final vault = EncryptedVault(file: backupFile);
-
-      final derivedKey = await _backupKeyService.deriveBackupKeyFromDefaultSeed(
+      final derivedKey = await _backupKeyService.deriveVaultKeyFromDefaultSeed(
         path: vault.derivationPath,
       );
 
-      if (backupKey != derivedKey) {
+      if (vaultKey != derivedKey) {
         throw const KeyServerError.keyMismatch();
       }
 
-      await _recoverBullRepository.storeBackupKey(
+      await _recoverBullRepository.storeVaultKey(
         vault.id,
         password,
         vault.salt,
-        backupKey,
+        vaultKey,
       );
     } on recoverbull.KeyServerException catch (e) {
       log.severe('$StoreBackupKeyIntoServerUsecase: $e');

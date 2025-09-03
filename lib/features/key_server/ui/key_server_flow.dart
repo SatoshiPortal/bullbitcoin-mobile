@@ -30,11 +30,11 @@ import 'package:go_router/go_router.dart';
 class KeyServerFlow extends StatefulWidget {
   const KeyServerFlow({
     super.key,
-    this.backupFile,
+    this.vault,
     this.currentFlow,
     this.fromOnboarding = false,
   });
-  final String? backupFile;
+  final EncryptedVault? vault;
   final String? currentFlow;
   final bool fromOnboarding;
 
@@ -52,7 +52,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
           BlocProvider.value(
             value:
                 locator<KeyServerCubit>()..updateKeyServerState(
-                  vaultFile: widget.backupFile,
+                  vault: widget.vault,
                   flow: CurrentKeyServerFlow.fromString(
                     widget.currentFlow ?? '',
                   ),
@@ -200,7 +200,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     if (CurrentKeyServerFlow.fromString(widget.currentFlow ?? '') ==
         CurrentKeyServerFlow.recovery) {
       context.read<KeyServerCubit>().updateKeyServerState(
-        vaultFile: widget.backupFile,
+        vault: widget.vault,
         status: const KeyServerOperationStatus.initial(),
         flow: CurrentKeyServerFlow.fromString(widget.currentFlow ?? ''),
       );
@@ -238,8 +238,8 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
         !widget.fromOnboarding) {
       context.read<TestWalletBackupBloc>().add(
         StartVaultBackupTesting(
-          backupKey: state.vaultKey,
-          backupFile: state.vaultFile,
+          vaultKey: state.vaultKey,
+          vault: EncryptedVault(file: state.vaultFile),
         ),
       );
     }

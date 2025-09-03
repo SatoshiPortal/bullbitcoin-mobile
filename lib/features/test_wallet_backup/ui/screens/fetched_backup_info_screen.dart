@@ -64,7 +64,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                     () => context.push(
                       KeyServerRoute.keyServerFlow.path,
                       extra: (
-                        bullBackup.toFile(),
+                        bullBackup,
                         CurrentKeyServerFlow.recoveryWithBackupKey.name,
                         false,
                       ),
@@ -81,7 +81,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                   () => context.pushNamed(
                     KeyServerRoute.keyServerFlow.name,
                     extra: (
-                      bullBackup.toFile(),
+                      bullBackup,
                       CurrentKeyServerFlow.recovery.name,
                       false,
                     ),

@@ -12,14 +12,11 @@ class DecryptVaultUsecase {
     : _recoverBull = recoverBullRepository;
 
   DecryptedVault execute({
-    required EncryptedVault backupFile,
-    required String backupKey,
+    required EncryptedVault vault,
+    required String vaultKey,
   }) {
     try {
-      final plaintext = _recoverBull.restoreBackupJson(
-        backupFile.toFile(),
-        backupKey,
-      );
+      final plaintext = _recoverBull.restoreJsonVault(vault.toFile(), vaultKey);
 
       final decodedPlaintext = json.decode(plaintext) as Map<String, dynamic>;
       final decryptedVault = DecryptedVault.fromJson(decodedPlaintext);

@@ -10,22 +10,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecoverBullVaultRecoveryCubit
     extends Cubit<RecoverBullVaultRecoveryState> {
-  final EncryptedVault _backup;
-  final String _backupKey;
+  final EncryptedVault _vault;
+  final String _vaultKey;
 
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
   final TheDirtyUsecase _checkWalletStatusUsecase;
 
   RecoverBullVaultRecoveryCubit({
-    required EncryptedVault backup,
-    required String backupKey,
+    required EncryptedVault vault,
+    required String vaultKey,
     required TheDirtyUsecase checkWalletStatusUsecase,
     required DecryptVaultUsecase decryptVaultUsecase,
     required RestoreVaultUsecase restoreVaultUsecase,
   }) : _checkWalletStatusUsecase = checkWalletStatusUsecase,
-       _backup = backup,
-       _backupKey = backupKey,
+       _vault = vault,
+       _vaultKey = vaultKey,
        _decryptVaultUsecase = decryptVaultUsecase,
        _restoreVaultUsecase = restoreVaultUsecase,
        super(const RecoverBullVaultRecoveryState()) {
@@ -36,8 +36,8 @@ class RecoverBullVaultRecoveryCubit
   void extractMnemonic() {
     try {
       final decryptedVault = _decryptVaultUsecase.execute(
-        backupFile: _backup,
-        backupKey: _backupKey,
+        vault: _vault,
+        vaultKey: _vaultKey,
       );
       emit(state.copyWith(decryptedVault: decryptedVault));
     } catch (e) {

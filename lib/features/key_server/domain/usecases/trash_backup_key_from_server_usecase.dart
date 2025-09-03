@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
 
 /// Removes a backup key from the server using the provided password and backup file
 class TrashBackupKeyFromServerUsecase {
@@ -11,15 +10,12 @@ class TrashBackupKeyFromServerUsecase {
     required RecoverBullRepository recoverBullRepository,
   }) : _recoverBullRepository = recoverBullRepository;
 
-  Future<void> execute({required String password, required String backupFile}) {
+  Future<void> execute({
+    required String password,
+    required EncryptedVault vault,
+  }) {
     try {
-      if (!EncryptedVault.isValid(backupFile)) {
-        throw const KeyServerError.invalidBackupFile();
-      }
-
-      final vault = EncryptedVault(file: backupFile);
-
-      return _recoverBullRepository.trashBackupKey(
+      return _recoverBullRepository.trashVaultKey(
         vault.id,
         password,
         vault.salt,

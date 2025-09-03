@@ -24,14 +24,14 @@ class RecoverBullVaultRecoveryRouter {
     name: RecoverBullVaultRecovery.recoverbullVaultRecovery.name,
     path: RecoverBullVaultRecovery.recoverbullVaultRecovery.path,
     builder: (context, state) {
-      final (backup: backup, backupKey: backupKey) =
+      final (backup: vault, backupKey: vaultKey) =
           state.extra! as ({EncryptedVault backup, String backupKey});
 
       return BlocProvider(
         create:
             (context) => RecoverBullVaultRecoveryCubit(
-              backup: backup,
-              backupKey: backupKey,
+              vault: vault,
+              vaultKey: vaultKey,
               decryptVaultUsecase: locator<DecryptVaultUsecase>(),
               restoreVaultUsecase: locator<RestoreVaultUsecase>(),
               checkWalletStatusUsecase: locator<TheDirtyUsecase>(),

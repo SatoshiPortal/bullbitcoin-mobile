@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/choose_vault_provider_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/view_backup_key_screen.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/screens/backup_options_screen.dart';
@@ -36,8 +37,8 @@ class BackupSettingsSettingsRouter {
       name: BackupSettingsSubroute.viewBackupKey.name,
       path: BackupSettingsSubroute.viewBackupKey.path,
       builder: (context, state) {
-        final backupFile = state.extra! as String;
-        return ViewBackupKeyScreen(backupFile: backupFile);
+        final vaultFile = state.extra! as String;
+        return ViewBackupKeyScreen(vault: EncryptedVault(file: vaultFile));
       },
     ),
   ];

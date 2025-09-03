@@ -23,7 +23,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   final TrashBackupKeyFromServerUsecase trashKeyFromServerUsecase;
   final DeriveBackupKeyFromDefaultWalletUsecase
   deriveBackupKeyFromDefaultWalletUsecase;
-  final RestoreBackupKeyFromPasswordUsecase restoreBackupKeyFromPasswordUsecase;
+  final RestoreVaultKeyFromPasswordUsecase restoreBackupKeyFromPasswordUsecase;
   final CheckKeyServerConnectionUsecase checkServerConnectionUsecase;
   final CreateVaultKeyFromDefaultSeedUsecase
   createVaultKeyFromDefaultSeedUsecase;
@@ -96,34 +96,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     await storeKey();
   }
 
-  Future<void> deleteKey() async {
-    if (!state.canProceed) return;
-    try {
-      await checkConnection();
-      await _handleServerOperation(
-        () => trashKeyFromServerUsecase.execute(password: '', backupFile: ''),
-        'Delete Key',
-      );
-      emit(state.copyWith(secretStatus: SecretStatus.deleted));
-    } catch (e) {
-      if (e is KeyServerError) {
-        emit(
-          state.copyWith(
-            status: KeyServerOperationStatus.failure(message: e.message),
-          ),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            status: const KeyServerOperationStatus.failure(
-              message: 'Failed to delete key. Please try again.',
-            ),
-          ),
-        );
-      }
-    }
-  }
-
   void enterKey(String value) {
     updateKeyServerState(
       password:
@@ -187,7 +159,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
           await checkConnection();
           final vaultKey = await _handleServerOperation(
             () => restoreBackupKeyFromPasswordUsecase.execute(
-              backupFile: state.vaultFile,
+              vault: EncryptedVault(file: state.vaultFile),
               password: state.password,
             ),
             'Recover Key',
@@ -242,14 +214,14 @@ class KeyServerCubit extends Cubit<KeyServerState> {
       await checkConnection();
 
       final derivedKey = await deriveBackupKeyFromDefaultWalletUsecase.execute(
-        backupFile: state.vaultFile,
+        vault: EncryptedVault(file: state.vaultFile),
       );
 
       await _handleServerOperation(
         () => storeBackupKeyIntoServerUsecase.execute(
           password: state.password,
-          backupKey: derivedKey,
-          backupFile: state.vaultFile,
+          vault: EncryptedVault(file: state.vaultFile),
+          vaultKey: derivedKey,
         ),
         'Store Key',
       );
@@ -311,7 +283,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     SecretStatus? secretStatus,
     KeyServerOperationStatus? status,
     AuthInputType? authInputType,
-    String? vaultFile,
+    EncryptedVault? vault,
     bool resetState = false,
   }) {
     // Prevent duplicate state updates
@@ -320,7 +292,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
         vaultKey == state.vaultKey &&
         flow == state.currentFlow &&
         authInputType == state.authInputType &&
-        vaultFile == state.vaultFile) {
+        vault?.toFile() == state.vaultFile) {
       return;
     }
 
@@ -339,10 +311,9 @@ class KeyServerCubit extends Cubit<KeyServerState> {
                 : (resetState ? '' : (vaultKey ?? state.vaultKey)),
         currentFlow: flow ?? state.currentFlow,
         authInputType: authInputType ?? state.authInputType,
-        vaultFile: vaultFile ?? state.vaultFile,
+        vaultFile: vault?.toFile() ?? state.vaultFile,
         temporaryPassword: resetState ? '' : state.temporaryPassword,
         secretStatus: secretStatus ?? state.secretStatus,
-
         status: status ?? state.status, // Don't clear status automatically
       ),
     );

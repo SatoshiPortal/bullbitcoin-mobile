@@ -75,13 +75,13 @@ class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
         emit(state.copyWith(error: FileNotSelectedError()));
       }
 
-      final backupFile = await File(selectedFile!).readAsString();
+      final fileSelectedContent = await File(selectedFile!).readAsString();
 
-      if (!EncryptedVault.isValid(backupFile)) {
+      if (!EncryptedVault.isValid(fileSelectedContent)) {
         emit(state.copyWith(error: RecoverbullBackupFileNotValidError()));
       }
 
-      final backup = EncryptedVault(file: backupFile);
+      final backup = EncryptedVault(file: fileSelectedContent);
       emit(state.copyWith(selectedBackup: backup));
     } catch (e) {
       emit(state.copyWith(error: SelectFileFromPathError()));

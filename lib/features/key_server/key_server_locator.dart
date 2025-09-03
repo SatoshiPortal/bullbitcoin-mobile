@@ -14,8 +14,8 @@ import 'package:bb_mobile/locator.dart';
 class KeyServerLocator {
   static void setup() {
     // Registering services
-    locator.registerLazySingleton<BackupKeyService>(
-      () => BackupKeyService(
+    locator.registerLazySingleton<VaultKeyService>(
+      () => VaultKeyService(
         seedRepository: locator<SeedRepository>(),
         walletRepository: locator<WalletRepository>(),
       ),
@@ -24,7 +24,7 @@ class KeyServerLocator {
     locator.registerFactory<StoreBackupKeyIntoServerUsecase>(
       () => StoreBackupKeyIntoServerUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
-        backupService: locator<BackupKeyService>(),
+        backupService: locator<VaultKeyService>(),
       ),
     );
 
@@ -42,12 +42,12 @@ class KeyServerLocator {
 
     locator.registerFactory<DeriveBackupKeyFromDefaultWalletUsecase>(
       () => DeriveBackupKeyFromDefaultWalletUsecase(
-        backupKeyService: locator<BackupKeyService>(),
+        backupKeyService: locator<VaultKeyService>(),
       ),
     );
 
-    locator.registerFactory<RestoreBackupKeyFromPasswordUsecase>(
-      () => RestoreBackupKeyFromPasswordUsecase(
+    locator.registerFactory<RestoreVaultKeyFromPasswordUsecase>(
+      () => RestoreVaultKeyFromPasswordUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
       ),
     );
@@ -63,7 +63,7 @@ class KeyServerLocator {
         deriveBackupKeyFromDefaultWalletUsecase:
             locator<DeriveBackupKeyFromDefaultWalletUsecase>(),
         restoreBackupKeyFromPasswordUsecase:
-            locator<RestoreBackupKeyFromPasswordUsecase>(),
+            locator<RestoreVaultKeyFromPasswordUsecase>(),
         createVaultKeyFromDefaultSeedUsecase:
             locator<CreateVaultKeyFromDefaultSeedUsecase>(),
       ),

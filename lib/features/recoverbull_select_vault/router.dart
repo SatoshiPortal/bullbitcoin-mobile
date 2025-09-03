@@ -106,8 +106,8 @@ class RecoverBullSelectVaultRouter {
         path: RecoverBullSelectVault.vaultSelected.path,
         name: RecoverBullSelectVault.vaultSelected.name,
         builder: (context, state) {
-          final backup = state.extra! as EncryptedVault;
-          return VaultSelectedPage(backup: backup);
+          final vault = state.extra! as EncryptedVault;
+          return VaultSelectedPage(vault: vault);
         },
       ),
     ],

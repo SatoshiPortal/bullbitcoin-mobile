@@ -8,15 +8,14 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
 
 /// If the key server is down
-class RestoreEncryptedVaultFromBackupKeyUsecase {
+class RestoreEncryptedVaultFromVaultKeyUsecase {
   final RecoverBullRepository _recoverBull;
   final WalletRepository _walletRepository;
   final CreateDefaultWalletsUsecase _createDefaultWallets;
 
-  RestoreEncryptedVaultFromBackupKeyUsecase({
+  RestoreEncryptedVaultFromVaultKeyUsecase({
     required RecoverBullRepository recoverBullRepository,
     required WalletRepository walletRepository,
     required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
@@ -25,15 +24,11 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
        _createDefaultWallets = createDefaultWalletsUsecase;
 
   Future<void> execute({
-    required String backupFile,
-    required String backupKey,
+    required EncryptedVault vault,
+    required String vaultKey,
   }) async {
     try {
-      if (!EncryptedVault.isValid(backupFile)) {
-        throw const KeyServerError.invalidBackupFile();
-      }
-
-      final plaintext = _recoverBull.restoreBackupJson(backupFile, backupKey);
+      final plaintext = _recoverBull.restoreJsonVault(vault.toFile(), vaultKey);
 
       final decodedPlaintext = json.decode(plaintext) as Map<String, dynamic>;
       final decodedRecoverbullWallets = DecryptedVault.fromJson(
@@ -78,7 +73,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
 
       log.info('Default wallets updated');
     } catch (e) {
-      log.severe('$RestoreEncryptedVaultFromBackupKeyUsecase: $e');
+      log.severe('$RestoreEncryptedVaultFromVaultKeyUsecase: $e');
       rethrow;
     }
   }

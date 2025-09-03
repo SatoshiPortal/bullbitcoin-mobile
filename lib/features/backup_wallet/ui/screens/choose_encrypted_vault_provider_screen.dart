@@ -62,17 +62,15 @@ class _Screen extends StatelessWidget {
       listenWhen:
           (previous, current) => current.status == BackupWalletStatus.success,
       listener: (context, state) {
-        if (state.backupFile.isNotEmpty) {
+        if (state.vault != null) {
           context.read<BackupWalletBloc>().add(const StartTransitioning());
           final bloc = context.read<BackupWalletBloc>();
+
+          final vault = state.vault;
           context
               .pushNamed(
                 KeyServerRoute.keyServerFlow.name,
-                extra: (
-                  state.backupFile,
-                  CurrentKeyServerFlow.enter.toString(),
-                  false,
-                ),
+                extra: (vault, CurrentKeyServerFlow.enter.toString(), false),
               )
               .then((_) {
                 bloc.add(const EndTransitioning());

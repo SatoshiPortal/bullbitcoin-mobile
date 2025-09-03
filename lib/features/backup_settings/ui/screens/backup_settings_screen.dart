@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -62,13 +63,14 @@ class _Screen extends StatelessWidget {
           listener: (context, state) {
             if (state.derivedBackupKey == null &&
                 state.error is BackupKeyDerivationFailedError) {
+              EncryptedVault? vault;
+              if (state.downloadedBackupFile != null) {
+                vault = EncryptedVault(file: state.downloadedBackupFile!);
+              }
+
               context.pushNamed(
                 KeyServerRoute.keyServerFlow.name,
-                extra: (
-                  state.downloadedBackupFile ?? '',
-                  CurrentKeyServerFlow.recovery.name,
-                  false,
-                ),
+                extra: (vault, CurrentKeyServerFlow.recovery.name, false),
               );
               context.read<BackupSettingsCubit>().clearDownloadedData();
             } else {

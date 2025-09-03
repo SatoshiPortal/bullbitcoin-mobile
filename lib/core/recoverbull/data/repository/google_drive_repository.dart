@@ -17,7 +17,7 @@ class GoogleDriveRepository {
     return files.map((file) => file.toEntity()).toList();
   }
 
-  Future<String> fetchBackupContent(String fileId) async {
+  Future<String> fetchFileContent(String fileId) async {
     final bytes = await _dataSource.fetchFileContent(fileId);
     return utf8.decode(bytes);
   }

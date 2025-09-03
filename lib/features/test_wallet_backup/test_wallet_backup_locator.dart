@@ -55,9 +55,9 @@ class TestWalletBackupLocator {
         selectFileFromPathUsecase: locator<SelectFileFromPathUsecase>(),
         connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
         restoreEncryptedVaultFromBackupKeyUsecase:
-            locator<RestoreEncryptedVaultFromBackupKeyUsecase>(),
+            locator<RestoreEncryptedVaultFromVaultKeyUsecase>(),
         fetchLatestGoogleDriveBackupUsecase:
-            locator<FetchLatestGoogleDriveBackupUsecase>(),
+            locator<FetchLatestGoogleDriveVaultUsecase>(),
       ),
     );
   }

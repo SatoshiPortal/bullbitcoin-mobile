@@ -5,22 +5,17 @@ import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dar
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
 /// If the key server is up
-class RestoreBackupKeyFromPasswordUsecase {
+class RestoreVaultKeyFromPasswordUsecase {
   final RecoverBullRepository recoverBullRepository;
 
-  RestoreBackupKeyFromPasswordUsecase({required this.recoverBullRepository});
+  RestoreVaultKeyFromPasswordUsecase({required this.recoverBullRepository});
 
   Future<String> execute({
-    required String backupFile,
+    required EncryptedVault vault,
     required String password,
   }) async {
     try {
-      if (!EncryptedVault.isValid(backupFile)) {
-        throw const KeyServerError.invalidBackupFile();
-      }
-
-      final vault = EncryptedVault(file: backupFile);
-      final vaultKey = await recoverBullRepository.fetchBackupKey(
+      final vaultKey = await recoverBullRepository.fetchVaultKey(
         vault.id,
         password,
         vault.salt,
@@ -30,7 +25,7 @@ class RestoreBackupKeyFromPasswordUsecase {
     } on recoverbull.KeyServerException catch (e) {
       throw KeyServerError.fromException(e);
     } catch (e) {
-      log.severe('$RestoreBackupKeyFromPasswordUsecase: $e');
+      log.severe('$RestoreVaultKeyFromPasswordUsecase: $e');
       rethrow;
     }
   }

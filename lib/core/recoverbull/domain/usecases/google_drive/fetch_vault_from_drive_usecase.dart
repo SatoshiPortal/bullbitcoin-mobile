@@ -8,9 +8,7 @@ class FetchVaultFromDriveUsecase {
 
   Future<String> execute(DriveFileMetadata driveFileMetadata) async {
     try {
-      final content = await _repository.fetchBackupContent(
-        driveFileMetadata.id,
-      );
+      final content = await _repository.fetchFileContent(driveFileMetadata.id);
       return content;
     } catch (e) {
       rethrow;
