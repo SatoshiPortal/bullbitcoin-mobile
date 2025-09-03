@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_d
 import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
@@ -114,11 +113,6 @@ class RecoverbullLocator {
     );
     locator.registerFactory<SaveToFileSystemUsecase>(
       () => SaveToFileSystemUsecase(locator<FileSystemRepository>()),
-    );
-    locator.registerLazySingleton<CompletePhysicalBackupVerificationUsecase>(
-      () => CompletePhysicalBackupVerificationUsecase(
-        walletRepository: locator<WalletRepository>(),
-      ),
     );
     locator.registerFactory<FetchAllDriveBackupsUsecase>(
       () => FetchAllDriveBackupsUsecase(locator<GoogleDriveRepository>()),
