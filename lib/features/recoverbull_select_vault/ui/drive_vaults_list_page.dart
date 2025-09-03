@@ -39,24 +39,26 @@ class DriveVaultsListPage extends StatelessWidget {
               ? Center(child: Text('Error: $error'))
               : Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    if (state.isLoading)
-                      const Center(child: CircularProgressIndicator()),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      if (state.isLoading)
+                        const Center(child: CircularProgressIndicator()),
 
-                    if (!state.isLoading && driveMetadata.isEmpty)
-                      const Center(child: Text('No backups found')),
+                      if (!state.isLoading && driveMetadata.isEmpty)
+                        const Center(child: Text('No backups found')),
 
-                    ...List.generate(driveMetadata.length, (index) {
-                      final driveBackupMetadata = driveMetadata[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: _BackupItem(
-                          driveFileMetadata: driveBackupMetadata,
-                        ),
-                      );
-                    }),
-                  ],
+                      ...List.generate(driveMetadata.length, (index) {
+                        final driveBackupMetadata = driveMetadata[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: _BackupItem(
+                            driveFileMetadata: driveBackupMetadata,
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
                 ),
               ),
     );
