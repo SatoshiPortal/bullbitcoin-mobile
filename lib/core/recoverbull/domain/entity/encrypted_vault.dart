@@ -4,14 +4,13 @@ import 'package:recoverbull/recoverbull.dart' as recoverbull;
 class EncryptedVault {
   late recoverbull.BullBackup backup;
 
-  EncryptedVault({required String backupFile}) {
-    backup = recoverbull.BullBackup.fromJson(backupFile);
+  EncryptedVault({required String file}) {
+    backup = recoverbull.BullBackup.fromJson(file);
   }
 
   String toFile() => backup.toJson();
 
-  static bool isValid(String backupFile) =>
-      recoverbull.BullBackup.isValid(backupFile);
+  static bool isValid(String file) => recoverbull.BullBackup.isValid(file);
 
   String get salt => HEX.encode(backup.salt);
 

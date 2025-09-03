@@ -27,10 +27,10 @@ class StoreBackupKeyIntoServerUsecase {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final backup = EncryptedVault(backupFile: backupFile);
+      final vault = EncryptedVault(file: backupFile);
 
       final derivedKey = await _backupKeyService.deriveBackupKeyFromDefaultSeed(
-        path: backup.derivationPath,
+        path: vault.derivationPath,
       );
 
       if (backupKey != derivedKey) {
@@ -38,9 +38,9 @@ class StoreBackupKeyIntoServerUsecase {
       }
 
       await _recoverBullRepository.storeBackupKey(
-        backup.id,
+        vault.id,
         password,
-        backup.salt,
+        vault.salt,
         backupKey,
       );
     } on recoverbull.KeyServerException catch (e) {

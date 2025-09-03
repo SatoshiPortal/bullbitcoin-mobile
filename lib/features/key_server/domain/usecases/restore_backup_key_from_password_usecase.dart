@@ -19,14 +19,14 @@ class RestoreBackupKeyFromPasswordUsecase {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final backup = EncryptedVault(backupFile: backupFile);
-      final backupKey = await recoverBullRepository.fetchBackupKey(
-        backup.id,
+      final vault = EncryptedVault(file: backupFile);
+      final vaultKey = await recoverBullRepository.fetchBackupKey(
+        vault.id,
         password,
-        backup.salt,
+        vault.salt,
       );
 
-      return backupKey;
+      return vaultKey;
     } on recoverbull.KeyServerException catch (e) {
       throw KeyServerError.fromException(e);
     } catch (e) {

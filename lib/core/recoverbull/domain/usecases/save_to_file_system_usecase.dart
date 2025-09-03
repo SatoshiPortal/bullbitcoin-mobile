@@ -11,11 +11,11 @@ class SaveToFileSystemUsecase {
 
   Future<void> execute(String path, String content) async {
     try {
-      final backup = EncryptedVault(backupFile: content);
-      final filename = backup.filename;
+      final vault = EncryptedVault(file: content);
+      final filename = vault.filename;
 
-      final backupDir = await Directory(path).create(recursive: true);
-      final file = File('${backupDir.path}/$filename');
+      final vaultDir = await Directory(path).create(recursive: true);
+      final file = File('${vaultDir.path}/$filename');
 
       await fileSystemRepository.saveFile(file, content);
     } catch (e) {

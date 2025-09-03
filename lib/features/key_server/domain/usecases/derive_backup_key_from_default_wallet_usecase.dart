@@ -16,10 +16,10 @@ class DeriveBackupKeyFromDefaultWalletUsecase {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final backup = EncryptedVault(backupFile: backupFile);
+      final vault = EncryptedVault(file: backupFile);
 
       return await _backupKeyService.deriveBackupKeyFromDefaultSeed(
-        path: backup.derivationPath,
+        path: vault.derivationPath,
       );
     } catch (e) {
       log.severe('$DeriveBackupKeyFromDefaultWalletUsecase: $e');

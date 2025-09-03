@@ -136,7 +136,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   Future<void> autoFetchKey() async {
     try {
       emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
-      final vault = EncryptedVault(backupFile: state.vaultFile);
+      final vault = EncryptedVault(file: state.vaultFile);
       final vaultKey = await createVaultKeyFromDefaultSeedUsecase.execute(
         vault.derivationPath,
       );

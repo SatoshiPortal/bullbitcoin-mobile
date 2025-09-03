@@ -16,7 +16,7 @@ class FetchEncryptedVaultFromFileSystemUsecase {
       if (!EncryptedVault.isValid(backupFileContent)) {
         throw 'File is not a valid encrypted vault';
       }
-      return EncryptedVault(backupFile: backupFileContent);
+      return EncryptedVault(file: backupFileContent);
     } catch (e) {
       throw Exception(e.toString());
     }

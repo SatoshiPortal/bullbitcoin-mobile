@@ -101,7 +101,7 @@ class TestWalletBackupBloc
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          encryptedVault: EncryptedVault(backupFile: backupFile),
+          encryptedVault: EncryptedVault(file: backupFile),
         ),
       );
     } catch (e) {

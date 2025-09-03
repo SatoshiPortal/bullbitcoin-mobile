@@ -17,12 +17,12 @@ class TrashBackupKeyFromServerUsecase {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final backup = EncryptedVault(backupFile: backupFile);
+      final vault = EncryptedVault(file: backupFile);
 
       return _recoverBullRepository.trashBackupKey(
-        backup.id,
+        vault.id,
         password,
-        backup.salt,
+        vault.salt,
       );
     } catch (e) {
       log.severe('$TrashBackupKeyFromServerUsecase: $e');

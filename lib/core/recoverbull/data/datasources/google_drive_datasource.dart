@@ -85,9 +85,9 @@ class GoogleDriveAppDatasource {
 
   Future<void> store(String content) async {
     _checkConnection();
-    final backup = EncryptedVault(backupFile: content);
-    final filename = backup.filename;
-    final jsonBackup = backup.toFile();
+    final vault = EncryptedVault(file: content);
+    final filename = vault.filename;
+    final jsonVault = vault.toFile();
 
     final file =
         drive.File()
@@ -98,8 +98,8 @@ class GoogleDriveAppDatasource {
     await _driveApi!.files.create(
       file,
       uploadMedia: drive.Media(
-        Stream.value(utf8.encode(jsonBackup)),
-        jsonBackup.length,
+        Stream.value(utf8.encode(jsonVault)),
+        jsonVault.length,
       ),
     );
   }

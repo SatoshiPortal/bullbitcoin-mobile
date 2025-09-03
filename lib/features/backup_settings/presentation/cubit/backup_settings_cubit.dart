@@ -139,12 +139,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         return;
       }
 
-      final backup = EncryptedVault(backupFile: backupFile);
+      final vault = EncryptedVault(file: backupFile);
 
       String? backupKey;
       try {
         backupKey = await _createBackupKeyFromDefaultSeedUsecase.execute(
-          backup.derivationPath,
+          vault.derivationPath,
         );
       } catch (e) {
         log.severe('Local backup key derivation failed: $e');
