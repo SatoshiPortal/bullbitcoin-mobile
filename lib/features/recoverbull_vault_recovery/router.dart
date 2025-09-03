@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecas
 import 'package:bb_mobile/features/recoverbull_vault_recovery/presentation/cubit.dart';
 import 'package:bb_mobile/features/recoverbull_vault_recovery/presentation/state.dart';
 import 'package:bb_mobile/features/recoverbull_vault_recovery/ui/recoverbull_vault_recovery_page.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,8 +43,7 @@ class RecoverBullVaultRecoveryRouter {
           listenWhen:
               (previous, current) => !previous.isImported && current.isImported,
           listener: (context, state) {
-            // TODO(azad): something is missing from onboarding flow
-            // TODO(azad): wallets are properly imported but does not appear on walletHome
+            context.read<WalletBloc>().add(const WalletStarted());
             context.goNamed(WalletRoute.walletHome.name);
           },
           child: const RecoverBullVaultRecoveryPage(),
