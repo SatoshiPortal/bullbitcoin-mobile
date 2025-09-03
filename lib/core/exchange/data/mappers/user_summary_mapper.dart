@@ -11,7 +11,7 @@ class UserSummaryMapper {
       balances: model.balances.map(_mapUserBalance).toList(),
       language: model.language,
       currency: model.currency,
-      dca: _mapUserDca(model.dca),
+      dca: model.dca.toEntity(),
       autoBuy: _mapUserAutoBuy(model.autoBuy),
     );
   }
@@ -22,15 +22,6 @@ class UserSummaryMapper {
 
   static UserBalance _mapUserBalance(UserBalanceModel model) {
     return UserBalance(amount: model.amount, currencyCode: model.currencyCode);
-  }
-
-  static UserDca _mapUserDca(UserDcaModel model) {
-    return UserDca(
-      isActive: model.isActive,
-      frequency: model.frequency,
-      amount: model.amount,
-      address: model.address,
-    );
   }
 
   static UserAutoBuy _mapUserAutoBuy(UserAutoBuyModel model) {

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
-import 'package:bb_mobile/features/dca/domain/dca_wallet_type.dart';
+import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_wallet_radio_list.dart';
 import 'package:flutter/material.dart';
@@ -21,12 +21,15 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _lightningAddressController =
       TextEditingController();
-  DcaWalletType? _selectedWallet;
+  DcaNetwork? _selectedNetwork;
+  late String? _defaultLightningAddress;
   bool _useDefaultLightningAddress = false;
 
   @override
   void initState() {
     super.initState();
+    _defaultLightningAddress =
+        context.read<DcaBloc>().state.defaultLightningAddress;
   }
 
   @override
@@ -49,23 +52,23 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                 ),
               ),
               const Gap(24),
-              FormField<DcaWalletType>(
-                initialValue: _selectedWallet,
+              FormField<DcaNetwork>(
+                initialValue: _selectedNetwork,
                 validator:
-                    (val) => val == null ? 'Please select a wallet' : null,
+                    (val) => val == null ? 'Please select a network' : null,
                 builder: (field) {
                   return DcaWalletRadioList(
                     selectedWallet: field.value,
-                    onChanged: (wallet) {
+                    onChanged: (network) {
                       field.reset();
-                      setState(() => _selectedWallet = wallet);
-                      field.didChange(wallet);
+                      setState(() => _selectedNetwork = network);
+                      field.didChange(network);
                     },
                     errorText: field.errorText,
                   );
                 },
               ),
-              if (_selectedWallet == DcaWalletType.lightning) ...[
+              if (_selectedNetwork == DcaNetwork.lightning) ...[
                 const Gap(16),
                 Text(
                   'Enter Lightning address',
@@ -75,25 +78,56 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                 TextFormField(
                   controller: _lightningAddressController,
                   textAlignVertical: TextAlignVertical.center,
-                  style: context.font.headlineSmall,
+                  style: context.font.headlineSmall?.copyWith(
+                    color: _useDefaultLightningAddress
+                        ? context.colour.surfaceContainer
+                        : context.colour.secondary,
+                  ),
+                  enabled: !_useDefaultLightningAddress,
                   decoration: InputDecoration(
-                    fillColor: Colors.white,
+                    fillColor: _useDefaultLightningAddress
+                        ? context.colour.secondaryFixedDim
+                        : context.colour.onPrimary,
                     filled: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.colour.secondaryFixedDim,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.colour.secondaryFixedDim,
+                      ),
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.colour.secondaryFixedDim.withValues(alpha: 0.5),
+                      ),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16.0,
                     ),
                     suffixIcon: IconButton(
-                      icon: Icon(Icons.paste, color: context.colour.secondary),
-                      onPressed: () {
-                        Clipboard.getData(Clipboard.kTextPlain).then((value) {
-                          if (value?.text != null) {
-                            _lightningAddressController.text = value!.text!;
-                          }
-                        });
-                      },
+                      icon: Icon(
+                        Icons.paste,
+                        color: _useDefaultLightningAddress
+                            ? context.colour.surfaceContainer
+                            : context.colour.secondary,
+                      ),
+                      onPressed: _useDefaultLightningAddress
+                          ? null
+                          : () {
+                              Clipboard.getData(Clipboard.kTextPlain)
+                                  .then((value) {
+                                if (value?.text != null) {
+                                  _lightningAddressController.text =
+                                      value!.text!;
+                                }
+                              });
+                            },
                     ),
                   ),
                   validator: (value) {
@@ -110,19 +144,27 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                   },
                 ),
                 const Gap(24),
-                CheckboxListTile(
-                  title: const Text('Use my default Lightning address'),
-                  value: _useDefaultLightningAddress,
-                  onChanged: (value) {
-                    setState(() {
-                      _useDefaultLightningAddress = value ?? false;
-                    });
-                  },
-                  tileColor: Colors.black.withValues(alpha: 0.04),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                if (_defaultLightningAddress != null)
+                  CheckboxListTile(
+                    title: const Text('Use my default Lightning address.'),
+                    subtitle: const Text(
+                      'If unchecked, the default address will be overwritten.',
+                    ),
+                    value: _useDefaultLightningAddress,
+                    onChanged: (value) {
+                      setState(() {
+                        _useDefaultLightningAddress = value ?? false;
+                      });
+                      if (value == true) {
+                        _lightningAddressController.text =
+                            _defaultLightningAddress!;
+                      }
+                    },
+                    tileColor: Colors.black.withValues(alpha: 0.04),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                   ),
-                ),
               ],
               const Spacer(),
               BBButton.big(
@@ -131,7 +173,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                   if (_formKey.currentState!.validate()) {
                     context.read<DcaBloc>().add(
                       DcaEvent.walletSelected(
-                        wallet: _selectedWallet!,
+                        network: _selectedNetwork!,
                         lightningAddress:
                             _lightningAddressController.text.trim(),
                         useDefaultLightningAddress: _useDefaultLightningAddress,

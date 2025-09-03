@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_dca_settings_link.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
@@ -30,9 +31,8 @@ class ExchangeHomeScreen extends StatelessWidget {
     final isFullyVerified = context.select(
       (ExchangeCubit cubit) => cubit.state.isFullyVerifiedKycLevel,
     );
-    final hasDcaActive = context.select(
-      (ExchangeCubit cubit) => cubit.state.hasDcaActive,
-    );
+    final dca = context.select((ExchangeCubit cubit) => cubit.state.dca);
+    final hasDcaActive = dca?.isActive ?? false;
 
     if (isFetchingUserSummary || notLoggedIn) {
       return const Center(child: CircularProgressIndicator());
@@ -66,20 +66,65 @@ class ExchangeHomeScreen extends StatelessWidget {
                                   // Activate DCA
                                   context.pushNamed(DcaRoute.dca.name);
                                 } else {
-                                  // Deactivate DCA
-                                  //context.read<ExchangeCubit>().deactivateDca();
+                                  // Deactivate DCA - show confirmation dialog
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext dialogContext) {
+                                      return AlertDialog(
+                                        backgroundColor: Colors.white,
+                                        title: const Text(
+                                          'Cancel Bitcoin Recurring Buy?',
+                                        ),
+                                        content: const Text(
+                                          "Your recurring Bitcoin purchase plan will stop, "
+                                          "and scheduled buys will end. "
+                                          "To restart, you'll need to set up a new plan.",
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(dialogContext).pop();
+                                            },
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(dialogContext).pop();
+                                              context
+                                                  .read<ExchangeCubit>()
+                                                  .stopDca();
+                                            },
+                                            child: const Text(
+                                              'Yes, deactivate',
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
                                 }
                               },
                               title: const Text('Activate recurring buy'),
+
+                              subtitle:
+                                  hasDcaActive
+                                      ? ExchangeHomeDcaSettingsLink(
+                                        amount: dca!.amount!,
+                                        currency: dca.currency!,
+                                        frequency: dca.frequency!,
+                                        network: dca.network!,
+                                        address: dca.address!,
+                                      )
+                                      : null,
                             ),
+                            const Gap(12),
                             /*
-                        const Gap(12),
-                        SwitchListTile(
-                          value: false,
-                          onChanged: (value) {},
-                          title: const Text('Activate auto-buy'),
-                        ),
-                        
+                            SwitchListTile(
+                              value: false,
+                              onChanged: (value) {},
+                              title: const Text('Activate auto-buy'),
+                            ),
+                            
                         const Gap(12),
                         ListTile(
                           title: const Text('View auto-sell address'),

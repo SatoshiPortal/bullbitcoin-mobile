@@ -9,7 +9,7 @@ sealed class DcaEvent with _$DcaEvent {
     required DcaBuyFrequency frequency,
   }) = DcaBuyInputContinuePressed;
   const factory DcaEvent.walletSelected({
-    required DcaWalletType wallet,
+    required DcaNetwork network,
     String? lightningAddress,
     bool? useDefaultLightningAddress,
   }) = DcaWalletSelected;

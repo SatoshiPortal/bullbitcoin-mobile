@@ -35,6 +35,7 @@ class DcaAmountInputFields extends StatelessWidget {
               balances
                   .where((b) => b.currencyCode == fiatCurrency.code)
                   .firstOrNull,
+          canExceedBalance: true,
         ),
         const Gap(16.0),
         ExchangeAmountCurrencyDropdown(

@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'user_summary.freezed.dart';
@@ -54,8 +56,10 @@ sealed class UserBalance with _$UserBalance {
 sealed class UserDca with _$UserDca {
   const factory UserDca({
     required bool isActive,
-    String? frequency,
+    DcaBuyFrequency? frequency,
     double? amount,
+    FiatCurrency? currency,
+    DcaNetwork? network,
     String? address,
   }) = _UserDca;
 

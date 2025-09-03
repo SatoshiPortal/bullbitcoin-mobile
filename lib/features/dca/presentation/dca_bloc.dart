@@ -5,8 +5,8 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
-import 'package:bb_mobile/features/dca/domain/dca_buy_frequency.dart';
-import 'package:bb_mobile/features/dca/domain/dca_wallet_type.dart';
+import 'package:bb_mobile/features/dca/domain/dca.dart';
+import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,8 +17,9 @@ part 'dca_state.dart';
 class DcaBloc extends Bloc<DcaEvent, DcaState> {
   DcaBloc({
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
+    required SetDcaUsecase setDcaUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-
+       _setDcaUsecase = setDcaUsecase,
        super(const DcaState.initial()) {
     on<DcaStarted>(_onStarted);
     on<DcaBuyInputContinuePressed>(_onBuyInputContinuePressed);
@@ -27,6 +28,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
+  final SetDcaUsecase _setDcaUsecase;
 
   Future<void> _onStarted(DcaStarted event, Emitter<DcaState> emit) async {
     try {
@@ -74,7 +76,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
 
     emit(
       walletSelectionState.toConfirmationState(
-        selectedWallet: event.wallet,
+        network: event.network,
         lightningAddress: event.lightningAddress,
         isDefaultLightningAddress: event.useDefaultLightningAddress ?? false,
       ),
@@ -91,14 +93,25 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
 
     emit(dcaConfirmationState.copyWith(isConfirmingDca: true));
     try {
-      // TODO: fetch user summary to be sure dca was set and set success state
+      final dca = await _setDcaUsecase.execute(
+        amount: dcaConfirmationState.amount,
+        currency: dcaConfirmationState.currency,
+        frequency: dcaConfirmationState.frequency,
+        network: dcaConfirmationState.network,
+        lightningAddress: dcaConfirmationState.lightningAddress,
+      );
+
+      // Todo: change to variables from the created DCA response
       emit(
         dcaConfirmationState.toSuccessState(
-          userSummary: dcaConfirmationState.userSummary,
+          amount: dca.amount,
+          currency: dca.currency,
+          frequency: dca.frequency,
         ),
       );
     } catch (e) {
       // Log unexpected errors
+      emit(dcaConfirmationState.copyWith(error: e));
       log.severe('Unexpected error in DcaBloc: $e');
     } finally {
       if (state is DcaConfirmationState) {

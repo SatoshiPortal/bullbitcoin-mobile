@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/dca/domain/dca_wallet_type.dart';
+import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -11,8 +11,8 @@ class DcaWalletRadioList extends StatelessWidget {
     this.errorText,
   });
 
-  final DcaWalletType? selectedWallet;
-  final ValueChanged<DcaWalletType?>? onChanged;
+  final DcaNetwork? selectedWallet;
+  final ValueChanged<DcaNetwork?>? onChanged;
   final String? errorText;
 
   @override
@@ -27,7 +27,7 @@ class DcaWalletRadioList extends StatelessWidget {
       children: [
         Text('Select Bitcoin wallet type', style: context.font.bodyMedium),
         const Gap(4),
-        ...DcaWalletType.values.map((walletType) {
+        ...DcaNetwork.values.map((walletType) {
           return Column(
             children: [
               RadioListTile(
@@ -36,15 +36,15 @@ class DcaWalletRadioList extends StatelessWidget {
                   side: BorderSide(color: borderColor),
                 ),
                 title: Text(switch (walletType) {
-                  DcaWalletType.bitcoin => 'Bitcoin (BTC)',
-                  DcaWalletType.lightning => 'Lightning Network (LN)',
-                  DcaWalletType.liquid => 'Liquid (LBTC)',
+                  DcaNetwork.bitcoin => 'Bitcoin (BTC)',
+                  DcaNetwork.lightning => 'Lightning Network (LN)',
+                  DcaNetwork.liquid => 'Liquid (LBTC)',
                 }, style: context.font.headlineSmall),
                 subtitle: Text(switch (walletType) {
-                  DcaWalletType.bitcoin => 'Minimum 0.001 BTC',
-                  DcaWalletType.lightning =>
+                  DcaNetwork.bitcoin => 'Minimum 0.001 BTC',
+                  DcaNetwork.lightning =>
                     'Requires compatible wallet, maximum 0.25 BTC',
-                  DcaWalletType.liquid => 'Requires compatible wallet',
+                  DcaNetwork.liquid => 'Requires compatible wallet',
                 }, style: context.font.bodySmall),
                 value: walletType,
                 groupValue: selectedWallet,

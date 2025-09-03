@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/dca/domain/dca_buy_frequency.dart';
+import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 

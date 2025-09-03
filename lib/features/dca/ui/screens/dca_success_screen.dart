@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
-import 'package:bb_mobile/features/dca/domain/dca_buy_frequency.dart';
+import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:flutter/material.dart';
@@ -17,11 +17,10 @@ class DcaSuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final successState = context.watch<DcaBloc>().state as DcaSuccessState;
     final amount = FormatAmount.fiat(
-      successState.userSummary.dca.amount ?? 0,
+      successState.amount,
       successState.currency.code,
     );
-    const frequency = DcaBuyFrequency.hourly;
-    //successState.userSummary.dca.frequency!;
+    final frequency = successState.frequency;
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
