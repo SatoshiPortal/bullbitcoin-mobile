@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_lo
 import 'package:bb_mobile/features/key_server/key_server_locator.dart';
 import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
+import 'package:bb_mobile/features/pay/pay_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
@@ -69,6 +70,7 @@ class AppLocator {
     BuyLocator.setup();
     SellLocator.setup();
     WithdrawLocator.setup();
+    registerPayDependencies(locator);
     FundExchangeLocator.setup();
     AutoSwapLocator.setup();
     AddressViewLocator.setup();

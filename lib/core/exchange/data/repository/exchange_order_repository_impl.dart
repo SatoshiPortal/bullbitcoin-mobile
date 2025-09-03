@@ -247,7 +247,6 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   Future<FiatPaymentOrder> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
-    required String paymentProcessor,
     required OrderBitcoinNetwork network,
   }) async {
     try {
@@ -263,7 +262,6 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         apiKey: apiKeyModel.key,
         orderAmount: orderAmount,
         recipientId: recipientId,
-        paymentProcessor: paymentProcessor,
         network: network,
       );
 
@@ -434,6 +432,45 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } catch (e) {
       throw SellError.unexpected(message: 'Failed to refresh sell order: $e');
+    }
+  }
+
+  @override
+  Future<FiatPaymentOrder> refreshPayOrder(String orderId) async {
+    try {
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+
+      if (apiKeyModel == null) {
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw ApiKeyException(
+          'API key is inactive. Please login again to your Bull Bitcoin account.',
+        );
+      }
+
+      final orderModel = await _bullbitcoinApiDatasource.refreshOrder(
+        apiKey: apiKeyModel.key,
+        orderId: orderId,
+      );
+
+      final order = orderModel.toEntity(isTestnet: _isTestnet);
+
+      if (order is! FiatPaymentOrder) {
+        throw const PayError.unexpected(
+          message:
+              'Expected FiatPaymentOrder but received a different order type',
+        );
+      }
+
+      return order;
+    } catch (e) {
+      throw PayError.unexpected(message: 'Failed to refresh pay order: $e');
     }
   }
 

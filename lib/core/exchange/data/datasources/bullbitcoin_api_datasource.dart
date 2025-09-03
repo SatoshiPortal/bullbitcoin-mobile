@@ -370,12 +370,10 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required OrderAmount orderAmount,
     required String recipientId,
-    required String paymentProcessor,
     required OrderBitcoinNetwork network,
   }) async {
     final params = <String, dynamic>{
       'recipientId': recipientId,
-      'paymentProcessor': paymentProcessor,
       'bitcoinNetwork': network.value,
     };
 
@@ -385,16 +383,23 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       params['bitcoinAmount'] = orderAmount.amount;
     }
 
+    final requestData = {
+      'jsonrpc': '2.0',
+      'id': '0',
+      'method': 'sellToRecipient',
+      'params': params,
+    };
+
+    log.info('BullBitcoinApiDatasource.createPayOrder request:');
+    log.info('full request data: $requestData');
+
     final resp = await _http.post(
       _ordersPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'sellToRecipient',
-        'params': params,
-      },
+      data: requestData,
       options: Options(headers: {'X-API-Key': apiKey}),
     );
+    log.info('BullBitcoinApiDatasource.createPayOrder response:');
+    log.info('  result: ${resp.data}');
     final statusCode = resp.statusCode;
     final error = resp.data['error'];
     if (statusCode != 200) {
@@ -421,6 +426,12 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         }
       }
     }
+
+    log.info('BullBitcoinApiDatasource.createPayOrder response:');
+    log.info('  statusCode: ${resp.statusCode}');
+    log.info('  full response data: ${resp.data}');
+    log.info('  result: ${resp.data['result']}');
+
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 

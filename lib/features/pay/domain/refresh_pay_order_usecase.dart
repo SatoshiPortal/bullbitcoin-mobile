@@ -4,12 +4,12 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
-class PlacePayOrderUsecase {
+class RefreshPayOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
 
-  PlacePayOrderUsecase({
+  RefreshPayOrderUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
     required SettingsRepository settingsRepository,
@@ -17,11 +17,7 @@ class PlacePayOrderUsecase {
        _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _settingsRepository = settingsRepository;
 
-  Future<FiatPaymentOrder> execute({
-    required OrderAmount orderAmount,
-    required String recipientId,
-    required OrderBitcoinNetwork network,
-  }) async {
+  Future<FiatPaymentOrder> execute({required String orderId}) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -29,18 +25,13 @@ class PlacePayOrderUsecase {
           isTestnet
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
-
-      final order = await repo.placePayOrder(
-        orderAmount: orderAmount,
-        recipientId: recipientId,
-        network: network,
-      );
-
+      final order = await repo.refreshPayOrder(orderId);
       return order;
-    } on PayError {
-      rethrow;
     } catch (e) {
-      log.severe('Error in PlacePayOrderUsecase: $e');
+      log.severe('Error in RefreshPayOrderUsecase: $e');
+      if (e is PayError) {
+        rethrow;
+      }
       throw PayError.unexpected(message: '$e');
     }
   }
