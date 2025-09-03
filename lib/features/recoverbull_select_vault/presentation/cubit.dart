@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.da
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_backups_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_drive_backup_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/errors.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/presentation/state.dart';
@@ -12,12 +12,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
   final FetchAllDriveFileMetadataUsecase _fetchAllDriveFileMetadataUsecase;
-  final FetchDriveBackupUsecase _fetchDriveBackupUsecase;
+  final FetchVaultFromDriveUsecase _fetchDriveBackupUsecase;
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
 
   RecoverBullSelectVaultCubit({
     required FetchAllDriveFileMetadataUsecase fetchAllDriveFileMetadataUsecase,
-    required FetchDriveBackupUsecase fetchDriveBackupUsecase,
+    required FetchVaultFromDriveUsecase fetchDriveBackupUsecase,
     required SelectFileFromPathUsecase selectFileFromPathUsecase,
   }) : _fetchAllDriveFileMetadataUsecase = fetchAllDriveFileMetadataUsecase,
        _fetchDriveBackupUsecase = fetchDriveBackupUsecase,
