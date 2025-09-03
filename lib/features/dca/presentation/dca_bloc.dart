@@ -50,16 +50,16 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     DcaBuyInputContinuePressed event,
     Emitter<DcaState> emit,
   ) async {
-    // We should be on a clean DcaWalletSelectionState state here
-    final amountInputState = state.toCleanBuyInputState;
-    if (amountInputState == null) {
-      log.severe('Expected to be on DcaAmountInputState but on: $state');
+    // We should be on a clean DcaBuyInputState state here
+    final buyInputState = state.toCleanBuyInputState;
+    if (buyInputState == null) {
+      log.severe('Expected to be on DcaBuyInputState but on: $state');
       return;
     }
-    emit(amountInputState);
+    emit(buyInputState);
 
     emit(
-      amountInputState.toWalletSelectionState(
+      buyInputState.toWalletSelectionState(
         amount: double.parse(event.amountInput),
         currency: event.currency,
         frequency: event.frequency,
@@ -71,6 +71,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     DcaWalletSelected event,
     Emitter<DcaState> emit,
   ) async {
+    // We should be on a clean DcaWalletSelectionState state here
     final walletSelectionState = state.toCleanWalletSelectionState;
     if (walletSelectionState == null) {
       log.severe('Expected to be on DcaWalletSelectionState but on: $state');
@@ -88,7 +89,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
   }
 
   Future<void> _onConfirmed(DcaConfirmed event, Emitter<DcaState> emit) async {
-    // We should be on a DcaConfirmationState
+    // We should be on a DcaConfirmationState here
     final dcaConfirmationState = state.toCleanConfirmationState;
     if (dcaConfirmationState == null) {
       log.severe('Expected to be on DcaConfirmationState but on: $state');

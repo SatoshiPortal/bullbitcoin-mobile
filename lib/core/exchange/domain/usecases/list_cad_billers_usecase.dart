@@ -1,14 +1,14 @@
-import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/cad_biller.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
-class ListRecipientsUsecase {
+class ListCadBillersUsecase {
   final ExchangeRecipientRepository _mainnetExchangeRecipientRepository;
   final ExchangeRecipientRepository _testnetExchangeRecipientRepository;
   final SettingsRepository _settingsRepository;
 
-  ListRecipientsUsecase({
+  ListCadBillersUsecase({
     required ExchangeRecipientRepository mainnetExchangeRecipientRepository,
     required ExchangeRecipientRepository testnetExchangeRecipientRepository,
     required SettingsRepository settingsRepository,
@@ -16,34 +16,28 @@ class ListRecipientsUsecase {
        _testnetExchangeRecipientRepository = testnetExchangeRecipientRepository,
        _settingsRepository = settingsRepository;
 
-  Future<List<Recipient>> execute({bool fiatOnly = true}) async {
+  Future<List<CadBiller>> execute({required String searchTerm}) async {
     try {
-      log.info(
-        'ListRecipientsUsecase: Starting to fetch recipients (fiatOnly: $fiatOnly)',
-      );
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
       final repo =
           isTestnet
               ? _testnetExchangeRecipientRepository
               : _mainnetExchangeRecipientRepository;
-      final recipients = await repo.listRecipients(fiatOnly: fiatOnly);
-      log.info(
-        'ListRecipientsUsecase: Successfully fetched ${recipients.length} recipients',
-      );
-      return recipients;
+      final cadBillers = await repo.listCadBillers(searchTerm: searchTerm);
+      return cadBillers;
     } catch (e) {
-      log.severe('Error in ListRecipientsUsecase: $e');
-      throw ListRecipientsException('$e');
+      log.severe('Error in ListCadBillersUsecase: $e');
+      throw ListCadBillersException('$e');
     }
   }
 }
 
-class ListRecipientsException implements Exception {
+class ListCadBillersException implements Exception {
   final String message;
 
-  ListRecipientsException(this.message);
+  ListCadBillersException(this.message);
 
   @override
-  String toString() => '[ListRecipientsUsecase]: $message';
+  String toString() => '[ListCadBillersUsecase]: $message';
 }

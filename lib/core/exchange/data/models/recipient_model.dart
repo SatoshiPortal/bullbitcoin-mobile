@@ -12,11 +12,10 @@ sealed class RecipientModel with _$RecipientModel {
     required int userNbr,
     required bool isOwner,
     required bool isArchived,
-    required DateTime createdAt,
-    required DateTime updatedAt,
+    required String createdAt,
+    required String updatedAt,
     String? label,
-    List<String>? paymentProcessors,
-    required String recipientType,
+    String? recipientType,
     String? firstname,
     String? lastname,
     String? name,
@@ -38,6 +37,17 @@ sealed class RecipientModel with _$RecipientModel {
     String? institutionCode,
     bool? isCorporate,
     String? corporateName,
+    // New fields from API response
+    String? ownerName,
+    String? currency,
+    String? recipientTypeFiat,
+    String? phoneNumber,
+    String? defaultComment,
+    String? payeeName,
+    String? payeeCode,
+    String? payeeAccountNumber,
+    // Additional fields from API
+    String? debitcard,
   }) = _RecipientModel;
 
   factory RecipientModel.fromJson(Map<String, dynamic> json) =>
@@ -46,38 +56,232 @@ sealed class RecipientModel with _$RecipientModel {
   const RecipientModel._();
 
   Recipient toEntity() {
-    return Recipient(
-      recipientId: recipientId,
-      userId: userId,
-      userNbr: userNbr,
-      isOwner: isOwner,
-      isArchived: isArchived,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-      label: label,
-      paymentProcessors: paymentProcessors,
-      recipientType: recipientType,
-      firstname: firstname,
-      lastname: lastname,
-      name: name,
-      iban: iban,
-      email: email,
-      securityQuestion: securityQuestion,
-      securityAnswer: securityAnswer,
-      institutionNumber: institutionNumber,
-      transitNumber: transitNumber,
-      accountNumber: accountNumber,
-      billerPayeeCode: billerPayeeCode,
-      billerPayeeName: billerPayeeName,
-      billerPayeeAccountNumber: billerPayeeAccountNumber,
-      address: address,
-      isDefault: isDefault,
-      clabe: clabe,
-      phone: phone,
-      debitCard: debitCard,
-      institutionCode: institutionCode,
-      isCorporate: isCorporate,
-      corporateName: corporateName,
+    // Convert string dates to DateTime objects
+    final createdAtDateTime = DateTime.parse(createdAt);
+    final updatedAtDateTime = DateTime.parse(updatedAt);
+
+    if (recipientTypeFiat != null) {
+      final recipientType = WithdrawRecipientType.fromValue(recipientTypeFiat!);
+      // Use the appropriate factory constructor based on recipientTypeFiat
+      switch (recipientType) {
+        case WithdrawRecipientType.interacEmailCad:
+          return Recipient.interacEmailCad(
+            recipientId: recipientId,
+            userId: userId,
+            userNbr: userNbr,
+            isOwner: isOwner,
+            isArchived: isArchived,
+            createdAt: createdAtDateTime,
+            updatedAt: updatedAtDateTime,
+            label: label,
+            name: name,
+            email: email,
+            securityQuestion: securityQuestion,
+            securityAnswer: securityAnswer,
+            isDefault: isDefault,
+            defaultComment: defaultComment,
+            firstname: firstname,
+            lastname: lastname,
+            isCorporate: isCorporate,
+            corporateName: corporateName,
+          );
+        case WithdrawRecipientType.billPaymentCad:
+          return Recipient.billPaymentCad(
+            recipientId: recipientId,
+            userId: userId,
+            userNbr: userNbr,
+            isOwner: isOwner,
+            isArchived: isArchived,
+            createdAt: createdAtDateTime,
+            updatedAt: updatedAtDateTime,
+            label: label,
+            isDefault: isDefault,
+            payeeName: payeeName,
+            payeeCode: payeeCode,
+            payeeAccountNumber: payeeAccountNumber,
+            isCorporate: isCorporate,
+            corporateName: corporateName,
+          );
+        case WithdrawRecipientType.bankTransferCad:
+          return Recipient.bankTransferCad(
+            recipientId: recipientId,
+            userId: userId,
+            userNbr: userNbr,
+            isOwner: isOwner,
+            isArchived: isArchived,
+            createdAt: createdAtDateTime,
+            updatedAt: updatedAtDateTime,
+            label: label,
+            firstname: firstname,
+            lastname: lastname,
+            name: name,
+            institutionNumber: institutionNumber,
+            transitNumber: transitNumber,
+            accountNumber: accountNumber,
+            isDefault: isDefault,
+            ownerName: ownerName,
+            currency: currency,
+            defaultComment: defaultComment,
+            payeeName: payeeName,
+            payeeCode: payeeCode,
+            payeeAccountNumber: payeeAccountNumber,
+            isCorporate: isCorporate,
+            corporateName: corporateName,
+          );
+        case WithdrawRecipientType.sepaEur:
+          return Recipient.sepaEur(
+            recipientId: recipientId,
+            userId: userId,
+            userNbr: userNbr,
+            isOwner: isOwner,
+            isArchived: isArchived,
+            createdAt: createdAtDateTime,
+            updatedAt: updatedAtDateTime,
+            label: label,
+            firstname: firstname,
+            lastname: lastname,
+            name: name,
+            iban: iban,
+            address: address,
+            isDefault: isDefault,
+            ownerName: ownerName,
+            currency: currency,
+            defaultComment: defaultComment,
+            payeeName: payeeName,
+            payeeCode: payeeCode,
+            payeeAccountNumber: payeeAccountNumber,
+            isCorporate: isCorporate,
+            corporateName: corporateName,
+          );
+        case WithdrawRecipientType.speiClabeMxn:
+          return Recipient.speiClabeMxn(
+            recipientId: recipientId,
+            userId: userId,
+            userNbr: userNbr,
+            isOwner: isOwner,
+            isArchived: isArchived,
+            createdAt: createdAtDateTime,
+            updatedAt: updatedAtDateTime,
+            label: label,
+            firstname: firstname,
+            lastname: lastname,
+            name: name,
+            clabe: clabe,
+            institutionCode: institutionCode,
+            isDefault: isDefault,
+            ownerName: ownerName,
+            currency: currency,
+            defaultComment: defaultComment,
+            payeeName: payeeName,
+            payeeCode: payeeCode,
+            payeeAccountNumber: payeeAccountNumber,
+            isCorporate: isCorporate,
+            corporateName: corporateName,
+          );
+        case WithdrawRecipientType.speiSmsMxn:
+          return Recipient.speiSmsMxn(
+            recipientId: recipientId,
+            userId: userId,
+            userNbr: userNbr,
+            isOwner: isOwner,
+            isArchived: isArchived,
+            createdAt: createdAtDateTime,
+            updatedAt: updatedAtDateTime,
+            label: label,
+            firstname: firstname,
+            lastname: lastname,
+            name: name,
+            phone: phone,
+            phoneNumber: phoneNumber,
+            institutionCode: institutionCode,
+            isDefault: isDefault,
+            ownerName: ownerName,
+            currency: currency,
+            defaultComment: defaultComment,
+            isCorporate: isCorporate,
+            corporateName: corporateName,
+          );
+        case WithdrawRecipientType.speiCardMxn:
+          return Recipient.speiCardMxn(
+            recipientId: recipientId,
+            userId: userId,
+            userNbr: userNbr,
+            isOwner: isOwner,
+            isArchived: isArchived,
+            createdAt: createdAtDateTime,
+            updatedAt: updatedAtDateTime,
+            label: label,
+            firstname: firstname,
+            lastname: lastname,
+            name: name,
+            debitCard: debitCard ?? debitcard, // Handle both fields from API
+            institutionCode: institutionCode,
+            isDefault: isDefault,
+            ownerName: ownerName,
+            currency: currency,
+            defaultComment: defaultComment,
+            isCorporate: isCorporate,
+            corporateName: corporateName,
+          );
+        case WithdrawRecipientType.sinpeIbanUsd:
+          return Recipient.sinpeIbanUsd(
+            recipientId: recipientId,
+            userId: userId,
+            userNbr: userNbr,
+            isOwner: isOwner,
+            isArchived: isArchived,
+            createdAt: createdAtDateTime,
+            updatedAt: updatedAtDateTime,
+            label: label,
+            isDefault: isDefault,
+            iban: iban,
+            ownerName: ownerName,
+            currency: currency,
+            isCorporate: isCorporate,
+            corporateName: corporateName,
+          );
+        case WithdrawRecipientType.sinpeIbanCrc:
+          return Recipient.sinpeIbanCrc(
+            recipientId: recipientId,
+            userId: userId,
+            userNbr: userNbr,
+            isOwner: isOwner,
+            isArchived: isArchived,
+            createdAt: createdAtDateTime,
+            updatedAt: updatedAtDateTime,
+            label: label,
+            isDefault: isDefault,
+            iban: iban,
+            ownerName: ownerName,
+            currency: currency,
+            isCorporate: isCorporate,
+            corporateName: corporateName,
+          );
+        case WithdrawRecipientType.sinpeMovilCrc:
+          return Recipient.sinpeMovilCrc(
+            recipientId: recipientId,
+            userId: userId,
+            userNbr: userNbr,
+            isOwner: isOwner,
+            isArchived: isArchived,
+            createdAt: createdAtDateTime,
+            updatedAt: updatedAtDateTime,
+            label: label,
+            isDefault: isDefault,
+            phoneNumber: phoneNumber,
+            ownerName: ownerName,
+            currency: currency,
+            defaultComment: defaultComment,
+            isCorporate: isCorporate,
+            corporateName: corporateName,
+          );
+      }
+    }
+
+    // Fallback to a default constructor if recipientTypeFiat is null
+    // This maintains backward compatibility
+    throw Exception(
+      'recipientTypeFiat is required to create a Recipient entity',
     );
   }
 }

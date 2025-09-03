@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -10,6 +9,7 @@ import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -207,13 +207,9 @@ class ExchangeHomeScreen extends StatelessWidget {
                         label: 'Withdraw',
                         iconFirst: true,
                         disabled: false,
-                        onPressed: () {
-                          ComingSoonBottomSheet.show(
-                            context,
-                            description:
-                                'Withdraw Fiat from Account Balance to External Account',
-                          );
-                        },
+                        onPressed:
+                            () =>
+                                context.pushNamed(WithdrawRoute.withdraw.name),
                         bgColor: context.colour.secondary,
                         textColor: context.colour.onPrimary,
                       ),
