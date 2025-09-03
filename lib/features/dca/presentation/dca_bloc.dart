@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
@@ -18,8 +19,10 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
   DcaBloc({
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
     required SetDcaUsecase setDcaUsecase,
+    required SaveUserPreferencesUsecase saveUserPreferencesUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _setDcaUsecase = setDcaUsecase,
+       _saveUserPreferencesUsecase = saveUserPreferencesUsecase,
        super(const DcaState.initial()) {
     on<DcaStarted>(_onStarted);
     on<DcaBuyInputContinuePressed>(_onBuyInputContinuePressed);
@@ -29,6 +32,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final SetDcaUsecase _setDcaUsecase;
+  final SaveUserPreferencesUsecase _saveUserPreferencesUsecase;
 
   Future<void> _onStarted(DcaStarted event, Emitter<DcaState> emit) async {
     try {
@@ -101,7 +105,10 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
         lightningAddress: dcaConfirmationState.lightningAddress,
       );
 
-      // Todo: change to variables from the created DCA response
+      // Now that the configuration was stored successfully,
+      // We can activate DCA again.
+      await _saveUserPreferencesUsecase.execute(dcaEnabled: true);
+
       emit(
         dcaConfirmationState.toSuccessState(
           amount: dca.amount,

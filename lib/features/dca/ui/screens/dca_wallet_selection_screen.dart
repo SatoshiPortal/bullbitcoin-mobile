@@ -79,15 +79,17 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                   controller: _lightningAddressController,
                   textAlignVertical: TextAlignVertical.center,
                   style: context.font.headlineSmall?.copyWith(
-                    color: _useDefaultLightningAddress
-                        ? context.colour.surfaceContainer
-                        : context.colour.secondary,
+                    color:
+                        _useDefaultLightningAddress
+                            ? context.colour.surfaceContainer
+                            : context.colour.secondary,
                   ),
                   enabled: !_useDefaultLightningAddress,
                   decoration: InputDecoration(
-                    fillColor: _useDefaultLightningAddress
-                        ? context.colour.secondaryFixedDim
-                        : context.colour.onPrimary,
+                    fillColor:
+                        _useDefaultLightningAddress
+                            ? context.colour.secondaryFixedDim
+                            : context.colour.onPrimary,
                     filled: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
@@ -104,7 +106,9 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     disabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
                       borderSide: BorderSide(
-                        color: context.colour.secondaryFixedDim.withValues(alpha: 0.5),
+                        color: context.colour.secondaryFixedDim.withValues(
+                          alpha: 0.5,
+                        ),
                       ),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
@@ -113,21 +117,24 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     suffixIcon: IconButton(
                       icon: Icon(
                         Icons.paste,
-                        color: _useDefaultLightningAddress
-                            ? context.colour.surfaceContainer
-                            : context.colour.secondary,
+                        color:
+                            _useDefaultLightningAddress
+                                ? context.colour.surfaceContainer
+                                : context.colour.secondary,
                       ),
-                      onPressed: _useDefaultLightningAddress
-                          ? null
-                          : () {
-                              Clipboard.getData(Clipboard.kTextPlain)
-                                  .then((value) {
-                                if (value?.text != null) {
-                                  _lightningAddressController.text =
-                                      value!.text!;
-                                }
-                              });
-                            },
+                      onPressed:
+                          _useDefaultLightningAddress
+                              ? null
+                              : () {
+                                Clipboard.getData(Clipboard.kTextPlain).then((
+                                  value,
+                                ) {
+                                  if (value?.text != null) {
+                                    _lightningAddressController.text =
+                                        value!.text!;
+                                  }
+                                });
+                              },
                     ),
                   ),
                   validator: (value) {
@@ -143,13 +150,10 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     return null;
                   },
                 ),
-                const Gap(24),
+                const Gap(8),
                 if (_defaultLightningAddress != null)
                   CheckboxListTile(
                     title: const Text('Use my default Lightning address.'),
-                    subtitle: const Text(
-                      'If unchecked, the default address will be overwritten.',
-                    ),
                     value: _useDefaultLightningAddress,
                     onChanged: (value) {
                       setState(() {

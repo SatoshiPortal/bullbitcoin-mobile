@@ -9,7 +9,7 @@ part 'dca_model.g.dart';
 sealed class DcaModel with _$DcaModel {
   const factory DcaModel({
     required String userId,
-    required String userNbr,
+    required int userNbr,
     required String amountStr,
     required String currencyCode,
     required String recurringFrequency,

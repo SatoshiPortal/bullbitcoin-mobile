@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -34,6 +35,7 @@ class DcaLocator {
       () => DcaBloc(
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         setDcaUsecase: locator<SetDcaUsecase>(),
+        saveUserPreferencesUsecase: locator<SaveUserPreferencesUsecase>(),
       ),
     );
   }

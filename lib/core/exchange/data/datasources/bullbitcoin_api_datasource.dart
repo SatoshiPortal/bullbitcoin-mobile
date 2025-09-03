@@ -527,20 +527,22 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       'id': '1',
       'method': 'createDCA',
       'params': {
-        'amountStr': amount.toString(),
-        'currencyCode': currency.code,
-        'recurringFrequency': switch (frequency) {
-          DcaBuyFrequency.hourly => 'HOURLY',
-          DcaBuyFrequency.daily => 'DAILY',
-          DcaBuyFrequency.weekly => 'WEEKLY',
-          DcaBuyFrequency.monthly => 'MONTHLY',
+        'element': {
+          'amountStr': amount.toString(),
+          'currencyCode': currency.code,
+          'recurringFrequency': switch (frequency) {
+            DcaBuyFrequency.hourly => 'HOURLY',
+            DcaBuyFrequency.daily => 'DAILY',
+            DcaBuyFrequency.weekly => 'WEEKLY',
+            DcaBuyFrequency.monthly => 'MONTHLY',
+          },
+          'recipientType': switch (network) {
+            DcaNetwork.bitcoin => 'OUT_BITCOIN_ADDRESS',
+            DcaNetwork.lightning => 'OUT_LIGHTNING_ADDRESS',
+            DcaNetwork.liquid => 'OUT_LIQUID_ADDRESS',
+          },
+          'address': address,
         },
-        'recipientType': switch (network) {
-          DcaNetwork.bitcoin => 'OUT_BITCOIN_ADDRESS',
-          DcaNetwork.lightning => 'OUT_LIGHTNING_ADDRESS',
-          DcaNetwork.liquid => 'OUT_LIQUID_ADDRESS',
-        },
-        'address': address,
       },
     };
     final resp = await _http.post(
@@ -556,7 +558,9 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       final message = error['message'];
       throw Exception('Failed to create DCA: $message');
     }
-    return DcaModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+    return DcaModel.fromJson(
+      resp.data['result']['element'] as Map<String, dynamic>,
+    );
   }
 }
 
