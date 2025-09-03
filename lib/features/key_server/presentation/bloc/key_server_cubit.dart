@@ -105,6 +105,10 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     );
   }
 
+  void updateBackupKey(String value) {
+    updateKeyServerState(backupKey: value);
+  }
+
   Future<void> autoFetchKey() async {
     try {
       emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
