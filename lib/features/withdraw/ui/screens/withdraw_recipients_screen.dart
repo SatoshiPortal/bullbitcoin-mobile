@@ -89,7 +89,7 @@ class _WithdrawRecipientsScreenState extends State<WithdrawRecipientsScreen> {
                       color: Theme.of(context).scaffoldBackgroundColor,
                       child: Column(
                         children: [
-                          const Gap(40.0),
+                          const Gap(16.0),
                           Text(
                             'Where and how should we send the money?',
                             style: context.font.labelMedium?.copyWith(

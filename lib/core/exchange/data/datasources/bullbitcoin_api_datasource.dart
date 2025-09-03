@@ -575,14 +575,21 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     }
   }
 
-  Future<List<CadBillerModel>> listCadBillers({required String apiKey}) async {
+  Future<List<CadBillerModel>> listCadBillers({
+    required String apiKey,
+    required String searchTerm,
+  }) async {
+    final params = <String, dynamic>{
+      'filters': {'search': searchTerm},
+    };
+
     final resp = await _http.post(
       _recipientsPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'listAplBillers',
-        'params': {},
+        'params': params,
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );

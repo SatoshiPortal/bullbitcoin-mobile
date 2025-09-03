@@ -16,7 +16,7 @@ class ListCadBillersUsecase {
        _testnetExchangeRecipientRepository = testnetExchangeRecipientRepository,
        _settingsRepository = settingsRepository;
 
-  Future<List<CadBiller>> execute() async {
+  Future<List<CadBiller>> execute({required String searchTerm}) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -24,7 +24,7 @@ class ListCadBillersUsecase {
           isTestnet
               ? _testnetExchangeRecipientRepository
               : _mainnetExchangeRecipientRepository;
-      final cadBillers = await repo.listCadBillers();
+      final cadBillers = await repo.listCadBillers(searchTerm: searchTerm);
       return cadBillers;
     } catch (e) {
       log.severe('Error in ListCadBillersUsecase: $e');

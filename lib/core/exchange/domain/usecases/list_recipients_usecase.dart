@@ -18,6 +18,9 @@ class ListRecipientsUsecase {
 
   Future<List<Recipient>> execute({bool fiatOnly = true}) async {
     try {
+      log.info(
+        'ListRecipientsUsecase: Starting to fetch recipients (fiatOnly: $fiatOnly)',
+      );
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
       final repo =
@@ -25,6 +28,9 @@ class ListRecipientsUsecase {
               ? _testnetExchangeRecipientRepository
               : _mainnetExchangeRecipientRepository;
       final recipients = await repo.listRecipients(fiatOnly: fiatOnly);
+      log.info(
+        'ListRecipientsUsecase: Successfully fetched ${recipients.length} recipients',
+      );
       return recipients;
     } catch (e) {
       log.severe('Error in ListRecipientsUsecase: $e');

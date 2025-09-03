@@ -40,6 +40,7 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
         );
       }
 
+      log.info('ListRecipients API Key: ${apiKeyModel.key}');
       final recipientModels =
           fiatOnly
               ? await _bullbitcoinApiDatasource.listRecipientsFiat(
@@ -97,7 +98,7 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
   }
 
   @override
-  Future<List<CadBiller>> listCadBillers() async {
+  Future<List<CadBiller>> listCadBillers({required String searchTerm}) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
         isTestnet: _isTestnet,
@@ -117,6 +118,7 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
 
       final cadBillerModels = await _bullbitcoinApiDatasource.listCadBillers(
         apiKey: apiKeyModel.key,
+        searchTerm: searchTerm,
       );
 
       return cadBillerModels.map((model) => model.toEntity()).toList();

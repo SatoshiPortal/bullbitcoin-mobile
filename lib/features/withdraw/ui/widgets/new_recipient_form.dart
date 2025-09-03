@@ -184,7 +184,7 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
           'isOwner',
         ];
       case WithdrawRecipientType.billPaymentCad:
-        return ['payeeName', 'payeeCode', 'payeeAccountNumber', 'isOwner'];
+        return ['payeeName', 'payeeCode', 'payeeAccountNumber'];
       case WithdrawRecipientType.bankTransferCad:
         return [
           'institutionNumber',
@@ -581,18 +581,13 @@ class _BillPaymentForm extends StatefulWidget {
 
 class _BillPaymentFormState extends State<_BillPaymentForm> {
   final TextEditingController _searchController = TextEditingController();
-  List<CadBiller> _filteredBillers = [];
   CadBiller? _selectedBiller;
 
   @override
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
-
-    // Load CAD billers when form is initialized
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WithdrawBloc>().add(const WithdrawEvent.getCadBillers());
-    });
+    // Don't load CAD billers on initialization - only when user types 3+ letters
   }
 
   @override
@@ -602,29 +597,23 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
   }
 
   void _onSearchChanged() {
-    final query = _searchController.text.toLowerCase();
+    final query = _searchController.text;
     final currentState = context.read<WithdrawBloc>().state;
 
     if (currentState is WithdrawRecipientInputState) {
-      setState(() {
-        if (query.isEmpty) {
-          _filteredBillers = currentState.cadBillers;
-        } else {
-          _filteredBillers =
-              currentState.cadBillers
-                  .where(
-                    (biller) => biller.payeeName.toLowerCase().contains(query),
-                  )
-                  .toList();
-        }
-      });
+      if (query.length >= 3) {
+        // Call API with search term when user types at least 3 letters
+        context.read<WithdrawBloc>().add(
+          WithdrawEvent.getCadBillers(searchTerm: query),
+        );
+      }
     }
   }
 
   void _selectBiller(CadBiller biller) {
     setState(() {
       _selectedBiller = biller;
-      _searchController.text = biller.payeeName;
+      _searchController.clear(); // Clear the search field after selection
     });
 
     // Update form data with selected biller
@@ -640,20 +629,8 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Biller Type Dropdown
-              _buildDropdownField(
-                context,
-                'Biller Type',
-                'billerType',
-                'Standard Biller',
-                ['Standard Biller'],
-                widget.formData,
-                widget.onFormDataChanged,
-              ),
-              const Gap(12),
-
               // Biller Search Field
-              _buildSearchField(context),
+              _buildSearchField(context, state),
               const Gap(12),
 
               // Biller Name (Read-only)
@@ -686,12 +663,6 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
                 widget.formData,
                 widget.onFormDataChanged,
               ),
-              const Gap(12),
-
-              AccountOwnershipWidget(
-                formData: widget.formData,
-                onFormDataChanged: widget.onFormDataChanged,
-              ),
             ],
           );
         }
@@ -700,7 +671,10 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
     );
   }
 
-  Widget _buildSearchField(BuildContext context) {
+  Widget _buildSearchField(
+    BuildContext context,
+    WithdrawRecipientInputState state,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -719,9 +693,10 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
             // Search is handled by the listener
           },
         ),
-        if (_filteredBillers.isNotEmpty && _searchController.text.isNotEmpty)
+        if (state.cadBillers.isNotEmpty && _searchController.text.length >= 3)
           Container(
             margin: const EdgeInsets.only(top: 4),
+            constraints: const BoxConstraints(maxHeight: 200),
             decoration: BoxDecoration(
               color: context.colour.surface,
               borderRadius: BorderRadius.circular(8),
@@ -736,11 +711,9 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
             ),
             child: ListView.builder(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount:
-                  _filteredBillers.length > 5 ? 5 : _filteredBillers.length,
+              itemCount: state.cadBillers.length,
               itemBuilder: (context, index) {
-                final biller = _filteredBillers[index];
+                final biller = state.cadBillers[index];
                 return ListTile(
                   title: BBText(
                     biller.payeeName,
@@ -786,7 +759,7 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
             children: [
               Expanded(
                 child: BBText(
-                  value.isEmpty ? 'Select a biller' : value,
+                  value.isEmpty ? 'Selected Biller Name' : value,
                   style: context.font.bodyMedium?.copyWith(
                     color:
                         value.isEmpty
@@ -1360,53 +1333,4 @@ bool _parseBoolValue(dynamic value) {
     return value.toLowerCase() == 'true';
   }
   return false;
-}
-
-Widget _buildDropdownField(
-  BuildContext context,
-  String label,
-  String key,
-  String defaultValue,
-  List<String> options,
-  Map<String, dynamic> formData,
-  Function(String, String) onFormDataChanged,
-) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      BBText(
-        label,
-        style: context.font.bodyLarge?.copyWith(
-          color: context.colour.secondary,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      const Gap(8),
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey.shade300),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: BBText(
-                (formData[key] as String?) ?? defaultValue,
-                style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.secondary,
-                ),
-              ),
-            ),
-            Icon(
-              Icons.keyboard_arrow_down,
-              color: Colors.grey.shade600,
-              size: 20,
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
 }

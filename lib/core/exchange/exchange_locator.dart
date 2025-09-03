@@ -21,6 +21,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_det
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_recipients_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
@@ -374,6 +375,20 @@ class ExchangeLocator {
 
     locator.registerFactory<CreateFiatRecipientUsecase>(
       () => CreateFiatRecipientUsecase(
+        mainnetExchangeRecipientRepository:
+            locator<ExchangeRecipientRepository>(
+              instanceName: 'mainnetExchangeRecipientRepository',
+            ),
+        testnetExchangeRecipientRepository:
+            locator<ExchangeRecipientRepository>(
+              instanceName: 'testnetExchangeRecipientRepository',
+            ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<ListCadBillersUsecase>(
+      () => ListCadBillersUsecase(
         mainnetExchangeRecipientRepository:
             locator<ExchangeRecipientRepository>(
               instanceName: 'mainnetExchangeRecipientRepository',

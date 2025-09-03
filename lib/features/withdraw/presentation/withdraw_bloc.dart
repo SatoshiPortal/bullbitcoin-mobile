@@ -338,10 +338,17 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     if (state is WithdrawRecipientInputState) {
       final currentState = state as WithdrawRecipientInputState;
 
+      // Only search if search term has at least 3 characters
+      if (event.searchTerm.length < 3) {
+        return;
+      }
+
       emit(currentState.copyWith(isLoadingCadBillers: true));
 
       try {
-        final cadBillers = await _listCadBillersUsecase.execute();
+        final cadBillers = await _listCadBillersUsecase.execute(
+          searchTerm: event.searchTerm,
+        );
         emit(
           currentState.copyWith(
             cadBillers: cadBillers,
