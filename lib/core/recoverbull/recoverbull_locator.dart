@@ -114,8 +114,8 @@ class RecoverbullLocator {
     locator.registerFactory<SaveToFileSystemUsecase>(
       () => SaveToFileSystemUsecase(locator<FileSystemRepository>()),
     );
-    locator.registerFactory<FetchAllDriveBackupsUsecase>(
-      () => FetchAllDriveBackupsUsecase(locator<GoogleDriveRepository>()),
+    locator.registerFactory<FetchAllDriveFileMetadataUsecase>(
+      () => FetchAllDriveFileMetadataUsecase(locator<GoogleDriveRepository>()),
     );
 
     locator.registerFactory<FetchDriveBackupUsecase>(

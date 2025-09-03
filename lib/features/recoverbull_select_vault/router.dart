@@ -31,8 +31,8 @@ class RecoverBullSelectVaultRouter {
       return BlocProvider(
         create:
             (_) => RecoverBullSelectVaultCubit(
-              fetchAllDriveBackupsUsecase:
-                  locator<FetchAllDriveBackupsUsecase>(),
+              fetchAllDriveFileMetadataUsecase:
+                  locator<FetchAllDriveFileMetadataUsecase>(),
               fetchDriveBackupUsecase: locator<FetchDriveBackupUsecase>(),
               selectFileFromPathUsecase: locator<SelectFileFromPathUsecase>(),
             ),

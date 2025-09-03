@@ -11,15 +11,15 @@ import 'package:bb_mobile/features/recoverbull_select_vault/presentation/state.d
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
-  final FetchAllDriveBackupsUsecase _fetchAllDriveBackupsUsecase;
+  final FetchAllDriveFileMetadataUsecase _fetchAllDriveFileMetadataUsecase;
   final FetchDriveBackupUsecase _fetchDriveBackupUsecase;
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
 
   RecoverBullSelectVaultCubit({
-    required FetchAllDriveBackupsUsecase fetchAllDriveBackupsUsecase,
+    required FetchAllDriveFileMetadataUsecase fetchAllDriveFileMetadataUsecase,
     required FetchDriveBackupUsecase fetchDriveBackupUsecase,
     required SelectFileFromPathUsecase selectFileFromPathUsecase,
-  }) : _fetchAllDriveBackupsUsecase = fetchAllDriveBackupsUsecase,
+  }) : _fetchAllDriveFileMetadataUsecase = fetchAllDriveFileMetadataUsecase,
        _fetchDriveBackupUsecase = fetchDriveBackupUsecase,
        _selectFileFromPathUsecase = selectFileFromPathUsecase,
        super(const RecoverBullSelectVaultState());
@@ -31,10 +31,10 @@ class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
   Future<void> fetchDriveBackups() async {
     try {
       emit(state.copyWith(isLoading: true));
-      final backups = await _fetchAllDriveBackupsUsecase.execute();
+      final backups = await _fetchAllDriveFileMetadataUsecase.execute();
       emit(state.copyWith(driveMetadata: backups));
     } catch (e) {
-      emit(state.copyWith(error: FetchAllDriveBackupsError()));
+      emit(state.copyWith(error: FetchAllDriveFilesError()));
     } finally {
       emit(state.copyWith(isLoading: false));
     }

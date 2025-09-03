@@ -6,8 +6,8 @@ class RecoverBullSelectVaultError implements Exception {
   String toString() => message;
 }
 
-class FetchAllDriveBackupsError extends RecoverBullSelectVaultError {
-  FetchAllDriveBackupsError() : super('Failed to fetch all drive backups');
+class FetchAllDriveFilesError extends RecoverBullSelectVaultError {
+  FetchAllDriveFilesError() : super('Failed to fetch all drive backups');
 }
 
 class FileNotSelectedError extends RecoverBullSelectVaultError {
