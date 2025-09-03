@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/features/recoverbull_vault_recovery/errors.dart';
 import 'package:bb_mobile/features/recoverbull_vault_recovery/presentation/state.dart';
@@ -16,14 +17,17 @@ class RecoverBullVaultRecoveryCubit
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
   final TheDirtyUsecase _checkWalletStatusUsecase;
+  final TheDirtyLiquidUsecase _checkLiquidWalletStatusUsecase;
 
   RecoverBullVaultRecoveryCubit({
     required EncryptedVault vault,
     required String vaultKey,
     required TheDirtyUsecase checkWalletStatusUsecase,
+    required TheDirtyLiquidUsecase checkLiquidWalletStatusUsecase,
     required DecryptVaultUsecase decryptVaultUsecase,
     required RestoreVaultUsecase restoreVaultUsecase,
   }) : _checkWalletStatusUsecase = checkWalletStatusUsecase,
+       _checkLiquidWalletStatusUsecase = checkLiquidWalletStatusUsecase,
        _vault = vault,
        _vaultKey = vaultKey,
        _decryptVaultUsecase = decryptVaultUsecase,
@@ -60,7 +64,11 @@ class RecoverBullVaultRecoveryCubit
         ScriptType.bip84,
       );
 
-      emit(state.copyWith(bip84Status: bip84Status));
+      final liquidStatus = await _checkLiquidWalletStatusUsecase(mnemonic);
+
+      emit(
+        state.copyWith(bip84Status: bip84Status, liquidStatus: liquidStatus),
+      );
     } catch (e) {
       emit(state.copyWith(error: RecoverBullVaultRecoveryError(e.toString())));
     }

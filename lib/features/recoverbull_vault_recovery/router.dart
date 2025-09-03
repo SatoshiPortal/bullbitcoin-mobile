@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/features/recoverbull_vault_recovery/presentation/cubit.dart';
 import 'package:bb_mobile/features/recoverbull_vault_recovery/presentation/state.dart';
@@ -35,6 +36,7 @@ class RecoverBullVaultRecoveryRouter {
               decryptVaultUsecase: locator<DecryptVaultUsecase>(),
               restoreVaultUsecase: locator<RestoreVaultUsecase>(),
               checkWalletStatusUsecase: locator<TheDirtyUsecase>(),
+              checkLiquidWalletStatusUsecase: locator<TheDirtyLiquidUsecase>(),
             ),
         child: BlocListener<
           RecoverBullVaultRecoveryCubit,

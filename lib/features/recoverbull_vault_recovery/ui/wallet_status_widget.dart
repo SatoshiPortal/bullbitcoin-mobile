@@ -1,32 +1,19 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/recoverbull_vault_recovery/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class WalletStatusWidget extends StatelessWidget {
-  const WalletStatusWidget({super.key, required this.status});
+  const WalletStatusWidget({super.key, required this.state});
 
-  final ({BigInt satoshis, int transactions})? status;
+  final RecoverBullVaultRecoveryState state;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (status != null) ...[
-          BBText(
-            'Balance: ${status?.satoshis.toString() ?? '0'}',
-            style: context.font.bodyMedium?.copyWith(
-              color: context.colour.secondary,
-            ),
-          ),
-          const Gap(4),
-          BBText(
-            'Transactions: ${status?.transactions.toString() ?? '0'}',
-            style: context.font.bodyMedium?.copyWith(
-              color: context.colour.secondary,
-            ),
-          ),
-        ] else ...[
+    if (state.isStillLoading) {
+      return Column(
+        children: [
           BBText(
             'Looking for balance and transactions…',
             style: context.font.bodyMedium?.copyWith(
@@ -34,6 +21,24 @@ class WalletStatusWidget extends StatelessWidget {
             ),
           ),
         ],
+      );
+    }
+
+    return Column(
+      children: [
+        BBText(
+          'Balance: ${state.totalBalance}',
+          style: context.font.bodyMedium?.copyWith(
+            color: context.colour.secondary,
+          ),
+        ),
+        const Gap(4),
+        BBText(
+          'Transactions: ${state.totalTransactions}',
+          style: context.font.bodyMedium?.copyWith(
+            color: context.colour.secondary,
+          ),
+        ),
       ],
     );
   }

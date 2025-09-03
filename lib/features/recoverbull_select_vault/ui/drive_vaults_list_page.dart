@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/recoverbull_select_vault/presentation/state.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class DriveVaultsListPage extends StatelessWidget {
   const DriveVaultsListPage({super.key});
@@ -92,7 +93,11 @@ class _BackupItem extends StatelessWidget {
         );
 
     return ListTile(
-      title: Text(driveFileMetadata.createdTime.toLocal().toString()),
+      title: Text(
+        DateFormat(
+          'MMM dd, yyyy • HH:mm',
+        ).format(driveFileMetadata.createdTime.toLocal()),
+      ),
       onTap:
           state.isSelectingBackup
               ? null

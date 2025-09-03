@@ -33,12 +33,11 @@ class RecoverBullVaultRecoveryPage extends StatelessWidget {
       >(
         builder: (context, state) {
           final cubit = context.read<RecoverBullVaultRecoveryCubit>();
-          final status = state.bip84Status;
 
           return Column(
             children: [
               FadingLinearProgress(
-                trigger: status == null,
+                trigger: state.isStillLoading,
                 backgroundColor: context.colour.surface,
                 foregroundColor: context.colour.primary,
                 height: 2.0,
@@ -49,7 +48,7 @@ class RecoverBullVaultRecoveryPage extends StatelessWidget {
                   child: Column(
                     children: [
                       const Gap(40),
-                      WalletStatusWidget(status: status),
+                      WalletStatusWidget(state: state),
                       const Spacer(),
                       BBButton.big(
                         onPressed: cubit.importWallet,
