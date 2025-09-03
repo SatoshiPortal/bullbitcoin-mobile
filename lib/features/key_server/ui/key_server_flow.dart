@@ -52,7 +52,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
           BlocProvider.value(
             value:
                 locator<KeyServerCubit>()..updateKeyServerState(
-                  backupFile: widget.backupFile,
+                  vaultFile: widget.backupFile,
                   flow: CurrentKeyServerFlow.fromString(
                     widget.currentFlow ?? '',
                   ),
@@ -200,7 +200,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     if (CurrentKeyServerFlow.fromString(widget.currentFlow ?? '') ==
         CurrentKeyServerFlow.recovery) {
       context.read<KeyServerCubit>().updateKeyServerState(
-        backupFile: widget.backupFile,
+        vaultFile: widget.backupFile,
         status: const KeyServerOperationStatus.initial(),
         flow: CurrentKeyServerFlow.fromString(widget.currentFlow ?? ''),
       );
@@ -228,18 +228,18 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     final testWalletBackupState = context.read<TestWalletBackupBloc>().state;
 
     if (widget.fromOnboarding) {
-      final bullBackup = EncryptedVault(backupFile: state.backupFile);
+      final bullBackup = EncryptedVault(backupFile: state.vaultFile);
       context.pushNamed(
         RecoverBullVaultRecovery.recoverbullVaultRecovery.name,
-        extra: (backup: bullBackup, backupKey: state.backupKey),
+        extra: (backup: bullBackup, backupKey: state.vaultKey),
       );
     } else if (!(testWalletBackupState.status ==
             TestWalletBackupStatus.success) &&
         !widget.fromOnboarding) {
       context.read<TestWalletBackupBloc>().add(
         StartVaultBackupTesting(
-          backupKey: state.backupKey,
-          backupFile: state.backupFile,
+          backupKey: state.vaultKey,
+          backupFile: state.vaultFile,
         ),
       );
     }

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/create_vault_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_encrypted_vault_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -22,7 +22,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     required SelectFolderPathUsecase selectFolderPathUsecase,
     required SaveToFileSystemUsecase saveToFileSystemUsecase,
-    required CreateBackupKeyFromDefaultSeedUsecase
+    required CreateVaultKeyFromDefaultSeedUsecase
     createBackupKeyFromDefaultSeedUsecase,
     required SelectFileFromPathUsecase selectFileFromPathUsecase,
     required FetchEncryptedVaultFromFileSystemUsecase
@@ -47,7 +47,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   final GetWalletsUsecase _getWalletsUsecase;
   final SelectFolderPathUsecase _selectFolderPathUsecase;
   final SaveToFileSystemUsecase _saveToFileSystemUsecase;
-  final CreateBackupKeyFromDefaultSeedUsecase
+  final CreateVaultKeyFromDefaultSeedUsecase
   _createBackupKeyFromDefaultSeedUsecase;
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
   final FetchEncryptedVaultFromFileSystemUsecase
