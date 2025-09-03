@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_encrypted_vault_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
@@ -25,7 +25,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     required CreateBackupKeyFromDefaultSeedUsecase
     createBackupKeyFromDefaultSeedUsecase,
     required SelectFileFromPathUsecase selectFileFromPathUsecase,
-    required FetchBackupFromFileSystemUsecase fetchBackupFromFileSystemUsecase,
+    required FetchEncryptedVaultFromFileSystemUsecase
+    fetchEncryptedVaultFromFileSystemUsecase,
     required FetchLatestGoogleDriveBackupUsecase
     fetchLatestGoogleDriveBackupUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
@@ -35,7 +36,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
        _createBackupKeyFromDefaultSeedUsecase =
            createBackupKeyFromDefaultSeedUsecase,
        _selectFileFromPathUsecase = selectFileFromPathUsecase,
-       _fetchBackupFromFileSystemUsecase = fetchBackupFromFileSystemUsecase,
+       _fetchEncryptedVaultFromFileSystemUsecase =
+           fetchEncryptedVaultFromFileSystemUsecase,
        _fetchLatestGoogleDriveBackupUsecase =
            fetchLatestGoogleDriveBackupUsecase,
        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
@@ -48,7 +50,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   final CreateBackupKeyFromDefaultSeedUsecase
   _createBackupKeyFromDefaultSeedUsecase;
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
-  final FetchBackupFromFileSystemUsecase _fetchBackupFromFileSystemUsecase;
+  final FetchEncryptedVaultFromFileSystemUsecase
+  _fetchEncryptedVaultFromFileSystemUsecase;
   final FetchLatestGoogleDriveBackupUsecase
   _fetchLatestGoogleDriveBackupUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
@@ -186,7 +189,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   Future<String> readBackupFile(String filePath) async {
-    return await _fetchBackupFromFileSystemUsecase.execute(filePath);
+    final encryptedVault = await _fetchEncryptedVaultFromFileSystemUsecase
+        .execute(filePath);
+    return encryptedVault.toFile();
   }
 
   Future<void> selectGoogleDriveProvider() async {
@@ -224,7 +229,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       }
 
       // Read the backup file content
-      final content = await _fetchBackupFromFileSystemUsecase.execute(filePath);
+      final encryptedVault = await _fetchEncryptedVaultFromFileSystemUsecase
+          .execute(filePath);
+      final content = encryptedVault.toFile();
 
       emit(
         state.copyWith(

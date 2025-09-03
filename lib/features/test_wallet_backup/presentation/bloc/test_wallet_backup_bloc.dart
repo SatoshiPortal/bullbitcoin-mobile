@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_encrypted_vault_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
@@ -29,7 +29,8 @@ class TestWalletBackupBloc
     restoreEncryptedVaultFromBackupKeyUsecase,
     required FetchLatestGoogleDriveBackupUsecase
     fetchLatestGoogleDriveBackupUsecase,
-    required FetchBackupFromFileSystemUsecase fetchBackupFromFileSystemUsecase,
+    required FetchEncryptedVaultFromFileSystemUsecase
+    fetchBackupFromFileSystemUsecase,
     required CompleteEncryptedVaultVerificationUsecase
     completeEncryptedVaultVerificationUsecase,
     required CompletePhysicalBackupVerificationUsecase
@@ -75,7 +76,8 @@ class TestWalletBackupBloc
   _restoreEncryptedVaultFromBackupKeyUsecase;
   final FetchLatestGoogleDriveBackupUsecase
   _fetchLatestGoogleDriveBackupUsecase;
-  final FetchBackupFromFileSystemUsecase _fetchBackupFromFileSystemUsecase;
+  final FetchEncryptedVaultFromFileSystemUsecase
+  _fetchBackupFromFileSystemUsecase;
   final CompleteEncryptedVaultVerificationUsecase
   _completeEncryptedVaultVerificationUsecase;
   final CompletePhysicalBackupVerificationUsecase
@@ -99,7 +101,7 @@ class TestWalletBackupBloc
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          bullBackup: EncryptedVault(backupFile: backupFile),
+          encryptedVault: EncryptedVault(backupFile: backupFile),
         ),
       );
     } catch (e) {
@@ -133,13 +135,13 @@ class TestWalletBackupBloc
         state.copyWith(vaultProvider: VaultProvider.fileSystem(selectedFile)),
       );
 
-      final backupFile = await _fetchBackupFromFileSystemUsecase.execute(
+      final encryptedVault = await _fetchBackupFromFileSystemUsecase.execute(
         selectedFile,
       );
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          bullBackup: EncryptedVault(backupFile: backupFile),
+          encryptedVault: encryptedVault,
         ),
       );
     } catch (e) {
