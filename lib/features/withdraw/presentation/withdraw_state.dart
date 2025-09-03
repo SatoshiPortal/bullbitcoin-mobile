@@ -21,7 +21,6 @@ sealed class WithdrawState with _$WithdrawState {
     @Default([]) List<CadBiller> cadBillers,
     @Default(false) bool isLoadingCadBillers,
     WithdrawError? error,
-    // TODO: Check if this shouldn't move to the next state and be passed in
     NewRecipient? newRecipient,
   }) = WithdrawRecipientInputState;
   /*onst factory WithdrawState.descriptionInput({
