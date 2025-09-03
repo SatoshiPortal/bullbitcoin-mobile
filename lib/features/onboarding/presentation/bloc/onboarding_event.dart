@@ -41,7 +41,3 @@ class StartTransitioning extends OnboardingEvent {
 class EndTransitioning extends OnboardingEvent {
   const EndTransitioning();
 }
-
-class RecoverBullCompleted extends OnboardingEvent {
-  const RecoverBullCompleted();
-}

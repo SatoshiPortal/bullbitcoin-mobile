@@ -22,7 +22,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
        super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoverWalletClicked>(_onRecoverWalletClicked);
-    on<RecoverBullCompleted>(_onRecoverBullCompleted);
 
     on<OnboardingGoBack>((event, emit) {
       emit(state.copyWith(step: OnboardingStep.splash));
@@ -91,12 +90,5 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     } catch (e) {
       await _handleError(e.toString(), emit);
     }
-  }
-
-  Future<void> _onRecoverBullCompleted(
-    RecoverBullCompleted event,
-    Emitter<OnboardingState> emit,
-  ) async {
-    emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
   }
 }
