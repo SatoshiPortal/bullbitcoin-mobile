@@ -27,6 +27,7 @@ import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
+import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt locator = GetIt.instance;
@@ -67,6 +68,7 @@ class AppLocator {
     ExchangeLocator.setup();
     BuyLocator.setup();
     SellLocator.setup();
+    WithdrawLocator.setup();
     FundExchangeLocator.setup();
     AutoSwapLocator.setup();
     AddressViewLocator.setup();

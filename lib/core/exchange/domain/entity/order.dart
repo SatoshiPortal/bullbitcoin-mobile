@@ -148,8 +148,44 @@ enum OrderPayoutStatus {
   }
 }
 
+// enum WithdrawalPaymentProcessor {
+//   // CANADA
+//   interacEmailCad(code: 'INTERAC_EMAIL_CAD', currencyCode: 'CAD'),
+//   billPaymentCad(code: 'BILL_PAYMENT_CAD', currencyCode: 'CAD'),
+//   bankTransferCad(code: 'BANK_TRANSFER_CAD', currencyCode: 'CAD'),
+
+//   // EUROPE
+//   sepaEur(code: 'SEPA_EUR', currencyCode: 'EUR'),
+
+//   // MEXICO
+//   speiClabeMxn(code: 'SPEI_CLABE_MXN', currencyCode: 'MXN'),
+//   speiSmsMxn(code: 'SPEI_SMS_MXN', currencyCode: 'MXN'),
+//   speiCardMxn(code: 'SPEI_CARD_MXN', currencyCode: 'MXN'),
+
+//   // COSTA RICA
+//   sinpeIbanUsd(code: 'SINPE_IBAN_USD', currencyCode: 'USD'),
+//   sinpeIbanCrc(code: 'SINPE_IBAN_CRC', currencyCode: 'CRC'),
+//   sinpeMovilCrc(code: 'SINPE_MOVIL_CRC', currencyCode: 'CRC');
+
+//   final String code;
+//   final String currencyCode;
+//   const WithdrawalPaymentProcessor({
+//     required this.code,
+//     required this.currencyCode,
+//   });
+
+//   static WithdrawalPaymentProcessor fromCode(String code) {
+//     return WithdrawalPaymentProcessor.values.firstWhere(
+//       (e) => e.code == code,
+//       orElse:
+//           () => throw Exception('Unknown WithdrawalPaymentProcessor: $code'),
+//     );
+//   }
+// }
+
 enum OrderPaymentMethod {
   eTransfer('E-Transfer'),
+  eTransferArs('E-Transfer ARS'),
   billPayment('Bill payment'),
   bankTransfer('Bank transfer'),
   loadhub('Loadhub'),
@@ -161,6 +197,7 @@ enum OrderPaymentMethod {
   mxnBalance('MXN Balance'),
   crcBalance('CRC Balance'),
   usdBalance('USD Balance'),
+  arsBalance('ARS Balance'),
   bitcoin('Bitcoin'),
   liquid('Liquid'),
   lnAddress('Lightning address'),
