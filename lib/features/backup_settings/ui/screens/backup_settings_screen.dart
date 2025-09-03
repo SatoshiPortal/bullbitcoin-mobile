@@ -72,6 +72,7 @@ class _Screen extends StatelessWidget {
                 KeyServerRoute.keyServerFlow.name,
                 extra: (vault, CurrentKeyServerFlow.recovery.name, false),
               );
+
               context.read<BackupSettingsCubit>().clearDownloadedData();
             } else {
               log.severe('Backup settings error: ${state.error}');
@@ -110,6 +111,7 @@ class _Screen extends StatelessWidget {
                       const _TestBackupButton(),
                     const Gap(5),
                     const _StartBackupButton(),
+                    if (state.error != null) ErrorWidget(error: state.error!),
                     const Spacer(),
                     if (state.lastEncryptedBackup != null)
                       const _KeyServerStatusWidget(),
@@ -323,6 +325,49 @@ class _ViewVaultKeyButton extends StatelessWidget {
           outlined: true,
         );
       },
+    );
+  }
+}
+
+class ErrorWidget extends StatelessWidget {
+  final Object error;
+
+  const ErrorWidget({required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: context.colour.error),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.error_outline, color: context.colour.error, size: 20),
+              const Gap(8),
+              Text(
+                'Error',
+                style: context.font.titleSmall?.copyWith(
+                  color: context.colour.error,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const Gap(8),
+          Text(
+            error.toString(),
+            style: context.font.bodySmall?.copyWith(
+              color: context.colour.error,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

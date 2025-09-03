@@ -115,7 +115,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         ),
       );
     } catch (e) {
-      log.severe('exportVault error: $e');
+      log.severe('exportVault: $e');
       emit(
         state.copyWith(status: BackupSettingsStatus.error, error: e.toString()),
       );
