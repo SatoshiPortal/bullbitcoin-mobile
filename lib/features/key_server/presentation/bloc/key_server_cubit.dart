@@ -27,6 +27,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   final CheckKeyServerConnectionUsecase checkServerConnectionUsecase;
   final CreateVaultKeyFromDefaultSeedUsecase
   createVaultKeyFromDefaultSeedUsecase;
+
   KeyServerCubit({
     required this.checkServerConnectionUsecase,
     required this.createVaultKeyFromDefaultSeedUsecase,
@@ -105,8 +106,8 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     );
   }
 
-  void updateBackupKey(String value) {
-    updateKeyServerState(backupKey: value);
+  void updateVaultKey(String value) {
+    updateKeyServerState(vaultKey: value);
   }
 
   Future<void> autoFetchKey() async {
@@ -135,62 +136,67 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     }
   }
 
-  Future<void> recoverKey() async {
+  Future<void> recoverKeyFromVaultKey() async {
+    if (!state.canProceed) return;
+
+    try {
+      emit(
+        state.copyWith(
+          secretStatus: SecretStatus.recovered,
+          status: const KeyServerOperationStatus.success(),
+        ),
+      );
+    } catch (e) {
+      final error = KeyServerOperationStatus.failure(message: e.toString());
+      emit(state.copyWith(status: error));
+    }
+  }
+
+  Future<void> recoverKeyFromPassword() async {
     if (!state.canProceed) return;
 
     try {
       emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
 
-      if (state.authInputType == AuthInputType.encryptionKey) {
-        emit(
-          state.copyWith(
-            vaultKey: state.vaultKey,
-            secretStatus: SecretStatus.recovered,
-            status: const KeyServerOperationStatus.success(),
+      if (state.vaultFile.isEmpty) {
+        _emitOperationStatus(
+          const KeyServerOperationStatus.failure(
+            message: 'No backup key found. Please try again.',
           ),
         );
-      } else {
-        if (state.vaultFile.isEmpty) {
-          _emitOperationStatus(
-            const KeyServerOperationStatus.failure(
-              message: 'No backup key found. Please try again.',
-            ),
-          );
-          return;
-        }
+        return;
+      }
+      try {
+        await checkConnection();
+        final backupKey = await _handleServerOperation(
+          () => restoreBackupKeyFromPasswordUsecase.execute(
+            vault: EncryptedVault(file: state.vaultFile),
+            password: state.password,
+          ),
+          'Recover Key',
+        );
 
-        try {
-          await checkConnection();
-          final vaultKey = await _handleServerOperation(
-            () => restoreBackupKeyFromPasswordUsecase.execute(
-              vault: EncryptedVault(file: state.vaultFile),
-              password: state.password,
-            ),
-            'Recover Key',
-          );
-
-          if (vaultKey.isNotEmpty) {
-            updateKeyServerState(
-              vaultKey: vaultKey,
-              secretStatus: SecretStatus.recovered,
-              status: const KeyServerOperationStatus.success(),
-            );
-          }
-        } on KeyServerError catch (e) {
-          emit(
-            state.copyWith(
-              status: KeyServerOperationStatus.failure(message: e.message),
-            ),
-          );
-        } catch (e) {
-          emit(
-            state.copyWith(
-              status: const KeyServerOperationStatus.failure(
-                message: 'Failed to recover key. Please try again.',
-              ),
-            ),
+        if (backupKey.isNotEmpty) {
+          updateKeyServerState(
+            vaultKey: backupKey,
+            secretStatus: SecretStatus.recovered,
+            status: const KeyServerOperationStatus.success(),
           );
         }
+      } on KeyServerError catch (e) {
+        emit(
+          state.copyWith(
+            status: KeyServerOperationStatus.failure(message: e.message),
+          ),
+        );
+      } catch (e) {
+        emit(
+          state.copyWith(
+            status: const KeyServerOperationStatus.failure(
+              message: 'Failed to recover key. Please try again.',
+            ),
+          ),
+        );
       }
     } on KeyServerError catch (e) {
       emit(
@@ -258,6 +264,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
   void toggleObscure() =>
       emit(state.copyWith(isPasswordObscured: !state.isPasswordObscured));
+
   void toggleAuthInputType(AuthInputType newType) {
     if (newType == AuthInputType.encryptionKey &&
         state.currentFlow != CurrentKeyServerFlow.recovery) {

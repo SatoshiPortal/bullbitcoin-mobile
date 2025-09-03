@@ -123,11 +123,8 @@ class RecoverButton extends StatelessWidget {
         label: 'Confirm',
         textStyle: context.font.headlineLarge,
         disabled: !state.canProceed,
-        bgColor:
-            state.canProceed
-                ? context.colour.secondary
-                : context.colour.outline,
-        onPressed: () => state.canProceed ? cubit.recoverKey() : null,
+        bgColor: context.colour.secondary,
+        onPressed: cubit.recoverKeyFromPassword,
         textColor: context.colour.onSecondary,
       ),
     );
