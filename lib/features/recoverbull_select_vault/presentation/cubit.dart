@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_backups_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/errors.dart';
