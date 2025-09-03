@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/pop_until.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/router.dart';
 import 'package:bb_mobile/features/recoverbull_vault_recovery/presentation/cubit.dart';
@@ -34,23 +35,36 @@ class RecoverBullVaultRecoveryPage extends StatelessWidget {
           final cubit = context.read<RecoverBullVaultRecoveryCubit>();
           final status = state.bip84Status;
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                WalletStatusWidget(status: status),
-                const Spacer(),
-                BBButton.big(
-                  onPressed: cubit.importWallet,
-                  label: 'Continue',
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onPrimary,
-                  disabled: state.decryptedVault == null || state.isImported,
+          return Column(
+            children: [
+              FadingLinearProgress(
+                trigger: status == null,
+                backgroundColor: context.colour.surface,
+                foregroundColor: context.colour.primary,
+                height: 2.0,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      const Gap(40),
+                      WalletStatusWidget(status: status),
+                      const Spacer(),
+                      BBButton.big(
+                        onPressed: cubit.importWallet,
+                        label: 'Continue',
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onPrimary,
+                        disabled:
+                            state.decryptedVault == null || state.isImported,
+                      ),
+                      const Gap(40),
+                    ],
+                  ),
                 ),
-                const Gap(20),
-              ],
-            ),
+              ),
+            ],
           );
         },
       ),

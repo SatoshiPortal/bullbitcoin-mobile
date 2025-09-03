@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/presentation/cubit.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/presentation/state.dart';
@@ -34,33 +36,44 @@ class DriveVaultsListPage extends StatelessWidget {
         ),
       ),
 
-      body:
-          error != null
-              ? Center(child: Text('Error: $error'))
-              : Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      if (state.isLoading)
-                        const Center(child: CircularProgressIndicator()),
+      body: Column(
+        children: [
+          FadingLinearProgress(
+            trigger: state.isLoading || state.isSelectingBackup,
+            backgroundColor: context.colour.surface,
+            foregroundColor: context.colour.primary,
+            height: 2.0,
+          ),
+          Expanded(
+            child:
+                error != null
+                    ? Center(child: Text('Error: $error'))
+                    : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            if (!state.isLoading && driveMetadata.isEmpty)
+                              const Center(child: Text('No backups found')),
 
-                      if (!state.isLoading && driveMetadata.isEmpty)
-                        const Center(child: Text('No backups found')),
-
-                      ...List.generate(driveMetadata.length, (index) {
-                        final driveBackupMetadata = driveMetadata[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: _BackupItem(
-                            driveFileMetadata: driveBackupMetadata,
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-                ),
-              ),
+                            ...List.generate(driveMetadata.length, (index) {
+                              final driveBackupMetadata = driveMetadata[index];
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                child: _BackupItem(
+                                  driveFileMetadata: driveBackupMetadata,
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -73,10 +86,18 @@ class _BackupItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<RecoverBullSelectVaultCubit>();
+    final state = context
+        .select<RecoverBullSelectVaultCubit, RecoverBullSelectVaultState>(
+          (cubit) => cubit.state,
+        );
 
     return ListTile(
       title: Text(driveFileMetadata.createdTime.toLocal().toString()),
-      onTap: () => cubit.selectDriveBackup(driveFileMetadata),
+      onTap:
+          state.isSelectingBackup
+              ? null
+              : () => cubit.selectDriveBackup(driveFileMetadata),
+      enabled: !state.isSelectingBackup,
     );
   }
 }

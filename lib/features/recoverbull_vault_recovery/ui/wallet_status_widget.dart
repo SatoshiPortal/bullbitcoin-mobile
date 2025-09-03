@@ -33,7 +33,6 @@ class WalletStatusWidget extends StatelessWidget {
               color: context.colour.secondary,
             ),
           ),
-          const Center(child: CircularProgressIndicator()),
         ],
       ],
     );

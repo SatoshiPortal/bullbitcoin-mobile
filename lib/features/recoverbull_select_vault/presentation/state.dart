@@ -11,6 +11,7 @@ sealed class RecoverBullSelectVaultState with _$RecoverBullSelectVaultState {
   const factory RecoverBullSelectVaultState({
     @Default(null) BackupProviderType? selectedProvider,
     @Default(false) bool isLoading,
+    @Default(false) bool isSelectingBackup,
     RecoverBullSelectVaultError? error,
     @Default([]) List<DriveFileMetadata> driveMetadata,
     @Default(null) EncryptedVault? selectedBackup,

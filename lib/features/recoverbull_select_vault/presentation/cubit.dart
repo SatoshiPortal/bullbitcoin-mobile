@@ -41,10 +41,25 @@ class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
   }
 
   Future<void> selectDriveBackup(DriveFileMetadata backupMetadata) async {
-    emit(state.copyWith(error: null, selectedBackup: null));
-    final vaultFile = await _fetchDriveBackupUsecase.execute(backupMetadata);
-    final vault = EncryptedVault(file: vaultFile);
-    emit(state.copyWith(selectedBackup: vault));
+    try {
+      emit(
+        state.copyWith(
+          error: null,
+          selectedBackup: null,
+          isSelectingBackup: true,
+        ),
+      );
+      final vaultFile = await _fetchDriveBackupUsecase.execute(backupMetadata);
+      final vault = EncryptedVault(file: vaultFile);
+      emit(state.copyWith(selectedBackup: vault, isSelectingBackup: false));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          error: FetchAllDriveFilesError(),
+          isSelectingBackup: false,
+        ),
+      );
+    }
   }
 
   Future<void> clearSelectedBackup() async {
