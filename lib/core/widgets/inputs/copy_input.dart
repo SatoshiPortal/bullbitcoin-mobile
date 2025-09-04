@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
@@ -57,10 +56,11 @@ class CopyInput extends StatelessWidget {
                 child:
                     isValueLoading
                         ? const LoadingLineContent()
-                        : BBText(
+                        : Text(
                           text,
-                          style: context.font.bodyLarge,
-                          color: context.colour.secondary,
+                          style: context.font.bodyLarge?.copyWith(
+                            color: context.colour.secondary,
+                          ),
                           maxLines: maxLines,
                           overflow: overflow,
                         ),
@@ -105,7 +105,7 @@ class CopyInput extends StatelessWidget {
             backgroundColor: Colors.white,
             title:
                 modalTitle != null
-                    ? BBText(
+                    ? Text(
                       modalTitle!,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontSize: 20,
@@ -133,7 +133,7 @@ class CopyInput extends StatelessWidget {
                       ClipboardData(text: clipboardText ?? text),
                     );
                   },
-                  child: BBText('Copy', style: theme.textTheme.bodyLarge),
+                  child: Text('Copy', style: theme.textTheme.bodyLarge),
                 ),
               TextButton(
                 style: TextButton.styleFrom(
@@ -141,7 +141,7 @@ class CopyInput extends StatelessWidget {
                   textStyle: theme.textTheme.bodyLarge,
                 ),
                 onPressed: () => Navigator.of(context).pop(),
-                child: BBText('Close', style: theme.textTheme.bodyLarge),
+                child: Text('Close', style: theme.textTheme.bodyLarge),
               ),
             ],
           ),

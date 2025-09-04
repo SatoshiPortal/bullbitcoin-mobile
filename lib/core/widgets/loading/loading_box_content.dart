@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class LoadingBoxContent extends StatelessWidget {
-  const LoadingBoxContent({super.key, required this.height, this.width});
+  const LoadingBoxContent({
+    super.key,
+    required this.height,
+    this.width,
+    this.padding,
+  });
 
   final double height;
   final double? width;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +19,7 @@ class LoadingBoxContent extends StatelessWidget {
       baseColor: Colors.grey.shade300,
       highlightColor: Colors.grey.shade100,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.da
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
-import 'package:bb_mobile/core/widgets/selectors/backup_provider_selector.dart';
+import 'package:bb_mobile/core/widgets/selectors/recoverbull_vault_provider_selector.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
@@ -97,7 +97,7 @@ class _Screen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BackupProviderSelector(
+                  RecoverbullVaultProviderSelector(
                     onProviderSelected:
                         (provider) => onProviderSelected(context, provider),
                   ),

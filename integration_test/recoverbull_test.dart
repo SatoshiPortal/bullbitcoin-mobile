@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -14,13 +15,13 @@ Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final restoreBackupKeyFromPasswordUsecase =
-      locator<RestoreBackupKeyFromPasswordUsecase>();
+  final restoreVaultKeyFromPasswordUsecase =
+      locator<RestoreVaultKeyFromPasswordUsecase>();
 
   final initializeTorUsecase = locator<InitializeTorUsecase>();
 
-  final restoreEncryptedVaultFromBackupKeyUsecase =
-      locator<RestoreEncryptedVaultFromBackupKeyUsecase>();
+  final restoreEncryptedVaultFromVaultKeyUsecase =
+      locator<RestoreEncryptedVaultFromVaultKeyUsecase>();
 
   final walletRepository = locator<WalletRepository>();
   final seedRepository = locator<SeedRepository>();
@@ -47,8 +48,8 @@ Future<void> main({bool isInitialized = false}) async {
 
   group('Recoverbull', () {
     test('Restore backup key from password', () async {
-      final backupKey = await restoreBackupKeyFromPasswordUsecase.execute(
-        backupFile: backupZooMnemonicWithSevenZerosPassword,
+      final backupKey = await restoreVaultKeyFromPasswordUsecase.execute(
+        vault: EncryptedVault(file: backupZooMnemonicWithSevenZerosPassword),
         password: password,
       );
 
@@ -56,15 +57,15 @@ Future<void> main({bool isInitialized = false}) async {
     });
 
     test('Restore encrypted vault from backup key', () async {
-      final backupKey = await restoreBackupKeyFromPasswordUsecase.execute(
-        backupFile: backupZooMnemonicWithSevenZerosPassword,
+      final backupKey = await restoreVaultKeyFromPasswordUsecase.execute(
+        vault: EncryptedVault(file: backupZooMnemonicWithSevenZerosPassword),
         password: password,
       );
       expect(backupKey, isNotEmpty);
 
-      await restoreEncryptedVaultFromBackupKeyUsecase.execute(
-        backupFile: backupZooMnemonicWithSevenZerosPassword,
-        backupKey: backupKey,
+      await restoreEncryptedVaultFromVaultKeyUsecase.execute(
+        vault: EncryptedVault(file: backupZooMnemonicWithSevenZerosPassword),
+        vaultKey: backupKey,
       );
 
       final wallets = await walletRepository.getWallets(

@@ -13,7 +13,7 @@ enum CurrentKeyServerFlow {
   }
 }
 
-enum AuthInputType { pin, password, backupKey }
+enum AuthInputType { pin, password, encryptionKey }
 
 enum SecretStatus { initial, stored, recovered, deleted }
 

@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_encrypted_vault_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_encrypted_vault_verification_usecase.dart.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
@@ -25,11 +25,12 @@ class TestWalletBackupBloc
   TestWalletBackupBloc({
     required SelectFileFromPathUsecase selectFileFromPathUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
-    required RestoreEncryptedVaultFromBackupKeyUsecase
+    required RestoreEncryptedVaultFromVaultKeyUsecase
     restoreEncryptedVaultFromBackupKeyUsecase,
-    required FetchLatestGoogleDriveBackupUsecase
+    required FetchLatestGoogleDriveVaultUsecase
     fetchLatestGoogleDriveBackupUsecase,
-    required FetchBackupFromFileSystemUsecase fetchBackupFromFileSystemUsecase,
+    required FetchEncryptedVaultFromFileSystemUsecase
+    fetchBackupFromFileSystemUsecase,
     required CompleteEncryptedVaultVerificationUsecase
     completeEncryptedVaultVerificationUsecase,
     required CompletePhysicalBackupVerificationUsecase
@@ -71,11 +72,11 @@ class TestWalletBackupBloc
 
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
-  final RestoreEncryptedVaultFromBackupKeyUsecase
+  final RestoreEncryptedVaultFromVaultKeyUsecase
   _restoreEncryptedVaultFromBackupKeyUsecase;
-  final FetchLatestGoogleDriveBackupUsecase
-  _fetchLatestGoogleDriveBackupUsecase;
-  final FetchBackupFromFileSystemUsecase _fetchBackupFromFileSystemUsecase;
+  final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveBackupUsecase;
+  final FetchEncryptedVaultFromFileSystemUsecase
+  _fetchBackupFromFileSystemUsecase;
   final CompleteEncryptedVaultVerificationUsecase
   _completeEncryptedVaultVerificationUsecase;
   final CompletePhysicalBackupVerificationUsecase
@@ -93,13 +94,13 @@ class TestWalletBackupBloc
       await _connectToGoogleDriveUsecase.execute();
       emit(state.copyWith(vaultProvider: const VaultProvider.googleDrive()));
 
-      final (content: encryptedBackup, fileName: _) =
+      final (content: fileContent, fileName: _) =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
 
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          backupInfo: encryptedBackup.backupInfo,
+          encryptedVault: EncryptedVault(file: fileContent),
         ),
       );
     } catch (e) {
@@ -133,13 +134,13 @@ class TestWalletBackupBloc
         state.copyWith(vaultProvider: VaultProvider.fileSystem(selectedFile)),
       );
 
-      final encryptedBackup = await _fetchBackupFromFileSystemUsecase.execute(
+      final encryptedVault = await _fetchBackupFromFileSystemUsecase.execute(
         selectedFile,
       );
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          backupInfo: encryptedBackup.backupInfo,
+          encryptedVault: encryptedVault,
         ),
       );
     } catch (e) {
@@ -161,8 +162,8 @@ class TestWalletBackupBloc
 
       try {
         await _restoreEncryptedVaultFromBackupKeyUsecase.execute(
-          backupFile: event.backupFile,
-          backupKey: event.backupKey,
+          vault: event.vault,
+          vaultKey: event.vaultKey,
         );
         // If we get here, something went wrong because we expect DefaultWalletAlreadyExistsError
         emit(
@@ -200,8 +201,7 @@ class TestWalletBackupBloc
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.error,
-          statusError:
-              'Failed to test backup: ${event.backupFile.backupInfo.id}',
+          statusError: 'Failed to test backup: $e',
         ),
       );
     }

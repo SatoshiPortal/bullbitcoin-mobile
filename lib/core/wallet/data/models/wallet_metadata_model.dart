@@ -27,6 +27,7 @@ abstract class WalletMetadataModel with _$WalletMetadataModel {
     String? label,
     DateTime? syncedAt,
     SignerDevice? signerDevice,
+    DateTime? birthday,
   }) = _WalletMetadataModel;
 
   const WalletMetadataModel._();
@@ -47,22 +48,23 @@ extension WalletMetadataModelExtension on WalletMetadataModel {
 }
 
 extension WalletMetadataModelMapper on WalletMetadataModel {
-  WalletMetadatasCompanion toSqlite() => WalletMetadatasCompanion(
-    id: Value(id),
-    masterFingerprint: Value(masterFingerprint),
-    xpubFingerprint: Value(xpubFingerprint),
-    isEncryptedVaultTested: Value(isEncryptedVaultTested),
-    isPhysicalBackupTested: Value(isPhysicalBackupTested),
-    latestEncryptedBackup: Value(latestEncryptedBackup),
-    latestPhysicalBackup: Value(latestPhysicalBackup),
-    xpub: Value(xpub),
-    externalPublicDescriptor: Value(externalPublicDescriptor),
-    internalPublicDescriptor: Value(internalPublicDescriptor),
-    signer: Value(signer.name),
-    signerDevice: Value(signerDevice),
-    isDefault: Value(isDefault),
-    label: Value(label),
-    syncedAt: Value(syncedAt),
+  WalletMetadataRow toSqlite() => WalletMetadataRow(
+    id: id,
+    masterFingerprint: masterFingerprint,
+    xpubFingerprint: xpubFingerprint,
+    isEncryptedVaultTested: isEncryptedVaultTested,
+    isPhysicalBackupTested: isPhysicalBackupTested,
+    latestEncryptedBackup: latestEncryptedBackup,
+    latestPhysicalBackup: latestPhysicalBackup,
+    xpub: xpub,
+    externalPublicDescriptor: externalPublicDescriptor,
+    internalPublicDescriptor: internalPublicDescriptor,
+    signer: signer.name,
+    isDefault: isDefault,
+    label: label ?? '',
+    syncedAt: syncedAt,
+    signerDevice: signerDevice,
+    birthday: birthday,
   );
 
   static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>
@@ -82,5 +84,6 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
         label: row.label,
         syncedAt: row.syncedAt,
         signerDevice: row.signerDevice,
+        birthday: row.birthday,
       );
 }

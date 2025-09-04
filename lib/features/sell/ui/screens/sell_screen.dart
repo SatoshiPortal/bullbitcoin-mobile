@@ -31,8 +31,7 @@ class _SellScreenState extends State<SellScreen> {
         // route of a shellroute and so no back button is provided by default.
         leading:
             context.canPop()
-                ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
+                ? BackButton(
                   onPressed: () {
                     context.pop();
                   },

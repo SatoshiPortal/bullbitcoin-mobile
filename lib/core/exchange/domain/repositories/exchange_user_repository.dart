@@ -5,7 +5,7 @@ abstract class ExchangeUserRepository {
   Future<void> saveUserPreference({
     String? language,
     String? currency,
-    String? dcaEnabled,
+    bool? dcaEnabled,
     String? autoBuyEnabled,
   });
 }

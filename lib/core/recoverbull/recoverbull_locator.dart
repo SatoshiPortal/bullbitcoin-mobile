@@ -4,14 +4,17 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_d
 import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/create_vault_key_from_default_seed_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_encrypted_vault_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
@@ -77,24 +80,24 @@ class RecoverbullLocator {
       () => DisconnectFromGoogleDriveUsecase(locator<GoogleDriveRepository>()),
     );
 
-    locator.registerFactory<FetchLatestGoogleDriveBackupUsecase>(
+    locator.registerFactory<FetchLatestGoogleDriveVaultUsecase>(
       () =>
-          FetchLatestGoogleDriveBackupUsecase(locator<GoogleDriveRepository>()),
+          FetchLatestGoogleDriveVaultUsecase(locator<GoogleDriveRepository>()),
     );
 
-    locator.registerFactory<CreateBackupKeyFromDefaultSeedUsecase>(
-      () => CreateBackupKeyFromDefaultSeedUsecase(
+    locator.registerFactory<CreateVaultKeyFromDefaultSeedUsecase>(
+      () => CreateVaultKeyFromDefaultSeedUsecase(
         seedRepository: locator<SeedRepository>(),
         walletRepository: locator<WalletRepository>(),
       ),
     );
 
-    locator.registerFactory<FetchBackupFromFileSystemUsecase>(
-      () => FetchBackupFromFileSystemUsecase(),
+    locator.registerFactory<FetchEncryptedVaultFromFileSystemUsecase>(
+      () => FetchEncryptedVaultFromFileSystemUsecase(),
     );
 
-    locator.registerFactory<RestoreEncryptedVaultFromBackupKeyUsecase>(
-      () => RestoreEncryptedVaultFromBackupKeyUsecase(
+    locator.registerFactory<RestoreEncryptedVaultFromVaultKeyUsecase>(
+      () => RestoreEncryptedVaultFromVaultKeyUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
         walletRepository: locator<WalletRepository>(),
         createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
@@ -111,9 +114,23 @@ class RecoverbullLocator {
     locator.registerFactory<SaveToFileSystemUsecase>(
       () => SaveToFileSystemUsecase(locator<FileSystemRepository>()),
     );
-    locator.registerLazySingleton<CompletePhysicalBackupVerificationUsecase>(
-      () => CompletePhysicalBackupVerificationUsecase(
+    locator.registerFactory<FetchAllDriveFileMetadataUsecase>(
+      () => FetchAllDriveFileMetadataUsecase(locator<GoogleDriveRepository>()),
+    );
+
+    locator.registerFactory<FetchVaultFromDriveUsecase>(
+      () => FetchVaultFromDriveUsecase(locator<GoogleDriveRepository>()),
+    );
+
+    locator.registerFactory<DecryptVaultUsecase>(
+      () => DecryptVaultUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+      ),
+    );
+    locator.registerFactory<RestoreVaultUsecase>(
+      () => RestoreVaultUsecase(
         walletRepository: locator<WalletRepository>(),
+        createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
       ),
     );
   }

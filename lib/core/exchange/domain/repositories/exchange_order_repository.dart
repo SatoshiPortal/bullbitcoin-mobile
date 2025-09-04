@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/features/dca/domain/dca.dart';
 
 abstract class ExchangeOrderRepository {
   Future<BuyOrder> placeBuyOrder({
@@ -22,7 +23,7 @@ abstract class ExchangeOrderRepository {
   Future<WithdrawOrder> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
-    required String paymentProcessor,
+    bool isETransfer = false,
   });
   Future<BuyOrder> confirmBuyOrder(String orderId);
   Future<WithdrawOrder> confirmWithdrawOrder(String orderId);
@@ -32,4 +33,11 @@ abstract class ExchangeOrderRepository {
   Future<Order> getOrder(String orderId);
   Future<Order?> getOrderByTxId(String txId);
   Future<List<Order>> getOrders({int? limit, int? offset, OrderType? type});
+  Future<Dca> createDca({
+    required double amount,
+    required FiatCurrency currency,
+    required DcaBuyFrequency frequency,
+    required DcaNetwork network,
+    required String address,
+  });
 }
