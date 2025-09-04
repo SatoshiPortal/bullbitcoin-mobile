@@ -512,13 +512,12 @@ class BdkWalletDatasource {
     return false;
   }
 
-  Future<BigInt> getAddressBalanceSat(
-    String address, {
+  Future<Map<String, BigInt>> getAddressBalancesSat({
     required WalletModel wallet,
   }) async {
     final bdkWallet = await _createWallet(wallet);
     final utxos = bdkWallet.listUnspent();
-    BigInt balance = BigInt.zero;
+    final addressBalances = <String, BigInt>{};
 
     for (final utxo in utxos) {
       final utxoAddress =
@@ -528,12 +527,11 @@ class BdkWalletDatasource {
           );
       if (utxoAddress == null) continue;
 
-      if (utxoAddress == address) {
-        balance += utxo.txout.value;
-      }
+      addressBalances[utxoAddress] =
+          (addressBalances[utxoAddress] ?? BigInt.zero) + utxo.txout.value;
     }
 
-    return balance;
+    return addressBalances;
   }
 
   Future<List<BitcoinTransactionOutputModel>> _getAllOutputsOfTransactions(
