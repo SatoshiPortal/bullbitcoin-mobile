@@ -5,31 +5,42 @@ import 'package:bip85/bip85.dart' as bip85;
 import 'package:hex/hex.dart';
 
 class RecoverbullBip85Utils {
+  static final bip85.CustomApplication recoverbullApplication = bip85
+      .CustomApplication.fromNumber(1608);
+
   static int findApplicationNumber(String path) {
     // Old format was using `m/` prefix, which was unnecessarirly added by rust-bip85 before I forked it.
     final trimmed = path.replaceAll("'", "").replaceAll("m/", "");
     return int.parse(trimmed.split('/').first);
   }
 
+  static int findIndex(String path) {
+    final trimmed = path.replaceAll("'", "").replaceAll("m/", "");
+    return int.parse(trimmed.split('/').last);
+  }
+
   static String generateBackupKeyPath() {
-    final randomIndex = _randomIndex();
-    final recoverbullApp = bip85.CustomApplication.fromNumber(1608);
-    return "${recoverbullApp.number}'/0'/$randomIndex";
+    final randomIndex = _getRandomIndex();
+    return formatRecoverBullPath(randomIndex);
+  }
+
+  static String formatRecoverBullPath(int index) {
+    return "${recoverbullApplication.number}'/0'/$index'";
   }
 
   static String deriveBackupKey(String xprv, String path) {
-    final applicationNumber = findApplicationNumber(path);
-    final application = bip85.CustomApplication.fromNumber(applicationNumber);
+    final index = findIndex(path);
+    final formattedPath = formatRecoverBullPath(index);
     final derivation = bip85.Bip85Entropy.derive(
       xprvBase58: xprv,
-      application: application,
-      path: path,
+      application: recoverbullApplication,
+      path: formattedPath,
     );
     final octets32 = derivation.sublist(0, 32);
     return HEX.encode(octets32);
   }
 
-  static int _randomIndex() {
+  static int _getRandomIndex() {
     final random = Uint8List(4);
     final secureRandom = Random.secure();
     for (int i = 0; i < 4; i++) {

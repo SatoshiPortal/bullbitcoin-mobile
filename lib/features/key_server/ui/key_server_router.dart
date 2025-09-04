@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/features/key_server/ui/key_server_flow.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,10 +15,10 @@ class KeyServerRouter {
     name: KeyServerRoute.keyServerFlow.name,
     path: KeyServerRoute.keyServerFlow.path,
     builder: (context, state) {
-      final (String? backupFile, String? flow, bool fromOnboarding) =
-          state.extra! as (String?, String?, bool);
+      final (EncryptedVault? vault, String? flow, bool fromOnboarding) =
+          state.extra! as (EncryptedVault?, String?, bool);
       return KeyServerFlow(
-        backupFile: backupFile,
+        vault: vault,
         currentFlow: flow,
         fromOnboarding: fromOnboarding,
       );

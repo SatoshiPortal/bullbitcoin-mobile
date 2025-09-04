@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/recoverbull/data/datasources/google_drive_datasource.dart';
-import 'package:bb_mobile/core/recoverbull/data/models/drive_file_model.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 
 class GoogleDriveRepository {
   final GoogleDriveAppDatasource _dataSource;
@@ -13,15 +12,13 @@ class GoogleDriveRepository {
 
   Future<void> disconnect() => _dataSource.disconnect();
 
-  Future<List<DriveFile>> fetchBackupFiles() async {
-    final files = await _dataSource.fetchAll();
-    return files
-        .map((file) => DriveFileModel.fromDriveFile(file).toDomain())
-        .toList();
+  Future<List<DriveFileMetadata>> fetchAllMetadata() async {
+    final files = await _dataSource.fetchAllMetadata();
+    return files.map((file) => file.toEntity()).toList();
   }
 
-  Future<String> fetchBackupContent(String fileId) async {
-    final bytes = await _dataSource.fetchContent(fileId);
+  Future<String> fetchFileContent(String fileId) async {
+    final bytes = await _dataSource.fetchFileContent(fileId);
     return utf8.decode(bytes);
   }
 

@@ -24,8 +24,8 @@ abstract class KeyServerState with _$KeyServerState {
     @Default(false) bool isPasswordObscured,
     @Default('') String password,
     @Default('') String temporaryPassword,
-    @Default('') String backupKey,
-    @Default('') String backupFile,
+    @Default('') String vaultKey,
+    @Default('') String vaultFile,
     DateTime? lastRequestTime,
     int? cooldownMinutes,
   }) = _KeyServerState;
@@ -42,11 +42,11 @@ abstract class KeyServerState with _$KeyServerState {
       hasValidPasswordLength && !isInCommonPasswordList,
     CurrentKeyServerFlow.confirm => arePasswordsMatching,
     CurrentKeyServerFlow.recovery =>
-      authInputType == AuthInputType.backupKey
-          ? backupKey.isNotEmpty
+      authInputType == AuthInputType.encryptionKey
+          ? vaultKey.isNotEmpty
           : hasValidPasswordLength,
     CurrentKeyServerFlow.delete => hasValidPasswordLength,
-    CurrentKeyServerFlow.recoveryWithBackupKey => backupKey.isNotEmpty,
+    CurrentKeyServerFlow.recoveryWithBackupKey => vaultKey.isNotEmpty,
   };
 
   bool get isInCooldown {

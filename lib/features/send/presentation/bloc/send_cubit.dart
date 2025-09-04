@@ -1075,6 +1075,7 @@ class SendCubit extends Cubit<SendState> {
           emit(
             state.copyWith(
               unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
+              bitcoinTxSize: unsignedPsbtAndTxSize.txSize,
               buildingTransaction: false,
             ),
           );

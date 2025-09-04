@@ -24,7 +24,14 @@ class WalletAddressRepository {
        _lwkWallet = lwkWalletDatasource,
        _walletAddressHistoryDatasource = walletAddressHistoryDatasource;
 
-  Future<WalletAddress> getNewReceiveAddress({required String walletId}) async {
+  // TODO: Split this function in two: one that really generates a new/unseen address
+  // and one that returns the last unused address, which may have been seen before
+  // The forceUnseenLiquidAddress is just a temporary quick fix to avoid too many
+  // unused addresses being generated that exceed the stop gap, a better solution is needed.
+  Future<WalletAddress> getNewReceiveAddress({
+    required String walletId,
+    bool forceUnseenLiquidAddress = false,
+  }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
@@ -45,27 +52,29 @@ class WalletAddressRepository {
       ({String confidential, int index, String standard}) addressInfo =
           await _lwkWallet.getNewAddress(wallet: walletModel);
 
-      // Since lwk doesn't increment the index until funds are received on an address,
-      //  we need to check for address re-use ourselves, as the user might have
-      //  already seen and shared the address without having received funds on it yet.
-      final addressInHistory = await _walletAddressHistoryDatasource.fetch(
-        addressInfo.confidential,
-      );
-
-      if (addressInHistory != null) {
-        // Address is already in history, so it has been generated before.
-        // Get the latest index from the history.
-        final latestWalletAddressInHistory =
-            await _walletAddressHistoryDatasource.getByWalletId(
-              walletId,
-              limit: 1,
-              descending: true,
-            );
-        // Generate a new address with the next index.
-        addressInfo = await _lwkWallet.getAddressByIndex(
-          latestWalletAddressInHistory.first.index + 1,
-          wallet: walletModel,
+      if (forceUnseenLiquidAddress) {
+        // Since lwk doesn't increment the index until funds are received on an address,
+        //  we need to check for address re-use ourselves, as the user might have
+        //  already seen and shared the address without having received funds on it yet.
+        final addressInHistory = await _walletAddressHistoryDatasource.fetch(
+          addressInfo.confidential,
         );
+
+        if (addressInHistory != null) {
+          // Address is already in history, so it has been generated before.
+          // Get the latest index from the history.
+          final latestWalletAddressInHistory =
+              await _walletAddressHistoryDatasource.getByWalletId(
+                walletId,
+                limit: 1,
+                descending: true,
+              );
+          // Generate a new address with the next index.
+          addressInfo = await _lwkWallet.getAddressByIndex(
+            latestWalletAddressInHistory.first.index + 1,
+            wallet: walletModel,
+          );
+        }
       }
 
       index = addressInfo.index;
@@ -281,20 +290,15 @@ class WalletAddressRepository {
         isBdkWallet
             ? await _bdkWallet.getTransactions(wallet: walletModel)
             : await _lwkWallet.getTransactions(wallet: walletModel);
+    final addressBalances =
+        isBdkWallet
+            ? await _bdkWallet.getAddressBalancesSat(wallet: walletModel)
+            : await _lwkWallet.getAddressBalancesSat(wallet: walletModel);
 
     final enrichedAddresses = await Future.wait(
       addressHistory.map((addressModel) async {
         // Fetch balance and transactions in parallel
-        final balanceSat =
-            isBdkWallet
-                ? await _bdkWallet.getAddressBalanceSat(
-                  addressModel.address,
-                  wallet: walletModel,
-                )
-                : await _lwkWallet.getAddressBalanceSat(
-                  addressModel.address,
-                  wallet: walletModel,
-                );
+        final balanceSat = addressBalances[addressModel.address] ?? BigInt.zero;
 
         final transactions =
             allTransactions

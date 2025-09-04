@@ -60,7 +60,7 @@ dependencies:
     git:
       url: https://github.com/ethicnology/dart-bip85-entropy.git
       ref: 01fac31dff26bc0269b9895540262dca75a7f911
-  bip21_uri: ^2.1.2
+  bip21_uri: ^2.1.3
   bip32_keys: ^3.0.1
   bip39_mnemonic: ^4.0.0
   bs58check: ^1.0.2
@@ -73,7 +73,7 @@ dependencies:
   recoverbull:
     git:
       url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
-      ref: 334b5402d8b7b80b4736663861f7952020312831
+      ref: 48b7af3cc6a856d9c1f7fbdb9374071fea11342b
   flutter_zxing: ^2.1.0
   webview_cookie_manager:
     git:
@@ -146,9 +146,3 @@ flutter_launcher_icons:
   min_sdk_android: 21 # android min sdk min:16, default 21
   adaptive_icon_background: "#FBFBFB"
   adaptive_icon_foreground: "assets/misc/iconnew-red.png"
-
-dependency_overrides:
-  tor:
-    git:
-      url: https://github.com/Foundation-Devices/tor
-      ref: 440a2d2207da26683893bf8a2440499f4b43f019

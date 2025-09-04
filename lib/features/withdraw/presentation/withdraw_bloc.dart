@@ -98,19 +98,14 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     WithdrawAmountInputContinuePressed event,
     Emitter<WithdrawState> emit,
   ) async {
-    // We should be on a WithdrawAmountInputState or WithdrawRecipientInputState and
-    //  return to a clean WithdrawAmountInputState state to change the amount
-    WithdrawAmountInputState amountInputState;
-    switch (state) {
-      case WithdrawAmountInputState _:
-        amountInputState = state as WithdrawAmountInputState;
-      case final WithdrawRecipientInputState recipientInputState:
-        amountInputState = recipientInputState.toAmountInputState();
-      default:
-        // Unexpected state, do nothing
-        return;
+    // We should be on a clean WithdrawAmountInputState here
+    final amountInputState = state.cleanAmountInputState;
+    if (amountInputState == null) {
+      log.severe('Expected to be on WithdrawAmountInputState but on: $state');
+      return;
     }
     emit(amountInputState);
+
     final amount = FiatAmount(double.parse(event.amountInput));
 
     emit(
@@ -203,21 +198,15 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     WithdrawRecipientSelected event,
     Emitter<WithdrawState> emit,
   ) async {
-    // We should be on a WithdrawRecipientInputState or WithdrawAmountInputState and
-    //  return to a clean WithdrawRecipientInputState to change the recipient
-    WithdrawRecipientInputState recipientInputState;
-    switch (state) {
-      case WithdrawRecipientInputState _:
-        recipientInputState = state as WithdrawRecipientInputState;
-      case final WithdrawConfirmationState confirmationState:
-        recipientInputState = confirmationState.toRecipientInputState();
-      default:
-        // Unexpected state, do nothing
-        return;
+    // We should be on a WithdrawRecipientInputState here
+    final recipientInputState = state.cleanRecipientInputState;
+    if (recipientInputState == null) {
+      log.severe(
+        'Expected to be on WithdrawRecipientInputState but on: $state',
+      );
+      return;
     }
-    emit(
-      recipientInputState.copyWith(error: null, isCreatingWithdrawOrder: true),
-    );
+    emit(recipientInputState.copyWith(isCreatingWithdrawOrder: true));
 
     try {
       final recipient = event.recipient;
@@ -301,13 +290,10 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     WithdrawConfirmed event,
     Emitter<WithdrawState> emit,
   ) async {
-    // We should be on a WithdrawConfirmationState and
-    //  return to a clean WithdrawConfirmationState state to confirm the withdraw
-    WithdrawConfirmationState confirmationState;
-    if (state is WithdrawConfirmationState) {
-      confirmationState = state as WithdrawConfirmationState;
-    } else {
-      // Unexpected state, do nothing
+    // We should be on a WithdrawConfirmationState here
+    final confirmationState = state.cleanConfirmationState;
+    if (confirmationState == null) {
+      log.severe('Expected to be on WithdrawConfirmationState but on: $state');
       return;
     }
     emit(confirmationState.copyWith(isConfirmingWithdrawal: true, error: null));

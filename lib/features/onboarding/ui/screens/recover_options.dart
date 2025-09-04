@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/widgets/cards/backup_option_card.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
+import 'package:bb_mobile/features/recoverbull_select_vault/router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -55,9 +56,7 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                           () => {
                             context.read<KeyServerCubit>().checkConnection(),
                             context.pushNamed(
-                              OnboardingRoute
-                                  .chooseRecoverProvider
-                                  .name, // ChooseVaultProviderScreen
+                              RecoverBullSelectVault.selectProvider.name,
                               extra: true,
                             ),
                           },

@@ -15,8 +15,8 @@ class RecoverBullRepository {
     required this.torRepository,
   });
 
-  String createBackupJson(String backupKey, String plaintext) {
-    final backupKeyBytes = HEX.decode(backupKey);
+  String createJsonVault(String vaultKey, String plaintext) {
+    final backupKeyBytes = HEX.decode(vaultKey);
     final plaintextBytes = utf8.encode(plaintext);
 
     final jsonBackup = RecoverBullDatasource.create(
@@ -27,11 +27,11 @@ class RecoverBullRepository {
     return jsonBackup;
   }
 
-  String restoreBackupJson(String backupFile, String backupKey) {
+  String restoreJsonVault(String vaultFile, String vaultKey) {
     try {
       final decryptedBytes = RecoverBullDatasource.restore(
-        backupFile,
-        HEX.decode(backupKey),
+        vaultFile,
+        HEX.decode(vaultKey),
       );
 
       return utf8.decode(decryptedBytes);
@@ -41,11 +41,11 @@ class RecoverBullRepository {
     }
   }
 
-  Future<void> storeBackupKey(
+  Future<void> storeVaultKey(
     String identifier,
     String password,
     String salt,
-    String backupKey,
+    String vaultKey,
   ) async {
     final socket = await torRepository.createSocket();
 
@@ -53,27 +53,27 @@ class RecoverBullRepository {
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),
-      HEX.decode(backupKey),
+      HEX.decode(vaultKey),
       socket,
     );
   }
 
-  Future<String> fetchBackupKey(
+  Future<String> fetchVaultKey(
     String identifier,
     String password,
     String salt,
   ) async {
     final socket = await torRepository.createSocket();
-    final backupKey = await remoteDatasource.fetch(
+    final vaultKey = await remoteDatasource.fetch(
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),
       socket,
     );
-    return HEX.encode(backupKey);
+    return HEX.encode(vaultKey);
   }
 
-  Future<void> trashBackupKey(
+  Future<void> trashVaultKey(
     String identifier,
     String password,
     String salt,

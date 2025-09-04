@@ -10,8 +10,6 @@ sealed class OnboardingState with _$OnboardingState {
     @Default(OnboardingStep.splash) OnboardingStep step,
     @Default(OnboardingStepStatus.none)
     OnboardingStepStatus onboardingStepStatus,
-    @Default(VaultProvider.googleDrive()) VaultProvider vaultProvider,
-    @Default(BackupInfo.empty()) BackupInfo backupInfo,
     @Default('') String statusError,
     @Default(false) bool transitioning,
   }) = _OnboardingState;

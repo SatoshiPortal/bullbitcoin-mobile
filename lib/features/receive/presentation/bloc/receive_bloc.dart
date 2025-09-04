@@ -672,6 +672,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       final address = await _getNewReceiveAddressUsecase.execute(
         walletId: walletId,
+        forceUnseenLiquidAddress: true,
       );
 
       switch (state.type) {

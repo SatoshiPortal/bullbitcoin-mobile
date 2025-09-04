@@ -4,17 +4,17 @@ import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
-class BackupKeyService {
+class VaultKeyService {
   final SeedRepository _seedRepository;
   final WalletRepository _walletRepository;
 
-  BackupKeyService({
+  VaultKeyService({
     required SeedRepository seedRepository,
     required WalletRepository walletRepository,
   }) : _seedRepository = seedRepository,
        _walletRepository = walletRepository;
 
-  Future<String> deriveBackupKeyFromDefaultSeed({required String? path}) async {
+  Future<String> deriveVaultKeyFromDefaultSeed({required String? path}) async {
     try {
       if (path == null) throw 'Missing bip85 path';
 
@@ -39,13 +39,13 @@ class BackupKeyService {
 
       return RecoverbullBip85Utils.deriveBackupKey(xprv, path);
     } catch (e) {
-      throw BackupKeyServiceException(e.toString());
+      throw VaultKeyServiceException(e.toString());
     }
   }
 }
 
-class BackupKeyServiceException implements Exception {
+class VaultKeyServiceException implements Exception {
   final String message;
 
-  BackupKeyServiceException(this.message);
+  VaultKeyServiceException(this.message);
 }

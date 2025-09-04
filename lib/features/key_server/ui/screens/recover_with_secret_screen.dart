@@ -20,6 +20,8 @@ class RecoverWithSecretScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.select((KeyServerCubit x) => x.state);
+    final cubit = context.read<KeyServerCubit>();
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -65,8 +67,7 @@ class RecoverWithSecretScreen extends StatelessWidget {
               BBInputText(
                 value: state.password,
                 obscure: state.isPasswordObscured,
-                onRightTap:
-                    () => context.read<KeyServerCubit>().toggleObscure(),
+                onRightTap: cubit.toggleObscure,
                 rightIcon:
                     state.isPasswordObscured
                         ? const Icon(Icons.visibility_off_outlined)
@@ -74,7 +75,7 @@ class RecoverWithSecretScreen extends StatelessWidget {
                 onlyPaste: state.authInputType == AuthInputType.pin,
                 onChanged: (String value) {
                   if (state.authInputType == AuthInputType.password) {
-                    context.read<KeyServerCubit>().enterKey(value);
+                    cubit.enterKey(value);
                   }
                 },
               ),
@@ -86,7 +87,7 @@ class RecoverWithSecretScreen extends StatelessWidget {
                 textColor: context.colour.inversePrimary,
                 textStyle: context.font.labelSmall,
                 onPressed:
-                    () => context.read<KeyServerCubit>().toggleAuthInputType(
+                    () => cubit.toggleAuthInputType(
                       state.authInputType == AuthInputType.pin
                           ? AuthInputType.password
                           : AuthInputType.pin,
@@ -95,10 +96,8 @@ class RecoverWithSecretScreen extends StatelessWidget {
               if (state.authInputType == AuthInputType.pin)
                 DialPad(
                   disableFeedback: true,
-                  onNumberPressed:
-                      (e) => context.read<KeyServerCubit>().enterKey(e),
-                  onBackspacePressed:
-                      () => context.read<KeyServerCubit>().backspaceKey(),
+                  onNumberPressed: cubit.enterKey,
+                  onBackspacePressed: cubit.backspaceKey,
                 )
               else
                 const SizedBox.shrink(),
@@ -116,6 +115,7 @@ class RecoverButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.select((KeyServerCubit x) => x.state);
+    final cubit = context.read<KeyServerCubit>();
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
@@ -127,11 +127,7 @@ class RecoverButton extends StatelessWidget {
             state.canProceed
                 ? context.colour.secondary
                 : context.colour.outline,
-        onPressed: () {
-          if (state.canProceed) {
-            context.read<KeyServerCubit>().recoverKey();
-          }
-        },
+        onPressed: () => state.canProceed ? cubit.recoverKey() : null,
         textColor: context.colour.onSecondary,
       ),
     );

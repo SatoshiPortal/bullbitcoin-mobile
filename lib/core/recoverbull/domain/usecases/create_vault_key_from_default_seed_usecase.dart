@@ -5,11 +5,11 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
-class CreateBackupKeyFromDefaultSeedUsecase {
+class CreateVaultKeyFromDefaultSeedUsecase {
   final SeedRepository _seed;
   final WalletRepository _wallet;
 
-  CreateBackupKeyFromDefaultSeedUsecase({
+  CreateVaultKeyFromDefaultSeedUsecase({
     required SeedRepository seedRepository,
     required WalletRepository walletRepository,
   }) : _seed = seedRepository,
@@ -37,14 +37,14 @@ class CreateBackupKeyFromDefaultSeedUsecase {
         defaultWallet.network,
       );
 
-      final backupKey = RecoverbullBip85Utils.deriveBackupKey(
+      final vaultKey = RecoverbullBip85Utils.deriveBackupKey(
         defaultXprv,
         derivationPath,
       );
 
-      return backupKey;
+      return vaultKey;
     } catch (e) {
-      log.severe('$CreateBackupKeyFromDefaultSeedUsecase: $e');
+      log.severe('$CreateVaultKeyFromDefaultSeedUsecase: $e');
       throw CreateBackupKeyFromDefaultSeedException(e.toString());
     }
   }

@@ -1,36 +1,31 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
-import 'package:recoverbull/recoverbull.dart';
+import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
 /// If the key server is up
-class RestoreBackupKeyFromPasswordUsecase {
+class RestoreVaultKeyFromPasswordUsecase {
   final RecoverBullRepository recoverBullRepository;
 
-  RestoreBackupKeyFromPasswordUsecase({required this.recoverBullRepository});
+  RestoreVaultKeyFromPasswordUsecase({required this.recoverBullRepository});
 
   Future<String> execute({
-    required String backupFile,
+    required EncryptedVault vault,
     required String password,
   }) async {
     try {
-      final backupInfo = backupFile.backupInfo;
-      if (backupInfo.isCorrupted) {
-        throw const KeyServerError.invalidBackupFile();
-      }
-
-      final backupKey = await recoverBullRepository.fetchBackupKey(
-        backupInfo.id,
+      final vaultKey = await recoverBullRepository.fetchVaultKey(
+        vault.id,
         password,
-        backupInfo.salt,
+        vault.salt,
       );
 
-      return backupKey;
-    } on KeyServerException catch (e) {
+      return vaultKey;
+    } on recoverbull.KeyServerException catch (e) {
       throw KeyServerError.fromException(e);
     } catch (e) {
-      log.severe('$RestoreBackupKeyFromPasswordUsecase: $e');
+      log.severe('$RestoreVaultKeyFromPasswordUsecase: $e');
       rethrow;
     }
   }
