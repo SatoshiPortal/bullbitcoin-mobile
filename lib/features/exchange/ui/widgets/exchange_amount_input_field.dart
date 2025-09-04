@@ -18,13 +18,15 @@ class ExchangeAmountInputField extends StatelessWidget {
     FiatCurrency? fiatCurrency,
     void Function(bool isFiat)? onIsFiatCurrencyInputChanged,
     UserBalance? fiatBalance,
+    bool canExceedBalance = false,
   }) : _isLoading = isLoading,
        _bitcoinUnit = bitcoinUnit,
        _amountController = amountController,
        _isFiatCurrencyInput = isFiatCurrencyInput,
        _fiatCurrency = fiatCurrency,
        _onIsFiatCurrencyInputChanged = onIsFiatCurrencyInputChanged,
-       _fiatBalance = fiatBalance;
+       _fiatBalance = fiatBalance,
+       _canExceedBalance = canExceedBalance;
 
   final bool _isLoading;
   final BitcoinUnit? _bitcoinUnit;
@@ -33,6 +35,7 @@ class ExchangeAmountInputField extends StatelessWidget {
   final FiatCurrency? _fiatCurrency;
   final void Function(bool isFiat)? _onIsFiatCurrencyInputChanged;
   final UserBalance? _fiatBalance;
+  final bool _canExceedBalance;
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +118,9 @@ class ExchangeAmountInputField extends StatelessWidget {
                             } else if (int.parse(value) <= 0) {
                               return 'Amount must be greater than zero';
                             }
-                            if (_isFiatCurrencyInput && _fiatBalance != null) {
+                            if (!_canExceedBalance &&
+                                _isFiatCurrencyInput &&
+                                _fiatBalance != null) {
                               final amount = double.parse(value);
                               if (amount > _fiatBalance.amount) {
                                 return 'Insufficient balance';

@@ -114,6 +114,21 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     }
   }
 
+  Future<void> stopDca() async {
+    try {
+      emit(state.copyWith(isSaving: true));
+
+      await _saveUserPreferencesUsecase.execute(dcaEnabled: false);
+
+      // Trigger a refresh of the user summary to be sure the Dca was stopped
+      await fetchUserSummary();
+    } catch (e) {
+      log.severe('Error in stopDca: $e');
+    } finally {
+      emit(state.copyWith(isSaving: false));
+    }
+  }
+
   Future<void> logout() async {
     try {
       log.info('Logging out from exchange');
