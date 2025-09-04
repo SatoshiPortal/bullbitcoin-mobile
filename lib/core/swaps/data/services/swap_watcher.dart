@@ -162,9 +162,17 @@ class SwapWatcherService {
 
   Future<void> _processSendBitcoinToLnRefund({required LnSendSwap swap}) async {
     try {
-      final address = await _walletAddressRepository.getNewReceiveAddress(
-        walletId: swap.sendWalletId,
-      );
+      String refundAddress;
+      if (swap.refundAddress != null) {
+        refundAddress = swap.refundAddress!;
+      } else {
+        final address = await _walletAddressRepository.getNewReceiveAddress(
+          walletId: swap.sendWalletId,
+        );
+        refundAddress = address.address;
+        final updatedSwap = swap.copyWith(refundAddress: refundAddress);
+        await _boltzRepo.updateSwap(swap: updatedSwap);
+      }
 
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
@@ -182,7 +190,7 @@ class SwapWatcherService {
       try {
         refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
           swapId: swap.id,
-          bitcoinAddress: address.address,
+          bitcoinAddress: refundAddress,
           absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
         );
       } catch (e, st) {
@@ -199,14 +207,14 @@ class SwapWatcherService {
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
         refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
           swapId: swap.id,
-          bitcoinAddress: address.address,
+          bitcoinAddress: refundAddress,
           absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
           cooperate: false,
         );
       }
       final updatedSwap = swap.copyWith(
         refundTxid: refundTxid,
-        refundAddress: address.address,
+        refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
       );
@@ -268,9 +276,17 @@ class SwapWatcherService {
 
   Future<void> _processSendLiquidToLnRefund({required LnSendSwap swap}) async {
     try {
-      final address = await _walletAddressRepository.getNewReceiveAddress(
-        walletId: swap.sendWalletId,
-      );
+      String refundAddress;
+      if (swap.refundAddress != null) {
+        refundAddress = swap.refundAddress!;
+      } else {
+        final address = await _walletAddressRepository.getNewReceiveAddress(
+          walletId: swap.sendWalletId,
+        );
+        refundAddress = address.address;
+        final updatedSwap = swap.copyWith(refundAddress: refundAddress);
+        await _boltzRepo.updateSwap(swap: updatedSwap);
+      }
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
       final network = Network.fromEnvironment(
@@ -287,7 +303,7 @@ class SwapWatcherService {
       try {
         refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
           swapId: swap.id,
-          liquidAddress: address.address,
+          liquidAddress: refundAddress,
           absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
         );
       } catch (e, st) {
@@ -304,14 +320,14 @@ class SwapWatcherService {
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
         refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
           swapId: swap.id,
-          liquidAddress: address.address,
+          liquidAddress: refundAddress,
           absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
           cooperate: false,
         );
       }
       final updatedSwap = swap.copyWith(
         refundTxid: refundTxid,
-        refundAddress: address.address,
+        refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
       );
@@ -424,9 +440,17 @@ class SwapWatcherService {
     required ChainSwap swap,
   }) async {
     try {
-      final refundAddress = await _walletAddressRepository.getNewReceiveAddress(
-        walletId: swap.sendWalletId,
-      );
+      String refundAddress;
+      if (swap.refundAddress != null) {
+        refundAddress = swap.refundAddress!;
+      } else {
+        final address = await _walletAddressRepository.getNewReceiveAddress(
+          walletId: swap.sendWalletId,
+        );
+        refundAddress = address.address;
+        final updatedSwap = swap.copyWith(refundAddress: refundAddress);
+        await _boltzRepo.updateSwap(swap: updatedSwap);
+      }
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
       final network = Network.fromEnvironment(
@@ -437,7 +461,7 @@ class SwapWatcherService {
       final txSize = await _boltzRepo.getSwapRefundTxSize(
         swapId: swap.id,
         swapType: swap.type,
-        refundAddressForChainSwaps: refundAddress.address,
+        refundAddressForChainSwaps: refundAddress,
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
       String refundTxid;
@@ -445,7 +469,7 @@ class SwapWatcherService {
         refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
           swapId: swap.id,
           absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
-          bitcoinRefundAddress: refundAddress.address,
+          bitcoinRefundAddress: refundAddress,
         );
       } catch (e, st) {
         log.severe(
@@ -457,19 +481,19 @@ class SwapWatcherService {
           swapId: swap.id,
           swapType: swap.type,
           isCooperative: false,
-          refundAddressForChainSwaps: refundAddress.address,
+          refundAddressForChainSwaps: refundAddress,
         );
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
         refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
           swapId: swap.id,
           absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
-          bitcoinRefundAddress: refundAddress.address,
+          bitcoinRefundAddress: refundAddress,
           cooperate: false,
         );
       }
       final updatedSwap = swap.copyWith(
         refundTxid: refundTxid,
-        refundAddress: refundAddress.address,
+        refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
       );
@@ -545,9 +569,17 @@ class SwapWatcherService {
     required ChainSwap swap,
   }) async {
     try {
-      final refundAddress = await _walletAddressRepository.getNewReceiveAddress(
-        walletId: swap.sendWalletId,
-      );
+      String refundAddress;
+      if (swap.refundAddress != null) {
+        refundAddress = swap.refundAddress!;
+      } else {
+        final address = await _walletAddressRepository.getNewReceiveAddress(
+          walletId: swap.sendWalletId,
+        );
+        refundAddress = address.address;
+        final updatedSwap = swap.copyWith(refundAddress: refundAddress);
+        await _boltzRepo.updateSwap(swap: updatedSwap);
+      }
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
       final network = Network.fromEnvironment(
@@ -558,7 +590,7 @@ class SwapWatcherService {
       final txSize = await _boltzRepo.getSwapRefundTxSize(
         swapId: swap.id,
         swapType: swap.type,
-        refundAddressForChainSwaps: refundAddress.address,
+        refundAddressForChainSwaps: refundAddress,
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
       String refundTxid;
@@ -566,7 +598,7 @@ class SwapWatcherService {
         refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
           swapId: swap.id,
           absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
-          liquidRefundAddress: refundAddress.address,
+          liquidRefundAddress: refundAddress,
         );
       } catch (e, st) {
         log.severe(
@@ -583,13 +615,13 @@ class SwapWatcherService {
         refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
           swapId: swap.id,
           absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
-          liquidRefundAddress: refundAddress.address,
+          liquidRefundAddress: refundAddress,
           cooperate: false,
         );
       }
       final updatedSwap = swap.copyWith(
         refundTxid: refundTxid,
-        refundAddress: refundAddress.address,
+        refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
       );
