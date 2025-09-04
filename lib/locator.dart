@@ -70,7 +70,7 @@ class AppLocator {
     BuyLocator.setup();
     SellLocator.setup();
     WithdrawLocator.setup();
-    registerPayDependencies(locator);
+    PayLocator.setup();
     FundExchangeLocator.setup();
     AutoSwapLocator.setup();
     AddressViewLocator.setup();

@@ -21,59 +21,68 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_use
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
-import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/locator.dart';
 
-void registerPayDependencies(GetIt locator) {
-  locator.registerFactory<PlacePayOrderUsecase>(
-    () => PlacePayOrderUsecase(
-      mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-        instanceName: 'mainnetExchangeOrderRepository',
-      ),
-      testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-        instanceName: 'testnetExchangeOrderRepository',
-      ),
-      settingsRepository: locator(),
-    ),
-  );
+class PayLocator {
+  static void setup() {
+    registerUsecases();
+    registerBlocs();
+  }
 
-  locator.registerFactory<RefreshPayOrderUsecase>(
-    () => RefreshPayOrderUsecase(
-      mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-        instanceName: 'mainnetExchangeOrderRepository',
+  static void registerUsecases() {
+    locator.registerFactory<PlacePayOrderUsecase>(
+      () => PlacePayOrderUsecase(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator(),
       ),
-      testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-        instanceName: 'testnetExchangeOrderRepository',
-      ),
-      settingsRepository: locator(),
-    ),
-  );
+    );
 
-  locator.registerFactory<PayBloc>(
-    () => PayBloc(
-      getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
-      listRecipientsUsecase: locator<ListRecipientsUsecase>(),
-      createFiatRecipientUsecase: locator<CreateFiatRecipientUsecase>(),
-      listCadBillersUsecase: locator<ListCadBillersUsecase>(),
-      placePayOrderUsecase: locator<PlacePayOrderUsecase>(),
-      refreshPayOrderUsecase: locator<RefreshPayOrderUsecase>(),
-      prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
-      prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
-      signBitcoinTxUsecase: locator<SignBitcoinTxUsecase>(),
-      signLiquidTxUsecase: locator<SignLiquidTxUsecase>(),
-      broadcastBitcoinTransactionUsecase:
-          locator<BroadcastBitcoinTransactionUsecase>(),
-      broadcastLiquidTransactionUsecase:
-          locator<BroadcastLiquidTransactionUsecase>(),
-      getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
-      calculateLiquidAbsoluteFeesUsecase:
-          locator<CalculateLiquidAbsoluteFeesUsecase>(),
-      calculateBitcoinAbsoluteFeesUsecase:
-          locator<CalculateBitcoinAbsoluteFeesUsecase>(),
-      convertSatsToCurrencyAmountUsecase:
-          locator<ConvertSatsToCurrencyAmountUsecase>(),
-      getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
-      getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
-      getOrderUsecase: locator<GetOrderUsecase>(),
-    ),
-  );
+    locator.registerFactory<RefreshPayOrderUsecase>(
+      () => RefreshPayOrderUsecase(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator(),
+      ),
+    );
+  }
+
+  static void registerBlocs() {
+    locator.registerFactory<PayBloc>(
+      () => PayBloc(
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        listRecipientsUsecase: locator<ListRecipientsUsecase>(),
+        createFiatRecipientUsecase: locator<CreateFiatRecipientUsecase>(),
+        listCadBillersUsecase: locator<ListCadBillersUsecase>(),
+        placePayOrderUsecase: locator<PlacePayOrderUsecase>(),
+        refreshPayOrderUsecase: locator<RefreshPayOrderUsecase>(),
+        prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
+        prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
+        signBitcoinTxUsecase: locator<SignBitcoinTxUsecase>(),
+        signLiquidTxUsecase: locator<SignLiquidTxUsecase>(),
+        broadcastBitcoinTransactionUsecase:
+            locator<BroadcastBitcoinTransactionUsecase>(),
+        broadcastLiquidTransactionUsecase:
+            locator<BroadcastLiquidTransactionUsecase>(),
+        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        calculateLiquidAbsoluteFeesUsecase:
+            locator<CalculateLiquidAbsoluteFeesUsecase>(),
+        calculateBitcoinAbsoluteFeesUsecase:
+            locator<CalculateBitcoinAbsoluteFeesUsecase>(),
+        convertSatsToCurrencyAmountUsecase:
+            locator<ConvertSatsToCurrencyAmountUsecase>(),
+        getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
+        getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
+        getOrderUsecase: locator<GetOrderUsecase>(),
+      ),
+    );
+  }
 }
