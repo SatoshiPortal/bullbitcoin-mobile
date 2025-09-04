@@ -3,14 +3,13 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
-import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
-import 'package:bb_mobile/features/withdraw/ui/widgets/new_recipient_form.dart';
-import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_recipient_card.dart';
+import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
+import 'package:bb_mobile/features/pay/ui/widgets/pay_new_recipient_form.dart';
+import 'package:bb_mobile/features/pay/ui/widgets/pay_recipient_list_tile.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_recipients_filter_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 enum RecipientsTab {
   newRecipient(displayValue: 'New beneficiary'),
@@ -28,15 +27,14 @@ enum RecipientsTab {
   }
 }
 
-class WithdrawRecipientsScreen extends StatefulWidget {
-  const WithdrawRecipientsScreen({super.key});
+class PayRecipientsScreen extends StatefulWidget {
+  const PayRecipientsScreen({super.key});
 
   @override
-  State<WithdrawRecipientsScreen> createState() =>
-      _WithdrawRecipientsScreenState();
+  State<PayRecipientsScreen> createState() => _PayRecipientsScreenState();
 }
 
-class _WithdrawRecipientsScreenState extends State<WithdrawRecipientsScreen> {
+class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
   RecipientsTab _selectedTab = RecipientsTab.myRecipients;
 
   void _onTabSelected(RecipientsTab tab) {
@@ -47,30 +45,19 @@ class _WithdrawRecipientsScreenState extends State<WithdrawRecipientsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: theme.scaffoldBackgroundColor,
         title: const Text('Select recipient'),
-        leading:
-            context.canPop()
-                ? BackButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                )
-                : null,
         scrolledUnderElevation: 0,
       ),
       body: Column(
         children: [
           FadingLinearProgress(
             height: 3,
-            trigger: context.select<WithdrawBloc, bool>((bloc) {
+            trigger: context.select<PayBloc, bool>((bloc) {
               final state = bloc.state;
-              if (state is WithdrawRecipientInputState) {
-                return state.isCreatingWithdrawOrder ||
-                    state.isCreatingNewRecipient;
+              if (state is PayRecipientInputState) {
+                return state.isCreatingPayOrder || state.isCreatingNewRecipient;
               }
               return false;
             }),
@@ -89,7 +76,7 @@ class _WithdrawRecipientsScreenState extends State<WithdrawRecipientsScreen> {
                         children: [
                           const Gap(16.0),
                           Text(
-                            'Where and how should we send the money?',
+                            'Who are you paying?',
                             style: context.font.labelMedium?.copyWith(
                               color: Colors.black,
                             ),
@@ -116,8 +103,9 @@ class _WithdrawRecipientsScreenState extends State<WithdrawRecipientsScreen> {
                     ),
                     Expanded(
                       child: switch (_selectedTab) {
-                        RecipientsTab.newRecipient => const NewRecipientForm(),
-                        RecipientsTab.myRecipients => _WithdrawRecipientsTab(
+                        RecipientsTab.newRecipient =>
+                          const PayNewRecipientForm(),
+                        RecipientsTab.myRecipients => _PayRecipientsTab(
                           key: ValueKey(_selectedTab),
                         ),
                       },
@@ -133,14 +121,14 @@ class _WithdrawRecipientsScreenState extends State<WithdrawRecipientsScreen> {
   }
 }
 
-class _WithdrawRecipientsTab extends StatefulWidget {
-  const _WithdrawRecipientsTab({super.key});
+class _PayRecipientsTab extends StatefulWidget {
+  const _PayRecipientsTab({super.key});
 
   @override
-  State<_WithdrawRecipientsTab> createState() => _WithdrawRecipientsTabState();
+  State<_PayRecipientsTab> createState() => _PayRecipientsTabState();
 }
 
-class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
+class _PayRecipientsTabState extends State<_PayRecipientsTab> {
   late String _filterRecipientType;
   late List<Recipient> _allEligibleRecipients;
   late List<Recipient> _filteredRecipients;
@@ -152,7 +140,7 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
     // Start with no filter
     _filterRecipientType = 'All types';
     _allEligibleRecipients =
-        context.read<WithdrawBloc>().state.eligibleRecipientsByCurrency;
+        context.read<PayBloc>().state.eligibleRecipientsByCurrency;
     _filteredRecipients = _allEligibleRecipients;
   }
 
@@ -201,7 +189,7 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
         if (_filteredRecipients.isEmpty) ...[
           const Gap(40.0),
           const Text(
-            'No recipients found to withdraw to.',
+            'No recipients found to pay to.',
             style: TextStyle(fontSize: 16.0, color: Colors.grey),
           ),
         ] else ...[
@@ -211,7 +199,7 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
                 final recipient = _filteredRecipients[index];
                 return Column(
                   children: [
-                    WithdrawRecipientCard(
+                    PayRecipientListTile(
                       recipient: recipient,
                       selected: _selectedRecipient == recipient,
                       onTap: () {
@@ -231,8 +219,8 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
             enabled: _selectedRecipient != null,
             onPressed: () {
               if (_selectedRecipient != null) {
-                context.read<WithdrawBloc>().add(
-                  WithdrawEvent.recipientSelected(_selectedRecipient!),
+                context.read<PayBloc>().add(
+                  PayEvent.recipientSelected(_selectedRecipient!),
                 );
               }
             },
@@ -244,17 +232,17 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
 }
 
 class _ContinueButton extends StatelessWidget {
-  const _ContinueButton({required this.onPressed, required this.enabled});
+  const _ContinueButton({required this.enabled, required this.onPressed});
 
-  final VoidCallback onPressed;
   final bool enabled;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final isCreatingWithdrawOrder = context.select(
-      (WithdrawBloc bloc) =>
-          bloc.state is WithdrawRecipientInputState &&
-          (bloc.state as WithdrawRecipientInputState).isCreatingWithdrawOrder,
+    final isCreatingPayOrder = context.select(
+      (PayBloc bloc) =>
+          bloc.state is PayRecipientInputState &&
+          (bloc.state as PayRecipientInputState).isCreatingPayOrder,
     );
 
     return ColoredBox(
@@ -264,7 +252,7 @@ class _ContinueButton extends StatelessWidget {
           const Gap(16.0),
           BBButton.big(
             label: 'Continue',
-            disabled: !enabled || isCreatingWithdrawOrder,
+            disabled: !enabled || isCreatingPayOrder,
             onPressed: onPressed,
             bgColor: context.colour.secondary,
             textColor: context.colour.onSecondary,

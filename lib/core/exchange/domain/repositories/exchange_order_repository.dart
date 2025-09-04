@@ -17,7 +17,6 @@ abstract class ExchangeOrderRepository {
   Future<FiatPaymentOrder> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
-    required String paymentProcessor,
     required OrderBitcoinNetwork network,
   });
   Future<WithdrawOrder> placeWithdrawalOrder({
@@ -29,6 +28,7 @@ abstract class ExchangeOrderRepository {
   Future<WithdrawOrder> confirmWithdrawOrder(String orderId);
   Future<BuyOrder> refreshBuyOrder(String orderId);
   Future<SellOrder> refreshSellOrder(String orderId);
+  Future<FiatPaymentOrder> refreshPayOrder(String orderId);
   Future<BuyOrder> accelerateBuyOrder(String orderId);
   Future<Order> getOrder(String orderId);
   Future<Order?> getOrderByTxId(String txId);

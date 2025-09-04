@@ -9,6 +9,7 @@ sealed class PayError with _$PayError {
       BelowMinAmountPayError;
   const factory PayError.aboveMaxAmount({required int maxAmountSat}) =
       AboveMaxAmountPayError;
+  const factory PayError.insufficientBalance() = InsufficientBalancePayError;
   const factory PayError.orderNotFound() = OrderNotFoundPayError;
   const factory PayError.orderAlreadyConfirmed() =
       OrderAlreadyConfirmedPayError;

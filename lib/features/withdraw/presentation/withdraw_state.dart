@@ -47,6 +47,38 @@ sealed class WithdrawState with _$WithdrawState {
       WithdrawSuccessState;
   const WithdrawState._();
 
+  FiatCurrency get currency {
+    return when(
+      initial: (_, _, _) => FiatCurrency.cad,
+      amountInput:
+          (userSummary, _) =>
+              userSummary.currency != null
+                  ? FiatCurrency.fromCode(userSummary.currency!)
+                  : FiatCurrency.cad,
+      recipientInput: (_, _, _, currency, _, _, _, _, _, _) => currency,
+      confirmation: (_, _, _, currency, _, _, _, _) => currency,
+      success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
+    );
+  }
+
+  List<Recipient> get recipients {
+    return when(
+      initial: (_, recipientsException, _) => [],
+      amountInput: (_, recipients) => recipients,
+      recipientInput: (_, recipients, _, _, _, _, _, _, _, _) => recipients,
+      confirmation: (_, recipients, _, _, _, _, _, _) => recipients,
+      success: (order) => [],
+    );
+  }
+
+  List<Recipient> get eligibleRecipientsByCurrency {
+    return recipients
+        .where(
+          (recipient) => recipient.recipientType.currencyCode == currency.code,
+        )
+        .toList();
+  }
+
   WithdrawAmountInputState? get cleanAmountInputState {
     return whenOrNull(
       amountInput:

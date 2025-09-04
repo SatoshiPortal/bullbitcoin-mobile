@@ -350,6 +350,13 @@ sealed class Order with _$Order {
     required DateTime confirmationDeadline,
     required DateTime createdAt,
     DateTime? scheduledPayoutTime,
+    String? lightningInvoice,
+    String? bitcoinAddress,
+    String? bitcoinTransactionId,
+    String? liquidAddress,
+    String? liquidTransactionId,
+    String? lightningAddress,
+    String? lnUrl,
     String? beneficiaryName,
     String? beneficiaryLabel,
     String? beneficiaryAccountNumber,
@@ -568,6 +575,9 @@ sealed class Order with _$Order {
         return buyOrder.bitcoinTransactionId ?? buyOrder.liquidTransactionId;
       case final SellOrder sellOrder:
         return sellOrder.bitcoinTransactionId ?? sellOrder.liquidTransactionId;
+      case final FiatPaymentOrder fiatPaymentOrder:
+        return fiatPaymentOrder.bitcoinTransactionId ??
+            fiatPaymentOrder.liquidTransactionId;
       case _:
         return null;
     }
@@ -579,6 +589,9 @@ sealed class Order with _$Order {
         return buyOrder.bitcoinAddress ?? buyOrder.liquidAddress;
       case final SellOrder sellOrder:
         return sellOrder.bitcoinAddress ?? sellOrder.liquidAddress;
+      case final FiatPaymentOrder fiatPaymentOrder:
+        return fiatPaymentOrder.bitcoinAddress ??
+            fiatPaymentOrder.liquidAddress;
       case _:
         return null;
     }
