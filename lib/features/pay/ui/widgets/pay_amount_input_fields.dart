@@ -23,16 +23,6 @@ class PayAmountInputFields extends StatelessWidget {
     final isLoading = context.select(
       (PayBloc bloc) => bloc.state is PayInitialState,
     );
-    final balances = context.select((PayBloc bloc) {
-      final state = bloc.state;
-      if (state is PayAmountInputState) {
-        return state.userSummary.balances;
-      }
-      if (state is PayRecipientInputState) {
-        return state.userSummary.balances;
-      }
-      return null;
-    });
 
     return Column(
       children: [
@@ -40,10 +30,6 @@ class PayAmountInputFields extends StatelessWidget {
           isLoading: isLoading,
           amountController: amountController,
           fiatCurrency: fiatCurrency,
-          fiatBalance:
-              balances
-                  ?.where((b) => b.currencyCode == fiatCurrency.code)
-                  .firstOrNull,
         ),
         const Gap(16.0),
         ExchangeAmountCurrencyDropdown(
@@ -54,7 +40,6 @@ class PayAmountInputFields extends StatelessWidget {
             final newFiatCurrency = FiatCurrency.fromCode(currencyCode);
             onFiatCurrencyChanged(newFiatCurrency);
           },
-          balances: balances,
         ),
       ],
     );
