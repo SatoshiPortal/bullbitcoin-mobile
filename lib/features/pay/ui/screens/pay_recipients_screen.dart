@@ -1,9 +1,7 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_new_recipient_form.dart';
@@ -12,7 +10,6 @@ import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_recipients_filte
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 enum RecipientsTab {
   newRecipient(displayValue: 'New beneficiary'),
@@ -48,19 +45,9 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: theme.scaffoldBackgroundColor,
         title: const Text('Select recipient'),
-        leading:
-            context.canPop()
-                ? BackButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                )
-                : null,
         scrolledUnderElevation: 0,
       ),
       body: Column(
@@ -142,31 +129,36 @@ class _PayRecipientsTab extends StatefulWidget {
 }
 
 class _PayRecipientsTabState extends State<_PayRecipientsTab> {
-  String? _filterRecipientType;
+  late String _filterRecipientType;
+  late List<Recipient> _allEligibleRecipients;
+  late List<Recipient> _filteredRecipients;
   Recipient? _selectedRecipient;
 
-  void _onFilterChanged(String? filter) {
-    setState(() {
-      _filterRecipientType = filter;
-    });
+  @override
+  void initState() {
+    super.initState();
+    // Start with no filter
+    _filterRecipientType = 'All types';
+    _allEligibleRecipients =
+        context.read<PayBloc>().state.eligibleRecipientsByCurrency;
+    _filteredRecipients = _allEligibleRecipients;
   }
 
-  void _onRecipientsChanged(List<Recipient>? newRecipients) {
-    // Reset filter if the selected type is no longer available
-    if (_filterRecipientType != null &&
-        _filterRecipientType != 'All types' &&
-        newRecipients != null) {
-      final availableTypes =
-          newRecipients
-              .map((recipient) => recipient.recipientType.displayName)
-              .toSet();
-
-      if (!availableTypes.contains(_filterRecipientType)) {
-        setState(() {
-          _filterRecipientType = null;
-        });
-      }
-    }
+  void _onFilterChanged(String filter) {
+    // Change the filter and update the filtered recipients
+    setState(() {
+      _filterRecipientType = filter;
+      _filteredRecipients =
+          filter == 'All types'
+              ? _allEligibleRecipients
+              : _allEligibleRecipients
+                  .where(
+                    (recipient) =>
+                        recipient.recipientType.displayName ==
+                        _filterRecipientType,
+                  )
+                  .toList();
+    });
   }
 
   void _onRecipientSelected(Recipient? recipient) {
@@ -178,54 +170,6 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final recipients = context.select((PayBloc bloc) {
-      List<Recipient>? allRecipients;
-      FiatCurrency? currency;
-      final state = bloc.state;
-      switch (state) {
-        case PayRecipientInputState():
-          allRecipients = state.recipients;
-          currency = state.currency;
-        case PayWalletSelectionState():
-          allRecipients = state.recipients;
-          currency = state.currency;
-        default:
-          break;
-      }
-
-      if (allRecipients == null) return null;
-
-      // Filter recipients based on the selected filter and the currency
-      if (_filterRecipientType == null || _filterRecipientType == 'All types') {
-        // Show all recipients for the current currency
-        final paymentProcessorsForCurrency =
-            WithdrawRecipientType.values
-                .where((pp) => pp.currencyCode == currency?.code)
-                .toList();
-        return allRecipients
-            .where(
-              (recipient) => paymentProcessorsForCurrency.any(
-                (pp) => recipient.recipientType.code == pp.code,
-              ),
-            )
-            .toList();
-      } else {
-        // Filter by specific recipient type
-        final selectedType = WithdrawRecipientType.values.firstWhere(
-          (type) => type.displayName == _filterRecipientType,
-          orElse: () => WithdrawRecipientType.interacEmailCad,
-        );
-
-        return allRecipients
-            .where((recipient) => recipient.recipientType == selectedType)
-            .toList();
-      }
-    });
-
-    // Check if recipients changed and reset filter if needed
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _onRecipientsChanged(recipients);
-    });
 
     return Column(
       children: [
@@ -236,19 +180,13 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
               WithdrawRecipientsFilterDropdown(
                 selectedFilter: _filterRecipientType,
                 onFilterChanged: _onFilterChanged,
-                recipients: recipients,
+                allEligibleRecipients: _allEligibleRecipients,
               ),
               const Gap(16.0),
             ],
           ),
         ),
-        if (recipients == null) ...[
-          const LoadingBoxContent(
-            padding: EdgeInsets.zero,
-            height: 200,
-            width: double.infinity,
-          ),
-        ] else if (recipients.isEmpty) ...[
+        if (_filteredRecipients.isEmpty) ...[
           const Gap(40.0),
           const Text(
             'No recipients found to pay to.',
@@ -258,7 +196,7 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
           Expanded(
             child: ListView.separated(
               itemBuilder: (context, index) {
-                final recipient = recipients[index];
+                final recipient = _filteredRecipients[index];
                 return Column(
                   children: [
                     PayRecipientListTile(
@@ -268,12 +206,13 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
                         _onRecipientSelected(recipient);
                       },
                     ),
-                    if (index == recipients.length - 1) const Gap(24.0),
+                    if (index == _filteredRecipients.length - 1)
+                      const Gap(24.0),
                   ],
                 );
               },
               separatorBuilder: (_, _) => const Gap(8.0),
-              itemCount: recipients.length,
+              itemCount: _filteredRecipients.length,
             ),
           ),
           _ContinueButton(

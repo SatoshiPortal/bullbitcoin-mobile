@@ -21,7 +21,6 @@ sealed class PayState with _$PayState {
     @Default([]) List<CadBiller> cadBillers,
     @Default(false) bool isLoadingCadBillers,
     PayError? error,
-    NewRecipient? newRecipient,
   }) = PayRecipientInputState;
   const factory PayState.walletSelection({
     required UserSummary userSummary,
@@ -32,15 +31,6 @@ sealed class PayState with _$PayState {
     @Default(false) bool isCreatingPayOrder,
     PayError? error,
   }) = PayWalletSelectionState;
-  const factory PayState.externalWalletNetworkSelection({
-    required UserSummary userSummary,
-    required List<Recipient> recipients,
-    required FiatAmount amount,
-    required FiatCurrency currency,
-    required Recipient recipient,
-    @Default(false) bool isCreatingPayOrder,
-    PayError? error,
-  }) = PayExternalWalletNetworkSelectionState;
   const factory PayState.payment({
     required UserSummary userSummary,
     required List<Recipient> recipients,
@@ -70,9 +60,8 @@ sealed class PayState with _$PayState {
               userSummary.currency != null
                   ? FiatCurrency.fromCode(userSummary.currency!)
                   : FiatCurrency.cad,
-      recipientInput: (_, _, _, currency, _, _, _, _, _, _) => currency,
+      recipientInput: (_, _, _, currency, _, _, _, _, _) => currency,
       walletSelection: (_, _, _, currency, _, _, _) => currency,
-      externalWalletNetworkSelection: (_, _, _, currency, _, _, _) => currency,
       payment:
           (_, _, _, _, _, _, order, _, _, _, _, _, _, _, _) =>
               FiatCurrency.fromCode(order.payoutCurrency),
@@ -80,7 +69,27 @@ sealed class PayState with _$PayState {
     );
   }
 
-  PayAmountInputState? get cleanPayAmountInputState {
+  List<Recipient> get recipients {
+    return when(
+      initial: (_, recipientsException, _) => [],
+      amountInput: (_, recipients) => recipients,
+      recipientInput: (_, recipients, _, _, _, _, _, _, _) => recipients,
+      walletSelection: (_, recipients, _, _, _, _, _) => recipients,
+      payment:
+          (_, recipients, _, _, _, _, _, _, _, _, _, _, _, _, _) => recipients,
+      success: (order) => [],
+    );
+  }
+
+  List<Recipient> get eligibleRecipientsByCurrency {
+    return recipients
+        .where(
+          (recipient) => recipient.recipientType.currencyCode == currency.code,
+        )
+        .toList();
+  }
+
+  PayAmountInputState? get cleanAmountInputState {
     return whenOrNull(
       amountInput:
           (userSummary, recipients) => PayAmountInputState(
@@ -88,17 +97,11 @@ sealed class PayState with _$PayState {
             recipients: recipients,
           ),
       recipientInput:
-          (userSummary, recipients, _, _, _, _, _, _, _, _) =>
-              PayAmountInputState(
-                userSummary: userSummary,
-                recipients: recipients,
-              ),
-      walletSelection:
-          (userSummary, recipients, _, _, _, _, _) => PayAmountInputState(
+          (userSummary, recipients, _, _, _, _, _, _, _) => PayAmountInputState(
             userSummary: userSummary,
             recipients: recipients,
           ),
-      externalWalletNetworkSelection:
+      walletSelection:
           (userSummary, recipients, _, _, _, _, _) => PayAmountInputState(
             userSummary: userSummary,
             recipients: recipients,
@@ -109,6 +112,119 @@ sealed class PayState with _$PayState {
                 userSummary: userSummary,
                 recipients: recipients,
               ),
+    );
+  }
+
+  PayRecipientInputState? get cleanRecipientInputState {
+    return whenOrNull(
+      recipientInput:
+          (userSummary, recipients, amount, currency, _, _, _, _, _) =>
+              PayRecipientInputState(
+                userSummary: userSummary,
+                recipients: recipients,
+                amount: amount,
+                currency: currency,
+              ),
+      walletSelection:
+          (userSummary, recipients, amount, currency, _, _, _) =>
+              PayRecipientInputState(
+                userSummary: userSummary,
+                recipients: recipients,
+                amount: amount,
+                currency: currency,
+              ),
+      payment:
+          (
+            userSummary,
+            recipients,
+            amount,
+            currency,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+          ) => PayRecipientInputState(
+            userSummary: userSummary,
+            recipients: recipients,
+            amount: amount,
+            currency: currency,
+          ),
+    );
+  }
+
+  PayWalletSelectionState? get cleanWalletSelectionState {
+    return whenOrNull(
+      walletSelection:
+          (userSummary, recipients, amount, currency, recipient, _, _) =>
+              PayWalletSelectionState(
+                userSummary: userSummary,
+                recipients: recipients,
+                amount: amount,
+                currency: currency,
+                recipient: recipient,
+              ),
+      payment:
+          (
+            userSummary,
+            recipients,
+            amount,
+            currency,
+            recipient,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+          ) => PayWalletSelectionState(
+            userSummary: userSummary,
+            recipients: recipients,
+            amount: amount,
+            currency: currency,
+            recipient: recipient,
+          ),
+    );
+  }
+
+  PayPaymentState? get cleanPaymentState {
+    return whenOrNull(
+      payment:
+          (
+            userSummary,
+            recipients,
+            amount,
+            currency,
+            recipient,
+            selectedWallet,
+            payOrder,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+          ) => PayPaymentState(
+            userSummary: userSummary,
+            recipients: recipients,
+            amount: amount,
+            currency: currency,
+            recipient: recipient,
+            selectedWallet: selectedWallet,
+            payOrder: payOrder,
+          ),
     );
   }
 }
@@ -144,13 +260,6 @@ extension PayAmountInputStateX on PayAmountInputState {
 }
 
 extension PayRecipientInputStateX on PayRecipientInputState {
-  PayAmountInputState toAmountInputState() {
-    return PayAmountInputState(
-      userSummary: userSummary,
-      recipients: recipients,
-    );
-  }
-
   PayWalletSelectionState toWalletSelectionState({
     required Recipient recipient,
   }) {
@@ -166,31 +275,6 @@ extension PayRecipientInputStateX on PayRecipientInputState {
 }
 
 extension PayWalletSelectionStateX on PayWalletSelectionState {
-  PayRecipientInputState toRecipientInputState() {
-    return PayRecipientInputState(
-      userSummary: userSummary,
-      recipients: recipients,
-      amount: amount,
-      currency: currency,
-      isCreatingPayOrder: false,
-      isCreatingNewRecipient: false,
-      cadBillers: const [],
-      isLoadingCadBillers: false,
-    );
-  }
-
-  PayExternalWalletNetworkSelectionState
-  toExternalWalletNetworkSelectionState() {
-    return PayExternalWalletNetworkSelectionState(
-      userSummary: userSummary,
-      recipients: recipients,
-      amount: amount,
-      currency: currency,
-      recipient: recipient,
-      isCreatingPayOrder: false,
-    );
-  }
-
   PayPaymentState toSendPaymentState({
     required Wallet selectedWallet,
     required FiatPaymentOrder payOrder,
@@ -209,36 +293,6 @@ extension PayWalletSelectionStateX on PayWalletSelectionState {
       absoluteFees: absoluteFees,
       exchangeRateEstimate: exchangeRateEstimate,
       utxos: utxos ?? [],
-    );
-  }
-
-  PayPaymentState toReceivePaymentState({
-    required FiatPaymentOrder payOrder,
-    double? exchangeRateEstimate,
-  }) {
-    return PayPaymentState(
-      userSummary: userSummary,
-      recipients: recipients,
-      amount: amount,
-      currency: currency,
-      recipient: recipient,
-      selectedWallet: null,
-      payOrder: payOrder,
-      exchangeRateEstimate: exchangeRateEstimate,
-    );
-  }
-}
-
-extension PayExternalWalletNetworkSelectionStateX
-    on PayExternalWalletNetworkSelectionState {
-  PayWalletSelectionState toWalletSelectionState() {
-    return PayWalletSelectionState(
-      userSummary: userSummary,
-      recipients: recipients,
-      amount: amount,
-      currency: currency,
-      recipient: recipient,
-      isCreatingPayOrder: false,
     );
   }
 
@@ -308,182 +362,5 @@ extension PayPaymentStateX on PayPaymentState {
     }
 
     return invoiceString;
-  }
-}
-
-extension PayStateX on PayState {
-  PayAmountInputState? get toCleanAmountInputState {
-    return whenOrNull(
-      amountInput: (userSummary, recipients) {
-        return PayAmountInputState(
-          userSummary: userSummary,
-          recipients: recipients,
-        );
-      },
-      recipientInput: (
-        userSummary,
-        recipients,
-        amount,
-        currency,
-        isCreatingPayOrder,
-        isCreatingNewRecipient,
-        cadBillers,
-        isLoadingCadBillers,
-        error,
-        newRecipient,
-      ) {
-        return PayAmountInputState(
-          userSummary: userSummary,
-          recipients: recipients,
-        );
-      },
-      walletSelection: (
-        userSummary,
-        recipients,
-        amount,
-        currency,
-        recipient,
-        isCreatingPayOrder,
-        error,
-      ) {
-        return PayAmountInputState(
-          userSummary: userSummary,
-          recipients: recipients,
-        );
-      },
-      externalWalletNetworkSelection: (
-        userSummary,
-        recipients,
-        amount,
-        currency,
-        recipient,
-        isCreatingPayOrder,
-        error,
-      ) {
-        return PayAmountInputState(
-          userSummary: userSummary,
-          recipients: recipients,
-        );
-      },
-      payment: (
-        userSummary,
-        recipients,
-        amount,
-        currency,
-        recipient,
-        selectedWallet,
-        payOrder,
-        isConfirmingPayment,
-        isPolling,
-        error,
-        absoluteFees,
-        _,
-        _,
-        _,
-        _,
-      ) {
-        return PayAmountInputState(
-          userSummary: userSummary,
-          recipients: recipients,
-        );
-      },
-    );
-  }
-
-  PayWalletSelectionState? get toCleanWalletSelectionState {
-    return whenOrNull(
-      walletSelection: (
-        userSummary,
-        recipients,
-        amount,
-        currency,
-        recipient,
-        isCreatingPayOrder,
-        error,
-      ) {
-        return PayWalletSelectionState(
-          userSummary: userSummary,
-          recipients: recipients,
-          amount: amount,
-          currency: currency,
-          recipient: recipient,
-        );
-      },
-      externalWalletNetworkSelection: (
-        userSummary,
-        recipients,
-        amount,
-        currency,
-        recipient,
-        isCreatingPayOrder,
-        error,
-      ) {
-        return PayWalletSelectionState(
-          userSummary: userSummary,
-          recipients: recipients,
-          amount: amount,
-          currency: currency,
-          recipient: recipient,
-        );
-      },
-      payment: (
-        userSummary,
-        recipients,
-        amount,
-        currency,
-        recipient,
-        selectedWallet,
-        payOrder,
-        isConfirmingPayment,
-        isPolling,
-        error,
-        absoluteFees,
-        _,
-        _,
-        _,
-        _,
-      ) {
-        return PayWalletSelectionState(
-          userSummary: userSummary,
-          recipients: recipients,
-          amount: amount,
-          currency: currency,
-          recipient: recipient,
-        );
-      },
-    );
-  }
-
-  PayPaymentState? get toCleanPaymentState {
-    return whenOrNull(
-      payment: (
-        userSummary,
-        recipients,
-        amount,
-        currency,
-        recipient,
-        selectedWallet,
-        payOrder,
-        isConfirmingPayment,
-        isPolling,
-        error,
-        absoluteFees,
-        _,
-        _,
-        _,
-        _,
-      ) {
-        return PayPaymentState(
-          userSummary: userSummary,
-          recipients: recipients,
-          amount: amount,
-          currency: currency,
-          recipient: recipient,
-          selectedWallet: selectedWallet,
-          payOrder: payOrder,
-          absoluteFees: absoluteFees,
-        );
-      },
-    );
   }
 }

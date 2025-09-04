@@ -65,6 +65,7 @@ class PayWalletSelectionScreen extends StatelessWidget {
                             ? null
                             : () => context.pushNamed(
                               PayRoute.payExternalWalletNetworkSelection.name,
+                              extra: context.read<PayBloc>(),
                             ),
                   ),
                   const Gap(24.0),

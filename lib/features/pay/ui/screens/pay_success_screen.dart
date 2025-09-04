@@ -22,6 +22,8 @@ class PaySuccessScreen extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
+
+        context.goNamed(ExchangeRoute.exchangeHome.name);
       },
       child: Scaffold(
         appBar: AppBar(

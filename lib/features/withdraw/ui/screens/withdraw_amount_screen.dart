@@ -24,21 +24,8 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize the fiat currency based on the user summary
     final bloc = context.read<WithdrawBloc>();
-    final state = bloc.state;
-    switch (state) {
-      case WithdrawAmountInputState():
-        _fiatCurrency = FiatCurrency.fromCode(
-          state.userSummary.currency ?? 'CAD',
-        );
-      case WithdrawRecipientInputState():
-        _fiatCurrency = FiatCurrency.fromCode(
-          state.userSummary.currency ?? 'CAD',
-        );
-      default:
-        _fiatCurrency = FiatCurrency.cad;
-    }
+    _fiatCurrency = bloc.state.currency;
   }
 
   @override

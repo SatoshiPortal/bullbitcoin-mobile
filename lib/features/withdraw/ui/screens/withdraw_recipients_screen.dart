@@ -1,9 +1,7 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/new_recipient_form.dart';
@@ -143,31 +141,36 @@ class _WithdrawRecipientsTab extends StatefulWidget {
 }
 
 class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
-  String? _filterRecipientType;
+  late String _filterRecipientType;
+  late List<Recipient> _allEligibleRecipients;
+  late List<Recipient> _filteredRecipients;
   Recipient? _selectedRecipient;
 
-  void _onFilterChanged(String? filter) {
-    setState(() {
-      _filterRecipientType = filter;
-    });
+  @override
+  void initState() {
+    super.initState();
+    // Start with no filter
+    _filterRecipientType = 'All types';
+    _allEligibleRecipients =
+        context.read<WithdrawBloc>().state.eligibleRecipientsByCurrency;
+    _filteredRecipients = _allEligibleRecipients;
   }
 
-  void _onRecipientsChanged(List<Recipient>? newRecipients) {
-    // Reset filter if the selected type is no longer available
-    if (_filterRecipientType != null &&
-        _filterRecipientType != 'All types' &&
-        newRecipients != null) {
-      final availableTypes =
-          newRecipients
-              .map((recipient) => recipient.recipientType.displayName)
-              .toSet();
-
-      if (!availableTypes.contains(_filterRecipientType)) {
-        setState(() {
-          _filterRecipientType = null;
-        });
-      }
-    }
+  void _onFilterChanged(String filter) {
+    // Change the filter and update the filtered recipients
+    setState(() {
+      _filterRecipientType = filter;
+      _filteredRecipients =
+          filter == 'All types'
+              ? _allEligibleRecipients
+              : _allEligibleRecipients
+                  .where(
+                    (recipient) =>
+                        recipient.recipientType.displayName ==
+                        _filterRecipientType,
+                  )
+                  .toList();
+    });
   }
 
   void _onRecipientSelected(Recipient? recipient) {
@@ -179,54 +182,6 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final recipients = context.select((WithdrawBloc bloc) {
-      List<Recipient>? allRecipients;
-      FiatCurrency? currency;
-      final state = bloc.state;
-      switch (state) {
-        case WithdrawRecipientInputState():
-          allRecipients = state.recipients;
-          currency = state.currency;
-        case WithdrawConfirmationState():
-          allRecipients = state.recipients;
-          currency = state.currency;
-        default:
-          break;
-      }
-
-      if (allRecipients == null) return null;
-
-      // Filter recipients based on the selected filter and the currency
-      if (_filterRecipientType == null || _filterRecipientType == 'All types') {
-        // Show all recipients for the current currency
-        final paymentProcessorsForCurrency =
-            WithdrawRecipientType.values
-                .where((pp) => pp.currencyCode == currency?.code)
-                .toList();
-        return allRecipients
-            .where(
-              (recipient) => paymentProcessorsForCurrency.any(
-                (pp) => recipient.recipientType.code == pp.code,
-              ),
-            )
-            .toList();
-      } else {
-        // Filter by specific recipient type
-        final selectedType = WithdrawRecipientType.values.firstWhere(
-          (type) => type.displayName == _filterRecipientType,
-          orElse: () => WithdrawRecipientType.interacEmailCad,
-        );
-
-        return allRecipients
-            .where((recipient) => recipient.recipientType == selectedType)
-            .toList();
-      }
-    });
-
-    // Check if recipients changed and reset filter if needed
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _onRecipientsChanged(recipients);
-    });
 
     return Column(
       children: [
@@ -237,19 +192,13 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
               WithdrawRecipientsFilterDropdown(
                 selectedFilter: _filterRecipientType,
                 onFilterChanged: _onFilterChanged,
-                recipients: recipients,
+                allEligibleRecipients: _allEligibleRecipients,
               ),
               const Gap(16.0),
             ],
           ),
         ),
-        if (recipients == null) ...[
-          const LoadingBoxContent(
-            padding: EdgeInsets.zero,
-            height: 200,
-            width: double.infinity,
-          ),
-        ] else if (recipients.isEmpty) ...[
+        if (_filteredRecipients.isEmpty) ...[
           const Gap(40.0),
           const Text(
             'No recipients found to withdraw to.',
@@ -259,7 +208,7 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
           Expanded(
             child: ListView.separated(
               itemBuilder: (context, index) {
-                final recipient = recipients[index];
+                final recipient = _filteredRecipients[index];
                 return Column(
                   children: [
                     WithdrawRecipientCard(
@@ -269,12 +218,13 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
                         _onRecipientSelected(recipient);
                       },
                     ),
-                    if (index == recipients.length - 1) const Gap(24.0),
+                    if (index == _filteredRecipients.length - 1)
+                      const Gap(24.0),
                   ],
                 );
               },
               separatorBuilder: (_, _) => const Gap(8.0),
-              itemCount: recipients.length,
+              itemCount: _filteredRecipients.length,
             ),
           ),
           _ContinueButton(

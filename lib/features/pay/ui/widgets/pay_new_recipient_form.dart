@@ -246,7 +246,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
                     formData,
                   );
                   context.read<PayBloc>().add(
-                    PayEvent.createNewRecipient(newRecipient),
+                    PayEvent.newRecipientCreated(newRecipient),
                   );
                 }
               }

@@ -8,16 +8,21 @@ class WithdrawRecipientsFilterDropdown extends StatelessWidget {
     super.key,
     required this.selectedFilter,
     required this.onFilterChanged,
-    required this.recipients,
+    required this.allEligibleRecipients,
   });
 
-  final String? selectedFilter;
-  final ValueChanged<String?> onFilterChanged;
-  final List<Recipient>? recipients;
+  final String selectedFilter;
+  final ValueChanged<String> onFilterChanged;
+  final List<Recipient> allEligibleRecipients;
 
   @override
   Widget build(BuildContext context) {
-    final filterOptions = _buildFilterOptions();
+    final eligibleTypes =
+        allEligibleRecipients
+            .map((recipient) => recipient.recipientType.displayName)
+            .toSet()
+            .toList();
+    final filterOptions = ['All types', ...eligibleTypes];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,7 +37,7 @@ class WithdrawRecipientsFilterDropdown extends StatelessWidget {
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
-                value: selectedFilter ?? filterOptions.first,
+                value: selectedFilter,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -54,7 +59,9 @@ class WithdrawRecipientsFilterDropdown extends StatelessWidget {
                         )
                         .toList(),
                 onChanged: (value) {
-                  onFilterChanged(value);
+                  if (value != null) {
+                    onFilterChanged(value);
+                  }
                 },
               ),
             ),
@@ -62,21 +69,5 @@ class WithdrawRecipientsFilterDropdown extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  List<String> _buildFilterOptions() {
-    if (recipients == null || recipients!.isEmpty) {
-      return ['All types'];
-    }
-
-    // Get unique recipient types from the actual response
-    final existingTypes =
-        recipients!
-            .map((recipient) => recipient.recipientType.displayName)
-            .toSet()
-            .toList();
-
-    // Always include "All types" as the first option
-    return ['All types', ...existingTypes];
   }
 }

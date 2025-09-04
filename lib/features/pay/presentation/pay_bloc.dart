@@ -89,8 +89,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
        super(const PayInitialState()) {
     on<PayStarted>(_onStarted);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);
-    on<PayNewRecipientAdded>(_onNewRecipientAdded);
-    on<PayCreateNewRecipient>(_onCreateNewRecipient);
+    on<PayNewRecipientCreated>(_onNewRecipientCreated);
     on<PayRecipientSelected>(_onRecipientSelected);
     on<PayGetCadBillers>(_onGetCadBillers);
     on<PayWalletSelected>(_onWalletSelected);
@@ -170,9 +169,8 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     PayAmountInputContinuePressed event,
     Emitter<PayState> emit,
   ) async {
-    // We should be on a PayAmountInputState or PayRecipientInputState and
-    //  return to a clean PayAmountInputState state to change the amount
-    final amountInputState = state.cleanPayAmountInputState;
+    // We should be on a PayAmountInputState here
+    final amountInputState = state.cleanAmountInputState;
     if (amountInputState == null) {
       // Unexpected state, do nothing
       log.severe('Expected to be on PayAmountInputState but on: $state');
@@ -190,66 +188,66 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     );
   }
 
-  // From Withdraw: Add new recipient form
-  Future<void> _onNewRecipientAdded(
-    PayNewRecipientAdded event,
-    Emitter<PayState> emit,
-  ) async {
-    // TODO
-  }
-
   // From Withdraw: Create new recipient and create pay order
-  Future<void> _onCreateNewRecipient(
-    PayCreateNewRecipient event,
+  Future<void> _onNewRecipientCreated(
+    PayNewRecipientCreated event,
     Emitter<PayState> emit,
   ) async {
-    log.info('🚀 _onCreateNewRecipient called');
+    log.info('🚀 _onNewRecipientCreated called');
     log.info('📝 New recipient from event: ${event.newRecipient}');
 
-    if (state is PayRecipientInputState) {
-      final currentState = state as PayRecipientInputState;
+    final recipientInputState = state.cleanRecipientInputState;
+    if (recipientInputState == null) {
+      // Unexpected state, do nothing
+      log.severe('Expected to be on PayRecipientInputState but on: $state');
+      return;
+    }
+    emit(recipientInputState.copyWith(isCreatingNewRecipient: true));
 
-      // Set loading state for new recipient creation
-      emit(currentState.copyWith(isCreatingNewRecipient: true));
+    // Use the recipient from the event directly
+    final newRecipient = event.newRecipient;
+    log.info('🏭 Executing createFiatRecipientUsecase...');
+    try {
+      final createdRecipient = await _createFiatRecipientUsecase.execute(
+        newRecipient,
+      );
+      log.info(
+        '✅ Recipient created successfully: ${createdRecipient.recipientId}',
+      );
 
-      // Use the recipient from the event directly
-      final newRecipient = event.newRecipient;
-      log.info('🏭 Executing createFiatRecipientUsecase...');
-      try {
-        final createdRecipient = await _createFiatRecipientUsecase.execute(
-          newRecipient,
-        );
-        log.info(
-          '✅ Recipient created successfully: ${createdRecipient.recipientId}',
-        );
+      // Add the new recipient to the list and update state
+      final updatedRecipients = [
+        ...recipientInputState.recipients,
+        createdRecipient,
+      ];
 
-        // Add the new recipient to the list and update state
-        final updatedRecipients = [
-          ...currentState.recipients,
-          createdRecipient,
-        ];
+      // Update state with the new recipient list and clear the newRecipient
+      final updatedState = recipientInputState.copyWith(
+        recipients: updatedRecipients,
+      );
+      emit(updatedState);
+      log.info('✅ State updated with new recipient list');
 
-        // Update state with the new recipient list and clear the newRecipient
-        final updatedState = currentState.copyWith(
-          recipients: updatedRecipients,
-          newRecipient: null,
-          isCreatingNewRecipient: false,
-        );
-        emit(updatedState);
-        log.info('✅ State updated with new recipient list');
-
-        // Transition to wallet selection state with the created recipient
-        // No order creation yet - we need to know the network first
-        emit(updatedState.toWalletSelectionState(recipient: createdRecipient));
-        log.info('✅ Transitioned to wallet selection state');
-      } catch (e) {
-        log.severe('Error creating new recipient: $e');
+      // Transition to wallet selection state with the created recipient
+      // No order creation yet - we need to know the network first
+      emit(updatedState.toWalletSelectionState(recipient: createdRecipient));
+      log.info('✅ Transitioned to wallet selection state');
+    } catch (e) {
+      log.severe('Error creating new recipient: $e');
+      if (state is PayRecipientInputState) {
         emit(
-          currentState.copyWith(
+          (state as PayRecipientInputState).copyWith(
             error: PayError.unexpected(
               message: 'Failed to create recipient: $e',
             ),
-            isCreatingNewRecipient: false, // Reset loading state on error
+          ),
+        );
+      }
+    } finally {
+      if (state is PayRecipientInputState) {
+        emit(
+          (state as PayRecipientInputState).copyWith(
+            isCreatingNewRecipient: false,
           ),
         );
       }
@@ -263,17 +261,13 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   ) async {
     // We should be on a PayRecipientInputState or PayWalletSelectionState and
     //  return to a clean PayRecipientInputState to change the recipient
-    PayRecipientInputState recipientInputState;
-    switch (state) {
-      case PayRecipientInputState _:
-        recipientInputState = state as PayRecipientInputState;
-      case final PayWalletSelectionState walletSelectionState:
-        recipientInputState = walletSelectionState.toRecipientInputState();
-      default:
-        // Unexpected state, do nothing
-        return;
+    final recipientInputState = state.cleanRecipientInputState;
+    if (recipientInputState == null) {
+      log.severe('Expected to be on PayRecipientInputState but on: $state');
+      // Unexpected state, do nothing
+      return;
     }
-    emit(recipientInputState.copyWith(error: null));
+    emit(recipientInputState);
 
     // Just transition to wallet selection - no order creation yet
     // We need to know the network (from wallet selection) first
@@ -323,12 +317,12 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     PayWalletSelected event,
     Emitter<PayState> emit,
   ) async {
-    final walletSelectionState = state.toCleanWalletSelectionState;
+    final walletSelectionState = state.cleanWalletSelectionState;
     if (walletSelectionState == null) {
       log.severe('Expected to be on PayWalletSelectionState but on: $state');
       return;
     }
-    emit(walletSelectionState.copyWith(isCreatingPayOrder: true, error: null));
+    emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
 
     int requiredAmountSat;
     final exchangeRateEstimate = await _convertSatsToCurrencyAmountUsecase
@@ -472,7 +466,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   ) async {
     // We should be on a PayWalletSelection or PayPaymentState and return
     //  to a clean PayWalletSelectionState state
-    final walletSelectionState = state.toCleanWalletSelectionState;
+    final walletSelectionState = state.cleanWalletSelectionState;
     if (walletSelectionState == null) {
       log.severe('Expected to be on PayWalletSelectionState but on: $state');
       return;
@@ -523,7 +517,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     Emitter<PayState> emit,
   ) async {
     // We should be on a PayPaymentState
-    final paymentState = state.toCleanPaymentState;
+    final paymentState = state.cleanPaymentState;
     if (paymentState == null) {
       log.severe('Expected to be on PayPaymentState but on: $state');
       return;
@@ -548,7 +542,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     Emitter<PayState> emit,
   ) async {
     // We should be on a PayPaymentState
-    final payPaymentState = state.toCleanPaymentState;
+    final payPaymentState = state.cleanPaymentState;
     if (payPaymentState == null) {
       log.severe('Expected to be on PayPaymentState but on: $state');
       return;
