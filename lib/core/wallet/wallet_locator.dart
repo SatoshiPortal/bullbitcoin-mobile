@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
+import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -20,6 +21,8 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repos
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
@@ -198,6 +201,18 @@ class WalletLocator {
         walletRepository: locator<WalletRepository>(),
         seedRepository: locator<SeedRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<TheDirtyUsecase>(
+      () => TheDirtyUsecase(
+        locator<SettingsRepository>(),
+        locator<ElectrumServerRepository>(),
+      ),
+    );
+    locator.registerFactory<TheDirtyLiquidUsecase>(
+      () => TheDirtyLiquidUsecase(
+        locator<SettingsRepository>(),
+        locator<ElectrumServerRepository>(),
       ),
     );
   }

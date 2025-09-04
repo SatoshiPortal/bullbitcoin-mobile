@@ -19,6 +19,7 @@ import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dar
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
+import 'package:bb_mobile/features/recoverbull_select_vault/locator.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
@@ -75,5 +76,6 @@ class AppLocator {
     ImportMnemonicLocator.setup();
     ReplaceByFeeLocator.setup();
     Bip85EntropyLocator.setup();
+    RecoverBullSelectDriveVaultLocator.setup();
   }
 }

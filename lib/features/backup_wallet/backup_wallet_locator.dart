@@ -16,16 +16,15 @@ class BackupWalletLocator {
     locator.registerFactory<SaveToGoogleDriveUsecase>(
       () => SaveToGoogleDriveUsecase(locator<GoogleDriveRepository>()),
     );
-    locator.registerFactory<FetchLatestGoogleDriveBackupUsecase>(
+    locator.registerFactory<FetchLatestGoogleDriveVaultUsecase>(
       () =>
-          FetchLatestGoogleDriveBackupUsecase(locator<GoogleDriveRepository>()),
+          FetchLatestGoogleDriveVaultUsecase(locator<GoogleDriveRepository>()),
     );
     // Blocs
     locator.registerFactory<BackupWalletBloc>(
       () => BackupWalletBloc(
-        createEncryptedBackupUsecase: locator<CreateEncryptedVaultUsecase>(),
-        fetchLatestBackupUsecase:
-            locator<FetchLatestGoogleDriveBackupUsecase>(),
+        createEncryptedVaultUsecase: locator<CreateEncryptedVaultUsecase>(),
+        fetchLatestBackupUsecase: locator<FetchLatestGoogleDriveVaultUsecase>(),
         connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
         disconnectFromGoogleDriveUsecase:
             locator<DisconnectFromGoogleDriveUsecase>(),

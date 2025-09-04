@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_encrypted_vault_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
@@ -7,6 +6,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usec
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_encrypted_vault_verification_usecase.dart.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
@@ -44,7 +44,7 @@ class TestWalletBackupLocator {
     locator.registerFactory<TestWalletBackupBloc>(
       () => TestWalletBackupBloc(
         fetchBackupFromFileSystemUsecase:
-            locator<FetchBackupFromFileSystemUsecase>(),
+            locator<FetchEncryptedVaultFromFileSystemUsecase>(),
         loadWalletsForNetworkUsecase: locator<LoadWalletsForNetworkUsecase>(),
         getMnemonicFromFingerprintUsecase:
             locator<GetMnemonicFromFingerprintUsecase>(),
@@ -55,9 +55,9 @@ class TestWalletBackupLocator {
         selectFileFromPathUsecase: locator<SelectFileFromPathUsecase>(),
         connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
         restoreEncryptedVaultFromBackupKeyUsecase:
-            locator<RestoreEncryptedVaultFromBackupKeyUsecase>(),
+            locator<RestoreEncryptedVaultFromVaultKeyUsecase>(),
         fetchLatestGoogleDriveBackupUsecase:
-            locator<FetchLatestGoogleDriveBackupUsecase>(),
+            locator<FetchLatestGoogleDriveVaultUsecase>(),
       ),
     );
   }

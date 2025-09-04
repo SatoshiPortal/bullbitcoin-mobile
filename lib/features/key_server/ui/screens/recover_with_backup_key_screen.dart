@@ -46,8 +46,8 @@ class _RecoverWithBackupKeyScreenState
     return BlocListener<KeyServerCubit, KeyServerState>(
       listener: (context, state) {
         if (state.status == const KeyServerOperationStatus.success() &&
-            state.backupKey.isNotEmpty) {
-          _controller.text = state.backupKey;
+            state.vaultKey.isNotEmpty) {
+          _controller.text = state.vaultKey;
         }
       },
       child: BlocBuilder<KeyServerCubit, KeyServerState>(
@@ -105,7 +105,7 @@ class _RecoverWithBackupKeyScreenState
                                 : context.colour.onInverseSurface,
                       ),
                       onRightTap: _copyWithFeedback,
-                      value: state.backupKey,
+                      value: state.vaultKey,
                     ),
                     const Spacer(),
                     if (widget.fromOnboarding)
