@@ -46,6 +46,115 @@ sealed class WithdrawState with _$WithdrawState {
   const factory WithdrawState.success({required WithdrawOrder order}) =
       WithdrawSuccessState;
   const WithdrawState._();
+
+  WithdrawAmountInputState? get cleanAmountInputState {
+    return whenOrNull(
+      amountInput:
+          (userSummary, recipients) => WithdrawAmountInputState(
+            userSummary: userSummary,
+            recipients: recipients,
+          ),
+      recipientInput:
+          (
+            userSummary,
+            recipients,
+            amount,
+            currency,
+            isCreatingWithdrawOrder,
+            isCreatingNewRecipient,
+            cadBillers,
+            isLoadingCadBillers,
+            error,
+            newRecipient,
+          ) => WithdrawAmountInputState(
+            userSummary: userSummary,
+            recipients: recipients,
+          ),
+      confirmation:
+          (
+            userSummary,
+            recipients,
+            amount,
+            currency,
+            recipient,
+            order,
+            isConfirmingWithdrawal,
+            error,
+          ) => WithdrawAmountInputState(
+            userSummary: userSummary,
+            recipients: recipients,
+          ),
+    );
+  }
+
+  WithdrawRecipientInputState? get cleanRecipientInputState {
+    return whenOrNull(
+      recipientInput:
+          (
+            userSummary,
+            recipients,
+            amount,
+            currency,
+            isCreatingWithdrawOrder,
+            isCreatingNewRecipient,
+            cadBillers,
+            isLoadingCadBillers,
+            error,
+            newRecipient,
+          ) => WithdrawRecipientInputState(
+            userSummary: userSummary,
+            recipients: recipients,
+            amount: amount,
+            currency: currency,
+            isCreatingWithdrawOrder: false,
+            isCreatingNewRecipient: false,
+            cadBillers: cadBillers,
+            isLoadingCadBillers: isLoadingCadBillers,
+            error: null,
+            newRecipient: newRecipient,
+          ),
+      confirmation:
+          (
+            userSummary,
+            recipients,
+            amount,
+            currency,
+            recipient,
+            order,
+            isConfirmingWithdrawal,
+            error,
+          ) => WithdrawRecipientInputState(
+            userSummary: userSummary,
+            recipients: recipients,
+            amount: amount,
+            currency: currency,
+          ),
+    );
+  }
+
+  WithdrawConfirmationState? get cleanConfirmationState {
+    return whenOrNull(
+      confirmation:
+          (
+            userSummary,
+            recipients,
+            amount,
+            currency,
+            recipient,
+            order,
+            isConfirmingWithdrawal,
+            error,
+          ) => WithdrawConfirmationState(
+            userSummary: userSummary,
+            recipients: recipients,
+            amount: amount,
+            currency: currency,
+            recipient: recipient,
+            order: order,
+            error: null,
+          ),
+    );
+  }
 }
 
 extension WithdrawInitialStateX on WithdrawInitialState {
@@ -70,22 +179,11 @@ extension WithdrawAmountInputStateX on WithdrawAmountInputState {
       recipients: recipients,
       amount: amount,
       currency: currency,
-      isCreatingWithdrawOrder: false,
-      isCreatingNewRecipient: false,
-      cadBillers: const [],
-      isLoadingCadBillers: false,
     );
   }
 }
 
 extension WithdrawRecipientInputStateX on WithdrawRecipientInputState {
-  WithdrawAmountInputState toAmountInputState() {
-    return WithdrawAmountInputState(
-      userSummary: userSummary,
-      recipients: recipients,
-    );
-  }
-
   WithdrawConfirmationState toConfirmationState({
     required Recipient recipient,
     required WithdrawOrder order,
@@ -125,18 +223,6 @@ extension WithdrawRecipientInputStateX on WithdrawRecipientInputState {
 }*/
 
 extension WithdrawConfirmationStateX on WithdrawConfirmationState {
-  WithdrawRecipientInputState toRecipientInputState() {
-    return WithdrawRecipientInputState(
-      userSummary: userSummary,
-      recipients: recipients,
-      amount: amount,
-      currency: currency,
-      isCreatingWithdrawOrder: false,
-      isCreatingNewRecipient: false,
-      cadBillers: const [],
-      isLoadingCadBillers: false,
-    );
-  }
   /*WithdrawDescriptionInputState toDescriptionInputState() {
     return WithdrawDescriptionInputState(
       userSummary: userSummary,
