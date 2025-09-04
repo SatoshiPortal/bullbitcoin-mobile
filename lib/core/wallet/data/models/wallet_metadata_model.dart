@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
-import 'package:drift/drift.dart' show Value;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
