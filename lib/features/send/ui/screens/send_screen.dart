@@ -1687,10 +1687,17 @@ class ShowPsbtButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.unsignedPsbt,
     );
 
+    final signerDevice = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet!.signerDevice,
+    );
+
     return BBButton.big(
       label: 'Show PSBT',
       onPressed: () {
-        context.pushNamed(PsbtFlowRoutes.show.name, extra: unsignedPsbt);
+        context.pushNamed(
+          PsbtFlowRoutes.show.name,
+          extra: (psbt: unsignedPsbt, signerDevice: signerDevice),
+        );
       },
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,

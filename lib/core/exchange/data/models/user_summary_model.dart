@@ -1,4 +1,6 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'user_summary_model.freezed.dart';
@@ -79,6 +81,8 @@ sealed class UserDcaModel with _$UserDcaModel {
     String? frequency,
     double? amount,
     String? address,
+    String? recipientType,
+    String? currencyCode,
   }) = _UserDcaModel;
 
   factory UserDcaModel.fromJson(Map<String, dynamic> json) =>
@@ -89,8 +93,22 @@ sealed class UserDcaModel with _$UserDcaModel {
   UserDca toEntity() {
     return UserDca(
       isActive: isActive,
-      frequency: frequency,
+      frequency: switch (frequency?.toLowerCase()) {
+        'hourly' => DcaBuyFrequency.hourly,
+        'daily' => DcaBuyFrequency.daily,
+        'weekly' => DcaBuyFrequency.weekly,
+        'monthly' => DcaBuyFrequency.monthly,
+        _ => null,
+      },
+      currency:
+          currencyCode != null ? FiatCurrency.fromCode(currencyCode!) : null,
       amount: amount,
+      network: switch (recipientType) {
+        'OUT_BITCOIN_ADDRESS' => DcaNetwork.bitcoin,
+        'OUT_LIGHTNING_ADDRESS' => DcaNetwork.lightning,
+        'OUT_LIQUID_ADDRESS' => DcaNetwork.liquid,
+        _ => null,
+      },
       address: address,
     );
   }

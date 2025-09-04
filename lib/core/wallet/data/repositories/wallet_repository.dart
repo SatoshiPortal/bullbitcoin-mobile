@@ -109,6 +109,7 @@ class WalletRepository {
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
       signer: metadata.signer.toEntity(),
+      signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
     );
   }
@@ -147,6 +148,7 @@ class WalletRepository {
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
       signer: metadata.signer.toEntity(),
+      signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
     );
   }
@@ -191,6 +193,7 @@ class WalletRepository {
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
       signer: metadata.signer.toEntity(),
+      signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
     );
   }
@@ -220,6 +223,7 @@ class WalletRepository {
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
       signer: metadata.signer.toEntity(),
+      signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
       isEncryptedVaultTested: metadata.isEncryptedVaultTested,
       isPhysicalBackupTested: metadata.isPhysicalBackupTested,
@@ -289,6 +293,7 @@ class WalletRepository {
             externalPublicDescriptor: entry.value.externalPublicDescriptor,
             internalPublicDescriptor: entry.value.internalPublicDescriptor,
             signer: entry.value.signer.toEntity(),
+            signerDevice: entry.value.signerDevice?.toEntity(),
             balanceSat: balances[entry.key].totalSat,
             isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
             isPhysicalBackupTested: entry.value.isPhysicalBackupTested,

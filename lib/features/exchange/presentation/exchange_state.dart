@@ -36,4 +36,6 @@ abstract class ExchangeState with _$ExchangeState {
 
   List<UserBalance> get balances =>
       userSummary?.balances.where((b) => b.amount > 0).toList() ?? [];
+
+  UserDca? get dca => userSummary?.dca;
 }

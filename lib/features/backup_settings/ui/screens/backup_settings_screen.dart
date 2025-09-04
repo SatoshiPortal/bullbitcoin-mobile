@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -62,14 +63,16 @@ class _Screen extends StatelessWidget {
           listener: (context, state) {
             if (state.derivedBackupKey == null &&
                 state.error is BackupKeyDerivationFailedError) {
+              EncryptedVault? vault;
+              if (state.downloadedBackupFile != null) {
+                vault = EncryptedVault(file: state.downloadedBackupFile!);
+              }
+
               context.pushNamed(
                 KeyServerRoute.keyServerFlow.name,
-                extra: (
-                  state.downloadedBackupFile ?? '',
-                  CurrentKeyServerFlow.recovery.name,
-                  false,
-                ),
+                extra: (vault, CurrentKeyServerFlow.recovery.name, false),
               );
+
               context.read<BackupSettingsCubit>().clearDownloadedData();
             } else {
               log.severe('Backup settings error: ${state.error}');
@@ -108,7 +111,7 @@ class _Screen extends StatelessWidget {
                       const _TestBackupButton(),
                     const Gap(5),
                     const _StartBackupButton(),
-
+                    if (state.error != null) ErrorWidget(error: state.error!),
                     const Spacer(),
                     if (state.lastEncryptedBackup != null)
                       const _KeyServerStatusWidget(),
@@ -322,6 +325,49 @@ class _ViewVaultKeyButton extends StatelessWidget {
           outlined: true,
         );
       },
+    );
+  }
+}
+
+class ErrorWidget extends StatelessWidget {
+  final Object error;
+
+  const ErrorWidget({required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: context.colour.error),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.error_outline, color: context.colour.error, size: 20),
+              const Gap(8),
+              Text(
+                'Error',
+                style: context.font.titleSmall?.copyWith(
+                  color: context.colour.error,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const Gap(8),
+          Text(
+            error.toString(),
+            style: context.font.bodySmall?.copyWith(
+              color: context.colour.error,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

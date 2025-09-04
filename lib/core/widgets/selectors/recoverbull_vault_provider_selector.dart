@@ -5,11 +5,11 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class BackupProviderSelector extends StatelessWidget {
+class RecoverbullVaultProviderSelector extends StatelessWidget {
   final void Function(BackupProviderType provider) onProviderSelected;
   final String? description;
 
-  const BackupProviderSelector({
+  const RecoverbullVaultProviderSelector({
     super.key,
     required this.onProviderSelected,
     this.description,

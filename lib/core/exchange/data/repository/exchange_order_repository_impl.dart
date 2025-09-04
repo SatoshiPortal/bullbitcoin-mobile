@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/dca/domain/dca.dart';
 
 class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   final BullbitcoinApiDatasource _bullbitcoinApiDatasource;
@@ -504,6 +505,46 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       throw WithdrawError.aboveMaxAmount(maxAmountSat: maxAmountSat);
     } catch (e) {
       throw Exception('Failed to create withdrawal order: $e');
+    }
+  }
+
+  @override
+  Future<Dca> createDca({
+    required double amount,
+    required FiatCurrency currency,
+    required DcaBuyFrequency frequency,
+    required DcaNetwork network,
+    required String address,
+  }) async {
+    try {
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+
+      if (apiKeyModel == null) {
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw ApiKeyException(
+          'API key is inactive. Please login again to your Bull Bitcoin account.',
+        );
+      }
+
+      final dcaModel = await _bullbitcoinApiDatasource.createDca(
+        amount: amount,
+        currency: currency,
+        frequency: frequency,
+        network: network,
+        address: address,
+        apiKey: apiKeyModel.key,
+      );
+
+      return dcaModel.toEntity();
+    } catch (e) {
+      throw Exception('Failed to create DCA: $e');
     }
   }
 }
