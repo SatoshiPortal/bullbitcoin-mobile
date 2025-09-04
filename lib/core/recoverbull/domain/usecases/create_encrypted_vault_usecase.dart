@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
@@ -22,7 +23,7 @@ class CreateEncryptedVaultUsecase {
        _seedRepository = seedRepository,
        _walletRepository = walletRepository;
 
-  Future<String> execute() async {
+  Future<EncryptedVault> execute() async {
     try {
       // Get the default wallet
       final defaultBitcoinWallets = await _walletRepository.getWallets(
@@ -53,7 +54,7 @@ class CreateEncryptedVaultUsecase {
         defaultWallet.network,
       );
 
-      final toBackup = RecoverBullWallet(
+      final toBackup = DecryptedVault(
         mnemonic: mnemonic,
         masterFingerprint: defaultWallet.masterFingerprint,
         isEncryptedVaultTested: defaultWallet.isEncryptedVaultTested,
@@ -71,7 +72,7 @@ class CreateEncryptedVaultUsecase {
       );
 
       // Create an encrypted backup file
-      final encryptedBackup = _recoverBullRepository.createBackupJson(
+      final encryptedBackup = _recoverBullRepository.createJsonVault(
         backupKey,
         plaintext,
       );
@@ -79,7 +80,7 @@ class CreateEncryptedVaultUsecase {
       final mapBackup = json.decode(encryptedBackup);
       mapBackup['path'] = derivationPath;
 
-      return json.encode(mapBackup);
+      return EncryptedVault(file: json.encode(mapBackup));
     } catch (e) {
       log.severe('$CreateEncryptedVaultUsecase: $e');
       throw CreateEncryptedVaultException(e.toString());

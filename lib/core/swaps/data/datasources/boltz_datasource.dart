@@ -156,8 +156,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -178,8 +179,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -234,8 +236,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -256,8 +259,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -275,8 +279,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -294,8 +299,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -350,8 +356,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -407,8 +414,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -419,8 +427,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -432,8 +441,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -453,8 +463,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -476,8 +487,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -532,8 +544,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -591,8 +604,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -615,8 +629,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -636,8 +651,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -657,8 +673,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -681,8 +698,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -702,8 +720,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -723,8 +742,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -1190,8 +1210,9 @@ class BoltzDatasource {
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 

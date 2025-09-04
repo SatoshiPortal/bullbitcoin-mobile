@@ -34,23 +34,6 @@ class OnboardingRecoverWalletClicked extends OnboardingEvent {
   mnemonic;
 }
 
-class SelectGoogleDriveRecovery extends OnboardingEvent {
-  const SelectGoogleDriveRecovery();
-}
-
-class SelectFileSystemRecovery extends OnboardingEvent {
-  const SelectFileSystemRecovery();
-}
-
-class StartWalletRecovery extends OnboardingEvent {
-  const StartWalletRecovery({
-    required this.backupKey,
-    required this.backupFile,
-  });
-  final String backupKey;
-  final String backupFile;
-}
-
 class StartTransitioning extends OnboardingEvent {
   const StartTransitioning();
 }

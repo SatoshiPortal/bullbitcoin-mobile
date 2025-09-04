@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
@@ -16,15 +17,15 @@ part 'backup_wallet_event.dart';
 part 'backup_wallet_state.dart';
 
 class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
-  final CreateEncryptedVaultUsecase createEncryptedBackupUsecase;
+  final CreateEncryptedVaultUsecase createEncryptedVaultUsecase;
   final SelectFolderPathUsecase selectFolderPathUsecase;
   final ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase;
-  final FetchLatestGoogleDriveBackupUsecase fetchLatestBackupUsecase;
+  final FetchLatestGoogleDriveVaultUsecase fetchLatestBackupUsecase;
   final DisconnectFromGoogleDriveUsecase disconnectFromGoogleDriveUsecase;
   final SaveToFileSystemUsecase saveToFileSystemUsecase;
   final SaveToGoogleDriveUsecase saveToGoogleDriveUsecase;
   BackupWalletBloc({
-    required this.createEncryptedBackupUsecase,
+    required this.createEncryptedVaultUsecase,
     required this.fetchLatestBackupUsecase,
     required this.connectToGoogleDriveUsecase,
     required this.disconnectFromGoogleDriveUsecase,
@@ -119,16 +120,19 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     try {
       emit(state.copyWith(status: BackupWalletStatus.loading));
 
-      final encryptedBackup = await createEncryptedBackupUsecase.execute();
+      final encryptedVault = await createEncryptedVaultUsecase.execute();
 
-      emit(state.copyWith(backupFile: encryptedBackup));
+      emit(state.copyWith(vault: encryptedVault));
 
       switch (state.vaultProvider) {
         case FileSystem(:final fileAsString):
           if (fileAsString.isEmpty) throw Exception('No file path selected');
-          await saveToFileSystemUsecase.execute(fileAsString, encryptedBackup);
+          await saveToFileSystemUsecase.execute(
+            fileAsString,
+            encryptedVault.toFile(),
+          );
         case GoogleDrive():
-          await saveToGoogleDriveUsecase.execute(encryptedBackup);
+          await saveToGoogleDriveUsecase.execute(encryptedVault.toFile());
         case ICloud():
           throw UnimplementedError('iCloud backup not implemented');
       }

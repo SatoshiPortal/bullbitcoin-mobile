@@ -1,7 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:bb_mobile/features/onboarding/ui/screens/choose_encrypted_vault_provider_screen.dart';
-import 'package:bb_mobile/features/onboarding/ui/screens/fetched_backup_info_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/recover_options.dart';
@@ -80,27 +77,9 @@ class OnboardingRouter {
                 builder: (context, state) => const OnboardingPhysicalRecovery(),
               ),
               GoRoute(
-                name: OnboardingRoute.recoverFromEncrypted.name,
-                path: OnboardingRoute.recoverFromEncrypted.path,
-                builder: (context, state) => const OnboardingPhysicalRecovery(),
-              ),
-              GoRoute(
                 name: OnboardingRoute.recoverOptions.name,
                 path: OnboardingRoute.recoverOptions.path,
                 builder: (context, state) => const OnboardingRecoverOptions(),
-              ),
-              GoRoute(
-                name: OnboardingRoute.retrievedBackupInfo.name,
-                path: OnboardingRoute.retrievedBackupInfo.path,
-                builder: (context, state) {
-                  final backupInfo = state.extra! as BackupInfo;
-                  return FetchedBackupInfoScreen(encryptedInfo: backupInfo);
-                },
-              ),
-              GoRoute(
-                name: OnboardingRoute.chooseRecoverProvider.name,
-                path: OnboardingRoute.chooseRecoverProvider.path,
-                builder: (context, state) => const ChooseVaultProviderScreen(),
               ),
             ],
           ),
