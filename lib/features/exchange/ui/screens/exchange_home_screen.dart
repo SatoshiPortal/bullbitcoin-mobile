@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
@@ -19,6 +20,29 @@ import 'package:sliver_tools/sliver_tools.dart';
 
 class ExchangeHomeScreen extends StatelessWidget {
   const ExchangeHomeScreen({super.key});
+
+  Widget? _buildDcaSubtitle(UserDca dca, BuildContext context) {
+    if (dca.amount == null ||
+        dca.currency == null ||
+        dca.frequency == null ||
+        dca.network == null ||
+        dca.address == null) {
+      return Text(
+        'Unable to get DCA configuration',
+        style: TextStyle(
+          color: context.colour.onSurface.withValues(alpha: 0.6),
+        ),
+      );
+    }
+
+    return ExchangeHomeDcaSettingsLink(
+      amount: dca.amount!,
+      currency: dca.currency!,
+      frequency: dca.frequency!,
+      network: dca.network!,
+      address: dca.address!,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,13 +132,7 @@ class ExchangeHomeScreen extends StatelessWidget {
 
                               subtitle:
                                   hasDcaActive
-                                      ? ExchangeHomeDcaSettingsLink(
-                                        amount: dca!.amount!,
-                                        currency: dca.currency!,
-                                        frequency: dca.frequency!,
-                                        network: dca.network!,
-                                        address: dca.address!,
-                                      )
+                                      ? _buildDcaSubtitle(dca!, context)
                                       : null,
                             ),
                             const Gap(12),
