@@ -10,7 +10,6 @@ sealed class PayEvent with _$PayEvent {
       PayRecipientSelected;
   const factory PayEvent.amountInputContinuePressed({
     required String amountInput,
-    required bool isFiatCurrencyInput,
     required FiatCurrency fiatCurrency,
   }) = PayAmountInputContinuePressed;
   const factory PayEvent.getCadBillers({required String searchTerm}) =

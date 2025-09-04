@@ -61,6 +61,56 @@ sealed class PayState with _$PayState {
   const factory PayState.success({required FiatPaymentOrder payOrder}) =
       PaySuccessState;
   const PayState._();
+
+  FiatCurrency get currency {
+    return when(
+      initial: (_, _, _) => FiatCurrency.cad,
+      amountInput:
+          (userSummary, _) =>
+              userSummary.currency != null
+                  ? FiatCurrency.fromCode(userSummary.currency!)
+                  : FiatCurrency.cad,
+      recipientInput: (_, _, _, currency, _, _, _, _, _, _) => currency,
+      walletSelection: (_, _, _, currency, _, _, _) => currency,
+      externalWalletNetworkSelection: (_, _, _, currency, _, _, _) => currency,
+      payment:
+          (_, _, _, _, _, _, order, _, _, _, _, _, _, _, _) =>
+              FiatCurrency.fromCode(order.payoutCurrency),
+      success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
+    );
+  }
+
+  PayAmountInputState? get cleanPayAmountInputState {
+    return whenOrNull(
+      amountInput:
+          (userSummary, recipients) => PayAmountInputState(
+            userSummary: userSummary,
+            recipients: recipients,
+          ),
+      recipientInput:
+          (userSummary, recipients, _, _, _, _, _, _, _, _) =>
+              PayAmountInputState(
+                userSummary: userSummary,
+                recipients: recipients,
+              ),
+      walletSelection:
+          (userSummary, recipients, _, _, _, _, _) => PayAmountInputState(
+            userSummary: userSummary,
+            recipients: recipients,
+          ),
+      externalWalletNetworkSelection:
+          (userSummary, recipients, _, _, _, _, _) => PayAmountInputState(
+            userSummary: userSummary,
+            recipients: recipients,
+          ),
+      payment:
+          (userSummary, recipients, _, _, _, _, _, _, _, _, _, _, _, _, _) =>
+              PayAmountInputState(
+                userSummary: userSummary,
+                recipients: recipients,
+              ),
+    );
+  }
 }
 
 extension PayInitialStateX on PayInitialState {

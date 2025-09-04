@@ -172,26 +172,15 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   ) async {
     // We should be on a PayAmountInputState or PayRecipientInputState and
     //  return to a clean PayAmountInputState state to change the amount
-    PayAmountInputState amountInputState;
-    switch (state) {
-      case PayAmountInputState _:
-        amountInputState = state as PayAmountInputState;
-      case final PayRecipientInputState recipientInputState:
-        amountInputState = recipientInputState.toAmountInputState();
-      default:
-        // Unexpected state, do nothing
-        return;
+    final amountInputState = state.cleanPayAmountInputState;
+    if (amountInputState == null) {
+      // Unexpected state, do nothing
+      log.severe('Expected to be on PayAmountInputState but on: $state');
+      return;
     }
     emit(amountInputState);
 
-    FiatAmount amount;
-    if (event.isFiatCurrencyInput) {
-      amount = FiatAmount(double.parse(event.amountInput));
-    } else {
-      // For Pay, we only support fiat input, so this shouldn't happen
-      log.severe('Pay only supports fiat currency input');
-      return;
-    }
+    final amount = FiatAmount(double.parse(event.amountInput));
 
     emit(
       amountInputState.toRecipientInputState(

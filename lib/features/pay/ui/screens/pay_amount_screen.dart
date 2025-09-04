@@ -19,7 +19,14 @@ class PayAmountScreen extends StatefulWidget {
 class _PayAmountScreenState extends State<PayAmountScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController = TextEditingController();
-  FiatCurrency? _fiatCurrency;
+  late FiatCurrency _fiatCurrency;
+
+  @override
+  void initState() {
+    super.initState();
+    final bloc = context.read<PayBloc>();
+    _fiatCurrency = bloc.state.currency;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +54,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
               const Gap(24.0),
               PayAmountInputFields(
                 amountController: _amountController,
-                fiatCurrency: _fiatCurrency ?? FiatCurrency.cad,
+                fiatCurrency: _fiatCurrency,
                 onFiatCurrencyChanged: (FiatCurrency fiatCurrency) {
                   setState(() {
                     _fiatCurrency = fiatCurrency;
@@ -59,21 +66,10 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                 label: 'Continue',
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    final payBloc = context.read<PayBloc>();
-                    final payState = payBloc.state;
-                    payBloc.add(
+                    context.read<PayBloc>().add(
                       PayEvent.amountInputContinuePressed(
                         amountInput: _amountController.text,
-                        isFiatCurrencyInput: true, // Always fiat for Pay
-                        fiatCurrency:
-                            _fiatCurrency ??
-                            ((payState is PayAmountInputState)
-                                ? FiatCurrency.fromCode(
-                                  payState.userSummary.currency ?? 'CAD',
-                                )
-                                : payState is PayRecipientInputState
-                                ? payState.currency
-                                : FiatCurrency.cad),
+                        fiatCurrency: _fiatCurrency,
                       ),
                     );
                   }
