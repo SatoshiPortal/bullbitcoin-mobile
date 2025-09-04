@@ -1461,8 +1461,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "334b5402d8b7b80b4736663861f7952020312831"
-      resolved-ref: "334b5402d8b7b80b4736663861f7952020312831"
+      ref: "48b7af3cc6a856d9c1f7fbdb9374071fea11342b"
+      resolved-ref: "48b7af3cc6a856d9c1f7fbdb9374071fea11342b"
       url: "https://github.com/SatoshiPortal/recoverbull-client-dart.git"
     source: git
     version: "1.0.0"
@@ -1745,10 +1745,10 @@ packages:
     source: hosted
     version: "1.0.2"
   tor:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "."
-      ref: "440a2d2207da26683893bf8a2440499f4b43f019"
+      ref: "440a2d2"
       resolved-ref: "440a2d2207da26683893bf8a2440499f4b43f019"
       url: "https://github.com/Foundation-Devices/tor"
     source: git
