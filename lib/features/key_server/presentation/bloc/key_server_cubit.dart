@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_vault_key_from_default_seed_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/check_key_server_connection_usecase.dart';
@@ -27,6 +28,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   final CheckKeyServerConnectionUsecase checkServerConnectionUsecase;
   final CreateVaultKeyFromDefaultSeedUsecase
   createVaultKeyFromDefaultSeedUsecase;
+  final DecryptVaultUsecase decryptVaultUsecase;
 
   KeyServerCubit({
     required this.checkServerConnectionUsecase,
@@ -35,6 +37,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     required this.trashKeyFromServerUsecase,
     required this.deriveBackupKeyFromDefaultWalletUsecase,
     required this.restoreBackupKeyFromPasswordUsecase,
+    required this.decryptVaultUsecase,
   }) : super(const KeyServerState());
 
   void backspaceKey() {
@@ -154,6 +157,11 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     checkVaultIsNotNull();
 
     try {
+      final _ = decryptVaultUsecase.execute(
+        vault: state.vault!,
+        vaultKey: state.vaultKey,
+      );
+
       emit(
         state.copyWith(
           secretStatus: SecretStatus.recovered,
@@ -171,15 +179,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
     checkVaultIsNotNull();
 
-    // try {
-    // if (state.vaultFile.isEmpty) {
-    //   _emitOperationStatus(
-    //     const KeyServerOperationStatus.failure(
-    //       message: 'No backup key found. Please try again.',
-    //     ),
-    //   );
-    //   return;
-    // }
     try {
       emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
 
