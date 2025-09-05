@@ -30,7 +30,10 @@ class ImportWalletPage extends StatelessWidget {
               const Gap(16),
               TabMenuVerticalButton(
                 title: 'Connect Coldcard Q',
-                onTap: () => context.pushNamed(ImportColdcardQRoute.home.name),
+                onTap:
+                    () => context.pushNamed(
+                      ImportColdcardQRoute.importColdcardQ.name,
+                    ),
               ),
               const Gap(16),
               TabMenuVerticalButton(

@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/import_coldcard_q/import_coldcard_q_page.dart
 import 'package:go_router/go_router.dart';
 
 enum ImportColdcardQRoute {
-  home('/import-coldcard-q-home');
+  importColdcardQ('/import-coldcard-q');
 
   final String path;
 
@@ -11,8 +11,8 @@ enum ImportColdcardQRoute {
 
 class ImportColdcardRouter {
   static final route = GoRoute(
-    name: ImportColdcardQRoute.home.name,
-    path: ImportColdcardQRoute.home.path,
+    name: ImportColdcardQRoute.importColdcardQ.name,
+    path: ImportColdcardQRoute.importColdcardQ.path,
     builder: (context, state) => const ImportColdcardQPage(),
   );
 }
