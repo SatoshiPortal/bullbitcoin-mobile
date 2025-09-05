@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum Bip85EntropyRoute {
-  home('/bip85-home');
+  bip85Home('/bip85-home');
 
   final String path;
 
@@ -21,8 +21,8 @@ class Bip85EntropyRouter {
         ),
     routes: [
       GoRoute(
-        name: Bip85EntropyRoute.home.name,
-        path: Bip85EntropyRoute.home.path,
+        name: Bip85EntropyRoute.bip85Home.name,
+        path: Bip85EntropyRoute.bip85Home.path,
         builder: (context, state) => const Bip85HomePage(),
         routes: const [],
       ),
