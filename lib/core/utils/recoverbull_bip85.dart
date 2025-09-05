@@ -26,8 +26,8 @@ class RecoverbullBip85Utils {
 
   static String formatRecoverBullPath(int index) {
     // /!\ The bip85 path should be finished by a single quote /!\
-    // /!\ We keep this typo to ensure vault key derived today are still valid. /!\
-    return "${recoverbullApplication.number}'/0'/$index";
+    // /!\ We keep this typo to ensure encryption keys derived today are still valid with old vaults. /!\
+    return "${recoverbullApplication.number}'/0'/$index"; // <--- this should be $index'
   }
 
   // m/1608'/0'/586053381' -> 0'/586053381
