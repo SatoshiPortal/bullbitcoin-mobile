@@ -25,7 +25,7 @@ abstract class KeyServerState with _$KeyServerState {
     @Default('') String password,
     @Default('') String temporaryPassword,
     @Default('') String vaultKey,
-    @Default('') String vaultFile,
+    @Default(null) EncryptedVault? vault,
     DateTime? lastRequestTime,
     int? cooldownMinutes,
   }) = _KeyServerState;

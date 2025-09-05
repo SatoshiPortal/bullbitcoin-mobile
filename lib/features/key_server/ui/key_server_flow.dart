@@ -227,20 +227,19 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
   void _handleRecoverySuccess(BuildContext context, KeyServerState state) {
     final testWalletBackupState = context.read<TestWalletBackupBloc>().state;
 
+    if (state.vault == null) throw 'Vault is null';
+    final vault = state.vault!;
+
     if (widget.fromOnboarding) {
-      final encryptedVault = EncryptedVault(file: state.vaultFile);
       context.pushNamed(
         RecoverBullVaultRecovery.recoverbullVaultRecovery.name,
-        extra: (backup: encryptedVault, backupKey: state.vaultKey),
+        extra: (backup: vault, backupKey: state.vaultKey),
       );
     } else if (!(testWalletBackupState.status ==
             TestWalletBackupStatus.success) &&
         !widget.fromOnboarding) {
       context.read<TestWalletBackupBloc>().add(
-        StartVaultBackupTesting(
-          vaultKey: state.vaultKey,
-          vault: EncryptedVault(file: state.vaultFile),
-        ),
+        StartVaultBackupTesting(vaultKey: state.vaultKey, vault: vault),
       );
     }
   }

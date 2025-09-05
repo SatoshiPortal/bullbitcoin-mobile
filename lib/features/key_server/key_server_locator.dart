@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_vault_key_from_default_seed_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/key_server/data/services/backup_key_service.dart';
@@ -55,6 +56,7 @@ class KeyServerLocator {
     // Blocs
     locator.registerFactory<KeyServerCubit>(
       () => KeyServerCubit(
+        decryptVaultUsecase: locator<DecryptVaultUsecase>(),
         checkServerConnectionUsecase:
             locator<CheckKeyServerConnectionUsecase>(),
         storeBackupKeyIntoServerUsecase:

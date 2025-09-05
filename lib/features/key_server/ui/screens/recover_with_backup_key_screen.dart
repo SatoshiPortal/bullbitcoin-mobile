@@ -1,57 +1,27 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class RecoverWithBackupKeyScreen extends StatefulWidget {
+class RecoverWithBackupKeyScreen extends StatelessWidget {
   final bool fromOnboarding;
   const RecoverWithBackupKeyScreen({super.key, required this.fromOnboarding});
 
   @override
-  State<RecoverWithBackupKeyScreen> createState() =>
-      _RecoverWithBackupKeyScreenState();
-}
-
-class _RecoverWithBackupKeyScreenState
-    extends State<RecoverWithBackupKeyScreen> {
-  final _controller = TextEditingController();
-  bool _justCopied = false;
-
-  Future<void> _copyWithFeedback() async {
-    await Clipboard.setData(ClipboardData(text: _controller.text));
-    await HapticFeedback.lightImpact();
-    setState(() => _justCopied = true);
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) setState(() => _justCopied = false);
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocListener<KeyServerCubit, KeyServerState>(
-      listener: (context, state) {
-        if (state.status == const KeyServerOperationStatus.success() &&
-            state.vaultKey.isNotEmpty) {
-          _controller.text = state.vaultKey;
-        }
-      },
+      listener: (context, state) {},
       child: BlocBuilder<KeyServerCubit, KeyServerState>(
         builder: (context, state) {
+          final cubit = context.read<KeyServerCubit>();
+
           return Scaffold(
             backgroundColor: context.colour.onSecondary,
             appBar: AppBar(
@@ -61,7 +31,7 @@ class _RecoverWithBackupKeyScreenState
                 title: 'Enter backup key manually',
                 onBack:
                     () =>
-                        widget.fromOnboarding
+                        fromOnboarding
                             ? context.pop()
                             : context.go(WalletRoute.walletHome.path),
               ),
@@ -93,28 +63,17 @@ class _RecoverWithBackupKeyScreenState
                       ),
                     ),
                     const Gap(10),
-                    BBInputText(
-                      controller: _controller,
-                      onChanged:
-                          (e) => context.read<KeyServerCubit>().enterKey(e),
-                      rightIcon: Icon(
-                        _justCopied ? Icons.check_rounded : Icons.copy_rounded,
-                        color:
-                            _justCopied
-                                ? context.colour.inverseSurface
-                                : context.colour.onInverseSurface,
-                      ),
-                      onRightTap: _copyWithFeedback,
-                      value: state.vaultKey,
+                    PasteInput(
+                      text: state.vaultKey,
+                      hint: 'acc8b7b12daf06412f45a90b7fd2…',
+                      onChanged: cubit.updateVaultKey,
                     ),
                     const Spacer(),
-                    if (widget.fromOnboarding)
+                    if (fromOnboarding)
                       const SizedBox.shrink()
                     else
                       GestureDetector(
-                        onTap: () {
-                          context.read<KeyServerCubit>().autoFetchKey();
-                        },
+                        onTap: cubit.autoFetchKey,
                         child: BBText(
                           'Automatically Fetch key >>',
                           style: context.font.bodySmall?.copyWith(
@@ -125,12 +84,7 @@ class _RecoverWithBackupKeyScreenState
                     const Gap(20),
                     BBButton.big(
                       label: 'Decrypt vault',
-                      onPressed:
-                          () => context
-                              .read<KeyServerCubit>()
-                              .updateKeyServerState(
-                                secretStatus: SecretStatus.recovered,
-                              ),
+                      onPressed: cubit.recoverKeyFromVaultKey,
                       bgColor: context.colour.secondary,
                       textColor: context.colour.onSecondary,
                     ),
