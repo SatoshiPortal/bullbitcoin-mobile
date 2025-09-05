@@ -110,10 +110,22 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     updateKeyServerState(vaultKey: value);
   }
 
+  void checkVaultIsNotNull() {
+    if (state.vault != null) return;
+
+    _emitOperationStatus(
+      const KeyServerOperationStatus.failure(
+        message: 'No vault found. Please try again.',
+      ),
+    );
+  }
+
   Future<void> autoFetchKey() async {
+    checkVaultIsNotNull();
+
     try {
       emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
-      final vault = EncryptedVault(file: state.vaultFile);
+      final vault = state.vault!;
       final vaultKey = await createVaultKeyFromDefaultSeedUsecase.execute(
         vault.derivationPath,
       );
@@ -139,6 +151,8 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   Future<void> recoverKeyFromVaultKey() async {
     if (!state.canProceed) return;
 
+    checkVaultIsNotNull();
+
     try {
       emit(
         state.copyWith(
@@ -155,47 +169,34 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   Future<void> recoverKeyFromPassword() async {
     if (!state.canProceed) return;
 
+    checkVaultIsNotNull();
+
+    // try {
+    // if (state.vaultFile.isEmpty) {
+    //   _emitOperationStatus(
+    //     const KeyServerOperationStatus.failure(
+    //       message: 'No backup key found. Please try again.',
+    //     ),
+    //   );
+    //   return;
+    // }
     try {
       emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
 
-      if (state.vaultFile.isEmpty) {
-        _emitOperationStatus(
-          const KeyServerOperationStatus.failure(
-            message: 'No backup key found. Please try again.',
-          ),
-        );
-        return;
-      }
-      try {
-        await checkConnection();
-        final backupKey = await _handleServerOperation(
-          () => restoreBackupKeyFromPasswordUsecase.execute(
-            vault: EncryptedVault(file: state.vaultFile),
-            password: state.password,
-          ),
-          'Recover Key',
-        );
+      await checkConnection();
+      final backupKey = await _handleServerOperation(
+        () => restoreBackupKeyFromPasswordUsecase.execute(
+          vault: state.vault!,
+          password: state.password,
+        ),
+        'Recover Key',
+      );
 
-        if (backupKey.isNotEmpty) {
-          updateKeyServerState(
-            vaultKey: backupKey,
-            secretStatus: SecretStatus.recovered,
-            status: const KeyServerOperationStatus.success(),
-          );
-        }
-      } on KeyServerError catch (e) {
-        emit(
-          state.copyWith(
-            status: KeyServerOperationStatus.failure(message: e.message),
-          ),
-        );
-      } catch (e) {
-        emit(
-          state.copyWith(
-            status: const KeyServerOperationStatus.failure(
-              message: 'Failed to recover key. Please try again.',
-            ),
-          ),
+      if (backupKey.isNotEmpty) {
+        updateKeyServerState(
+          vaultKey: backupKey,
+          secretStatus: SecretStatus.recovered,
+          status: const KeyServerOperationStatus.success(),
         );
       }
     } on KeyServerError catch (e) {
@@ -213,10 +214,29 @@ class KeyServerCubit extends Cubit<KeyServerState> {
         ),
       );
     }
+    // } on KeyServerError catch (e) {
+    //   emit(
+    //     state.copyWith(
+    //       status: KeyServerOperationStatus.failure(message: e.message),
+    //     ),
+    //   );
+    // } catch (e) {
+    //   emit(
+    //     state.copyWith(
+    //       status: const KeyServerOperationStatus.failure(
+    //         message: 'Failed to recover key. Please try again.',
+    //       ),
+    //     ),
+    //   );
+    // }
   }
 
   Future<void> storeKey() async {
-    if (!state.canProceed || !state.arePasswordsMatching) return;
+    if (!state.canProceed ||
+        !state.arePasswordsMatching ||
+        state.vault == null) {
+      return;
+    }
 
     try {
       emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
@@ -224,13 +244,13 @@ class KeyServerCubit extends Cubit<KeyServerState> {
       await checkConnection();
 
       final derivedKey = await deriveBackupKeyFromDefaultWalletUsecase.execute(
-        vault: EncryptedVault(file: state.vaultFile),
+        vault: state.vault!,
       );
 
       await _handleServerOperation(
         () => storeBackupKeyIntoServerUsecase.execute(
           password: state.password,
-          vault: EncryptedVault(file: state.vaultFile),
+          vault: state.vault!,
           vaultKey: derivedKey,
         ),
         'Store Key',
@@ -303,7 +323,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
         vaultKey == state.vaultKey &&
         flow == state.currentFlow &&
         authInputType == state.authInputType &&
-        vault?.toFile() == state.vaultFile) {
+        vault == state.vault) {
       return;
     }
 
@@ -322,7 +342,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
                 : (resetState ? '' : (vaultKey ?? state.vaultKey)),
         currentFlow: flow ?? state.currentFlow,
         authInputType: authInputType ?? state.authInputType,
-        vaultFile: vault?.toFile() ?? state.vaultFile,
+        vault: vault ?? state.vault,
         temporaryPassword: resetState ? '' : state.temporaryPassword,
         secretStatus: secretStatus ?? state.secretStatus,
         status: status ?? state.status, // Don't clear status automatically
