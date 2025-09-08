@@ -62,8 +62,7 @@ abstract class SendState with _$SendState {
     PaymentRequest? paymentRequest,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
-    @Default('') String amount,
-    int? confirmedAmountSat,
+    @Default(0) int confirmedAmountSat,
     BitcoinUnit? bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('CAD') String fiatCurrencyCode,
@@ -173,33 +172,7 @@ abstract class SendState with _$SendState {
         BitcoinUnit.sats.code,
       ].contains(inputAmountCurrencyCode);
 
-  int get inputAmountSat {
-    int amountSat = 0;
-    if (amount.isNotEmpty) {
-      if (isInputAmountFiat) {
-        final amountFiat = double.tryParse(amount) ?? 0;
-        amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
-      } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-        amountSat = int.tryParse(amount) ?? 0;
-      } else {
-        final amountBtc = double.tryParse(amount) ?? 0;
-        amountSat = ConvertAmount.btcToSats(amountBtc);
-      }
-    }
-
-    return amountSat;
-  }
-
-  double get inputAmountBtc => ConvertAmount.satsToBtc(inputAmountSat);
-
-  double get inputAmountFiat {
-    return ConvertAmount.btcToFiat(inputAmountBtc, exchangeRate);
-  }
-
-  double get confirmedAmountBtc =>
-      confirmedAmountSat != null
-          ? ConvertAmount.satsToBtc(confirmedAmountSat!)
-          : 0;
+  double get confirmedAmountBtc => ConvertAmount.satsToBtc(confirmedAmountSat);
 
   double get confirmedAmountFiat {
     return ConvertAmount.btcToFiat(confirmedAmountBtc, exchangeRate);
@@ -214,7 +187,7 @@ abstract class SendState with _$SendState {
     if (bitcoinUnit == null) {
       return '';
     } else if (bitcoinUnit == BitcoinUnit.sats) {
-      return FormatAmount.sats(confirmedAmountSat ?? 0);
+      return FormatAmount.sats(confirmedAmountSat);
     } else {
       return FormatAmount.btc(confirmedAmountBtc);
     }
@@ -234,17 +207,34 @@ abstract class SendState with _$SendState {
     return FormatAmount.fiat(confirmedAmountFiat, fiatCurrencyCode);
   }
 
-  String get formattedAmountInputEquivalent {
+  String convertAmountInput(String inputAmount) {
     if (isInputAmountFiat) {
       // If the input is in fiat, the equivalent should be in bitcoin
+
       if (bitcoinUnit == null) {
         return '';
-      } else if (bitcoinUnit == BitcoinUnit.sats) {
+      }
+      final inputAmountFiat = double.tryParse(inputAmount) ?? 0;
+      final inputAmountSat = ConvertAmount.fiatToSats(
+        inputAmountFiat,
+        exchangeRate,
+      );
+
+      if (bitcoinUnit == BitcoinUnit.sats) {
         return FormatAmount.sats(inputAmountSat);
       } else {
+        final inputAmountBtc = ConvertAmount.satsToBtc(inputAmountSat);
         return FormatAmount.btc(inputAmountBtc);
       }
     } else {
+      final inputAmountBtc =
+          bitcoinUnit == BitcoinUnit.sats
+              ? ConvertAmount.satsToBtc(int.tryParse(inputAmount) ?? 0)
+              : double.tryParse(inputAmount) ?? 0;
+      final inputAmountFiat = ConvertAmount.btcToFiat(
+        inputAmountBtc,
+        exchangeRate,
+      );
       return FormatAmount.fiat(inputAmountFiat, fiatCurrencyCode);
     }
   }
@@ -298,11 +288,13 @@ abstract class SendState with _$SendState {
     }
   }
 
-  bool get walletHasBalance =>
+  /*bool get walletHasBalance =>
       // ignore: avoid_bool_literals_in_conditional_expressions
       selectedWallet == null
           ? false
-          : inputAmountSat <= selectedWallet!.balanceSat.toInt();
+          : confirmedAmountSat <= selectedWallet!.balanceSat.toInt();*/
+
+  int get walletBalanceSat => selectedWallet?.balanceSat.toInt() ?? 0;
 
   String sendTypeName() {
     switch (sendType) {
@@ -320,21 +312,20 @@ abstract class SendState with _$SendState {
       isLightning && selectedWallet!.network.isBitcoin;
 
   bool get swapAmountBelowLimit {
-    if (isLightning && inputAmountSat != 0) {
-      return selectedSwapLimits != null &&
-          inputAmountSat < selectedSwapLimits!.min;
+    final swapAmount = confirmedAmountSat;
+    if (isLightning && swapAmount != 0) {
+      return selectedSwapLimits != null && swapAmount < selectedSwapLimits!.min;
     }
-    if (requireChainSwap && inputAmountSat != 0) {
-      return selectedSwapLimits != null &&
-          inputAmountSat < selectedSwapLimits!.min;
+    if (requireChainSwap && swapAmount != 0) {
+      return selectedSwapLimits != null && swapAmount < selectedSwapLimits!.min;
     }
     return false;
   }
 
   bool get swapAmountAboveLimit {
+    final swapAmount = confirmedAmountSat;
     if (isLightning) {
-      return selectedSwapLimits != null &&
-          inputAmountSat > selectedSwapLimits!.max;
+      return selectedSwapLimits != null && swapAmount > selectedSwapLimits!.max;
     }
     return false;
   }
@@ -343,7 +334,7 @@ abstract class SendState with _$SendState {
       isLightning ||
       requireChainSwap &&
           (selectedSwapLimits == null ||
-              inputAmountSat == 0 ||
+              confirmedAmountSat == 0 ||
               swapAmountBelowLimit ||
               swapAmountAboveLimit);
 
@@ -416,8 +407,6 @@ abstract class SendState with _$SendState {
           : selectedWallet!.isLiquid
           ? false
           : true;
-
-  String get displayAmount => sendMax ? 'MAX' : amount;
 }
 
 extension SendStateFeePercent on SendState {
@@ -429,7 +418,7 @@ extension SendStateFeePercent on SendState {
       return chainSwap!.getFeeAsPercentOfAmount();
     }
     final fee = absoluteFees ?? 0;
-    final amount = confirmedAmountSat ?? 0;
+    final amount = confirmedAmountSat;
     if (fee == 0 || amount == 0) return 0.0;
     return calculatePercentage(amount, fee);
   }

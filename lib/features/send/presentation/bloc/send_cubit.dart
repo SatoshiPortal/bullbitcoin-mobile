@@ -313,7 +313,9 @@ class SendCubit extends Cubit<SendState> {
         }
         //
         emit(
-          state.copyWith(confirmedAmountSat: state.paymentRequest!.amountSat),
+          state.copyWith(
+            confirmedAmountSat: state.paymentRequest!.amountSat ?? 0,
+          ),
         );
         await handleChainSwap();
         if (state.swapAmountAboveLimit ||
@@ -326,7 +328,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             step: SendStep.confirm,
-            confirmedAmountSat: state.paymentRequest!.amountSat,
+            confirmedAmountSat: state.paymentRequest!.amountSat ?? 0,
           ),
         );
         return;
@@ -399,7 +401,7 @@ class SendCubit extends Cubit<SendState> {
             state.copyWith(
               step: SendStep.confirm,
               lightningSwap: swap,
-              confirmedAmountSat: state.paymentRequest!.amountSat,
+              confirmedAmountSat: state.paymentRequest!.amountSat ?? 0,
               creatingSwap: false,
             ),
           );
@@ -498,7 +500,7 @@ class SendCubit extends Cubit<SendState> {
         }
         emit(state.copyWith(creatingSwap: true));
         final amountSat =
-            state.paymentRequest!.amountSat ?? state.inputAmountSat;
+            state.paymentRequest!.amountSat ?? state.confirmedAmountSat;
         final swap = await _createChainSwapToExternalUsecase.execute(
           sendWalletId: state.selectedWallet!.id,
           receiveAddress:
@@ -530,7 +532,7 @@ class SendCubit extends Cubit<SendState> {
     }
     emit(
       state.copyWith(
-        confirmedAmountSat: state.paymentRequest!.amountSat,
+        confirmedAmountSat: state.paymentRequest!.amountSat ?? 0,
         step: SendStep.confirm,
         loadingBestWallet: false,
       ),
@@ -654,7 +656,7 @@ class SendCubit extends Cubit<SendState> {
         return wallet.balanceSat.toInt() > totalPayable;
 
       case LnAddressPaymentRequest _:
-        final invoiceAmount = state.inputAmountSat;
+        final invoiceAmount = state.confirmedAmountSat;
         final feeEstimate =
             state.selectedSwapFees?.totalFees(invoiceAmount) ?? 0;
         final totalPayable = invoiceAmount + feeEstimate;
@@ -662,7 +664,7 @@ class SendCubit extends Cubit<SendState> {
 
       default:
         return wallet.balanceSat.toInt() >=
-            (state.inputAmountSat + (state.absoluteFees ?? 0));
+            (state.confirmedAmountSat + (state.absoluteFees ?? 0));
     }
   }
 
@@ -687,55 +689,6 @@ class SendCubit extends Cubit<SendState> {
         inputAmountCurrencyCode: bitcoinUnit.code,
       ),
     );
-  }
-
-  Future<void> amountChanged(String amount) async {
-    try {
-      clearAllExceptions();
-      String validatedAmount;
-
-      if (amount.isEmpty) {
-        validatedAmount = amount;
-      } else if (state.isInputAmountFiat) {
-        final amountFiat = double.tryParse(amount);
-        final isDecimalPoint = amount == '.';
-
-        validatedAmount =
-            amountFiat == null && !isDecimalPoint ? state.amount : amount;
-      } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-        // If the amount is in sats, make sure it is a valid BigInt and do not
-        //  allow a decimal point.
-        final amountSats = BigInt.tryParse(amount);
-        final hasDecimals = amount.contains('.');
-
-        validatedAmount =
-            amountSats == null ||
-                    hasDecimals ||
-                    amountSats > ConversionConstants.maxSatsAmount
-                ? state.amount
-                : amountSats.toString();
-      } else {
-        // If the amount is in BTC, make sure it is a valid double and
-        //  do not allow more than 8 decimal places.
-        final amountBtc = double.tryParse(amount);
-        final decimals = amount.split('.').last.length;
-        final isDecimalPoint = amount == '.';
-
-        validatedAmount =
-            (amountBtc == null && !isDecimalPoint) ||
-                    decimals > BitcoinUnit.btc.decimals ||
-                    (amountBtc != null &&
-                        amountBtc >
-                            ConversionConstants.maxBitcoinAmount.toDouble())
-                ? state.amount
-                : amount;
-      }
-
-      emit(state.copyWith(amount: validatedAmount, sendMax: false));
-      await updateBestWallet();
-    } catch (e) {
-      emit(state.copyWith(error: e.toString()));
-    }
   }
 
   Future<void> onCurrencyChanged(String currencyCode) async {
@@ -766,7 +719,7 @@ class SendCubit extends Cubit<SendState> {
         inputAmountCurrencyCode: currencyCode,
         fiatCurrencyCode: fiatCurrencyCode,
         exchangeRate: exchangeRate,
-        amount: '', // Clear the amount when changing the currency
+        confirmedAmountSat: 0, // Clear the amount when changing the currency
       ),
     );
   }
@@ -786,7 +739,7 @@ class SendCubit extends Cubit<SendState> {
           _bestWalletUsecase.execute(
             wallets: state.wallets,
             request: state.paymentRequest!,
-            amountSat: state.inputAmountSat,
+            amountSat: state.confirmedAmountSat,
           );
       emit(
         state.copyWith(
@@ -814,19 +767,29 @@ class SendCubit extends Cubit<SendState> {
   void onMaxPressed() {
     if (state.selectedWallet == null) return;
     clearAllExceptions();
-    emit(state.copyWith(amount: '0', sendMax: true));
+    emit(state.copyWith(confirmedAmountSat: 0, sendMax: true));
   }
 
   void noteChanged(String note) => emit(state.copyWith(label: note));
 
-  Future<void> onAmountConfirmed() async {
+  Future<void> onAmountConfirmed(String amount) async {
     clearAllExceptions();
-    emit(
-      state.copyWith(
-        amountConfirmedClicked: true,
-        confirmedAmountSat: state.inputAmountSat,
-      ),
-    );
+    emit(state.copyWith(amountConfirmedClicked: true));
+
+    int amountSat = 0;
+    if (amount.isNotEmpty) {
+      if (state.isInputAmountFiat) {
+        final amountFiat = double.tryParse(amount) ?? 0;
+        amountSat = ConvertAmount.fiatToSats(amountFiat, state.exchangeRate);
+      } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+        amountSat = int.tryParse(amount) ?? 0;
+      } else {
+        final amountBtc = double.tryParse(amount) ?? 0;
+        amountSat = ConvertAmount.btcToSats(amountBtc);
+      }
+    }
+
+    emit(state.copyWith(confirmedAmountSat: amountSat));
 
     if (state.sendType == SendType.lightning) {
       if (state.selectedSwapLimits == null) {
@@ -838,6 +801,8 @@ class SendCubit extends Cubit<SendState> {
               ? SwapType.liquidToLightning
               : SwapType.bitcoinToLightning;
 
+      // TODO: We should move these checks, which are business rules or technical depending on the concrete
+      //  implementation of the swap provider, to the domain layer so that we can test them in use cases.
       if (state.swapAmountBelowLimit) {
         emit(
           state.copyWith(
@@ -921,12 +886,7 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
     if (state.buildTransactionException == null) {
-      emit(
-        state.copyWith(
-          step: SendStep.confirm,
-          confirmedAmountSat: state.inputAmountSat,
-        ),
-      );
+      emit(state.copyWith(step: SendStep.confirm));
     } else {
       emit(state.copyWith(amountConfirmedClicked: false));
     }
@@ -1045,19 +1005,7 @@ class SendCubit extends Cubit<SendState> {
           final maxAmountSat =
               state.selectedWallet!.balanceSat.toInt() -
               (state.absoluteFees ?? 0);
-          // convert to btc or fiat based on selected currency
-          final maxAmount =
-              state.bitcoinUnit == BitcoinUnit.btc
-                  ? ConvertAmount.satsToBtc(maxAmountSat)
-                  : state.isInputAmountFiat
-                  ? ConvertAmount.satsToFiat(maxAmountSat, state.exchangeRate)
-                  : maxAmountSat;
-          emit(
-            state.copyWith(
-              amount: maxAmount.toString(),
-              confirmedAmountSat: state.inputAmountSat,
-            ),
-          );
+          emit(state.copyWith(confirmedAmountSat: maxAmountSat));
         }
       } else {
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
@@ -1099,18 +1047,7 @@ class SendCubit extends Cubit<SendState> {
           final maxAmountSat =
               state.selectedWallet!.balanceSat.toInt() -
               (state.absoluteFees ?? 0);
-          final maxAmount =
-              state.bitcoinUnit == BitcoinUnit.btc
-                  ? ConvertAmount.satsToBtc(maxAmountSat)
-                  : state.isInputAmountFiat
-                  ? ConvertAmount.satsToFiat(maxAmountSat, state.exchangeRate)
-                  : maxAmountSat;
-          emit(
-            state.copyWith(
-              amount: maxAmount.toString(),
-              confirmedAmountSat: state.inputAmountSat,
-            ),
-          );
+          emit(state.copyWith(confirmedAmountSat: maxAmountSat));
         }
       }
     } catch (e) {
@@ -1166,7 +1103,7 @@ class SendCubit extends Cubit<SendState> {
             isTestnet: state.selectedWallet!.network.isTestnet,
             bip21: paymentRequest.uri,
             unsignedOriginalPsbt: state.unsignedPsbt!,
-            amountSat: state.confirmedAmountSat!,
+            amountSat: state.confirmedAmountSat,
             networkFeesSatPerVb:
                 state.selectedFee!.isRelative
                     ? state.selectedFee!.value as double
@@ -1320,7 +1257,7 @@ class SendCubit extends Cubit<SendState> {
           bitcoinUnit: BitcoinUnit.fromCode(currencyCode),
           inputAmountCurrencyCode: currencyCode,
           fiatCurrencyCode: 'CAD',
-          amount: '0',
+          confirmedAmountSat: 0,
         ),
       );
       return;
@@ -1330,7 +1267,7 @@ class SendCubit extends Cubit<SendState> {
       state.copyWith(
         fiatCurrencyCode: currencyCode,
         inputAmountCurrencyCode: currencyCode,
-        amount: '0',
+        confirmedAmountSat: 0,
       ),
     );
     // await updateFiatApproximatedAmount();
@@ -1342,20 +1279,6 @@ class SendCubit extends Cubit<SendState> {
     );
 
     emit(state.copyWith(exchangeRate: exchangeRate));
-  }
-
-  void onNumberPressed(String n) {
-    amountChanged(state.amount + n);
-    // updateFiatApproximatedAmount();
-  }
-
-  void onBackspacePressed() {
-    if (state.amount.isEmpty) return;
-
-    final newAmount = state.amount.substring(0, state.amount.length - 1);
-    emit(state.copyWith(amount: newAmount));
-
-    // updateFiatApproximatedAmount();
   }
 
   void _watchSendSwap(String swapId) {
@@ -1438,7 +1361,7 @@ class SendCubit extends Cubit<SendState> {
       if (swapLimits == null) return;
       if (state.selectedFee == null) await loadFees();
       final networkFee = state.selectedFee!;
-      int absoluteFees;
+      int absoluteFeesSat;
       if (state.selectedWallet!.isLiquid) {
         const String dummySwapAddress =
             "lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24";
@@ -1448,10 +1371,10 @@ class SendCubit extends Cubit<SendState> {
           networkFee: networkFee,
           drain: true,
         );
-        absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
+        absoluteFeesSat = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: dummyPset,
         );
-        emit(state.copyWith(liquidAbsoluteFees: absoluteFees));
+        emit(state.copyWith(liquidAbsoluteFees: absoluteFeesSat));
       } else {
         const String dummySwapAddress =
             "bc1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskq9pj5n4";
@@ -1461,21 +1384,17 @@ class SendCubit extends Cubit<SendState> {
           networkFee: networkFee,
           drain: true,
         );
-        absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
+        absoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: dummyDrainTxInfo.unsignedPsbt,
           feeRate: networkFee.value as double,
         );
         emit(state.copyWith(bitcoinTxSize: dummyDrainTxInfo.txSize));
       }
-      final balance = state.selectedWallet!.balanceSat.toInt();
-      final maxAmount = balance - absoluteFees;
-      if (state.bitcoinUnit == BitcoinUnit.sats) {
-        emit(state.copyWith(amount: maxAmount.toString()));
-      } else {
-        final validatedAmount = ConvertAmount.satsToBtc(maxAmount);
-        emit(state.copyWith(amount: validatedAmount.toString()));
-      }
-      if (swapLimits.min > maxAmount) {
+      final balanceSat = state.selectedWallet!.balanceSat.toInt();
+      final maxAmountSat = balanceSat - absoluteFeesSat;
+      emit(state.copyWith(confirmedAmountSat: maxAmountSat));
+
+      if (swapLimits.min > maxAmountSat) {
         emit(
           state.copyWith(
             swapLimitsException: SwapLimitsException(
@@ -1485,7 +1404,7 @@ class SendCubit extends Cubit<SendState> {
         );
         return;
       }
-      if (swapLimits.max < maxAmount) {
+      if (swapLimits.max < maxAmountSat) {
         emit(
           state.copyWith(
             swapLimitsException: SwapLimitsException(

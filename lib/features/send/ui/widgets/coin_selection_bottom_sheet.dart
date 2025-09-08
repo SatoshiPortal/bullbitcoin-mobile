@@ -38,7 +38,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
             ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
             : FormatAmount.sats(selectedUtxoTotalSat);
     final amountToSendSat = context.select(
-      (SendCubit send) => send.state.confirmedAmountSat ?? 0,
+      (SendCubit send) => send.state.confirmedAmountSat,
     );
     final amountToSend =
         bitcoinUnit == BitcoinUnit.btc
