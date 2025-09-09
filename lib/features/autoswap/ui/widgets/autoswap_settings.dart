@@ -87,6 +87,8 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
                           const Gap(16),
                           _FeeThresholdField(),
                           const Gap(16),
+                          _WalletSelectionDropdown(),
+                          const Gap(16),
                           _AlwaysBlockToggle(),
                           const Gap(32),
                           _SaveButton(),
@@ -402,32 +404,156 @@ class _AlwaysBlockToggle extends StatelessWidget {
   }
 }
 
+class _WalletSelectionDropdown extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final availableWallets = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.availableBitcoinWallets,
+    );
+    final selectedWalletId = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.selectedBitcoinWalletId,
+    );
+    final enabled = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            BBText(
+              'Recipient Bitcoin Wallet',
+              style: context.font.bodyLarge?.copyWith(
+                color: context.colour.secondary,
+              ),
+            ),
+            if (enabled) ...[
+              const Gap(4),
+              BBText(
+                '*',
+                style: context.font.bodyLarge?.copyWith(
+                  color: context.colour.error,
+                ),
+              ),
+            ],
+          ],
+        ),
+        const Gap(8),
+        DropdownButtonFormField<String>(
+          value: selectedWalletId,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color:
+                    enabled && selectedWalletId == null
+                        ? context.colour.error
+                        : context.colour.surfaceContainer,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color:
+                    enabled && selectedWalletId == null
+                        ? context.colour.error
+                        : context.colour.surfaceContainer,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color:
+                    enabled && selectedWalletId == null
+                        ? context.colour.error
+                        : context.colour.primary,
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+          ),
+          hint: BBText(
+            enabled ? 'Select a Bitcoin wallet *' : 'Select a Bitcoin wallet',
+            style: context.font.bodyMedium?.copyWith(
+              color:
+                  enabled && selectedWalletId == null
+                      ? context.colour.error
+                      : context.colour.surfaceContainer,
+            ),
+          ),
+          items:
+              availableWallets.map((wallet) {
+                return DropdownMenuItem<String>(
+                  value: wallet.id,
+                  child: BBText(
+                    wallet.label ?? 'Bitcoin Wallet',
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.colour.secondary,
+                    ),
+                  ),
+                );
+              }).toList(),
+          onChanged: (walletId) {
+            context.read<AutoSwapSettingsCubit>().onWalletSelected(walletId);
+          },
+        ),
+        const Gap(4),
+        BBText(
+          'Choose which Bitcoin wallet will receive the swapped funds (required)',
+
+          style: context.font.labelSmall?.copyWith(
+            color:
+                enabled && selectedWalletId == null
+                    ? context.colour.error
+                    : context.colour.surfaceContainer,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _SaveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final saving = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.saving,
     );
+    final enabled = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
+    );
+    final selectedWalletId = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.selectedBitcoinWalletId,
+    );
+
+    final isDisabled = saving || (enabled && selectedWalletId == null);
 
     return BBButton.big(
       label: 'Save',
-      disabled: saving,
-      onPressed: () async {
-        try {
-          await context.read<AutoSwapSettingsCubit>().updateSettings();
-        } catch (e) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: BBText(
-                  'Failed to save settings: $e',
-                  style: context.font.bodyMedium,
-                ),
-              ),
-            );
-          }
-        }
-      },
+      disabled: isDisabled,
+      onPressed:
+          isDisabled
+              ? () {}
+              : () {
+                context
+                    .read<AutoSwapSettingsCubit>()
+                    .updateSettings()
+                    .catchError((e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: BBText(
+                              'Failed to save settings: $e',
+                              style: context.font.bodyMedium,
+                            ),
+                          ),
+                        );
+                      }
+                    });
+              },
       bgColor: context.colour.secondary,
       textStyle: context.font.headlineLarge,
       textColor: context.colour.onSecondary,

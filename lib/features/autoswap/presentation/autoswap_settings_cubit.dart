@@ -6,6 +6,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usec
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,6 +19,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
   final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
+  final WalletRepository _walletRepository;
 
   static const int _minimumAmountThresholdSats = 50000;
   static const int _maximumFeeThreshold = 10;
@@ -25,9 +28,11 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
     required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
     required SaveAutoSwapSettingsUsecase saveAutoSwapSettingsUsecase,
     required GetSettingsUsecase getSettingsUsecase,
+    required WalletRepository walletRepository,
   }) : _getAutoSwapSettingsUsecase = getAutoSwapSettingsUsecase,
        _saveAutoSwapSettingsUsecase = saveAutoSwapSettingsUsecase,
        _getSettingsUsecase = getSettingsUsecase,
+       _walletRepository = walletRepository,
        super(const AutoSwapSettingsState());
 
   Future<void> loadSettings() async {
@@ -38,6 +43,13 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
         isTestnet: isTestnet,
       );
+
+      // Load Bitcoin wallets for selection
+      final environment = isTestnet ? Environment.testnet : Environment.mainnet;
+      final allWallets = await _walletRepository.getWallets(
+        environment: environment,
+      );
+      final bitcoinWallets = allWallets.where((w) => !w.isLiquid).toList();
 
       String amountThresholdInput;
       if (settings.bitcoinUnit == BitcoinUnit.btc) {
@@ -59,6 +71,8 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           enabledToggle: autoSwapSettings.enabled,
           alwaysBlock: autoSwapSettings.alwaysBlock,
           bitcoinUnit: settings.bitcoinUnit,
+          availableBitcoinWallets: bitcoinWallets,
+          selectedBitcoinWalletId: autoSwapSettings.recipientWalletId,
         ),
       );
     } catch (e) {
@@ -77,6 +91,17 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       emit(state.copyWith(saving: true, error: null, successfullySaved: false));
       final settings = await _getSettingsUsecase.execute();
       final isTestnet = settings.environment == Environment.testnet;
+
+      // Validate recipient wallet selection if auto swap is enabled
+      if (state.enabledToggle && state.selectedBitcoinWalletId == null) {
+        emit(
+          state.copyWith(
+            saving: false,
+            error: 'Please select a recipient Bitcoin wallet',
+          ),
+        );
+        return;
+      }
 
       // Convert amount based on unit
       int balanceThresholdSats;
@@ -115,6 +140,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           balanceThresholdSats: balanceThresholdSats,
           feeThresholdPercent: feeThreshold,
           alwaysBlock: state.alwaysBlock,
+          recipientWalletId: state.selectedBitcoinWalletId,
         ),
         isTestnet: isTestnet,
       );
@@ -175,5 +201,14 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
 
   void onAlwaysBlockToggleChanged(bool value) {
     emit(state.copyWith(alwaysBlock: value));
+  }
+
+  void onWalletSelected(String? walletId) {
+    emit(
+      state.copyWith(
+        selectedBitcoinWalletId: walletId,
+        error: null, // Clear any previous error when wallet is selected
+      ),
+    );
   }
 }
