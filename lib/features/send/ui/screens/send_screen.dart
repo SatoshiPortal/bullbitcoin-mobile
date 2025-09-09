@@ -275,6 +275,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
       ),
     );
     _amountFocusNode = FocusNode();
+    _amountController.addListener(() {
+      final text = _amountController.text;
+      if (text != context.read<SendCubit>().state.displayAmount) {
+        context.read<SendCubit>().amountChanged(text);
+      }
+    });
   }
 
   @override
