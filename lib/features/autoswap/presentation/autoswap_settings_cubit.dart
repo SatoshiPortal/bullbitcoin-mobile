@@ -193,6 +193,78 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
 
   void onEnabledToggleChanged(bool value) {
     emit(state.copyWith(enabledToggle: value));
+
+    // Auto-save and close when disabled
+    if (!value) {
+      _autoSaveDisabledSettings();
+    }
+  }
+
+  Future<void> _autoSaveDisabledSettings() async {
+    try {
+      emit(state.copyWith(saving: true, error: null, successfullySaved: false));
+      final settings = await _getSettingsUsecase.execute();
+      final isTestnet = settings.environment == Environment.testnet;
+
+      // Convert amount based on unit
+      int balanceThresholdSats;
+      if (settings.bitcoinUnit == BitcoinUnit.btc) {
+        final btcAmount =
+            double.tryParse(state.amountThresholdInput ?? '0') ?? 0;
+        balanceThresholdSats = ConvertAmount.btcToSats(btcAmount);
+      } else {
+        balanceThresholdSats =
+            int.tryParse(state.amountThresholdInput ?? '0') ?? 0;
+      }
+
+      // Validate minimum amount threshold
+      if (balanceThresholdSats < _minimumAmountThresholdSats) {
+        final exception = MinimumAmountThresholdException(
+          _minimumAmountThresholdSats,
+          settings.bitcoinUnit,
+        );
+        emit(state.copyWith(saving: false, amountThresholdError: exception));
+        return;
+      }
+
+      // Validate fee threshold
+      final feeThreshold =
+          double.tryParse(state.feeThresholdInput ?? '3.0') ?? 3.0;
+      if (feeThreshold > _maximumFeeThreshold) {
+        final exception = MaximumFeeThresholdException(_maximumFeeThreshold);
+        emit(state.copyWith(saving: false, feeThresholdError: exception));
+        return;
+      }
+
+      await _saveAutoSwapSettingsUsecase.execute(
+        AutoSwap(
+          enabled: false, // Always false for auto-save when disabled
+          balanceThresholdSats: balanceThresholdSats,
+          feeThresholdPercent: feeThreshold,
+          alwaysBlock: state.alwaysBlock,
+          recipientWalletId: state.selectedBitcoinWalletId,
+        ),
+        isTestnet: isTestnet,
+      );
+
+      emit(
+        state.copyWith(
+          saving: false,
+          successfullySaved: true,
+          amountThresholdError: null,
+          feeThresholdError: null,
+        ),
+      );
+    } catch (e) {
+      log.severe('Error auto-saving disabled auto swap settings: $e');
+      emit(
+        state.copyWith(
+          saving: false,
+          error: 'Failed to save settings',
+          successfullySaved: false,
+        ),
+      );
+    }
   }
 
   void onInfoToggleChanged() {

@@ -416,6 +416,9 @@ class _WalletSelectionDropdown extends StatelessWidget {
     final enabled = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
     );
+    final showInfo = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.showInfo,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -500,17 +503,18 @@ class _WalletSelectionDropdown extends StatelessWidget {
             context.read<AutoSwapSettingsCubit>().onWalletSelected(walletId);
           },
         ),
-        const Gap(4),
-        BBText(
-          'Choose which Bitcoin wallet will receive the swapped funds (required)',
-
-          style: context.font.labelSmall?.copyWith(
-            color:
-                enabled && selectedWalletId == null
-                    ? context.colour.error
-                    : context.colour.surfaceContainer,
+        if (showInfo) ...[
+          const Gap(4),
+          BBText(
+            'Choose which Bitcoin wallet will receive the swapped funds (required)',
+            style: context.font.labelSmall?.copyWith(
+              color:
+                  enabled && selectedWalletId == null
+                      ? context.colour.error
+                      : context.colour.surfaceContainer,
+            ),
           ),
-        ),
+        ],
       ],
     );
   }
@@ -529,7 +533,8 @@ class _SaveButton extends StatelessWidget {
       (AutoSwapSettingsCubit cubit) => cubit.state.selectedBitcoinWalletId,
     );
 
-    final isDisabled = saving || (enabled && selectedWalletId == null);
+    final isDisabled =
+        saving || !enabled || (enabled && selectedWalletId == null);
 
     return BBButton.big(
       label: 'Save',
