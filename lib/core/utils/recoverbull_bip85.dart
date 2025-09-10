@@ -25,16 +25,25 @@ class RecoverbullBip85Utils {
   }
 
   static String formatRecoverBullPath(int index) {
-    return "${recoverbullApplication.number}'/0'/$index'";
+    // /!\ The bip85 path should be finished by a single quote /!\
+    // /!\ We keep this typo to ensure encryption keys derived today are still valid with old vaults. /!\
+    return "${recoverbullApplication.number}'/0'/$index"; // <--- this should be $index'
+  }
+
+  // m/1608'/0'/586053381' -> 0'/586053381
+  // 1608'/0'/586053381' -> 0'/586053381
+  static String clearPathFromPrefixAndAppNumber(String path) {
+    return path
+        .replaceAll("m/", "")
+        .replaceAll("${recoverbullApplication.number}'/", "");
   }
 
   static String deriveBackupKey(String xprv, String path) {
-    final index = findIndex(path);
-    final formattedPath = formatRecoverBullPath(index);
+    final clearedPath = clearPathFromPrefixAndAppNumber(path);
     final derivation = bip85.Bip85Entropy.derive(
       xprvBase58: xprv,
       application: recoverbullApplication,
-      path: formattedPath,
+      path: clearedPath,
     );
     final octets32 = derivation.sublist(0, 32);
     return HEX.encode(octets32);
