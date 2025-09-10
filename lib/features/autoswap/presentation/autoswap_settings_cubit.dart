@@ -6,6 +6,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usec
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,6 +19,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
   final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
+  final WalletRepository _walletRepository;
 
   static const int _minimumAmountThresholdSats = 50000;
   static const int _maximumFeeThreshold = 10;
@@ -25,9 +28,11 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
     required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
     required SaveAutoSwapSettingsUsecase saveAutoSwapSettingsUsecase,
     required GetSettingsUsecase getSettingsUsecase,
+    required WalletRepository walletRepository,
   }) : _getAutoSwapSettingsUsecase = getAutoSwapSettingsUsecase,
        _saveAutoSwapSettingsUsecase = saveAutoSwapSettingsUsecase,
        _getSettingsUsecase = getSettingsUsecase,
+       _walletRepository = walletRepository,
        super(const AutoSwapSettingsState());
 
   Future<void> loadSettings() async {
@@ -38,6 +43,13 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
         isTestnet: isTestnet,
       );
+
+      // Load Bitcoin wallets for selection
+      final environment = isTestnet ? Environment.testnet : Environment.mainnet;
+      final allWallets = await _walletRepository.getWallets(
+        environment: environment,
+      );
+      final bitcoinWallets = allWallets.where((w) => !w.isLiquid).toList();
 
       String amountThresholdInput;
       if (settings.bitcoinUnit == BitcoinUnit.btc) {
@@ -59,6 +71,8 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           enabledToggle: autoSwapSettings.enabled,
           alwaysBlock: autoSwapSettings.alwaysBlock,
           bitcoinUnit: settings.bitcoinUnit,
+          availableBitcoinWallets: bitcoinWallets,
+          selectedBitcoinWalletId: autoSwapSettings.recipientWalletId,
         ),
       );
     } catch (e) {
@@ -77,6 +91,17 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       emit(state.copyWith(saving: true, error: null, successfullySaved: false));
       final settings = await _getSettingsUsecase.execute();
       final isTestnet = settings.environment == Environment.testnet;
+
+      // Validate recipient wallet selection if auto swap is enabled
+      if (state.enabledToggle && state.selectedBitcoinWalletId == null) {
+        emit(
+          state.copyWith(
+            saving: false,
+            error: 'Please select a recipient Bitcoin wallet',
+          ),
+        );
+        return;
+      }
 
       // Convert amount based on unit
       int balanceThresholdSats;
@@ -115,6 +140,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           balanceThresholdSats: balanceThresholdSats,
           feeThresholdPercent: feeThreshold,
           alwaysBlock: state.alwaysBlock,
+          recipientWalletId: state.selectedBitcoinWalletId,
         ),
         isTestnet: isTestnet,
       );
@@ -167,6 +193,78 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
 
   void onEnabledToggleChanged(bool value) {
     emit(state.copyWith(enabledToggle: value));
+
+    // Auto-save and close when disabled
+    if (!value) {
+      _autoSaveDisabledSettings();
+    }
+  }
+
+  Future<void> _autoSaveDisabledSettings() async {
+    try {
+      emit(state.copyWith(saving: true, error: null, successfullySaved: false));
+      final settings = await _getSettingsUsecase.execute();
+      final isTestnet = settings.environment == Environment.testnet;
+
+      // Convert amount based on unit
+      int balanceThresholdSats;
+      if (settings.bitcoinUnit == BitcoinUnit.btc) {
+        final btcAmount =
+            double.tryParse(state.amountThresholdInput ?? '0') ?? 0;
+        balanceThresholdSats = ConvertAmount.btcToSats(btcAmount);
+      } else {
+        balanceThresholdSats =
+            int.tryParse(state.amountThresholdInput ?? '0') ?? 0;
+      }
+
+      // Validate minimum amount threshold
+      if (balanceThresholdSats < _minimumAmountThresholdSats) {
+        final exception = MinimumAmountThresholdException(
+          _minimumAmountThresholdSats,
+          settings.bitcoinUnit,
+        );
+        emit(state.copyWith(saving: false, amountThresholdError: exception));
+        return;
+      }
+
+      // Validate fee threshold
+      final feeThreshold =
+          double.tryParse(state.feeThresholdInput ?? '3.0') ?? 3.0;
+      if (feeThreshold > _maximumFeeThreshold) {
+        final exception = MaximumFeeThresholdException(_maximumFeeThreshold);
+        emit(state.copyWith(saving: false, feeThresholdError: exception));
+        return;
+      }
+
+      await _saveAutoSwapSettingsUsecase.execute(
+        AutoSwap(
+          enabled: false, // Always false for auto-save when disabled
+          balanceThresholdSats: balanceThresholdSats,
+          feeThresholdPercent: feeThreshold,
+          alwaysBlock: state.alwaysBlock,
+          recipientWalletId: state.selectedBitcoinWalletId,
+        ),
+        isTestnet: isTestnet,
+      );
+
+      emit(
+        state.copyWith(
+          saving: false,
+          successfullySaved: true,
+          amountThresholdError: null,
+          feeThresholdError: null,
+        ),
+      );
+    } catch (e) {
+      log.severe('Error auto-saving disabled auto swap settings: $e');
+      emit(
+        state.copyWith(
+          saving: false,
+          error: 'Failed to save settings',
+          successfullySaved: false,
+        ),
+      );
+    }
   }
 
   void onInfoToggleChanged() {
@@ -175,5 +273,14 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
 
   void onAlwaysBlockToggleChanged(bool value) {
     emit(state.copyWith(alwaysBlock: value));
+  }
+
+  void onWalletSelected(String? walletId) {
+    emit(
+      state.copyWith(
+        selectedBitcoinWalletId: walletId,
+        error: null, // Clear any previous error when wallet is selected
+      ),
+    );
   }
 }

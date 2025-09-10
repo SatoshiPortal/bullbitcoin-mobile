@@ -16,6 +16,9 @@ abstract class AutoSwapSettingsState with _$AutoSwapSettingsState {
     BitcoinUnit? bitcoinUnit,
     @Default(false) bool alwaysBlock,
     @Default(false) bool showInfo,
+    @Default([]) List<Wallet> availableBitcoinWallets,
+    String? selectedBitcoinWalletId,
+    @Default(false) bool loadingWallets,
   }) = _AutoSwapSettingsState;
 
   const AutoSwapSettingsState._();

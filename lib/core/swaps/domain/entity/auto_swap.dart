@@ -11,6 +11,7 @@ sealed class AutoSwap with _$AutoSwap {
     @Default(3.0) double feeThresholdPercent,
     @Default(false) bool blockTillNextExecution,
     @Default(false) bool alwaysBlock,
+    @Default(null) String? recipientWalletId,
   }) = _AutoSwap;
 
   const AutoSwap._();

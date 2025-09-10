@@ -29,6 +29,7 @@ class BoltzStorageDatasource {
             feeThresholdPercent: settings.feeThresholdPercent,
             blockTillNextExecution: Value(settings.blockTillNextExecution),
             alwaysBlock: Value(settings.alwaysBlock),
+            recipientWalletId: Value(settings.recipientWalletId),
           ),
         );
   }
@@ -51,6 +52,7 @@ class BoltzStorageDatasource {
             feeThresholdPercent: settings.feeThresholdPercent,
             blockTillNextExecution: Value(settings.blockTillNextExecution),
             alwaysBlock: Value(settings.alwaysBlock),
+            recipientWalletId: Value(settings.recipientWalletId),
           ),
         );
   }
