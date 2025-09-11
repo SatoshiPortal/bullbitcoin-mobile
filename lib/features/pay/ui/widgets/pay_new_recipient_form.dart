@@ -30,6 +30,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
     {'code': 'EU', 'name': 'Europe', 'flag': '🇪🇺'},
     {'code': 'MX', 'name': 'Mexico', 'flag': '🇲🇽'},
     {'code': 'CR', 'name': 'Costa Rica', 'flag': '🇨🇷'},
+    {'code': 'AR', 'name': 'Argentina', 'flag': '🇦🇷'},
   ];
 
   // Map currency to country code
@@ -45,6 +46,8 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
         return 'CR';
       case FiatCurrency.usd:
         return 'CR'; // Default fallback
+      case FiatCurrency.ars:
+        return 'AR';
     }
   }
 

@@ -8,7 +8,8 @@ enum FiatCurrency {
   cad('CAD', decimals: 2, symbol: '\$'),
   crc('CRC', decimals: 2, symbol: '₡'),
   eur('EUR', decimals: 2, symbol: '€'),
-  mxn('MXN', decimals: 2, symbol: '\$');
+  mxn('MXN', decimals: 2, symbol: '\$'),
+  ars('ARS', decimals: 2, symbol: '\$');
 
   const FiatCurrency(this.code, {required this.decimals, required this.symbol});
   final String code;
@@ -27,6 +28,8 @@ enum FiatCurrency {
         return FiatCurrency.eur;
       case 'MXN':
         return FiatCurrency.mxn;
+      case 'ARS':
+        return FiatCurrency.ars;
       default:
         throw Exception('Unknown FiatCurrency: $code');
     }
