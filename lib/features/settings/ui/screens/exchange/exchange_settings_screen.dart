@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/widgets/delete_account_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/not_logged_in_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
@@ -124,6 +125,13 @@ class ExchangeSettingsScreen extends StatelessWidget {
                     } else {
                       context.pushNamed(SettingsRoute.exchangeReferrals.name);
                     }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.delete_forever,
+                  title: 'Delete Account',
+                  onTap: () {
+                    DeleteAccountBottomSheet.show(context);
                   },
                 ),
                 if (state.notLoggedIn)
