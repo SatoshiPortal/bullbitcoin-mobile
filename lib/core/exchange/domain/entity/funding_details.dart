@@ -5,7 +5,7 @@ part 'funding_details.freezed.dart';
 @freezed
 sealed class FundingDetails with _$FundingDetails {
   const factory FundingDetails.eTransfer({
-    required String code,
+    required String secretQuestion,
     required String beneficiaryName,
     required String beneficiaryEmail,
   }) = ETransferFundingDetails;

@@ -60,7 +60,7 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
   Future<void> saveUserPreference({
     String? language,
     String? currency,
-    String? dcaEnabled,
+    bool? dcaEnabled,
     String? autoBuyEnabled,
   }) async {
     try {
@@ -77,7 +77,7 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
       final params = UserPreferencePayloadModel(
         language: language,
         currencyCode: currency,
-        dcaEnabled: dcaEnabled,
+        dcaEnabled: dcaEnabled.toString(),
         autoBuyEnabled: autoBuyEnabled,
       );
 

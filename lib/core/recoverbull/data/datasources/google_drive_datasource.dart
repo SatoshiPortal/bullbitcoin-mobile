@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:bb_mobile/core/recoverbull/data/models/drive_file_metadata_model.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
-import 'package:recoverbull/recoverbull.dart';
 
 class GoogleDriveAppDatasource {
   static final _google = GoogleSignIn(
@@ -38,7 +39,7 @@ class GoogleDriveAppDatasource {
     _driveApi = null;
   }
 
-  Future<List<drive.File>> fetchAll() async {
+  Future<List<DriveFileMetadataModel>> fetchAllMetadata() async {
     _checkConnection();
     final response = await _driveApi!.files.list(
       spaces: 'appDataFolder',
@@ -46,10 +47,13 @@ class GoogleDriveAppDatasource {
       $fields: 'files(id, name, createdTime)',
       orderBy: 'createdTime desc',
     );
-    return response.files ?? [];
+    return response.files
+            ?.map((file) => DriveFileMetadataModel.fromDriveFile(file))
+            .toList() ??
+        [];
   }
 
-  Future<List<int>> fetchContent(String fileId) async {
+  Future<List<int>> fetchFileContent(String fileId) async {
     _checkConnection();
     final media =
         await _driveApi!.files.get(
@@ -81,9 +85,9 @@ class GoogleDriveAppDatasource {
 
   Future<void> store(String content) async {
     _checkConnection();
-    final backup = BullBackup.fromJson(content);
-    final filename =
-        '${DateTime.now().millisecondsSinceEpoch}_${backup.id}.json';
+    final vault = EncryptedVault(file: content);
+    final filename = vault.filename;
+    final jsonVault = vault.toFile();
 
     final file =
         drive.File()
@@ -91,13 +95,11 @@ class GoogleDriveAppDatasource {
           ..mimeType = 'application/json'
           ..parents = ['appDataFolder'];
 
-    final jsonBackup = backup.toJson();
-
     await _driveApi!.files.create(
       file,
       uploadMedia: drive.Media(
-        Stream.value(utf8.encode(jsonBackup)),
-        jsonBackup.length,
+        Stream.value(utf8.encode(jsonVault)),
+        jsonVault.length,
       ),
     );
   }

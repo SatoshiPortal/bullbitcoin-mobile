@@ -14,7 +14,6 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:bip85/bip85.dart';
 import 'package:boltz/boltz.dart';
 import 'package:dart_bbqr/bbqr.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +28,6 @@ class Bull {
     await Future.wait([
       LibLwk.init(),
       BoltzCore.init(),
-      LibBip85.init(),
       PConfig.initializeApp(),
       dotenv.load(isOptional: true),
       LibBbqr.init(),

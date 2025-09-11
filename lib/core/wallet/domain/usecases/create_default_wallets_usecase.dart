@@ -26,9 +26,16 @@ class CreateDefaultWalletsUsecase {
     String? passphrase,
   }) async {
     try {
+      final isGenerated = mnemonicWords == null;
+
       // Generate a mnemonic seed if the user creates a new wallet
       //  or use the provided mnemonic words in case of recovery.
       final mnemonic = mnemonicWords ?? await _mnemonicGenerator.generate();
+
+      // The wallet birthday will be useful to optimize syncs.
+      DateTime? birthday;
+      if (isGenerated) birthday = DateTime.now().toUtc();
+
       // Create and store the seed
       final seed = await _seedRepository.createFromMnemonic(
         mnemonicWords: mnemonic,
@@ -55,12 +62,14 @@ class CreateDefaultWalletsUsecase {
           network: bitcoinNetwork,
           scriptType: scriptType,
           isDefault: true,
+          birthday: birthday,
         ),
         _wallet.createWallet(
           seed: seed,
           network: liquidNetwork,
           scriptType: scriptType,
           isDefault: true,
+          birthday: birthday,
         ),
       ]);
 

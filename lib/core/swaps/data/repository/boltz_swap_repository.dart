@@ -366,7 +366,7 @@ class BoltzSwapRepository {
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
-        // TODO: add server fees for chain swaps
+        // add server lockupfees for chain swaps
         fees: swap.fees?.copyWith(
           lockupFee: (swap.fees?.lockupFee ?? 0) + absoluteFees,
         ),

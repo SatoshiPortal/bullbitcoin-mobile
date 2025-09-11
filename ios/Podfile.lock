@@ -11,8 +11,6 @@ PODS:
     - PromisesObjC (~> 2.4)
   - bdk_flutter (0.31.3):
     - Flutter
-  - bip85 (0.0.1):
-    - Flutter
   - boltz (0.1.6)
   - camera_avfoundation (0.0.1):
     - Flutter
@@ -105,9 +103,9 @@ PODS:
   - payjoin_flutter (0.20.0)
   - PromisesObjC (2.4.0)
   - ScreenProtectorKit (1.3.1)
-  - SDWebImage (5.21.1):
-    - SDWebImage/Core (= 5.21.1)
-  - SDWebImage/Core (5.21.1)
+  - SDWebImage (5.21.2):
+    - SDWebImage/Core (= 5.21.2)
+  - SDWebImage/Core (5.21.2)
   - share_plus (0.0.1):
     - Flutter
   - sqlite3 (3.50.4):
@@ -148,7 +146,6 @@ PODS:
 
 DEPENDENCIES:
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
-  - bip85 (from `.symlinks/plugins/bip85/ios`)
   - boltz (from `.symlinks/plugins/boltz/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - dart_bbqr (from `.symlinks/plugins/dart_bbqr/ios`)
@@ -192,8 +189,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   bdk_flutter:
     :path: ".symlinks/plugins/bdk_flutter/ios"
-  bip85:
-    :path: ".symlinks/plugins/bip85/ios"
   boltz:
     :path: ".symlinks/plugins/boltz/ios"
   camera_avfoundation:
@@ -244,43 +239,42 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
-  bdk_flutter: cef9180019b4c6b67a3e3dfb74611683fe140107
-  bip85: 3059e217a3a606a100dd244f21d2fc61b0a1aa83
+  bdk_flutter: 86c9ba59ee282dee08c3a29599abe867d10a8b10
   boltz: 6388ec2412f3753b63a9e65c97f87ea26f43bddc
-  camera_avfoundation: be3be85408cd4126f250386828e9b1dfa40ab436
-  dart_bbqr: bfd89cc8a74538d94ef6d87d11e4a2ad55578e7d
+  camera_avfoundation: adb0207d868b2d873e895371d88448399ab78d87
+  dart_bbqr: 10143a83ef3919f9ac06974e3bbe23cac4abc39b
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
-  file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
+  file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
-  flutter_nfc_kit: e1b71583eafd2c9650bc86844a7f2d185fb414f6
-  flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
-  flutter_zxing: e8bcc43bd3056c70c271b732ed94e7a16fd62f93
-  google_sign_in_ios: b48bb9af78576358a168361173155596c845f0b9
+  flutter_native_splash: df59bb2e1421aa0282cb2e95618af4dcb0c56c29
+  flutter_nfc_kit: 3985c93f749b9cb4747479205c2f10bd2f877a11
+  flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
+  flutter_zxing: d527c3ff9c7f3606dd29a7ec8c4055f7daa088c5
+  google_sign_in_ios: 7411fab6948df90490dc4620ecbcabdc3ca04017
   GoogleSignIn: ce8c89bb9b37fb624b92e7514cc67335d1e277e4
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
-  image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
-  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   lwk: 22e06bc5664247d6b2dac91cfe209b63b70dd580
-  no_screenshot: 6d183496405a3ab709a67a54e5cd0f639e94729e
-  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
-  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  no_screenshot: 67d110f12466f4913b488803d4e498d03ef2889e
+  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   payjoin_flutter: 6397d7b698cdad6453be4949ab6aca1863f6c5e5
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
-  SDWebImage: f29024626962457f3470184232766516dee8dfea
-  share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
+  SDWebImage: 9f177d83116802728e122410fb25ad88f5c7608a
+  share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
   sqlite3: 73513155ec6979715d3904ef53a8d68892d4032b
-  sqlite3_flutter_libs: 83f8e9f5b6554077f1d93119fe20ebaa5f3a9ef1
+  sqlite3_flutter_libs: 86f82662868ee26ff3451f73cac9c5fc2a1f57fa
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
-  tor: 767208930250ef7be241963b75568c55c0a81890
-  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
-  webview_cookie_manager: d63a76cabdf42a7ea3d92768ac67d4853a1367f8
-  webview_flutter_wkwebview: 1821ceac936eba6f7984d89a9f3bcb4dea99ebb2
+  tor: 662a9f5b980b5c86decb8ba611de9bcd4c8286eb
+  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
+  webview_cookie_manager: eaf920722b493bd0f7611b5484771ca53fed03f7
+  webview_flutter_wkwebview: a4af96a051138e28e29f60101d094683b9f82188
 
-PODFILE CHECKSUM: b6fce51d85d6bfea5dd6ff4c1b945437a9e9dfa9
+PODFILE CHECKSUM: 3402bb9f9a69470d12a30feec0fd288c203ab3f5
 
 COCOAPODS: 1.16.2

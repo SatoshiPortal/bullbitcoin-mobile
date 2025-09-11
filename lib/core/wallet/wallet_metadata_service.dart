@@ -105,6 +105,7 @@ class WalletMetadataService {
     required ScriptType scriptType,
     String? label,
     required bool isDefault,
+    DateTime? birthday,
   }) async {
     final xpub = await Bip32Derivation.getAccountXpub(
       seedBytes: seed.bytes,
@@ -162,6 +163,7 @@ class WalletMetadataService {
       label: label,
       isPhysicalBackupTested: false,
       isEncryptedVaultTested: false,
+      birthday: birthday,
     );
   }
 

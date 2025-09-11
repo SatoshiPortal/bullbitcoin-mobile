@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
@@ -45,8 +46,10 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
 
             final isKyc = url.path.startsWith('/kyc');
             final isLogin = url.path.contains('/login');
+            final isEmailVerification = url.path.contains('/verification');
+            final isIncodeSmile = url.host.contains('incodesmile.com');
 
-            final allow = isKyc || isLogin;
+            final allow = isKyc || isLogin || isEmailVerification;
             log.info('UrlChange: ${url.path} → allow: $allow');
 
             // Anything that is not a KYC or login URL should not be allowed and
@@ -54,11 +57,17 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             //  after completing it or by trying to close the KYC flow from
             //  within the WebView.
             if (!allow) {
-              // Fetch the user summary to update the exchange state before
-              // going back, since the user might have completed the KYC
-              // process and the exchange state needs to be updated accordingly.
-              context.read<ExchangeCubit>().fetchUserSummary();
-              GoRouter.of(context).pop();
+              if (isIncodeSmile) {
+                // If the URL is from inCodeSmile, we allow it to be opened in
+                //  an in-app browser view.
+                launchUrl(url, mode: LaunchMode.inAppBrowserView);
+              } else {
+                // Fetch the user summary to update the exchange state before
+                // going back, since the user might have completed the KYC
+                // process and the exchange state needs to be updated accordingly.
+                context.read<ExchangeCubit>().fetchUserSummary();
+                GoRouter.of(context).pop();
+              }
             }
           },
           onNavigationRequest: (NavigationRequest request) {
@@ -70,13 +79,18 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             final isBBLogo = url.path.contains('/bb-logo');
             final isLogin = url.path.contains('/login');
             final isKyc = url.path.contains('/kyc');
+            final isEmailVerification = url.path.contains('/verification');
+            final isIncodeSmile = url.host.contains('incodesmile.com');
 
-            final allow = isKyc || isLogin || isBBLogo;
+            final allow = isKyc || isLogin || isBBLogo || isEmailVerification;
 
             if (allow) {
               return NavigationDecision.navigate;
             } else {
               log.warning('Navigation blocked: ${url.path}');
+              if (isIncodeSmile) {
+                launchUrl(url, mode: LaunchMode.inAppBrowserView);
+              }
               return NavigationDecision.prevent;
             }
           },
@@ -108,12 +122,12 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             //  web app has been rendered successfully. If the tabindex is -1,
             //  it indicates that the Flutter web app is ready and rendered.
 
-            // Wait 5 seconds for Flutter to render and then check if the
+            // Wait 10 seconds for Flutter to render and then check if the
             //  flutter-view tabindex is -1, which indicates that the
             //  Flutter web app has been rendered successfully.
             // If it is still 0, it means that the Flutter web app has not been
             //  rendered correctly, and we should reload the WebView.
-            await Future.delayed(const Duration(seconds: 5));
+            await Future.delayed(const Duration(seconds: 10));
 
             try {
               final result = await _controller.runJavaScriptReturningResult('''
@@ -123,7 +137,10 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
                 })()
               ''');
 
-              final isRendered = result.toString() == '-1';
+              final isRendered = result.toString() != '0';
+              log.info(
+                'Flutter WebView ${isRendered ? 'rendered' : 'not rendered'} for url: $url with result: $result',
+              );
               log.info('Flutter Web rendered based on tabindex: $isRendered');
 
               if (!isRendered) {

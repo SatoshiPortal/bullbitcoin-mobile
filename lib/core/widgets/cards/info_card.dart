@@ -61,14 +61,10 @@ class InfoCard extends StatelessWidget {
                               ),
                               const Gap(4),
                             ],
-                            Container(
-                              constraints: const BoxConstraints(maxWidth: 280),
-                              child: Text(
-                                description,
-                                style: context.font.bodyMedium?.copyWith(
-                                  color: context.colour.secondary,
-                                ),
-                                maxLines: 5,
+                            Text(
+                              description,
+                              style: context.font.bodyMedium?.copyWith(
+                                color: context.colour.secondary,
                               ),
                             ),
                           ],

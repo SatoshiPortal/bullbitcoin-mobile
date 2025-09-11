@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
@@ -15,9 +16,9 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ViewBackupKeyScreen extends StatefulWidget {
-  final String backupFile;
+  final EncryptedVault vault;
 
-  const ViewBackupKeyScreen({super.key, required this.backupFile});
+  const ViewBackupKeyScreen({super.key, required this.vault});
 
   @override
   State<ViewBackupKeyScreen> createState() => _ViewBackupKeyScreenState();
@@ -39,8 +40,7 @@ class _ViewBackupKeyScreenState extends State<ViewBackupKeyScreen>
         return BlocProvider(
           create:
               (context) =>
-                  locator<BackupSettingsCubit>()
-                    ..viewVaultKey(widget.backupFile),
+                  locator<BackupSettingsCubit>()..viewVaultKey(widget.vault),
           child: const _Screen(),
         );
       },

@@ -96,65 +96,6 @@ abstract class ElectrumSettingsState with _$ElectrumSettingsState {
     return true;
   }
 
-  // Improved hasPendingChanges implementation
-  bool get hasPendingChanges {
-    if (stagedServers.isEmpty) return false;
-
-    // Check URL validity for custom servers
-    if (isCustomServerSelected) {
-      final mainnetNetwork =
-          isSelectedNetworkLiquid
-              ? Network.liquidMainnet
-              : Network.bitcoinMainnet;
-
-      final testnetNetwork =
-          isSelectedNetworkLiquid
-              ? Network.liquidTestnet
-              : Network.bitcoinTestnet;
-
-      final mainnetServer = getServerForNetworkAndProvider(
-        mainnetNetwork,
-        const ElectrumServerProvider.customProvider(),
-      );
-
-      final testnetServer = getServerForNetworkAndProvider(
-        testnetNetwork,
-        const ElectrumServerProvider.customProvider(),
-      );
-
-      // URLs must be non-empty for custom servers
-      if (mainnetServer != null && mainnetServer.url.trim().isEmpty) {
-        return false;
-      }
-
-      if (testnetServer != null && testnetServer.url.trim().isEmpty) {
-        return false;
-      }
-    }
-
-    // Check if staged servers actually differ from existing servers
-    for (final staged in stagedServers) {
-      final existingServer = electrumServers.firstWhere(
-        (server) =>
-            server.network == staged.network &&
-            server.electrumServerProvider == staged.electrumServerProvider,
-        orElse: () => ElectrumServer(url: "", network: staged.network),
-      );
-
-      // Check if any properties are different
-      if (staged.url != existingServer.url ||
-          staged.validateDomain != existingServer.validateDomain ||
-          staged.isActive != existingServer.isActive ||
-          staged.stopGap != existingServer.stopGap ||
-          staged.retry != existingServer.retry ||
-          staged.timeout != existingServer.timeout) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   // Get all current servers including staged changes with better merging
   List<ElectrumServer> get effectiveServers {
     final result = <ElectrumServer>[];

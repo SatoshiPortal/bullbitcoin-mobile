@@ -17,7 +17,7 @@ class SaveUserPreferencesUsecase {
   Future<void> execute({
     String? language,
     String? currency,
-    String? dcaEnabled,
+    bool? dcaEnabled,
     String? autoBuyEnabled,
   }) async {
     try {

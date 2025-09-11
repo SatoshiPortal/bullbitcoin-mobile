@@ -48,6 +48,8 @@ class AutoSwapExecutionUsecase {
   }) async {
     final swapRepository = isTestnet ? _testnetRepository : _mainnetRepository;
     final autoSwapSettings = await swapRepository.getAutoSwapParams();
+    // check if recipient wallet id is set
+
     if (!autoSwapSettings.enabled) {
       throw AutoSwapDisabledException('Auto swap is disabled');
     }
@@ -55,19 +57,37 @@ class AutoSwapExecutionUsecase {
     final wallets = await _walletRepository.getWallets(
       environment: environment,
     );
-
-    final defaultLiquidWallet =
-        wallets.where((w) => w.isDefault && w.isLiquid).firstOrNull;
     final defaultBitcoinWallet =
         wallets.where((w) => w.isDefault && !w.isLiquid).firstOrNull;
+    final defaultLiquidWallet =
+        wallets.where((w) => w.isDefault && w.isLiquid).firstOrNull;
 
     if (defaultLiquidWallet == null || defaultBitcoinWallet == null) {
       throw Exception('No default wallets found');
     }
 
-    debugPrint(
-      'Found default wallets - Liquid: ${defaultLiquidWallet.id}, Bitcoin: ${defaultBitcoinWallet.id}',
-    );
+    if (autoSwapSettings.recipientWalletId == null) {
+      final updatedSwapSettings = autoSwapSettings.copyWith(
+        recipientWalletId: defaultBitcoinWallet.id,
+      );
+      await swapRepository.updateAutoSwapParams(updatedSwapSettings);
+    }
+
+    final sendBitcoinWallet =
+        autoSwapSettings.recipientWalletId != null
+            ? wallets
+                .where((w) => w.id == autoSwapSettings.recipientWalletId)
+                .firstOrNull
+            : defaultBitcoinWallet;
+
+    if (sendBitcoinWallet == null) {
+      // if user deleted the bitcoin wallet, this could be null
+      // TODO: when a set autoswap wallet is deleted, we should prompt the user to update the autoswap settings
+      throw Exception(
+        'Send bitcoin wallet not found. Check autoswap settings.',
+      );
+    }
+    debugPrint('Found default wallet - Liquid: ${defaultLiquidWallet.id}');
 
     final walletBalance = defaultLiquidWallet.balanceSat.toInt();
 
@@ -128,7 +148,7 @@ class AutoSwapExecutionUsecase {
       amountSat: autoSwapSettings.swapAmount(walletBalance),
       btcElectrumUrl: btcElectrumUrl,
       lbtcElectrumUrl: lbtcElectrumUrl,
-      receiveWalletId: defaultBitcoinWallet.id,
+      receiveWalletId: sendBitcoinWallet.id,
     );
 
     debugPrint('Building PSET...');
@@ -138,6 +158,10 @@ class AutoSwapExecutionUsecase {
       amountSat: swap.paymentAmount,
       networkFee: const NetworkFee.relative(0.1),
     );
+
+    debugPrint('Getting absolute fees from PSET...');
+    final (_, absoluteFees) = await _liquidWalletRepository
+        .getPsetSizeAndAbsoluteFees(pset: pset);
 
     debugPrint('Signing PSET...');
     final signedPset = await _liquidWalletRepository.signPset(
@@ -154,28 +178,27 @@ class AutoSwapExecutionUsecase {
     await swapRepository.updatePaidSendSwap(
       swapId: swap.id,
       txid: txid,
-      absoluteFees: 0,
+      absoluteFees: absoluteFees,
     );
     // Reset blockTillNextExecution after successful swap
     await swapRepository.updateAutoSwapParams(
       autoSwapSettings.copyWith(blockTillNextExecution: false),
     );
     debugPrint('Swap executed successfully!');
+    // sometimes sync fails and label is not set
+    final txLabel = Label.tx(
+      transactionId: txid,
+      walletId: defaultLiquidWallet.id,
+      label: 'Auto-Swap',
+    );
+    await _labelRepository.store(txLabel);
 
-    final walletTx = await _walletTxRepository.getWalletTransaction(
+    // sync at the end to ensure label is set
+    await _walletTxRepository.getWalletTransaction(
       txid,
       walletId: defaultLiquidWallet.id,
       sync: true,
     );
-
-    if (walletTx != null) {
-      final txLabel = Label.tx(
-        transactionId: walletTx.txId,
-        walletId: defaultLiquidWallet.id,
-        label: 'Auto-Swap',
-      );
-      await _labelRepository.store(txLabel);
-    }
     return swap;
   }
 }

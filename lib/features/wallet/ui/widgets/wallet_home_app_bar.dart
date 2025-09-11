@@ -19,6 +19,7 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
+      scrolledUnderElevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.light,
       centerTitle: true,
       title: const TopBarBullLogo(enableSuperuserTapUnlocker: true),

@@ -12,6 +12,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
     @Default(3.0) double feeThresholdPercent,
     @Default(false) bool blockTillNextExecution,
     @Default(false) bool alwaysBlock,
+    @Default(null) String? recipientWalletId,
   }) = _AutoSwapModel;
 
   const AutoSwapModel._();
@@ -23,6 +24,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       feeThresholdPercent: entity.feeThresholdPercent,
       blockTillNextExecution: entity.blockTillNextExecution,
       alwaysBlock: entity.alwaysBlock,
+      recipientWalletId: entity.recipientWalletId,
     );
   }
 
@@ -33,6 +35,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       feeThresholdPercent: feeThresholdPercent,
       blockTillNextExecution: blockTillNextExecution,
       alwaysBlock: alwaysBlock,
+      recipientWalletId: recipientWalletId,
     );
   }
 
@@ -43,6 +46,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       feeThresholdPercent: row.feeThresholdPercent,
       blockTillNextExecution: row.blockTillNextExecution,
       alwaysBlock: row.alwaysBlock,
+      recipientWalletId: row.recipientWalletId,
     );
   }
 
@@ -54,6 +58,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       feeThresholdPercent: feeThresholdPercent,
       blockTillNextExecution: blockTillNextExecution,
       alwaysBlock: alwaysBlock,
+      recipientWalletId: recipientWalletId,
     );
   }
 }

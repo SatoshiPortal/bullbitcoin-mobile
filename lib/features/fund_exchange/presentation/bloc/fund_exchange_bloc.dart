@@ -16,9 +16,9 @@ part 'fund_exchange_bloc.freezed.dart';
 class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   FundExchangeBloc({
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required GetExchangeFundingDetailsUsecase getExchangeFundingDetailsUseCase,
+    required GetExchangeFundingDetailsUsecase getExchangeFundingDetailsUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _getExchangeFundingDetailsUseCase = getExchangeFundingDetailsUseCase,
+       _getExchangeFundingDetailsUsecase = getExchangeFundingDetailsUsecase,
        super(const FundExchangeState()) {
     on<FundExchangeStarted>(_onStarted);
     on<FundExchangeJurisdictionChanged>(_onJurisdictionChanged);
@@ -27,7 +27,7 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final GetExchangeFundingDetailsUsecase _getExchangeFundingDetailsUseCase;
+  final GetExchangeFundingDetailsUsecase _getExchangeFundingDetailsUsecase;
 
   Future<void> _onStarted(
     FundExchangeStarted event,
@@ -72,12 +72,16 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
         ),
       );
 
-      final fundingDetails = await _getExchangeFundingDetailsUseCase.execute(
+      final fundingDetails = await _getExchangeFundingDetailsUsecase.execute(
         fundingMethod: event.fundingMethod,
         jurisdiction: state.jurisdiction,
       );
-
       emit(state.copyWith(fundingDetails: fundingDetails));
+
+      if (state.userSummary == null) {
+        final userSummary = await _getExchangeUserSummaryUsecase.execute();
+        emit(state.copyWith(userSummary: userSummary));
+      }
     } catch (e) {
       debugPrint('Error handling email e-transfer request: $e');
       if (e is GetExchangeFundingDetailsException) {
