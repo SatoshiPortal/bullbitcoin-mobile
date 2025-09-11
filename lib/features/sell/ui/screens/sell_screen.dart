@@ -1,12 +1,9 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_currency_dropdown.dart';
+import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_bottom_buttons.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -66,31 +63,11 @@ class _SellScreenState extends State<SellScreen> {
                 },
               ),
               const Spacer(),
-              BBButton.big(
-                label: 'Continue',
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    final sellBloc = context.read<SellBloc>();
-                    final sellState = sellBloc.state;
-                    sellBloc.add(
-                      SellEvent.amountInputContinuePressed(
-                        amountInput: _amountController.text,
-                        isFiatCurrencyInput: _isFiatCurrencyInput,
-                        fiatCurrency:
-                            _fiatCurrency ??
-                            ((sellState is SellAmountInputState)
-                                ? FiatCurrency.fromCode(
-                                  sellState.userSummary.currency ?? 'CAD',
-                                )
-                                : sellState is SellWalletSelectionState
-                                ? sellState.fiatCurrency
-                                : FiatCurrency.cad),
-                      ),
-                    );
-                  }
-                },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+              SellAmountInputBottomButtons(
+                formKey: _formKey,
+                amountController: _amountController,
+                isFiatCurrencyInput: _isFiatCurrencyInput,
+                fiatCurrency: _fiatCurrency,
               ),
               const Gap(16.0),
             ],
