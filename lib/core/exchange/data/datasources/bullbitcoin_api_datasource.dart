@@ -666,6 +666,41 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       resp.data['result']['element'] as Map<String, dynamic>,
     );
   }
+
+  Future<String> checkSinpe({
+    required String phoneNumber,
+    required String apiKey,
+  }) async {
+    log.info('checkSinpe request - phoneNumber: $phoneNumber');
+    log.info('checkSinpe request - apiKey: $apiKey');
+
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'checkSinpe',
+        'params': {'phoneNumber': phoneNumber},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    log.info('checkSinpe response: ${resp.data}');
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to check SINPE');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to check SINPE: $error');
+    }
+
+    final result = resp.data['result'] as Map<String, dynamic>;
+    final ownerName = result['ownerName'] as String;
+
+    return ownerName;
+  }
 }
 
 class BullBitcoinApiMinAmountException implements Exception {

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/exchange/domain/entity/cad_biller.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/new_recipient_factory.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -12,6 +15,7 @@ import 'package:bb_mobile/features/withdraw/ui/widgets/account_ownership_widget.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:get_it/get_it.dart';
 
 class PayNewRecipientForm extends StatefulWidget {
   const PayNewRecipientForm({super.key});
@@ -24,6 +28,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
   String? selectedCountry;
   WithdrawRecipientType? selectedPayoutMethod;
   final Map<String, dynamic> formData = {};
+  bool _isSinpeValid = false;
 
   final List<Map<String, String>> countries = [
     {'code': 'CA', 'name': 'Canada', 'flag': '🇨🇦'},
@@ -166,14 +171,33 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
     });
   }
 
+  void _onSinpeValidationChanged(bool isValid, {String? ownerName}) {
+    setState(() {
+      _isSinpeValid = isValid;
+      if (isValid && ownerName != null) {
+        // Store the owner name in form data for the createRecipients endpoint
+        formData['ownerName'] = ownerName;
+      } else {
+        formData.remove('ownerName');
+      }
+    });
+  }
+
   bool get canContinue {
     if (selectedCountry == null || selectedPayoutMethod == null) return false;
 
     final requiredFields = _getRequiredFields(selectedPayoutMethod!);
-    return requiredFields.every(
+    final hasAllRequiredFields = requiredFields.every(
       (field) =>
           formData[field] != null && (formData[field] as String).isNotEmpty,
     );
+
+    // For SINPE Móvil, also check if SINPE validation is successful
+    if (selectedPayoutMethod == WithdrawRecipientType.sinpeMovilCrc) {
+      return hasAllRequiredFields && _isSinpeValid;
+    }
+
+    return hasAllRequiredFields;
   }
 
   List<String> _getRequiredFields(WithdrawRecipientType method) {
@@ -208,7 +232,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
       case WithdrawRecipientType.sinpeIbanCrc:
         return ['iban', 'ownerName', 'isOwner'];
       case WithdrawRecipientType.sinpeMovilCrc:
-        return ['phoneNumber', 'ownerName', 'isOwner'];
+        return ['phoneNumber', 'ownerName'];
     }
   }
 
@@ -445,6 +469,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
       recipientType: selectedPayoutMethod!,
       formData: formData,
       onFormDataChanged: _onFormDataChanged,
+      onSinpeValidationChanged: _onSinpeValidationChanged,
     );
   }
 }
@@ -455,11 +480,13 @@ class PayoutMethodForm extends StatelessWidget {
     required this.recipientType,
     required this.formData,
     required this.onFormDataChanged,
+    this.onSinpeValidationChanged,
   });
 
   final WithdrawRecipientType recipientType;
   final Map<String, dynamic> formData;
   final Function(String, String) onFormDataChanged;
+  final Function(bool isValid, {String? ownerName})? onSinpeValidationChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -503,6 +530,8 @@ class PayoutMethodForm extends StatelessWidget {
       WithdrawRecipientType.sinpeMovilCrc => _SinpeMovilForm(
         formData: formData,
         onFormDataChanged: onFormDataChanged,
+        onSinpeValidationChanged:
+            onSinpeValidationChanged ?? (_, {ownerName}) {},
       ),
     };
   }
@@ -1154,52 +1183,179 @@ class _SinpeIbanForm extends StatelessWidget {
   }
 }
 
-class _SinpeMovilForm extends StatelessWidget {
+class _SinpeMovilForm extends StatefulWidget {
   const _SinpeMovilForm({
     required this.formData,
     required this.onFormDataChanged,
+    required this.onSinpeValidationChanged,
   });
 
   final Map<String, dynamic> formData;
   final Function(String, String) onFormDataChanged;
+  final Function(bool isValid, {String? ownerName}) onSinpeValidationChanged;
+
+  @override
+  State<_SinpeMovilForm> createState() => _SinpeMovilFormState();
+}
+
+class _SinpeMovilFormState extends State<_SinpeMovilForm> {
+  Timer? _debounceTimer;
+  String? _sinpeValidationMessage;
+  bool _isValidatingSinpe = false;
+  bool _isSinpeValid = false;
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  void _onPhoneNumberChanged(String value) {
+    widget.onFormDataChanged('phoneNumber', value);
+
+    // Cancel previous timer
+    _debounceTimer?.cancel();
+
+    // Reset validation state
+    setState(() {
+      _sinpeValidationMessage = null;
+      _isValidatingSinpe = false;
+      _isSinpeValid = false;
+    });
+
+    // Notify parent of validation state change
+    widget.onSinpeValidationChanged(false);
+
+    // Only validate if we have exactly 8 digits
+    if (value.length == 8 && RegExp(r'^\d{8}$').hasMatch(value)) {
+      setState(() {
+        _isValidatingSinpe = true;
+      });
+
+      _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
+        _validateSinpe(value);
+      });
+    }
+  }
+
+  Future<void> _validateSinpe(String phoneNumber) async {
+    try {
+      final checkSinpeUsecase = GetIt.instance<CheckSinpeUsecase>();
+      final ownerName = await checkSinpeUsecase.execute(
+        phoneNumber: phoneNumber,
+      );
+
+      if (mounted) {
+        setState(() {
+          _sinpeValidationMessage = ownerName;
+          _isValidatingSinpe = false;
+          _isSinpeValid = true;
+        });
+
+        // Notify parent of successful validation
+        widget.onSinpeValidationChanged(true, ownerName: ownerName);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _sinpeValidationMessage = 'Invalid Sinpe';
+          _isValidatingSinpe = false;
+          _isSinpeValid = false;
+        });
+
+        // Notify parent of failed validation
+        widget.onSinpeValidationChanged(false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildInputField(
-          context,
-          'Phone Number',
-          'phoneNumber',
-          'Enter phone number',
-          formData,
-          onFormDataChanged,
-        ),
+        _buildPhoneNumberField(context),
         const Gap(12),
-        _buildInputField(
-          context,
-          'Owner Name',
-          'ownerName',
-          'Enter owner name',
-          formData,
-          onFormDataChanged,
-        ),
+        _buildValidationMessage(context),
         const Gap(12),
         _buildInputField(
           context,
           'Label (optional)',
           'label',
           'Enter a label for this recipient',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
+          widget.formData,
+          widget.onFormDataChanged,
         ),
       ],
+    );
+  }
+
+  Widget _buildPhoneNumberField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BBText(
+          'Phone Number',
+          style: context.font.bodyLarge?.copyWith(
+            color: context.colour.secondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const Gap(8),
+        BBInputText(
+          value: (widget.formData['phoneNumber'] as String?) ?? '',
+          onChanged: _onPhoneNumberChanged,
+          hint: 'Enter phone number',
+          hintStyle: context.font.bodyMedium?.copyWith(
+            color: context.colour.outline,
+          ),
+          fixedPrefix: '+501',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildValidationMessage(BuildContext context) {
+    return SizedBox(
+      height: 24,
+      child: Row(
+        children: [
+          if (_isValidatingSinpe) ...[
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  context.colour.primary,
+                ),
+              ),
+            ),
+            const Gap(8),
+            BBText(
+              'Validating...',
+              style: context.font.bodySmall?.copyWith(
+                color: context.colour.primary,
+              ),
+            ),
+          ] else if (_sinpeValidationMessage != null) ...[
+            Icon(
+              _isSinpeValid ? Icons.check_circle : Icons.cancel,
+              size: 16,
+              color: _isSinpeValid ? Colors.green : Colors.red,
+            ),
+            const Gap(8),
+            Expanded(
+              child: BBText(
+                _sinpeValidationMessage!,
+                style: context.font.bodySmall?.copyWith(
+                  color: _isSinpeValid ? Colors.green : Colors.red,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

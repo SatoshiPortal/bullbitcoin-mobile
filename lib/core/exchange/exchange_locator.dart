@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_fiat_recipient_usecase.dart';
@@ -389,6 +390,20 @@ class ExchangeLocator {
 
     locator.registerFactory<ListCadBillersUsecase>(
       () => ListCadBillersUsecase(
+        mainnetExchangeRecipientRepository:
+            locator<ExchangeRecipientRepository>(
+              instanceName: 'mainnetExchangeRecipientRepository',
+            ),
+        testnetExchangeRecipientRepository:
+            locator<ExchangeRecipientRepository>(
+              instanceName: 'testnetExchangeRecipientRepository',
+            ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<CheckSinpeUsecase>(
+      () => CheckSinpeUsecase(
         mainnetExchangeRecipientRepository:
             locator<ExchangeRecipientRepository>(
               instanceName: 'mainnetExchangeRecipientRepository',

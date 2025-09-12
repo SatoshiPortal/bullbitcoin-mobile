@@ -127,4 +127,35 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
       return [];
     }
   }
+
+  @override
+  Future<String> checkSinpe({required String phoneNumber}) async {
+    try {
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+
+      if (apiKeyModel == null) {
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw ApiKeyException(
+          'API key is inactive. Please login again to your Bull Bitcoin account.',
+        );
+      }
+
+      final ownerName = await _bullbitcoinApiDatasource.checkSinpe(
+        phoneNumber: phoneNumber,
+        apiKey: apiKeyModel.key,
+      );
+
+      return ownerName;
+    } catch (e) {
+      log.severe('Error checking SINPE: $e');
+      rethrow;
+    }
+  }
 }
