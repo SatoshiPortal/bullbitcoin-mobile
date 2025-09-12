@@ -10,7 +10,10 @@ enum FundingJurisdiction {
       FundingMethod.canadaPost,
     ],
   ),
-  europe('EU', fundingMethods: [FundingMethod.sepaTransfer]),
+  europe(
+    'EU',
+    fundingMethods: [FundingMethod.instantSepa, FundingMethod.regularSepa],
+  ),
   mexico('MX', fundingMethods: [FundingMethod.speiTransfer]),
   costaRica(
     'CR',

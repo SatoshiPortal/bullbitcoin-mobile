@@ -23,8 +23,14 @@ sealed class FundingDetails with _$FundingDetails {
     required String beneficiaryAddress,
     required String bankAccountCountry,
   }) = InstantSepaFundingDetails;
-  const factory FundingDetails.regularSepa({required String code}) =
-      RegularSepaFundingDetails;
+  const factory FundingDetails.regularSepa({
+    required String code,
+    required String iban,
+    required String bic,
+    required String beneficiaryName,
+    required String beneficiaryAddress,
+    required String bankCountry,
+  }) = RegularSepaFundingDetails;
   const factory FundingDetails.wire({
     required String code,
     required String beneficiaryName,

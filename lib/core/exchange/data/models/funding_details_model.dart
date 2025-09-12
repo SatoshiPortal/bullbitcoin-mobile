@@ -27,6 +27,7 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
     @JsonKey(name: 'BILLER NAME') String? billerName,
     @JsonKey(name: 'BIC') String? bic,
     @JsonKey(name: 'BANK ACCOUNT COUNTRY') String? bankAccountCountry,
+    @JsonKey(name: 'BANK COUNTRY') String? bankCountry,
     @JsonKey(name: 'CLABE') String? clabe,
     @JsonKey(name: 'CÉDULA JURÍDICA') String? cedulaJuridica,
     @JsonKey(name: 'CVU') String? cvu,
@@ -66,7 +67,7 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
         return FundingDetails.billPayment(code: code!, billerName: billerName!);
       case FundingMethod.canadaPost:
         return FundingDetails.canadaPost(code: code!);
-      case FundingMethod.sepaTransfer:
+      case FundingMethod.instantSepa:
         return FundingDetails.instantSepa(
           code: code!,
           iban: iban!,
@@ -74,6 +75,15 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
           beneficiaryName: beneficiaryName!,
           beneficiaryAddress: beneficiaryAddress!,
           bankAccountCountry: bankAccountCountry!,
+        );
+      case FundingMethod.regularSepa:
+        return FundingDetails.regularSepa(
+          code: code!,
+          iban: iban!,
+          bic: bic!,
+          beneficiaryName: beneficiaryName!,
+          beneficiaryAddress: beneficiaryAddress!,
+          bankCountry: bankCountry!,
         );
       case FundingMethod.speiTransfer:
         return FundingDetails.spei(

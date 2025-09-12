@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class FundExchangeSepaTransferScreen extends StatelessWidget {
-  const FundExchangeSepaTransferScreen({super.key});
+class FundExchangeInstantSepaScreen extends StatelessWidget {
+  const FundExchangeInstantSepaScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +39,10 @@ class FundExchangeSepaTransferScreen extends StatelessWidget {
                   style: theme.textTheme.headlineSmall,
                   children: [
                     TextSpan(
-                      text: 'exactly',
+                      text: 'exactly.',
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    TextSpan(
-                      text: '. Make sure to select the SEPA INSTANT option.',
-                      style: theme.textTheme.headlineSmall,
                     ),
                   ],
                 ),
@@ -57,6 +53,15 @@ class FundExchangeSepaTransferScreen extends StatelessWidget {
                 const FundExchangeDetailsErrorCard(),
                 const Gap(24.0),
               ] else ...[
+                InfoCard(
+                  description:
+                      'Only use for transactions below €20,000. For larger transactions, use the Regular SEPA option.',
+                  tagColor: theme.colorScheme.secondary,
+                  bgColor: theme.colorScheme.inverseSurface.withValues(
+                    alpha: 0.1,
+                  ),
+                ),
+                const Gap(24.0),
                 FundExchangeDetail(
                   label: 'IBAN account number',
                   value: details?.iban,

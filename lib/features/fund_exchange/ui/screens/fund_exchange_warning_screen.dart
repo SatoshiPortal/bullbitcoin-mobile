@@ -131,9 +131,13 @@ class FundExchangeWarningScreen extends StatelessWidget {
                   context.pushReplacementNamed(
                     FundExchangeRoute.fundExchangeCanadaPost.name,
                   );
-                case FundingMethod.sepaTransfer:
+                case FundingMethod.instantSepa:
                   context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeSepaTransfer.name,
+                    FundExchangeRoute.fundExchangeInstantSepa.name,
+                  );
+                case FundingMethod.regularSepa:
+                  context.pushReplacementNamed(
+                    FundExchangeRoute.fundExchangeRegularSepa.name,
                   );
                 case FundingMethod.speiTransfer:
                   context.pushReplacementNamed(

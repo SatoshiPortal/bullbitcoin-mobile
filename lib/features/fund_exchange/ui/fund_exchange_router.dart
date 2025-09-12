@@ -9,8 +9,9 @@ import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_canada
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_cr_iban_crc_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_cr_iban_usd_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_email_e_transfer_screen.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_instant_sepa_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_online_bill_payment_screen.dart';
-import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_sepa_transfer_screen.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_regular_sepa_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_sinpe_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_spei_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_warning_screen.dart';
@@ -25,7 +26,8 @@ enum FundExchangeRoute {
   fundExchangeBankTransferWire('bank-transfer-wire'),
   fundExchangeOnlineBillPayment('online-bill-payment'),
   fundExchangeCanadaPost('canada-post'),
-  fundExchangeSepaTransfer('sepa-transfer'),
+  fundExchangeInstantSepa('instant-sepa'),
+  fundExchangeRegularSepa('regular-sepa'),
   fundExchangeSpeiTransfer('spei-transfer'),
   fundExchangeSinpeTransfer('sinpe-transfer'),
   fundExchangeCostaRicaIbanCrc('cr-iban-crc'),
@@ -141,15 +143,27 @@ class FundExchangeRouter {
             },
           ),
           GoRoute(
-            name: FundExchangeRoute.fundExchangeSepaTransfer.name,
-            path: FundExchangeRoute.fundExchangeSepaTransfer.path,
+            name: FundExchangeRoute.fundExchangeInstantSepa.name,
+            path: FundExchangeRoute.fundExchangeInstantSepa.path,
             builder: (context, state) {
               context.read<FundExchangeBloc>().add(
                 const FundExchangeEvent.fundingDetailsRequested(
-                  fundingMethod: FundingMethod.sepaTransfer,
+                  fundingMethod: FundingMethod.instantSepa,
                 ),
               );
-              return const FundExchangeSepaTransferScreen();
+              return const FundExchangeInstantSepaScreen();
+            },
+          ),
+          GoRoute(
+            name: FundExchangeRoute.fundExchangeRegularSepa.name,
+            path: FundExchangeRoute.fundExchangeRegularSepa.path,
+            builder: (context, state) {
+              context.read<FundExchangeBloc>().add(
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: FundingMethod.regularSepa,
+                ),
+              );
+              return const FundExchangeRegularSepaScreen();
             },
           ),
           GoRoute(
