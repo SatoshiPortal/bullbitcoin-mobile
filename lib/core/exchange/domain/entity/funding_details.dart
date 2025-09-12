@@ -45,9 +45,23 @@ sealed class FundingDetails with _$FundingDetails {
     required String beneficiaryName,
     required String clabe,
   }) = SpeiFundingDetails;
-  const factory FundingDetails.crIbanCrc({required String code}) =
-      CrIbanCrcFundingDetails;
-  const factory FundingDetails.crIbanUsd({required String code}) =
-      CrIbanUsdFundingDetails;
+  const factory FundingDetails.sinpeTransfer({required String number}) =
+      SinpeTransferFundingDetails;
+  const factory FundingDetails.crIbanCrc({
+    required String iban,
+    required String code,
+    required String beneficiaryName,
+    required String cedulaJuridica,
+  }) = CrIbanCrcFundingDetails;
+  const factory FundingDetails.crIbanUsd({
+    required String iban,
+    required String code,
+    required String beneficiaryName,
+    required String cedulaJuridica,
+  }) = CrIbanUsdFundingDetails;
+  const factory FundingDetails.arsBankTransfer({
+    required String beneficiaryName,
+    required String cvu,
+  }) = ArsBankTransferFundingDetails;
   const FundingDetails._();
 }

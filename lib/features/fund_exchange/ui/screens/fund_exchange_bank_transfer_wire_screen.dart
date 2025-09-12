@@ -23,7 +23,7 @@ class FundExchangeBankTransferWireScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Funding')),
+      appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),

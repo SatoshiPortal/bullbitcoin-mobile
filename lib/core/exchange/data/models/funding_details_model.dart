@@ -10,7 +10,7 @@ part 'funding_details_model.g.dart';
 @freezed
 sealed class FundingDetailsModel with _$FundingDetailsModel {
   const factory FundingDetailsModel({
-    required String code,
+    String? code,
     String? userNbr,
     @JsonKey(name: 'BENEFICIARY NAME') String? beneficiaryName,
     @JsonKey(name: 'BENEFICIARY EMAIL') String? beneficiaryEmail,
@@ -28,6 +28,8 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
     @JsonKey(name: 'BIC') String? bic,
     @JsonKey(name: 'BANK ACCOUNT COUNTRY') String? bankAccountCountry,
     @JsonKey(name: 'CLABE') String? clabe,
+    @JsonKey(name: 'CÉDULA JURÍDICA') String? cedulaJuridica,
+    @JsonKey(name: 'CVU') String? cvu,
   }) = _FundingDetailsModel;
   const FundingDetailsModel._();
 
@@ -41,13 +43,13 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
     switch (method) {
       case FundingMethod.emailETransfer:
         return FundingDetails.eTransfer(
-          secretQuestion: code,
+          secretQuestion: code!,
           beneficiaryName: beneficiaryName!,
           beneficiaryEmail: beneficiaryEmail!,
         );
       case FundingMethod.bankTransferWire:
         return FundingDetails.wire(
-          code: code,
+          code: code!,
           beneficiaryName: beneficiaryName!,
           bankAccountDetails: bankAccountDetails!,
           iban: iban!,
@@ -61,12 +63,12 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
           bankName: bankName!,
         );
       case FundingMethod.onlineBillPayment:
-        return FundingDetails.billPayment(code: code, billerName: billerName!);
+        return FundingDetails.billPayment(code: code!, billerName: billerName!);
       case FundingMethod.canadaPost:
-        return FundingDetails.canadaPost(code: code);
+        return FundingDetails.canadaPost(code: code!);
       case FundingMethod.sepaTransfer:
         return FundingDetails.instantSepa(
-          code: code,
+          code: code!,
           iban: iban!,
           bic: bic!,
           beneficiaryName: beneficiaryName!,
@@ -75,17 +77,33 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
         );
       case FundingMethod.speiTransfer:
         return FundingDetails.spei(
-          code: code,
+          code: code!,
           bankName: bankName!,
           beneficiaryName: beneficiaryName!,
           clabe: clabe!,
         );
+      case FundingMethod.sinpeTransfer:
+        // TODO: Handle this case.
+        throw UnimplementedError();
       case FundingMethod.crIbanCrc:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        return FundingDetails.crIbanCrc(
+          iban: iban!,
+          code: code!,
+          beneficiaryName: beneficiaryName!,
+          cedulaJuridica: cedulaJuridica!,
+        );
       case FundingMethod.crIbanUsd:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        return FundingDetails.crIbanUsd(
+          iban: iban!,
+          code: code!,
+          beneficiaryName: beneficiaryName!,
+          cedulaJuridica: cedulaJuridica!,
+        );
+      case FundingMethod.arsBankTransfer:
+        return FundingDetails.arsBankTransfer(
+          beneficiaryName: beneficiaryName!,
+          cvu: cvu!,
+        );
     }
   }
 }

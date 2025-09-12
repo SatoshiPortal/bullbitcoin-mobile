@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_account_screen.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_ars_bank_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_bank_transfer_wire_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_canada_post_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_cr_iban_crc_screen.dart';
@@ -10,6 +11,7 @@ import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_cr_iba
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_email_e_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_online_bill_payment_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_sepa_transfer_screen.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_sinpe_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_spei_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_warning_screen.dart';
 import 'package:bb_mobile/locator.dart';
@@ -25,8 +27,10 @@ enum FundExchangeRoute {
   fundExchangeCanadaPost('canada-post'),
   fundExchangeSepaTransfer('sepa-transfer'),
   fundExchangeSpeiTransfer('spei-transfer'),
+  fundExchangeSinpeTransfer('sinpe-transfer'),
   fundExchangeCostaRicaIbanCrc('cr-iban-crc'),
-  fundExchangeCostaRicaIbanUsd('cr-iban-usd');
+  fundExchangeCostaRicaIbanUsd('cr-iban-usd'),
+  fundExchangeArsBankTransfer('ars-bank-transfer');
 
   final String path;
 
@@ -161,6 +165,18 @@ class FundExchangeRouter {
             },
           ),
           GoRoute(
+            name: FundExchangeRoute.fundExchangeSinpeTransfer.name,
+            path: FundExchangeRoute.fundExchangeSinpeTransfer.path,
+            builder: (context, state) {
+              context.read<FundExchangeBloc>().add(
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: FundingMethod.sinpeTransfer,
+                ),
+              );
+              return const FundExchangeSinpeTransferScreen();
+            },
+          ),
+          GoRoute(
             name: FundExchangeRoute.fundExchangeCostaRicaIbanCrc.name,
             path: FundExchangeRoute.fundExchangeCostaRicaIbanCrc.path,
             builder: (context, state) {
@@ -182,6 +198,18 @@ class FundExchangeRouter {
                 ),
               );
               return const FundExchangeCrIbanUsdScreen();
+            },
+          ),
+          GoRoute(
+            name: FundExchangeRoute.fundExchangeArsBankTransfer.name,
+            path: FundExchangeRoute.fundExchangeArsBankTransfer.path,
+            builder: (context, state) {
+              context.read<FundExchangeBloc>().add(
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: FundingMethod.arsBankTransfer,
+                ),
+              );
+              return const FundExchangeArsBankTransferScreen();
             },
           ),
         ],

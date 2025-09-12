@@ -15,7 +15,8 @@ enum FundingJurisdiction {
   costaRica(
     'CR',
     fundingMethods: [FundingMethod.crIbanCrc, FundingMethod.crIbanUsd],
-  );
+  ),
+  argentina('AR', fundingMethods: [FundingMethod.arsBankTransfer]);
 
   final String code;
   final List<FundingMethod> fundingMethods;

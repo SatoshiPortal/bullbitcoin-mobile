@@ -49,8 +49,10 @@ class ExchangeFundingRepositoryImpl implements ExchangeFundingRepository {
           FundingMethod.canadaPost => 'canadaPost',
           FundingMethod.sepaTransfer => 'instantSepa',
           FundingMethod.speiTransfer => 'spei',
+          FundingMethod.sinpeTransfer => 'sinpeTransfer',
           FundingMethod.crIbanCrc => 'CRIbanCRC',
           FundingMethod.crIbanUsd => 'CRIbanUSD',
+          FundingMethod.arsBankTransfer => 'eTransferAR',
         },
         amount: amount,
       );

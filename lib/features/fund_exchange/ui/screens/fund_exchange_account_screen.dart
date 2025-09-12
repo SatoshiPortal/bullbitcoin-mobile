@@ -47,6 +47,7 @@ class FundExchangeAccountScreen extends StatelessWidget {
                 )
                 : null,
         title: const Text('Funding'),
+        scrolledUnderElevation: 0.0,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -122,6 +123,13 @@ class FundExchangeAccountScreen extends StatelessWidget {
                         ),
                       FundingJurisdiction.costaRica =>
                         const FundExchangeCostaRicaMethods(),
+                      FundingJurisdiction.argentina =>
+                        const FundExchangeMethodListTile(
+                          method: FundingMethod.arsBankTransfer,
+                          title: 'Bank Transfer',
+                          subtitle:
+                              'Send a bank transfer from your bank account',
+                        ),
                     },
                 ],
               ],
