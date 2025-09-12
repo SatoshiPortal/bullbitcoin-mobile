@@ -67,8 +67,8 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
       currency = currentState.currency;
     } else if (currentState is PayAmountInputState) {
       currency =
-          currentState.userSummary.currency != null
-              ? FiatCurrency.fromCode(currentState.userSummary.currency!)
+          currentState.userSummary?.currency != null
+              ? FiatCurrency.fromCode(currentState.userSummary!.currency!)
               : null;
     }
 
@@ -125,8 +125,8 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
         currency = currentState.currency;
       } else if (currentState is PayAmountInputState) {
         currency =
-            currentState.userSummary.currency != null
-                ? FiatCurrency.fromCode(currentState.userSummary.currency!)
+            currentState.userSummary?.currency != null
+                ? FiatCurrency.fromCode(currentState.userSummary!.currency!)
                 : null;
       }
 

@@ -14,6 +14,7 @@ import 'package:go_router/go_router.dart';
 enum PayRoute {
   pay('/pay'),
   payRecipients('recipients'),
+  payAmount('amount'),
   payWalletSelection('wallet-selection'),
   payExternalWalletNetworkSelection('external-wallet-network-selection'),
   paySendPayment('send-payment'),
@@ -82,6 +83,29 @@ class PayRouter {
                 );
               },
               child: const PayRecipientsScreen(),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: PayRoute.payAmount.path,
+        name: PayRoute.payAmount.name,
+        builder: (context, state) {
+          final bloc = state.extra! as PayBloc;
+          return BlocProvider.value(
+            value: bloc,
+            child: BlocListener<PayBloc, PayState>(
+              listenWhen:
+                  (previous, current) =>
+                      previous is PayAmountInputState &&
+                      current is PayRecipientInputState,
+              listener: (context, state) {
+                context.pushNamed(
+                  PayRoute.payRecipients.name,
+                  extra: context.read<PayBloc>(),
+                );
+              },
+              child: const PayAmountScreen(),
             ),
           );
         },

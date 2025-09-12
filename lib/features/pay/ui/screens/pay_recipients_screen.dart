@@ -222,6 +222,10 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
                 context.read<PayBloc>().add(
                   PayEvent.recipientSelected(_selectedRecipient!),
                 );
+                // Also dispatch the continue event to transition to amount input
+                context.read<PayBloc>().add(
+                  const PayEvent.recipientInputContinuePressed(),
+                );
               }
             },
           ),

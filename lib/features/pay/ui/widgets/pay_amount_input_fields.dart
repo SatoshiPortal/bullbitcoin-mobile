@@ -11,12 +11,12 @@ class PayAmountInputFields extends StatelessWidget {
     super.key,
     required this.amountController,
     required this.fiatCurrency,
-    required this.onFiatCurrencyChanged,
+    this.onFiatCurrencyChanged,
   });
 
   final TextEditingController amountController;
   final FiatCurrency fiatCurrency;
-  final void Function(FiatCurrency fiatCurrency) onFiatCurrencyChanged;
+  final void Function(FiatCurrency fiatCurrency)? onFiatCurrencyChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +31,18 @@ class PayAmountInputFields extends StatelessWidget {
           amountController: amountController,
           fiatCurrency: fiatCurrency,
         ),
-        const Gap(16.0),
-        ExchangeAmountCurrencyDropdown(
-          isLoading: isLoading,
-          initialCurrency: fiatCurrency,
-          selectedCurrency: fiatCurrency.code,
-          onCurrencyChanged: (String currencyCode) {
-            final newFiatCurrency = FiatCurrency.fromCode(currencyCode);
-            onFiatCurrencyChanged(newFiatCurrency);
-          },
-        ),
+        if (onFiatCurrencyChanged != null) ...[
+          const Gap(16.0),
+          ExchangeAmountCurrencyDropdown(
+            isLoading: isLoading,
+            initialCurrency: fiatCurrency,
+            selectedCurrency: fiatCurrency.code,
+            onCurrencyChanged: (String currencyCode) {
+              final newFiatCurrency = FiatCurrency.fromCode(currencyCode);
+              onFiatCurrencyChanged!(newFiatCurrency);
+            },
+          ),
+        ],
       ],
     );
   }

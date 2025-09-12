@@ -8,14 +8,16 @@ sealed class PayState with _$PayState {
     ListRecipientsException? listRecipientsException,
   }) = PayInitialState;
   const factory PayState.amountInput({
-    required UserSummary userSummary,
-    required List<Recipient> recipients,
+    required FiatAmount amount,
+    required FiatCurrency currency,
+    UserSummary? userSummary,
   }) = PayAmountInputState;
   const factory PayState.recipientInput({
     required UserSummary userSummary,
     required List<Recipient> recipients,
     required FiatAmount amount,
     required FiatCurrency currency,
+    Recipient? selectedRecipient,
     @Default(false) bool isCreatingPayOrder,
     @Default(false) bool isCreatingNewRecipient,
     @Default([]) List<CadBiller> cadBillers,
@@ -55,12 +57,14 @@ sealed class PayState with _$PayState {
   FiatCurrency get currency {
     return when(
       initial: (_, _, _) => FiatCurrency.cad,
-      amountInput:
-          (userSummary, _) =>
-              userSummary.currency != null
-                  ? FiatCurrency.fromCode(userSummary.currency!)
-                  : FiatCurrency.cad,
-      recipientInput: (_, _, _, currency, _, _, _, _, _) => currency,
+      amountInput: (_, currency, _) => currency,
+      recipientInput:
+          (_, _, _, currency, selectedRecipient, _, _, _, _, _) =>
+              selectedRecipient != null
+                  ? FiatCurrency.fromCode(
+                    selectedRecipient.recipientType.currencyCode,
+                  )
+                  : currency,
       walletSelection: (_, _, _, currency, _, _, _) => currency,
       payment:
           (_, _, _, _, _, _, order, _, _, _, _, _, _, _, _) =>
@@ -72,8 +76,9 @@ sealed class PayState with _$PayState {
   List<Recipient> get recipients {
     return when(
       initial: (_, recipientsException, _) => [],
-      amountInput: (_, recipients) => recipients,
-      recipientInput: (_, recipients, _, _, _, _, _, _, _) => recipients,
+      amountInput: (_, _, _) => [],
+      recipientInput:
+          (_, recipients, _, _, selectedRecipient, _, _, _, _, _) => recipients,
       walletSelection: (_, recipients, _, _, _, _, _) => recipients,
       payment:
           (_, recipients, _, _, _, _, _, _, _, _, _, _, _, _, _) => recipients,
@@ -92,46 +97,56 @@ sealed class PayState with _$PayState {
   PayAmountInputState? get cleanAmountInputState {
     return whenOrNull(
       amountInput:
-          (userSummary, recipients) => PayAmountInputState(
+          (amount, currency, userSummary) => PayAmountInputState(
+            amount: amount,
+            currency: currency,
             userSummary: userSummary,
-            recipients: recipients,
           ),
       recipientInput:
-          (userSummary, recipients, _, _, _, _, _, _, _) => PayAmountInputState(
-            userSummary: userSummary,
-            recipients: recipients,
-          ),
-      walletSelection:
-          (userSummary, recipients, _, _, _, _, _) => PayAmountInputState(
-            userSummary: userSummary,
-            recipients: recipients,
-          ),
-      payment:
-          (userSummary, recipients, _, _, _, _, _, _, _, _, _, _, _, _, _) =>
+          (userSummary, _, amount, currency, _, _, _, _, _, _) =>
               PayAmountInputState(
+                amount: amount,
+                currency: currency,
                 userSummary: userSummary,
-                recipients: recipients,
               ),
+      walletSelection:
+          (_, _, amount, currency, _, _, _) =>
+              PayAmountInputState(amount: amount, currency: currency),
+      payment:
+          (_, _, amount, currency, _, _, _, _, _, _, _, _, _, _, _) =>
+              PayAmountInputState(amount: amount, currency: currency),
     );
   }
 
   PayRecipientInputState? get cleanRecipientInputState {
     return whenOrNull(
       recipientInput:
-          (userSummary, recipients, amount, currency, _, _, _, _, _) =>
-              PayRecipientInputState(
-                userSummary: userSummary,
-                recipients: recipients,
-                amount: amount,
-                currency: currency,
-              ),
+          (
+            userSummary,
+            recipients,
+            amount,
+            currency,
+            selectedRecipient,
+            _,
+            _,
+            _,
+            _,
+            _,
+          ) => PayRecipientInputState(
+            userSummary: userSummary,
+            recipients: recipients,
+            amount: amount,
+            currency: currency,
+            selectedRecipient: selectedRecipient,
+          ),
       walletSelection:
-          (userSummary, recipients, amount, currency, _, _, _) =>
+          (userSummary, recipients, amount, currency, recipient, _, _) =>
               PayRecipientInputState(
                 userSummary: userSummary,
                 recipients: recipients,
                 amount: amount,
                 currency: currency,
+                selectedRecipient: recipient,
               ),
       payment:
           (
@@ -139,7 +154,7 @@ sealed class PayState with _$PayState {
             recipients,
             amount,
             currency,
-            _,
+            recipient,
             _,
             _,
             _,
@@ -155,6 +170,7 @@ sealed class PayState with _$PayState {
             recipients: recipients,
             amount: amount,
             currency: currency,
+            selectedRecipient: recipient,
           ),
     );
   }
@@ -231,30 +247,31 @@ sealed class PayState with _$PayState {
 
 extension PayInitialStateX on PayInitialState {
   PayAmountInputState toAmountInputState({
-    required UserSummary userSummary,
-    required List<Recipient> recipients,
+    required FiatAmount amount,
+    required FiatCurrency currency,
+    UserSummary? userSummary,
   }) {
     return PayAmountInputState(
+      amount: amount,
+      currency: currency,
       userSummary: userSummary,
-      recipients: recipients,
     );
   }
 }
 
 extension PayAmountInputStateX on PayAmountInputState {
-  PayRecipientInputState toRecipientInputState({
-    required FiatAmount amount,
-    required FiatCurrency currency,
+  PayWalletSelectionState toWalletSelectionState({
+    required UserSummary userSummary,
+    required List<Recipient> recipients,
+    required Recipient selectedRecipient,
   }) {
-    return PayRecipientInputState(
+    return PayWalletSelectionState(
       userSummary: userSummary,
       recipients: recipients,
       amount: amount,
       currency: currency,
+      recipient: selectedRecipient,
       isCreatingPayOrder: false,
-      isCreatingNewRecipient: false,
-      cadBillers: const [],
-      isLoadingCadBillers: false,
     );
   }
 }

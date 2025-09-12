@@ -88,7 +88,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
        _getOrderUsecase = getOrderUsecase,
        super(const PayInitialState()) {
     on<PayStarted>(_onStarted);
+    on<PayRecipientInputContinuePressed>(_onRecipientInputContinuePressed);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);
+    on<PayCurrencyChanged>(_onCurrencyChanged);
     on<PayNewRecipientCreated>(_onNewRecipientCreated);
     on<PayRecipientSelected>(_onRecipientSelected);
     on<PayGetCadBillers>(_onGetCadBillers);
@@ -143,16 +145,16 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         ),
       );
 
-      final (userSummary, recipients) =
-          await (
-            _getExchangeUserSummaryUsecase.execute(),
-            _listRecipientsUsecase.execute(fiatOnly: true),
-          ).wait;
+      final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
       emit(
-        initialState.toAmountInputState(
+        PayState.amountInput(
+          amount: const FiatAmount(0.0),
+          currency:
+              userSummary.currency != null
+                  ? FiatCurrency.fromCode(userSummary.currency!)
+                  : FiatCurrency.cad,
           userSummary: userSummary,
-          recipients: recipients,
         ),
       );
     } on ApiKeyException catch (e) {
@@ -164,7 +166,28 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     }
   }
 
-  // From Withdraw: Parse amount and go to recipient input
+  // From Withdraw: Transition from recipient input to amount input
+  Future<void> _onRecipientInputContinuePressed(
+    PayRecipientInputContinuePressed event,
+    Emitter<PayState> emit,
+  ) async {
+    // We should be on a PayRecipientInputState here
+    final recipientInputState = state.cleanRecipientInputState;
+    if (recipientInputState == null) {
+      log.severe('Expected to be on PayRecipientInputState but on: $state');
+      return;
+    }
+    emit(recipientInputState);
+
+    // Transition to wallet selection state with the selected recipient
+    emit(
+      recipientInputState.toWalletSelectionState(
+        recipient: recipientInputState.selectedRecipient!,
+      ),
+    );
+  }
+
+  // From Withdraw: Parse amount and go to wallet selection
   Future<void> _onAmountInputContinuePressed(
     PayAmountInputContinuePressed event,
     Emitter<PayState> emit,
@@ -180,12 +203,40 @@ class PayBloc extends Bloc<PayEvent, PayState> {
 
     final amount = FiatAmount(double.parse(event.amountInput));
 
+    // Get the user summary from the amount input state
+    final userSummary = amountInputState.userSummary;
+
+    if (userSummary == null) {
+      log.severe('Missing user summary in amount input state');
+      return;
+    }
+
+    // Fetch recipients when transitioning to recipient input
+    final recipients = await _listRecipientsUsecase.execute(fiatOnly: true);
+
+    // Transition to recipient input state with the amount and currency
     emit(
-      amountInputState.toRecipientInputState(
+      PayState.recipientInput(
+        userSummary: userSummary,
+        recipients: recipients,
         amount: amount,
         currency: event.fiatCurrency,
       ),
     );
+  }
+
+  Future<void> _onCurrencyChanged(
+    PayCurrencyChanged event,
+    Emitter<PayState> emit,
+  ) async {
+    final amountInputState = state.cleanAmountInputState;
+    if (amountInputState == null) {
+      log.severe('Expected to be on PayAmountInputState but on: $state');
+      return;
+    }
+
+    // Update the currency in the amount input state
+    emit(amountInputState.copyWith(currency: event.fiatCurrency));
   }
 
   // From Withdraw: Create new recipient and create pay order
@@ -254,13 +305,12 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     }
   }
 
-  // From Withdraw: Select existing recipient and create pay order
+  // From Withdraw: Select existing recipient and transition to amount input
   Future<void> _onRecipientSelected(
     PayRecipientSelected event,
     Emitter<PayState> emit,
   ) async {
-    // We should be on a PayRecipientInputState or PayWalletSelectionState and
-    //  return to a clean PayRecipientInputState to change the recipient
+    // We should be on a PayRecipientInputState
     final recipientInputState = state.cleanRecipientInputState;
     if (recipientInputState == null) {
       log.severe('Expected to be on PayRecipientInputState but on: $state');
@@ -269,10 +319,18 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     }
     emit(recipientInputState);
 
-    // Just transition to wallet selection - no order creation yet
-    // We need to know the network (from wallet selection) first
+    // Update the recipient input state with the selected recipient
     final recipient = event.recipient;
-    emit(recipientInputState.toWalletSelectionState(recipient: recipient));
+    final recipientCurrency = FiatCurrency.fromCode(
+      recipient.recipientType.currencyCode,
+    );
+
+    emit(
+      recipientInputState.copyWith(
+        selectedRecipient: recipient,
+        currency: recipientCurrency,
+      ),
+    );
   }
 
   // From Withdraw: Get CAD billers for search
