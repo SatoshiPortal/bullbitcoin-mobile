@@ -54,7 +54,7 @@ class ApiServiceConstants {
   // Bitcoin mempool
   static const bbMempoolUrlPath = 'mempool.bullbitcoin.com';
   static const publicMempoolUrlPath = 'mempool.space';
-  static const testnetMempoolUrlPath = 'mempool.space/testnet';
+  static const testnetMempoolUrlPath = 'testnet.mempool.space';
 
   // Liquid mempool
   static const bbLiquidMempoolUrlPath = 'liquid.bullbitcoin.com';
