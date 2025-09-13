@@ -53,7 +53,8 @@ class ImportColdcardQPage extends StatelessWidget {
                 const Gap(16),
                 BBButton.small(
                   label: 'Instructions',
-                  onPressed: () => InstructionsBottomSheet.show(context),
+                  onPressed:
+                      () => ColdcardQInstructionsBottomSheet.show(context),
                   bgColor: context.colour.onSecondary,
                   textColor: context.colour.secondary,
                   outlined: true,

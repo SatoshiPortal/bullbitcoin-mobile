@@ -1,10 +1,14 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_enter_note.dart';
@@ -29,6 +33,10 @@ class ReceiveQrPage extends StatelessWidget {
     final isLightning = context.select(
       (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
     );
+    final isLedger = context.select(
+      (ReceiveBloc bloc) =>
+          bloc.state.wallet?.signerDevice == SignerDeviceEntity.ledger,
+    );
 
     return SingleChildScrollView(
       child: Column(
@@ -45,6 +53,7 @@ class ReceiveQrPage extends StatelessWidget {
             // The switch to only copy/scan the address is only for Bitcoin since
             // the other networks don't have payjoin bip21 uri's
             const Column(children: [ReceiveCopyAddress(), Gap(10)]),
+          if (isLedger) const Column(children: [VerifyAddressOnLedgerButton()]),
           if (!isLightning) const ReceiveNewAddressButton(),
           const Gap(40),
         ],
@@ -554,6 +563,45 @@ class ReceiveNewAddressButton extends StatelessWidget {
         },
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
+      ),
+    );
+  }
+}
+
+class VerifyAddressOnLedgerButton extends StatelessWidget {
+  const VerifyAddressOnLedgerButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: BBButton.big(
+        label: 'Verify Address on Ledger',
+        onPressed: () {
+          final state = context.read<ReceiveBloc>().state;
+
+          if (state.wallet == null || state.bitcoinAddress == null) {
+            SnackBarUtils.showSnackBar(
+              context,
+              'Unable to verify address: Missing wallet or address information',
+            );
+            return;
+          }
+
+          final keyChainPath =
+              state.bitcoinAddress!.keyChain == WalletAddressKeyChain.external
+                  ? "0"
+                  : "1";
+          final derivationPath =
+              "${state.wallet!.derivationPath.replaceAll('h', "'").replaceAll(' ', '')}/$keyChainPath/${state.bitcoinAddress!.index}";
+          context.pushNamed(
+            LedgerRoute.verifyAddress.name,
+            extra: {'address': state.address, 'derivationPath': derivationPath},
+          );
+        },
+        bgColor: context.colour.primary,
+        textColor: context.colour.onPrimary,
+        outlined: true,
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
+import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -33,6 +34,14 @@ class ImportWalletPage extends StatelessWidget {
                 onTap:
                     () => context.pushNamed(
                       ImportColdcardQRoute.importColdcardQ.name,
+                    ),
+              ),
+              const Gap(16),
+              TabMenuVerticalButton(
+                title: 'Connect Ledger',
+                onTap:
+                    () => context.pushNamed(
+                      LedgerRoute.importLedger.name,
                     ),
               ),
               const Gap(16),
