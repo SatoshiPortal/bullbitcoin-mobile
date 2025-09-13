@@ -100,6 +100,13 @@ dependencies:
       url: https://github.com/ethicnology/dart-satoshifier.git
       ref: 9c69f4408f9f4e6b471ad2b180e006aea40e7d5a
   flutter_nfc_kit: ^3.6.0
+  ledger_flutter_plus: ^1.5.4
+  ledger_bitcoin:
+    git:
+      url: https://github.com/ben-kaufman/ledger-flutter-plus-plugins
+      path: packages/ledger-bitcoin
+      ref: 7e791f837166275d164f253bc03f5e90013825ee
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   build_runner: ^2.4.15
