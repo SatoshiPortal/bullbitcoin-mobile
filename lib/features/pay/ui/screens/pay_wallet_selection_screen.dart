@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
@@ -15,11 +16,20 @@ class PayWalletSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Update BitcoinPriceBloc currency to match pay flow currency
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currency = context.read<PayBloc>().state.currency;
+      context.read<BitcoinPriceBloc>().add(
+        BitcoinPriceCurrencyChanged(currencyCode: currency.code),
+      );
+    });
     final isCreatingPayOrder = context.select(
       (PayBloc bloc) =>
           bloc.state is PayWalletSelectionState &&
           (bloc.state as PayWalletSelectionState).isCreatingPayOrder,
     );
+
+    final currency = context.select((PayBloc bloc) => bloc.state.currency);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Select Wallet')),
@@ -52,6 +62,7 @@ class PayWalletSelectionScreen extends StatelessWidget {
                               PayEvent.walletSelected(wallet: wallet),
                             ),
                     localSignersOnly: true,
+                    fiatCurrency: currency.code,
                   ),
                   const Gap(24.0),
                   ListTile(

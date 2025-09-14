@@ -681,7 +681,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
               'Expected FiatPaymentOrder but received a different order type',
         );
       }
-
+      if (state is PayPaymentState) {
+        emit((state as PayPaymentState).copyWith(isConfirmingPayment: false));
+      }
       emit(payPaymentState.toSuccessState(payOrder: payPaymentState.payOrder));
     } on PrepareLiquidSendException catch (e) {
       emit(
@@ -721,10 +723,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           isConfirmingPayment: false,
         ),
       );
-    } finally {
-      if (state is PayPaymentState) {
-        emit((state as PayPaymentState).copyWith(isConfirmingPayment: false));
-      }
     }
   }
 

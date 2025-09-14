@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
@@ -15,6 +16,14 @@ class SellWalletSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Update BitcoinPriceBloc currency to match sell flow currency
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currency = context.read<SellBloc>().state.fiatCurrency;
+      context.read<BitcoinPriceBloc>().add(
+        BitcoinPriceCurrencyChanged(currencyCode: currency.code),
+      );
+    });
+
     final isCreatingSellOrder = context.select(
       (SellBloc bloc) =>
           bloc.state is SellWalletSelectionState &&
