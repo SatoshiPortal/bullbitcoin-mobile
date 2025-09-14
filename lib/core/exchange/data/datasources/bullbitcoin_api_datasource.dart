@@ -187,6 +187,9 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required String orderId,
   }) async {
+    log.info('getOrderSummary request - orderId: $orderId');
+    log.info('getOrderSummary request - apiKey: $apiKey');
+
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -197,6 +200,9 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
+
+    log.info('getOrderSummary response: ${resp.data}');
+
     if (resp.statusCode != 200) throw Exception('Failed to get order summary');
     return OrderModel.fromJson(
       (resp.data['result']['element'] ?? resp.data['result'])

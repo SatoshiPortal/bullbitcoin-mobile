@@ -33,4 +33,6 @@ sealed class PayEvent with _$PayEvent {
   const factory PayEvent.utxoSelected({required WalletUtxo utxo}) =
       PayUtxoSelected;
   const factory PayEvent.loadUtxos() = PayLoadUtxos;
+  const factory PayEvent.updateOrderStatus({required String orderId}) =
+      PayUpdateOrderStatus;
 }

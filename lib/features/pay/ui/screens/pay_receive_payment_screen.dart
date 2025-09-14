@@ -22,6 +22,32 @@ import 'package:gap/gap.dart';
 class PayReceivePaymentScreen extends StatelessWidget {
   const PayReceivePaymentScreen({super.key});
 
+  String _formatSinpePhoneNumber(String? phoneNumber) {
+    if (phoneNumber == null || phoneNumber.isEmpty) return 'N/A';
+
+    // Remove any existing formatting
+    final String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
+
+    // Add +501 prefix
+    final String formattedNumber = '+501$cleanNumber';
+
+    // Add dashes every 4 digits after the prefix
+    if (cleanNumber.length >= 4) {
+      const String prefix = '+501';
+      final String number = cleanNumber;
+      final StringBuffer formatted = StringBuffer(prefix);
+
+      for (int i = 0; i < number.length; i += 4) {
+        final int end = (i + 4 < number.length) ? i + 4 : number.length;
+        formatted.write('-${number.substring(i, end)}');
+      }
+
+      return formatted.toString();
+    }
+
+    return formattedNumber;
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.select((PayBloc bloc) => bloc.state);
@@ -704,7 +730,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
             defaultComment,
             isCorporate,
             corporateName,
-          ) => phoneNumber,
+          ) => _formatSinpePhoneNumber(phoneNumber),
     );
   }
 }

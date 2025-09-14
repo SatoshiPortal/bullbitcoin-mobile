@@ -102,6 +102,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     on<PayReplaceByFeeChanged>(_onReplaceByFeeChanged);
     on<PayUtxoSelected>(_onUtxoSelected);
     on<PayLoadUtxos>(_onLoadUtxos);
+    on<PayUpdateOrderStatus>(_onUpdateOrderStatus);
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
@@ -816,6 +817,30 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           error: PayError.unexpected(message: 'Failed to load UTXOs: $e'),
         ),
       );
+    }
+  }
+
+  // Update order status for SINPE móvil success screen
+  Future<void> _onUpdateOrderStatus(
+    PayUpdateOrderStatus event,
+    Emitter<PayState> emit,
+  ) async {
+    try {
+      final orderSummary = await _getOrderUsecase.execute(
+        orderId: event.orderId,
+      );
+
+      // Update the order in the current state if we're in success state
+      if (state is PaySuccessState) {
+        final currentState = state as PaySuccessState;
+        // Convert Order to FiatPaymentOrder if needed
+        if (orderSummary is FiatPaymentOrder) {
+          emit(currentState.copyWith(payOrder: orderSummary));
+        }
+      }
+    } catch (e) {
+      log.severe('Failed to update order status: $e');
+      // Don't emit error state for refresh failures in success screen
     }
   }
 

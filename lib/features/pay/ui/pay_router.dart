@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/pay/ui/screens/pay_external_wallet_network_se
 import 'package:bb_mobile/features/pay/ui/screens/pay_receive_payment_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_recipients_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_send_payment_screen.dart';
+import 'package:bb_mobile/features/pay/ui/screens/pay_sinpe_success_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_success_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_wallet_selection_screen.dart';
 import 'package:bb_mobile/locator.dart';
@@ -19,7 +20,8 @@ enum PayRoute {
   payExternalWalletNetworkSelection('external-wallet-network-selection'),
   paySendPayment('send-payment'),
   payReceivePayment('receive-payment'),
-  paySuccess('success');
+  paySuccess('success'),
+  paySinpeSuccess('sinpe-success');
 
   final String path;
 
@@ -209,6 +211,15 @@ class PayRouter {
             (context, state) => BlocProvider.value(
               value: state.extra! as PayBloc,
               child: const PaySuccessScreen(),
+            ),
+      ),
+      GoRoute(
+        path: PayRoute.paySinpeSuccess.path,
+        name: PayRoute.paySinpeSuccess.name,
+        builder:
+            (context, state) => BlocProvider.value(
+              value: state.extra! as PayBloc,
+              child: const PaySinpeSuccessScreen(),
             ),
       ),
     ],
