@@ -3,11 +3,13 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
+import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum ExchangeRoute {
   exchangeHome('/exchange'),
+  exchangeLanding('/exchange/landing'),
   exchangeAuth('/exchange/auth'),
   exchangeKyc('kyc');
 
@@ -22,10 +24,9 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeHome.name,
       path: ExchangeRoute.exchangeHome.path,
       redirect: (context, state) {
-        // Redirect to auth screen if the user is logged out
         final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
         if (notLoggedIn) {
-          return ExchangeRoute.exchangeAuth.path;
+          return ExchangeRoute.exchangeLanding.path;
         }
         return null;
       },
@@ -44,6 +45,13 @@ class ExchangeRouter {
           },
         ),
       ],
+    ),
+    GoRoute(
+      name: ExchangeRoute.exchangeLanding.name,
+      path: ExchangeRoute.exchangeLanding.path,
+      builder: (context, state) {
+        return const ExchangeLandingScreen();
+      },
     ),
     GoRoute(
       name: ExchangeRoute.exchangeAuth.name,
