@@ -594,7 +594,7 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
               "${state.wallet!.derivationPath.replaceAll(' ', '')}/$keyChainPath/${state.bitcoinAddress!.index}";
           context.pushNamed(
             LedgerRoute.verifyAddress.name,
-            extra: {'address': state.address, 'derivationPath': derivationPath},
+            extra: (address: state.address, derivationPath: derivationPath),
           );
         },
         bgColor: context.colour.primary,

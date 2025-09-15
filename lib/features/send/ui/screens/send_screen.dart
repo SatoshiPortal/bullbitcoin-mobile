@@ -1729,7 +1729,7 @@ class SignLedgerButton extends StatelessWidget {
 
         final result = await context.pushNamed<String>(
           LedgerRoute.signTransaction.name,
-          extra: {'psbt': unsignedPsbt, 'derivationPath': derivationPath},
+          extra: (psbt: unsignedPsbt, derivationPath: derivationPath),
         );
 
         if (result != null && context.mounted) {
