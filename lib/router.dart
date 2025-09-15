@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
+import 'package:bb_mobile/features/ark_setup/router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
@@ -102,6 +103,7 @@ class AppRouter {
       Bip85EntropyRouter.route,
       RecoverBullSelectVaultRouter.route,
       RecoverBullVaultRecoveryRouter.route,
+      ArkSetupRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
