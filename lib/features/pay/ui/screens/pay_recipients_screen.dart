@@ -130,6 +130,7 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
                             RecipientsTab.newRecipient =>
                               state is PayRecipientInputState
                                   ? PayNewRecipientForm(
+                                    isLoading: state.isLoadingRecipients,
                                     userSummary: state.userSummary,
                                   )
                                   : const PayNewRecipientForm(),

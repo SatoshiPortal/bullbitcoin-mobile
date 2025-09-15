@@ -21,8 +21,13 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 class PayNewRecipientForm extends StatefulWidget {
-  const PayNewRecipientForm({super.key, this.userSummary});
+  const PayNewRecipientForm({
+    super.key,
+    this.isLoading = false,
+    this.userSummary,
+  });
 
+  final bool isLoading;
   final UserSummary? userSummary;
 
   @override
@@ -141,7 +146,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.userSummary == null) ...[
+          if (!widget.isLoading && widget.userSummary == null) ...[
             InfoCard(
               title: 'Not Logged In',
               description:
