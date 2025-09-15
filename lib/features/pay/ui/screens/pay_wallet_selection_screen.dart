@@ -32,7 +32,18 @@ class PayWalletSelectionScreen extends StatelessWidget {
     final currency = context.select((PayBloc bloc) => bloc.state.currency);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Wallet')),
+      appBar: AppBar(
+        title: const Text('Select Wallet'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.read<PayBloc>().add(
+              const PayEvent.walletSelectionBackPressed(),
+            );
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [

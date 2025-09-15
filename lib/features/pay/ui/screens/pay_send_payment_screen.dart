@@ -81,6 +81,13 @@ class PaySendPaymentScreen extends StatelessWidget {
           height: 32,
           width: 32,
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.read<PayBloc>().add(const PayEvent.paymentBackPressed());
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: SafeArea(
         child: ScrollableColumn(

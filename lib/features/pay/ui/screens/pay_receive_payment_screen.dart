@@ -71,6 +71,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
           title: '',
           bullLogo: true,
           onBack: () {
+            context.read<PayBloc>().add(const PayEvent.paymentBackPressed());
             Navigator.of(context).pop();
           },
         ),

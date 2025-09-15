@@ -4,7 +4,7 @@ part of 'pay_bloc.dart';
 sealed class PayState with _$PayState {
   const factory PayState.recipientInput({
     UserSummary? userSummary,
-    List<Recipient>? recipients,
+    @Default([]) List<Recipient> recipients,
     Recipient? selectedRecipient,
     @Default(false) bool isCreatingPayOrder,
     @Default(false) bool isCreatingNewRecipient,
@@ -74,7 +74,7 @@ sealed class PayState with _$PayState {
   List<Recipient> get recipients {
     return when(
       amountInput: (_, _, _, recipients, _) => recipients,
-      recipientInput: (_, recipients, _, _, _, _, _, _, _) => recipients ?? [],
+      recipientInput: (_, recipients, _, _, _, _, _, _, _) => recipients,
       walletSelection: (_, recipients, _, _, _, _, _) => recipients,
       payment:
           (_, recipients, _, _, _, _, _, _, _, _, _, _, _, _, _) => recipients,
@@ -112,7 +112,7 @@ sealed class PayState with _$PayState {
                     : FiatCurrency.cad,
             amount: const FiatAmount(0.0),
             userSummary: userSummary!,
-            recipients: recipients ?? [],
+            recipients: recipients,
             selectedRecipient:
                 selectedRecipient ??
                 (throw StateError(
@@ -256,7 +256,7 @@ extension PayRecipientInputStateX on PayRecipientInputState {
       currency: FiatCurrency.fromCode(recipient.recipientType.currencyCode),
       amount: const FiatAmount(0.0),
       userSummary: userSummary!,
-      recipients: recipients ?? [],
+      recipients: recipients,
       selectedRecipient: recipient,
     );
   }
@@ -271,7 +271,7 @@ extension PayRecipientInputStateX on PayRecipientInputState {
     }
     return PayWalletSelectionState(
       userSummary: userSummary!,
-      recipients: recipients ?? [],
+      recipients: recipients,
       amount: const FiatAmount(0.0),
       currency: FiatCurrency.fromCode(recipient.recipientType.currencyCode),
       selectedRecipient: recipient,

@@ -211,7 +211,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         currency: recipientCurrency,
         amount: const FiatAmount(0.0),
         userSummary: recipientInputState.userSummary!,
-        recipients: recipientInputState.recipients ?? [],
+        recipients: recipientInputState.recipients,
         selectedRecipient: selectedRecipient,
       ),
     );
@@ -287,7 +287,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
 
       // Add the new recipient to the list and update state
       final updatedRecipients = [
-        ...(recipientInputState.recipients ?? []),
+        ...recipientInputState.recipients,
         createdRecipient,
       ];
 
