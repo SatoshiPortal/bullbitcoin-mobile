@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class PayReceivePaymentScreen extends StatelessWidget {
   const PayReceivePaymentScreen({super.key});
@@ -66,14 +67,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: '',
-          bullLogo: true,
-          onBack: () {
-            context.read<PayBloc>().add(const PayEvent.paymentBackPressed());
-            Navigator.of(context).pop();
-          },
-        ),
+        flexibleSpace: TopBar(title: '', bullLogo: true, onBack: context.pop),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

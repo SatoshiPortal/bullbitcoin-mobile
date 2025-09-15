@@ -48,7 +48,7 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
     return BlocBuilder<PayBloc, PayState>(
       builder: (context, state) {
         // Check if userSummary exists, if not redirect to new beneficiary tab
-        if (state is PayRecipientInputState && state.userSummary == null) {
+        if (state.userSummary == null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               setState(() {
@@ -127,13 +127,12 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
                         ),
                         Expanded(
                           child: switch (_selectedTab) {
-                            RecipientsTab.newRecipient =>
-                              state is PayRecipientInputState
-                                  ? PayNewRecipientForm(
-                                    isLoading: state.isLoadingRecipients,
-                                    userSummary: state.userSummary,
-                                  )
-                                  : const PayNewRecipientForm(),
+                            RecipientsTab.newRecipient => PayNewRecipientForm(
+                              isLoading:
+                                  state is PayRecipientInputState &&
+                                  state.isLoadingRecipients,
+                              userSummary: state.userSummary,
+                            ),
                             RecipientsTab.myRecipients => _PayRecipientsTab(
                               key: ValueKey(_selectedTab),
                             ),
@@ -202,12 +201,10 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
 
     return BlocBuilder<PayBloc, PayState>(
       builder: (context, state) {
-        if (state is! PayRecipientInputState) {
-          return const SizedBox.shrink();
-        }
-
         final allEligibleRecipients = state.recipients;
         final filteredRecipients = _applyFilters(allEligibleRecipients);
+        final isLoadingRecipients =
+            state is PayRecipientInputState && state.isLoadingRecipients;
 
         return Column(
           children: [
@@ -226,7 +223,7 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
                 ],
               ),
             ),
-            if (filteredRecipients.isEmpty && !state.isLoadingRecipients) ...[
+            if (filteredRecipients.isEmpty && !isLoadingRecipients) ...[
               const Gap(40.0),
               Text(
                 'No recipients found to pay to.',
@@ -234,7 +231,7 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
                   color: context.colour.outline,
                 ),
               ),
-            ] else if (state.isLoadingRecipients) ...[
+            ] else if (isLoadingRecipients) ...[
               const Gap(40.0),
               Center(
                 child: Text(
@@ -273,10 +270,6 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
                   if (_selectedRecipient != null) {
                     context.read<PayBloc>().add(
                       PayEvent.recipientSelected(_selectedRecipient!),
-                    );
-                    // Also dispatch the continue event to transition to amount input
-                    context.read<PayBloc>().add(
-                      const PayEvent.recipientInputContinuePressed(),
                     );
                   }
                 },

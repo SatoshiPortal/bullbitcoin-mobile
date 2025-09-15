@@ -22,18 +22,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pay'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            context.read<PayBloc>().add(
-              const PayEvent.amountInputBackPressed(),
-            );
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
+      appBar: AppBar(title: const Text('Pay')),
       body: SafeArea(
         child: Form(
           key: _formKey,
