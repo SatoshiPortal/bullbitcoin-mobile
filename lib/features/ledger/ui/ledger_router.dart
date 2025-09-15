@@ -25,7 +25,7 @@ class LedgerRouter {
       name: LedgerRoute.signTransaction.name,
       path: LedgerRoute.signTransaction.path,
       builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>?;
+        final extra = state.extra as LedgerRouteParams?;
         return LedgerActionScreen(
           action: const LedgerAction.signTransaction(),
           parameters: extra,
@@ -36,7 +36,7 @@ class LedgerRouter {
       name: LedgerRoute.verifyAddress.name,
       path: LedgerRoute.verifyAddress.path,
       builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>?;
+        final extra = state.extra as LedgerRouteParams?;
         return LedgerActionScreen(
           action: const LedgerAction.verifyAddress(),
           parameters: extra,

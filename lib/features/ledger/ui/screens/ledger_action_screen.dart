@@ -21,9 +21,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
+typedef LedgerRouteParams =
+    ({String? psbt, String? derivationPath, String? address});
+
 class LedgerActionScreen extends StatelessWidget {
   final LedgerAction action;
-  final Map<String, dynamic>? parameters;
+  final LedgerRouteParams? parameters;
 
   const LedgerActionScreen({super.key, required this.action, this.parameters});
 
@@ -42,7 +45,7 @@ class LedgerActionScreen extends StatelessWidget {
 
 class _LedgerActionView extends StatelessWidget {
   final LedgerAction action;
-  final Map<String, dynamic>? parameters;
+  final LedgerRouteParams? parameters;
 
   const _LedgerActionView({required this.action, this.parameters});
 
@@ -151,7 +154,7 @@ class _LedgerActionView extends StatelessWidget {
   }
 
   Widget _buildAddressDisplay(BuildContext context) {
-    final address = parameters?['address'] as String?;
+    final address = parameters?.address;
 
     if (address == null) return const SizedBox.shrink();
 
@@ -286,8 +289,8 @@ class _LedgerActionView extends StatelessWidget {
   }
 
   Future<String> _executeSignTransaction(LedgerDeviceEntity device) {
-    final psbt = parameters?['psbt'] as String?;
-    final derivationPath = parameters?['derivationPath'] as String?;
+    final psbt = parameters?.psbt;
+    final derivationPath = parameters?.derivationPath;
 
     if (psbt == null) {
       throw Exception('PSBT is required for signing');
@@ -306,8 +309,8 @@ class _LedgerActionView extends StatelessWidget {
   }
 
   Future<bool> _executeVerifyAddress(LedgerDeviceEntity device) {
-    final address = parameters?['address'] as String?;
-    final derivationPath = parameters?['derivationPath'] as String?;
+    final address = parameters?.address;
+    final derivationPath = parameters?.derivationPath;
 
     if (address == null) {
       throw Exception('Address is required for verification');
