@@ -559,6 +559,9 @@ class SendAmountConfirmButton extends StatelessWidget {
     final loadingBestWallet = context.select(
       (SendCubit cubit) => cubit.state.loadingBestWallet,
     );
+    final inputAmountSat = context.select(
+      (SendCubit cubit) => cubit.state.inputAmountSat,
+    );
     return BBButton.big(
       label: 'Continue',
       onPressed: () {
@@ -568,7 +571,8 @@ class SendAmountConfirmButton extends StatelessWidget {
           amountConfirmedClicked ||
           !hasBalance ||
           creatingSwap ||
-          loadingBestWallet,
+          loadingBestWallet ||
+          inputAmountSat <= 0,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );
