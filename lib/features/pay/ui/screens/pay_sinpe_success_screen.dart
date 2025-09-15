@@ -161,22 +161,22 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Gap(8),
-                    BBText(
-                      'COMPROBANTE:',
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.secondary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Gap(4),
-                    BBText(
-                      order.orderId,
-                      style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.secondary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    // const Gap(8),
+                    // BBText(
+                    //   'COMPROBANTE:',
+                    //   style: context.font.headlineSmall?.copyWith(
+                    //     color: context.colour.secondary,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
+                    // const Gap(4),
+                    // BBText(
+                    //   order.orderId,
+                    //   style: context.font.bodyMedium?.copyWith(
+                    //     color: context.colour.secondary,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
                     const Gap(32),
                     SizedBox(
                       width: double.infinity,
