@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
@@ -49,7 +48,7 @@ class GetLedgerWatchOnlyWalletUsecase {
       watchOnlyDescriptor: watchOnly,
       signer: SignerEntity.remote,
       label: label,
-      signerDevice: SignerDeviceEntity.ledger,
+      signerDevice: device.deviceType,
     );
 
     return watchOnlyWallet;

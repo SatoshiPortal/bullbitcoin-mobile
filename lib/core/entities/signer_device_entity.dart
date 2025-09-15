@@ -2,8 +2,13 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 
 enum SignerDeviceEntity {
   coldcardQ,
-  ledger;
+  ledgerNanoSPlus,
+  ledgerNanoX,
+  ledgerFlex,
+  ledgerStax;
 
   String get displayName =>
       StringFormatting.camelCaseToTitleCase(name, separator: ' ');
+
+  bool get isLedger => name.startsWith('ledger');
 }

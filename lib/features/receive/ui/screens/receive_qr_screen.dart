@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -34,8 +33,7 @@ class ReceiveQrPage extends StatelessWidget {
       (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
     );
     final isLedger = context.select(
-      (ReceiveBloc bloc) =>
-          bloc.state.wallet?.signerDevice == SignerDeviceEntity.ledger,
+      (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isLedger ?? false,
     );
 
     return SingleChildScrollView(
