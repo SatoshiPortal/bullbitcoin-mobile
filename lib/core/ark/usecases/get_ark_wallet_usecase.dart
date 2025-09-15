@@ -1,6 +1,6 @@
 import 'package:ark_wallet/ark_wallet.dart';
+import 'package:bb_mobile/core/ark/ark.dart';
 import 'package:bb_mobile/core/ark/usecases/fetch_ark_secret_usecase.dart';
-import 'package:bb_mobile/features/ark/ark.dart';
 import 'package:bb_mobile/features/ark/errors.dart';
 
 class GetArkWalletUsecase {
