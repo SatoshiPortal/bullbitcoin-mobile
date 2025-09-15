@@ -1,7 +1,7 @@
 import 'package:ark_wallet/ark_wallet.dart';
+import 'package:bb_mobile/core/ark/ark.dart';
 import 'package:bb_mobile/core/ark/usecases/create_ark_secret_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
-import 'package:bb_mobile/features/ark/ark.dart';
 import 'package:bb_mobile/features/ark/errors.dart';
 import 'package:bb_mobile/features/ark_setup/presentation/state.dart';
 import 'package:convert/convert.dart';

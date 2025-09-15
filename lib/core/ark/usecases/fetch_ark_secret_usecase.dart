@@ -1,9 +1,9 @@
+import 'package:bb_mobile/core/ark/ark.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/ark/ark.dart';
 import 'package:bb_mobile/features/ark/errors.dart';
 import 'package:bip85/bip85.dart' as bip85;
 import 'package:convert/convert.dart';
