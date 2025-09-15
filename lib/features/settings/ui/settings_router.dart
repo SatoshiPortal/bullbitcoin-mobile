@@ -94,8 +94,8 @@ class SettingsRouter {
                   (previous, current) =>
                       !previous.notLoggedIn && current.notLoggedIn,
               listener: (context, state) {
-                // Redirect to auth screen if the user logged out
-                context.goNamed(ExchangeRoute.exchangeAuth.name);
+                // Redirect to landing page if the user logged out
+                context.goNamed(ExchangeRoute.exchangeLanding.name);
               },
               child: const ExchangeSettingsScreen(),
             ),

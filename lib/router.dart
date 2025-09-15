@@ -44,6 +44,9 @@ class AppRouter {
           final location = state.uri.toString();
           final tabIndex =
               location.startsWith(ExchangeRoute.exchangeHome.path) ? 1 : 0;
+          final isExchangeLanding = location.contains(
+            ExchangeRoute.exchangeLanding.path,
+          );
 
           return Scaffold(
             // The app bar of the exchange tab is done with a sliver app bar
@@ -51,27 +54,30 @@ class AppRouter {
             appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
             extendBodyBehindAppBar: true,
             body: child,
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: tabIndex,
-              onTap: (index) {
-                final goNamed =
-                    index == 0
-                        ? WalletRoute.walletHome.name
-                        : ExchangeRoute.exchangeHome.name;
+            bottomNavigationBar:
+                isExchangeLanding
+                    ? null
+                    : BottomNavigationBar(
+                      currentIndex: tabIndex,
+                      onTap: (index) {
+                        final goNamed =
+                            index == 0
+                                ? WalletRoute.walletHome.name
+                                : ExchangeRoute.exchangeHome.name;
 
-                context.goNamed(goNamed);
-              },
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.currency_bitcoin),
-                  label: 'Wallet',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.attach_money),
-                  label: 'Exchange',
-                ),
-              ],
-            ),
+                        context.goNamed(goNamed);
+                      },
+                      items: const [
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.currency_bitcoin),
+                          label: 'Wallet',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.attach_money),
+                          label: 'Exchange',
+                        ),
+                      ],
+                    ),
           );
         },
         routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],
