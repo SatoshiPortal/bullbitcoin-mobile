@@ -984,11 +984,6 @@ class _SpeiClabeForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
       ],
     );
   }
@@ -1039,11 +1034,6 @@ class _SpeiSmsForm extends StatelessWidget {
           'Enter a label for this recipient',
           formData,
           onFormDataChanged,
-        ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
         ),
       ],
     );
@@ -1099,11 +1089,6 @@ class _SpeiCardForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
       ],
     );
   }
@@ -1149,11 +1134,6 @@ class _SinpeIbanForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
       ],
     );
   }
@@ -1198,11 +1178,6 @@ class _SinpeMovilForm extends StatelessWidget {
           'Enter a label for this recipient',
           formData,
           onFormDataChanged,
-        ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
         ),
       ],
     );

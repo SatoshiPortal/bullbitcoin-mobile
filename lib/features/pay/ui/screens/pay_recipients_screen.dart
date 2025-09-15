@@ -45,80 +45,108 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select recipient'),
-        scrolledUnderElevation: 0,
-      ),
-      body: Column(
-        children: [
-          FadingLinearProgress(
-            height: 3,
-            trigger: context.select<PayBloc, bool>((bloc) {
-              final state = bloc.state;
-              if (state is PayRecipientInputState) {
-                return state.isCreatingPayOrder ||
-                    state.isCreatingNewRecipient ||
-                    state.isLoadingRecipients;
-              }
-              return false;
-            }),
-            backgroundColor: context.colour.onPrimary,
-            foregroundColor: context.colour.primary,
+    return BlocBuilder<PayBloc, PayState>(
+      builder: (context, state) {
+        // Check if userSummary exists, if not redirect to new beneficiary tab
+        if (state is PayRecipientInputState && state.userSummary == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                _selectedTab = RecipientsTab.newRecipient;
+              });
+            }
+          });
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Select recipient'),
+            scrolledUnderElevation: 0,
           ),
-          Expanded(
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  children: [
-                    ColoredBox(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      child: Column(
-                        children: [
-                          const Gap(16.0),
-                          Text(
-                            'Who are you paying?',
-                            style: context.font.labelMedium?.copyWith(
-                              color: Colors.black,
-                            ),
+          body: Column(
+            children: [
+              FadingLinearProgress(
+                height: 3,
+                trigger: context.select<PayBloc, bool>((bloc) {
+                  final state = bloc.state;
+                  if (state is PayRecipientInputState) {
+                    return state.isCreatingPayOrder ||
+                        state.isCreatingNewRecipient ||
+                        state.isLoadingRecipients;
+                  }
+                  return false;
+                }),
+                backgroundColor: context.colour.onPrimary,
+                foregroundColor: context.colour.primary,
+              ),
+              Expanded(
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      children: [
+                        ColoredBox(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          child: Column(
+                            children: [
+                              const Gap(16.0),
+                              Text(
+                                'Who are you paying?',
+                                style: context.font.labelMedium?.copyWith(
+                                  color: context.colour.secondary,
+                                ),
+                              ),
+                              const Gap(16.0),
+                              SizedBox(
+                                width: double.infinity,
+                                child: BBSegmentFull(
+                                  items: {
+                                    RecipientsTab.newRecipient.displayValue,
+                                    RecipientsTab.myRecipients.displayValue,
+                                  },
+                                  initialValue: _selectedTab.displayValue,
+                                  disabledItems:
+                                      state is PayRecipientInputState &&
+                                              state.userSummary == null
+                                          ? {
+                                            RecipientsTab
+                                                .myRecipients
+                                                .displayValue,
+                                          }
+                                          : {},
+                                  onSelected: (value) {
+                                    _onTabSelected(
+                                      RecipientsTab.fromDisplayValue(value),
+                                    );
+                                  },
+                                ),
+                              ),
+                              const Gap(16.0),
+                            ],
                           ),
-                          const Gap(16.0),
-                          SizedBox(
-                            width: double.infinity,
-                            child: BBSegmentFull(
-                              items: {
-                                RecipientsTab.newRecipient.displayValue,
-                                RecipientsTab.myRecipients.displayValue,
-                              },
-                              initialValue: _selectedTab.displayValue,
-                              onSelected: (value) {
-                                _onTabSelected(
-                                  RecipientsTab.fromDisplayValue(value),
-                                );
-                              },
-                            ),
-                          ),
-                          const Gap(16.0),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: switch (_selectedTab) {
-                        RecipientsTab.newRecipient =>
-                          const PayNewRecipientForm(),
-                        RecipientsTab.myRecipients => _PayRecipientsTab(
-                          key: ValueKey(_selectedTab),
                         ),
-                      },
+                        Expanded(
+                          child: switch (_selectedTab) {
+                            RecipientsTab.newRecipient =>
+                              state is PayRecipientInputState
+                                  ? PayNewRecipientForm(
+                                    userSummary: state.userSummary,
+                                  )
+                                  : const PayNewRecipientForm(),
+                            RecipientsTab.myRecipients => _PayRecipientsTab(
+                              key: ValueKey(_selectedTab),
+                            ),
+                          },
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -197,11 +225,23 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
                 ],
               ),
             ),
-            if (filteredRecipients.isEmpty) ...[
+            if (filteredRecipients.isEmpty && !state.isLoadingRecipients) ...[
               const Gap(40.0),
-              const Text(
+              Text(
                 'No recipients found to pay to.',
-                style: TextStyle(fontSize: 16.0, color: Colors.grey),
+                style: context.font.bodyLarge?.copyWith(
+                  color: context.colour.outline,
+                ),
+              ),
+            ] else if (state.isLoadingRecipients) ...[
+              const Gap(40.0),
+              Center(
+                child: Text(
+                  'Loading recipients...',
+                  style: context.font.bodyLarge?.copyWith(
+                    color: context.colour.outline,
+                  ),
+                ),
               ),
             ] else ...[
               Expanded(

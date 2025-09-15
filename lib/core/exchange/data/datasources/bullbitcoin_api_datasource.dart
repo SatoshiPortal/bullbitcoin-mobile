@@ -167,7 +167,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required String orderId,
   }) async {
-    log.info('Confirm order request: $orderId');
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -178,7 +177,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-    log.info('Confirm order response: ${resp.data}');
     if (resp.statusCode != 200) throw Exception('Failed to confirm order');
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
@@ -187,9 +185,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required String orderId,
   }) async {
-    log.info('getOrderSummary request - orderId: $orderId');
-    log.info('getOrderSummary request - apiKey: $apiKey');
-
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -200,8 +195,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-
-    log.info('getOrderSummary response: ${resp.data}');
 
     if (resp.statusCode != 200) throw Exception('Failed to get order summary');
     return OrderModel.fromJson(
@@ -219,6 +212,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'method': 'listOrderSummaries',
         'params': {
           "sortBy": {"id": "createdAt", "sort": "desc"},
+          "paginator": {"page": 1, "pageSize": 50},
         },
       },
       options: Options(headers: {'X-API-Key': apiKey}),
@@ -287,7 +281,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-    log.info('getFundingDetails: ${resp.data}');
     if (resp.statusCode != 200) {
       throw Exception('Failed to get funding details');
     }
@@ -399,16 +392,11 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       'params': params,
     };
 
-    log.info('BullBitcoinApiDatasource.createPayOrder request:');
-    log.info('full request data: $requestData');
-
     final resp = await _http.post(
       _ordersPath,
       data: requestData,
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-    log.info('BullBitcoinApiDatasource.createPayOrder response:');
-    log.info('  result: ${resp.data}');
     final statusCode = resp.statusCode;
     final error = resp.data['error'];
     if (statusCode != 200) {
@@ -435,11 +423,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         }
       }
     }
-
-    log.info('BullBitcoinApiDatasource.createPayOrder response:');
-    log.info('  statusCode: ${resp.statusCode}');
-    log.info('  full response data: ${resp.data}');
-    log.info('  result: ${resp.data['result']}');
 
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
@@ -468,7 +451,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'securityAnswer': 'Orange',
       };
     }
-    log.info('Create withdrawal order request: $params');
     final resp = await _http.post(
       _ordersPath,
       data: {
@@ -479,7 +461,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-    log.info('Create withdrawal order response: ${resp.data}');
     final statusCode = resp.statusCode;
     final error = resp.data['error'];
     if (statusCode != 200) throw Exception('Failed to create withdrawal order');
@@ -515,7 +496,9 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'listRecipients',
-        'params': {},
+        'params': {
+          "paginator": {"page": 1, "pageSize": 50},
+        },
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
@@ -538,16 +521,16 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'listRecipientsFiat',
-        'params': {},
+        'params': {
+          "paginator": {"page": 1, "pageSize": 50},
+        },
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
-      log.info('List fiat recipients error: ${resp.data}');
       throw Exception('Failed to list fiat recipients');
     }
-    log.info('List fiat recipients response: ${resp.data}');
     final elements = resp.data['result']['elements'] as List<dynamic>?;
 
     if (elements == null) return [];
@@ -560,7 +543,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required NewRecipientModel recipient,
     required String apiKey,
   }) async {
-    log.info('Create fiat recipient request: ${recipient.toApiParams()}');
     final resp = await _http.post(
       _recipientsPath,
       data: {
@@ -571,9 +553,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-    log.info('Create fiat recipient response: ${resp.data}');
     if (resp.statusCode != 200) {
-      log.info('Create fiat recipient error: ${resp.data}');
       throw Exception('Failed to create fiat recipient');
     }
 
@@ -584,7 +564,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
     try {
       final result = resp.data['result']['element'] as Map<String, dynamic>;
-      log.info('Element data: $result');
       return RecipientModel.fromJson(result);
     } catch (e, stackTrace) {
       log.severe('Error parsing RecipientModel.fromJson: $e');
@@ -677,9 +656,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String phoneNumber,
     required String apiKey,
   }) async {
-    log.info('checkSinpe request - phoneNumber: $phoneNumber');
-    log.info('checkSinpe request - apiKey: $apiKey');
-
     final resp = await _http.post(
       _recipientsPath,
       data: {
@@ -690,8 +666,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-
-    log.info('checkSinpe response: ${resp.data}');
 
     if (resp.statusCode != 200) {
       throw Exception('Failed to check SINPE');

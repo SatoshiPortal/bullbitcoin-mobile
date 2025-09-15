@@ -200,9 +200,11 @@ class _WithdrawRecipientsTabState extends State<_WithdrawRecipientsTab> {
         ),
         if (_filteredRecipients.isEmpty) ...[
           const Gap(40.0),
-          const Text(
+          Text(
             'No recipients found to withdraw to.',
-            style: TextStyle(fontSize: 16.0, color: Colors.grey),
+            style: context.font.bodyLarge?.copyWith(
+              color: context.colour.outline,
+            ),
           ),
         ] else ...[
           Expanded(

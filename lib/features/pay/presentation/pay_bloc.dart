@@ -155,6 +155,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         emit(
           (state as PayRecipientInputState).copyWith(
             error: PayError.unexpected(message: e.message),
+            isLoadingRecipients: false,
           ),
         );
       }
@@ -163,6 +164,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         emit(
           (state as PayRecipientInputState).copyWith(
             error: PayError.unexpected(message: e.message),
+            isLoadingRecipients: false,
           ),
         );
       }
@@ -171,6 +173,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         emit(
           (state as PayRecipientInputState).copyWith(
             error: PayError.unexpected(message: e.message),
+            isLoadingRecipients: false,
           ),
         );
       }
@@ -263,9 +266,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     PayNewRecipientCreated event,
     Emitter<PayState> emit,
   ) async {
-    log.info('🚀 _onNewRecipientCreated called');
-    log.info('📝 New recipient from event: ${event.newRecipient}');
-
     final recipientInputState = state.cleanRecipientInputState;
     if (recipientInputState == null) {
       // Unexpected state, do nothing
@@ -276,13 +276,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
 
     // Use the recipient from the event directly
     final newRecipient = event.newRecipient;
-    log.info('🏭 Executing createFiatRecipientUsecase...');
     try {
       final createdRecipient = await _createFiatRecipientUsecase.execute(
         newRecipient,
-      );
-      log.info(
-        '✅ Recipient created successfully: ${createdRecipient.recipientId}',
       );
 
       // Add the new recipient to the list and update state
@@ -296,12 +292,10 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         recipients: updatedRecipients,
       );
       emit(updatedState);
-      log.info('✅ State updated with new recipient list');
 
       // Transition to wallet selection state with the created recipient
       // No order creation yet - we need to know the network first
       emit(updatedState.toWalletSelectionState(recipient: createdRecipient));
-      log.info('✅ Transitioned to wallet selection state');
     } catch (e) {
       log.severe('Error creating new recipient: $e');
       if (state is PayRecipientInputState) {
@@ -489,18 +483,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
                 : OrderBitcoinNetwork.bitcoin,
       );
 
-      log.info('createdPayOrder (internal wallet): $createdPayOrder');
-      log.info(
-        'createdPayOrder.bitcoinAddress: ${createdPayOrder.bitcoinAddress}',
-      );
-      log.info(
-        'createdPayOrder.liquidAddress: ${createdPayOrder.liquidAddress}',
-      );
-      log.info(
-        'createdPayOrder.lightningInvoice: ${createdPayOrder.lightningInvoice}',
-      );
-      log.info('createdPayOrder.payinMethod: ${createdPayOrder.payinMethod}');
-
       if (!event.wallet.isLiquid) {
         final utxos = await _getWalletUtxosUsecase.execute(
           walletId: event.wallet.id,
@@ -573,17 +555,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         network: event.network,
       );
 
-      log.info('createdPayOrder: $createdPayOrder');
-      log.info(
-        'createdPayOrder.bitcoinAddress: ${createdPayOrder.bitcoinAddress}',
-      );
-      log.info(
-        'createdPayOrder.liquidAddress: ${createdPayOrder.liquidAddress}',
-      );
-      log.info(
-        'createdPayOrder.lightningInvoice: ${createdPayOrder.lightningInvoice}',
-      );
-      log.info('createdPayOrder.payinMethod: ${createdPayOrder.payinMethod}');
       // Proceed to payment state
       emit(
         walletSelectionState.toReceivePaymentState(payOrder: createdPayOrder),

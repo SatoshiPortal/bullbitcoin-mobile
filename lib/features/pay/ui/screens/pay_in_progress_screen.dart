@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
@@ -81,9 +80,6 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
           // Handle SINPE móvil orders
           if (_isSinpeMovilOrder(currentOrder) &&
               currentOrder.payoutStatus == OrderPayoutStatus.completed) {
-            log.info(
-              'SINPE order completed, navigating to PaySinpeSuccessScreen',
-            );
             _stopPolling();
             context.goNamed(
               PayRoute.paySinpeSuccess.name,
@@ -93,9 +89,6 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
           // Handle other recipient types
           else if (!_isSinpeMovilOrder(currentOrder) &&
               currentOrder.payoutStatus == OrderPayoutStatus.completed) {
-            log.info(
-              'Payment completed for non-SINPE order, navigating to PaySuccessScreen',
-            );
             _stopPolling();
             context.goNamed(
               PayRoute.payPaymentCompleted.name,

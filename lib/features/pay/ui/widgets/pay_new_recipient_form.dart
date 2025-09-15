@@ -3,21 +3,27 @@ import 'dart:async';
 import 'package:bb_mobile/core/exchange/domain/entity/cad_biller.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/new_recipient_factory.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/account_ownership_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 class PayNewRecipientForm extends StatefulWidget {
-  const PayNewRecipientForm({super.key});
+  const PayNewRecipientForm({super.key, this.userSummary});
+
+  final UserSummary? userSummary;
 
   @override
   State<PayNewRecipientForm> createState() => _PayNewRecipientFormState();
@@ -135,6 +141,19 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (widget.userSummary == null) ...[
+            InfoCard(
+              title: 'Not Logged In',
+              description:
+                  'You are not logged in. Please log in to continue using the pay feature.',
+              tagColor: context.colour.error,
+              bgColor: context.colour.secondaryFixedDim,
+              onTap: () {
+                context.goNamed(ExchangeRoute.exchangeHome.name);
+              },
+            ),
+            const Gap(16),
+          ],
           _buildCountryDropdown(),
           const Gap(16),
           if (selectedCountry != null) ...[
@@ -155,11 +174,14 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
   }
 
   Widget _buildContinueButton() {
+    final isDisabled = !canContinue || widget.userSummary == null;
+
     return BBButton.big(
       label: 'Continue',
       onPressed:
-          canContinue
-              ? () {
+          isDisabled
+              ? () {}
+              : () {
                 if (selectedPayoutMethod != null) {
                   final newRecipient = NewRecipientFactory.fromFormData(
                     selectedPayoutMethod!,
@@ -169,11 +191,10 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
                     PayEvent.newRecipientCreated(newRecipient),
                   );
                 }
-              }
-              : () {},
+              },
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
-      disabled: !canContinue,
+      disabled: isDisabled,
     );
   }
 
@@ -896,11 +917,6 @@ class _SpeiClabeForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
       ],
     );
   }
@@ -951,11 +967,6 @@ class _SpeiSmsForm extends StatelessWidget {
           'Enter a label for this recipient',
           formData,
           onFormDataChanged,
-        ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
         ),
       ],
     );
@@ -1011,11 +1022,6 @@ class _SpeiCardForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
       ],
     );
   }
@@ -1060,11 +1066,6 @@ class _SinpeIbanForm extends StatelessWidget {
           'Enter a label for this recipient',
           formData,
           onFormDataChanged,
-        ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
         ),
       ],
     );

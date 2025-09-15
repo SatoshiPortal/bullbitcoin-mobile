@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -120,7 +119,6 @@ class PaySendPaymentScreen extends StatelessWidget {
                   Countdown(
                     until: order.confirmationDeadline,
                     onTimeout: () {
-                      log.info('Confirmation deadline reached');
                       context.read<PayBloc>().add(
                         const PayEvent.orderRefreshTimePassed(),
                       );

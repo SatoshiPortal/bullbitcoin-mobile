@@ -40,7 +40,6 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
         );
       }
 
-      log.info('ListRecipients API Key: ${apiKeyModel.key}');
       final recipientModels =
           fiatOnly
               ? await _bullbitcoinApiDatasource.listRecipientsFiat(
