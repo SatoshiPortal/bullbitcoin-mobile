@@ -1719,10 +1719,7 @@ class SignLedgerButton extends StatelessWidget {
 
     final derivationPath = context.select(
       (SendCubit cubit) =>
-          cubit.state.selectedWallet?.derivationPath
-              .replaceAll('h', "'")
-              .replaceAll(' ', '') ??
-          "m/84'/0'/0'",
+          cubit.state.selectedWallet?.derivationPath.replaceAll(' ', ''),
     );
 
     return BBButton.big(
