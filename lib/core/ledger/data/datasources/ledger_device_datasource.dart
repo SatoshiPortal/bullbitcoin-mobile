@@ -103,9 +103,7 @@ class LedgerDeviceDatasource {
     }
 
     if (_cachedDevice == null || _cachedDevice!.id != device.id) {
-      throw Exception(
-        'Device not found in cache. Please scan for devices first.',
-      );
+      throw const LedgerError.deviceNotFound();
     }
 
     sdk.LedgerInterface? ledgerInterface;
@@ -116,7 +114,7 @@ class LedgerDeviceDatasource {
     }
 
     if (ledgerInterface == null) {
-      throw Exception('Connection type selected was not initialized');
+      throw const LedgerError.connectionTypeNotInitialized();
     }
 
     // Adding retry logic due to permission dialog not returning
@@ -143,15 +141,11 @@ class LedgerDeviceDatasource {
 
   sdk.LedgerConnection _getSdkConnection(LedgerDeviceModel device) {
     if (_cachedConnection == null) {
-      throw Exception(
-        'No active connection. Please connect to a device first.',
-      );
+      throw const LedgerError.noActiveConnection();
     }
 
     if (_cachedDevice == null || _cachedDevice!.id != device.id) {
-      throw Exception(
-        'Device mismatch. Connected device does not match the requested device.',
-      );
+      throw const LedgerError.deviceMismatch();
     }
 
     return _cachedConnection!;
@@ -223,7 +217,7 @@ class LedgerDeviceDatasource {
       try {
         await _cachedConnection!.disconnect();
       } catch (e) {
-        log.warning('Error disconnecting Ledger device', error: e);
+        log.info('Error disconnecting Ledger device', error: e);
       }
       _cachedConnection = null;
     }
@@ -244,7 +238,7 @@ extension PsbtSigner on PsbtV2 {
       bufferReader.readSlice(5),
       Uint8List.fromList([0x70, 0x73, 0x62, 0x74, 0xff]),
     )) {
-      throw Exception("Invalid magic bytes");
+      throw const LedgerError.invalidMagicBytes();
     }
     while (_readKeyPair(globalMap, bufferReader)) {}
 
