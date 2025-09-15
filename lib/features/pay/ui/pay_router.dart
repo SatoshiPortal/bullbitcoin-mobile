@@ -15,15 +15,15 @@ import 'package:go_router/go_router.dart';
 
 enum PayRoute {
   pay('/pay'),
-  payRecipients('pay-recipients'),
-  payAmount('pay-amount'),
-  payWalletSelection('pay-wallet-selection'),
-  payExternalWalletNetworkSelection('pay-external-wallet-network-selection'),
-  paySendPayment('pay-send-payment'),
-  payReceivePayment('pay-receive-payment'),
-  payInProgress('pay-in-progress'),
+  payRecipients('recipients'),
+  payAmount('amount'),
+  payWalletSelection('wallet-selection'),
+  payExternalWalletNetworkSelection('external-wallet-network-selection'),
+  paySendPayment('send-payment'),
+  payReceivePayment('receive-payment'),
+  payInProgress('in-progress'),
   payPaymentCompleted('payment-completed'),
-  paySinpeSuccess('pay-sinpe-success');
+  paySinpeSuccess('sinpe-success');
 
   final String path;
 
