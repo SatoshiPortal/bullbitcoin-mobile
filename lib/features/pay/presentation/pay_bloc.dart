@@ -220,7 +220,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     );
   }
 
-  // From Withdraw: Parse amount and go to wallet selection
   Future<void> _onAmountInputContinuePressed(
     PayAmountInputContinuePressed event,
     Emitter<PayState> emit,
@@ -233,32 +232,15 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       return;
     }
 
-    // Parse the amount input from the text field
     final amount = double.tryParse(event.amountInput);
     if (amount == null || amount <= 0) {
       log.severe('Invalid amount input: ${event.amountInput}');
       return;
     }
 
-    // Create a new FiatAmount with the parsed amount
     final fiatAmount = FiatAmount(amount);
 
-    // Update the amount input state with the new amount
-    final updatedAmountInputState = amountInputState.copyWith(
-      amount: fiatAmount,
-      currency: event.fiatCurrency,
-    );
-    emit(updatedAmountInputState);
-
-    // Get the selected recipient from the amount input state
-    final selectedRecipient = amountInputState.selectedRecipient;
-
-    // Transition to wallet selection state with the new amount, currency, and selected recipient
-    emit(
-      updatedAmountInputState.toWalletSelectionState(
-        selectedRecipient: selectedRecipient,
-      ),
-    );
+    emit(amountInputState.toWalletSelectionState(amount: fiatAmount));
   }
 
   // From Withdraw: Create new recipient and create pay order
@@ -293,9 +275,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       );
       emit(updatedState);
 
-      // Transition to wallet selection state with the created recipient
-      // No order creation yet - we need to know the network first
-      emit(updatedState.toWalletSelectionState(recipient: createdRecipient));
+      emit(updatedState.toAmountInputState(recipient: createdRecipient));
     } catch (e) {
       log.severe('Error creating new recipient: $e');
       if (state is PayRecipientInputState) {

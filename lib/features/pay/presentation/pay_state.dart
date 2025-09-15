@@ -233,9 +233,7 @@ sealed class PayState with _$PayState {
 }
 
 extension PayAmountInputStateX on PayAmountInputState {
-  PayWalletSelectionState toWalletSelectionState({
-    required Recipient selectedRecipient,
-  }) {
+  PayWalletSelectionState toWalletSelectionState({required FiatAmount amount}) {
     return PayWalletSelectionState(
       userSummary: userSummary,
       recipients: recipients,
@@ -260,32 +258,14 @@ extension PayRecipientInputStateX on PayRecipientInputState {
       selectedRecipient: recipient,
     );
   }
-
-  PayWalletSelectionState toWalletSelectionState({
-    required Recipient recipient,
-  }) {
-    if (userSummary == null) {
-      throw StateError(
-        'Cannot create wallet selection state without user summary',
-      );
-    }
-    return PayWalletSelectionState(
-      userSummary: userSummary!,
-      recipients: recipients,
-      amount: const FiatAmount(0.0),
-      currency: FiatCurrency.fromCode(recipient.recipientType.currencyCode),
-      selectedRecipient: recipient,
-      isCreatingPayOrder: false,
-    );
-  }
 }
 
 extension PayWalletSelectionStateX on PayWalletSelectionState {
   PayPaymentState toSendPaymentState({
     required Wallet selectedWallet,
     required FiatPaymentOrder payOrder,
-    int? absoluteFees,
     List<WalletUtxo>? utxos,
+    int? absoluteFees,
     double? exchangeRateEstimate,
   }) {
     return PayPaymentState(
