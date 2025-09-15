@@ -596,11 +596,8 @@ extension NetworkX on Network {
         return lwk.Network.mainnet;
       case Network.liquidTestnet:
         return lwk.Network.testnet;
-      case Network.bitcoinMainnet:
-      case Network.bitcoinTestnet:
-        throw UnsupportedLwkNetworkException(
-          'Bitcoin network is not supported by LWK',
-        );
+      default:
+        throw UnsupportedLwkNetworkException('$name is not supported by LWK');
     }
   }
 }
