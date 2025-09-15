@@ -94,7 +94,7 @@ dependencies:
       url: https://github.com/SatoshiPortal/bbqr-dart.git
       ref: 348feb8db3dd00260f17da9f7d850301cb899a87
   sliver_tools: ^0.2.12
-  logging_colorful: ^1.2.2
+  logging_colorful: ^1.3.0
   timelines_plus: ^1.0.7
   satoshifier:
     git:
