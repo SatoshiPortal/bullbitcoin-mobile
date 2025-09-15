@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -53,7 +58,13 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.btc.path,
               label: 'Buy',
               onPressed: () {
-                context.pushNamed(BuyRoute.buy.name);
+                final isSuperuser =
+                    context.read<SettingsCubit>().state.isSuperuser ?? false;
+                if (Platform.isIOS && !isSuperuser) {
+                  context.goNamed(ExchangeRoute.exchangeLanding.name);
+                } else {
+                  context.pushNamed(BuyRoute.buy.name);
+                }
               },
               position: _ButtonPosition.first,
               disabled: false,
@@ -63,7 +74,13 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.dollar.path,
               label: 'Sell',
               onPressed: () {
-                context.pushNamed(SellRoute.sell.name);
+                final isSuperuser =
+                    context.read<SettingsCubit>().state.isSuperuser ?? false;
+                if (Platform.isIOS && !isSuperuser) {
+                  context.goNamed(ExchangeRoute.exchangeLanding.name);
+                } else {
+                  context.pushNamed(SellRoute.sell.name);
+                }
               },
               position: _ButtonPosition.middle,
               disabled: false,
@@ -73,7 +90,13 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.rightArrow.path,
               label: 'Pay',
               onPressed: () {
-                context.pushNamed(PayRoute.pay.name);
+                final isSuperuser =
+                    context.read<SettingsCubit>().state.isSuperuser ?? false;
+                if (Platform.isIOS && !isSuperuser) {
+                  context.goNamed(ExchangeRoute.exchangeLanding.name);
+                } else {
+                  context.pushNamed(PayRoute.pay.name);
+                }
               },
               position: _ButtonPosition.middle,
               disabled: false,
