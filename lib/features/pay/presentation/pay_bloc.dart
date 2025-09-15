@@ -137,7 +137,11 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
       // Emit loading state for recipients
       emit(
-        PayState.recipientInput(userSummary: userSummary, recipients: const []),
+        PayState.recipientInput(
+          userSummary: userSummary,
+          recipients: const [],
+          isLoadingRecipients: false,
+        ),
       );
 
       final recipients = await _listRecipientsUsecase.execute(fiatOnly: true);
