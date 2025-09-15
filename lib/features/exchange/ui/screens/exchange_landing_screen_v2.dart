@@ -31,6 +31,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
             onPressed: () => context.goNamed(WalletRoute.walletHome.name),
           ),
         ),
+        extendBodyBehindAppBar: true,
         body: Stack(
           children: [
             // Background image with geometric pattern
