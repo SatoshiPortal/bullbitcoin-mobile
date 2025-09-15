@@ -9,8 +9,10 @@ sealed class PayEvent with _$PayEvent {
       PayRecipientSelected;
   const factory PayEvent.recipientInputContinuePressed() =
       PayRecipientInputContinuePressed;
-  const factory PayEvent.recipientInputBackPressed() =
-      PayRecipientInputBackPressed;
+  const factory PayEvent.amountInputBackPressed() = PayAmountInputBackPressed;
+  const factory PayEvent.walletSelectionBackPressed() =
+      PayWalletSelectionBackPressed;
+  const factory PayEvent.paymentBackPressed() = PayPaymentBackPressed;
   const factory PayEvent.amountInputContinuePressed({
     required String amountInput,
     required FiatCurrency fiatCurrency,

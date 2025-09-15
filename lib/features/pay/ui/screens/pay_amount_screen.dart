@@ -28,7 +28,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             context.read<PayBloc>().add(
-              const PayEvent.recipientInputBackPressed(),
+              const PayEvent.amountInputBackPressed(),
             );
             Navigator.of(context).pop();
           },

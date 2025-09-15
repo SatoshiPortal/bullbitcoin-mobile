@@ -102,7 +102,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     on<PayUtxoSelected>(_onUtxoSelected);
     on<PayLoadUtxos>(_onLoadUtxos);
     on<PayUpdateOrderStatus>(_onUpdateOrderStatus);
-    on<PayRecipientInputBackPressed>(_onRecipientInputBackPressed);
+    on<PayAmountInputBackPressed>(_onAmountInputBackPressed);
+    on<PayWalletSelectionBackPressed>(_onWalletSelectionBackPressed);
+    on<PayPaymentBackPressed>(_onPaymentBackPressed);
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
@@ -342,21 +344,19 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   }
 
   // Handle back navigation from amount input to recipient input
-  Future<void> _onRecipientInputBackPressed(
-    PayRecipientInputBackPressed event,
+  Future<void> _onAmountInputBackPressed(
+    PayAmountInputBackPressed event,
     Emitter<PayState> emit,
   ) async {
-    // If we're in PayAmountInputState, restore the PayRecipientInputState
+    // If we're in PayAmountInputState, go back to PayRecipientInputState
     if (state is PayAmountInputState) {
       final amountInputState = state as PayAmountInputState;
 
       // Get the user summary and recipients
       final userSummary = amountInputState.userSummary;
+      final recipients = amountInputState.recipients;
 
-      // Fetch recipients
-      final recipients = await _listRecipientsUsecase.execute(fiatOnly: true);
-
-      // Restore the PayRecipientInputState with the same currency and selected recipient
+      // Restore the PayRecipientInputState with the same data
       emit(
         PayState.recipientInput(
           userSummary: userSummary,
@@ -947,6 +947,49 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   void _stopPolling() {
     _pollingTimer?.cancel();
     _pollingTimer = null;
+  }
+
+  Future<void> _onWalletSelectionBackPressed(
+    PayWalletSelectionBackPressed event,
+    Emitter<PayState> emit,
+  ) async {
+    // If we're in PayWalletSelectionState, go back to PayAmountInputState
+    if (state is PayWalletSelectionState) {
+      final walletSelectionState = state as PayWalletSelectionState;
+
+      // Transition back to amount input state with the same data
+      emit(
+        PayState.amountInput(
+          currency: walletSelectionState.currency,
+          amount: walletSelectionState.amount,
+          userSummary: walletSelectionState.userSummary,
+          recipients: walletSelectionState.recipients,
+          selectedRecipient: walletSelectionState.selectedRecipient,
+        ),
+      );
+    }
+  }
+
+  Future<void> _onPaymentBackPressed(
+    PayPaymentBackPressed event,
+    Emitter<PayState> emit,
+  ) async {
+    // If we're in PayPaymentState, go back to PayWalletSelectionState
+    if (state is PayPaymentState) {
+      final paymentState = state as PayPaymentState;
+
+      // Transition back to wallet selection state with the same data
+      emit(
+        PayState.walletSelection(
+          userSummary: paymentState.userSummary,
+          recipients: paymentState.recipients,
+          amount: paymentState.amount,
+          currency: paymentState.currency,
+          selectedRecipient: paymentState.selectedRecipient,
+          isCreatingPayOrder: false,
+        ),
+      );
+    }
   }
 
   @override
