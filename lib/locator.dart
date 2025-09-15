@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/ark/locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
@@ -91,6 +92,7 @@ class AppLocator {
     ReplaceByFeeLocator.setup();
     Bip85EntropyLocator.setup();
     RecoverBullSelectDriveVaultLocator.setup();
+    ArkLocator.setup();
     LedgerLocator.setup();
   }
 }
