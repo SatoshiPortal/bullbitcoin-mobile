@@ -20,7 +20,7 @@ class ExchangeLandingScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const Gap(48),
+            const Gap(32),
             Center(
               child: Column(
                 children: [
