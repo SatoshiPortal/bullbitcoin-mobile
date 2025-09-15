@@ -26,16 +26,25 @@ enum Signer {
 
 enum SignerDevice {
   coldcardQ,
-  ledger;
+  ledgerNanoSPlus,
+  ledgerNanoX,
+  ledgerFlex,
+  ledgerStax;
 
   static SignerDevice fromEntity(SignerDeviceEntity entity) => switch (entity) {
     SignerDeviceEntity.coldcardQ => SignerDevice.coldcardQ,
-    SignerDeviceEntity.ledger => SignerDevice.ledger,
+    SignerDeviceEntity.ledgerNanoSPlus => SignerDevice.ledgerNanoSPlus,
+    SignerDeviceEntity.ledgerNanoX => SignerDevice.ledgerNanoX,
+    SignerDeviceEntity.ledgerFlex => SignerDevice.ledgerFlex,
+    SignerDeviceEntity.ledgerStax => SignerDevice.ledgerStax,
   };
 
   SignerDeviceEntity toEntity() => switch (this) {
     SignerDevice.coldcardQ => SignerDeviceEntity.coldcardQ,
-    SignerDevice.ledger => SignerDeviceEntity.ledger,
+    SignerDevice.ledgerNanoSPlus => SignerDeviceEntity.ledgerNanoSPlus,
+    SignerDevice.ledgerNanoX => SignerDeviceEntity.ledgerNanoX,
+    SignerDevice.ledgerFlex => SignerDeviceEntity.ledgerFlex,
+    SignerDevice.ledgerStax => SignerDeviceEntity.ledgerStax,
   };
 }
 

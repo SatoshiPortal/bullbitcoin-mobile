@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:ledger_flutter_plus/ledger_flutter_plus.dart' as sdk;
@@ -10,6 +11,7 @@ abstract class LedgerDeviceModel with _$LedgerDeviceModel {
     required String id,
     required String name,
     required LedgerConnectionType connectionType,
+    required sdk.LedgerDeviceType deviceType,
   }) = _LedgerDeviceModel;
 
   const LedgerDeviceModel._();
@@ -19,6 +21,7 @@ abstract class LedgerDeviceModel with _$LedgerDeviceModel {
       id: id,
       name: name,
       connectionType: connectionType,
+      deviceType: _convertToSignerDeviceType(deviceType),
     );
   }
 
@@ -29,7 +32,23 @@ abstract class LedgerDeviceModel with _$LedgerDeviceModel {
       connectionType: device.connectionType == sdk.ConnectionType.ble
           ? LedgerConnectionType.ble
           : LedgerConnectionType.usb,
+      deviceType: device.deviceInfo,
     );
+  }
+
+  static SignerDeviceEntity _convertToSignerDeviceType(sdk.LedgerDeviceType deviceType) {
+    switch (deviceType) {
+      case sdk.LedgerDeviceType.nanoSP:
+        return SignerDeviceEntity.ledgerNanoSPlus;
+      case sdk.LedgerDeviceType.nanoX:
+        return SignerDeviceEntity.ledgerNanoX;
+      case sdk.LedgerDeviceType.flex:
+        return SignerDeviceEntity.ledgerFlex;
+      case sdk.LedgerDeviceType.stax:
+        return SignerDeviceEntity.ledgerStax;
+      default:
+        throw Exception('Unsupported Ledger device');
+    }
   }
 }
 
@@ -39,6 +58,22 @@ extension LedgerDeviceEntityExtension on LedgerDeviceEntity {
       id: id,
       name: name,
       connectionType: connectionType,
+      deviceType: _convertToSdkDeviceType(deviceType),
     );
+  }
+
+  static sdk.LedgerDeviceType _convertToSdkDeviceType(SignerDeviceEntity deviceType) {
+    switch (deviceType) {
+      case SignerDeviceEntity.ledgerNanoSPlus:
+        return sdk.LedgerDeviceType.nanoSP;
+      case SignerDeviceEntity.ledgerNanoX:
+        return sdk.LedgerDeviceType.nanoX;
+      case SignerDeviceEntity.ledgerFlex:
+        return sdk.LedgerDeviceType.flex;
+      case SignerDeviceEntity.ledgerStax:
+        return sdk.LedgerDeviceType.stax;
+      default:
+        throw Exception('Unsupported Ledger device');
+    }
   }
 }
