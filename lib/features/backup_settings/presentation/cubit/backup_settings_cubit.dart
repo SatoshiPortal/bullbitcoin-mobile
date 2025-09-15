@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_la
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -19,7 +20,7 @@ part 'backup_settings_state.dart';
 class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   BackupSettingsCubit({
     required GetWalletsUsecase getWalletsUsecase,
-
+    required SettingsRepository settingsRepository,
     required SelectFolderPathUsecase selectFolderPathUsecase,
     required SaveToFileSystemUsecase saveToFileSystemUsecase,
     required CreateVaultKeyFromDefaultSeedUsecase
@@ -41,6 +42,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
        _fetchLatestGoogleDriveBackupUsecase =
            fetchLatestGoogleDriveBackupUsecase,
        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
+       _settingsRepository = settingsRepository,
 
        super(BackupSettingsState());
 
@@ -49,6 +51,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   final SaveToFileSystemUsecase _saveToFileSystemUsecase;
   final CreateVaultKeyFromDefaultSeedUsecase
   _createBackupKeyFromDefaultSeedUsecase;
+  final SettingsRepository _settingsRepository;
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
   final FetchEncryptedVaultFromFileSystemUsecase
   _fetchEncryptedVaultFromFileSystemUsecase;
@@ -72,13 +75,21 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       final isDefaultEncryptedBackupTested = defaultWallets.every(
         (e) => e.isEncryptedVaultTested,
       );
+
+      final settings = await _settingsRepository.fetch();
+      final environment = settings.environment;
+      final network = Network.fromEnvironment(
+        isTestnet: environment.isTestnet,
+        isLiquid: false,
+      );
+
       final lastPhysicalBackup =
           defaultWallets
-              .firstWhere((e) => e.network == Network.bitcoinMainnet)
+              .firstWhere((e) => e.network == network)
               .latestPhysicalBackup;
       final lastEncryptedBackup =
           defaultWallets
-              .firstWhere((e) => e.network == Network.bitcoinMainnet)
+              .firstWhere((e) => e.network == network)
               .latestEncryptedBackup;
       emit(
         state.copyWith(
