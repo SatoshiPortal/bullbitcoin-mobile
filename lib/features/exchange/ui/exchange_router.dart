@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
+import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -50,6 +53,10 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeLanding.name,
       path: ExchangeRoute.exchangeLanding.path,
       builder: (context, state) {
+        // Show v2 screen for iOS, regular screen for Android
+        if (Platform.isIOS) {
+          return const ExchangeLandingScreenV2();
+        }
         return const ExchangeLandingScreen();
       },
     ),

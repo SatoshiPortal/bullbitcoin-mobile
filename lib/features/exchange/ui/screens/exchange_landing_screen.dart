@@ -40,8 +40,8 @@ class ExchangeLandingScreen extends StatelessWidget {
                   const Gap(12),
                   BBText(
                     'Connect your Bull Bitcoin exchange account',
-                    style: context.font.bodyLarge?.copyWith(
-                      color: context.colour.outline,
+                    style: context.font.headlineSmall?.copyWith(
+                      color: context.colour.onSecondary,
                     ),
                   ),
                 ],
@@ -49,7 +49,7 @@ class ExchangeLandingScreen extends StatelessWidget {
             ),
             const Gap(32),
             Container(
-              padding: const EdgeInsets.all(36),
+              padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
                 border: Border.all(color: context.colour.primary, width: 0),
                 borderRadius: BorderRadius.circular(12),
@@ -59,42 +59,42 @@ class ExchangeLandingScreen extends StatelessWidget {
                 children: [
                   BBText(
                     '• Buy Bitcoin straight to self-custody',
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.font.bodyLarge?.copyWith(
                       color: context.colour.onSecondary,
                     ),
                   ),
                   const Gap(12),
                   BBText(
                     '• DCA, Limit orders and Auto-buy',
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.font.bodyLarge?.copyWith(
                       color: context.colour.onSecondary,
                     ),
                   ),
                   const Gap(12),
                   BBText(
                     '• Sell Bitcoin, get paid with Bitcoin',
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.font.bodyLarge?.copyWith(
                       color: context.colour.onSecondary,
                     ),
                   ),
                   const Gap(12),
                   BBText(
                     '• Send bank transfers and pay bills',
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.font.bodyLarge?.copyWith(
                       color: context.colour.onSecondary,
                     ),
                   ),
                   const Gap(12),
                   BBText(
                     '• Chat with customer support',
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.font.bodyLarge?.copyWith(
                       color: context.colour.onSecondary,
                     ),
                   ),
                   const Gap(12),
                   BBText(
                     '• Unified transaction history',
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.font.bodyLarge?.copyWith(
                       color: context.colour.onSecondary,
                     ),
                   ),
