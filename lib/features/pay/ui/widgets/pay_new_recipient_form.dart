@@ -2,11 +2,10 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/cad_biller.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/new_recipient_factory.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -30,124 +29,18 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
   final Map<String, dynamic> formData = {};
   bool _isSinpeValid = false;
 
-  final List<Map<String, String>> countries = [
-    {'code': 'CA', 'name': 'Canada', 'flag': '🇨🇦'},
-    {'code': 'EU', 'name': 'Europe', 'flag': '🇪🇺'},
-    {'code': 'MX', 'name': 'Mexico', 'flag': '🇲🇽'},
-    {'code': 'CR', 'name': 'Costa Rica', 'flag': '🇨🇷'},
-    {'code': 'AR', 'name': 'Argentina', 'flag': '🇦🇷'},
-  ];
-
-  // Map currency to country code
-  String _getCountryCodeFromCurrency(FiatCurrency currency) {
-    switch (currency) {
-      case FiatCurrency.cad:
-        return 'CA';
-      case FiatCurrency.eur:
-        return 'EU';
-      case FiatCurrency.mxn:
-        return 'MX';
-      case FiatCurrency.crc:
-        return 'CR';
-      case FiatCurrency.usd:
-        return 'CR'; // Default fallback
-      case FiatCurrency.ars:
-        return 'AR';
-    }
-  }
-
   @override
   void initState() {
     super.initState();
 
-    // Preselect country based on currency from bloc
-    final payBloc = context.read<PayBloc>();
-    final currentState = payBloc.state;
-
-    // Try to get currency from current state or fallback to default
-    FiatCurrency? currency;
-    if (currentState is PayRecipientInputState) {
-      currency = currentState.currency;
-    } else if (currentState is PayWalletSelectionState) {
-      currency = currentState.currency;
-    } else if (currentState is PayAmountInputState) {
-      currency =
-          currentState.userSummary?.currency != null
-              ? FiatCurrency.fromCode(currentState.userSummary!.currency!)
-              : null;
-    }
-
-    // Set selectedCountry based on available currency or use default
-    if (currency != null) {
-      selectedCountry = _getCountryCodeFromCurrency(currency);
-      log.info(
-        '🌍 Preselected country: $selectedCountry for currency: ${currency.code}',
-      );
-
-      // Auto-select SEPA for Europe since it's the only option
-      if (selectedCountry == 'EU') {
-        selectedPayoutMethod = WithdrawRecipientType.sepaEur;
-      }
-    } else {
-      // Fallback to default currency (CAD)
-      selectedCountry = 'CA';
-      log.info('🌍 Using default country: $selectedCountry');
-    }
-
-    // Listen to bloc state changes
-    payBloc.stream.listen((state) {
-      if (state is PayRecipientInputState) {
-        final newCountry = _getCountryCodeFromCurrency(state.currency);
-        if (newCountry != selectedCountry) {
-          setState(() {
-            selectedCountry = newCountry;
-            selectedPayoutMethod = null;
-            formData.clear();
-
-            // Auto-select SEPA for Europe
-            if (newCountry == 'EU') {
-              selectedPayoutMethod = WithdrawRecipientType.sepaEur;
-            }
-          });
-        }
-      }
-    });
+    // Start with Canada selected by default
+    selectedCountry = 'CA';
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    // Ensure country is set when dependencies change (e.g., when navigating back)
-    if (selectedCountry == null) {
-      final payBloc = context.read<PayBloc>();
-      final currentState = payBloc.state;
-
-      FiatCurrency? currency;
-      if (currentState is PayRecipientInputState) {
-        currency = currentState.currency;
-      } else if (currentState is PayWalletSelectionState) {
-        currency = currentState.currency;
-      } else if (currentState is PayAmountInputState) {
-        currency =
-            currentState.userSummary?.currency != null
-                ? FiatCurrency.fromCode(currentState.userSummary!.currency!)
-                : null;
-      }
-
-      if (currency != null) {
-        setState(() {
-          selectedCountry = _getCountryCodeFromCurrency(currency!);
-          if (selectedCountry == 'EU') {
-            selectedPayoutMethod = WithdrawRecipientType.sepaEur;
-          }
-        });
-      } else {
-        setState(() {
-          selectedCountry = 'CA';
-        });
-      }
-    }
+    // No automatic country selection - let user choose
   }
 
   List<WithdrawRecipientType> get payoutMethodsForCountry {
@@ -285,41 +178,6 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
   }
 
   Widget _buildCountryDropdown() {
-    if (selectedCountry == null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          BBText(
-            'Country',
-            style: context.font.bodyLarge?.copyWith(
-              color: context.colour.secondary,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const Gap(8),
-          Container(
-            height: 56,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: context.colour.onPrimary,
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: context.colour.outline),
-            ),
-            child: Center(
-              child: BBText(
-                'Loading...',
-                style: context.font.headlineSmall?.copyWith(
-                  color: context.colour.outline,
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    final country = countries.firstWhere((c) => c['code'] == selectedCountry);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -339,15 +197,45 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
             borderRadius: BorderRadius.circular(4),
             border: Border.all(color: context.colour.outline),
           ),
-          child: Row(
-            children: [
-              BBText(
-                '${country['flag']} ${country['name']}',
-                style: context.font.headlineSmall,
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedCountry,
+              isExpanded: true,
+              hint: BBText(
+                'Select country',
+                style: context.font.headlineSmall?.copyWith(
+                  color: context.colour.outline,
+                ),
               ),
-              const Spacer(),
-              Icon(Icons.lock, color: context.colour.outline, size: 20),
-            ],
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                color: context.colour.secondary,
+              ),
+              items:
+                  CountryConstants.countries.map((country) {
+                    return DropdownMenuItem<String>(
+                      value: country['code'],
+                      child: BBText(
+                        '${country['flag']} ${country['name']}',
+                        style: context.font.headlineSmall,
+                      ),
+                    );
+                  }).toList(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedCountry = newValue;
+                    selectedPayoutMethod = null;
+                    formData.clear();
+
+                    // Auto-select SEPA for Europe
+                    if (newValue == 'EU') {
+                      selectedPayoutMethod = WithdrawRecipientType.sepaEur;
+                    }
+                  });
+                }
+              },
+            ),
           ),
         ),
       ],

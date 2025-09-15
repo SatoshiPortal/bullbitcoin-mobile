@@ -54,17 +54,17 @@ class PayRouter {
             BlocListener<PayBloc, PayState>(
               listenWhen:
                   (previous, current) =>
-                      previous is PayAmountInputState &&
-                      current is PayRecipientInputState,
+                      previous is PayRecipientInputState &&
+                      current is PayAmountInputState,
               listener: (context, state) {
                 context.pushNamed(
-                  PayRoute.payRecipients.name,
+                  PayRoute.payAmount.name,
                   extra: context.read<PayBloc>(),
                 );
               },
             ),
           ],
-          child: const PayAmountScreen(),
+          child: const PayRecipientsScreen(),
         ),
       );
     },
@@ -76,19 +76,7 @@ class PayRouter {
           final bloc = state.extra! as PayBloc;
           return BlocProvider.value(
             value: bloc,
-            child: BlocListener<PayBloc, PayState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous is PayRecipientInputState &&
-                      current is PayWalletSelectionState,
-              listener: (context, state) {
-                context.pushNamed(
-                  PayRoute.payWalletSelection.name,
-                  extra: context.read<PayBloc>(),
-                );
-              },
-              child: const PayRecipientsScreen(),
-            ),
+            child: const PayRecipientsScreen(),
           );
         },
       ),
@@ -103,10 +91,10 @@ class PayRouter {
               listenWhen:
                   (previous, current) =>
                       previous is PayAmountInputState &&
-                      current is PayRecipientInputState,
+                      current is PayWalletSelectionState,
               listener: (context, state) {
                 context.pushNamed(
-                  PayRoute.payRecipients.name,
+                  PayRoute.payWalletSelection.name,
                   extra: context.read<PayBloc>(),
                 );
               },

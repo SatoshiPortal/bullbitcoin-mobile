@@ -103,6 +103,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     on<PayUtxoSelected>(_onUtxoSelected);
     on<PayLoadUtxos>(_onLoadUtxos);
     on<PayUpdateOrderStatus>(_onUpdateOrderStatus);
+    on<PayRecipientInputBackPressed>(_onRecipientInputBackPressed);
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
@@ -148,14 +149,32 @@ class PayBloc extends Bloc<PayEvent, PayState> {
 
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
+      // Emit loading state for recipients
       emit(
-        PayState.amountInput(
+        PayState.recipientInput(
+          userSummary: userSummary,
+          recipients: const [],
           amount: const FiatAmount(0.0),
           currency:
               userSummary.currency != null
                   ? FiatCurrency.fromCode(userSummary.currency!)
                   : FiatCurrency.cad,
+          isLoadingRecipients: true,
+        ),
+      );
+
+      final recipients = await _listRecipientsUsecase.execute(fiatOnly: true);
+
+      emit(
+        PayState.recipientInput(
           userSummary: userSummary,
+          recipients: recipients,
+          amount: const FiatAmount(0.0),
+          currency:
+              userSummary.currency != null
+                  ? FiatCurrency.fromCode(userSummary.currency!)
+                  : FiatCurrency.cad,
+          isLoadingRecipients: false,
         ),
       );
     } on ApiKeyException catch (e) {
@@ -180,9 +199,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     }
     emit(recipientInputState);
 
-    // Transition to wallet selection state with the selected recipient
+    // Transition to amount input state with the selected recipient
     emit(
-      recipientInputState.toWalletSelectionState(
+      recipientInputState.toAmountInputState(
         recipient: recipientInputState.selectedRecipient!,
       ),
     );
@@ -200,9 +219,23 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       log.severe('Expected to be on PayAmountInputState but on: $state');
       return;
     }
-    emit(amountInputState);
 
-    final amount = FiatAmount(double.parse(event.amountInput));
+    // Parse the amount input from the text field
+    final amount = double.tryParse(event.amountInput);
+    if (amount == null || amount <= 0) {
+      log.severe('Invalid amount input: ${event.amountInput}');
+      return;
+    }
+
+    // Create a new FiatAmount with the parsed amount
+    final fiatAmount = FiatAmount(amount);
+
+    // Update the amount input state with the new amount
+    final updatedAmountInputState = amountInputState.copyWith(
+      amount: fiatAmount,
+      currency: event.fiatCurrency,
+    );
+    emit(updatedAmountInputState);
 
     // Get the user summary from the amount input state
     final userSummary = amountInputState.userSummary;
@@ -212,16 +245,22 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       return;
     }
 
-    // Fetch recipients when transitioning to recipient input
+    // Get the selected recipient from the amount input state
+    final selectedRecipient = amountInputState.selectedRecipient;
+    if (selectedRecipient == null) {
+      log.severe('No recipient selected in amount input state');
+      return;
+    }
+
+    // Fetch recipients for the wallet selection state
     final recipients = await _listRecipientsUsecase.execute(fiatOnly: true);
 
-    // Transition to recipient input state with the amount and currency
+    // Transition to wallet selection state with the new amount, currency, and selected recipient
     emit(
-      PayState.recipientInput(
+      updatedAmountInputState.toWalletSelectionState(
         userSummary: userSummary,
         recipients: recipients,
-        amount: amount,
-        currency: event.fiatCurrency,
+        selectedRecipient: selectedRecipient,
       ),
     );
   }
@@ -332,6 +371,39 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         currency: recipientCurrency,
       ),
     );
+  }
+
+  // Handle back navigation from amount input to recipient input
+  Future<void> _onRecipientInputBackPressed(
+    PayRecipientInputBackPressed event,
+    Emitter<PayState> emit,
+  ) async {
+    // If we're in PayAmountInputState, restore the PayRecipientInputState
+    if (state is PayAmountInputState) {
+      final amountInputState = state as PayAmountInputState;
+
+      // Get the user summary and recipients
+      final userSummary = amountInputState.userSummary;
+      if (userSummary == null) {
+        log.severe('Missing user summary in amount input state');
+        return;
+      }
+
+      // Fetch recipients
+      final recipients = await _listRecipientsUsecase.execute(fiatOnly: true);
+
+      // Restore the PayRecipientInputState with the same currency and selected recipient
+      emit(
+        PayState.recipientInput(
+          userSummary: userSummary,
+          recipients: recipients,
+          amount: amountInputState.amount,
+          currency: amountInputState.currency,
+          selectedRecipient: amountInputState.selectedRecipient,
+          isLoadingRecipients: false,
+        ),
+      );
+    }
   }
 
   // From Withdraw: Get CAD billers for search

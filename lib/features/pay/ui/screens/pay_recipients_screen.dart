@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_new_recipient_form.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_recipient_list_tile.dart';
-import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_recipients_filter_dropdown.dart';
+import 'package:bb_mobile/features/pay/ui/widgets/pay_recipients_filter_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -56,8 +56,13 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
             height: 3,
             trigger: context.select<PayBloc, bool>((bloc) {
               final state = bloc.state;
+              if (state is PayInitialState) {
+                return true;
+              }
               if (state is PayRecipientInputState) {
-                return state.isCreatingPayOrder || state.isCreatingNewRecipient;
+                return state.isCreatingPayOrder ||
+                    state.isCreatingNewRecipient ||
+                    state.isLoadingRecipients;
               }
               return false;
             }),
@@ -129,36 +134,34 @@ class _PayRecipientsTab extends StatefulWidget {
 }
 
 class _PayRecipientsTabState extends State<_PayRecipientsTab> {
-  late String _filterRecipientType;
-  late List<Recipient> _allEligibleRecipients;
-  late List<Recipient> _filteredRecipients;
+  String _filterRecipientType = 'All types';
+  String _filterCountry = 'CA';
   Recipient? _selectedRecipient;
 
-  @override
-  void initState() {
-    super.initState();
-    // Start with no filter
-    _filterRecipientType = 'All types';
-    _allEligibleRecipients =
-        context.read<PayBloc>().state.eligibleRecipientsByCurrency;
-    _filteredRecipients = _allEligibleRecipients;
-  }
-
-  void _onFilterChanged(String filter) {
-    // Change the filter and update the filtered recipients
+  void _onTypeFilterChanged(String filter) {
     setState(() {
       _filterRecipientType = filter;
-      _filteredRecipients =
-          filter == 'All types'
-              ? _allEligibleRecipients
-              : _allEligibleRecipients
-                  .where(
-                    (recipient) =>
-                        recipient.recipientType.displayName ==
-                        _filterRecipientType,
-                  )
-                  .toList();
     });
+  }
+
+  void _onCountryFilterChanged(String filter) {
+    setState(() {
+      _filterCountry = filter;
+      // Reset type filter when country changes
+      _filterRecipientType = 'All types';
+    });
+  }
+
+  List<Recipient> _applyFilters(List<Recipient> allEligibleRecipients) {
+    return allEligibleRecipients.where((recipient) {
+      final typeMatch =
+          _filterRecipientType == 'All types' ||
+          recipient.recipientType.displayName == _filterRecipientType;
+      final countryMatch =
+          _filterCountry == 'All countries' ||
+          recipient.recipientType.countryCode == _filterCountry;
+      return typeMatch && countryMatch;
+    }).toList();
   }
 
   void _onRecipientSelected(Recipient? recipient) {
@@ -171,66 +174,79 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Column(
-      children: [
-        ColoredBox(
-          color: theme.scaffoldBackgroundColor,
-          child: Column(
-            children: [
-              WithdrawRecipientsFilterDropdown(
-                selectedFilter: _filterRecipientType,
-                onFilterChanged: _onFilterChanged,
-                allEligibleRecipients: _allEligibleRecipients,
+    return BlocBuilder<PayBloc, PayState>(
+      builder: (context, state) {
+        if (state is! PayRecipientInputState) {
+          return const SizedBox.shrink();
+        }
+
+        final allEligibleRecipients = state.recipients;
+        final filteredRecipients = _applyFilters(allEligibleRecipients);
+
+        return Column(
+          children: [
+            ColoredBox(
+              color: theme.scaffoldBackgroundColor,
+              child: Column(
+                children: [
+                  PayRecipientsFilterDropdown(
+                    selectedTypeFilter: _filterRecipientType,
+                    selectedCountryFilter: _filterCountry,
+                    onTypeFilterChanged: _onTypeFilterChanged,
+                    onCountryFilterChanged: _onCountryFilterChanged,
+                    allEligibleRecipients: allEligibleRecipients,
+                  ),
+                  const Gap(16.0),
+                ],
               ),
-              const Gap(16.0),
-            ],
-          ),
-        ),
-        if (_filteredRecipients.isEmpty) ...[
-          const Gap(40.0),
-          const Text(
-            'No recipients found to pay to.',
-            style: TextStyle(fontSize: 16.0, color: Colors.grey),
-          ),
-        ] else ...[
-          Expanded(
-            child: ListView.separated(
-              itemBuilder: (context, index) {
-                final recipient = _filteredRecipients[index];
-                return Column(
-                  children: [
-                    PayRecipientListTile(
-                      recipient: recipient,
-                      selected: _selectedRecipient == recipient,
-                      onTap: () {
-                        _onRecipientSelected(recipient);
-                      },
-                    ),
-                    if (index == _filteredRecipients.length - 1)
-                      const Gap(24.0),
-                  ],
-                );
-              },
-              separatorBuilder: (_, _) => const Gap(8.0),
-              itemCount: _filteredRecipients.length,
             ),
-          ),
-          _ContinueButton(
-            enabled: _selectedRecipient != null,
-            onPressed: () {
-              if (_selectedRecipient != null) {
-                context.read<PayBloc>().add(
-                  PayEvent.recipientSelected(_selectedRecipient!),
-                );
-                // Also dispatch the continue event to transition to amount input
-                context.read<PayBloc>().add(
-                  const PayEvent.recipientInputContinuePressed(),
-                );
-              }
-            },
-          ),
-        ],
-      ],
+            if (filteredRecipients.isEmpty) ...[
+              const Gap(40.0),
+              const Text(
+                'No recipients found to pay to.',
+                style: TextStyle(fontSize: 16.0, color: Colors.grey),
+              ),
+            ] else ...[
+              Expanded(
+                child: ListView.separated(
+                  itemBuilder: (context, index) {
+                    final recipient = filteredRecipients[index];
+                    return Column(
+                      children: [
+                        PayRecipientListTile(
+                          recipient: recipient,
+                          selected: _selectedRecipient == recipient,
+                          onTap: () {
+                            _onRecipientSelected(recipient);
+                          },
+                        ),
+                        if (index == filteredRecipients.length - 1)
+                          const Gap(24.0),
+                      ],
+                    );
+                  },
+                  separatorBuilder: (_, _) => const Gap(8.0),
+                  itemCount: filteredRecipients.length,
+                ),
+              ),
+              _ContinueButton(
+                enabled: _selectedRecipient != null,
+                onPressed: () {
+                  if (_selectedRecipient != null) {
+                    context.read<PayBloc>().add(
+                      PayEvent.recipientSelected(_selectedRecipient!),
+                    );
+                    // Also dispatch the continue event to transition to amount input
+                    context.read<PayBloc>().add(
+                      const PayEvent.recipientInputContinuePressed(),
+                    );
+                  }
+                },
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }

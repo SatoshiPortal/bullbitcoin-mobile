@@ -121,3 +121,13 @@ class LabelConstants {
   static const separator = '␟';
   static const labelKeyPrefix = 'label';
 }
+
+class CountryConstants {
+  static const List<Map<String, String>> countries = [
+    {'code': 'CA', 'name': 'Canada', 'flag': '🇨🇦'},
+    {'code': 'EU', 'name': 'Europe', 'flag': '🇪🇺'},
+    {'code': 'MX', 'name': 'Mexico', 'flag': '🇲🇽'},
+    {'code': 'CR', 'name': 'Costa Rica', 'flag': '🇨🇷'},
+    {'code': 'AR', 'name': 'Argentina', 'flag': '🇦🇷'},
+  ];
+}

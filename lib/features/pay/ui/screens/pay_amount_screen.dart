@@ -22,7 +22,18 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pay')),
+      appBar: AppBar(
+        title: const Text('Pay'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.read<PayBloc>().add(
+              const PayEvent.recipientInputBackPressed(),
+            );
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -35,11 +46,6 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                 fiatCurrency: context.select<PayBloc, FiatCurrency>(
                   (bloc) => bloc.state.currency,
                 ),
-                onFiatCurrencyChanged: (FiatCurrency fiatCurrency) {
-                  context.read<PayBloc>().add(
-                    PayEvent.currencyChanged(fiatCurrency: fiatCurrency),
-                  );
-                },
               ),
               const Spacer(),
               BBButton.big(
