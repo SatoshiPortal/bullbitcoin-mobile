@@ -21,7 +21,9 @@ class PayAmountInputFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLoading = context.select(
-      (PayBloc bloc) => bloc.state is PayInitialState,
+      (PayBloc bloc) =>
+          bloc.state is PayRecipientInputState &&
+          (bloc.state as PayRecipientInputState).isLoadingRecipients,
     );
 
     return Column(

@@ -70,7 +70,7 @@ class PaySendPaymentScreen extends StatelessWidget {
     final recipient = context.select(
       (PayBloc bloc) =>
           bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).recipient
+              ? (bloc.state as PayPaymentState).selectedRecipient
               : null,
     );
 

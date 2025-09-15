@@ -57,7 +57,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
     }
 
     final order = state.payOrder;
-    final recipient = state.recipient;
+    final recipient = state.selectedRecipient;
     // For now, we'll use BTC as default unit since PayPaymentState doesn't have bitcoinUnit
     const bitcoinUnit = BitcoinUnit.btc;
     // Get bip21InvoiceData from the state

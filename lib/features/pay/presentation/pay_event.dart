@@ -15,8 +15,6 @@ sealed class PayEvent with _$PayEvent {
     required String amountInput,
     required FiatCurrency fiatCurrency,
   }) = PayAmountInputContinuePressed;
-  const factory PayEvent.currencyChanged({required FiatCurrency fiatCurrency}) =
-      PayCurrencyChanged;
   const factory PayEvent.getCadBillers({required String searchTerm}) =
       PayGetCadBillers;
   const factory PayEvent.walletSelected({required Wallet wallet}) =

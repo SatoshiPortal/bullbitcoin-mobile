@@ -56,9 +56,6 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
             height: 3,
             trigger: context.select<PayBloc, bool>((bloc) {
               final state = bloc.state;
-              if (state is PayInitialState) {
-                return true;
-              }
               if (state is PayRecipientInputState) {
                 return state.isCreatingPayOrder ||
                     state.isCreatingNewRecipient ||
@@ -181,7 +178,7 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
         }
 
         final allEligibleRecipients = state.recipients;
-        final filteredRecipients = _applyFilters(allEligibleRecipients);
+        final filteredRecipients = _applyFilters(allEligibleRecipients ?? []);
 
         return Column(
           children: [
@@ -194,7 +191,7 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
                     selectedCountryFilter: _filterCountry,
                     onTypeFilterChanged: _onTypeFilterChanged,
                     onCountryFilterChanged: _onCountryFilterChanged,
-                    allEligibleRecipients: allEligibleRecipients,
+                    allEligibleRecipients: allEligibleRecipients ?? [],
                   ),
                   const Gap(16.0),
                 ],

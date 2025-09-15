@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_amount_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_external_wallet_network_selection_screen.dart';
@@ -40,17 +39,6 @@ class PayRouter {
         create: (_) => locator<PayBloc>()..add(const PayEvent.started()),
         child: MultiBlocListener(
           listeners: [
-            BlocListener<PayBloc, PayState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous is PayInitialState &&
-                      previous.apiKeyException == null &&
-                      current is PayInitialState &&
-                      current.apiKeyException != null,
-              listener: (context, state) {
-                context.goNamed(ExchangeRoute.exchangeHome.name);
-              },
-            ),
             BlocListener<PayBloc, PayState>(
               listenWhen:
                   (previous, current) =>
