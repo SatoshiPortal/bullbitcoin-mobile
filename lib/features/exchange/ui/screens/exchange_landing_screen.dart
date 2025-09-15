@@ -31,6 +31,7 @@ class ExchangeLandingScreen extends StatelessWidget {
             onPressed: () => context.goNamed(WalletRoute.walletHome.name),
           ),
         ),
+        extendBodyBehindAppBar: true,
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
