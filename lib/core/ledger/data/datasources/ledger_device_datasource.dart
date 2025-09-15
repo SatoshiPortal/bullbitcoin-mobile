@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
+import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_errors.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -15,50 +17,72 @@ import 'package:ledger_flutter_plus/ledger_flutter_plus.dart' as sdk;
 
 class LedgerDeviceDatasource {
   sdk.LedgerInterface? _ledgerBle;
+  sdk.LedgerInterface? _ledgerUsb;
   sdk.LedgerDevice? _cachedDevice;
   sdk.LedgerConnection? _cachedConnection;
 
   Future<List<LedgerDeviceModel>> scanDevices({
     Duration scanDuration = const Duration(seconds: 60),
   }) async {
-    if (_ledgerBle != null) {
-      await dispose();
-    }
+    await dispose();
 
     _ledgerBle = sdk.LedgerInterface.ble(
       onPermissionRequest: (_) async => true,
       bleOptions: sdk.BluetoothOptions(maxScanDuration: scanDuration),
     );
 
+    if (!Platform.isIOS) {
+      _ledgerUsb = sdk.LedgerInterface.usb();
+    }
+
     final devices = <sdk.LedgerDevice>[];
     final completer = Completer<void>();
-    StreamSubscription<sdk.LedgerDevice>? scanSubscription;
-    
-    scanSubscription = _ledgerBle!.scan().listen(
-      (device) {
-        devices.add(device);
-        if (!completer.isCompleted) {
-          completer.complete();
-        }
-      },
-      onError: (error) {
-        if (!completer.isCompleted) {
-          completer.completeError(error as Object);
-        }
-      },
-    );
+    final StreamSubscription<sdk.LedgerDevice> bleScanSubscription = _ledgerBle!
+        .scan()
+        .listen(
+          (device) {
+            devices.add(device);
+            if (!completer.isCompleted) {
+              completer.complete();
+            }
+          },
+          onError: (error) {
+            if (!completer.isCompleted) {
+              completer.completeError(error as Object);
+            }
+          },
+        );
+
+    StreamSubscription<sdk.LedgerDevice>? usbScanSubscription;
+
+    if (_ledgerUsb != null) {
+      usbScanSubscription = _ledgerUsb!.scan().listen(
+        (device) {
+          devices.add(device);
+          if (!completer.isCompleted) {
+            completer.complete();
+          }
+        },
+        onError: (error) {
+          if (!completer.isCompleted) {
+            completer.completeError(error as Object);
+          }
+        },
+      );
+    }
 
     try {
       await completer.future.timeout(scanDuration);
     } on TimeoutException {
       // Timeout is expected if no device found
     } finally {
-      await scanSubscription.cancel();
+      await bleScanSubscription.cancel();
+      await usbScanSubscription?.cancel();
     }
 
     final deviceModels =
         devices.map((device) {
-          return LedgerDeviceModel(id: device.id, name: device.name);
+          return LedgerDeviceModel.fromSdkDevice(device);
         }).toList();
 
     if (deviceModels.isEmpty) {
@@ -78,17 +102,42 @@ class LedgerDeviceDatasource {
       await _disconnectCurrentConnection();
     }
 
-    if (_ledgerBle == null) {
-      throw Exception('Bluetooth interface not initialized');
-    }
-
     if (_cachedDevice == null || _cachedDevice!.id != device.id) {
       throw Exception(
         'Device not found in cache. Please scan for devices first.',
       );
     }
 
-    _cachedConnection = await _ledgerBle!.connect(_cachedDevice!);
+    sdk.LedgerInterface? ledgerInterface;
+    if (device.connectionType == LedgerConnectionType.ble) {
+      ledgerInterface = _ledgerBle;
+    } else if (device.connectionType == LedgerConnectionType.usb) {
+      ledgerInterface = _ledgerUsb;
+    }
+
+    if (ledgerInterface == null) {
+      throw Exception('Connection type selected was not initialized');
+    }
+
+    // Adding retry logic due to permission dialog not returning
+    if (device.connectionType == LedgerConnectionType.usb) {
+      for (int attempt = 0; attempt < 5; attempt++) {
+        try {
+          _cachedConnection = await ledgerInterface
+              .connect(_cachedDevice!)
+              .timeout(const Duration(seconds: 10));
+          break;
+        } catch (e) {
+          if (attempt == 4) {
+            rethrow;
+          }
+          await Future.delayed(const Duration(seconds: 2));
+        }
+      }
+    } else {
+      _cachedConnection = await ledgerInterface.connect(_cachedDevice!);
+    }
+
     return device;
   }
 
@@ -184,6 +233,7 @@ class LedgerDeviceDatasource {
     await _disconnectCurrentConnection();
     _cachedDevice = null;
     _ledgerBle = null;
+    _ledgerUsb = null;
   }
 }
 
