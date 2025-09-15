@@ -93,6 +93,11 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
         multipleDevicesFound:
             () =>
                 'Multiple Ledger devices found. Please ensure only one device is nearby.',
+        deviceNotFound: () => 'Ledger device not found.',
+        connectionTypeNotInitialized: () => 'Connection type not initialized.',
+        noActiveConnection: () => 'No active connection to Ledger device.',
+        deviceMismatch: () => 'Device mismatch detected.',
+        invalidMagicBytes: () => 'Invalid PSBT format detected.',
         operationFailed: (msg) => msg,
       );
       log.severe('Ledger operation failed: $message');

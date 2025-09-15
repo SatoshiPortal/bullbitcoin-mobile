@@ -7,6 +7,11 @@ part 'ledger_errors.freezed.dart';
 sealed class LedgerError with _$LedgerError {
   const factory LedgerError.permissionDenied() = PermissionDeniedLedgerError;
   const factory LedgerError.noDevicesFound() = NoDevicesFoundLedgerError;
-    const factory LedgerError.multipleDevicesFound() = MultipleDevicesFoundLedgerError;
+  const factory LedgerError.multipleDevicesFound() = MultipleDevicesFoundLedgerError;
+  const factory LedgerError.deviceNotFound() = DeviceNotFoundLedgerError;
+  const factory LedgerError.connectionTypeNotInitialized() = ConnectionTypeNotInitializedLedgerError;
+  const factory LedgerError.noActiveConnection() = NoActiveConnectionLedgerError;
+  const factory LedgerError.deviceMismatch() = DeviceMismatchLedgerError;
+  const factory LedgerError.invalidMagicBytes() = InvalidMagicBytesLedgerError;
   const factory LedgerError.operationFailed({required String message}) = OperationFailedLedgerError;
 }
