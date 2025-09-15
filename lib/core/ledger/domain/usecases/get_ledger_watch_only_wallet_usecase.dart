@@ -2,8 +2,9 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:satoshifier/satoshifier.dart';
+import 'package:satoshifier/satoshifier.dart' hide Network;
 
 class GetLedgerWatchOnlyWalletUsecase {
   final LedgerDeviceRepository _repository;
@@ -18,11 +19,15 @@ class GetLedgerWatchOnlyWalletUsecase {
   Future<WatchOnlyWalletEntity> execute({
     required String label,
     required LedgerDeviceEntity device,
+    ScriptType scriptType = ScriptType.bip84,
   }) async {
     final settings = await _settingsRepository.fetch();
-    final isTestnet = settings.environment.isTestnet;
+    final network = Network.fromEnvironment(
+      isTestnet: settings.environment.isTestnet,
+      isLiquid: false,
+    );
 
-    final derivationPath = isTestnet ? "m/84'/1'/0'" : "m/84'/0'/0'";
+    final derivationPath = "m/${scriptType.purpose}'/${network.coinType}'/0'";
 
     final masterFingerprint = await _repository.getMasterFingerprint(device);
     final xpub = await _repository.getXpub(
