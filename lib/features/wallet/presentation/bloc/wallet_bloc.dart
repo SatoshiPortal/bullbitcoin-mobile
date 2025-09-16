@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:ark_wallet/ark_wallet.dart';
+import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
@@ -136,10 +136,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       try {
         final arkWallet = await _getArkWalletUsecase.execute();
-        final arkBalance = await arkWallet.balance();
-        final arkTotalBalance = arkBalance.total;
+        final arkBalance = await arkWallet.balance;
         emit(
-          state.copyWith(arkWallet: arkWallet, arkBalanceSat: arkTotalBalance),
+          state.copyWith(arkWallet: arkWallet, arkBalanceSat: arkBalance.total),
         );
       } catch (e) {
         log.severe('[WalletBloc] Failed to get ark wallet: $e');
