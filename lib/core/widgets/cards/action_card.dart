@@ -58,10 +58,16 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.btc.path,
               label: 'Buy',
               onPressed: () {
-                final isSuperuser =
-                    context.read<SettingsCubit>().state.isSuperuser ?? false;
-                if (Platform.isIOS && !isSuperuser) {
-                  context.goNamed(ExchangeRoute.exchangeLanding.name);
+                if (Platform.isIOS) {
+                  final isSuperuser =
+                      context.read<SettingsCubit>().state.isSuperuser ?? false;
+                  if (isSuperuser) {
+                    // iOS with superuser: go to exchange home (will redirect to v1 landing if not logged in)
+                    context.goNamed(ExchangeRoute.exchangeHome.name);
+                  } else {
+                    // iOS without superuser: always show v2 landing
+                    context.goNamed(ExchangeRoute.exchangeLanding.name);
+                  }
                 } else {
                   context.pushNamed(BuyRoute.buy.name);
                 }
@@ -74,10 +80,16 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.dollar.path,
               label: 'Sell',
               onPressed: () {
-                final isSuperuser =
-                    context.read<SettingsCubit>().state.isSuperuser ?? false;
-                if (Platform.isIOS && !isSuperuser) {
-                  context.goNamed(ExchangeRoute.exchangeLanding.name);
+                if (Platform.isIOS) {
+                  final isSuperuser =
+                      context.read<SettingsCubit>().state.isSuperuser ?? false;
+                  if (isSuperuser) {
+                    // iOS with superuser: go to exchange home (will redirect to v1 landing if not logged in)
+                    context.goNamed(ExchangeRoute.exchangeHome.name);
+                  } else {
+                    // iOS without superuser: always show v2 landing
+                    context.goNamed(ExchangeRoute.exchangeLanding.name);
+                  }
                 } else {
                   context.pushNamed(SellRoute.sell.name);
                 }
@@ -90,10 +102,16 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.rightArrow.path,
               label: 'Pay',
               onPressed: () {
-                final isSuperuser =
-                    context.read<SettingsCubit>().state.isSuperuser ?? false;
-                if (Platform.isIOS && !isSuperuser) {
-                  context.goNamed(ExchangeRoute.exchangeLanding.name);
+                if (Platform.isIOS) {
+                  final isSuperuser =
+                      context.read<SettingsCubit>().state.isSuperuser ?? false;
+                  if (isSuperuser) {
+                    // iOS with superuser: go to exchange home (will redirect to v1 landing if not logged in)
+                    context.goNamed(ExchangeRoute.exchangeHome.name);
+                  } else {
+                    // iOS without superuser: always show v2 landing
+                    context.goNamed(ExchangeRoute.exchangeLanding.name);
+                  }
                 } else {
                   context.pushNamed(PayRoute.pay.name);
                 }
