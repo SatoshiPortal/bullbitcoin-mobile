@@ -86,7 +86,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
        _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
        _getWalletUtxosUsecase = getWalletUtxosUsecase,
        _getOrderUsecase = getOrderUsecase,
-       super(const PayRecipientInputState()) {
+       super(const PayRecipientInputState(isLoadingRecipients: true)) {
     on<PayStarted>(_onStarted);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<PayNewRecipientCreated>(_onNewRecipientCreated);
