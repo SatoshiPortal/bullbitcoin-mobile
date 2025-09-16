@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
@@ -52,31 +50,15 @@ class _AmountPageState extends State<AmountPage> {
     final bloc = context.read<ReceiveBloc>();
     final initialAmount = bloc.state.inputAmount;
     _amountController = TextEditingController.fromValue(
-      TextEditingValue(
-        text: initialAmount,
-        selection: TextSelection.collapsed(offset: initialAmount.length),
-      ),
+      TextEditingValue(text: initialAmount),
     );
+    _amountController.addListener(() {
+      final text = _amountController.text;
+      if (text != bloc.state.inputAmount) {
+        bloc.add(ReceiveEvent.receiveAmountInputChanged(text));
+      }
+    });
     _amountFocusNode = FocusNode();
-  }
-
-  @override
-  void didUpdateWidget(AmountPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Keep controller in sync with state
-    final amount = context.read<ReceiveBloc>().state.inputAmount;
-    if (_amountController.text != amount) {
-      final currentPosition = _amountController.selection.baseOffset;
-      _amountController.value = TextEditingValue(
-        text: amount,
-        selection: TextSelection.collapsed(
-          offset:
-              currentPosition <= amount.length
-                  ? currentPosition
-                  : amount.length,
-        ),
-      );
-    }
   }
 
   @override
@@ -93,44 +75,19 @@ class _AmountPageState extends State<AmountPage> {
         FocusScope.of(context).unfocus();
       },
       behavior: HitTestBehavior.translucent,
-      child: BlocListener<ReceiveBloc, ReceiveState>(
-        listenWhen:
-            (previous, current) =>
-                // Only listen for changes that aren't from direct user input
-                previous.inputAmount != current.inputAmount &&
-                // Skip if controller already has the correct text (likely from direct user input)
-                _amountController.text != current.inputAmount,
-        listener: (context, state) {
-          // Only update controller if it doesn't match state
-          // and maintain cursor position where possible
-          final currentCursor = _amountController.selection.baseOffset;
-          final safePosition = math.min(
-            currentCursor,
-            state.inputAmount.length,
-          );
-
-          _amountController.value = TextEditingValue(
-            text: state.inputAmount,
-            selection: TextSelection.collapsed(offset: safePosition),
-          );
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ReceiveAmountEntry(
-              amountController: _amountController,
-              focusNode: _amountFocusNode,
-            ),
-            ReceiveNumberPad(
-              amountController: _amountController,
-              focusNode: _amountFocusNode,
-            ),
-            ReceiveAmountContinueButton(
-              onContinueNavigation: widget.onContinueNavigation,
-            ),
-          ],
-        ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ReceiveAmountEntry(
+            amountController: _amountController,
+            focusNode: _amountFocusNode,
+          ),
+          ReceiveNumberPad(amountController: _amountController),
+          ReceiveAmountContinueButton(
+            onContinueNavigation: widget.onContinueNavigation,
+          ),
+        ],
       ),
     );
   }
