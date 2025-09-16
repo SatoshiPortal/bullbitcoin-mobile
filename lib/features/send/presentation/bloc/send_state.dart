@@ -416,8 +416,6 @@ abstract class SendState with _$SendState {
           : selectedWallet!.isLiquid
           ? false
           : true;
-
-  String get displayAmount => sendMax ? 'MAX' : amount;
 }
 
 extension SendStateFeePercent on SendState {

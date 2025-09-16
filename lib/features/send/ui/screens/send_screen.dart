@@ -263,23 +263,24 @@ class SendAmountScreen extends StatefulWidget {
 class _SendAmountScreenState extends State<SendAmountScreen> {
   late TextEditingController _amountController;
   late FocusNode _amountFocusNode;
+  bool _isMax = false;
 
   @override
   void initState() {
     super.initState();
-    final displayAmount = context.read<SendCubit>().state.displayAmount;
+    final amount = context.read<SendCubit>().state.amount;
     _amountController = TextEditingController.fromValue(
       TextEditingValue(
-        text: displayAmount,
-        selection: TextSelection.collapsed(offset: displayAmount.length),
+        text: amount,
+        selection: TextSelection.collapsed(offset: amount.length),
       ),
     );
     _amountFocusNode = FocusNode();
-    _amountController.addListener(() {
-      final text = _amountController.text;
-      if (text != context.read<SendCubit>().state.displayAmount) {
-        context.read<SendCubit>().amountChanged(text);
-      }
+  }
+
+  void _setIsMax(bool isMax) {
+    setState(() {
+      _isMax = isMax;
     });
   }
 
@@ -316,18 +317,18 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             child: BlocListener<SendCubit, SendState>(
               listenWhen:
                   (previous, current) =>
-                      previous.displayAmount != current.displayAmount &&
-                      _amountController.text != current.displayAmount,
+                      previous.amount != current.amount &&
+                      _amountController.text != current.amount,
               listener: (context, state) {
-                final displayAmount = state.displayAmount;
+                final amount = state.amount;
                 final currentCursor = _amountController.selection.baseOffset;
-                final safePosition = math.min(
-                  currentCursor,
-                  displayAmount.length,
-                );
+                final safePosition =
+                    _isMax
+                        ? amount.length
+                        : math.min(currentCursor, amount.length);
 
                 _amountController.value = TextEditingValue(
-                  text: displayAmount,
+                  text: amount,
                   selection: TextSelection.collapsed(offset: safePosition),
                 );
               },
@@ -386,6 +387,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               amountController: _amountController,
                               onNoteChanged: cubit.noteChanged,
                               onCurrencyChanged: (currencyCode) {
+                                _setIsMax(false);
                                 context.read<SendCubit>().onCurrencyChanged(
                                   currencyCode,
                                 );
@@ -399,7 +401,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       ? swapLimitsError.toString()
                                       : swapCreationError?.toString(),
                               focusNode: _amountFocusNode,
-                              readOnly: state.sendMax,
+                              readOnly: _isMax,
+                              isMax: _isMax,
                             ),
                             const Gap(48),
                             Divider(
@@ -410,11 +413,19 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               balance: state.formattedWalletBalance(),
                               currencyCode: '',
                               showMax: !isLightning && !isChainSwap,
-                              onMaxPressed: cubit.onMaxPressed,
+                              onMaxPressed: () {
+                                _setIsMax(true);
+                                context.read<SendCubit>().amountChanged(
+                                  isMax: true,
+                                );
+                              },
                               walletLabel: selectedWalletLabel,
                             ),
                             DialPad(
                               onNumberPressed: (number) async {
+                                // Unset max since user manually changed the amount
+                                _setIsMax(false);
+
                                 final selectionStart =
                                     _amountController.selection.baseOffset;
                                 final selectionEnd =
@@ -460,10 +471,13 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
 
                                 // Finally, inform the cubit of the change
                                 await context.read<SendCubit>().amountChanged(
-                                  newAmount,
+                                  amount: newAmount,
                                 );
                               },
                               onBackspacePressed: () async {
+                                // Unset max since user manually changed the amount
+                                _setIsMax(false);
+
                                 final selectionStart =
                                     _amountController.selection.baseOffset;
                                 final selectionEnd =
@@ -519,7 +533,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
 
                                 // Finally, inform the cubit of the change
                                 await context.read<SendCubit>().amountChanged(
-                                  newAmount,
+                                  amount: newAmount,
                                 );
                               },
                             ),
