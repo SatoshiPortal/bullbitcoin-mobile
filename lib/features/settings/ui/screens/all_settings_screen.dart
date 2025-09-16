@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
@@ -36,15 +38,31 @@ class AllSettingsScreen extends StatelessWidget {
                   icon: Icons.account_balance_wallet,
                   title: 'Exchange Settings',
                   onTap: () {
-                    final notLoggedIn =
-                        context.read<ExchangeCubit>().state.notLoggedIn;
-
-                    if (notLoggedIn) {
-                      // Not logged in: go to landing page
-                      context.goNamed(ExchangeRoute.exchangeLanding.name);
+                    if (Platform.isIOS) {
+                      final isSuperuser =
+                          context.read<SettingsCubit>().state.isSuperuser ??
+                          false;
+                      if (isSuperuser) {
+                        final notLoggedIn =
+                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        if (notLoggedIn) {
+                          context.goNamed(ExchangeRoute.exchangeLanding.name);
+                        } else {
+                          context.pushNamed(
+                            SettingsRoute.exchangeSettings.name,
+                          );
+                        }
+                      } else {
+                        context.goNamed(ExchangeRoute.exchangeLanding.name);
+                      }
                     } else {
-                      // Logged in: allow access to exchange settings
-                      context.pushNamed(SettingsRoute.exchangeSettings.name);
+                      final notLoggedIn =
+                          context.read<ExchangeCubit>().state.notLoggedIn;
+                      if (notLoggedIn) {
+                        context.goNamed(ExchangeRoute.exchangeLanding.name);
+                      } else {
+                        context.pushNamed(SettingsRoute.exchangeSettings.name);
+                      }
                     }
                   },
                 ),

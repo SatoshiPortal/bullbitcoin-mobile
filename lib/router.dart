@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
@@ -20,6 +22,7 @@ import 'package:bb_mobile/features/recoverbull_vault_recovery/router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -27,6 +30,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 /// The main router of the app. It is the root of the routing tree and contains
@@ -60,12 +64,28 @@ class AppRouter {
                     : BottomNavigationBar(
                       currentIndex: tabIndex,
                       onTap: (index) {
-                        final goNamed =
-                            index == 0
-                                ? WalletRoute.walletHome.name
-                                : ExchangeRoute.exchangeHome.name;
-
-                        context.goNamed(goNamed);
+                        if (index == 0) {
+                          context.goNamed(WalletRoute.walletHome.name);
+                        } else {
+                          // Exchange tab
+                          if (Platform.isIOS) {
+                            final isSuperuser =
+                                context
+                                    .read<SettingsCubit>()
+                                    .state
+                                    .isSuperuser ??
+                                false;
+                            if (isSuperuser) {
+                              context.goNamed(ExchangeRoute.exchangeHome.name);
+                            } else {
+                              context.goNamed(
+                                ExchangeRoute.exchangeLanding.name,
+                              );
+                            }
+                          } else {
+                            context.goNamed(ExchangeRoute.exchangeHome.name);
+                          }
+                        }
                       },
                       items: const [
                         BottomNavigationBarItem(

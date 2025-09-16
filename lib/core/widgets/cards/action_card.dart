@@ -62,10 +62,8 @@ class _ActionRow extends StatelessWidget {
                   final isSuperuser =
                       context.read<SettingsCubit>().state.isSuperuser ?? false;
                   if (isSuperuser) {
-                    // iOS with superuser: go to exchange home (will redirect to v1 landing if not logged in)
-                    context.goNamed(ExchangeRoute.exchangeHome.name);
+                    context.pushNamed(BuyRoute.buy.name);
                   } else {
-                    // iOS without superuser: always show v2 landing
                     context.goNamed(ExchangeRoute.exchangeLanding.name);
                   }
                 } else {
@@ -84,10 +82,8 @@ class _ActionRow extends StatelessWidget {
                   final isSuperuser =
                       context.read<SettingsCubit>().state.isSuperuser ?? false;
                   if (isSuperuser) {
-                    // iOS with superuser: go to exchange home (will redirect to v1 landing if not logged in)
-                    context.goNamed(ExchangeRoute.exchangeHome.name);
+                    context.pushNamed(SellRoute.sell.name);
                   } else {
-                    // iOS without superuser: always show v2 landing
                     context.goNamed(ExchangeRoute.exchangeLanding.name);
                   }
                 } else {
@@ -106,10 +102,8 @@ class _ActionRow extends StatelessWidget {
                   final isSuperuser =
                       context.read<SettingsCubit>().state.isSuperuser ?? false;
                   if (isSuperuser) {
-                    // iOS with superuser: go to exchange home (will redirect to v1 landing if not logged in)
-                    context.goNamed(ExchangeRoute.exchangeHome.name);
+                    context.pushNamed(PayRoute.pay.name);
                   } else {
-                    // iOS without superuser: always show v2 landing
                     context.goNamed(ExchangeRoute.exchangeLanding.name);
                   }
                 } else {
