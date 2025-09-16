@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 
-class ArkLocator {
+class ArkCoreLocator {
   static void setup() {
     locator.registerFactory<CreateArkSecretUsecase>(
       () => CreateArkSecretUsecase(bip85Repository: locator<Bip85Repository>()),
