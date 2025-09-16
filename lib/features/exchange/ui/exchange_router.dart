@@ -7,6 +7,8 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -52,12 +54,22 @@ class ExchangeRouter {
     GoRoute(
       name: ExchangeRoute.exchangeLanding.name,
       path: ExchangeRoute.exchangeLanding.path,
-      builder: (context, state) {
-        // Show v2 screen for iOS, regular screen for Android
+      pageBuilder: (context, state) {
+        // Show v2 screen for iOS without superuser, v1 for iOS with superuser, regular screen for Android
+        Widget landingScreen;
         if (Platform.isIOS) {
-          return const ExchangeLandingScreenV2();
+          final isSuperuser =
+              context.read<SettingsCubit>().state.isSuperuser ?? false;
+          if (isSuperuser) {
+            landingScreen = const ExchangeLandingScreen();
+          } else {
+            landingScreen = const ExchangeLandingScreenV2();
+          }
+        } else {
+          landingScreen = const ExchangeLandingScreen();
         }
-        return const ExchangeLandingScreen();
+
+        return NoTransitionPage(key: state.pageKey, child: landingScreen);
       },
     ),
     GoRoute(

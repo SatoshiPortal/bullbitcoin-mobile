@@ -5,7 +5,6 @@ version: 5.4.4+94
 
 environment:
   sdk: ">=3.7.0 <4.0.0"
-
 dependencies:
   flutter:
     sdk: flutter
