@@ -3,11 +3,13 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
+import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark/ui/transaction_history_widget.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class ArkWalletDetailPage extends StatelessWidget {
   const ArkWalletDetailPage({super.key});
@@ -32,9 +34,11 @@ class ArkWalletDetailPage extends StatelessWidget {
             signer: SignerEntity.local,
             hasSyncingIndicator: false,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 13.0),
-            child: TransactionHistoryWidget(transactions: state.transactions),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 13.0),
+              child: TransactionHistoryWidget(transactions: state.transactions),
+            ),
           ),
           const Padding(
             padding: EdgeInsets.only(left: 13.0, right: 13.0, bottom: 40.0),
@@ -58,7 +62,9 @@ class ArkWalletBottomButtons extends StatelessWidget {
             iconData: Icons.arrow_downward,
             label: 'Receive',
             iconFirst: true,
-            onPressed: () {},
+            onPressed: () {
+              context.pushNamed(ArkRoute.arkReceive.name);
+            },
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,
           ),
