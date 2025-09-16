@@ -11,4 +11,7 @@ enum SignerDeviceEntity {
       StringFormatting.camelCaseToTitleCase(name, separator: ' ');
 
   bool get isLedger => name.startsWith('ledger');
+
+  bool get supportsBluetooth =>
+      isLedger && this != SignerDeviceEntity.ledgerNanoSPlus;
 }

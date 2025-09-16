@@ -1,7 +1,10 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 
 abstract class LedgerDeviceRepository {
-  Future<List<LedgerDeviceEntity>> scanDevices();
+  Future<List<LedgerDeviceEntity>> scanDevices({
+    SignerDeviceEntity? deviceType,
+  });
 
   Future<void> connectDevice(LedgerDeviceEntity device);
 

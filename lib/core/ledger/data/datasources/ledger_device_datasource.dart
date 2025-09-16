@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_errors.dart';
@@ -23,6 +24,7 @@ class LedgerDeviceDatasource {
 
   Future<List<LedgerDeviceModel>> scanDevices({
     Duration scanDuration = const Duration(seconds: 60),
+    SignerDeviceEntity? deviceType,
   }) async {
     await dispose();
 
@@ -37,27 +39,40 @@ class LedgerDeviceDatasource {
 
     final devices = <sdk.LedgerDevice>[];
     final completer = Completer<void>();
-    final StreamSubscription<sdk.LedgerDevice> bleScanSubscription = _ledgerBle!
-        .scan()
-        .listen(
-          (device) {
-            devices.add(device);
-            if (!completer.isCompleted) {
-              completer.complete();
-            }
-          },
-          onError: (error) {
-            if (!completer.isCompleted) {
-              completer.completeError(error as Object);
-            }
-          },
-        );
+    StreamSubscription<sdk.LedgerDevice>? bleScanSubscription;
+
+    final ledgerDeviceType =
+        deviceType != null ? convertToSdkDeviceType(deviceType) : null;
+
+    if (ledgerDeviceType == null || !ledgerDeviceType.usbOnly) {
+      bleScanSubscription = _ledgerBle!.scan().listen(
+        (device) {
+          if (ledgerDeviceType != null &&
+              device.deviceInfo != ledgerDeviceType) {
+            return;
+          }
+          devices.add(device);
+          if (!completer.isCompleted) {
+            completer.complete();
+          }
+        },
+        onError: (error) {
+          if (!completer.isCompleted) {
+            completer.completeError(error as Object);
+          }
+        },
+      );
+    }
 
     StreamSubscription<sdk.LedgerDevice>? usbScanSubscription;
 
     if (_ledgerUsb != null) {
       usbScanSubscription = _ledgerUsb!.scan().listen(
         (device) {
+          if (ledgerDeviceType != null &&
+              device.deviceInfo != ledgerDeviceType) {
+            return;
+          }
           devices.add(device);
           if (!completer.isCompleted) {
             completer.complete();
@@ -76,7 +91,7 @@ class LedgerDeviceDatasource {
     } on TimeoutException {
       // Timeout is expected if no device found
     } finally {
-      await bleScanSubscription.cancel();
+      await bleScanSubscription?.cancel();
       await usbScanSubscription?.cancel();
     }
 

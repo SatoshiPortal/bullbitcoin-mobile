@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
+import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_enter_note.dart';
@@ -594,7 +595,11 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
               "${state.wallet!.derivationPath.replaceAll(' ', '')}/$keyChainPath/${state.bitcoinAddress!.index}";
           context.pushNamed(
             LedgerRoute.verifyAddress.name,
-            extra: (address: state.address, derivationPath: derivationPath),
+            extra: LedgerRouteParams(
+              address: state.address,
+              derivationPath: derivationPath,
+              requestedDeviceType: state.wallet!.signerDevice,
+            ),
           );
         },
         bgColor: context.colour.primary,

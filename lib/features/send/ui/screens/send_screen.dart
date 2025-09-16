@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
+import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -1738,6 +1739,10 @@ class SignLedgerButton extends StatelessWidget {
           cubit.state.selectedWallet?.derivationPath.replaceAll(' ', ''),
     );
 
+    final deviceType = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.signerDevice,
+    );
+
     return BBButton.big(
       label: 'Sign with Ledger',
       onPressed: () async {
@@ -1745,7 +1750,11 @@ class SignLedgerButton extends StatelessWidget {
 
         final result = await context.pushNamed<String>(
           LedgerRoute.signTransaction.name,
-          extra: (psbt: unsignedPsbt, derivationPath: derivationPath),
+          extra: LedgerRouteParams(
+            psbt: unsignedPsbt,
+            derivationPath: derivationPath,
+            requestedDeviceType: deviceType,
+          ),
         );
 
         if (result != null && context.mounted) {

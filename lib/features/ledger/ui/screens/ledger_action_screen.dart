@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_watch_only_wallet_usecase.dart';
@@ -21,8 +23,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-typedef LedgerRouteParams =
-    ({String? psbt, String? derivationPath, String? address});
+class LedgerRouteParams {
+  final String? psbt;
+  final String? derivationPath;
+  final String? address;
+  final SignerDeviceEntity? requestedDeviceType;
+
+  const LedgerRouteParams({
+    this.psbt,
+    this.derivationPath,
+    this.address,
+    this.requestedDeviceType,
+  });
+}
 
 class LedgerActionScreen extends StatelessWidget {
   final LedgerAction action;
@@ -37,6 +50,7 @@ class LedgerActionScreen extends StatelessWidget {
           (context) => LedgerOperationCubit(
             scanLedgerDevicesUsecase: locator<ScanLedgerDevicesUsecase>(),
             connectLedgerDeviceUsecase: locator<ConnectLedgerDeviceUsecase>(),
+            requestedDeviceType: parameters?.requestedDeviceType,
           ),
       child: _LedgerActionView(action: action, parameters: parameters),
     );
@@ -100,7 +114,7 @@ class _LedgerActionView extends StatelessWidget {
   Widget _buildMainContent(BuildContext context, LedgerOperationState state) {
     return Column(
       children: [
-        Icon(_getIconForState(state), size: 80, color: context.colour.primary),
+        _buildnIconsForState(context, state),
         const Gap(24),
         BBText(
           _getMainTextForState(state),
@@ -121,6 +135,54 @@ class _LedgerActionView extends StatelessWidget {
           ),
       ],
     );
+  }
+
+  Widget _buildnIconsForState(
+    BuildContext context,
+    LedgerOperationState state,
+  ) {
+    if (state.status == LedgerOperationStatus.initial) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (parameters?.requestedDeviceType == null ||
+              parameters!.requestedDeviceType!.supportsBluetooth)
+            Icon(Icons.bluetooth, size: 60, color: context.colour.primary),
+          if (!Platform.isIOS) ...[
+            const Gap(16),
+            Icon(Icons.usb, size: 60, color: context.colour.primary),
+          ],
+        ],
+      );
+    }
+
+    if (state.status == LedgerOperationStatus.scanning ||
+        state.status == LedgerOperationStatus.connecting) {
+      return SizedBox(
+        width: 80,
+        height: 80,
+        child: CircularProgressIndicator(
+          color: context.colour.primary,
+          strokeWidth: 3,
+        ),
+      );
+    }
+
+    IconData icon;
+    switch (state.status) {
+      case LedgerOperationStatus.requestingPermissions:
+        icon = Icons.bluetooth_searching;
+      case LedgerOperationStatus.processing:
+        icon = _getProcessingIcon();
+      case LedgerOperationStatus.success:
+        icon = Icons.check_circle;
+      case LedgerOperationStatus.error:
+        icon = Icons.error;
+      default:
+        return Container();
+    }
+
+    return Icon(icon, size: 80, color: context.colour.primary);
   }
 
   Widget _buildActionButtons(BuildContext context, LedgerOperationState state) {
@@ -188,24 +250,6 @@ class _LedgerActionView extends StatelessWidget {
     );
   }
 
-  IconData _getIconForState(LedgerOperationState state) {
-    switch (state.status) {
-      case LedgerOperationStatus.initial:
-        return Icons.bluetooth;
-      case LedgerOperationStatus.requestingPermissions:
-      case LedgerOperationStatus.scanning:
-        return Icons.bluetooth_searching;
-      case LedgerOperationStatus.connecting:
-        return Icons.circle;
-      case LedgerOperationStatus.processing:
-        return _getProcessingIcon();
-      case LedgerOperationStatus.success:
-        return Icons.check_circle;
-      case LedgerOperationStatus.error:
-        return Icons.error;
-    }
-  }
-
   IconData _getProcessingIcon() {
     switch (action) {
       case ImportWalletLedgerAction():
@@ -239,7 +283,12 @@ class _LedgerActionView extends StatelessWidget {
   String _getSubTextForState(LedgerOperationState state) {
     switch (state.status) {
       case LedgerOperationStatus.initial:
-        return 'Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled.';
+        return Platform.isIOS
+            ? 'Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled.'
+            : (parameters?.requestedDeviceType != null &&
+                !parameters!.requestedDeviceType!.supportsBluetooth)
+            ? 'Make sure your Ledger is unlocked with the Bitcoin app opened and connect it via USB.'
+            : 'Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled, or connect the device via USB.';
       case LedgerOperationStatus.requestingPermissions:
         return 'Please allow Bluetooth permissions to scan for your Ledger device.';
       case LedgerOperationStatus.scanning:
