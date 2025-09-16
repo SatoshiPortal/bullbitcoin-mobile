@@ -3,10 +3,13 @@ enum FundingMethod {
   bankTransferWire(queryParam: 'bank-transfer-wire'),
   onlineBillPayment(queryParam: 'online-bill-payment'),
   canadaPost(queryParam: 'canada-post'),
-  sepaTransfer(queryParam: 'sepa-transfer'),
+  instantSepa(queryParam: 'instant-sepa'),
+  regularSepa(queryParam: 'regular-sepa'),
   speiTransfer(queryParam: 'spei-transfer'),
+  sinpeTransfer(queryParam: 'sinpe-transfer'),
   crIbanCrc(queryParam: 'cr-iban-crc'),
-  crIbanUsd(queryParam: 'cr-iban-usd');
+  crIbanUsd(queryParam: 'cr-iban-usd'),
+  arsBankTransfer(queryParam: 'ars-bank-transfer');
 
   final String queryParam;
   const FundingMethod({required this.queryParam});

@@ -78,7 +78,24 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
       final settings = await _getSettingsUsecase.execute();
-      final currencyInput = summary.currency ?? settings.currencyCode;
+      final preferredCurrency = summary.currency ?? settings.currencyCode;
+      final balances = summary.balances.fold<Map<String, double>>({}, (
+        map,
+        balance,
+      ) {
+        map[balance.currencyCode] = balance.amount;
+        return map;
+      });
+      // Only keep the currencies with a balance > 0.
+      balances.removeWhere((key, value) => value <= 0);
+      // If no currencies have a balance > 0, keep the preferred currency
+      if (balances.isEmpty) {
+        balances[preferredCurrency] = 0.0;
+      }
+      final currencyInput =
+          balances[preferredCurrency] != null
+              ? preferredCurrency
+              : balances.keys.first;
       emit(
         state.copyWith(
           userSummary: summary,
@@ -86,6 +103,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           getUserSummaryException: null,
           currencyInput: currencyInput,
           bitcoinUnit: settings.bitcoinUnit,
+          balances: balances,
         ),
       );
 

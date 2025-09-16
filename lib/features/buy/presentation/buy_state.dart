@@ -7,6 +7,7 @@ sealed class BuyState with _$BuyState {
     UserSummary? userSummary,
     ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
+    @Default({}) Map<String, double> balances,
     @Default('') String amountInput,
     @Default(true) bool isFiatCurrencyInput,
     @Default(BitcoinUnit.btc) BitcoinUnit bitcoinUnit,
@@ -34,13 +35,6 @@ sealed class BuyState with _$BuyState {
 
   bool get isFullyVerifiedKycLevel =>
       userSummary?.isFullyVerifiedKycLevel == true;
-
-  Map<String, double> get balances =>
-      userSummary?.balances.fold<Map<String, double>>({}, (map, balance) {
-        map[balance.currencyCode] = balance.amount;
-        return map;
-      }) ??
-      {};
 
   double? get balance => balances[currencyInput];
 

@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class FundExchangeBankTransferWireScreen extends StatelessWidget {
-  const FundExchangeBankTransferWireScreen({super.key});
+class FundExchangeRegularSepaScreen extends StatelessWidget {
+  const FundExchangeRegularSepaScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,6 @@ class FundExchangeBankTransferWireScreen extends StatelessWidget {
     final failedToLoadFundingDetails = context.select(
       (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
     );
-
     return Scaffold(
       appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
       body: SafeArea(
@@ -31,36 +30,50 @@ class FundExchangeBankTransferWireScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BBText(
-                'Bank transfer (wire)',
-                style: theme.textTheme.displaySmall,
-              ),
+              BBText('SEPA transfer', style: theme.textTheme.displaySmall),
               const Gap(16.0),
-              BBText(
-                "Send a wire transfer from your bank account using Bull Bitcoin's bank details below. Your bank may require only some parts of these details.",
-                style: theme.textTheme.headlineSmall,
-              ),
-              const Gap(16.0),
-              BBText(
-                "Any funds you send will be added to your Bull Bitcoin within 1-2 business days.",
-                style: theme.textTheme.headlineSmall,
+              RichText(
+                text: TextSpan(
+                  text:
+                      "Send a SEPA transfer from your bank account using the details below ",
+                  style: theme.textTheme.headlineSmall,
+                  children: [
+                    TextSpan(
+                      text: 'exactly.',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const Gap(24.0),
               if (failedToLoadFundingDetails ||
-                  details is! WireFundingDetails?) ...[
+                  details is! RegularSepaFundingDetails?) ...[
                 const FundExchangeDetailsErrorCard(),
                 const Gap(24.0),
               ] else ...[
+                InfoCard(
+                  description:
+                      'Only use for transactions above €20,000. For smaller transactions, use the Instant SEPA option.',
+                  tagColor: theme.colorScheme.secondary,
+                  bgColor: theme.colorScheme.inverseSurface.withValues(
+                    alpha: 0.1,
+                  ),
+                ),
+                const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Beneficiary name',
-                  helpText:
-                      'Use our official corporate name. Do not use "Bull Bitcoin".',
+                  label: 'IBAN account number',
+                  value: details?.iban,
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Recipient name',
                   value: details?.beneficiaryName,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Transfer code (add this as a payment description)',
-                  helpText: 'Add this as the reason for the transfer',
+                  label: 'Transfer code (add this as payment description)',
                   value: details?.code,
                 ),
                 const Gap(16.0),
@@ -70,44 +83,19 @@ class FundExchangeBankTransferWireScreen extends StatelessWidget {
                   ),
                   tagColor: theme.colorScheme.secondary,
                   description:
-                      'You must add the transfer code as the "message" or "reason" when making the payment.',
+                      'In the payment description, add your transfer code.',
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Bank account details',
-                  value: details?.bankAccountDetails,
+                  label: 'Bank country',
+                  value: details?.bankCountry,
                 ),
                 const Gap(24.0),
-                FundExchangeDetail(label: 'SWIFT code', value: details?.swift),
+                FundExchangeDetail(label: 'BIC code', value: details?.bic),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Institution number',
-                  value: details?.institutionNumber,
-                ),
-                const Gap(24.0),
-                FundExchangeDetail(
-                  label: 'Transit number',
-                  value: details?.transitNumber,
-                ),
-                const Gap(24.0),
-                FundExchangeDetail(
-                  label: 'Routing number',
-                  value: details?.routingNumber,
-                ),
-                const Gap(24.0),
-                FundExchangeDetail(
-                  label: 'Beneficiary address',
+                  label: 'Recipient address',
                   value: details?.beneficiaryAddress,
-                ),
-                const Gap(24.0),
-                FundExchangeDetail(
-                  label: 'Bank name',
-                  value: details?.bankName,
-                ),
-                const Gap(24.0),
-                FundExchangeDetail(
-                  label: 'Address of our bank',
-                  value: details?.bankAddress,
                 ),
                 const Gap(24.0),
               ],

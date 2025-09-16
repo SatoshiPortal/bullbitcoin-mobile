@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class FundExchangeOnlineBillPaymentScreen extends StatelessWidget {
-  const FundExchangeOnlineBillPaymentScreen({super.key});
+class FundExchangeArsBankTransferScreen extends StatelessWidget {
+  const FundExchangeArsBankTransferScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +20,7 @@ class FundExchangeOnlineBillPaymentScreen extends StatelessWidget {
     final failedToLoadFundingDetails = context.select(
       (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
     );
+
     return Scaffold(
       appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
       body: SafeArea(
@@ -29,34 +30,24 @@ class FundExchangeOnlineBillPaymentScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BBText(
-                'Online Bill Payment',
-                style: theme.textTheme.displaySmall,
-              ),
+              BBText('Bank Transfer', style: theme.textTheme.displaySmall),
               const Gap(16.0),
-              BBText(
-                "Any amount you send via your bank's online bill payment feature using the information below will be credited to your Bull Bitcoin account balance within 3-4 business days.",
+              Text(
+                "Send a bank transfer from your bank account using the exact Argentina bank details below.",
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(24.0),
               if (failedToLoadFundingDetails ||
-                  details is! BillPaymentFundingDetails?) ...[
+                  details is! ArsBankTransferFundingDetails?) ...[
                 const FundExchangeDetailsErrorCard(),
                 const Gap(24.0),
               ] else ...[
                 FundExchangeDetail(
-                  label: "Search your bank's list of billers for this name",
-                  helpText:
-                      "Add this company as a payee - it's Bull Bitcoin's payment processor",
-                  value: details?.billerName,
+                  label: 'Recipient Name',
+                  value: details?.beneficiaryName,
                 ),
                 const Gap(24.0),
-                FundExchangeDetail(
-                  label: 'Add this as the account number',
-                  helpText:
-                      'This unique account number is created just for you',
-                  value: details?.code,
-                ),
+                FundExchangeDetail(label: 'CVU', value: details?.cvu),
                 const Gap(24.0),
               ],
             ],

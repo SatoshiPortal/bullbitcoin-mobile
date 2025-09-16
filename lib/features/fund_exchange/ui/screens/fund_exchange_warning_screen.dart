@@ -21,7 +21,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Funding')),
+      appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -131,13 +131,21 @@ class FundExchangeWarningScreen extends StatelessWidget {
                   context.pushReplacementNamed(
                     FundExchangeRoute.fundExchangeCanadaPost.name,
                   );
-                case FundingMethod.sepaTransfer:
+                case FundingMethod.instantSepa:
                   context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeSepaTransfer.name,
+                    FundExchangeRoute.fundExchangeInstantSepa.name,
+                  );
+                case FundingMethod.regularSepa:
+                  context.pushReplacementNamed(
+                    FundExchangeRoute.fundExchangeRegularSepa.name,
                   );
                 case FundingMethod.speiTransfer:
                   context.pushReplacementNamed(
                     FundExchangeRoute.fundExchangeSpeiTransfer.name,
+                  );
+                case FundingMethod.sinpeTransfer:
+                  context.pushReplacementNamed(
+                    FundExchangeRoute.fundExchangeSinpeTransfer.name,
                   );
                 case FundingMethod.crIbanCrc:
                   context.pushReplacementNamed(
@@ -146,6 +154,10 @@ class FundExchangeWarningScreen extends StatelessWidget {
                 case FundingMethod.crIbanUsd:
                   context.pushReplacementNamed(
                     FundExchangeRoute.fundExchangeCostaRicaIbanUsd.name,
+                  );
+                case FundingMethod.arsBankTransfer:
+                  context.pushReplacementNamed(
+                    FundExchangeRoute.fundExchangeArsBankTransfer.name,
                   );
               }
             },

@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_canada_methods.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_costa_rica_methods.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_europe_methods.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_method_list_tile.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +48,7 @@ class FundExchangeAccountScreen extends StatelessWidget {
                 )
                 : null,
         title: const Text('Funding'),
+        scrolledUnderElevation: 0.0,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -109,11 +111,7 @@ class FundExchangeAccountScreen extends StatelessWidget {
                       FundingJurisdiction.canada =>
                         const FundExchangeCanadaMethods(),
                       FundingJurisdiction.europe =>
-                        const FundExchangeMethodListTile(
-                          method: FundingMethod.sepaTransfer,
-                          title: 'SEPA transfer',
-                          subtitle: 'Send a SEPA transfer from your bank',
-                        ),
+                        const FundExchangeEuropeMethods(),
                       FundingJurisdiction.mexico =>
                         const FundExchangeMethodListTile(
                           method: FundingMethod.speiTransfer,
@@ -122,6 +120,13 @@ class FundExchangeAccountScreen extends StatelessWidget {
                         ),
                       FundingJurisdiction.costaRica =>
                         const FundExchangeCostaRicaMethods(),
+                      FundingJurisdiction.argentina =>
+                        const FundExchangeMethodListTile(
+                          method: FundingMethod.arsBankTransfer,
+                          title: 'Bank Transfer',
+                          subtitle:
+                              'Send a bank transfer from your bank account',
+                        ),
                     },
                 ],
               ],
