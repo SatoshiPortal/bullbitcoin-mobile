@@ -495,6 +495,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   } else {
                                     newAmount = currentText;
                                   }
+
+                                  _amountController.text = newAmount;
                                 } else {
                                   // Field is focused
                                   int newCursorPosition = selectionStart;
