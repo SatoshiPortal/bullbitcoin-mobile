@@ -45,10 +45,15 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PayBloc, PayState>(
-      builder: (context, state) {
+    return BlocSelector<PayBloc, PayState, bool>(
+      selector:
+          (state) =>
+              state is PayRecipientInputState &&
+              !state.isLoadingRecipients &&
+              state.userSummary == null,
+      builder: (context, isLoadedWithoutUserSummary) {
         // Check if userSummary exists, if not redirect to new beneficiary tab
-        if (state.userSummary == null) {
+        if (isLoadedWithoutUserSummary) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               setState(() {
@@ -106,8 +111,7 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
                                   },
                                   initialValue: _selectedTab.displayValue,
                                   disabledItems:
-                                      state is PayRecipientInputState &&
-                                              state.userSummary == null
+                                      isLoadedWithoutUserSummary
                                           ? {
                                             RecipientsTab
                                                 .myRecipients
@@ -125,18 +129,23 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
                             ],
                           ),
                         ),
-                        Expanded(
-                          child: switch (_selectedTab) {
-                            RecipientsTab.newRecipient => PayNewRecipientForm(
-                              isLoading:
-                                  state is PayRecipientInputState &&
-                                  state.isLoadingRecipients,
-                              userSummary: state.userSummary,
-                            ),
-                            RecipientsTab.myRecipients => _PayRecipientsTab(
-                              key: ValueKey(_selectedTab),
-                            ),
-                          },
+                        BlocBuilder<PayBloc, PayState>(
+                          builder:
+                              (context, state) => Expanded(
+                                child: switch (_selectedTab) {
+                                  RecipientsTab.newRecipient =>
+                                    PayNewRecipientForm(
+                                      isLoading:
+                                          state is PayRecipientInputState &&
+                                          state.isLoadingRecipients,
+                                      userSummary: state.userSummary,
+                                    ),
+                                  RecipientsTab.myRecipients =>
+                                    _PayRecipientsTab(
+                                      key: ValueKey(_selectedTab),
+                                    ),
+                                },
+                              ),
                         ),
                       ],
                     ),
