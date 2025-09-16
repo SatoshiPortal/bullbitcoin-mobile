@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:ark_wallet/ark_wallet.dart';
+import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/check_for_online_electrum_servers_request.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
@@ -50,6 +52,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required CheckAllServiceStatusUsecase checkAllServiceStatusUsecase,
     required CheckForOnlineElectrumServersUsecase
     checkForOnlineElectrumServersUsecase,
+    required GetArkWalletUsecase getArkWalletUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -67,6 +70,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _checkAllServiceStatusUsecase = checkAllServiceStatusUsecase,
        _checkForOnlineElectrumServersUsecase =
            checkForOnlineElectrumServersUsecase,
+       _getArkWalletUsecase = getArkWalletUsecase,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -101,6 +105,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final CheckAllServiceStatusUsecase _checkAllServiceStatusUsecase;
   final CheckForOnlineElectrumServersUsecase
   _checkForOnlineElectrumServersUsecase;
+  final GetArkWalletUsecase _getArkWalletUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -138,6 +143,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           syncStatus: syncStatus,
         ),
       );
+
+      try {
+        final arkWallet = await _getArkWalletUsecase.execute();
+        final arkBalance = await arkWallet.balance();
+        final arkTotalBalance = arkBalance.total;
+        emit(
+          state.copyWith(arkWallet: arkWallet, arkBalanceSat: arkTotalBalance),
+        );
+      } catch (e) {
+        log.severe('[WalletBloc] Failed to get ark wallet: $e');
+      }
+
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const WalletRefreshed());
 
