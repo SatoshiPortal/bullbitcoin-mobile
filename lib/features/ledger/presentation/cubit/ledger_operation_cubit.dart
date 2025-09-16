@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_errors.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
@@ -13,13 +14,16 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   final ScanLedgerDevicesUsecase _scanLedgerDevicesUsecase;
   final ConnectLedgerDeviceUsecase _connectLedgerDeviceUsecase;
   final LedgerDeviceRepository _repository;
+  final SignerDeviceEntity? _requestedDeviceType;
 
   LedgerOperationCubit({
     required ScanLedgerDevicesUsecase scanLedgerDevicesUsecase,
     required ConnectLedgerDeviceUsecase connectLedgerDeviceUsecase,
+    SignerDeviceEntity? requestedDeviceType,
   }) : _scanLedgerDevicesUsecase = scanLedgerDevicesUsecase,
        _connectLedgerDeviceUsecase = connectLedgerDeviceUsecase,
        _repository = locator<LedgerDeviceRepository>(),
+       _requestedDeviceType = requestedDeviceType,
        super(const LedgerOperationState());
 
   LedgerDeviceEntity? get connectedDevice => state.connectedDevice;
@@ -57,7 +61,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
       }
 
       emit(state.copyWith(status: LedgerOperationStatus.scanning));
-      final devices = await _scanLedgerDevicesUsecase.execute();
+      final devices = await _scanLedgerDevicesUsecase.execute(deviceType: _requestedDeviceType);
 
       emit(
         state.copyWith(

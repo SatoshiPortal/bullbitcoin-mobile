@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/datasources/ledger_device_datasource.dart';
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
@@ -10,8 +11,10 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
       : _datasource = datasource;
 
   @override
-  Future<List<LedgerDeviceEntity>> scanDevices() async {
-    final models = await _datasource.scanDevices();
+  Future<List<LedgerDeviceEntity>> scanDevices({SignerDeviceEntity? deviceType}) async {
+    final models = await _datasource.scanDevices(
+      deviceType: deviceType,
+    );
     return models.map((model) => model.toEntity()).toList();
   }
 
