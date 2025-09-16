@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
@@ -12,7 +11,7 @@ class WalletCard extends StatelessWidget {
     required this.tagColor,
     required this.title,
     required this.description,
-    required this.wallet,
+    required this.balanceSat,
     this.onTap,
     this.isSyncing = false,
   });
@@ -20,7 +19,7 @@ class WalletCard extends StatelessWidget {
   final Color tagColor;
   final String title;
   final String description;
-  final Wallet wallet;
+  final int balanceSat;
   final bool isSyncing;
   final void Function()? onTap;
 
@@ -64,7 +63,7 @@ class WalletCard extends StatelessWidget {
                               ),
                               const Gap(4),
                               CurrencyText(
-                                wallet.balanceSat.toInt(),
+                                balanceSat,
                                 showFiat: false,
                                 style: context.font.bodyLarge,
                                 color: context.colour.secondary,
@@ -82,7 +81,7 @@ class WalletCard extends StatelessWidget {
                               ),
                               const Gap(4),
                               CurrencyText(
-                                wallet.balanceSat.toInt(),
+                                balanceSat,
                                 showFiat: true,
                                 style: context.font.labelMedium,
                                 color: context.colour.outline,

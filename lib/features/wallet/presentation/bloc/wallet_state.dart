@@ -18,6 +18,8 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool autoSwapExecuting,
     @Default(false) bool isDeletingWallet,
     WalletError? walletDeletionError,
+    @Default(null) ArkWallet? arkWallet,
+    @Default(0) int arkBalanceSat,
   }) = _WalletState;
   const WalletState._();
 
