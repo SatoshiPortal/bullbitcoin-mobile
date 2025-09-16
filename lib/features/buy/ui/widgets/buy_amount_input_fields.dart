@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,8 +43,8 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
     final currency = context.select((BuyBloc bloc) => bloc.state.currency);
     final balance = context.select((BuyBloc bloc) => bloc.state.balance);
     final balances = context.select((BuyBloc bloc) => bloc.state.balances);
-    final fiatAmount = context.select((BuyBloc bloc) => bloc.state.amount);
-    final amountSat = context.select((BuyBloc bloc) => bloc.state.amountSat);
+    // final fiatAmount = context.select((BuyBloc bloc) => bloc.state.amount);
+    // final amountSat = context.select((BuyBloc bloc) => bloc.state.amountSat);
     final bitcoinUnit = context.select(
       (BuyBloc bloc) => bloc.state.bitcoinUnit,
     );
@@ -148,21 +147,21 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                         ),
                       ),
                       const Gap(8.0),
-                      CurrencyText(
-                        amountSat ?? 0,
-                        showFiat: !isFiatCurrencyInput,
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.outline,
-                        ),
-                        fiatCurrency: currency.code,
-                        fiatAmount: !isFiatCurrencyInput ? fiatAmount : null,
-                      ),
-                      Text(
-                        ' approx.',
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.outline,
-                        ),
-                      ),
+                      // CurrencyText(
+                      //   amountSat ?? 0,
+                      //   showFiat: !isFiatCurrencyInput,
+                      //   style: context.font.bodyMedium?.copyWith(
+                      //     color: context.colour.outline,
+                      //   ),
+                      //   fiatCurrency: currency.code,
+                      //   fiatAmount: !isFiatCurrencyInput ? fiatAmount : null,
+                      // ),
+                      // Text(
+                      //   ' approx.',
+                      //   style: context.font.bodyMedium?.copyWith(
+                      //     color: context.colour.outline,
+                      //   ),
+                      // ),
                       const Spacer(),
                       Align(
                         alignment: Alignment.centerRight,
