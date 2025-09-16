@@ -21,18 +21,18 @@ class ArkTxWidget extends StatelessWidget {
     switch (tx) {
       case final ark_wallet.Transaction_Boarding tx:
         if (tx.confirmedAt != null) {
-          date = DateTime.fromMillisecondsSinceEpoch(tx.confirmedAt!);
+          date = DateTime.fromMillisecondsSinceEpoch(tx.confirmedAt! * 1000);
         }
         transactionType = ArkTransactionType.boarding;
         sats = tx.sats;
         txid = tx.txid;
       case final ark_wallet.Transaction_Commitment tx:
-        date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt);
+        date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
         transactionType = ArkTransactionType.commitment;
         sats = tx.sats;
         txid = tx.txid;
       case final ark_wallet.Transaction_Redeem tx:
-        date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt);
+        date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
         transactionType = ArkTransactionType.redeem;
         sats = tx.sats;
         txid = tx.txid;
@@ -64,35 +64,29 @@ class ArkTxWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(2.0),
           boxShadow: const [],
         ),
-        child: Row(
+        child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: context.colour.onPrimary,
-                border: Border.all(color: context.colour.surface),
-                borderRadius: BorderRadius.circular(2.0),
-              ),
-              child: Icon(icon, color: context.colour.secondary),
-            ),
-            const Gap(16.0),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CurrencyText(
-                    sats,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                    fiatAmount: null,
-                    fiatCurrency: null,
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: context.colour.onPrimary,
+                    border: Border.all(color: context.colour.surface),
+                    borderRadius: BorderRadius.circular(2.0),
+                  ),
+                  child: Icon(icon, color: context.colour.secondary),
+                ),
+
+                CurrencyText(
+                  sats,
+                  showFiat: false,
+                  style: context.font.bodyLarge,
+                  fiatAmount: null,
+                  fiatCurrency: null,
+                ),
+
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 4.0,
@@ -103,12 +97,18 @@ class ArkTxWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2.0),
                   ),
                   child: BBText(
-                    'Ark',
+                    transactionType.name,
                     style: context.font.labelSmall?.copyWith(
                       color: context.colour.secondary,
                     ),
                   ),
                 ),
+              ],
+            ),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
                 const Gap(4.0),
                 if (date != null)
                   Row(
@@ -127,16 +127,8 @@ class ArkTxWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-
                 BBText(
                   txid,
-                  style: context.font.labelSmall?.copyWith(
-                    color: context.colour.outline,
-                  ),
-                ),
-
-                BBText(
-                  sats.toString(),
                   style: context.font.labelSmall?.copyWith(
                     color: context.colour.outline,
                   ),
