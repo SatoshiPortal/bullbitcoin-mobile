@@ -70,13 +70,13 @@ class WalletCards extends StatelessWidget {
           if (arkWallet != null) ...[
             WalletCard(
               tagColor: context.colour.primary,
-              title: 'Instant payments',
-              description: 'Ark',
+              title: 'Ark Instant payments',
+              description: 'Experimental',
               balanceSat: arkBalanceSat,
               isSyncing: false,
               onTap:
                   () => context.pushNamed(
-                    ArkRoute.arkHome.name,
+                    ArkRoute.arkWalletDetail.name,
                     extra: arkWallet,
                   ),
             ),
