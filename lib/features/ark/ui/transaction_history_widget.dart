@@ -36,10 +36,7 @@ class TransactionHistoryWidget extends StatelessWidget {
         itemCount: transactions.length,
         itemBuilder: (context, index) {
           final tx = transactions[index];
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [const Gap(16), ArkTxWidget(tx: tx), const Gap(16)],
-          );
+          return ArkTxWidget(tx: tx);
         },
       );
     }
