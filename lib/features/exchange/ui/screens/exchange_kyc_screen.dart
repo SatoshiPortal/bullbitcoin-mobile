@@ -50,7 +50,6 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             final isIncodeSmile = url.host.contains('incodesmile.com');
 
             final allow = isKyc || isLogin || isEmailVerification;
-            log.info('UrlChange: ${url.path} → allow: $allow');
 
             // Anything that is not a KYC or login URL should not be allowed and
             //  may indicate that the user is trying to leave the KYC flow, either
@@ -95,9 +94,6 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             }
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
-            log.info(
-              'HTTP Auth request for ${request.host} with realm ${request.realm}',
-            );
             request.onProceed(
               WebViewCredential(
                 user: dotenv.env['BASIC_AUTH_USERNAME'] ?? '',
@@ -105,12 +101,8 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
               ),
             );
           },
-          onPageStarted: (String url) {
-            log.info('Page started loading: $url');
-          },
+          onPageStarted: (String url) {},
           onPageFinished: (String url) async {
-            log.info('Page fully loaded: $url');
-
             // Even though the onPageFinished callback is called when the
             //  page is fully loaded, the Flutter web app inside the WebView
             //  might not have rendered correctly yet, if that happens, we should
@@ -138,19 +130,13 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
               ''');
 
               final isRendered = result.toString() != '0';
-              log.info(
-                'Flutter WebView ${isRendered ? 'rendered' : 'not rendered'} for url: $url with result: $result',
-              );
-              log.info('Flutter Web rendered based on tabindex: $isRendered');
 
               if (!isRendered) {
                 log.warning(
                   'Flutter view not successfully rendered. Reloading WebView.',
                 );
                 await _controller.reload();
-              } else {
-                log.info('Flutter view appears to be fully rendered.');
-              }
+              } else {}
             } catch (e) {
               log.severe('Error checking Flutter view readiness: $e');
               await _controller.reload(); // fallback in case of JS failure

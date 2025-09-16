@@ -24,6 +24,7 @@ class BBInputText extends StatefulWidget {
     this.hideBorder = false,
     this.maxLines,
     this.minLines,
+    this.fixedPrefix,
   });
 
   final Key? uiKey;
@@ -46,6 +47,7 @@ class BBInputText extends StatefulWidget {
   final int? minLines;
   final TextStyle? style;
   final bool hideBorder;
+  final String? fixedPrefix;
 
   @override
   State<BBInputText> createState() => _BBInputTextState();
@@ -136,6 +138,22 @@ class _BBInputTextState extends State<BBInputText> {
             TextStyle(
               color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
             ),
+        prefixIcon:
+            widget.fixedPrefix != null
+                ? Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 16,
+                  ),
+                  child: Text(
+                    widget.fixedPrefix!,
+                    style: context.font.bodyLarge?.copyWith(
+                      color: context.colour.secondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                )
+                : null,
         suffixIcon:
             widget.rightIcon != null
                 ? IconButton(

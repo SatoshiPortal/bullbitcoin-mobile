@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -21,6 +20,32 @@ import 'package:gap/gap.dart';
 
 class PaySendPaymentScreen extends StatelessWidget {
   const PaySendPaymentScreen({super.key});
+
+  String _formatSinpePhoneNumber(String? phoneNumber) {
+    if (phoneNumber == null || phoneNumber.isEmpty) return 'N/A';
+
+    // Remove any existing formatting
+    final String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
+
+    // Add +501 prefix
+    final String formattedNumber = '+501$cleanNumber';
+
+    // Add dashes every 4 digits after the prefix
+    if (cleanNumber.length >= 4) {
+      const String prefix = '+501';
+      final String number = cleanNumber;
+      final StringBuffer formatted = StringBuffer(prefix);
+
+      for (int i = 0; i < number.length; i += 4) {
+        final int end = (i + 4 < number.length) ? i + 4 : number.length;
+        formatted.write('-${number.substring(i, end)}');
+      }
+
+      return formatted.toString();
+    }
+
+    return formattedNumber;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +69,7 @@ class PaySendPaymentScreen extends StatelessWidget {
     final recipient = context.select(
       (PayBloc bloc) =>
           bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).recipient
+              ? (bloc.state as PayPaymentState).selectedRecipient
               : null,
     );
 
@@ -87,9 +112,8 @@ class PaySendPaymentScreen extends StatelessWidget {
                   Countdown(
                     until: order.confirmationDeadline,
                     onTimeout: () {
-                      log.info('Confirmation deadline reached');
                       context.read<PayBloc>().add(
-                        const PayEvent.pollOrderStatus(),
+                        const PayEvent.orderRefreshTimePassed(),
                       );
                     },
                   ),
@@ -408,7 +432,7 @@ class PaySendPaymentScreen extends StatelessWidget {
             defaultComment,
             isCorporate,
             corporateName,
-          ) => phoneNumber,
+          ) => _formatSinpePhoneNumber(phoneNumber),
     );
   }
 }

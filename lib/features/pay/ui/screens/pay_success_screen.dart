@@ -3,8 +3,11 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
+import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
 class PaySuccessScreen extends StatelessWidget {
@@ -18,6 +21,7 @@ class PaySuccessScreen extends StatelessWidget {
               ? (bloc.state as PaySuccessState).payOrder
               : null,
     );
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -43,14 +47,19 @@ class PaySuccessScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.check_circle, size: 100, color: Colors.green),
-                const SizedBox(height: 20),
-                Text('Payment completed!', style: context.font.titleLarge),
-                const SizedBox(height: 10),
+                Gif(
+                  image: AssetImage(Assets.animations.successTick.path),
+                  autostart: Autostart.once,
+                  height: 100,
+                  width: 100,
+                ),
+                const Gap(20),
+                Text('Payment Completed!', style: context.font.titleLarge),
+                const Gap(10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: Text(
-                    'Your payment has been sent and the recipient will receive the funds after your transaction receives 1 confirmation onchain.',
+                    'Your payment has been completed and the recipient has received the funds.',
                     style: context.font.bodyMedium,
                     textAlign: TextAlign.center,
                   ),

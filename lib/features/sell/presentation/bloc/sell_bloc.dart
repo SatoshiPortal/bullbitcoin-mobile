@@ -321,7 +321,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         network: event.network,
       );
 
-      log.info('createdSellOrder: $createdSellOrder');
       // Proceed to confirmation state
       emit(
         walletSelectionState.toReceivePaymentState(

@@ -127,9 +127,6 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     WithdrawCreateNewRecipient event,
     Emitter<WithdrawState> emit,
   ) async {
-    log.info('🚀 _onCreateNewRecipient called');
-    log.info('📝 New recipient from event: ${event.newRecipient}');
-
     if (state is WithdrawRecipientInputState) {
       final currentState = state as WithdrawRecipientInputState;
 
@@ -138,13 +135,9 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
 
       // Use the recipient from the event directly
       final newRecipient = event.newRecipient;
-      log.info('🏭 Executing createFiatRecipientUsecase...');
       try {
         final createdRecipient = await _createFiatRecipientUsecase.execute(
           newRecipient,
-        );
-        log.info(
-          '✅ Recipient created successfully: ${createdRecipient.recipientId}',
         );
 
         // Add the new recipient to the list and update state
@@ -161,16 +154,13 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
           isCreatingNewRecipient: true,
         );
         emit(updatedState);
-        log.info('✅ State updated with new recipient list');
 
         // Now create the withdrawal order using the newly created recipient
-        log.info('🏭 Creating withdrawal order for new recipient...');
         final order = await _createWithdrawOrderUsecase.execute(
           fiatAmount: currentState.amount.amount,
           recipientId: createdRecipient.recipientId,
           recipientType: createdRecipient.recipientType,
         );
-        log.info('✅ Withdrawal order created: ${order.orderId}');
 
         // Transition to confirmation state
         emit(
@@ -179,7 +169,6 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
             order: order,
           ),
         );
-        log.info('✅ Transitioned to confirmation state');
       } catch (e) {
         log.severe('Error creating new recipient: $e');
         emit(

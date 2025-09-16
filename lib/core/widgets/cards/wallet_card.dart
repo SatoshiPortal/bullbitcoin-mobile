@@ -15,6 +15,7 @@ class WalletCard extends StatelessWidget {
     required this.wallet,
     this.onTap,
     this.isSyncing = false,
+    this.fiatCurrency,
   });
 
   final Color tagColor;
@@ -23,6 +24,7 @@ class WalletCard extends StatelessWidget {
   final Wallet wallet;
   final bool isSyncing;
   final void Function()? onTap;
+  final String? fiatCurrency;
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +86,7 @@ class WalletCard extends StatelessWidget {
                               CurrencyText(
                                 wallet.balanceSat.toInt(),
                                 showFiat: true,
+                                fiatCurrency: fiatCurrency,
                                 style: context.font.labelMedium,
                                 color: context.colour.outline,
                               ),

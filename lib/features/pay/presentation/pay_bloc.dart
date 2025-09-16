@@ -86,7 +86,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
        _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
        _getWalletUtxosUsecase = getWalletUtxosUsecase,
        _getOrderUsecase = getOrderUsecase,
-       super(const PayInitialState()) {
+       super(const PayRecipientInputState()) {
     on<PayStarted>(_onStarted);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<PayNewRecipientCreated>(_onNewRecipientCreated);
@@ -100,6 +100,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     on<PayReplaceByFeeChanged>(_onReplaceByFeeChanged);
     on<PayUtxoSelected>(_onUtxoSelected);
     on<PayLoadUtxos>(_onLoadUtxos);
+    on<PayUpdateOrderStatus>(_onUpdateOrderStatus);
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
@@ -128,64 +129,55 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   // From Withdraw: Initialize with user summary and recipients
   Future<void> _onStarted(PayStarted event, Emitter<PayState> emit) async {
     try {
-      // Reset the initial state to clear any previous exceptions
-      PayInitialState initialState;
-      if (state is PayInitialState) {
-        initialState = state as PayInitialState;
-      } else {
-        initialState = const PayInitialState();
-      }
+      emit(const PayState.recipientInput(isLoadingRecipients: true));
+      final userSummary = await _getExchangeUserSummaryUsecase.execute();
+      // Emit loading state for recipients
       emit(
-        initialState.copyWith(
-          apiKeyException: null,
-          getUserSummaryException: null,
-          listRecipientsException: null,
-        ),
+        PayState.recipientInput(userSummary: userSummary, recipients: const []),
       );
 
-      final (userSummary, recipients) =
-          await (
-            _getExchangeUserSummaryUsecase.execute(),
-            _listRecipientsUsecase.execute(fiatOnly: true),
-          ).wait;
+      final recipients = await _listRecipientsUsecase.execute(fiatOnly: true);
 
       emit(
-        initialState.toAmountInputState(
+        PayState.recipientInput(
           userSummary: userSummary,
           recipients: recipients,
         ),
       );
     } on ApiKeyException catch (e) {
-      emit(PayState.initial(apiKeyException: e));
+      // Handle API key error by showing error in current state
+      if (state is PayRecipientInputState) {
+        emit(
+          (state as PayRecipientInputState).copyWith(
+            error: PayError.unexpected(message: e.message),
+          ),
+        );
+      }
     } on GetExchangeUserSummaryException catch (e) {
-      emit(PayState.initial(getUserSummaryException: e));
+      if (state is PayRecipientInputState) {
+        emit(
+          (state as PayRecipientInputState).copyWith(
+            error: PayError.unexpected(message: e.message),
+          ),
+        );
+      }
     } on ListRecipientsException catch (e) {
-      emit(PayState.initial(listRecipientsException: e));
+      if (state is PayRecipientInputState) {
+        emit(
+          (state as PayRecipientInputState).copyWith(
+            error: PayError.unexpected(message: e.message),
+          ),
+        );
+      }
+    } finally {
+      if (state is PayRecipientInputState) {
+        emit(
+          (state as PayRecipientInputState).copyWith(
+            isLoadingRecipients: false,
+          ),
+        );
+      }
     }
-  }
-
-  // From Withdraw: Parse amount and go to recipient input
-  Future<void> _onAmountInputContinuePressed(
-    PayAmountInputContinuePressed event,
-    Emitter<PayState> emit,
-  ) async {
-    // We should be on a PayAmountInputState here
-    final amountInputState = state.cleanAmountInputState;
-    if (amountInputState == null) {
-      // Unexpected state, do nothing
-      log.severe('Expected to be on PayAmountInputState but on: $state');
-      return;
-    }
-    emit(amountInputState);
-
-    final amount = FiatAmount(double.parse(event.amountInput));
-
-    emit(
-      amountInputState.toRecipientInputState(
-        amount: amount,
-        currency: event.fiatCurrency,
-      ),
-    );
   }
 
   // From Withdraw: Create new recipient and create pay order
@@ -193,9 +185,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     PayNewRecipientCreated event,
     Emitter<PayState> emit,
   ) async {
-    log.info('🚀 _onNewRecipientCreated called');
-    log.info('📝 New recipient from event: ${event.newRecipient}');
-
     final recipientInputState = state.cleanRecipientInputState;
     if (recipientInputState == null) {
       // Unexpected state, do nothing
@@ -206,32 +195,12 @@ class PayBloc extends Bloc<PayEvent, PayState> {
 
     // Use the recipient from the event directly
     final newRecipient = event.newRecipient;
-    log.info('🏭 Executing createFiatRecipientUsecase...');
     try {
       final createdRecipient = await _createFiatRecipientUsecase.execute(
         newRecipient,
       );
-      log.info(
-        '✅ Recipient created successfully: ${createdRecipient.recipientId}',
-      );
 
-      // Add the new recipient to the list and update state
-      final updatedRecipients = [
-        ...recipientInputState.recipients,
-        createdRecipient,
-      ];
-
-      // Update state with the new recipient list and clear the newRecipient
-      final updatedState = recipientInputState.copyWith(
-        recipients: updatedRecipients,
-      );
-      emit(updatedState);
-      log.info('✅ State updated with new recipient list');
-
-      // Transition to wallet selection state with the created recipient
-      // No order creation yet - we need to know the network first
-      emit(updatedState.toWalletSelectionState(recipient: createdRecipient));
-      log.info('✅ Transitioned to wallet selection state');
+      emit(recipientInputState.toAmountInputState(recipient: createdRecipient));
     } catch (e) {
       log.severe('Error creating new recipient: $e');
       if (state is PayRecipientInputState) {
@@ -254,13 +223,10 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     }
   }
 
-  // From Withdraw: Select existing recipient and create pay order
   Future<void> _onRecipientSelected(
     PayRecipientSelected event,
     Emitter<PayState> emit,
   ) async {
-    // We should be on a PayRecipientInputState or PayWalletSelectionState and
-    //  return to a clean PayRecipientInputState to change the recipient
     final recipientInputState = state.cleanRecipientInputState;
     if (recipientInputState == null) {
       log.severe('Expected to be on PayRecipientInputState but on: $state');
@@ -269,10 +235,31 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     }
     emit(recipientInputState);
 
-    // Just transition to wallet selection - no order creation yet
-    // We need to know the network (from wallet selection) first
-    final recipient = event.recipient;
-    emit(recipientInputState.toWalletSelectionState(recipient: recipient));
+    emit(recipientInputState.toAmountInputState(recipient: event.recipient));
+  }
+
+  Future<void> _onAmountInputContinuePressed(
+    PayAmountInputContinuePressed event,
+    Emitter<PayState> emit,
+  ) async {
+    // We should be on a PayAmountInputState here
+    final amountInputState = state.cleanAmountInputState;
+    if (amountInputState == null) {
+      // Unexpected state, do nothing
+      log.severe('Expected to be on PayAmountInputState but on: $state');
+      return;
+    }
+    emit(amountInputState);
+
+    final amount = double.tryParse(event.amountInput);
+    if (amount == null || amount <= 0) {
+      log.severe('Invalid amount input: ${event.amountInput}');
+      return;
+    }
+
+    final fiatAmount = FiatAmount(amount);
+
+    emit(amountInputState.toWalletSelectionState(amount: fiatAmount));
   }
 
   // From Withdraw: Get CAD billers for search
@@ -389,24 +376,12 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     try {
       final createdPayOrder = await _placePayOrderUsecase.execute(
         orderAmount: walletSelectionState.amount,
-        recipientId: walletSelectionState.recipient.recipientId,
+        recipientId: walletSelectionState.selectedRecipient.recipientId,
         network:
             event.wallet.isLiquid
                 ? OrderBitcoinNetwork.liquid
                 : OrderBitcoinNetwork.bitcoin,
       );
-
-      log.info('createdPayOrder (internal wallet): $createdPayOrder');
-      log.info(
-        'createdPayOrder.bitcoinAddress: ${createdPayOrder.bitcoinAddress}',
-      );
-      log.info(
-        'createdPayOrder.liquidAddress: ${createdPayOrder.liquidAddress}',
-      );
-      log.info(
-        'createdPayOrder.lightningInvoice: ${createdPayOrder.lightningInvoice}',
-      );
-      log.info('createdPayOrder.payinMethod: ${createdPayOrder.payinMethod}');
 
       if (!event.wallet.isLiquid) {
         final utxos = await _getWalletUtxosUsecase.execute(
@@ -464,8 +439,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     PayExternalWalletNetworkSelected event,
     Emitter<PayState> emit,
   ) async {
-    // We should be on a PayWalletSelection or PayPaymentState and return
-    //  to a clean PayWalletSelectionState state
+    // We should be on a PayWalletSelection state here
     final walletSelectionState = state.cleanWalletSelectionState;
     if (walletSelectionState == null) {
       log.severe('Expected to be on PayWalletSelectionState but on: $state');
@@ -476,21 +450,10 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     try {
       final createdPayOrder = await _placePayOrderUsecase.execute(
         orderAmount: walletSelectionState.amount,
-        recipientId: walletSelectionState.recipient.recipientId,
+        recipientId: walletSelectionState.selectedRecipient.recipientId,
         network: event.network,
       );
 
-      log.info('createdPayOrder: $createdPayOrder');
-      log.info(
-        'createdPayOrder.bitcoinAddress: ${createdPayOrder.bitcoinAddress}',
-      );
-      log.info(
-        'createdPayOrder.liquidAddress: ${createdPayOrder.liquidAddress}',
-      );
-      log.info(
-        'createdPayOrder.lightningInvoice: ${createdPayOrder.lightningInvoice}',
-      );
-      log.info('createdPayOrder.payinMethod: ${createdPayOrder.payinMethod}');
       // Proceed to payment state
       emit(
         walletSelectionState.toReceivePaymentState(payOrder: createdPayOrder),
@@ -622,7 +585,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
               'Expected FiatPaymentOrder but received a different order type',
         );
       }
-
+      if (state is PayPaymentState) {
+        emit((state as PayPaymentState).copyWith(isConfirmingPayment: false));
+      }
       emit(payPaymentState.toSuccessState(payOrder: payPaymentState.payOrder));
     } on PrepareLiquidSendException catch (e) {
       emit(
@@ -662,10 +627,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           isConfirmingPayment: false,
         ),
       );
-    } finally {
-      if (state is PayPaymentState) {
-        emit((state as PayPaymentState).copyWith(isConfirmingPayment: false));
-      }
     }
   }
 
@@ -758,6 +719,30 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           error: PayError.unexpected(message: 'Failed to load UTXOs: $e'),
         ),
       );
+    }
+  }
+
+  // Update order status for SINPE móvil success screen
+  Future<void> _onUpdateOrderStatus(
+    PayUpdateOrderStatus event,
+    Emitter<PayState> emit,
+  ) async {
+    try {
+      final orderSummary = await _getOrderUsecase.execute(
+        orderId: event.orderId,
+      );
+
+      // Update the order in the current state if we're in success state
+      if (state is PaySuccessState) {
+        final currentState = state as PaySuccessState;
+        // Convert Order to FiatPaymentOrder if needed
+        if (orderSummary is FiatPaymentOrder) {
+          emit(currentState.copyWith(payOrder: orderSummary));
+        }
+      }
+    } catch (e) {
+      log.severe('Failed to update order status: $e');
+      // Don't emit error state for refresh failures in success screen
     }
   }
 

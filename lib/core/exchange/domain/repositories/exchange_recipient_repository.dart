@@ -6,4 +6,5 @@ abstract class ExchangeRecipientRepository {
   Future<List<Recipient>> listRecipients({bool fiatOnly = true});
   Future<Recipient> createFiatRecipient(NewRecipient recipient);
   Future<List<CadBiller>> listCadBillers({required String searchTerm});
+  Future<String> checkSinpe({required String phoneNumber});
 }

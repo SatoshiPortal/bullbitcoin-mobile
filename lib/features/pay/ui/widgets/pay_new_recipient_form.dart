@@ -1,20 +1,34 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/exchange/domain/entity/cad_biller.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/new_recipient_factory.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/account_ownership_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 class PayNewRecipientForm extends StatefulWidget {
-  const PayNewRecipientForm({super.key});
+  const PayNewRecipientForm({
+    super.key,
+    this.isLoading = false,
+    this.userSummary,
+  });
+
+  final bool isLoading;
+  final UserSummary? userSummary;
 
   @override
   State<PayNewRecipientForm> createState() => _PayNewRecipientFormState();
@@ -24,125 +38,20 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
   String? selectedCountry;
   WithdrawRecipientType? selectedPayoutMethod;
   final Map<String, dynamic> formData = {};
-
-  final List<Map<String, String>> countries = [
-    {'code': 'CA', 'name': 'Canada', 'flag': '🇨🇦'},
-    {'code': 'EU', 'name': 'Europe', 'flag': '🇪🇺'},
-    {'code': 'MX', 'name': 'Mexico', 'flag': '🇲🇽'},
-    {'code': 'CR', 'name': 'Costa Rica', 'flag': '🇨🇷'},
-    {'code': 'AR', 'name': 'Argentina', 'flag': '🇦🇷'},
-  ];
-
-  // Map currency to country code
-  String _getCountryCodeFromCurrency(FiatCurrency currency) {
-    switch (currency) {
-      case FiatCurrency.cad:
-        return 'CA';
-      case FiatCurrency.eur:
-        return 'EU';
-      case FiatCurrency.mxn:
-        return 'MX';
-      case FiatCurrency.crc:
-        return 'CR';
-      case FiatCurrency.usd:
-        return 'CR'; // Default fallback
-      case FiatCurrency.ars:
-        return 'AR';
-    }
-  }
+  bool _isSinpeValid = false;
 
   @override
   void initState() {
     super.initState();
 
-    // Preselect country based on currency from bloc
-    final payBloc = context.read<PayBloc>();
-    final currentState = payBloc.state;
-
-    // Try to get currency from current state or fallback to default
-    FiatCurrency? currency;
-    if (currentState is PayRecipientInputState) {
-      currency = currentState.currency;
-    } else if (currentState is PayWalletSelectionState) {
-      currency = currentState.currency;
-    } else if (currentState is PayAmountInputState) {
-      currency =
-          currentState.userSummary.currency != null
-              ? FiatCurrency.fromCode(currentState.userSummary.currency!)
-              : null;
-    }
-
-    // Set selectedCountry based on available currency or use default
-    if (currency != null) {
-      selectedCountry = _getCountryCodeFromCurrency(currency);
-      log.info(
-        '🌍 Preselected country: $selectedCountry for currency: ${currency.code}',
-      );
-
-      // Auto-select SEPA for Europe since it's the only option
-      if (selectedCountry == 'EU') {
-        selectedPayoutMethod = WithdrawRecipientType.sepaEur;
-      }
-    } else {
-      // Fallback to default currency (CAD)
-      selectedCountry = 'CA';
-      log.info('🌍 Using default country: $selectedCountry');
-    }
-
-    // Listen to bloc state changes
-    payBloc.stream.listen((state) {
-      if (state is PayRecipientInputState) {
-        final newCountry = _getCountryCodeFromCurrency(state.currency);
-        if (newCountry != selectedCountry) {
-          setState(() {
-            selectedCountry = newCountry;
-            selectedPayoutMethod = null;
-            formData.clear();
-
-            // Auto-select SEPA for Europe
-            if (newCountry == 'EU') {
-              selectedPayoutMethod = WithdrawRecipientType.sepaEur;
-            }
-          });
-        }
-      }
-    });
+    // Start with Canada selected by default
+    selectedCountry = 'CA';
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    // Ensure country is set when dependencies change (e.g., when navigating back)
-    if (selectedCountry == null) {
-      final payBloc = context.read<PayBloc>();
-      final currentState = payBloc.state;
-
-      FiatCurrency? currency;
-      if (currentState is PayRecipientInputState) {
-        currency = currentState.currency;
-      } else if (currentState is PayWalletSelectionState) {
-        currency = currentState.currency;
-      } else if (currentState is PayAmountInputState) {
-        currency =
-            currentState.userSummary.currency != null
-                ? FiatCurrency.fromCode(currentState.userSummary.currency!)
-                : null;
-      }
-
-      if (currency != null) {
-        setState(() {
-          selectedCountry = _getCountryCodeFromCurrency(currency!);
-          if (selectedCountry == 'EU') {
-            selectedPayoutMethod = WithdrawRecipientType.sepaEur;
-          }
-        });
-      } else {
-        setState(() {
-          selectedCountry = 'CA';
-        });
-      }
-    }
+    // No automatic country selection - let user choose
   }
 
   List<WithdrawRecipientType> get payoutMethodsForCountry {
@@ -166,14 +75,33 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
     });
   }
 
+  void _onSinpeValidationChanged(bool isValid, {String? ownerName}) {
+    setState(() {
+      _isSinpeValid = isValid;
+      if (isValid && ownerName != null) {
+        // Store the owner name in form data for the createRecipients endpoint
+        formData['ownerName'] = ownerName;
+      } else {
+        formData.remove('ownerName');
+      }
+    });
+  }
+
   bool get canContinue {
     if (selectedCountry == null || selectedPayoutMethod == null) return false;
 
     final requiredFields = _getRequiredFields(selectedPayoutMethod!);
-    return requiredFields.every(
+    final hasAllRequiredFields = requiredFields.every(
       (field) =>
           formData[field] != null && (formData[field] as String).isNotEmpty,
     );
+
+    // For SINPE Móvil, also check if SINPE validation is successful
+    if (selectedPayoutMethod == WithdrawRecipientType.sinpeMovilCrc) {
+      return hasAllRequiredFields && _isSinpeValid;
+    }
+
+    return hasAllRequiredFields;
   }
 
   List<String> _getRequiredFields(WithdrawRecipientType method) {
@@ -208,7 +136,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
       case WithdrawRecipientType.sinpeIbanCrc:
         return ['iban', 'ownerName', 'isOwner'];
       case WithdrawRecipientType.sinpeMovilCrc:
-        return ['phoneNumber', 'ownerName', 'isOwner'];
+        return ['phoneNumber', 'ownerName'];
     }
   }
 
@@ -218,6 +146,19 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (!widget.isLoading && widget.userSummary == null) ...[
+            InfoCard(
+              title: 'Not Logged In',
+              description:
+                  'You are not logged in. Please log in to continue using the pay feature.',
+              tagColor: context.colour.error,
+              bgColor: context.colour.secondaryFixedDim,
+              onTap: () {
+                context.goNamed(ExchangeRoute.exchangeHome.name);
+              },
+            ),
+            const Gap(16),
+          ],
           _buildCountryDropdown(),
           const Gap(16),
           if (selectedCountry != null) ...[
@@ -238,11 +179,14 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
   }
 
   Widget _buildContinueButton() {
+    final isDisabled = !canContinue || widget.userSummary == null;
+
     return BBButton.big(
       label: 'Continue',
       onPressed:
-          canContinue
-              ? () {
+          isDisabled
+              ? () {}
+              : () {
                 if (selectedPayoutMethod != null) {
                   final newRecipient = NewRecipientFactory.fromFormData(
                     selectedPayoutMethod!,
@@ -252,50 +196,14 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
                     PayEvent.newRecipientCreated(newRecipient),
                   );
                 }
-              }
-              : () {},
+              },
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
-      disabled: !canContinue,
+      disabled: isDisabled,
     );
   }
 
   Widget _buildCountryDropdown() {
-    if (selectedCountry == null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          BBText(
-            'Country',
-            style: context.font.bodyLarge?.copyWith(
-              color: context.colour.secondary,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const Gap(8),
-          Container(
-            height: 56,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: context.colour.onPrimary,
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: context.colour.outline),
-            ),
-            child: Center(
-              child: BBText(
-                'Loading...',
-                style: context.font.headlineSmall?.copyWith(
-                  color: context.colour.outline,
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    final country = countries.firstWhere((c) => c['code'] == selectedCountry);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -315,15 +223,45 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
             borderRadius: BorderRadius.circular(4),
             border: Border.all(color: context.colour.outline),
           ),
-          child: Row(
-            children: [
-              BBText(
-                '${country['flag']} ${country['name']}',
-                style: context.font.headlineSmall,
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedCountry,
+              isExpanded: true,
+              hint: BBText(
+                'Select country',
+                style: context.font.headlineSmall?.copyWith(
+                  color: context.colour.outline,
+                ),
               ),
-              const Spacer(),
-              Icon(Icons.lock, color: context.colour.outline, size: 20),
-            ],
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                color: context.colour.secondary,
+              ),
+              items:
+                  CountryConstants.countries.map((country) {
+                    return DropdownMenuItem<String>(
+                      value: country['code'],
+                      child: BBText(
+                        '${country['flag']} ${country['name']}',
+                        style: context.font.headlineSmall,
+                      ),
+                    );
+                  }).toList(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedCountry = newValue;
+                    selectedPayoutMethod = null;
+                    formData.clear();
+
+                    // Auto-select SEPA for Europe
+                    if (newValue == 'EU') {
+                      selectedPayoutMethod = WithdrawRecipientType.sepaEur;
+                    }
+                  });
+                }
+              },
+            ),
           ),
         ),
       ],
@@ -445,6 +383,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
       recipientType: selectedPayoutMethod!,
       formData: formData,
       onFormDataChanged: _onFormDataChanged,
+      onSinpeValidationChanged: _onSinpeValidationChanged,
     );
   }
 }
@@ -455,11 +394,13 @@ class PayoutMethodForm extends StatelessWidget {
     required this.recipientType,
     required this.formData,
     required this.onFormDataChanged,
+    this.onSinpeValidationChanged,
   });
 
   final WithdrawRecipientType recipientType;
   final Map<String, dynamic> formData;
   final Function(String, String) onFormDataChanged;
+  final Function(bool isValid, {String? ownerName})? onSinpeValidationChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -503,6 +444,8 @@ class PayoutMethodForm extends StatelessWidget {
       WithdrawRecipientType.sinpeMovilCrc => _SinpeMovilForm(
         formData: formData,
         onFormDataChanged: onFormDataChanged,
+        onSinpeValidationChanged:
+            onSinpeValidationChanged ?? (_, {ownerName}) {},
       ),
     };
   }
@@ -979,11 +922,6 @@ class _SpeiClabeForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
       ],
     );
   }
@@ -1034,11 +972,6 @@ class _SpeiSmsForm extends StatelessWidget {
           'Enter a label for this recipient',
           formData,
           onFormDataChanged,
-        ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
         ),
       ],
     );
@@ -1094,11 +1027,6 @@ class _SpeiCardForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
       ],
     );
   }
@@ -1144,62 +1072,184 @@ class _SinpeIbanForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
       ],
     );
   }
 }
 
-class _SinpeMovilForm extends StatelessWidget {
+class _SinpeMovilForm extends StatefulWidget {
   const _SinpeMovilForm({
     required this.formData,
     required this.onFormDataChanged,
+    required this.onSinpeValidationChanged,
   });
 
   final Map<String, dynamic> formData;
   final Function(String, String) onFormDataChanged;
+  final Function(bool isValid, {String? ownerName}) onSinpeValidationChanged;
+
+  @override
+  State<_SinpeMovilForm> createState() => _SinpeMovilFormState();
+}
+
+class _SinpeMovilFormState extends State<_SinpeMovilForm> {
+  Timer? _debounceTimer;
+  String? _sinpeValidationMessage;
+  bool _isValidatingSinpe = false;
+  bool _isSinpeValid = false;
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  void _onPhoneNumberChanged(String value) {
+    widget.onFormDataChanged('phoneNumber', value);
+
+    // Cancel previous timer
+    _debounceTimer?.cancel();
+
+    // Reset validation state
+    setState(() {
+      _sinpeValidationMessage = null;
+      _isValidatingSinpe = false;
+      _isSinpeValid = false;
+    });
+
+    // Notify parent of validation state change
+    widget.onSinpeValidationChanged(false);
+
+    // Only validate if we have exactly 8 digits
+    if (value.length == 8 && RegExp(r'^\d{8}$').hasMatch(value)) {
+      setState(() {
+        _isValidatingSinpe = true;
+      });
+
+      _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
+        _validateSinpe(value);
+      });
+    }
+  }
+
+  Future<void> _validateSinpe(String phoneNumber) async {
+    try {
+      final checkSinpeUsecase = GetIt.instance<CheckSinpeUsecase>();
+      final ownerName = await checkSinpeUsecase.execute(
+        phoneNumber: phoneNumber,
+      );
+
+      if (mounted) {
+        setState(() {
+          _sinpeValidationMessage = ownerName;
+          _isValidatingSinpe = false;
+          _isSinpeValid = true;
+        });
+
+        // Notify parent of successful validation
+        widget.onSinpeValidationChanged(true, ownerName: ownerName);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _sinpeValidationMessage = 'Invalid Sinpe';
+          _isValidatingSinpe = false;
+          _isSinpeValid = false;
+        });
+
+        // Notify parent of failed validation
+        widget.onSinpeValidationChanged(false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildInputField(
-          context,
-          'Phone Number',
-          'phoneNumber',
-          'Enter phone number',
-          formData,
-          onFormDataChanged,
-        ),
+        _buildPhoneNumberField(context),
         const Gap(12),
-        _buildInputField(
-          context,
-          'Owner Name',
-          'ownerName',
-          'Enter owner name',
-          formData,
-          onFormDataChanged,
-        ),
+        _buildValidationMessage(context),
         const Gap(12),
         _buildInputField(
           context,
           'Label (optional)',
           'label',
           'Enter a label for this recipient',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
+          widget.formData,
+          widget.onFormDataChanged,
         ),
       ],
+    );
+  }
+
+  Widget _buildPhoneNumberField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BBText(
+          'Phone Number',
+          style: context.font.bodyLarge?.copyWith(
+            color: context.colour.secondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const Gap(8),
+        BBInputText(
+          value: (widget.formData['phoneNumber'] as String?) ?? '',
+          onChanged: _onPhoneNumberChanged,
+          hint: 'Enter phone number',
+          hintStyle: context.font.bodyMedium?.copyWith(
+            color: context.colour.outline,
+          ),
+          fixedPrefix: '+501',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildValidationMessage(BuildContext context) {
+    return SizedBox(
+      height: 24,
+      child: Row(
+        children: [
+          if (_isValidatingSinpe) ...[
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  context.colour.primary,
+                ),
+              ),
+            ),
+            const Gap(8),
+            BBText(
+              'Validating...',
+              style: context.font.bodySmall?.copyWith(
+                color: context.colour.primary,
+              ),
+            ),
+          ] else if (_sinpeValidationMessage != null) ...[
+            Icon(
+              _isSinpeValid ? Icons.check_circle : Icons.cancel,
+              size: 16,
+              color: _isSinpeValid ? Colors.green : Colors.red,
+            ),
+            const Gap(8),
+            Expanded(
+              child: BBText(
+                _sinpeValidationMessage!,
+                style: context.font.bodySmall?.copyWith(
+                  color: _isSinpeValid ? Colors.green : Colors.red,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

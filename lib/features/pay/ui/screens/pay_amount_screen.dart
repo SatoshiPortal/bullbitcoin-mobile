@@ -18,14 +18,6 @@ class PayAmountScreen extends StatefulWidget {
 class _PayAmountScreenState extends State<PayAmountScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController = TextEditingController();
-  late FiatCurrency _fiatCurrency;
-
-  @override
-  void initState() {
-    super.initState();
-    final bloc = context.read<PayBloc>();
-    _fiatCurrency = bloc.state.currency;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,22 +32,20 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
               const Gap(24.0),
               PayAmountInputFields(
                 amountController: _amountController,
-                fiatCurrency: _fiatCurrency,
-                onFiatCurrencyChanged: (FiatCurrency fiatCurrency) {
-                  setState(() {
-                    _fiatCurrency = fiatCurrency;
-                  });
-                },
+                fiatCurrency: context.select<PayBloc, FiatCurrency>(
+                  (bloc) => bloc.state.currency,
+                ),
               ),
               const Spacer(),
               BBButton.big(
                 label: 'Continue',
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    context.read<PayBloc>().add(
+                    final bloc = context.read<PayBloc>();
+                    bloc.add(
                       PayEvent.amountInputContinuePressed(
                         amountInput: _amountController.text,
-                        fiatCurrency: _fiatCurrency,
+                        fiatCurrency: bloc.state.currency,
                       ),
                     );
                   }

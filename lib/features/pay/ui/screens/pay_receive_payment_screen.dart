@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 
@@ -18,9 +17,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class PayReceivePaymentScreen extends StatelessWidget {
   const PayReceivePaymentScreen({super.key});
+
+  String _formatSinpePhoneNumber(String? phoneNumber) {
+    if (phoneNumber == null || phoneNumber.isEmpty) return 'N/A';
+
+    // Remove any existing formatting
+    final String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
+
+    // Add +501 prefix
+    final String formattedNumber = '+501$cleanNumber';
+
+    // Add dashes every 4 digits after the prefix
+    if (cleanNumber.length >= 4) {
+      const String prefix = '+501';
+      final String number = cleanNumber;
+      final StringBuffer formatted = StringBuffer(prefix);
+
+      for (int i = 0; i < number.length; i += 4) {
+        final int end = (i + 4 < number.length) ? i + 4 : number.length;
+        formatted.write('-${number.substring(i, end)}');
+      }
+
+      return formatted.toString();
+    }
+
+    return formattedNumber;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +57,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
     }
 
     final order = state.payOrder;
-    final recipient = state.recipient;
+    final recipient = state.selectedRecipient;
     // For now, we'll use BTC as default unit since PayPaymentState doesn't have bitcoinUnit
     const bitcoinUnit = BitcoinUnit.btc;
     // Get bip21InvoiceData from the state
@@ -41,13 +67,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: '',
-          bullLogo: true,
-          onBack: () {
-            Navigator.of(context).pop();
-          },
-        ),
+        flexibleSpace: TopBar(title: '', bullLogo: true, onBack: context.pop),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -72,7 +92,6 @@ class PayReceivePaymentScreen extends StatelessWidget {
                   Countdown(
                     until: order.confirmationDeadline,
                     onTimeout: () {
-                      log.info('Confirmation deadline reached');
                       context.read<PayBloc>().add(
                         const PayEvent.orderRefreshTimePassed(),
                       );
@@ -704,7 +723,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
             defaultComment,
             isCorporate,
             corporateName,
-          ) => phoneNumber,
+          ) => _formatSinpePhoneNumber(phoneNumber),
     );
   }
 }
