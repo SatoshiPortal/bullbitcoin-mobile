@@ -1,13 +1,20 @@
+import 'dart:io';
+
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
+import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
+import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum ExchangeRoute {
   exchangeHome('/exchange'),
+  exchangeLanding('/exchange/landing'),
   exchangeAuth('/exchange/auth'),
   exchangeKyc('kyc');
 
@@ -22,10 +29,9 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeHome.name,
       path: ExchangeRoute.exchangeHome.path,
       redirect: (context, state) {
-        // Redirect to auth screen if the user is logged out
         final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
         if (notLoggedIn) {
-          return ExchangeRoute.exchangeAuth.path;
+          return ExchangeRoute.exchangeLanding.path;
         }
         return null;
       },
@@ -44,6 +50,27 @@ class ExchangeRouter {
           },
         ),
       ],
+    ),
+    GoRoute(
+      name: ExchangeRoute.exchangeLanding.name,
+      path: ExchangeRoute.exchangeLanding.path,
+      pageBuilder: (context, state) {
+        // Show v2 screen for iOS without superuser, v1 for iOS with superuser, regular screen for Android
+        Widget landingScreen;
+        if (Platform.isIOS) {
+          final isSuperuser =
+              context.read<SettingsCubit>().state.isSuperuser ?? false;
+          if (isSuperuser) {
+            landingScreen = const ExchangeLandingScreen();
+          } else {
+            landingScreen = const ExchangeLandingScreenV2();
+          }
+        } else {
+          landingScreen = const ExchangeLandingScreen();
+        }
+
+        return NoTransitionPage(key: state.pageKey, child: landingScreen);
+      },
     ),
     GoRoute(
       name: ExchangeRoute.exchangeAuth.name,

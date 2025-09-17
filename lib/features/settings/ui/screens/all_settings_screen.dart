@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +38,32 @@ class AllSettingsScreen extends StatelessWidget {
                   icon: Icons.account_balance_wallet,
                   title: 'Exchange Settings',
                   onTap: () {
-                    context.pushNamed(SettingsRoute.exchangeSettings.name);
+                    if (Platform.isIOS) {
+                      final isSuperuser =
+                          context.read<SettingsCubit>().state.isSuperuser ??
+                          false;
+                      if (isSuperuser) {
+                        final notLoggedIn =
+                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        if (notLoggedIn) {
+                          context.goNamed(ExchangeRoute.exchangeLanding.name);
+                        } else {
+                          context.pushNamed(
+                            SettingsRoute.exchangeSettings.name,
+                          );
+                        }
+                      } else {
+                        context.goNamed(ExchangeRoute.exchangeLanding.name);
+                      }
+                    } else {
+                      final notLoggedIn =
+                          context.read<ExchangeCubit>().state.notLoggedIn;
+                      if (notLoggedIn) {
+                        context.goNamed(ExchangeRoute.exchangeLanding.name);
+                      } else {
+                        context.pushNamed(SettingsRoute.exchangeSettings.name);
+                      }
+                    }
                   },
                 ),
                 SettingsEntryItem(

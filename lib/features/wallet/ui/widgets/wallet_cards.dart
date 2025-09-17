@@ -12,11 +12,13 @@ class WalletCards extends StatelessWidget {
     this.padding,
     this.onTap,
     this.localSignersOnly = false,
+    this.fiatCurrency,
   });
 
   final EdgeInsetsGeometry? padding;
   final bool localSignersOnly;
   final Function(Wallet wallet)? onTap;
+  final String? fiatCurrency;
 
   static Color cardDetails(BuildContext context, Wallet wallet) {
     final isTestnet = wallet.isTestnet;
@@ -58,6 +60,7 @@ class WalletCards extends StatelessWidget {
               description: w.walletTypeString,
               wallet: w,
               isSyncing: syncStatus[w.id] ?? false,
+              fiatCurrency: fiatCurrency,
               onTap: () => onTap?.call(w),
             ),
             const Gap(8),

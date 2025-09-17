@@ -31,13 +31,16 @@ sealed class WalletTransaction with _$WalletTransaction {
     required String txId,
     required int amountSat,
     required int feeSat,
+    required int vsize,
     required List<TransactionInput> inputs,
     required List<TransactionOutput> outputs,
+    required bool isRbf,
     DateTime? confirmationTime,
     @Default(false) bool isToSelf,
     @Default([]) List<String> labels,
     String? unblindedUrl,
   }) = _WalletTransaction;
+
   const WalletTransaction._();
 
   bool get isBitcoin => network.isBitcoin;

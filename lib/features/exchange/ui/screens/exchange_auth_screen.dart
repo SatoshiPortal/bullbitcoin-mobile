@@ -113,7 +113,6 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
           onUrlChange: (UrlChange change) async {
             final url = change.url;
             if (url == null) return;
-            log.info('Url change to ${change.url}');
 
             // Check if the URL contains the bb_session cookie
             final bbSessionCookie = await _tryGetBBSessionCookie(change.url!);
@@ -123,7 +122,6 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
             // If the bb_session cookie is found, the user is logged in and
             //  we can proceed to try to generate and save the API key.
-            log.info('Found bb_session cookie');
 
             try {
               // Set the flag to indicate that we are generating the API key
@@ -158,7 +156,6 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
           },
           onNavigationRequest: (NavigationRequest request) {
             if (request.url.startsWith('https://accounts')) {
-              log.info('allowing navigation to ${request.url}');
               return NavigationDecision.navigate;
             }
 
@@ -168,13 +165,9 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
               return NavigationDecision.navigate;
             }
 
-            log.info('blocking navigation to ${request.url}');
             return NavigationDecision.prevent;
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
-            log.info(
-              'HTTP Auth request for ${request.host} with realm ${request.realm}',
-            );
             request.onProceed(
               WebViewCredential(
                 user: dotenv.env['BASIC_AUTH_USERNAME'] ?? '',

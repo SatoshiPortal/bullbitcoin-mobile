@@ -263,18 +263,25 @@ class SendAmountScreen extends StatefulWidget {
 class _SendAmountScreenState extends State<SendAmountScreen> {
   late TextEditingController _amountController;
   late FocusNode _amountFocusNode;
+  bool _isMax = false;
 
   @override
   void initState() {
     super.initState();
-    final displayAmount = context.read<SendCubit>().state.displayAmount;
+    final amount = context.read<SendCubit>().state.amount;
     _amountController = TextEditingController.fromValue(
       TextEditingValue(
-        text: displayAmount,
-        selection: TextSelection.collapsed(offset: displayAmount.length),
+        text: amount,
+        selection: TextSelection.collapsed(offset: amount.length),
       ),
     );
     _amountFocusNode = FocusNode();
+  }
+
+  void _setIsMax(bool isMax) {
+    setState(() {
+      _isMax = isMax;
+    });
   }
 
   @override
@@ -310,18 +317,18 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             child: BlocListener<SendCubit, SendState>(
               listenWhen:
                   (previous, current) =>
-                      previous.displayAmount != current.displayAmount &&
-                      _amountController.text != current.displayAmount,
+                      previous.amount != current.amount &&
+                      _amountController.text != current.amount,
               listener: (context, state) {
-                final displayAmount = state.displayAmount;
+                final amount = state.amount;
                 final currentCursor = _amountController.selection.baseOffset;
-                final safePosition = math.min(
-                  currentCursor,
-                  displayAmount.length,
-                );
+                final safePosition =
+                    _isMax
+                        ? amount.length
+                        : math.min(currentCursor, amount.length);
 
                 _amountController.value = TextEditingValue(
-                  text: displayAmount,
+                  text: amount,
                   selection: TextSelection.collapsed(offset: safePosition),
                 );
               },
@@ -380,6 +387,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               amountController: _amountController,
                               onNoteChanged: cubit.noteChanged,
                               onCurrencyChanged: (currencyCode) {
+                                _setIsMax(false);
                                 context.read<SendCubit>().onCurrencyChanged(
                                   currencyCode,
                                 );
@@ -393,7 +401,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       ? swapLimitsError.toString()
                                       : swapCreationError?.toString(),
                               focusNode: _amountFocusNode,
-                              readOnly: state.sendMax,
+                              readOnly: _isMax,
+                              isMax: _isMax,
                             ),
                             const Gap(48),
                             Divider(
@@ -404,133 +413,129 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               balance: state.formattedWalletBalance(),
                               currencyCode: '',
                               showMax: !isLightning && !isChainSwap,
-                              onMaxPressed: cubit.onMaxPressed,
+                              onMaxPressed: () {
+                                _setIsMax(true);
+                                context.read<SendCubit>().amountChanged(
+                                  isMax: true,
+                                );
+                              },
                               walletLabel: selectedWalletLabel,
                             ),
                             DialPad(
                               onNumberPressed: (number) async {
-                                if (!_amountFocusNode.hasFocus) {
-                                  _amountFocusNode.requestFocus();
+                                // Unset max since user manually changed the amount
+                                _setIsMax(false);
 
-                                  final currentText = _amountController.text;
+                                final selectionStart =
+                                    _amountController.selection.baseOffset;
+                                final selectionEnd =
+                                    _amountController.selection.extentOffset;
+                                final currentText = _amountController.text;
+                                String newAmount;
+
+                                if (selectionStart == -1) {
+                                  // Field is not focused, so just add to the end
+                                  newAmount = currentText + number;
+                                  _amountController.text = newAmount;
+                                } else {
+                                  // Field is focused
+                                  if (selectionStart == selectionEnd) {
+                                    // No selection, insert at cursor
+                                    newAmount =
+                                        currentText.substring(
+                                          0,
+                                          selectionStart,
+                                        ) +
+                                        number +
+                                        currentText.substring(selectionStart);
+                                  } else {
+                                    // Text is selected, replace selection
+                                    newAmount =
+                                        currentText.substring(
+                                          0,
+                                          selectionStart,
+                                        ) +
+                                        number +
+                                        currentText.substring(selectionEnd);
+                                  }
+
+                                  _amountController.text = newAmount;
+                                  // Update the cursor position after inserting
+                                  final newCursorPosition =
+                                      selectionStart + number.length;
                                   _amountController
                                       .selection = TextSelection.collapsed(
-                                    offset: currentText.length,
+                                    offset: newCursorPosition,
                                   );
                                 }
 
-                                final inputAmount =
-                                    context.read<SendCubit>().state.amount;
-
-                                final selection = _amountController.selection;
-                                final cursorPosition = selection.baseOffset
-                                    .clamp(0, inputAmount.length);
-                                final endPosition = selection.extentOffset
-                                    .clamp(0, inputAmount.length);
-
-                                String newAmount;
-                                int newCursorPosition;
-
-                                if (cursorPosition == endPosition) {
-                                  newAmount =
-                                      inputAmount.substring(0, cursorPosition) +
-                                      number +
-                                      inputAmount.substring(cursorPosition);
-                                  newCursorPosition = cursorPosition + 1;
-                                } else {
-                                  final start = math.min(
-                                    cursorPosition,
-                                    endPosition,
-                                  );
-                                  final end = math.max(
-                                    cursorPosition,
-                                    endPosition,
-                                  );
-                                  newAmount =
-                                      inputAmount.substring(0, start) +
-                                      number +
-                                      inputAmount.substring(end);
-                                  newCursorPosition = start + 1;
-                                }
-
-                                final targetCursorPosition = newCursorPosition;
-
+                                // Finally, inform the cubit of the change
                                 await context.read<SendCubit>().amountChanged(
-                                  newAmount,
-                                );
-
-                                _amountController.value = TextEditingValue(
-                                  text: newAmount,
-                                  selection: TextSelection.collapsed(
-                                    offset: targetCursorPosition,
-                                  ),
+                                  amount: newAmount,
                                 );
                               },
                               onBackspacePressed: () async {
-                                if (!_amountFocusNode.hasFocus) {
-                                  _amountFocusNode.requestFocus();
+                                // Unset max since user manually changed the amount
+                                _setIsMax(false);
 
-                                  final currentText = _amountController.text;
+                                final selectionStart =
+                                    _amountController.selection.baseOffset;
+                                final selectionEnd =
+                                    _amountController.selection.extentOffset;
+                                final currentText = _amountController.text;
+                                String newAmount;
+
+                                if (selectionStart == -1) {
+                                  // Field is not focused, so just remove from the end
+                                  if (currentText.isNotEmpty) {
+                                    newAmount = currentText.substring(
+                                      0,
+                                      currentText.length - 1,
+                                    );
+                                  } else {
+                                    newAmount = currentText;
+                                  }
+
+                                  _amountController.text = newAmount;
+                                } else {
+                                  // Field is focused
+                                  int newCursorPosition = selectionStart;
+                                  if (selectionStart == selectionEnd) {
+                                    // No selection, remove before cursor
+                                    if (selectionStart > 0) {
+                                      newAmount =
+                                          currentText.substring(
+                                            0,
+                                            selectionStart - 1,
+                                          ) +
+                                          currentText.substring(selectionStart);
+                                      newCursorPosition = selectionStart - 1;
+                                    } else {
+                                      newAmount = currentText;
+                                    }
+                                    _amountController.text = newAmount;
+                                  } else {
+                                    // Text is selected, remove selection
+                                    newAmount =
+                                        currentText.substring(
+                                          0,
+                                          selectionStart,
+                                        ) +
+                                        currentText.substring(selectionEnd);
+                                  }
+
+                                  _amountController.text = newAmount;
+
+                                  // Update the cursor position after deleting
                                   _amountController
                                       .selection = TextSelection.collapsed(
-                                    offset: currentText.length,
+                                    offset: newCursorPosition,
                                   );
                                 }
 
-                                final inputAmount =
-                                    context.read<SendCubit>().state.amount;
-                                if (inputAmount.isEmpty) return;
-
-                                final selection = _amountController.selection;
-                                final cursorPosition = selection.baseOffset
-                                    .clamp(0, inputAmount.length);
-                                final endPosition = selection.extentOffset
-                                    .clamp(0, inputAmount.length);
-
-                                String newAmount;
-                                int newCursorPosition;
-
-                                if (cursorPosition == endPosition) {
-                                  if (cursorPosition > 0) {
-                                    newAmount =
-                                        inputAmount.substring(
-                                          0,
-                                          cursorPosition - 1,
-                                        ) +
-                                        inputAmount.substring(cursorPosition);
-                                    newCursorPosition = cursorPosition - 1;
-                                  } else {
-                                    return;
-                                  }
-                                } else {
-                                  final start = math.min(
-                                    cursorPosition,
-                                    endPosition,
-                                  );
-                                  final end = math.max(
-                                    cursorPosition,
-                                    endPosition,
-                                  );
-                                  newAmount =
-                                      inputAmount.substring(0, start) +
-                                      inputAmount.substring(end);
-                                  newCursorPosition = start;
-                                }
-
-                                // Store the intended cursor position before updating state
-                                final targetCursorPosition = newCursorPosition;
-
-                                // Update state first
+                                // Finally, inform the cubit of the change
                                 await context.read<SendCubit>().amountChanged(
-                                  newAmount,
-                                );
-
-                                // Then update controller with the stored cursor position
-                                _amountController.value = TextEditingValue(
-                                  text: newAmount,
-                                  selection: TextSelection.collapsed(
-                                    offset: targetCursorPosition,
-                                  ),
+                                  amount: newAmount,
                                 );
                               },
                             ),
@@ -570,6 +575,9 @@ class SendAmountConfirmButton extends StatelessWidget {
     final loadingBestWallet = context.select(
       (SendCubit cubit) => cubit.state.loadingBestWallet,
     );
+    final inputAmountSat = context.select(
+      (SendCubit cubit) => cubit.state.inputAmountSat,
+    );
     return BBButton.big(
       label: 'Continue',
       onPressed: () {
@@ -579,7 +587,8 @@ class SendAmountConfirmButton extends StatelessWidget {
           amountConfirmedClicked ||
           !hasBalance ||
           creatingSwap ||
-          loadingBestWallet,
+          loadingBestWallet ||
+          inputAmountSat <= 0,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );
@@ -1687,10 +1696,17 @@ class ShowPsbtButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.unsignedPsbt,
     );
 
+    final signerDevice = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet!.signerDevice,
+    );
+
     return BBButton.big(
       label: 'Show PSBT',
       onPressed: () {
-        context.pushNamed(PsbtFlowRoutes.show.name, extra: unsignedPsbt);
+        context.pushNamed(
+          PsbtFlowRoutes.show.name,
+          extra: (psbt: unsignedPsbt, signerDevice: signerDevice),
+        );
       },
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,

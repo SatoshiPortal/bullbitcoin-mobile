@@ -12,6 +12,12 @@ class FundExchangeCostaRicaMethods extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         FundExchangeMethodListTile(
+          method: FundingMethod.sinpeTransfer,
+          title: 'SINPE Transfer',
+          subtitle: 'Transfer Colones using SINPE',
+        ),
+        Gap(16.0),
+        FundExchangeMethodListTile(
           method: FundingMethod.crIbanCrc,
           title: 'Costa Rica IBAN (CRC)',
           subtitle: 'Transfer funds in Costa Rican Colón (CRC)',

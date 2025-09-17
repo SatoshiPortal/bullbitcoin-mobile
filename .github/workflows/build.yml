@@ -12,24 +12,23 @@ env:
 jobs:
   ios:
     runs-on: macos-15
-    
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: latest-stable
+        xcode-version: 16.4
         
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - uses: dtolnay/rust-toolchain@stable
 
     - run: rustup target add aarch64-apple-ios
 
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        architecture: x64
-        flutter-version: 3.29.3
+    - name: Install FVM
+      run: |
+        curl -fsSL https://fvm.app/install.sh | bash
+        echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
 
+    - run: make fvm-check
     - run: make clean
     - run: make deps
     - run: make build-runner
@@ -38,7 +37,7 @@ jobs:
     - run: cp .env.template .env
 
     - name: Build no-codesign release
-      run: flutter build ios --release --no-codesign
+      run: fvm flutter build ios --release --no-codesign
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4

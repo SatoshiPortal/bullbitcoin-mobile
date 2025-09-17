@@ -8,10 +8,14 @@ class GetNewReceiveAddressUsecase {
     required WalletAddressRepository walletAddressRepository,
   }) : _walletAddressRepository = walletAddressRepository;
 
-  Future<WalletAddress> execute({required String walletId}) async {
+  Future<WalletAddress> execute({
+    required String walletId,
+    bool forceUnseenLiquidAddress = false,
+  }) async {
     try {
       final address = await _walletAddressRepository.getNewReceiveAddress(
         walletId: walletId,
+        forceUnseenLiquidAddress: forceUnseenLiquidAddress,
       );
 
       return address;

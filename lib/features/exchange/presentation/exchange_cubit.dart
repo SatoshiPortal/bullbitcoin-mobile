@@ -31,8 +31,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   Future<void> fetchUserSummary() async {
     try {
-      log.info('Fetching user summary');
-
       emit(
         state.copyWith(apiKeyException: null, getUserSummaryException: null),
       );
@@ -75,7 +73,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       emit(state.copyWith(saveApiKeyException: null));
 
       await _saveExchangeApiKeyUsecase.execute(apiKeyResponseData: apiKeyData);
-      log.fine('API key successfully stored');
 
       await fetchUserSummary();
     } catch (e) {
@@ -114,10 +111,23 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     }
   }
 
+  Future<void> stopDca() async {
+    try {
+      emit(state.copyWith(isSaving: true));
+
+      await _saveUserPreferencesUsecase.execute(dcaEnabled: false);
+
+      // Trigger a refresh of the user summary to be sure the Dca was stopped
+      await fetchUserSummary();
+    } catch (e) {
+      log.severe('Error in stopDca: $e');
+    } finally {
+      emit(state.copyWith(isSaving: false));
+    }
+  }
+
   Future<void> logout() async {
     try {
-      log.info('Logging out from exchange');
-
       stopPolling();
 
       emit(state.copyWith(deleteApiKeyException: null));
@@ -133,8 +143,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
           selectedCurrency: null,
         ),
       );
-
-      log.info('Successfully logged out from exchange');
     } catch (e) {
       log.severe('Error in logout: $e');
       if (e is DeleteExchangeApiKeyException) {

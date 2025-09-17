@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_detail.dart';
@@ -22,7 +23,7 @@ class FundExchangeCrIbanCrcScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Funding')),
+      appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -31,13 +32,31 @@ class FundExchangeCrIbanCrcScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BBText(
-                'Costa Rica IBAN (CRC)',
+                'Bank Transfer (CRC)',
                 style: theme.textTheme.displaySmall,
               ),
               const Gap(16.0),
-              Text(
-                "Transfer funds in Costa Rican Colón (CRC)",
-                style: theme.textTheme.headlineSmall,
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text:
+                          "Send a bank transfer from your bank account using the details below ",
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                    TextSpan(
+                      text: "exactly",
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text:
+                          ". The funds will be added to your account balance.",
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                  ],
+                ),
               ),
               const Gap(24.0),
               if (failedToLoadFundingDetails ||
@@ -45,7 +64,37 @@ class FundExchangeCrIbanCrcScreen extends StatelessWidget {
                 const FundExchangeDetailsErrorCard(),
                 const Gap(24.0),
               ] else ...[
-                const FundExchangeDetail(label: ''),
+                FundExchangeDetail(
+                  label: 'IBAN account number (for Colones only)',
+                  value: details?.iban,
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Payment description',
+                  value: details?.code,
+                  helpText: 'Your transfer code.',
+                ),
+                const Gap(16.0),
+                InfoCard(
+                  description:
+                      'You must add the transfer code as the "message" or "reason" or "description" when making the payment. If you forget to put this code your payment may be rejected.',
+                  bgColor: theme.colorScheme.inverseSurface.withValues(
+                    alpha: 0.1,
+                  ),
+                  tagColor: theme.colorScheme.secondary,
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Recipient name',
+                  value: details?.beneficiaryName,
+                  helpText:
+                      'Use our official corporate name. Do not use "Bull Bitcoin".',
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Cédula Jurídica',
+                  value: details?.cedulaJuridica,
+                ),
                 const Gap(24.0),
               ],
             ],

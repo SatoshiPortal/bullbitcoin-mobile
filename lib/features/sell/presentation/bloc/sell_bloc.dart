@@ -169,6 +169,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       log.severe('Expected to be on SellWalletSelectionState but on: $state');
       return;
     }
+    emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
 
     int requiredAmountSat;
     final exchangeRateEstimate = await _convertSatsToCurrencyAmountUsecase
@@ -238,9 +239,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       );
       return;
     }
-
     emit(walletSelectionState.copyWith(isCreatingSellOrder: true));
-
     try {
       final createdSellOrder = await _createSellOrderUsecase.execute(
         orderAmount: walletSelectionState.orderAmount,
@@ -322,7 +321,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         network: event.network,
       );
 
-      log.info('createdSellOrder: $createdSellOrder');
       // Proceed to confirmation state
       emit(
         walletSelectionState.toReceivePaymentState(
@@ -462,18 +460,21 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       emit(
         sellPaymentState.copyWith(
           error: SellError.unexpected(message: e.message),
+          isConfirmingPayment: false,
         ),
       );
     } on PrepareBitcoinSendException catch (e) {
       emit(
         sellPaymentState.copyWith(
           error: SellError.unexpected(message: e.toString()),
+          isConfirmingPayment: false,
         ),
       );
     } on SignLiquidTxException catch (e) {
       emit(
         sellPaymentState.copyWith(
           error: SellError.unexpected(message: e.toString()),
+          isConfirmingPayment: false,
         ),
       );
     } on SignBitcoinTxException catch (e) {
@@ -481,11 +482,18 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       emit(
         sellPaymentState.copyWith(
           error: SellError.unexpected(message: e.toString()),
+          isConfirmingPayment: false,
         ),
       );
     } catch (e) {
       // Log unexpected errors
       log.severe('Unexpected error in SellBloc: $e');
+      emit(
+        sellPaymentState.copyWith(
+          error: SellError.unexpected(message: e.toString()),
+          isConfirmingPayment: false,
+        ),
+      );
     } finally {
       if (state is SellPaymentState) {
         emit((state as SellPaymentState).copyWith(isConfirmingPayment: false));

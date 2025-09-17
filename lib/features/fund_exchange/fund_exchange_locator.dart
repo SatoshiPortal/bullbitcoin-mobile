@@ -11,9 +11,9 @@ class FundExchangeLocator {
   static void registerBlocs() {
     locator.registerFactory<FundExchangeBloc>(
       () => FundExchangeBloc(
-        getExchangeFundingDetailsUseCase:
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        getExchangeFundingDetailsUsecase:
             locator<GetExchangeFundingDetailsUsecase>(),
-        getExchangeUserSummaryUseCase: locator<GetExchangeUserSummaryUsecase>(),
       ),
     );
   }

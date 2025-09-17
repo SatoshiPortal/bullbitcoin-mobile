@@ -20,8 +20,7 @@ class PlacePayOrderUsecase {
   Future<FiatPaymentOrder> execute({
     required OrderAmount orderAmount,
     required String recipientId,
-    required String paymentProcessor,
-    required bool isLiquid,
+    required OrderBitcoinNetwork network,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -30,14 +29,13 @@ class PlacePayOrderUsecase {
           isTestnet
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
-      final network =
-          isLiquid ? OrderBitcoinNetwork.liquid : OrderBitcoinNetwork.bitcoin;
+
       final order = await repo.placePayOrder(
         orderAmount: orderAmount,
         recipientId: recipientId,
-        paymentProcessor: paymentProcessor,
         network: network,
       );
+
       return order;
     } on PayError {
       rethrow;

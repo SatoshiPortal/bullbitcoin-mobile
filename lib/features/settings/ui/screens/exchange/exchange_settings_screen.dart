@@ -131,7 +131,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                     icon: Icons.login,
                     title: 'Log In',
                     onTap: () {
-                      context.goNamed(ExchangeRoute.exchangeAuth.name);
+                      context.goNamed(ExchangeRoute.exchangeLanding.name);
                     },
                   ),
                 if (!state.notLoggedIn)

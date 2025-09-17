@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,8 +14,12 @@ class PsbtRouterConfig {
     name: PsbtFlowRoutes.show.name,
     path: PsbtFlowRoutes.show.path,
     builder: (context, state) {
-      final psbt = state.extra as String?;
-      return ShowPsbtScreen(psbt: psbt ?? '');
+      final extra =
+          state.extra! as ({String? psbt, SignerDeviceEntity? signerDevice});
+      return ShowPsbtScreen(
+        psbt: extra.psbt ?? '',
+        signerDevice: extra.signerDevice,
+      );
     },
   );
 }

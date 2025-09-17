@@ -8,7 +8,8 @@ enum FiatCurrency {
   cad('CAD', decimals: 2, symbol: '\$'),
   crc('CRC', decimals: 2, symbol: '₡'),
   eur('EUR', decimals: 2, symbol: '€'),
-  mxn('MXN', decimals: 2, symbol: '\$');
+  mxn('MXN', decimals: 2, symbol: '\$'),
+  ars('ARS', decimals: 2, symbol: '\$');
 
   const FiatCurrency(this.code, {required this.decimals, required this.symbol});
   final String code;
@@ -27,6 +28,8 @@ enum FiatCurrency {
         return FiatCurrency.eur;
       case 'MXN':
         return FiatCurrency.mxn;
+      case 'ARS':
+        return FiatCurrency.ars;
       default:
         throw Exception('Unknown FiatCurrency: $code');
     }
@@ -148,8 +151,44 @@ enum OrderPayoutStatus {
   }
 }
 
+// enum WithdrawalPaymentProcessor {
+//   // CANADA
+//   interacEmailCad(code: 'INTERAC_EMAIL_CAD', currencyCode: 'CAD'),
+//   billPaymentCad(code: 'BILL_PAYMENT_CAD', currencyCode: 'CAD'),
+//   bankTransferCad(code: 'BANK_TRANSFER_CAD', currencyCode: 'CAD'),
+
+//   // EUROPE
+//   sepaEur(code: 'SEPA_EUR', currencyCode: 'EUR'),
+
+//   // MEXICO
+//   speiClabeMxn(code: 'SPEI_CLABE_MXN', currencyCode: 'MXN'),
+//   speiSmsMxn(code: 'SPEI_SMS_MXN', currencyCode: 'MXN'),
+//   speiCardMxn(code: 'SPEI_CARD_MXN', currencyCode: 'MXN'),
+
+//   // COSTA RICA
+//   sinpeIbanUsd(code: 'SINPE_IBAN_USD', currencyCode: 'USD'),
+//   sinpeIbanCrc(code: 'SINPE_IBAN_CRC', currencyCode: 'CRC'),
+//   sinpeMovilCrc(code: 'SINPE_MOVIL_CRC', currencyCode: 'CRC');
+
+//   final String code;
+//   final String currencyCode;
+//   const WithdrawalPaymentProcessor({
+//     required this.code,
+//     required this.currencyCode,
+//   });
+
+//   static WithdrawalPaymentProcessor fromCode(String code) {
+//     return WithdrawalPaymentProcessor.values.firstWhere(
+//       (e) => e.code == code,
+//       orElse:
+//           () => throw Exception('Unknown WithdrawalPaymentProcessor: $code'),
+//     );
+//   }
+// }
+
 enum OrderPaymentMethod {
   eTransfer('E-Transfer'),
+  eTransferArs('E-Transfer ARS'),
   billPayment('Bill payment'),
   bankTransfer('Bank transfer'),
   loadhub('Loadhub'),
@@ -161,6 +200,7 @@ enum OrderPaymentMethod {
   mxnBalance('MXN Balance'),
   crcBalance('CRC Balance'),
   usdBalance('USD Balance'),
+  arsBalance('ARS Balance'),
   bitcoin('Bitcoin'),
   liquid('Liquid'),
   lnAddress('Lightning address'),
@@ -313,6 +353,13 @@ sealed class Order with _$Order {
     required DateTime confirmationDeadline,
     required DateTime createdAt,
     DateTime? scheduledPayoutTime,
+    String? lightningInvoice,
+    String? bitcoinAddress,
+    String? bitcoinTransactionId,
+    String? liquidAddress,
+    String? liquidTransactionId,
+    String? lightningAddress,
+    String? lnUrl,
     String? beneficiaryName,
     String? beneficiaryLabel,
     String? beneficiaryAccountNumber,
@@ -531,6 +578,9 @@ sealed class Order with _$Order {
         return buyOrder.bitcoinTransactionId ?? buyOrder.liquidTransactionId;
       case final SellOrder sellOrder:
         return sellOrder.bitcoinTransactionId ?? sellOrder.liquidTransactionId;
+      case final FiatPaymentOrder fiatPaymentOrder:
+        return fiatPaymentOrder.bitcoinTransactionId ??
+            fiatPaymentOrder.liquidTransactionId;
       case _:
         return null;
     }
@@ -542,6 +592,9 @@ sealed class Order with _$Order {
         return buyOrder.bitcoinAddress ?? buyOrder.liquidAddress;
       case final SellOrder sellOrder:
         return sellOrder.bitcoinAddress ?? sellOrder.liquidAddress;
+      case final FiatPaymentOrder fiatPaymentOrder:
+        return fiatPaymentOrder.bitcoinAddress ??
+            fiatPaymentOrder.liquidAddress;
       case _:
         return null;
     }

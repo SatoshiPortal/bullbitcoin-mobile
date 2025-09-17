@@ -55,6 +55,13 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
                   style: context.font.headlineSmall,
                 ),
               ),
+              DropdownMenuItem(
+                value: FundingJurisdiction.argentina,
+                child: BBText(
+                  '🇦🇷 Argentina',
+                  style: context.font.headlineSmall,
+                ),
+              ),
             ],
             onChanged: (value) {
               if (value != null) {

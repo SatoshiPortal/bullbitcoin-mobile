@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
-
 export 'package:logging_colorful/logging_colorful.dart';
 
 // DONE: add a String encryptionKey to the Logger
@@ -28,21 +27,10 @@ class Logger {
       final time = record.time.toIso8601String();
       final content = [time, record.level.name, record.message];
 
-      String error = '';
-      String trace = '';
-      // standard record.error is a list containing [exception, stack trace, zone] default is [null, null, null]
-      if (record.error is List && (record.error! as List).isNotEmpty) {
-        final firstElement = (record.error! as List).first;
-        if (firstElement != null) error = firstElement.toString();
-        try {
-          final secondElement = (record.error! as List).elementAt(1);
-          if (secondElement != null) trace = secondElement.toString();
-        } catch (_) {}
-      }
-      content.add(error);
-      content.add(trace);
+      final (:String error, :String trace) = record.stringifyErrorAndTrace();
+      content.addAll([error, trace]);
 
-      final sanitizedContent = _sanitizeContent(content);
+      final sanitizedContent = content.map((e) => logger.sanitize(e)).toList();
       final tsvLine = sanitizedContent.join('\t');
 
       // We don't want to keep the info session in memory, they should be written to file
@@ -73,16 +61,6 @@ class Logger {
 
   Future<void> dumpSessionToFile() async {
     await sessionLogs.writeAsString(session.join('\n'));
-  }
-
-  List<String> _sanitizeContent(List<String> content) {
-    final colors = RegExp(r'\x1B\[[0-9;]*[a-zA-Z]'); // ascii colors
-    final tabNewLine = RegExp(r'[\t\n]'); // no tabs or newlines
-    final sanitizedContent =
-        content
-            .map((e) => e.replaceAll(tabNewLine, ' ').replaceAll(colors, ''))
-            .toList();
-    return sanitizedContent;
   }
 
   /// Logs information messages that are part of the normal operation of the app.
@@ -147,7 +125,7 @@ class Logger {
     content.add(exception?.toString() ?? '');
     content.add(stackTrace?.toString() ?? '');
 
-    final sanitizedContent = _sanitizeContent(content);
+    final sanitizedContent = content.map((e) => logger.sanitize(e)).toList();
     final tsvLine = sanitizedContent.join('\t');
     await appendToMigrationFile(tsvLine);
   }

@@ -33,6 +33,8 @@ class WalletTransactionMapper {
       isTestnet: walletTransaction.network.isTestnet,
       isLiquid: walletTransaction.network.isLiquid,
       unblindedUrl: walletTransaction.unblindedUrl,
+      isRbf: walletTransaction.isRbf,
+      vsize: walletTransaction.vsize,
     );
   }
 
@@ -42,6 +44,7 @@ class WalletTransactionMapper {
     required List<TransactionInput> inputs,
     required List<TransactionOutput> outputs,
     List<String>? labels,
+    required bool isRbf,
   }) {
     return WalletTransaction(
       walletId: walletId,
@@ -71,6 +74,8 @@ class WalletTransactionMapper {
       inputs: inputs,
       outputs: outputs,
       unblindedUrl: walletTransactionModel.unblindedUrl,
+      isRbf: isRbf,
+      vsize: walletTransactionModel.vsize,
     );
   }
 }

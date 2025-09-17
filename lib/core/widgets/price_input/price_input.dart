@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class PriceInput extends StatefulWidget {
+class PriceInput extends StatelessWidget {
   const PriceInput({
     super.key,
 
@@ -16,6 +16,7 @@ class PriceInput extends StatefulWidget {
     this.error,
     required this.focusNode,
     this.readOnly = false,
+    this.isMax = false,
   });
 
   final String currency;
@@ -27,35 +28,16 @@ class PriceInput extends StatefulWidget {
   final String? error;
   final FocusNode focusNode;
   final bool readOnly;
-
-  @override
-  State<PriceInput> createState() => _PriceInputState();
-}
-
-class _PriceInputState extends State<PriceInput> {
-  @override
-  void initState() {
-    super.initState();
-    widget.focusNode.addListener(() {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    widget.focusNode.removeListener(() {});
-    super.dispose();
-  }
+  final bool isMax;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         BBText(
-          widget.error ?? '',
+          error ?? '',
           style: context.font.bodyLarge,
-          color:
-              widget.error != null ? context.colour.error : Colors.transparent,
+          color: error != null ? context.colour.error : Colors.transparent,
           maxLines: 2,
         ),
         const Gap(8),
@@ -70,35 +52,45 @@ class _PriceInputState extends State<PriceInput> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IntrinsicWidth(
-                      child: TextField(
-                        controller: widget.amountController,
-                        focusNode: widget.focusNode,
-                        keyboardType: TextInputType.none,
-                        showCursor: true,
-                        readOnly: widget.readOnly,
-                        cursorColor: context.colour.outline,
-                        cursorOpacityAnimates: true,
-                        cursorHeight: 30,
-                        style: context.font.displaySmall!.copyWith(
-                          fontSize: 36,
-                          color: context.colour.outlineVariant,
-                        ),
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
-                          isDense: false,
-                          hintText: widget.focusNode.hasFocus ? null : "0",
-                          hintStyle: context.font.displaySmall!.copyWith(
-                            fontSize: 36,
-                            color: context.colour.outlineVariant,
-                          ),
-                        ),
-                      ),
+                      child:
+                          isMax
+                              ? Text(
+                                'MAX',
+                                style: context.font.displaySmall!.copyWith(
+                                  fontSize: 36,
+                                  color: context.colour.outlineVariant,
+                                ),
+                              )
+                              : TextField(
+                                controller: amountController,
+                                focusNode: focusNode,
+                                keyboardType: TextInputType.none,
+                                showCursor: true,
+                                readOnly: readOnly,
+                                cursorColor: context.colour.outline,
+                                cursorOpacityAnimates: true,
+                                cursorHeight: 30,
+                                style: context.font.displaySmall!.copyWith(
+                                  fontSize: 36,
+                                  color: context.colour.outlineVariant,
+                                ),
+                                textAlign: TextAlign.center,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.zero,
+                                  isDense: false,
+                                  hintText: focusNode.hasFocus ? null : "0",
+                                  hintStyle: context.font.displaySmall!
+                                      .copyWith(
+                                        fontSize: 36,
+                                        color: context.colour.outlineVariant,
+                                      ),
+                                ),
+                              ),
                     ),
                     const Gap(8),
                     BBText(
-                      widget.currency,
+                      currency,
                       style: context.font.displaySmall,
                       color: context.colour.outlineVariant,
                       maxLines: 1,
@@ -110,8 +102,8 @@ class _PriceInputState extends State<PriceInput> {
             const Gap(16),
             InkWell(
               onTap: () async {
-                final selected = await _openPopup(context, widget.currency);
-                if (selected != null) widget.onCurrencyChanged(selected);
+                final selected = await _openPopup(context, currency);
+                if (selected != null) onCurrencyChanged(selected);
               },
               child: Icon(
                 Icons.arrow_drop_down,
@@ -123,7 +115,7 @@ class _PriceInputState extends State<PriceInput> {
         ),
         const Gap(14),
         BBText(
-          '~${widget.amountEquivalent}',
+          '~$amountEquivalent',
           style: context.font.bodyLarge,
           color: context.colour.surfaceContainer,
         ),
@@ -134,7 +126,7 @@ class _PriceInputState extends State<PriceInput> {
             width: 200,
             alignment: Alignment.center,
             child: TextField(
-              onChanged: widget.onNoteChanged,
+              onChanged: onNoteChanged,
               textAlignVertical: TextAlignVertical.center,
               textAlign: TextAlign.center,
               decoration: InputDecoration(
@@ -165,7 +157,7 @@ class _PriceInputState extends State<PriceInput> {
       constraints: const BoxConstraints(maxWidth: double.infinity),
       builder: (context) {
         return CurrencyBottomSheet(
-          availableCurrencies: widget.availableCurrencies,
+          availableCurrencies: availableCurrencies,
           selectedValue: selected,
         );
       },

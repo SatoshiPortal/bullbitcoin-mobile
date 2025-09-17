@@ -302,7 +302,7 @@ abstract class SendState with _$SendState {
       // ignore: avoid_bool_literals_in_conditional_expressions
       selectedWallet == null
           ? false
-          : inputAmountSat <= selectedWallet!.balanceSat.toInt();
+          : (inputAmountSat <= selectedWallet!.balanceSat.toInt());
 
   String sendTypeName() {
     switch (sendType) {
@@ -416,8 +416,6 @@ abstract class SendState with _$SendState {
           : selectedWallet!.isLiquid
           ? false
           : true;
-
-  String get displayAmount => sendMax ? 'MAX' : amount;
 }
 
 extension SendStateFeePercent on SendState {

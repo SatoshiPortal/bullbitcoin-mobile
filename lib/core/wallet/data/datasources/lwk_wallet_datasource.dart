@@ -269,14 +269,14 @@ class LwkWalletDatasource {
     }
   }
 
-  Future<BigInt> getAddressBalanceSat(
-    String address, {
+  Future<Map<String, BigInt>> getAddressBalancesSat({
     required WalletModel wallet,
   }) async {
     try {
       final lwkWallet = await _createPublicWallet(wallet);
       final utxos = await lwkWallet.utxos();
-      BigInt balance = BigInt.zero;
+      final addressBalances = <String, BigInt>{};
+
       for (final utxo in utxos) {
         final assetId = _lBtcAssetId(
           Network.fromEnvironment(isTestnet: wallet.isTestnet, isLiquid: true),
@@ -284,12 +284,12 @@ class LwkWalletDatasource {
         if (utxo.unblinded.asset != assetId) {
           continue;
         }
-        if (utxo.address.confidential == address ||
-            utxo.address.standard == address) {
-          balance += utxo.unblinded.value;
-        }
+
+        addressBalances[utxo.address.confidential] =
+            (addressBalances[utxo.address.confidential] ?? BigInt.zero) +
+            utxo.unblinded.value;
       }
-      return balance;
+      return addressBalances;
     } catch (e) {
       if (e is lwk.LwkError) {
         throw e.msg;
@@ -389,11 +389,13 @@ class LwkWalletDatasource {
                   : isIncoming
                   ? finalBalance
                   : finalBalance.abs() - tx.fee.toInt();
+
           return WalletTransactionModel(
             txId: tx.txid,
             isIncoming: isIncoming,
             amountSat: netAmountSat,
             feeSat: tx.fee.toInt(),
+            vsize: tx.vsize.toInt(),
             confirmationTimestamp: tx.timestamp,
             isToSelf: isToSelf,
             inputs: inputs,
@@ -401,6 +403,7 @@ class LwkWalletDatasource {
             isLiquid: true,
             isTestnet: wallet.isTestnet,
             unblindedUrl: tx.unblindedUrl,
+            isRbf: false,
           );
         }),
       );

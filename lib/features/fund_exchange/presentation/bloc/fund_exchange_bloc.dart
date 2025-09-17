@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
@@ -14,18 +15,36 @@ part 'fund_exchange_bloc.freezed.dart';
 
 class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   FundExchangeBloc({
-    required GetExchangeFundingDetailsUsecase getExchangeFundingDetailsUseCase,
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUseCase,
-  }) : _getExchangeFundingDetailsUseCase = getExchangeFundingDetailsUseCase,
-       _getExchangeUserSummaryUseCase = getExchangeUserSummaryUseCase,
+    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
+    required GetExchangeFundingDetailsUsecase getExchangeFundingDetailsUsecase,
+  }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
+       _getExchangeFundingDetailsUsecase = getExchangeFundingDetailsUsecase,
        super(const FundExchangeState()) {
+    on<FundExchangeStarted>(_onStarted);
     on<FundExchangeJurisdictionChanged>(_onJurisdictionChanged);
     on<FundExchangeNoCoercionConfirmed>(_onNoCoercionConfirmed);
     on<FundExchangeFundingDetailsRequested>(_onFundingDetailsRequested);
   }
 
-  final GetExchangeFundingDetailsUsecase _getExchangeFundingDetailsUseCase;
-  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUseCase;
+  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
+  final GetExchangeFundingDetailsUsecase _getExchangeFundingDetailsUsecase;
+
+  Future<void> _onStarted(
+    FundExchangeStarted event,
+    Emitter<FundExchangeState> emit,
+  ) async {
+    try {
+      final summary = await _getExchangeUserSummaryUsecase.execute();
+
+      emit(state.copyWith(userSummary: summary));
+    } on ApiKeyException catch (e) {
+      emit(state.copyWith(apiKeyException: e));
+    } on GetExchangeUserSummaryException catch (e) {
+      emit(state.copyWith(getUserSummaryException: e));
+    } finally {
+      emit(state.copyWith(isStarted: true));
+    }
+  }
 
   void _onJurisdictionChanged(
     FundExchangeJurisdictionChanged event,
@@ -53,14 +72,14 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
         ),
       );
 
-      final fundingDetails = await _getExchangeFundingDetailsUseCase.execute(
+      final fundingDetails = await _getExchangeFundingDetailsUsecase.execute(
         fundingMethod: event.fundingMethod,
         jurisdiction: state.jurisdiction,
       );
       emit(state.copyWith(fundingDetails: fundingDetails));
 
       if (state.userSummary == null) {
-        final userSummary = await _getExchangeUserSummaryUseCase.execute();
+        final userSummary = await _getExchangeUserSummaryUsecase.execute();
         emit(state.copyWith(userSummary: userSummary));
       }
     } catch (e) {

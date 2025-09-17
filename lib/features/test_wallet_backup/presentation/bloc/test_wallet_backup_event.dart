@@ -13,12 +13,9 @@ class SelectFileSystemBackupTes extends TestWalletBackupEvent {
 }
 
 class StartVaultBackupTesting extends TestWalletBackupEvent {
-  const StartVaultBackupTesting({
-    required this.backupKey,
-    required this.backupFile,
-  });
-  final String backupKey;
-  final String backupFile;
+  const StartVaultBackupTesting({required this.vaultKey, required this.vault});
+  final String vaultKey;
+  final EncryptedVault vault;
 }
 
 class OnWordsSelected extends TestWalletBackupEvent {

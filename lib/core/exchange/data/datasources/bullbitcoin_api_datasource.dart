@@ -1,13 +1,17 @@
 import 'dart:math' show pow;
 
+import 'package:bb_mobile/core/exchange/data/models/cad_biller_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/dca_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_request_params_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/new_recipient_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/recipient_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:dio/dio.dart';
 
 abstract class BitcoinPriceDatasource {
@@ -20,6 +24,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
   final _pricePath = '/public/price';
   final _usersPath = '/ak/api-users';
   final _ordersPath = '/ak/api-orders';
+  final _orderTriggerPath = '/ak/api-ordertrigger';
   final _recipientsPath = '/ak/api-recipients';
 
   BullbitcoinApiDatasource({required Dio bullbitcoinApiHttpClient})
@@ -190,6 +195,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
+
     if (resp.statusCode != 200) throw Exception('Failed to get order summary');
     return OrderModel.fromJson(
       (resp.data['result']['element'] ?? resp.data['result'])
@@ -206,6 +212,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'method': 'listOrderSummaries',
         'params': {
           "sortBy": {"id": "createdAt", "sort": "desc"},
+          "paginator": {"page": 1, "pageSize": 50},
         },
       },
       options: Options(headers: {'X-API-Key': apiKey}),
@@ -274,7 +281,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-    log.info('getFundingDetails: ${resp.data}');
     if (resp.statusCode != 200) {
       throw Exception('Failed to get funding details');
     }
@@ -366,12 +372,10 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required OrderAmount orderAmount,
     required String recipientId,
-    required String paymentProcessor,
     required OrderBitcoinNetwork network,
   }) async {
     final params = <String, dynamic>{
       'recipientId': recipientId,
-      'paymentProcessor': paymentProcessor,
       'bitcoinNetwork': network.value,
     };
 
@@ -381,14 +385,16 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       params['bitcoinAmount'] = orderAmount.amount;
     }
 
+    final requestData = {
+      'jsonrpc': '2.0',
+      'id': '0',
+      'method': 'sellToRecipient',
+      'params': params,
+    };
+
     final resp = await _http.post(
       _ordersPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'sellToRecipient',
-        'params': params,
-      },
+      data: requestData,
       options: Options(headers: {'X-API-Key': apiKey}),
     );
     final statusCode = resp.statusCode;
@@ -417,6 +423,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         }
       }
     }
+
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 
@@ -424,19 +431,33 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required double fiatAmount,
     required String recipientId,
-    required String paymentProcessor,
+    bool isETransfer = false,
   }) async {
+    /**
+     *   "paymentProcessorData": {
+    "securityQuestion": "What is your favorite color?",
+    "securityAnswer": "Blue"
+  }
+  if e-transfer fails with 400 for security Q/A
+     */
+    final params = <String, dynamic>{
+      'fiatAmount': fiatAmount,
+      'recipientId': recipientId,
+    };
+
+    if (isETransfer) {
+      params['paymentProcessorData'] = {
+        'securityQuestion': 'What is your favorite color?',
+        'securityAnswer': 'Orange',
+      };
+    }
     final resp = await _http.post(
       _ordersPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'createWithdrawalOrder',
-        'params': {
-          'fiatAmount': fiatAmount,
-          'recipientId': recipientId,
-          'paymentProcessor': paymentProcessor,
-        },
+        'params': params,
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
@@ -463,6 +484,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
           );
         }
       }
+      throw Exception('Failed to create withdrawal order: $reason');
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
@@ -474,7 +496,9 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'listRecipients',
-        'params': {},
+        'params': {
+          "paginator": {"page": 1, "pageSize": 50},
+        },
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
@@ -497,18 +521,165 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'listRecipientsFiat',
-        'params': {},
+        'params': {
+          "paginator": {"page": 1, "pageSize": 50},
+        },
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
+
     if (resp.statusCode != 200) {
       throw Exception('Failed to list fiat recipients');
     }
     final elements = resp.data['result']['elements'] as List<dynamic>?;
+
     if (elements == null) return [];
     return elements
         .map((e) => RecipientModel.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  Future<RecipientModel> createFiatRecipient({
+    required NewRecipientModel recipient,
+    required String apiKey,
+  }) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'createRecipientFiat',
+        'params': recipient.toApiParams(),
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to create fiat recipient');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to create fiat recipient: $error');
+    }
+
+    try {
+      final result = resp.data['result']['element'] as Map<String, dynamic>;
+      return RecipientModel.fromJson(result);
+    } catch (e, stackTrace) {
+      log.severe('Error parsing RecipientModel.fromJson: $e');
+      log.severe('Stack trace: $stackTrace');
+      log.severe(
+        'Element data that failed to parse: ${resp.data['result']['element']}',
+      );
+      rethrow;
+    }
+  }
+
+  Future<List<CadBillerModel>> listCadBillers({
+    required String apiKey,
+    required String searchTerm,
+  }) async {
+    final params = <String, dynamic>{
+      'filters': {'search': searchTerm},
+    };
+
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'listAplBillers',
+        'params': params,
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to list CAD billers');
+    }
+    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    if (elements == null) return [];
+    return elements
+        .map((e) => CadBillerModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<DcaModel> createDca({
+    required double amount,
+    required FiatCurrency currency,
+    required DcaBuyFrequency frequency,
+    required DcaNetwork network,
+    required String address,
+    required String apiKey,
+  }) async {
+    final data = {
+      'jsonrpc': '2.0',
+      'id': '1',
+      'method': 'createDCA',
+      'params': {
+        'element': {
+          'amountStr': amount.toString(),
+          'currencyCode': currency.code,
+          'recurringFrequency': switch (frequency) {
+            DcaBuyFrequency.hourly => 'HOURLY',
+            DcaBuyFrequency.daily => 'DAILY',
+            DcaBuyFrequency.weekly => 'WEEKLY',
+            DcaBuyFrequency.monthly => 'MONTHLY',
+          },
+          'recipientType': switch (network) {
+            DcaNetwork.bitcoin => 'OUT_BITCOIN_ADDRESS',
+            DcaNetwork.lightning => 'OUT_LIGHTNING_ADDRESS',
+            DcaNetwork.liquid => 'OUT_LIQUID_ADDRESS',
+          },
+          'address': address,
+        },
+      },
+    };
+    final resp = await _http.post(
+      _orderTriggerPath,
+      data: data,
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to create DCA');
+    }
+    if (resp.data['error'] != null) {
+      final error = resp.data['error'];
+      final message = error['message'];
+      throw Exception('Failed to create DCA: $message');
+    }
+    return DcaModel.fromJson(
+      resp.data['result']['element'] as Map<String, dynamic>,
+    );
+  }
+
+  Future<String> checkSinpe({
+    required String phoneNumber,
+    required String apiKey,
+  }) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'checkSinpe',
+        'params': {'phoneNumber': phoneNumber},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to check SINPE');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to check SINPE: $error');
+    }
+
+    final result = resp.data['result'] as Map<String, dynamic>;
+    final ownerName = result['ownerName'] as String;
+
+    return ownerName;
   }
 }
 

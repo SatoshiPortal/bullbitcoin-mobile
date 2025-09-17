@@ -689,49 +689,72 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
-  Future<void> amountChanged(String amount) async {
+  Future<void> amountChanged({String? amount, bool isMax = false}) async {
     try {
       clearAllExceptions();
       String validatedAmount;
 
-      if (amount.isEmpty) {
-        validatedAmount = amount;
-      } else if (state.isInputAmountFiat) {
-        final amountFiat = double.tryParse(amount);
-        final isDecimalPoint = amount == '.';
+      if (amount == null) {
+        if (!isMax) {
+          throw Exception('Amount should be provided if max is not selected');
+        }
 
-        validatedAmount =
-            amountFiat == null && !isDecimalPoint ? state.amount : amount;
-      } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-        // If the amount is in sats, make sure it is a valid BigInt and do not
-        //  allow a decimal point.
-        final amountSats = BigInt.tryParse(amount);
-        final hasDecimals = amount.contains('.');
+        // To avoid converting rounding errors when max is set, set the
+        //  input currency to bitcoin unit if it was fiat
+        if (state.isInputAmountFiat) {
+          final bitcoinUnit = state.bitcoinUnit ?? BitcoinUnit.btc;
+          emit(state.copyWith(inputAmountCurrencyCode: bitcoinUnit.code));
+        }
 
-        validatedAmount =
-            amountSats == null ||
-                    hasDecimals ||
-                    amountSats > ConversionConstants.maxSatsAmount
-                ? state.amount
-                : amountSats.toString();
+        final totalBalanceSat = state.selectedWallet?.balanceSat ?? BigInt.zero;
+        if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+          validatedAmount = totalBalanceSat.toString();
+        } else {
+          final totalBalanceBtc = ConvertAmount.satsToBtc(
+            totalBalanceSat.toInt(),
+          );
+          validatedAmount = totalBalanceBtc.toStringAsFixed(8);
+        }
       } else {
-        // If the amount is in BTC, make sure it is a valid double and
-        //  do not allow more than 8 decimal places.
-        final amountBtc = double.tryParse(amount);
-        final decimals = amount.split('.').last.length;
-        final isDecimalPoint = amount == '.';
+        if (amount.isEmpty) {
+          validatedAmount = amount;
+        } else if (state.isInputAmountFiat) {
+          final amountFiat = double.tryParse(amount);
+          final isDecimalPoint = amount == '.';
 
-        validatedAmount =
-            (amountBtc == null && !isDecimalPoint) ||
-                    decimals > BitcoinUnit.btc.decimals ||
-                    (amountBtc != null &&
-                        amountBtc >
-                            ConversionConstants.maxBitcoinAmount.toDouble())
-                ? state.amount
-                : amount;
+          validatedAmount =
+              amountFiat == null && !isDecimalPoint ? state.amount : amount;
+        } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+          // If the amount is in sats, make sure it is a valid BigInt and do not
+          //  allow a decimal point.
+          final amountSats = BigInt.tryParse(amount);
+          final hasDecimals = amount.contains('.');
+
+          validatedAmount =
+              amountSats == null ||
+                      hasDecimals ||
+                      amountSats > ConversionConstants.maxSatsAmount
+                  ? state.amount
+                  : amountSats.toString();
+        } else {
+          // If the amount is in BTC, make sure it is a valid double and
+          //  do not allow more than 8 decimal places.
+          final amountBtc = double.tryParse(amount);
+          final decimals = amount.split('.').last.length;
+          final isDecimalPoint = amount == '.';
+
+          validatedAmount =
+              (amountBtc == null && !isDecimalPoint) ||
+                      decimals > BitcoinUnit.btc.decimals ||
+                      (amountBtc != null &&
+                          amountBtc >
+                              ConversionConstants.maxBitcoinAmount.toDouble())
+                  ? state.amount
+                  : amount;
+        }
       }
 
-      emit(state.copyWith(amount: validatedAmount, sendMax: false));
+      emit(state.copyWith(amount: validatedAmount, sendMax: isMax));
       await updateBestWallet();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
@@ -809,12 +832,6 @@ class SendCubit extends Cubit<SendState> {
     } catch (e) {
       emit(state.copyWith(loadingBestWallet: false));
     }
-  }
-
-  void onMaxPressed() {
-    if (state.selectedWallet == null) return;
-    clearAllExceptions();
-    emit(state.copyWith(amount: '0', sendMax: true));
   }
 
   void noteChanged(String note) => emit(state.copyWith(label: note));
@@ -925,6 +942,7 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           step: SendStep.confirm,
           confirmedAmountSat: state.inputAmountSat,
+          amountConfirmedClicked: false,
         ),
       );
     } else {
@@ -1075,6 +1093,7 @@ class SendCubit extends Cubit<SendState> {
           emit(
             state.copyWith(
               unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
+              bitcoinTxSize: unsignedPsbtAndTxSize.txSize,
               buildingTransaction: false,
             ),
           );
@@ -1099,7 +1118,7 @@ class SendCubit extends Cubit<SendState> {
               state.selectedWallet!.balanceSat.toInt() -
               (state.absoluteFees ?? 0);
           final maxAmount =
-              state.bitcoinUnit == BitcoinUnit.btc
+              state.inputAmountCurrencyCode == BitcoinUnit.btc.code
                   ? ConvertAmount.satsToBtc(maxAmountSat)
                   : state.isInputAmountFiat
                   ? ConvertAmount.satsToFiat(maxAmountSat, state.exchangeRate)
@@ -1341,20 +1360,6 @@ class SendCubit extends Cubit<SendState> {
     );
 
     emit(state.copyWith(exchangeRate: exchangeRate));
-  }
-
-  void onNumberPressed(String n) {
-    amountChanged(state.amount + n);
-    // updateFiatApproximatedAmount();
-  }
-
-  void onBackspacePressed() {
-    if (state.amount.isEmpty) return;
-
-    final newAmount = state.amount.substring(0, state.amount.length - 1);
-    emit(state.copyWith(amount: newAmount));
-
-    // updateFiatApproximatedAmount();
   }
 
   void _watchSendSwap(String swapId) {
