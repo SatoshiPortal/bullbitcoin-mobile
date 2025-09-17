@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
@@ -98,16 +99,24 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.rightArrow.path,
               label: 'Pay',
               onPressed: () {
-                if (Platform.isIOS) {
-                  final isSuperuser =
-                      context.read<SettingsCubit>().state.isSuperuser ?? false;
-                  if (isSuperuser) {
-                    context.pushNamed(PayRoute.pay.name);
-                  } else {
-                    context.goNamed(ExchangeRoute.exchangeLanding.name);
-                  }
+                final notLoggedIn =
+                    context.read<ExchangeCubit>().state.notLoggedIn;
+
+                if (notLoggedIn) {
+                  context.goNamed(ExchangeRoute.exchangeLanding.name);
                 } else {
-                  context.pushNamed(PayRoute.pay.name);
+                  if (Platform.isIOS) {
+                    final isSuperuser =
+                        context.read<SettingsCubit>().state.isSuperuser ??
+                        false;
+                    if (isSuperuser) {
+                      context.pushNamed(PayRoute.pay.name);
+                    } else {
+                      context.goNamed(ExchangeRoute.exchangeLanding.name);
+                    }
+                  } else {
+                    context.pushNamed(PayRoute.pay.name);
+                  }
                 }
               },
               position: _ButtonPosition.middle,
