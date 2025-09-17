@@ -17,3 +17,8 @@ sealed class ArkState with _$ArkState {
     @Default(ArkReceiveMethod.offchain) ArkReceiveMethod receiveMethod,
   }) = _ArkState;
 }
+
+extension ArkStateX on ArkState {
+  bool get hasBoardingTransaction =>
+      transactions.any((tx) => tx is ark_wallet.Transaction_Boarding);
+}

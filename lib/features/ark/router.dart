@@ -27,7 +27,7 @@ class ArkRouter {
       }
 
       return BlocProvider(
-        create: (context) => ArkCubit(wallet: wallet)..init(),
+        create: (context) => ArkCubit(wallet: wallet)..refresh(),
         child: child,
       );
     },
