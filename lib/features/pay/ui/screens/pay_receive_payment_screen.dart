@@ -28,12 +28,12 @@ class PayReceivePaymentScreen extends StatelessWidget {
     // Remove any existing formatting
     final String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
 
-    // Add +501 prefix
-    final String formattedNumber = '+501$cleanNumber';
+    // Add +506 prefix
+    final String formattedNumber = '+506$cleanNumber';
 
     // Add dashes every 4 digits after the prefix
     if (cleanNumber.length >= 4) {
-      const String prefix = '+501';
+      const String prefix = '+506';
       final String number = cleanNumber;
       final StringBuffer formatted = StringBuffer(prefix);
 

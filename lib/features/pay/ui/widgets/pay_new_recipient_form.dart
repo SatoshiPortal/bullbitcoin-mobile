@@ -1203,7 +1203,7 @@ class _SinpeMovilFormState extends State<_SinpeMovilForm> {
           hintStyle: context.font.bodyMedium?.copyWith(
             color: context.colour.outline,
           ),
-          fixedPrefix: '+501',
+          fixedPrefix: '+506',
         ),
       ],
     );
