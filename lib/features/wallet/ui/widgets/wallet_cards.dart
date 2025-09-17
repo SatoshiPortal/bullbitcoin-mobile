@@ -74,11 +74,7 @@ class WalletCards extends StatelessWidget {
               description: 'Experimental',
               balanceSat: arkBalanceSat,
               isSyncing: false,
-              onTap:
-                  () => context.pushNamed(
-                    ArkRoute.arkWalletDetail.name,
-                    extra: arkWallet,
-                  ),
+              onTap: () => context.pushNamed(ArkRoute.arkWalletDetail.name),
             ),
             const Gap(8),
           ],
