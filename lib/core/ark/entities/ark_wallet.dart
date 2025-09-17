@@ -18,6 +18,10 @@ class ArkWalletEntity {
 
   String get offchainAddress => wallet.offchainAddress();
   String get boardingAddress => wallet.boardingAddress();
+  static bool isArkAddress(String address) =>
+      ark_wallet.Utils.isArk(address: address);
+  static bool isBtcAddress(String address) =>
+      ark_wallet.Utils.isBtc(address: address);
 
   Future<({int confirmed, int pending, int total})> get balance async {
     final balance = await wallet.balance();
@@ -33,4 +37,10 @@ class ArkWalletEntity {
 
   Future<void> settle(bool selectRecoverableVtxos) =>
       wallet.settle(selectRecoverableVtxos: selectRecoverableVtxos);
+
+  Future<void> sendOffchain({required int amount, required String address}) =>
+      wallet.sendOffChain(sats: amount, address: address);
+
+  Future<void> sendOnChain({required int amount, required String address}) =>
+      wallet.sendOnChain(sats: amount, address: address);
 }

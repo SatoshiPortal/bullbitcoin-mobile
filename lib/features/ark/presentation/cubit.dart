@@ -1,29 +1,43 @@
 import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
 import 'package:bb_mobile/core/ark/errors.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/features/ark/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ArkCubit extends Cubit<ArkState> {
   final ArkWalletEntity wallet;
+  final ConvertSatsToCurrencyAmountUsecase convertSatsToCurrencyAmountUsecase;
+  final GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase;
 
-  ArkCubit({required this.wallet}) : super(const ArkState());
+  ArkCubit({
+    required this.wallet,
+    required this.convertSatsToCurrencyAmountUsecase,
+    required this.getAvailableCurrenciesUsecase,
+  }) : super(const ArkState());
 
   void refresh() {
     loadBalance();
     loadTransactionsPerDay();
+    loadExchangeRate();
+    loadCurrencies();
   }
 
   Future<void> loadTransactionsPerDay() async {
     try {
+      emit(state.copyWith(isLoading: true));
       final arkTransactions = await wallet.transactions;
       emit(state.copyWith(transactions: arkTransactions));
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
     }
   }
 
   Future<void> loadBalance() async {
     try {
+      emit(state.copyWith(isLoading: true));
       final balance = await wallet.balance;
       emit(
         state.copyWith(
@@ -33,6 +47,8 @@ class ArkCubit extends Cubit<ArkState> {
       );
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
     }
   }
 
@@ -44,10 +60,86 @@ class ArkCubit extends Cubit<ArkState> {
 
   Future<void> settle() async {
     try {
+      emit(state.copyWith(isLoading: true));
       await wallet.settle(false);
       refresh();
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
     }
   }
+
+  Future<void> loadExchangeRate() async {
+    try {
+      emit(state.copyWith(isLoading: true));
+      final exchangeRate = await convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: state.currencyCode,
+      );
+      emit(state.copyWith(exchangeRate: exchangeRate));
+    } catch (e) {
+      emit(state.copyWith(error: ArkError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  Future<void> loadCurrencies() async {
+    try {
+      emit(state.copyWith(isLoading: true));
+      final fiatCurrencyCodes = await getAvailableCurrenciesUsecase.execute();
+      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencyCodes));
+    } catch (e) {
+      emit(state.copyWith(error: ArkError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  void onSendCurrencyCodeChanged(String code) {
+    emit(state.copyWith(currencyCode: code));
+    loadExchangeRate();
+  }
+
+  void updateSendAddress(String value) {
+    final trimmedValue = value.trim();
+    try {
+      AddressType? type;
+      if (ArkWalletEntity.isArkAddress(trimmedValue)) {
+        type = AddressType.ark;
+      } else if (ArkWalletEntity.isBtcAddress(trimmedValue)) {
+        type = AddressType.btc;
+      } else {
+        throw ArkError('Invalid address');
+      }
+      emit(state.copyWith(sendAddress: (address: trimmedValue, type: type)));
+    } catch (e) {
+      emit(state.copyWith(error: ArkError(e.toString())));
+    }
+  }
+
+  Future<void> onSendConfirm(int amount) async {
+    if (!state.hasValidAddress) throw ArkError('Invalid address');
+    if (amount > state.confirmedBalance) throw ArkError('Insufficient balance');
+
+    try {
+      emit(state.copyWith(isLoading: true));
+      final address = state.sendAddress.address;
+      switch (state.sendAddress.type) {
+        case AddressType.ark:
+          await wallet.sendOffchain(amount: amount, address: address);
+        case AddressType.btc:
+          await wallet.sendOnChain(amount: amount, address: address);
+        default:
+          throw ArkError('Invalid address type');
+      }
+    } catch (e) {
+      emit(state.copyWith(error: ArkError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
+      refresh();
+    }
+  }
+
+  void clearError() => emit(state.copyWith(error: null));
 }

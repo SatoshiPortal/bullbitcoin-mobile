@@ -1,15 +1,20 @@
 import 'package:bb_mobile/core/ark/errors.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark/ui/ark_wallet_detail_page.dart';
 import 'package:bb_mobile/features/ark/ui/receive_page.dart';
+import 'package:bb_mobile/features/ark/ui/send_page.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum ArkRoute {
   arkWalletDetail('/ark-wallet-detail'),
-  arkReceive('/ark-receive');
+  arkReceive('/ark-receive'),
+  arkSend('/ark-send');
 
   final String path;
 
@@ -27,7 +32,14 @@ class ArkRouter {
       }
 
       return BlocProvider(
-        create: (context) => ArkCubit(wallet: wallet)..refresh(),
+        create:
+            (context) => ArkCubit(
+              wallet: wallet,
+              convertSatsToCurrencyAmountUsecase:
+                  locator<ConvertSatsToCurrencyAmountUsecase>(),
+              getAvailableCurrenciesUsecase:
+                  locator<GetAvailableCurrenciesUsecase>(),
+            )..refresh(),
         child: child,
       );
     },
@@ -41,6 +53,11 @@ class ArkRouter {
         name: ArkRoute.arkReceive.name,
         path: ArkRoute.arkReceive.path,
         builder: (context, state) => const ReceivePage(),
+      ),
+      GoRoute(
+        name: ArkRoute.arkSend.name,
+        path: ArkRoute.arkSend.path,
+        builder: (context, state) => const SendPage(),
       ),
     ],
   );
