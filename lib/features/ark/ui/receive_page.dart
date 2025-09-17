@@ -24,19 +24,41 @@ class ReceivePage extends StatelessWidget {
       },
       builder: (context, state) {
         final wallet = context.read<ArkCubit>().wallet;
-        final offchainAddress = wallet.offchainAddress;
-        final _ = wallet.boardingAddress;
+        final cubit = context.read<ArkCubit>();
 
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ReceiveQR(qrData: offchainAddress),
-              // ReceiveInfoDetails(wallet: wallet),
-              // The switch to only copy/scan the address is only for Bitcoin since
-              // the other networks don't have payjoin bip21 uri's
-              ReceiveCopyAddress(address: offchainAddress),
+        String address = '';
+        if (state.receiveMethod == ArkReceiveMethod.offchain) {
+          address = wallet.offchainAddress;
+        } else {
+          address = wallet.boardingAddress;
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: BBText(
+              'Ark Receive ${state.receiveMethod.name}',
+              style: context.font.headlineMedium,
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: Switch(
+                  value: state.receiveMethod == ArkReceiveMethod.offchain,
+                  onChanged: cubit.receiveMethodChanged,
+                ),
+              ),
             ],
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ReceiveQR(
+                  qrData: address,
+                  title: '${state.receiveMethod.name} address',
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -45,8 +67,9 @@ class ReceivePage extends StatelessWidget {
 }
 
 class ReceiveQR extends StatelessWidget {
-  const ReceiveQR({super.key, required this.qrData});
+  const ReceiveQR({super.key, required this.qrData, required this.title});
   final String qrData;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -74,14 +97,14 @@ class ReceiveQR extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              BBText('Address', style: context.font.bodyMedium),
+              BBText(title, style: context.font.bodyMedium),
               const Gap(6),
               CopyInput(
                 text: qrData,
                 clipboardText: qrData,
                 overflow: TextOverflow.ellipsis,
                 canShowValueModal: true,
-                modalTitle: 'Address',
+                modalTitle: title,
               ),
             ],
           ),
