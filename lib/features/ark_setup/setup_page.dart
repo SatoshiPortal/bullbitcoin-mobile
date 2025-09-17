@@ -42,7 +42,7 @@ By continuing, you acknowledge the risk of losing funds if you have not properly
                       label: state.isLoading ? 'Creating...' : 'Enable Ark',
                       bgColor: context.colour.primary,
                       textColor: context.colour.onPrimary,
-                      disabled: state.isLoading,
+                      disabled: state.wallet != null,
                     ),
                   ],
                 );
