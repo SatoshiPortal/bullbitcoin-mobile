@@ -20,24 +20,28 @@ class ArkSetupRouter {
   static final route = GoRoute(
     name: ArkSetupRoute.arkSetup.name,
     path: ArkSetupRoute.arkSetup.path,
-    builder:
-        (context, state) => BlocProvider(
-          create:
-              (context) => ArkSetupCubit(
-                getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
-                createArkSecretUsecase: locator<CreateArkSecretUsecase>(),
-              ),
-          child: BlocListener<WalletBloc, WalletState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.arkWallet == null && current.arkWallet != null,
-            listener: (context, state) {
-              if (state.arkWallet != null) {
-                context.goNamed(WalletRoute.walletHome.name);
-              }
-            },
-            child: const ArkSetupPage(),
-          ),
+    builder: (context, state) {
+      final wallet = context.watch<WalletBloc>().state.arkWallet;
+
+      return BlocProvider(
+        create:
+            (context) => ArkSetupCubit(
+              getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
+              createArkSecretUsecase: locator<CreateArkSecretUsecase>(),
+              wallet: wallet,
+            ),
+        child: BlocListener<WalletBloc, WalletState>(
+          listenWhen:
+              (previous, current) =>
+                  previous.arkWallet == null && current.arkWallet != null,
+          listener: (context, state) {
+            if (state.arkWallet != null) {
+              context.goNamed(WalletRoute.walletHome.name);
+            }
+          },
+          child: const ArkSetupPage(),
         ),
+      );
+    },
   );
 }

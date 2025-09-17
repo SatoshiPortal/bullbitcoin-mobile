@@ -9,11 +9,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ArkSetupCubit extends Cubit<ArkSetupState> {
   final GetDefaultSeedUsecase getDefaultSeedUsecase;
   final CreateArkSecretUsecase createArkSecretUsecase;
+  final ArkWalletEntity? wallet;
 
   ArkSetupCubit({
     required this.getDefaultSeedUsecase,
     required this.createArkSecretUsecase,
-  }) : super(const ArkSetupState());
+    this.wallet,
+  }) : super(ArkSetupState(wallet: wallet));
 
   Future<void> createArkSecretKey() async {
     try {
