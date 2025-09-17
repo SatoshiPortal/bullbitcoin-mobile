@@ -9,6 +9,6 @@ sealed class ArkSetupState with _$ArkSetupState {
   const factory ArkSetupState({
     ArkError? error,
     @Default(false) bool isLoading,
-    ArkWallet? wallet,
+    ArkWalletEntity? wallet,
   }) = _ArkSetupState;
 }

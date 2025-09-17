@@ -25,7 +25,9 @@ class ArkSetupCubit extends Cubit<ArkSetupState> {
         hex: String arkSecretHex,
       ) = await createArkSecretUsecase.execute(defaultSeed: defaultSeed);
 
-      final wallet = await ArkWallet.init(secretKey: hex.decode(arkSecretHex));
+      final wallet = await ArkWalletEntity.init(
+        secretKey: hex.decode(arkSecretHex),
+      );
 
       emit(state.copyWith(wallet: wallet));
     } catch (e) {
