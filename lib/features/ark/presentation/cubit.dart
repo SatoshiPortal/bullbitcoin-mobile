@@ -4,11 +4,11 @@ import 'package:bb_mobile/features/ark/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ArkCubit extends Cubit<ArkState> {
-  final ArkWallet wallet;
+  final ArkWalletEntity wallet;
 
   ArkCubit({required this.wallet}) : super(const ArkState());
 
-  void init() {
+  void refresh() {
     loadBalance();
     loadTransactionsPerDay();
   }
@@ -40,5 +40,14 @@ class ArkCubit extends Cubit<ArkState> {
     final receiveMethod =
         isOffchain ? ArkReceiveMethod.offchain : ArkReceiveMethod.boarding;
     emit(state.copyWith(receiveMethod: receiveMethod));
+  }
+
+  Future<void> settle() async {
+    try {
+      await wallet.settle(false);
+      refresh();
+    } catch (e) {
+      emit(state.copyWith(error: ArkError(e.toString())));
+    }
   }
 }
