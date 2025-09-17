@@ -20,7 +20,7 @@ sealed class WalletState with _$WalletState {
     WalletError? walletDeletionError,
     @Default(null) AllServicesStatus? serviceStatus,
     @Default(false) bool isCheckingServiceStatus,
-    @Default(null) ArkWallet? arkWallet,
+    @Default(null) ArkWalletEntity? arkWallet,
     @Default(0) int arkBalanceSat,
   }) = _WalletState;
   const WalletState._();

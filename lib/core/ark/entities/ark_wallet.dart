@@ -1,19 +1,19 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
 import 'package:bb_mobile/core/ark/ark.dart';
 
-class ArkWallet {
+class ArkWalletEntity {
   final ark_wallet.ArkWallet wallet;
 
-  ArkWallet({required this.wallet});
+  ArkWalletEntity({required this.wallet});
 
-  static Future<ArkWallet> init({required List<int> secretKey}) async {
+  static Future<ArkWalletEntity> init({required List<int> secretKey}) async {
     final wallet = await ark_wallet.ArkWallet.init(
       secretKey: secretKey,
       network: Ark.network,
       esplora: Ark.esplora,
       server: Ark.server,
     );
-    return ArkWallet(wallet: wallet);
+    return ArkWalletEntity(wallet: wallet);
   }
 
   String get offchainAddress => wallet.offchainAddress();
@@ -28,7 +28,9 @@ class ArkWallet {
     );
   }
 
-  Future<List<ark_wallet.Transaction>> get transactions async {
-    return await wallet.transactionHistory();
-  }
+  Future<List<ark_wallet.Transaction>> get transactions =>
+      wallet.transactionHistory();
+
+  Future<void> settle(bool selectRecoverableVtxos) =>
+      wallet.settle(selectRecoverableVtxos: selectRecoverableVtxos);
 }
