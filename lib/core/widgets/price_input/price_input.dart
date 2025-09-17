@@ -21,11 +21,11 @@ class PriceInput extends StatefulWidget {
   final String currency;
   final String amountEquivalent;
   final List<String> availableCurrencies;
-  final Function(String) onCurrencyChanged;
-  final Function(String) onNoteChanged;
+  final Function(String)? onCurrencyChanged;
+  final Function(String)? onNoteChanged;
   final TextEditingController amountController;
   final String? error;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final bool readOnly;
 
   @override
@@ -36,14 +36,14 @@ class _PriceInputState extends State<PriceInput> {
   @override
   void initState() {
     super.initState();
-    widget.focusNode.addListener(() {
+    widget.focusNode?.addListener(() {
       setState(() {});
     });
   }
 
   @override
   void dispose() {
-    widget.focusNode.removeListener(() {});
+    widget.focusNode?.removeListener(() {});
     super.dispose();
   }
 
@@ -74,7 +74,7 @@ class _PriceInputState extends State<PriceInput> {
                         controller: widget.amountController,
                         focusNode: widget.focusNode,
                         keyboardType: TextInputType.none,
-                        showCursor: true,
+                        showCursor: !widget.readOnly,
                         readOnly: widget.readOnly,
                         cursorColor: context.colour.outline,
                         cursorOpacityAnimates: true,
@@ -88,7 +88,11 @@ class _PriceInputState extends State<PriceInput> {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                           isDense: false,
-                          hintText: widget.focusNode.hasFocus ? null : "0",
+                          hintText:
+                              widget.focusNode != null &&
+                                      widget.focusNode!.hasFocus
+                                  ? null
+                                  : "0",
                           hintStyle: context.font.displaySmall!.copyWith(
                             fontSize: 36,
                             color: context.colour.outlineVariant,
@@ -108,17 +112,21 @@ class _PriceInputState extends State<PriceInput> {
               ),
             ),
             const Gap(16),
-            InkWell(
-              onTap: () async {
-                final selected = await _openPopup(context, widget.currency);
-                if (selected != null) widget.onCurrencyChanged(selected);
-              },
-              child: Icon(
-                Icons.arrow_drop_down,
-                color: context.colour.secondary,
-                size: 40,
+            if (widget.availableCurrencies.isNotEmpty &&
+                widget.onCurrencyChanged != null)
+              InkWell(
+                onTap: () async {
+                  final selected = await _openPopup(context, widget.currency);
+                  if (selected != null && widget.onCurrencyChanged != null) {
+                    widget.onCurrencyChanged!(selected);
+                  }
+                },
+                child: Icon(
+                  Icons.arrow_drop_down,
+                  color: context.colour.secondary,
+                  size: 40,
+                ),
               ),
-            ),
           ],
         ),
         const Gap(14),
@@ -128,30 +136,31 @@ class _PriceInputState extends State<PriceInput> {
           color: context.colour.surfaceContainer,
         ),
         const Gap(14),
-        Center(
-          child: Container(
-            height: 50,
-            width: 200,
-            alignment: Alignment.center,
-            child: TextField(
-              onChanged: widget.onNoteChanged,
-              textAlignVertical: TextAlignVertical.center,
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(2),
-                  borderSide: BorderSide.none,
-                ),
-                fillColor: context.colour.secondaryFixedDim,
-                filled: true,
-                hintText: 'Add note',
-                hintStyle: context.font.labelSmall!.copyWith(
-                  color: context.colour.surfaceContainer,
+        if (widget.onNoteChanged != null)
+          Center(
+            child: Container(
+              height: 50,
+              width: 200,
+              alignment: Alignment.center,
+              child: TextField(
+                onChanged: widget.onNoteChanged,
+                textAlignVertical: TextAlignVertical.center,
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(2),
+                    borderSide: BorderSide.none,
+                  ),
+                  fillColor: context.colour.secondaryFixedDim,
+                  filled: true,
+                  hintText: 'Add note',
+                  hintStyle: context.font.labelSmall!.copyWith(
+                    color: context.colour.surfaceContainer,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
       ],
     );
   }
