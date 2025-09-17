@@ -406,12 +406,17 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               height: 1,
                               color: context.colour.secondaryFixedDim,
                             ),
-                            BalanceRow(
-                              balance: state.formattedWalletBalance(),
-                              currencyCode: '',
-                              showMax: !isLightning && !isChainSwap,
-                              onMaxPressed: cubit.onMaxPressed,
-                              walletLabel: selectedWalletLabel,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: BalanceRow(
+                                balance: state.formattedWalletBalance(),
+                                currencyCode: '',
+                                onMaxPressed:
+                                    !isLightning && !isChainSwap
+                                        ? cubit.onMaxPressed
+                                        : null,
+                                walletLabel: selectedWalletLabel,
+                              ),
                             ),
                             DialPad(
                               onNumberPressed: (number) async {
