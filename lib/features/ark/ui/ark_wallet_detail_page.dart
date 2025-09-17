@@ -1,11 +1,12 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
-import 'package:bb_mobile/features/ark/presentation/state.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark/ui/transaction_history_widget.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,13 +20,12 @@ class ArkWalletDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<ArkCubit>();
     final state = context.watch<ArkCubit>().state;
-    final hasBoardingTransaction = state.hasBoardingTransaction;
 
     return Scaffold(
       appBar: AppBar(
-        title: BBText(
-          'Ark Instant Payments',
-          style: context.font.headlineMedium,
+        flexibleSpace: TopBar(
+          title: 'Ark Instant Payments',
+          onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
       body: Column(
@@ -37,22 +37,28 @@ class ArkWalletDetailPage extends StatelessWidget {
             signer: SignerEntity.local,
             hasSyncingIndicator: false,
           ),
+
+          if (state.isLoading)
+            LinearProgressIndicator(
+              backgroundColor: context.colour.surface,
+              color: context.colour.primary,
+            ),
+
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 13.0),
               child: TransactionHistoryWidget(transactions: state.transactions),
             ),
           ),
-          if (hasBoardingTransaction)
-            Padding(
-              padding: const EdgeInsets.all(13.0),
-              child: BBButton.big(
-                label: 'Settle Boarding Transactions',
-                onPressed: () => _showSettleTransactionModal(context, cubit),
-                bgColor: context.colour.primary,
-                textColor: context.colour.onPrimary,
-              ),
+          Padding(
+            padding: const EdgeInsets.all(13.0),
+            child: BBButton.small(
+              label: 'Settle',
+              onPressed: () => _showSettleTransactionModal(context, cubit),
+              bgColor: context.colour.primary,
+              textColor: context.colour.onPrimary,
             ),
+          ),
           const Padding(
             padding: EdgeInsets.only(left: 13.0, right: 13.0, bottom: 40.0),
             child: ArkWalletBottomButtons(),
@@ -88,7 +94,9 @@ class ArkWalletBottomButtons extends StatelessWidget {
             iconData: Icons.crop_free,
             label: 'Send',
             iconFirst: true,
-            onPressed: () {},
+            onPressed: () {
+              context.pushNamed(ArkRoute.arkSend.name);
+            },
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,
             disabled: false,
