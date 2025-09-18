@@ -1,7 +1,18 @@
 #!/bin/sh
 echo "Begin pre-commit hook"
 
-result=$(flutter analyze)
+# Prefer FVM Flutter if present; else try `fvm flutter`; else global flutter
+if [[ -x "$REPO_ROOT/.fvm/flutter_sdk/bin/flutter" ]]; then
+  FLUTTER="$REPO_ROOT/.fvm/flutter_sdk/bin/flutter"
+elif command -v fvm >/dev/null 2>&1; then
+  FLUTTER="fvm flutter"
+else
+  FLUTTER="flutter"
+fi
+
+echo "Using Flutter: $($FLUTTER --version | head -n1)"
+
+result=$($FLUTTER analyze)
 exitCode=$?
 
 if [ $exitCode  -ne 0 ]; then
