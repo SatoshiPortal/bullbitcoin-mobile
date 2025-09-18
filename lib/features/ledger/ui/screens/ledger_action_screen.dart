@@ -170,8 +170,6 @@ class _LedgerActionView extends StatelessWidget {
 
     IconData icon;
     switch (state.status) {
-      case LedgerOperationStatus.requestingPermissions:
-        icon = Icons.bluetooth_searching;
       case LedgerOperationStatus.processing:
         icon = _getProcessingIcon();
       case LedgerOperationStatus.success:
@@ -265,8 +263,6 @@ class _LedgerActionView extends StatelessWidget {
     switch (state.status) {
       case LedgerOperationStatus.initial:
         return 'Connect Your Ledger Device';
-      case LedgerOperationStatus.requestingPermissions:
-        return 'Requesting Permissions';
       case LedgerOperationStatus.scanning:
         return 'Scanning for Devices';
       case LedgerOperationStatus.connecting:
@@ -289,8 +285,6 @@ class _LedgerActionView extends StatelessWidget {
                 !parameters!.requestedDeviceType!.supportsBluetooth)
             ? 'Make sure your Ledger is unlocked with the Bitcoin app opened and connect it via USB.'
             : 'Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled, or connect the device via USB.';
-      case LedgerOperationStatus.requestingPermissions:
-        return 'Please allow Bluetooth permissions to scan for your Ledger device.';
       case LedgerOperationStatus.scanning:
         return 'Looking for Ledger devices nearby...';
       case LedgerOperationStatus.connecting:

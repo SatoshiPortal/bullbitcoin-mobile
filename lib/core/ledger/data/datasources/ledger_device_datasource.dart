@@ -15,6 +15,7 @@ import 'package:ledger_bitcoin/src/psbt/map_extension.dart';
 // ignore: implementation_imports
 import 'package:ledger_bitcoin/src/utils/buffer_reader.dart';
 import 'package:ledger_flutter_plus/ledger_flutter_plus.dart' as sdk;
+import 'package:permission_handler/permission_handler.dart';
 
 class LedgerDeviceDatasource {
   sdk.LedgerInterface? _ledgerBle;
@@ -28,10 +29,44 @@ class LedgerDeviceDatasource {
   }) async {
     await dispose();
 
-    _ledgerBle = sdk.LedgerInterface.ble(
-      onPermissionRequest: (_) async => true,
-      bleOptions: sdk.BluetoothOptions(maxScanDuration: scanDuration),
-    );
+    final ledgerDeviceType =
+        deviceType != null ? convertToSdkDeviceType(deviceType) : null;
+    final needsBluetooth =
+        ledgerDeviceType == null || !ledgerDeviceType.usbOnly;
+    if (needsBluetooth) {
+      if (Platform.isAndroid) {
+        final bluetoothConnectStatus =
+            await Permission.bluetoothConnect.request();
+        final bluetoothScanStatus = await Permission.bluetoothScan.request();
+
+        if (!bluetoothConnectStatus.isGranted ||
+            !bluetoothScanStatus.isGranted) {
+          throw const LedgerError.permissionDenied();
+        }
+      }
+
+      final bleState = await sdk.UniversalBle.getBluetoothAvailabilityState();
+      final bleIsEnabled = bleState == sdk.AvailabilityState.poweredOn;
+
+      if (!bleIsEnabled) {
+        throw const LedgerError.permissionDenied();
+      }
+    }
+
+    if (needsBluetooth) {
+      _ledgerBle = sdk.LedgerInterface.ble(
+        onPermissionRequest: (_) async {
+          final Map<Permission, PermissionStatus> statuses =
+              await [
+                Permission.bluetoothScan,
+                Permission.bluetoothConnect,
+              ].request();
+
+          return statuses.values.where((status) => status.isDenied).isEmpty;
+        },
+        bleOptions: sdk.BluetoothOptions(maxScanDuration: scanDuration),
+      );
+    }
 
     if (!Platform.isIOS) {
       _ledgerUsb = sdk.LedgerInterface.usb();
@@ -41,10 +76,7 @@ class LedgerDeviceDatasource {
     final completer = Completer<void>();
     StreamSubscription<sdk.LedgerDevice>? bleScanSubscription;
 
-    final ledgerDeviceType =
-        deviceType != null ? convertToSdkDeviceType(deviceType) : null;
-
-    if (ledgerDeviceType == null || !ledgerDeviceType.usbOnly) {
+    if (needsBluetooth && _ledgerBle != null) {
       bleScanSubscription = _ledgerBle!.scan().listen(
         (device) {
           if (ledgerDeviceType != null &&

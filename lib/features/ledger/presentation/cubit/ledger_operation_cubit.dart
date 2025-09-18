@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   final ScanLedgerDevicesUsecase _scanLedgerDevicesUsecase;
@@ -47,20 +46,10 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
 
       emit(
         state.copyWith(
-          status: LedgerOperationStatus.requestingPermissions,
+          status: LedgerOperationStatus.scanning,
           errorMessage: null,
         ),
       );
-
-      final bluetoothConnectStatus =
-          await Permission.bluetoothConnect.request();
-      final bluetoothScanStatus = await Permission.bluetoothScan.request();
-
-      if (!bluetoothConnectStatus.isGranted || !bluetoothScanStatus.isGranted) {
-        throw const LedgerError.permissionDenied();
-      }
-
-      emit(state.copyWith(status: LedgerOperationStatus.scanning));
       final devices = await _scanLedgerDevicesUsecase.execute(deviceType: _requestedDeviceType);
 
       emit(

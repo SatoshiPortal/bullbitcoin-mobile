@@ -5,7 +5,6 @@ part 'ledger_operation_state.freezed.dart';
 
 enum LedgerOperationStatus {
   initial,
-  requestingPermissions,
   scanning,
   connecting,
   processing,
@@ -25,7 +24,6 @@ sealed class LedgerOperationState with _$LedgerOperationState {
   const LedgerOperationState._();
 
   bool get isInitial => status == LedgerOperationStatus.initial;
-  bool get isRequestingPermissions => status == LedgerOperationStatus.requestingPermissions;
   bool get isScanning => status == LedgerOperationStatus.scanning;
   bool get isConnecting => status == LedgerOperationStatus.connecting;
   bool get isProcessing => status == LedgerOperationStatus.processing;
