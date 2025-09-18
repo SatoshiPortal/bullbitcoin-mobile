@@ -49,7 +49,10 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   ),
                   showFiat: false,
                 ),
-                Icon(Icons.check_circle, color: theme.colorScheme.onPrimary),
+                Icon(
+                  Icons.check_circle,
+                  color: theme.colorScheme.inverseSurface,
+                ),
               ],
             ),
             Row(
@@ -62,7 +65,10 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   ),
                   showFiat: false,
                 ),
-                Icon(Icons.pending_actions, color: theme.colorScheme.onPrimary),
+                Icon(
+                  Icons.pending_actions,
+                  color: theme.colorScheme.inversePrimary,
+                ),
               ],
             ),
             const Gap(12),
