@@ -146,9 +146,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       try {
         final arkWallet = await _getArkWalletUsecase.execute();
-        final arkBalance = await arkWallet.balance;
+        final arkBalance = await arkWallet?.balance;
         emit(
-          state.copyWith(arkWallet: arkWallet, arkBalanceSat: arkBalance.total),
+          state.copyWith(
+            arkWallet: arkWallet,
+            arkBalanceSat: arkBalance?.total ?? 0,
+          ),
         );
       } catch (e) {
         log.severe('[WalletBloc] Failed to get ark wallet: $e');
@@ -191,6 +194,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       // Initialize all wallets as not syncing
       final syncStatus = {for (final wallet in wallets) wallet.id: false};
 
+      final arkWallet = await _getArkWalletUsecase.execute();
+      final arkBalance = await arkWallet?.balance;
+
       emit(
         state.copyWith(
           status: WalletStatus.success,
@@ -198,6 +204,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           noWalletsFoundException: null,
           error: null,
           syncStatus: syncStatus,
+          arkWallet: arkWallet,
+          arkBalanceSat: arkBalance?.total ?? 0,
         ),
       );
       add(const CheckAllWarnings());
@@ -236,12 +244,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
             await _getUnconfirmedIncomingBalanceUsecase.execute(
               walletIds: walletIds,
             );
+
+        final arkWallet = await _getArkWalletUsecase.execute();
+        final arkBalance = await arkWallet?.balance;
         emit(
           state.copyWith(
             unconfirmedIncomingBalance: unconfirmedIncomingBalance,
             status: WalletStatus.success,
             error: null,
             noWalletsFoundException: null,
+            arkWallet: arkWallet,
+            arkBalanceSat: arkBalance?.total ?? 0,
           ),
         );
       }
@@ -320,9 +333,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       log.info('[WalletBloc] Wallet with id $walletId deleted successfully');
       // Remove the wallet from the state to directly update the UI
       // without needing to refresh the wallets again
+      final arkWallet = await _getArkWalletUsecase.execute();
+      final arkBalance = await arkWallet?.balance;
       emit(
         state.copyWith(
           wallets: state.wallets.where((w) => w.id != walletId).toList(),
+          arkWallet: arkWallet,
+          arkBalanceSat: arkBalance?.total ?? 0,
         ),
       );
 
