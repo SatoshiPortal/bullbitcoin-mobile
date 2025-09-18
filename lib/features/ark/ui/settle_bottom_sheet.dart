@@ -68,11 +68,6 @@ class SettleBottomSheet extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      BBText(
-                        'Boarding transactions need to be settled to fund your Ark balance.',
-                        style: context.font.bodyMedium,
-                      ),
-                      const Gap(24),
                       SwitchListTile(
                         value: state.withRecoverableVtxos,
                         onChanged: cubit.onChangedSelectRecoverableVtxos,
