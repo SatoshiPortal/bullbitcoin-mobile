@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
 import 'package:bb_mobile/core/ark/errors.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
@@ -16,11 +18,11 @@ class ArkCubit extends Cubit<ArkState> {
     required this.getAvailableCurrenciesUsecase,
   }) : super(const ArkState());
 
-  void refresh() {
-    loadBalance();
-    loadTransactionsPerDay();
-    loadExchangeRate();
-    loadCurrencies();
+  Future<void> refresh() async {
+    await loadBalance();
+    await loadTransactionsPerDay();
+    await loadExchangeRate();
+    await loadCurrencies();
   }
 
   Future<void> loadTransactionsPerDay() async {
@@ -62,7 +64,7 @@ class ArkCubit extends Cubit<ArkState> {
     try {
       emit(state.copyWith(isLoading: true));
       await wallet.settle(selectRecoverableVtxos);
-      refresh();
+      unawaited(refresh());
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
     } finally {
@@ -137,7 +139,7 @@ class ArkCubit extends Cubit<ArkState> {
       emit(state.copyWith(error: ArkError(e.toString())));
     } finally {
       emit(state.copyWith(isLoading: false));
-      refresh();
+      unawaited(refresh());
     }
   }
 
