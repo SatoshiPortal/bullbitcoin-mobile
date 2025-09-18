@@ -33,13 +33,19 @@ class ArkRouter {
 
       return BlocProvider(
         create:
-            (context) => ArkCubit(
-              wallet: wallet,
-              convertSatsToCurrencyAmountUsecase:
-                  locator<ConvertSatsToCurrencyAmountUsecase>(),
-              getAvailableCurrenciesUsecase:
-                  locator<GetAvailableCurrenciesUsecase>(),
-            )..refresh(),
+            (context) =>
+                ArkCubit(
+                    wallet: wallet,
+                    convertSatsToCurrencyAmountUsecase:
+                        locator<ConvertSatsToCurrencyAmountUsecase>(),
+                    getAvailableCurrenciesUsecase:
+                        locator<GetAvailableCurrenciesUsecase>(),
+                  )
+                  ..loadTransactions()
+                  ..loadCurrencies()
+                  ..loadExchangeRate()
+                  ..loadBalance(),
+
         child: child,
       );
     },

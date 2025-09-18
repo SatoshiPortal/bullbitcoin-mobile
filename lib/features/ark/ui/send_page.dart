@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark/presentation/state.dart';
-import 'package:bb_mobile/features/ark/router.dart';
+import 'package:bb_mobile/features/ark/ui/collaborative_redeem_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -151,13 +151,30 @@ class _SendPageState extends State<SendPage> {
                     child: BBButton.big(
                       label: 'Confirm',
                       onPressed: () async {
-                        if (amount == null || !state.hasValidAddress) return;
-                        await cubit.onSendConfirm(amount);
-                        if (!context.mounted) return;
+                        final hasValidAddress = await state.hasValidAddress;
+                        if (amount == null || !hasValidAddress) return;
 
-                        context.goNamed(ArkRoute.arkWalletDetail.name);
+                        try {
+                          switch (state.sendAddress.type) {
+                            case null:
+                              return;
+                            case AddressType.btc:
+                              if (!context.mounted) return;
+                              await CollaborativeRedeemBottomSheet.show(
+                                context,
+                                cubit,
+                                amount,
+                              );
+                            case AddressType.ark:
+                              await cubit.onSendConfirmed(amount);
+                          }
+                          if (context.mounted) context.pop();
+                        } catch (e) {
+                          if (!context.mounted) return;
+                          SnackBarUtils.showSnackBar(context, e.toString());
+                        }
                       },
-                      disabled: !isValidAmount || !state.hasValidAddress,
+                      disabled: !isValidAmount,
                       bgColor: context.colour.primary,
                       textColor: context.colour.onPrimary,
                     ),

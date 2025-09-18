@@ -144,18 +144,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       );
 
-      try {
-        final arkWallet = await _getArkWalletUsecase.execute();
-        final arkBalance = await arkWallet?.balance;
-        emit(
-          state.copyWith(
-            arkWallet: arkWallet,
-            arkBalanceSat: arkBalance?.total ?? 0,
-          ),
-        );
-      } catch (e) {
-        log.severe('[WalletBloc] Failed to get ark wallet: $e');
-      }
+      final arkWallet = await _getArkWalletUsecase.execute();
+      final arkBalance = await arkWallet?.balance;
+      emit(
+        state.copyWith(
+          arkWallet: arkWallet,
+          arkBalanceSat: arkBalance?.total ?? 0,
+        ),
+      );
 
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const WalletRefreshed());
@@ -245,16 +241,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
               walletIds: walletIds,
             );
 
-        final arkWallet = await _getArkWalletUsecase.execute();
-        final arkBalance = await arkWallet?.balance;
         emit(
           state.copyWith(
             unconfirmedIncomingBalance: unconfirmedIncomingBalance,
             status: WalletStatus.success,
             error: null,
             noWalletsFoundException: null,
-            arkWallet: arkWallet,
-            arkBalanceSat: arkBalance?.total ?? 0,
           ),
         );
       }
@@ -333,13 +325,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       log.info('[WalletBloc] Wallet with id $walletId deleted successfully');
       // Remove the wallet from the state to directly update the UI
       // without needing to refresh the wallets again
-      final arkWallet = await _getArkWalletUsecase.execute();
-      final arkBalance = await arkWallet?.balance;
+
       emit(
         state.copyWith(
           wallets: state.wallets.where((w) => w.id != walletId).toList(),
-          arkWallet: arkWallet,
-          arkBalanceSat: arkBalance?.total ?? 0,
         ),
       );
 

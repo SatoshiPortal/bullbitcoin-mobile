@@ -29,6 +29,7 @@ sealed class ArkState with _$ArkState {
     @Default([]) List<String> fiatCurrencyCodes,
     @Default((address: '', type: null))
     ({String address, AddressType? type}) sendAddress,
+    @Default('') String txid,
 
     // Settle & Redeem
     @Default(true) bool withRecoverableVtxos,
@@ -40,7 +41,12 @@ extension ArkStateX on ArkState {
       transactions.any((tx) => tx is ark_wallet.Transaction_Boarding);
 
   bool get hasArkAddress => ArkWalletEntity.isArkAddress(sendAddress.address);
-  bool get hasBtcAddress => ArkWalletEntity.isBtcAddress(sendAddress.address);
-  bool get hasValidAddress => hasArkAddress || hasBtcAddress;
+
+  Future<bool> get hasBtcAddress =>
+      ArkWalletEntity.isBtcAddress(sendAddress.address);
+
+  Future<bool> get hasValidAddress async =>
+      hasArkAddress || await hasBtcAddress;
+
   int get totalBalance => confirmedBalance + pendingBalance;
 }
