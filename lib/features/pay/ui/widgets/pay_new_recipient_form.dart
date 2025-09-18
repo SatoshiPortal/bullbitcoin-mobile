@@ -889,27 +889,24 @@ class _SpeiClabeForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'Name',
-          'name',
-          'Enter recipient name',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
-        _buildInputField(
-          context,
           'CLABE',
           'clabe',
           'Enter CLABE number',
           formData,
           onFormDataChanged,
         ),
+
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
+        ),
         const Gap(12),
         _buildInputField(
           context,
-          'Institution Code',
-          'institutionCode',
-          'Enter institution code',
+          'Name',
+          'name',
+          'Enter recipient name',
           formData,
           onFormDataChanged,
         ),
@@ -973,6 +970,11 @@ class _SpeiSmsForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
+        ),
       ],
     );
   }
@@ -1027,6 +1029,11 @@ class _SpeiCardForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
+        ),
       ],
     );
   }
@@ -1071,6 +1078,11 @@ class _SinpeIbanForm extends StatelessWidget {
           'Enter a label for this recipient',
           formData,
           onFormDataChanged,
+        ),
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
         ),
       ],
     );
