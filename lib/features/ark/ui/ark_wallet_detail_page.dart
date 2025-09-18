@@ -27,40 +27,46 @@ class ArkWalletDetailPage extends StatelessWidget {
           onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          ArkBalanceDetailWidget(
-            confirmedBalance: state.confirmedBalance,
-            pendingBalance: state.pendingBalance,
-          ),
-
-          if (state.isLoading)
-            LinearProgressIndicator(
-              backgroundColor: context.colour.surface,
-              color: context.colour.primary,
+      body: RefreshIndicator(
+        edgeOffset: 30,
+        onRefresh: () async => await cubit.refresh(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ArkBalanceDetailWidget(
+              confirmedBalance: state.confirmedBalance,
+              pendingBalance: state.pendingBalance,
             ),
 
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 13.0),
-              child: TransactionHistoryWidget(transactions: state.transactions),
+            if (state.isLoading)
+              LinearProgressIndicator(
+                backgroundColor: context.colour.surface,
+                color: context.colour.primary,
+              ),
+
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 13.0),
+                child: TransactionHistoryWidget(
+                  transactions: state.transactions,
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(13.0),
-            child: BBButton.small(
-              label: 'Settle',
-              onPressed: () => SettleBottomSheet.show(context, cubit),
-              bgColor: context.colour.primary,
-              textColor: context.colour.onPrimary,
+            Padding(
+              padding: const EdgeInsets.all(13.0),
+              child: BBButton.small(
+                label: 'Settle',
+                onPressed: () => SettleBottomSheet.show(context, cubit),
+                bgColor: context.colour.primary,
+                textColor: context.colour.onPrimary,
+              ),
             ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(left: 13.0, right: 13.0, bottom: 40.0),
-            child: ArkWalletBottomButtons(),
-          ),
-        ],
+            const Padding(
+              padding: EdgeInsets.only(left: 13.0, right: 13.0, bottom: 40.0),
+              child: ArkWalletBottomButtons(),
+            ),
+          ],
+        ),
       ),
     );
   }
