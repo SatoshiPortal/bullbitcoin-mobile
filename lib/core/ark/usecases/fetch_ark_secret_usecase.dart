@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/ark/ark.dart';
-import 'package:bb_mobile/core/ark/errors.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
@@ -18,7 +17,7 @@ class FetchArkSecretUsecase {
   }) : _bip85Repository = bip85Repository,
        _getDefaultSeedUsecase = getDefaultSeedUsecase;
 
-  Future<List<int>> execute() async {
+  Future<List<int>?> execute() async {
     final derivations = await _bip85Repository.fetchAll();
     Bip85DerivationEntity? arkDerivation;
     for (final derivation in derivations) {
@@ -28,7 +27,7 @@ class FetchArkSecretUsecase {
       }
     }
 
-    if (arkDerivation == null) throw ArkDerivationNotFoundError();
+    if (arkDerivation == null) return null;
 
     final defaultSeed = await _getDefaultSeedUsecase.execute();
     final xprvBase58 = Bip32Derivation.getXprvFromSeed(

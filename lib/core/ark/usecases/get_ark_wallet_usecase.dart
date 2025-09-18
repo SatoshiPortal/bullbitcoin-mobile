@@ -8,10 +8,10 @@ class GetArkWalletUsecase {
   GetArkWalletUsecase({required FetchArkSecretUsecase fetchArkSecretUsecase})
     : _fetchArkSecretUsecase = fetchArkSecretUsecase;
 
-  Future<ArkWalletEntity> execute() async {
-    final arkSecretKey = await _fetchArkSecretUsecase.execute();
-
+  Future<ArkWalletEntity?> execute() async {
     try {
+      final arkSecretKey = await _fetchArkSecretUsecase.execute();
+      if (arkSecretKey == null) return null;
       return await ArkWalletEntity.init(secretKey: arkSecretKey);
     } catch (e) {
       throw ArkError(e.toString());
