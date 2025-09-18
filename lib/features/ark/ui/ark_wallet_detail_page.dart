@@ -2,9 +2,9 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark/router.dart';
+import 'package:bb_mobile/features/ark/ui/settle_bottom_sheet.dart';
 import 'package:bb_mobile/features/ark/ui/transaction_history_widget.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
@@ -54,7 +54,7 @@ class ArkWalletDetailPage extends StatelessWidget {
             padding: const EdgeInsets.all(13.0),
             child: BBButton.small(
               label: 'Settle',
-              onPressed: () => _showSettleTransactionModal(context, cubit),
+              onPressed: () => SettleBottomSheet.show(context, cubit),
               bgColor: context.colour.primary,
               textColor: context.colour.onPrimary,
             ),
@@ -105,61 +105,4 @@ class ArkWalletBottomButtons extends StatelessWidget {
       ],
     );
   }
-}
-
-void _showSettleTransactionModal(BuildContext context, ArkCubit cubit) {
-  showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: context.colour.onPrimary,
-    builder: (BuildContext modalContext) {
-      return Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            BBText(
-              'Settle Boarding Transaction',
-              style: modalContext.font.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-            const Gap(16),
-            BBText(
-              'Boarding transactions need to be settled to fund your Ark balance.',
-              style: modalContext.font.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const Gap(24),
-            Row(
-              children: [
-                Expanded(
-                  child: BBButton.big(
-                    label: 'Cancel',
-                    onPressed: () => Navigator.of(modalContext).pop(),
-                    bgColor: modalContext.colour.surface,
-                    textColor: modalContext.colour.onSurface,
-                  ),
-                ),
-                const Gap(16),
-                Expanded(
-                  child: BBButton.big(
-                    label: 'Settle',
-                    onPressed: () {
-                      try {
-                        cubit.settle();
-                        Navigator.of(modalContext).pop();
-                      } catch (_) {}
-                    },
-                    bgColor: modalContext.colour.primary,
-                    textColor: modalContext.colour.onPrimary,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    },
-  );
 }

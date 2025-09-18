@@ -58,10 +58,10 @@ class ArkCubit extends Cubit<ArkState> {
     emit(state.copyWith(receiveMethod: receiveMethod));
   }
 
-  Future<void> settle() async {
+  Future<void> settle(bool selectRecoverableVtxos) async {
     try {
       emit(state.copyWith(isLoading: true));
-      await wallet.settle(false);
+      await wallet.settle(selectRecoverableVtxos);
       refresh();
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
@@ -142,4 +142,8 @@ class ArkCubit extends Cubit<ArkState> {
   }
 
   void clearError() => emit(state.copyWith(error: null));
+
+  void onChangedSelectRecoverableVtxos(bool value) {
+    emit(state.copyWith(withRecoverableVtxos: !state.withRecoverableVtxos));
+  }
 }
