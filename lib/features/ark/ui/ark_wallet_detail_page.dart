@@ -1,13 +1,12 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark/router.dart';
+import 'package:bb_mobile/features/ark/ui/ark_balance_detail_widget.dart';
 import 'package:bb_mobile/features/ark/ui/settle_bottom_sheet.dart';
 import 'package:bb_mobile/features/ark/ui/transaction_history_widget.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -31,11 +30,9 @@ class ArkWalletDetailPage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          WalletDetailBalanceCard(
-            balanceSat: state.confirmedBalance + state.pendingBalance,
-            isLiquid: false,
-            signer: SignerEntity.local,
-            hasSyncingIndicator: false,
+          ArkBalanceDetailWidget(
+            confirmedBalance: state.confirmedBalance,
+            pendingBalance: state.pendingBalance,
           ),
 
           if (state.isLoading)
