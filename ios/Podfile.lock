@@ -9,6 +9,8 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
+  - ark_wallet (0.0.1):
+    - Flutter
   - bdk_flutter (0.31.3):
     - Flutter
   - boltz (0.1.6)
@@ -145,6 +147,7 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - ark_wallet (from `.symlinks/plugins/ark_wallet/ios`)
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
   - boltz (from `.symlinks/plugins/boltz/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
@@ -187,6 +190,8 @@ SPEC REPOS:
     - SwiftyGif
 
 EXTERNAL SOURCES:
+  ark_wallet:
+    :path: ".symlinks/plugins/ark_wallet/ios"
   bdk_flutter:
     :path: ".symlinks/plugins/bdk_flutter/ios"
   boltz:
@@ -239,6 +244,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
+  ark_wallet: cb7a2af0c3a711d488709b7b91b6e639cfd441b1
   bdk_flutter: cef9180019b4c6b67a3e3dfb74611683fe140107
   boltz: 6388ec2412f3753b63a9e65c97f87ea26f43bddc
   camera_avfoundation: be3be85408cd4126f250386828e9b1dfa40ab436
