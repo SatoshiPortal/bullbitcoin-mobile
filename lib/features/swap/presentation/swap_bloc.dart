@@ -251,11 +251,13 @@ class SwapCubit extends Cubit<SwapState> {
     final wallets = await _getWalletsUsecase.execute();
 
     final liquidWallets = wallets.where((w) => w.isLiquid).toList();
-    final bitcoinWallets =
+    final bitcoinSignerWallets =
         wallets.where((w) => !w.isLiquid && w.signsLocally).toList();
-    final defaultBitcoinWallet = bitcoinWallets.firstWhere(
+    final watchOnlyBitcoinWallets =
+        wallets.where((w) => !w.isLiquid && !w.signsLocally).toList();
+    final defaultBitcoinWallet = bitcoinSignerWallets.firstWhere(
       (w) => w.isDefault,
-      orElse: () => bitcoinWallets.first,
+      orElse: () => bitcoinSignerWallets.first,
     );
 
     final settings = await _getSettingsUsecase.execute();
@@ -286,11 +288,11 @@ class SwapCubit extends Cubit<SwapState> {
     emit(
       state.copyWith(
         fromWallets: liquidWallets,
-        toWallets: bitcoinWallets,
+        toWallets: bitcoinSignerWallets, // Start with signing wallets only
+        watchOnlyBitcoinWallets: watchOnlyBitcoinWallets,
         loadingWallets: false,
         fiatCurrencyCodes: currencies,
         fiatCurrencyCode: selectedFiatCurrencyCode,
-
         exchangeRate: exchangeRate,
       ),
     );
@@ -360,10 +362,21 @@ class SwapCubit extends Cubit<SwapState> {
       newSelectedFeeList = state.liquidFeeList;
       newSelectedFee = state.liquidFeeList?.fastest;
     }
+
+    List<Wallet> newFromWallets = [];
+    List<Wallet> newToWallets = [];
+
+    if (newFromNetwork == WalletNetwork.bitcoin) {
+      newFromWallets = state.toWallets;
+      newToWallets = state.fromWallets;
+    } else {
+      newToWallets = [...state.toWallets, ...state.watchOnlyBitcoinWallets];
+    }
+
     emit(
       state.copyWith(
-        fromWallets: state.toWallets,
-        toWallets: state.fromWallets,
+        fromWallets: newFromWallets,
+        toWallets: newToWallets,
         fromWalletNetwork: state.toWalletNetwork,
         toWalletNetwork: state.fromWalletNetwork,
         selectedFromCurrencyCode: state.selectedToCurrencyCode,

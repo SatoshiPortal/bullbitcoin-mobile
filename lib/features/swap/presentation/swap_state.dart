@@ -23,6 +23,7 @@ abstract class SwapState with _$SwapState {
     @Default(true) bool loadingWallets,
     @Default([]) List<Wallet> fromWallets,
     @Default([]) List<Wallet> toWallets,
+    @Default([]) List<Wallet> watchOnlyBitcoinWallets,
     @Default(WalletNetwork.liquid) WalletNetwork fromWalletNetwork,
     @Default(WalletNetwork.bitcoin) WalletNetwork toWalletNetwork,
     String? fromWalletId,
