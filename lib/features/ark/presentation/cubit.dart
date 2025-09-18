@@ -20,12 +20,10 @@ class ArkCubit extends Cubit<ArkState> {
 
   Future<void> refresh() async {
     await loadBalance();
-    await loadTransactionsPerDay();
-    await loadExchangeRate();
-    await loadCurrencies();
+    await loadTransactions();
   }
 
-  Future<void> loadTransactionsPerDay() async {
+  Future<void> loadTransactions() async {
     try {
       emit(state.copyWith(isLoading: true));
       final arkTransactions = await wallet.transactions;
@@ -100,45 +98,52 @@ class ArkCubit extends Cubit<ArkState> {
 
   void onSendCurrencyCodeChanged(String code) {
     emit(state.copyWith(currencyCode: code));
-    loadExchangeRate();
+    unawaited(loadExchangeRate());
   }
 
-  void updateSendAddress(String value) {
+  Future<void> updateSendAddress(String value) async {
     final trimmedValue = value.trim();
     try {
       AddressType? type;
-      if (ArkWalletEntity.isArkAddress(trimmedValue)) {
-        type = AddressType.ark;
-      } else if (ArkWalletEntity.isBtcAddress(trimmedValue)) {
+      if (await ArkWalletEntity.isBtcAddress(trimmedValue)) {
         type = AddressType.btc;
+      } else if (ArkWalletEntity.isArkAddress(trimmedValue)) {
+        type = AddressType.ark;
       } else {
         throw ArkError('Invalid address');
       }
+
       emit(state.copyWith(sendAddress: (address: trimmedValue, type: type)));
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
     }
   }
 
-  Future<void> onSendConfirm(int amount) async {
-    if (!state.hasValidAddress) throw ArkError('Invalid address');
+  Future<void> onSendConfirmed(int amount) async {
+    if (!await state.hasValidAddress) throw ArkError('Invalid address');
     if (amount > state.confirmedBalance) throw ArkError('Insufficient balance');
 
+    String txid = '';
     try {
       emit(state.copyWith(isLoading: true));
       final address = state.sendAddress.address;
+
       switch (state.sendAddress.type) {
         case AddressType.ark:
-          await wallet.sendOffchain(amount: amount, address: address);
+          txid = await wallet.sendOffchain(amount: amount, address: address);
         case AddressType.btc:
-          await wallet.sendOnChain(amount: amount, address: address);
+          txid = await wallet.collaborativeRedeem(
+            amount: amount,
+            address: address,
+            selectRecoverableVtxos: state.withRecoverableVtxos,
+          );
         default:
           throw ArkError('Invalid address type');
       }
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
     } finally {
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, txid: txid));
       unawaited(refresh());
     }
   }
