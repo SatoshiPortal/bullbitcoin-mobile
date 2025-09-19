@@ -47,6 +47,10 @@
 		<string>This app needs access to your camera to scan QR codes</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>This app needs access to your files to export and import wallet files like psbts, xpubs and recovery files</string>
+		<key>NSBluetoothPeripheralUsageDescription</key>
+		<string>We need access to Bluetooth in order to connect to your hardware wallet when needed</string>
+		<key>NSBluetoothAlwaysUsageDescription</key>
+		<string>We need access to Bluetooth in order to connect to your hardware wallet when needed</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UILaunchStoryboardName</key>
