@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class SignPsbtLedgerUsecase {
   final LedgerDeviceRepository _repository;
@@ -12,11 +13,13 @@ class SignPsbtLedgerUsecase {
     LedgerDeviceEntity device, {
     required String psbt,
     required String derivationPath,
+    required ScriptType scriptType,
   }) async {
     return await _repository.signPsbt(
       device,
       psbt: psbt,
       derivationPath: derivationPath,
+      scriptType: scriptType,
     );
   }
 }

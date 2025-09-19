@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/ledger/data/datasources/ledger_device_datasource.
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   final LedgerDeviceDatasource _datasource;
@@ -28,9 +29,14 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   Future<String> getXpub(
     LedgerDeviceEntity device, {
     required String derivationPath,
+    required ScriptType scriptType,
   }) async {
     final model = device.toModel();
-    return await _datasource.getXpub(model, derivationPath: derivationPath);
+    return await _datasource.getXpub(
+      model,
+      derivationPath: derivationPath,
+      scriptType: scriptType,
+    );
   }
 
   @override
@@ -44,12 +50,14 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
     LedgerDeviceEntity device, {
     required String psbt,
     required String derivationPath,
+    required ScriptType scriptType,
   }) async {
     final model = device.toModel();
     return await _datasource.signPsbt(
       model,
       psbt: psbt,
       derivationPath: derivationPath,
+      scriptType: scriptType,
     );
   }
 
@@ -58,12 +66,14 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
     LedgerDeviceEntity device, {
     required String address,
     required String derivationPath,
+    required ScriptType scriptType,
   }) async {
     final model = device.toModel();
     return await _datasource.verifyAddress(
       model,
       address: address,
       derivationPath: derivationPath,
+      scriptType: scriptType,
     );
   }
 

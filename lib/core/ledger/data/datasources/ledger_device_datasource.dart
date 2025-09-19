@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_errors.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:convert/convert.dart' as convert;
 import 'package:flutter/foundation.dart';
@@ -198,12 +199,24 @@ class LedgerDeviceDatasource {
     return _cachedConnection!;
   }
 
+  BitcoinLedgerApp _createBitcoinApp(sdk.LedgerConnection connection, ScriptType scriptType, String derivationPath) {
+    switch (scriptType) {
+      case ScriptType.bip84:
+        return BitcoinLedgerApp.nativeSegwit(connection, derivationPath: derivationPath);
+      case ScriptType.bip49:
+        return BitcoinLedgerApp.nestedSegwit(connection, derivationPath: derivationPath);
+      case ScriptType.bip44:
+        return BitcoinLedgerApp.legacy(connection, derivationPath: derivationPath);
+    }
+  }
+
   Future<String> getXpub(
     LedgerDeviceModel device, {
     required String derivationPath,
+    required ScriptType scriptType,
   }) async {
     final sdkConnection = _getSdkConnection(device);
-    final bitcoinApp = BitcoinLedgerApp(sdkConnection);
+    final bitcoinApp = _createBitcoinApp(sdkConnection, scriptType, derivationPath);
 
     return await bitcoinApp.getXPubKey(
       derivationPath: derivationPath,
@@ -222,6 +235,7 @@ class LedgerDeviceDatasource {
     LedgerDeviceModel device, {
     required String psbt,
     required String derivationPath,
+    required ScriptType scriptType,
   }) async {
     final sdkConnection = _getSdkConnection(device);
 
@@ -229,10 +243,7 @@ class LedgerDeviceDatasource {
     final psbtV2 = PsbtV2();
     await psbtV2.deserializeV0(decodedPsbt);
 
-    final bitcoinApp = BitcoinLedgerApp(
-      sdkConnection,
-      derivationPath: derivationPath,
-    );
+    final bitcoinApp = _createBitcoinApp(sdkConnection, scriptType, derivationPath);
 
     final rawHex = await bitcoinApp.signPsbt(psbt: psbtV2);
     final finalizedTx = convert.hex.encode(rawHex);
@@ -244,9 +255,10 @@ class LedgerDeviceDatasource {
     LedgerDeviceModel device, {
     required String address,
     required String derivationPath,
+    required ScriptType scriptType,
   }) async {
     final sdkConnection = _getSdkConnection(device);
-    final bitcoinApp = BitcoinLedgerApp(sdkConnection);
+    final bitcoinApp = _createBitcoinApp(sdkConnection, scriptType, derivationPath);
     final verifiedAddress = await bitcoinApp.getAccounts(
       accountsDerivationPath: derivationPath,
       display: true,

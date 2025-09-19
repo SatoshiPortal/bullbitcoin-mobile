@@ -296,10 +296,10 @@ packages:
     dependency: transitive
     description:
       name: camera_platform_interface
-      sha256: "2f757024a48696ff4814a789b0bd90f5660c0fb25f393ab4564fb483327930e2"
+      sha256: ea1ef6ba79cdbed93df2d3eeef11542a90dec24dbcd9cde574926b86d7a09a10
       url: "https://pub.dev"
     source: hosted
-    version: "2.10.0"
+    version: "2.11.0"
   camera_web:
     dependency: transitive
     description:
@@ -1164,8 +1164,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/ledger-bitcoin"
-      ref: "7e791f837166275d164f253bc03f5e90013825ee"
-      resolved-ref: "7e791f837166275d164f253bc03f5e90013825ee"
+      ref: a734f3b1663697d46b0d378898f975d10d7f5963
+      resolved-ref: a734f3b1663697d46b0d378898f975d10d7f5963
       url: "https://github.com/ben-kaufman/ledger-flutter-plus-plugins"
     source: git
     version: "0.0.3"
@@ -1173,18 +1173,18 @@ packages:
     dependency: "direct main"
     description:
       name: ledger_flutter_plus
-      sha256: adc6ea21a6235b2a5851d05d41746d64b999fdd7ed070be50b60783f85423e01
+      sha256: "66a9ac7e7706a2cda447d07e2ddc26d37e67297ffdfb0defa684f3c2936a38e1"
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.4"
+    version: "1.5.5"
   ledger_usb_plus:
     dependency: transitive
     description:
       name: ledger_usb_plus
-      sha256: "21cc5d976cf7edb3518bd2a0c4164139cbb0817d2e4f2054707fc4edfdf9ce87"
+      sha256: "1b60c81081fe9f104aaa0ca27a9b4e27ffe62462752ea826a8a0a9b0596de33c"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.4"
+    version: "1.0.6"
   lint:
     dependency: "direct dev"
     description:
@@ -1486,10 +1486,10 @@ packages:
     dependency: transitive
     description:
       name: pool
-      sha256: "20fe868b6314b322ea036ba325e6fc0711a22948856475e2c2b6306e8ab39c2a"
+      sha256: "978783255c543aa3586a1b3c21f6e9d720eb315376a915872c61ef8b5c20177d"
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.1"
+    version: "1.5.2"
   posix:
     dependency: transitive
     description:
@@ -1870,10 +1870,10 @@ packages:
     dependency: transitive
     description:
       name: universal_ble
-      sha256: a253dbb5c0b161738660e78588b26e14312c26fb441db31aee22062f5731f319
+      sha256: "6a5c6c1fb295015934a5aef3dc751ae7e00721535275f8478bfe74db77b238c5"
       url: "https://pub.dev"
     source: hosted
-    version: "0.20.2"
+    version: "0.21.1"
   universal_io:
     dependency: transitive
     description:

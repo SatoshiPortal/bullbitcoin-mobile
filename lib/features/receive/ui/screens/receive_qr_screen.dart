@@ -599,6 +599,7 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
               address: state.address,
               derivationPath: derivationPath,
               requestedDeviceType: state.wallet!.signerDevice,
+              scriptType: state.wallet!.scriptType,
             ),
           );
         },
