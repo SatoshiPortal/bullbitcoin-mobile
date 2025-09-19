@@ -76,23 +76,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
         throw LedgerError.operationFailed(message: e.toString());
       }
     } on LedgerError catch (e) {
-      final message = e.when(
-        permissionDenied:
-            () =>
-                'Bluetooth permissions are required to connect to Ledger devices.',
-        noDevicesFound:
-            () =>
-                'No Ledger devices found. Make sure your device is powered on and has Bluetooth enabled.',
-        multipleDevicesFound:
-            () =>
-                'Multiple Ledger devices found. Please ensure only one device is nearby.',
-        deviceNotFound: () => 'Ledger device not found.',
-        connectionTypeNotInitialized: () => 'Connection type not initialized.',
-        noActiveConnection: () => 'No active connection to Ledger device.',
-        deviceMismatch: () => 'Device mismatch detected.',
-        invalidMagicBytes: () => 'Invalid PSBT format detected.',
-        operationFailed: (msg) => msg,
-      );
+      final message = e.message;
       log.severe('Ledger operation failed: $message');
       emit(
         state.copyWith(
