@@ -1,12 +1,15 @@
 import 'dart:io';
+
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
+import 'package:bb_mobile/core/ledger/domain/errors/ledger_errors.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/verify_address_ledger_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -22,6 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class LedgerRouteParams {
   final String? psbt;
@@ -193,13 +197,23 @@ class _LedgerActionView extends StatelessWidget {
             bgColor: context.colour.primary,
             textColor: context.colour.onPrimary,
           ),
-        if (state.isError)
+        if (state.isError) ...[
           BBButton.big(
             onPressed: () => context.read<LedgerOperationCubit>().reset(),
             label: 'Try Again',
             bgColor: context.colour.primary,
             textColor: context.colour.onPrimary,
           ),
+          if (state.errorMessage == const LedgerError.permissionDenied().message) ...[
+            const Gap(16),
+            BBButton.big(
+              onPressed: () => _openAppSettings(),
+              label: 'Manage App Permissions',
+              bgColor: context.colour.secondary,
+              textColor: context.colour.onSecondary,
+            ),
+          ],
+        ],
         const Gap(16),
         if (state.isInitial || state.isError)
           BBButton.small(
@@ -399,5 +413,13 @@ class _LedgerActionView extends StatelessWidget {
         'Make sure your Ledger device is using the latest firmware, you can update the firmware using the Ledger Live desktop app.',
       ],
     );
+  }
+
+  Future<void> _openAppSettings() async {
+    try {
+      await openAppSettings();
+    } catch (e) {
+      log.warning('Could not open app settings', error: e);
+    }
   }
 }
