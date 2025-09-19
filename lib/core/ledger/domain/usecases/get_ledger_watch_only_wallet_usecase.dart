@@ -33,12 +33,14 @@ class GetLedgerWatchOnlyWalletUsecase {
     final xpub = await _repository.getXpub(
       device,
       derivationPath: derivationPath,
+      scriptType: scriptType,
     );
 
     final descriptor = _constructDescriptor(
       masterFingerprint: masterFingerprint,
       xpub: xpub,
       derivationPath: derivationPath,
+      scriptType: scriptType,
     );
 
     final watchOnly = await Satoshifier.parse(descriptor);
@@ -63,6 +65,7 @@ class GetLedgerWatchOnlyWalletUsecase {
     required String masterFingerprint,
     required String xpub,
     required String derivationPath,
+    required ScriptType scriptType,
   }) {
     final pathParts = derivationPath.split('/');
     final convertedPath = pathParts
@@ -75,6 +78,18 @@ class GetLedgerWatchOnlyWalletUsecase {
         })
         .join('/');
 
-    return 'wpkh([$masterFingerprint/$convertedPath]$xpub/0/*)';
+    final scriptTypeString = switch (scriptType) {
+      ScriptType.bip84 => 'wpkh',
+      ScriptType.bip49 => 'sh(wpkh',
+      ScriptType.bip44 => 'pkh',
+    };
+    
+    final closingParens = switch (scriptType) {
+      ScriptType.bip84 => '',
+      ScriptType.bip49 => ')',
+      ScriptType.bip44 => '',
+    };
+    
+    return '$scriptTypeString([$masterFingerprint/$convertedPath]$xpub/0/*)$closingParens';
   }
 }

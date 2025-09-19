@@ -1743,6 +1743,10 @@ class SignLedgerButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet?.signerDevice,
     );
 
+    final scriptType = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
+    );
+
     return BBButton.big(
       label: 'Sign with Ledger',
       onPressed: () async {
@@ -1754,6 +1758,7 @@ class SignLedgerButton extends StatelessWidget {
             psbt: unsignedPsbt,
             derivationPath: derivationPath,
             requestedDeviceType: deviceType,
+            scriptType: scriptType,
           ),
         );
 

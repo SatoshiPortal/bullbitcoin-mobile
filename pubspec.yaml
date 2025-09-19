@@ -105,7 +105,7 @@ dependencies:
     git:
       url: https://github.com/ben-kaufman/ledger-flutter-plus-plugins
       path: packages/ledger-bitcoin
-      ref: 7e791f837166275d164f253bc03f5e90013825ee
+      ref: a734f3b1663697d46b0d378898f975d10d7f5963
   permission_handler: ^12.0.1
 
 dev_dependencies:
