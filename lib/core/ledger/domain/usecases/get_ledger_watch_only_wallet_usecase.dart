@@ -20,6 +20,7 @@ class GetLedgerWatchOnlyWalletUsecase {
     required String label,
     required LedgerDeviceEntity device,
     ScriptType scriptType = ScriptType.bip84,
+    int account = 0,
   }) async {
     final settings = await _settingsRepository.fetch();
     final network = Network.fromEnvironment(
@@ -27,7 +28,7 @@ class GetLedgerWatchOnlyWalletUsecase {
       isLiquid: false,
     );
 
-    final derivationPath = "m/${scriptType.purpose}'/${network.coinType}'/0'";
+    final derivationPath = "m/${scriptType.purpose}'/${network.coinType}'/$account'";
 
     final masterFingerprint = await _repository.getMasterFingerprint(device);
     final xpub = await _repository.getXpub(
