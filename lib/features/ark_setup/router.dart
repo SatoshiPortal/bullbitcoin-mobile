@@ -29,15 +29,14 @@ class ArkSetupRouter {
               getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
               createArkSecretUsecase: locator<CreateArkSecretUsecase>(),
               wallet: wallet,
+              walletBloc: context.read<WalletBloc>(),
             ),
         child: BlocListener<WalletBloc, WalletState>(
           listenWhen:
               (previous, current) =>
                   previous.arkWallet == null && current.arkWallet != null,
           listener: (context, state) {
-            if (state.arkWallet != null) {
-              context.goNamed(WalletRoute.walletHome.name);
-            }
+            context.goNamed(WalletRoute.walletHome.name);
           },
           child: const ArkSetupPage(),
         ),
