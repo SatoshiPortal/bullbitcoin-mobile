@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
 import 'package:bb_mobile/core/ark/errors.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/ark/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,6 +30,7 @@ class ArkCubit extends Cubit<ArkState> {
       final arkTransactions = await wallet.transactions;
       emit(state.copyWith(transactions: arkTransactions));
     } catch (e) {
+      log.warning(e.toString());
       emit(state.copyWith(error: ArkError(e.toString())));
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -46,6 +48,7 @@ class ArkCubit extends Cubit<ArkState> {
         ),
       );
     } catch (e) {
+      log.warning(e.toString());
       emit(state.copyWith(error: ArkError(e.toString())));
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -65,6 +68,7 @@ class ArkCubit extends Cubit<ArkState> {
       unawaited(refresh());
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
+      log.warning(e.toString());
     } finally {
       emit(state.copyWith(isLoading: false));
     }
