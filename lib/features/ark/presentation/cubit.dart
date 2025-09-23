@@ -6,17 +6,20 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/ark/presentation/state.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ArkCubit extends Cubit<ArkState> {
   final ArkWalletEntity wallet;
   final ConvertSatsToCurrencyAmountUsecase convertSatsToCurrencyAmountUsecase;
   final GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase;
+  final WalletBloc walletBloc;
 
   ArkCubit({
     required this.wallet,
     required this.convertSatsToCurrencyAmountUsecase,
     required this.getAvailableCurrenciesUsecase,
+    required this.walletBloc,
   }) : super(const ArkState());
 
   Future<void> refresh() async {
@@ -41,6 +44,9 @@ class ArkCubit extends Cubit<ArkState> {
     try {
       emit(state.copyWith(isLoading: true));
       final balance = await wallet.balance;
+
+      walletBloc.add(RefreshArkWalletBalance(amount: balance.total));
+
       emit(
         state.copyWith(
           confirmedBalance: balance.confirmed,

@@ -49,3 +49,8 @@ class ExecuteAutoSwap extends WalletEvent {
 class ExecuteAutoSwapFeeOverride extends WalletEvent {
   const ExecuteAutoSwapFeeOverride();
 }
+
+class RefreshArkWalletBalance extends WalletEvent {
+  final int? amount;
+  const RefreshArkWalletBalance({this.amount});
+}

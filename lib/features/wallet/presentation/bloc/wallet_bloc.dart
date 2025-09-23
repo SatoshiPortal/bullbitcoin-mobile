@@ -76,6 +76,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<ExecuteAutoSwap>(_onExecuteAutoSwap);
     on<ExecuteAutoSwapFeeOverride>(_onExecuteAutoSwapFeeOverride);
     on<WalletDeleted>(_onDeleted);
+    on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
 
     // Start listening to auto swap timer when bloc is created
   }
@@ -134,14 +135,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       );
 
-      final arkWallet = await _getArkWalletUsecase.execute();
-      final arkBalance = await arkWallet?.balance;
-      emit(
-        state.copyWith(
-          arkWallet: arkWallet,
-          arkBalanceSat: arkBalance?.total ?? 0,
-        ),
-      );
+      add(const RefreshArkWalletBalance());
 
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const WalletRefreshed());
@@ -180,8 +174,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       // Initialize all wallets as not syncing
       final syncStatus = {for (final wallet in wallets) wallet.id: false};
 
-      final arkWallet = await _getArkWalletUsecase.execute();
-      final arkBalance = await arkWallet?.balance;
+      add(const RefreshArkWalletBalance());
 
       emit(
         state.copyWith(
@@ -190,8 +183,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           noWalletsFoundException: null,
           error: null,
           syncStatus: syncStatus,
-          arkWallet: arkWallet,
-          arkBalanceSat: arkBalance?.total ?? 0,
         ),
       );
       add(const CheckAllWarnings());
@@ -528,6 +519,25 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     } catch (e) {
       emit(state.copyWith(autoSwapExecuting: false));
       log.severe('[WalletBloc] Failed to execute auto swap: $e');
+    }
+  }
+
+  Future<void> _onRefreshArkWalletBalance(
+    RefreshArkWalletBalance event,
+    Emitter<WalletState> emit,
+  ) async {
+    if (event.amount != null) {
+      emit(state.copyWith(arkBalanceSat: event.amount!));
+      return;
+    } else {
+      final arkWallet = await _getArkWalletUsecase.execute();
+      final arkBalance = await arkWallet?.balance;
+      emit(
+        state.copyWith(
+          arkWallet: arkWallet,
+          arkBalanceSat: arkBalance?.total ?? 0,
+        ),
+      );
     }
   }
 }
