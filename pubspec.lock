@@ -53,8 +53,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "7be506aa0d0f327706e72cc0bfb95c4246207c38"
-      resolved-ref: "7be506aa0d0f327706e72cc0bfb95c4246207c38"
+      ref: f2094abd6fe9d8632a4a717c3683cc4a376068d0
+      resolved-ref: f2094abd6fe9d8632a4a717c3683cc4a376068d0
       url: "https://github.com/ethicnology/dart-ark-wallet"
     source: git
     version: "0.0.1"
