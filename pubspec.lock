@@ -1164,9 +1164,9 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/ledger-bitcoin"
-      ref: a734f3b1663697d46b0d378898f975d10d7f5963
-      resolved-ref: a734f3b1663697d46b0d378898f975d10d7f5963
-      url: "https://github.com/ben-kaufman/ledger-flutter-plus-plugins"
+      ref: e0fb7d62c5f3a8b85e971bedf278297ff7d447a2
+      resolved-ref: e0fb7d62c5f3a8b85e971bedf278297ff7d447a2
+      url: "https://github.com/SatoshiPortal/ledger-flutter-plus-plugins"
     source: git
     version: "0.0.3"
   ledger_flutter_plus:

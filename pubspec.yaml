@@ -103,9 +103,9 @@ dependencies:
   ledger_flutter_plus: ^1.5.4
   ledger_bitcoin:
     git:
-      url: https://github.com/ben-kaufman/ledger-flutter-plus-plugins
+      url: https://github.com/SatoshiPortal/ledger-flutter-plus-plugins
       path: packages/ledger-bitcoin
-      ref: a734f3b1663697d46b0d378898f975d10d7f5963
+      ref: e0fb7d62c5f3a8b85e971bedf278297ff7d447a2
   permission_handler: ^12.0.1
 
 dev_dependencies:
