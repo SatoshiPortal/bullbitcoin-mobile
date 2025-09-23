@@ -1736,7 +1736,7 @@ class SignLedgerButton extends StatelessWidget {
 
     final derivationPath = context.select(
       (SendCubit cubit) =>
-          cubit.state.selectedWallet?.derivationPath.replaceAll(' ', ''),
+          cubit.state.selectedWallet?.derivationPath,
     );
 
     final deviceType = context.select(
