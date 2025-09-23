@@ -32,69 +32,72 @@ class _DcaScreenState extends State<DcaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Set recurring buy')),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ScrollableColumn(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Gap(24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 48),
-                child: Text(
-                  'Bitcoin purchases will be placed automatically per this schedule.',
-                  style: context.theme.textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Set recurring buy')),
+        body: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: ScrollableColumn(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Gap(24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 48),
+                  child: Text(
+                    'Bitcoin purchases will be placed automatically per this schedule.',
+                    style: context.theme.textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
-              const Gap(24),
-              DcaAmountInputFields(
-                amountController: _amountController,
-                fiatCurrency: _fiatCurrency,
-                onFiatCurrencyChanged: (fiatCurrency) {
-                  setState(() {
-                    _fiatCurrency = fiatCurrency;
-                  });
-                },
-              ),
-              const Gap(24),
-              FormField<DcaBuyFrequency>(
-                initialValue: _frequency,
-                validator:
-                    (val) => val == null ? 'Please select a frequency' : null,
-                builder: (field) {
-                  return DcaFrequencyRadioList(
-                    selectedFrequency: field.value,
-                    onChanged: (freq) {
-                      field.reset();
-                      setState(() => _frequency = freq);
-                      field.didChange(freq);
-                    },
-                    errorText: field.errorText,
-                  );
-                },
-              ),
-              const Spacer(),
-              BBButton.big(
-                label: 'Continue',
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    context.read<DcaBloc>().add(
-                      DcaEvent.buyInputContinuePressed(
-                        amountInput: _amountController.text,
-                        currency: _fiatCurrency,
-                        frequency: _frequency!,
-                      ),
+                const Gap(24),
+                DcaAmountInputFields(
+                  amountController: _amountController,
+                  fiatCurrency: _fiatCurrency,
+                  onFiatCurrencyChanged: (fiatCurrency) {
+                    setState(() {
+                      _fiatCurrency = fiatCurrency;
+                    });
+                  },
+                ),
+                const Gap(24),
+                FormField<DcaBuyFrequency>(
+                  initialValue: _frequency,
+                  validator:
+                      (val) => val == null ? 'Please select a frequency' : null,
+                  builder: (field) {
+                    return DcaFrequencyRadioList(
+                      selectedFrequency: field.value,
+                      onChanged: (freq) {
+                        field.reset();
+                        setState(() => _frequency = freq);
+                        field.didChange(freq);
+                      },
+                      errorText: field.errorText,
                     );
-                  }
-                },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
-              ),
-              const Gap(16.0),
-            ],
+                  },
+                ),
+                const Spacer(),
+                BBButton.big(
+                  label: 'Continue',
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      context.read<DcaBloc>().add(
+                        DcaEvent.buyInputContinuePressed(
+                          amountInput: _amountController.text,
+                          currency: _fiatCurrency,
+                          frequency: _frequency!,
+                        ),
+                      );
+                    }
+                  },
+                  bgColor: context.colour.secondary,
+                  textColor: context.colour.onSecondary,
+                ),
+                const Gap(16.0),
+              ],
+            ),
           ),
         ),
       ),
