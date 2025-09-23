@@ -40,6 +40,7 @@ class ArkRouter {
                         locator<ConvertSatsToCurrencyAmountUsecase>(),
                     getAvailableCurrenciesUsecase:
                         locator<GetAvailableCurrenciesUsecase>(),
+                    walletBloc: context.read<WalletBloc>(),
                   )
                   ..loadTransactions()
                   ..loadCurrencies()

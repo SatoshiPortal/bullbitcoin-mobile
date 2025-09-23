@@ -39,7 +39,7 @@ class ArkSetupCubit extends Cubit<ArkSetupState> {
       log.fine('ARK wallet created');
 
       // Trigger WalletBloc refresh to update ARK wallet data
-      walletBloc.add(const WalletRefreshed());
+      walletBloc.add(const RefreshArkWalletBalance());
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
     } finally {
