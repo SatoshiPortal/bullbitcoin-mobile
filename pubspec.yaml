@@ -104,7 +104,7 @@ dependencies:
   ark_wallet:
     git:
       url: https://github.com/ethicnology/dart-ark-wallet
-      ref: 7be506aa0d0f327706e72cc0bfb95c4246207c38
+      ref: f2094abd6fe9d8632a4a717c3683cc4a376068d0
 
 dev_dependencies:
   build_runner: ^2.4.15
