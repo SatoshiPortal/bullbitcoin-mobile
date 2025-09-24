@@ -22,14 +22,8 @@ class SecureStorageKeyPrefixConstants {
   static const swap = 'swap_';
 }
 
-class HiveBoxNameConstants {
-  static const settings = 'settings';
-  static const electrumServers = 'electrumServers';
-  static const walletMetadata = 'walletMetadata';
-  static const pdkPayjoins = 'pdkPayjoins';
-  static const boltzSwaps = 'boltzSwaps';
-  static const labels = 'labels';
-  static const labelsByRef = 'labelsByRef';
+class SecureStorageKeyConstants {
+  static const defaultSeedKey = 'default_seed_key';
 }
 
 class AssetConstants {
