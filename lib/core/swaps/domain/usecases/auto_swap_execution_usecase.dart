@@ -125,9 +125,9 @@ class AutoSwapExecutionUsecase {
 
     debugPrint('Balance within swap limits, preparing swap...');
 
-    final liquidWalletMnemonic =
+    final liquidWalletSeed =
         await _seedRepository.get(defaultLiquidWallet.masterFingerprint)
-            as MnemonicSeed;
+            as EntropySeed;
 
     final btcElectrumUrl =
         defaultBitcoinWallet.isTestnet
@@ -143,7 +143,7 @@ class AutoSwapExecutionUsecase {
       'Creating swap with amount: ${autoSwapSettings.swapAmount(walletBalance)} sats',
     );
     final swap = await swapRepository.createLiquidToBitcoinSwap(
-      sendWalletMnemonic: liquidWalletMnemonic.mnemonicWords.join(' '),
+      sendWalletMnemonic: liquidWalletSeed.toMnemonic().sentence,
       sendWalletId: defaultLiquidWallet.id,
       amountSat: autoSwapSettings.swapAmount(walletBalance),
       btcElectrumUrl: btcElectrumUrl,

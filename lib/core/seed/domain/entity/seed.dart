@@ -1,4 +1,6 @@
-import 'package:bb_mobile/core/utils/uint_8_list_x.dart';
+import 'package:bip32_keys/bip32_keys.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart';
+import 'package:convert/convert.dart' as convert;
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -8,19 +10,26 @@ part 'seed.freezed.dart';
 sealed class Seed with _$Seed {
   const Seed._();
 
-  /// Bytes-based seed
-  const factory Seed.bytes({
-    required Uint8List bytes,
-    required String masterFingerprint,
-  }) = BytesSeed;
-
-  /// Mnemonic-based seed
-  const factory Seed.mnemonic({
-    required List<String> mnemonicWords,
+  const factory Seed.fromEntropy({
+    required List<int> entropy,
     String? passphrase,
-    required Uint8List bytes,
-    required String masterFingerprint,
-  }) = MnemonicSeed;
+  }) = EntropySeed;
 
-  String get hex => bytes.toHexString();
+  Mnemonic toMnemonic({Language language = Language.english}) =>
+      Mnemonic(entropy, language, passphrase: passphrase ?? '');
+
+  String get hex => convert.hex.encode(bytes);
+
+  Uint8List get bytes {
+    return switch (this) {
+      EntropySeed() => Uint8List.fromList(toMnemonic().seed),
+    };
+  }
+
+  String get masterFingerprint {
+    final root = Bip32Keys.fromSeed(Uint8List.fromList(bytes));
+    final fingerprintBytes = root.fingerprint;
+    final fingerprintHex = convert.hex.encode(fingerprintBytes);
+    return fingerprintHex;
+  }
 }

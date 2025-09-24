@@ -72,8 +72,8 @@ class LiquidWalletRepository {
     }
 
     final seed =
-        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
-    final mnemonic = seed.mnemonicWords.join(' ');
+        await _seed.get(metadata.masterFingerprint) as EntropySeedModel;
+    final mnemonic = seed.toMnemonic().sentence;
 
     final wallet =
         WalletModel.privateLwk(

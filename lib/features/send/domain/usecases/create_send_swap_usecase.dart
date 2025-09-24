@@ -56,8 +56,8 @@ class CreateSendSwapUsecase {
       );
       if (existingSwap != null) return existingSwap;
 
-      final mnemonic =
-          await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
+      final seed =
+          await _seedRepository.get(wallet.masterFingerprint) as EntropySeed;
 
       if (wallet.network.isLiquid && type != SwapType.liquidToLightning) {
         throw Exception(
@@ -85,7 +85,7 @@ class CreateSendSwapUsecase {
           return await swapRepository.createBitcoinToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
-            mnemonic: mnemonic.mnemonicWords.join(' '),
+            mnemonic: seed.toMnemonic().sentence,
             electrumUrl: btcElectrumUrl,
           );
 
@@ -93,7 +93,7 @@ class CreateSendSwapUsecase {
           return await swapRepository.createLiquidToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
-            mnemonic: mnemonic.mnemonicWords.join(' '),
+            mnemonic: seed.toMnemonic().sentence,
             electrumUrl: lbtcElectrumUrl,
           );
         default:

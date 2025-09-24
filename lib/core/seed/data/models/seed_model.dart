@@ -12,21 +12,56 @@ part 'seed_model.g.dart';
 sealed class SeedModel with _$SeedModel {
   const SeedModel._();
 
-  const factory SeedModel.bytes({required List<int> bytes}) = BytesSeedModel;
+  const factory SeedModel.fromEntropy({
+    required List<int> entropy,
+    required String passphrase,
+  }) = EntropySeedModel;
 
-  const factory SeedModel.mnemonic({
+  factory SeedModel.fromMnemonic({
     required List<String> mnemonicWords,
+    Language language = Language.english,
     String? passphrase,
-  }) = MnemonicSeedModel;
+  }) {
+    final mnemonic = Mnemonic.fromWords(
+      words: mnemonicWords,
+      language: language,
+      passphrase: passphrase ?? '',
+    );
+
+    return EntropySeedModel(
+      entropy: mnemonic.entropy,
+      passphrase: mnemonic.passphrase,
+    );
+  }
+
+  /// Convert `Seed` entity to `SeedModel`
+  factory SeedModel.fromEntity(Seed entity) {
+    return switch (entity) {
+      EntropySeed(:final entropy, :final passphrase) => SeedModel.fromEntropy(
+        entropy: entropy,
+        passphrase: passphrase ?? '',
+      ),
+    };
+  }
+
+  Seed toEntity() {
+    return switch (this) {
+      EntropySeedModel(:final entropy, :final passphrase) => Seed.fromEntropy(
+        entropy: entropy,
+        passphrase: passphrase,
+      ),
+    };
+  }
+
+  factory SeedModel.fromJson(Map<String, dynamic> json) =>
+      _$SeedModelFromJson(json);
+
+  Mnemonic toMnemonic({Language language = Language.english}) =>
+      Mnemonic(entropy, language, passphrase: passphrase);
 
   List<int> get bytes {
     return switch (this) {
-      BytesSeedModel(:final bytes) => bytes,
-      MnemonicSeedModel(:final mnemonicWords, :final passphrase) =>
-        Mnemonic.fromWords(
-          words: mnemonicWords,
-          passphrase: passphrase ?? '',
-        ).seed,
+      EntropySeedModel() => toMnemonic().seed,
     };
   }
 
@@ -36,35 +71,4 @@ sealed class SeedModel with _$SeedModel {
     final fingerprintHex = fingerprintBytes.toHexString();
     return fingerprintHex;
   }
-
-  /// Convert `Seed` entity to `SeedModel`
-  factory SeedModel.fromEntity(Seed entity) {
-    return switch (entity) {
-      BytesSeed(:final bytes) => SeedModel.bytes(bytes: bytes as List<int>),
-      MnemonicSeed(:final mnemonicWords, :final passphrase) =>
-        SeedModel.mnemonic(
-          mnemonicWords: mnemonicWords,
-          passphrase: passphrase,
-        ),
-    };
-  }
-
-  Seed toEntity() {
-    return switch (this) {
-      BytesSeedModel(:final bytes) => Seed.bytes(
-        bytes: Uint8List.fromList(bytes),
-        masterFingerprint: masterFingerprint,
-      ),
-      MnemonicSeedModel(:final mnemonicWords, :final passphrase) =>
-        Seed.mnemonic(
-          mnemonicWords: mnemonicWords,
-          passphrase: passphrase,
-          bytes: Uint8List.fromList(bytes),
-          masterFingerprint: masterFingerprint,
-        ),
-    };
-  }
-
-  factory SeedModel.fromJson(Map<String, dynamic> json) =>
-      _$SeedModelFromJson(json);
 }

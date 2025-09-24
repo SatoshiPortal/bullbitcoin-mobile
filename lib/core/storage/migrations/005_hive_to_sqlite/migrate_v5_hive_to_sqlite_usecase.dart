@@ -175,13 +175,13 @@ class MigrateToV5HiveToSqliteToUsecase {
     }
   }
 
-  Future<List<MnemonicSeed>> _storeNewSeeds(List<OldWallet> oldWallets) async {
+  Future<List<EntropySeed>> _storeNewSeeds(List<OldWallet> oldWallets) async {
     try {
       // mnemonic fingerprints are seed indexes
       // source fingerprints are passphrase indexes
       // mnemonic == source fingerprint for wallets without passphrases
 
-      final List<MnemonicSeed> seeds = [];
+      final List<EntropySeed> seeds = [];
       for (final oldWallet in oldWallets) {
         final oldSeed = await _oldSeedRepository.fetch(
           fingerprint: oldWallet.getRelatedSeedStorageString(),

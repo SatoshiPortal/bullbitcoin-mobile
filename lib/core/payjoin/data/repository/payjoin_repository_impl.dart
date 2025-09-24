@@ -380,8 +380,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     if (metadata == null) throw Exception('Wallet metadata not found');
 
     final seed =
-        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
-    final mnemonic = seed.mnemonicWords.join(' ');
+        await _seed.get(metadata.masterFingerprint) as EntropySeedModel;
+    final mnemonic = seed.toMnemonic().sentence;
 
     return WalletModel.privateBdk(
           id: walletId,

@@ -14,11 +14,7 @@ class GetMnemonicFromFingerprintUsecase {
       final defaultSeedModel = SeedModel.fromEntity(seed);
 
       final (mnemonicWords, passphrase) = switch (defaultSeedModel) {
-        MnemonicSeedModel(:final mnemonicWords, :final passphrase) => (
-          mnemonicWords,
-          passphrase,
-        ),
-        _ => throw Exception('selected seed is not a mnemonic seed'),
+        EntropySeedModel() => (seed.toMnemonic().words, seed.passphrase),
       };
 
       return (mnemonicWords, passphrase);

@@ -47,14 +47,13 @@ class CreateChainSwapUsecase {
       final swapRepository =
           isTestnet ? _swapRepositoryTestnet : _swapRepository;
 
-      final (bitcoinMnemonicSeed, liquidMnemonicSeed) =
+      final (bitcoinSeed, liquidSeed) =
           await (
             _seedRepository.get(bitcoinWallet.masterFingerprint),
             _seedRepository.get(liquidWallet.masterFingerprint),
           ).wait;
 
-      if (bitcoinMnemonicSeed is! MnemonicSeed ||
-          liquidMnemonicSeed is! MnemonicSeed) {
+      if (bitcoinSeed is! EntropySeed || liquidSeed is! EntropySeed) {
         throw Exception('One or both seeds are not mnemonic seeds');
       }
 
@@ -71,7 +70,7 @@ class CreateChainSwapUsecase {
       switch (type) {
         case SwapType.bitcoinToLiquid:
           return await swapRepository.createBitcoinToLiquidSwap(
-            sendWalletMnemonic: bitcoinMnemonicSeed.mnemonicWords.join(' '),
+            sendWalletMnemonic: bitcoinSeed.toMnemonic().sentence,
             sendWalletId: bitcoinWalletId,
             receiveWalletId: liquidWalletId,
             amountSat: amountSat!,
@@ -80,7 +79,7 @@ class CreateChainSwapUsecase {
           );
         case SwapType.liquidToBitcoin:
           return await swapRepository.createLiquidToBitcoinSwap(
-            sendWalletMnemonic: liquidMnemonicSeed.mnemonicWords.join(' '),
+            sendWalletMnemonic: liquidSeed.toMnemonic().sentence,
             sendWalletId: liquidWalletId,
             receiveWalletId: bitcoinWalletId,
             amountSat: amountSat!,

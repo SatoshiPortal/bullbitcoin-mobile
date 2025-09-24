@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart'
-    show MnemonicSeedModel, SeedModel;
+    show EntropySeedModel, SeedModel;
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -30,8 +30,7 @@ class VerifyPhysicalBackupUsecase {
 
       final defaultSeedModel = SeedModel.fromEntity(defaultSeed);
       final mnemonicWords = switch (defaultSeedModel) {
-        MnemonicSeedModel(:final mnemonicWords) => mnemonicWords,
-        _ => throw Exception('Default seed is not a mnemonic seed'),
+        EntropySeedModel() => defaultSeed.toMnemonic().words,
       };
 
       return mnemonic.length == mnemonicWords.length &&

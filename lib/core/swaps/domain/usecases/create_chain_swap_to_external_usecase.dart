@@ -38,9 +38,9 @@ class CreateChainSwapToExternalUsecase {
       final isTestnet = sendWallet.network.isTestnet;
       final swapRepository =
           isTestnet ? _swapRepositoryTestnet : _swapRepository;
-      final sendWalletMnemonic =
+      final sendWalletSeed =
           await _seedRepository.get(sendWallet.masterFingerprint)
-              as MnemonicSeed;
+              as EntropySeed;
 
       final btcElectrumUrl =
           sendWallet.network.isTestnet
@@ -60,7 +60,7 @@ class CreateChainSwapToExternalUsecase {
             );
           }
           return await swapRepository.createBitcoinToLiquidSwap(
-            sendWalletMnemonic: sendWalletMnemonic.mnemonicWords.join(' '),
+            sendWalletMnemonic: sendWalletSeed.toMnemonic().sentence,
             sendWalletId: sendWalletId,
             amountSat: amountSat,
             btcElectrumUrl: btcElectrumUrl,
@@ -74,7 +74,7 @@ class CreateChainSwapToExternalUsecase {
             );
           }
           return await swapRepository.createLiquidToBitcoinSwap(
-            sendWalletMnemonic: sendWalletMnemonic.mnemonicWords.join(' '),
+            sendWalletMnemonic: sendWalletSeed.toMnemonic().sentence,
             sendWalletId: sendWalletId,
             amountSat: amountSat,
             btcElectrumUrl: btcElectrumUrl,

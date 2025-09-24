@@ -54,8 +54,8 @@ class CreateReceiveSwapUsecase {
       }
 
       final mnemonicSeed =
-          await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
-      final mnemonic = mnemonicSeed.mnemonicWords.join(' ');
+          await _seedRepository.get(wallet.masterFingerprint) as EntropySeed;
+      final mnemonic = mnemonicSeed.toMnemonic().sentence;
 
       if (wallet.network.isLiquid && type == SwapType.lightningToBitcoin) {
         throw Exception(

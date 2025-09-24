@@ -49,10 +49,10 @@ Future<void> main({bool isInitialized = false}) async {
   setUpAll(() async {
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
 
-    final receiverSeedModel = SeedModel.mnemonic(
+    final receiverSeedModel = SeedModel.fromMnemonic(
       mnemonicWords: receiverMnemonic.split(' '),
     );
-    final senderSeedModel = SeedModel.mnemonic(
+    final senderSeedModel = SeedModel.fromMnemonic(
       mnemonicWords: senderMnemonic.split(' '),
     );
     receiverWallet = await walletRepository.createWallet(

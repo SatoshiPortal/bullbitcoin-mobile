@@ -85,9 +85,12 @@ Future<void> main({bool isInitialized = false}) async {
       expect(wallet.masterFingerprint, isNotEmpty);
       final seed = await seedRepository.get(wallet.masterFingerprint);
       final seedModel = SeedModel.fromEntity(seed);
-      expect(seedModel, isA<MnemonicSeedModel>());
-      final mnemonicSeedModel = seedModel as MnemonicSeedModel;
-      expect(mnemonicSeedModel.mnemonicWords, equals(expectedMnemonicWords));
+      expect(seedModel, isA<EntropySeedModel>());
+      final mnemonicSeedModel = seedModel as EntropySeedModel;
+      expect(
+        mnemonicSeedModel.toMnemonic().words,
+        equals(expectedMnemonicWords),
+      );
     });
 
     test('Derive backup key from default wallet', () async {

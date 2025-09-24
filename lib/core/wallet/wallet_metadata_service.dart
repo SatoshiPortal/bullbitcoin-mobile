@@ -131,7 +131,7 @@ class WalletMetadataService {
             isInternalKeychain: true,
           );
     } else {
-      if (seed is! MnemonicSeed) {
+      if (seed is! EntropySeed) {
         throw MnemonicSeedNeededException(
           'Mnemonic seed is required for Liquid network',
         );
@@ -139,7 +139,7 @@ class WalletMetadataService {
 
       descriptor =
           await DescriptorDerivation.derivePublicLiquidDescriptorFromMnemonic(
-            seed.mnemonicWords.join(' '),
+            seed.toMnemonic().sentence,
             scriptType: scriptType,
             isTestnet: network.isTestnet,
           );

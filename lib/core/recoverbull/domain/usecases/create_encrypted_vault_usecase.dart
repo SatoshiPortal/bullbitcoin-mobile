@@ -45,9 +45,7 @@ class CreateEncryptedVaultUsecase {
       final defaultSeed = await _seedRepository.get(defaultFingerprint);
       final defaultSeedModel = SeedModel.fromEntity(defaultSeed);
       final mnemonic = switch (defaultSeedModel) {
-        MnemonicSeedModel(:final mnemonicWords) => mnemonicWords,
-        _ =>
-          throw 'CreateEncryptedVaultUsecase: Default seed is not a bytes seed',
+        EntropySeedModel() => defaultSeed.toMnemonic().words,
       };
       final defaultXprv = Bip32Derivation.getXprvFromSeed(
         defaultSeed.bytes,

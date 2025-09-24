@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
@@ -9,35 +8,20 @@ class SeedRepository {
 
   const SeedRepository({required SeedDatasource source}) : _source = source;
 
-  Future<MnemonicSeed> createFromMnemonic({
+  Future<EntropySeed> createFromMnemonic({
     required List<String> mnemonicWords,
     String? passphrase,
   }) async {
     try {
-      final model = SeedModel.mnemonic(
+      final model = SeedModel.fromMnemonic(
         mnemonicWords: mnemonicWords,
         passphrase: passphrase,
       );
       await _source.store(fingerprint: model.masterFingerprint, seed: model);
-      return model.toEntity() as MnemonicSeed;
+      return model.toEntity() as EntropySeed;
     } catch (e, stackTrace) {
       log.info(
         'Failed to create seed from mnemonic: $e',
-        error: e,
-        trace: stackTrace,
-      );
-      rethrow;
-    }
-  }
-
-  Future<Seed> createFromBytes({required Uint8List bytes}) async {
-    try {
-      final model = SeedModel.bytes(bytes: bytes);
-      await _source.store(fingerprint: model.masterFingerprint, seed: model);
-      return model.toEntity();
-    } catch (e, stackTrace) {
-      log.info(
-        'Failed to create seed from bytes: $e',
         error: e,
         trace: stackTrace,
       );
