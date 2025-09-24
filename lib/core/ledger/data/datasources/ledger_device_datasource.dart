@@ -15,14 +15,13 @@ import 'package:ledger_bitcoin/ledger_bitcoin.dart';
 import 'package:ledger_bitcoin/src/psbt/map_extension.dart';
 // ignore: implementation_imports
 import 'package:ledger_bitcoin/src/utils/buffer_reader.dart';
-import 'package:ledger_flutter_plus/ledger_flutter_plus.dart' as sdk;
 import 'package:permission_handler/permission_handler.dart';
 
 class LedgerDeviceDatasource {
-  sdk.LedgerInterface? _ledgerBle;
-  sdk.LedgerInterface? _ledgerUsb;
-  sdk.LedgerDevice? _cachedDevice;
-  sdk.LedgerConnection? _cachedConnection;
+  LedgerInterface? _ledgerBle;
+  LedgerInterface? _ledgerUsb;
+  LedgerDevice? _cachedDevice;
+  LedgerConnection? _cachedConnection;
 
   Future<List<LedgerDeviceModel>> scanDevices({
     Duration scanDuration = const Duration(seconds: 60),
@@ -31,7 +30,7 @@ class LedgerDeviceDatasource {
     await dispose();
 
     final ledgerDeviceType =
-        deviceType != null ? convertToSdkDeviceType(deviceType) : null;
+        deviceType != null ? convertToLedgerDeviceType(deviceType) : null;
     final needsBluetooth =
         ledgerDeviceType == null || !ledgerDeviceType.usbOnly;
     if (needsBluetooth) {
@@ -46,8 +45,8 @@ class LedgerDeviceDatasource {
         }
       }
 
-      final bleState = await sdk.UniversalBle.getBluetoothAvailabilityState();
-      final bleIsEnabled = bleState == sdk.AvailabilityState.poweredOn;
+      final bleState = await UniversalBle.getBluetoothAvailabilityState();
+      final bleIsEnabled = bleState == AvailabilityState.poweredOn;
 
       if (!bleIsEnabled) {
         throw const LedgerError.permissionDenied();
@@ -55,7 +54,7 @@ class LedgerDeviceDatasource {
     }
 
     if (needsBluetooth) {
-      _ledgerBle = sdk.LedgerInterface.ble(
+      _ledgerBle = LedgerInterface.ble(
         onPermissionRequest: (_) async {
           final Map<Permission, PermissionStatus> statuses =
               await [
@@ -65,17 +64,17 @@ class LedgerDeviceDatasource {
 
           return statuses.values.where((status) => status.isDenied).isEmpty;
         },
-        bleOptions: sdk.BluetoothOptions(maxScanDuration: scanDuration),
+        bleOptions: BluetoothOptions(maxScanDuration: scanDuration),
       );
     }
 
     if (!Platform.isIOS) {
-      _ledgerUsb = sdk.LedgerInterface.usb();
+      _ledgerUsb = LedgerInterface.usb();
     }
 
-    final devices = <sdk.LedgerDevice>[];
+    final devices = <LedgerDevice>[];
     final completer = Completer<void>();
-    StreamSubscription<sdk.LedgerDevice>? bleScanSubscription;
+    StreamSubscription<LedgerDevice>? bleScanSubscription;
 
     if (needsBluetooth && _ledgerBle != null) {
       bleScanSubscription = _ledgerBle!.scan().listen(
@@ -97,7 +96,7 @@ class LedgerDeviceDatasource {
       );
     }
 
-    StreamSubscription<sdk.LedgerDevice>? usbScanSubscription;
+    StreamSubscription<LedgerDevice>? usbScanSubscription;
 
     if (_ledgerUsb != null) {
       usbScanSubscription = _ledgerUsb!.scan().listen(
@@ -130,7 +129,7 @@ class LedgerDeviceDatasource {
 
     final deviceModels =
         devices.map((device) {
-          return LedgerDeviceModel.fromSdkDevice(device);
+          return LedgerDeviceModel.fromLedgerDevice(device);
         }).toList();
 
     if (deviceModels.isEmpty) {
@@ -154,7 +153,7 @@ class LedgerDeviceDatasource {
       throw const LedgerError.deviceNotFound();
     }
 
-    sdk.LedgerInterface? ledgerInterface;
+    LedgerInterface? ledgerInterface;
     if (device.connectionType == LedgerConnectionType.ble) {
       ledgerInterface = _ledgerBle;
     } else if (device.connectionType == LedgerConnectionType.usb) {
@@ -187,7 +186,7 @@ class LedgerDeviceDatasource {
     return device;
   }
 
-  sdk.LedgerConnection _getSdkConnection(LedgerDeviceModel device) {
+  LedgerConnection _getSdkConnection(LedgerDeviceModel device) {
     if (_cachedConnection == null) {
       throw const LedgerError.noActiveConnection();
     }
@@ -199,7 +198,7 @@ class LedgerDeviceDatasource {
     return _cachedConnection!;
   }
 
-  BitcoinLedgerApp _createBitcoinApp(sdk.LedgerConnection connection, ScriptType scriptType, String derivationPath) {
+  BitcoinLedgerApp _createBitcoinApp(LedgerConnection connection, ScriptType scriptType, String derivationPath) {
     switch (scriptType) {
       case ScriptType.bip84:
         return BitcoinLedgerApp.nativeSegwit(connection, derivationPath: derivationPath);

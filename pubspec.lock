@@ -1164,13 +1164,13 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/ledger-bitcoin"
-      ref: e0fb7d62c5f3a8b85e971bedf278297ff7d447a2
-      resolved-ref: e0fb7d62c5f3a8b85e971bedf278297ff7d447a2
+      ref: b0503b97f255e67c2efe75ee95f6183b7c70c5dc
+      resolved-ref: b0503b97f255e67c2efe75ee95f6183b7c70c5dc
       url: "https://github.com/SatoshiPortal/ledger-flutter-plus-plugins"
     source: git
     version: "0.0.3"
   ledger_flutter_plus:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: ledger_flutter_plus
       sha256: "66a9ac7e7706a2cda447d07e2ddc26d37e67297ffdfb0defa684f3c2936a38e1"
