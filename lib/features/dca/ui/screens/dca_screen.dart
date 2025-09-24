@@ -104,6 +104,7 @@ class _DcaScreenState extends State<DcaScreen> {
                         return DcaFrequencyRadioList(
                           selectedFrequency: field.value,
                           onChanged: (freq) {
+                            FocusManager.instance.primaryFocus?.unfocus();
                             field.reset();
                             setState(() => _frequency = freq);
                             field.didChange(freq);
