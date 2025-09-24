@@ -800,7 +800,7 @@ class _BottomButtons extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (isBitcoinWallet) ...[
+          if (isBitcoinWallet && !hasFinalizedTx) ...[
             BBButton.big(
               label: 'Advanced Settings',
               onPressed: () {
@@ -877,6 +877,9 @@ class _OnchainSendInfoSection extends StatelessWidget {
     );
     final formattedFiatEquivalent = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
+    );
+    final hasFinalizedTx = context.select(
+      (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
     );
     // final selectedFees = context.select(
     //   (SendCubit cubit) => cubit.state.selectedFee,
@@ -976,7 +979,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
             InfoRow(
               title: 'Fee Priority',
               details: InkWell(
-                onTap: () async {
+                onTap: hasFinalizedTx ? null : () async {
                   final selected = await _showFeeOptions(context);
 
                   if (selected != null) {
