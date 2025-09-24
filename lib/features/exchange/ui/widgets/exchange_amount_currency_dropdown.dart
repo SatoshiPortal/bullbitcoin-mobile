@@ -11,7 +11,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
     super.key,
     this.isLoading = false,
     this.currencies = FiatCurrency.values,
-    this.initialCurrency = FiatCurrency.cad,
+    this.initialCurrency,
     this.selectedCurrency,
     required this.onCurrencyChanged,
     this.balances,
@@ -19,7 +19,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
 
   final bool isLoading;
   final List<FiatCurrency> currencies;
-  final FiatCurrency initialCurrency;
+  final FiatCurrency? initialCurrency;
   final String? selectedCurrency;
   final ValueChanged<String> onCurrencyChanged;
   final List<UserBalance>? balances;
@@ -29,7 +29,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Select currency', style: context.font.bodyMedium),
+        Text('Select Currency', style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -42,7 +42,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
                   isLoading
                       ? const LoadingLineContent()
                       : DropdownButtonFormField<String>(
-                        value: selectedCurrency ?? initialCurrency.code,
+                        value: selectedCurrency ?? initialCurrency?.code,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(

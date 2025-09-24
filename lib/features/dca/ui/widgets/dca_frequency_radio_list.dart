@@ -25,7 +25,7 @@ class DcaFrequencyRadioList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Select frequency', style: context.font.bodyMedium),
+        Text('Select Frequency', style: context.font.bodyMedium),
         const Gap(4),
         ...DcaBuyFrequency.values.map((frequency) {
           return Column(

@@ -37,7 +37,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Choose Bitcoin wallet')),
+        appBar: AppBar(title: const Text('Choose Bitcoin Wallet')),
         body: SafeArea(
           child: Form(
             key: _formKey,
@@ -73,7 +73,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                 if (_selectedNetwork == DcaNetwork.lightning) ...[
                   const Gap(16),
                   Text(
-                    'Enter Lightning address',
+                    'Enter Lightning Address',
                     style: context.theme.textTheme.bodyMedium,
                   ),
                   const Gap(4),

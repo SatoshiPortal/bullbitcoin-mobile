@@ -6,16 +6,21 @@ sealed class DcaState with _$DcaState {
     ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
   }) = DcaInitialState;
-  const factory DcaState.buyInput({required UserSummary userSummary}) =
-      DcaBuyInputState;
+  const factory DcaState.buyInput({
+    required UserSummary userSummary,
+    required List<UserBalance> balances,
+    FiatCurrency? currency,
+  }) = DcaBuyInputState;
   const factory DcaState.walletSelection({
     required UserSummary userSummary,
+    required List<UserBalance> balances,
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
   }) = DcaWalletSelectionState;
   const factory DcaState.confirmation({
     required UserSummary userSummary,
+    required List<UserBalance> balances,
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
@@ -35,12 +40,13 @@ sealed class DcaState with _$DcaState {
   String? get defaultLightningAddress {
     return when(
       initial: (apiKeyException, getUserSummaryException) => null,
-      buyInput: (userSummary) => userSummary.autoBuy.addresses.lightning,
+      buyInput: (userSummary, _, _) => userSummary.autoBuy.addresses.lightning,
       walletSelection:
-          (userSummary, amount, currency, frequency) =>
+          (userSummary, _, amount, currency, frequency) =>
               userSummary.autoBuy.addresses.lightning,
       confirmation: (
         userSummary,
+        _,
         amount,
         currency,
         frequency,
@@ -58,14 +64,23 @@ sealed class DcaState with _$DcaState {
 
   DcaBuyInputState? get toCleanBuyInputState {
     return whenOrNull(
-      buyInput: (userSummary) {
-        return DcaBuyInputState(userSummary: userSummary);
+      buyInput: (userSummary, balances, currency) {
+        return DcaBuyInputState(
+          userSummary: userSummary,
+          balances: balances,
+          currency: currency,
+        );
       },
-      walletSelection: (userSummary, amount, currency, frequency) {
-        return DcaBuyInputState(userSummary: userSummary);
+      walletSelection: (userSummary, balances, amount, currency, frequency) {
+        return DcaBuyInputState(
+          userSummary: userSummary,
+          balances: balances,
+          currency: currency,
+        );
       },
       confirmation: (
         userSummary,
+        balances,
         amount,
         currency,
         frequency,
@@ -75,16 +90,21 @@ sealed class DcaState with _$DcaState {
         isConfirmingDca,
         error,
       ) {
-        return DcaBuyInputState(userSummary: userSummary);
+        return DcaBuyInputState(
+          userSummary: userSummary,
+          balances: balances,
+          currency: currency,
+        );
       },
     );
   }
 
   DcaWalletSelectionState? get toCleanWalletSelectionState {
     return whenOrNull(
-      walletSelection: (userSummary, amount, currency, frequency) {
+      walletSelection: (userSummary, balances, amount, currency, frequency) {
         return DcaWalletSelectionState(
           userSummary: userSummary,
+          balances: balances,
           amount: amount,
           currency: currency,
           frequency: frequency,
@@ -92,6 +112,7 @@ sealed class DcaState with _$DcaState {
       },
       confirmation: (
         userSummary,
+        balances,
         amount,
         currency,
         frequency,
@@ -103,6 +124,7 @@ sealed class DcaState with _$DcaState {
       ) {
         return DcaWalletSelectionState(
           userSummary: userSummary,
+          balances: balances,
           amount: amount,
           currency: currency,
           frequency: frequency,
@@ -115,6 +137,7 @@ sealed class DcaState with _$DcaState {
     return whenOrNull(
       confirmation: (
         userSummary,
+        balances,
         amount,
         currency,
         frequency,
@@ -126,6 +149,7 @@ sealed class DcaState with _$DcaState {
       ) {
         return DcaConfirmationState(
           userSummary: userSummary,
+          balances: balances,
           amount: amount,
           currency: currency,
           frequency: frequency,
@@ -139,14 +163,15 @@ sealed class DcaState with _$DcaState {
     );
   }
 
-  FiatCurrency get currency {
+  FiatCurrency? get currency {
     return when(
-      initial: (apiKeyException, getUserSummaryException) => FiatCurrency.cad,
-      buyInput:
-          (userSummary) => FiatCurrency.fromCode(userSummary.currency ?? 'CAD'),
-      walletSelection: (userSummary, amount, currency, frequency) => currency,
+      initial: (apiKeyException, getUserSummaryException) => null,
+      buyInput: (userSummary, balances, currency) => currency,
+      walletSelection:
+          (userSummary, balances, amount, currency, frequency) => currency,
       confirmation: (
         userSummary,
+        balances,
         amount,
         currency,
         frequency,
@@ -164,11 +189,12 @@ sealed class DcaState with _$DcaState {
 
   List<UserBalance> get balances => when(
     initial: (apiKeyException, getUserSummaryException) => [],
-    buyInput: (userSummary) => userSummary.balances,
+    buyInput: (userSummary, balances, currency) => balances,
     walletSelection:
-        (userSummary, amount, currency, frequency) => userSummary.balances,
+        (userSummary, balances, amount, currency, frequency) => balances,
     confirmation: (
       userSummary,
+      balances,
       amount,
       currency,
       frequency,
@@ -178,7 +204,7 @@ sealed class DcaState with _$DcaState {
       isConfirmingDca,
       error,
     ) {
-      return userSummary.balances;
+      return balances;
     },
     success: (amount, currency, frequency) => [],
   );
@@ -192,6 +218,7 @@ extension DcaBuyInputStateX on DcaBuyInputState {
   }) {
     return DcaWalletSelectionState(
       userSummary: userSummary,
+      balances: balances,
       amount: amount,
       currency: currency,
       frequency: frequency,
@@ -207,6 +234,7 @@ extension DcaWalletSelectionStateX on DcaWalletSelectionState {
   }) {
     return DcaConfirmationState(
       userSummary: userSummary,
+      balances: balances,
       amount: amount,
       currency: currency,
       frequency: frequency,

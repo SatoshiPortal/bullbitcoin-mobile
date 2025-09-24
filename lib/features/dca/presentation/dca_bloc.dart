@@ -36,9 +36,27 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
 
   Future<void> _onStarted(DcaStarted event, Emitter<DcaState> emit) async {
     try {
+      // TODO: Move all this initial data fetching to a usecase specific to DCA
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
+      final balances = userSummary.balances.where((b) => b.amount > 0).toList();
+      final currencyCode =
+          balances.isEmpty
+              ? null
+              : balances
+                  .firstWhere(
+                    (b) => b.currencyCode == userSummary.currency,
+                    orElse: () => balances.first,
+                  )
+                  .currencyCode;
 
-      emit(DcaState.buyInput(userSummary: userSummary));
+      emit(
+        DcaState.buyInput(
+          userSummary: userSummary,
+          balances: balances,
+          currency:
+              currencyCode == null ? null : FiatCurrency.fromCode(currencyCode),
+        ),
+      );
     } on ApiKeyException catch (e) {
       emit(DcaState.initial(apiKeyException: e));
     } on GetExchangeUserSummaryException catch (e) {
