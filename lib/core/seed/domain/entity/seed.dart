@@ -11,14 +11,14 @@ sealed class Seed with _$Seed {
   const Seed._();
 
   const factory Seed.fromEntropy({
-    required List<int> entropy,
+    required Uint8List entropy,
     String? passphrase,
   }) = EntropySeed;
 
   Mnemonic toMnemonic({Language language = Language.english}) =>
       Mnemonic(entropy, language, passphrase: passphrase ?? '');
 
-  String get hex => convert.hex.encode(bytes);
+  String get hexBytes => convert.hex.encode(bytes);
 
   Uint8List get bytes {
     return switch (this) {
