@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
+import 'package:bb_mobile/core/storage/migrations/006_seed_mnemonic_to_entropy.dart';
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
@@ -24,6 +25,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
     required RequiresMigrationUsecase requiresMigrationUsecase,
     required CheckBackupUsecase checkBackupUsecase,
+    required Migration6SeedMnemonicToEntropy migration6SeedMnemonicToEntropy,
   }) : _resetAppDataUsecase = resetAppDataUsecase,
        _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
        _checkForExistingDefaultWalletsUsecase =
@@ -32,6 +34,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
        _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
        _requiresMigrationUsecase = requiresMigrationUsecase,
        _checkBackupUsecase = checkBackupUsecase,
+       _migration6SeedMnemonicToEntropy = migration6SeedMnemonicToEntropy,
        super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
@@ -44,6 +47,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
   final RequiresMigrationUsecase _requiresMigrationUsecase;
   final CheckBackupUsecase _checkBackupUsecase;
+  final Migration6SeedMnemonicToEntropy _migration6SeedMnemonicToEntropy;
 
   Future<void> _onAppStartupStarted(
     AppStartupStarted event,
@@ -95,6 +99,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
             );
         }
       }
+
+      await _migration6SeedMnemonicToEntropy.execute();
 
       // all here future migration calls
       final doDefaultWalletsExist =

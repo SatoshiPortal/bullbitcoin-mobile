@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hiv
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/migrations/006_seed_mnemonic_to_entropy.dart';
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/storage/secure_storage.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -67,6 +68,9 @@ class StorageLocator {
         locator<MigrationSecureStorageDatasource>(),
         locator<WalletRepository>(),
       ),
+    );
+    locator.registerFactory<Migration6SeedMnemonicToEntropy>(
+      () => Migration6SeedMnemonicToEntropy(),
     );
   }
 }
