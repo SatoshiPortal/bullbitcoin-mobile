@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_us
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
+import 'package:bb_mobile/features/dca/domain/usecases/start_dca_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,10 +18,10 @@ part 'dca_state.dart';
 
 class DcaBloc extends Bloc<DcaEvent, DcaState> {
   DcaBloc({
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
+    required StartDcaUsecase startDcaUsecase,
     required SetDcaUsecase setDcaUsecase,
     required SaveUserPreferencesUsecase saveUserPreferencesUsecase,
-  }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
+  }) : _startDcaUsecase = startDcaUsecase,
        _setDcaUsecase = setDcaUsecase,
        _saveUserPreferencesUsecase = saveUserPreferencesUsecase,
        super(const DcaState.initial()) {
@@ -30,31 +31,19 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     on<DcaConfirmed>(_onConfirmed);
   }
 
-  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
+  final StartDcaUsecase _startDcaUsecase;
   final SetDcaUsecase _setDcaUsecase;
   final SaveUserPreferencesUsecase _saveUserPreferencesUsecase;
 
   Future<void> _onStarted(DcaStarted event, Emitter<DcaState> emit) async {
     try {
-      // TODO: Move all this initial data fetching to a usecase specific to DCA
-      final userSummary = await _getExchangeUserSummaryUsecase.execute();
-      final balances = userSummary.balances.where((b) => b.amount > 0).toList();
-      final currencyCode =
-          balances.isEmpty
-              ? null
-              : balances
-                  .firstWhere(
-                    (b) => b.currencyCode == userSummary.currency,
-                    orElse: () => balances.first,
-                  )
-                  .currencyCode;
+      final startData = await _startDcaUsecase.execute();
 
       emit(
         DcaState.buyInput(
-          userSummary: userSummary,
-          balances: balances,
-          currency:
-              currencyCode == null ? null : FiatCurrency.fromCode(currencyCode),
+          balances: startData.balances,
+          currency: startData.currency,
+          defaultLightningAddress: startData.lightningAddress,
         ),
       );
     } on ApiKeyException catch (e) {
