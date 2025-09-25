@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
+import 'package:bb_mobile/core/storage/migrations/004_legacy/004_legacy.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/005_hive_to_sqlite.dart';
 import 'package:bb_mobile/core/storage/migrations/006_seed_mnemonic_to_entropy.dart';
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -21,20 +21,20 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     required CheckPinCodeExistsUsecase checkPinCodeExistsUsecase,
     required CheckForExistingDefaultWalletsUsecase
     checkForExistingDefaultWalletsUsecase,
-    required MigrateToV5HiveToSqliteToUsecase migrateHiveToSqliteUsecase,
-    required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
+    required Migration005 migration005,
+    required Migration004 migration004,
+    required Migration006 migration006,
     required RequiresMigrationUsecase requiresMigrationUsecase,
     required CheckBackupUsecase checkBackupUsecase,
-    required Migration6SeedMnemonicToEntropy migration6SeedMnemonicToEntropy,
   }) : _resetAppDataUsecase = resetAppDataUsecase,
        _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
        _checkForExistingDefaultWalletsUsecase =
            checkForExistingDefaultWalletsUsecase,
-       _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
-       _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
+       _migration005 = migration005,
+       _migration004 = migration004,
+       _migration006 = migration006,
        _requiresMigrationUsecase = requiresMigrationUsecase,
        _checkBackupUsecase = checkBackupUsecase,
-       _migration6SeedMnemonicToEntropy = migration6SeedMnemonicToEntropy,
        super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
@@ -43,11 +43,11 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
-  final MigrateToV5HiveToSqliteToUsecase _migrateToV5HiveToSqliteUsecase;
-  final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
+  final Migration005 _migration005;
+  final Migration004 _migration004;
+  final Migration006 _migration006;
   final RequiresMigrationUsecase _requiresMigrationUsecase;
   final CheckBackupUsecase _checkBackupUsecase;
-  final Migration6SeedMnemonicToEntropy _migration6SeedMnemonicToEntropy;
 
   Future<void> _onAppStartupStarted(
     AppStartupStarted event,
@@ -66,15 +66,15 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
         emit(const AppStartupState.loadingInProgress(requiresMigration: true));
 
         switch (migrationRequired) {
-          case MigrationRequired.v4:
-            await _migrateToV4LegacyUsecase.execute();
+          case MigrationRequired.migration004:
+            await _migration004.legacy();
             emit(
               const AppStartupState.loadingInProgress(
                 requiresMigration: true,
                 v4MigrationComplete: true,
               ),
             );
-            await _migrateToV5HiveToSqliteUsecase.execute();
+            await _migration005.hiveToSqlite();
             emit(
               const AppStartupState.loadingInProgress(
                 requiresMigration: true,
@@ -82,14 +82,14 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
                 v5MigrationComplete: true,
               ),
             );
-          case MigrationRequired.v5:
+          case MigrationRequired.migration005:
             emit(
               const AppStartupState.loadingInProgress(
                 requiresMigration: true,
                 v4MigrationComplete: true,
               ),
             );
-            await _migrateToV5HiveToSqliteUsecase.execute();
+            await _migration005.hiveToSqlite();
             emit(
               const AppStartupState.loadingInProgress(
                 requiresMigration: true,
@@ -100,7 +100,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
         }
       }
 
-      await _migration6SeedMnemonicToEntropy.execute();
+      await _migration006.seedMnemonicToEntropy();
 
       // all here future migration calls
       final doDefaultWalletsExist =

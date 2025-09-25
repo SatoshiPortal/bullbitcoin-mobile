@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_stor
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 // create an enum called Migration with two values v4 and v5
-enum MigrationRequired { v4, v5 }
+enum MigrationRequired { migration004, migration005 }
 
 class RequiresMigrationUsecase {
   final MigrationSecureStorageDatasource _migrationSecureStorageDatasource;
@@ -25,7 +25,7 @@ class RequiresMigrationUsecase {
     if (fromVersion.startsWith('0.1') ||
         fromVersion.startsWith('0.2') ||
         fromVersion.startsWith('0.3')) {
-      return MigrationRequired.v4;
+      return MigrationRequired.migration004;
     }
 
     final newMainnetDefaultWallets = await _newWalletRepository.getWallets(
@@ -33,7 +33,7 @@ class RequiresMigrationUsecase {
       environment: Environment.mainnet,
     );
     if (newMainnetDefaultWallets.length < 2 && fromVersion.startsWith('0.4')) {
-      return MigrationRequired.v5;
+      return MigrationRequired.migration005;
     }
     return null;
   }

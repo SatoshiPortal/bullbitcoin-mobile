@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'dart:convert';
 
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -17,14 +19,14 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:boltz/boltz.dart' as boltz;
 
-class MigrateToV5HiveToSqliteToUsecase {
+class Migration005 {
   final SeedRepository _newSeedRepository;
   final WalletRepository _newWalletRepository;
   final OldSeedRepository _oldSeedRepository;
   final OldWalletRepository _oldWalletRepository;
   final MigrationSecureStorageDatasource _secureStorage;
   final BoltzSwapRepository _mainnetBoltzSwapRepository;
-  MigrateToV5HiveToSqliteToUsecase({
+  Migration005({
     required SeedRepository newSeedRepository,
     required OldSeedRepository oldSeedRepository,
     required OldWalletRepository oldWalletRepository,
@@ -40,7 +42,7 @@ class MigrateToV5HiveToSqliteToUsecase {
   // true : successful migration
   // false: migration was not required / success
   // throw: errors
-  Future<bool> execute() async {
+  Future<bool> hiveToSqlite() async {
     try {
       final oldWallets = await _oldWalletRepository.fetch();
       if (oldWallets.isEmpty) return false;
