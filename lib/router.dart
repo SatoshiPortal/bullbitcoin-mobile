@@ -29,6 +29,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/utxos/frameworks_drivers/ui/routing/utxos_route.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
@@ -134,6 +135,7 @@ class AppRouter {
       RecoverBullVaultRecoveryRouter.route,
       ...ImportQrDeviceRouter.routes,
       ConnectHardwareWalletRouter.route,
+      ...UtxosRouter.routes,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
