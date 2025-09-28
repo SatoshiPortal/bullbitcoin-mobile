@@ -403,9 +403,9 @@ class SwapChangeButton extends StatelessWidget {
       child: Container(
         width: 32,
         height: 32,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white,
+          color: context.colour.surface,
         ),
         child: IconButton(
           icon: const Icon(Icons.swap_vert),
