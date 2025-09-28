@@ -685,15 +685,15 @@ class TransactionDetailsTable extends StatelessWidget {
             }
           })(),
         ],
-        // Swap info
+        // Transfer info
         if (swap != null) ...[
           DetailsTableItem(
-            label: 'Swap ID',
+            label: swap.isChainSwap ? 'Transfer ID' : 'Swap ID',
             displayValue: swap.id,
             copyValue: swap.id,
           ),
           DetailsTableItem(
-            label: 'Swap status',
+            label: swap.isChainSwap ? 'Transfer status' : 'Swap status',
             displayValue:
                 (swap.isChainSwap && (swap as ChainSwap).refundTxid != null ||
                         swap.isLnSendSwap &&
@@ -721,7 +721,8 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           if (swap.fees != null)
             DetailsTableItem(
-              label: 'Total Swap fees',
+              label:
+                  swap.isChainSwap ? 'Total Transfer fees' : 'Total Swap fees',
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
                       ? FormatAmount.sats(swapFees).toUpperCase()
@@ -738,7 +739,11 @@ class TransactionDetailsTable extends StatelessWidget {
                     (swap.fees?.lockupFee ?? 0) + (swap.fees?.claimFee ?? 0),
                   ),
 
-                  _feeRow(context, 'Boltz Swap Fee', swap.fees?.boltzFee ?? 0),
+                  _feeRow(
+                    context,
+                    swap.isChainSwap ? 'Transfer Fee' : 'Boltz Swap Fee',
+                    swap.fees?.boltzFee ?? 0,
+                  ),
                   const Gap(4),
                 ],
               ),

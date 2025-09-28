@@ -55,7 +55,9 @@ class TransactionDetailsScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title:
-              isOngoingSwap == true ? 'Swap Progress' : 'Transaction details',
+              isOngoingSwap == true
+                  ? (isChainSwap ? 'Transfer Progress' : 'Swap Progress')
+                  : 'Transaction details',
           actionIcon: Icons.close,
           onAction: () {
             if (context.canPop()) {
@@ -100,7 +102,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                 if (swap != null && swap.requiresAction) ...[
                   BBButton.big(
                     disabled: retryingSwap,
-                    label: 'Retry Swap $swapAction',
+                    label: 'Retry Transfer $swapAction',
                     onPressed: () async {
                       await context.read<TransactionDetailsCubit>().processSwap(
                         swap,

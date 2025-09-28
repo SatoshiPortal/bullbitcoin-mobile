@@ -19,9 +19,9 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
 
     return BBText(
       (swap != null && swap.swapCompleted && swap.isChainSwap)
-          ? 'Swap Completed'
+          ? 'Transfer Completed'
           : (swap != null && swap.swapInProgress && swap.isChainSwap)
-          ? 'Swap In Progress'
+          ? 'Transfer In Progress'
           : (swap != null &&
               swap.swapInProgress &&
               (swap.isLnSendSwap || swap.isLnReceiveSwap))
@@ -32,8 +32,8 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
               (swap.status == SwapStatus.failed ||
                   swap.status == SwapStatus.expired)
           ? swap.status == SwapStatus.failed
-              ? 'Swap Failed'
-              : 'Swap Expired'
+              ? (swap.isChainSwap ? 'Transfer Failed' : 'Swap Failed')
+              : (swap.isChainSwap ? 'Transfer Expired' : 'Swap Expired')
           : isOrder == true
           ? order!.orderType.value
           : transaction?.isOngoingPayjoinSender == true

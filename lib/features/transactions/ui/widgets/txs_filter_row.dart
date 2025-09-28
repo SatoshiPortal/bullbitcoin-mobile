@@ -29,7 +29,7 @@ class _TxsFilterRowState extends State<TxsFilterRow> {
                     TransactionsFilter.all => 'All',
                     TransactionsFilter.send => 'Send',
                     TransactionsFilter.receive => 'Receive',
-                    TransactionsFilter.swap => 'Swap',
+                    TransactionsFilter.swap => 'Transfer',
                     TransactionsFilter.payjoin => 'Payjoin',
                     TransactionsFilter.sell => 'Sell',
                     TransactionsFilter.buy => 'Buy',

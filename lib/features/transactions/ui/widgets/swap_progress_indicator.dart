@@ -166,7 +166,7 @@ class SwapProgressIndicator extends StatelessWidget {
     } else if (swap is ChainSwap) {
       // For Bitcoin to Liquid or Liquid to Bitcoin swaps
       // pending -> paid -> claimable -> completed
-      return ['Initiated', 'Confirmed', 'Counterparty', 'Completed'];
+      return ['Initiated', 'Confirmed', 'Claim', 'Completed'];
     }
     return ['Initiated', 'In Progress', 'Completed'];
   }
