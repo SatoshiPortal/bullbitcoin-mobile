@@ -3,8 +3,8 @@ import 'package:bb_mobile/features/utxos/frameworks_drivers/ui/screens/utxos_scr
 import 'package:go_router/go_router.dart';
 
 enum UtxosRoute {
-  utxos('/utxos/:walletId'),
-  utxo('/utxos/:walletId/:utxoId');
+  utxoList('/utxos/:walletId'),
+  utxoDetails('/utxos/:walletId/:utxoId');
 
   final String path;
   const UtxosRoute(this.path);
@@ -13,8 +13,8 @@ enum UtxosRoute {
 class UtxosRouter {
   static final routes = [
     GoRoute(
-      name: UtxosRoute.utxos.name,
-      path: UtxosRoute.utxos.path,
+      name: UtxosRoute.utxoList.name,
+      path: UtxosRoute.utxoList.path,
       builder: (context, state) {
         // TODO: add utxos bloc provider
         final walletId = state.pathParameters['walletId'];
@@ -22,12 +22,12 @@ class UtxosRouter {
       },
     ),
     GoRoute(
-      name: UtxosRoute.utxo.name,
-      path: UtxosRoute.utxo.path,
+      name: UtxosRoute.utxoDetails.name,
+      path: UtxosRoute.utxoDetails.path,
       builder: (context, state) {
         // TODO: add utxo details bloc provider
-        final walletId = state.pathParameters['walletId'];
-        final utxoId = state.pathParameters['utxoId'];
+        final walletId = state.pathParameters['walletId']!;
+        final utxoId = state.pathParameters['utxoId']!;
         return UtxoDetailsScreen(walletId: walletId, utxoId: utxoId);
       },
     ),

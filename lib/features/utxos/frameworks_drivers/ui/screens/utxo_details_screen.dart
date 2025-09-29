@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class UtxoDetailsScreen extends StatelessWidget {
-  final String? walletId;
-  final String? utxoId;
+  final String walletId;
+  final String utxoId;
 
   const UtxoDetailsScreen({
     super.key,

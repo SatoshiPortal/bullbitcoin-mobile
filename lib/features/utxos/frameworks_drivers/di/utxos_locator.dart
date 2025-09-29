@@ -1,4 +1,4 @@
-import 'package:bb_mobile/locator.dart';
+//import 'package:bb_mobile/locator.dart';
 
 class UtxoManagementLocator {
   static void setup() {

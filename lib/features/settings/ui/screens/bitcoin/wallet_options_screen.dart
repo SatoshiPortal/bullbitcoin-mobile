@@ -53,10 +53,10 @@ class WalletOptionsScreen extends StatelessWidget {
                           ),
                           SettingsEntryItem(
                             icon: Icons.toll,
-                            title: 'UTXOs',
+                            title: 'UTXO List',
                             onTap: () {
                               context.pushNamed(
-                                UtxosRoute.utxos.name,
+                                UtxosRoute.utxoList.name,
                                 pathParameters: {'walletId': walletId},
                               );
                             },
