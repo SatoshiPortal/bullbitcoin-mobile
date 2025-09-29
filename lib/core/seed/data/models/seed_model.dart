@@ -36,23 +36,6 @@ sealed class SeedModel with _$SeedModel {
     return fingerprintHex;
   }
 
-  factory SeedModel.fromMnemonic({
-    required List<String> mnemonicWords,
-    Language language = Language.english,
-    String? passphrase,
-  }) {
-    final mnemonic = Mnemonic.fromWords(
-      words: mnemonicWords,
-      language: language,
-      passphrase: passphrase ?? '',
-    );
-
-    return EntropySeedModel(
-      hexEntropy: hex.encode(mnemonic.entropy),
-      passphrase: mnemonic.passphrase,
-    );
-  }
-
   /// Convert `Seed` entity to `SeedModel`
   factory SeedModel.fromEntity(Seed entity) {
     return switch (entity) {

@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
@@ -49,19 +49,15 @@ Future<void> main({bool isInitialized = false}) async {
   setUpAll(() async {
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
 
-    final receiverSeedModel = SeedModel.fromMnemonic(
-      mnemonicWords: receiverMnemonic.split(' '),
-    );
-    final senderSeedModel = SeedModel.fromMnemonic(
-      mnemonicWords: senderMnemonic.split(' '),
-    );
+    final receiverSeed = Seed.fromMnemonic(words: receiverMnemonic.split(' '));
+    final senderSeed = Seed.fromMnemonic(words: senderMnemonic.split(' '));
     receiverWallet = await walletRepository.createWallet(
-      seed: receiverSeedModel.toEntity(),
+      seed: receiverSeed,
       network: Network.bitcoinTestnet,
       scriptType: ScriptType.bip84,
     );
     senderWallet = await walletRepository.createWallet(
-      seed: senderSeedModel.toEntity(),
+      seed: senderSeed,
       network: Network.bitcoinTestnet,
       scriptType: ScriptType.bip84,
     );

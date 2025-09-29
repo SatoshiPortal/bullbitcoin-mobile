@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -37,10 +38,8 @@ class CreateDefaultWalletsUsecase {
       if (isGenerated) birthday = DateTime.now().toUtc();
 
       // Create and store the seed
-      final seed = await _seedRepository.createFromMnemonic(
-        mnemonicWords: mnemonic,
-        passphrase: passphrase,
-      );
+      final seed = Seed.fromMnemonic(words: mnemonic, passphrase: passphrase);
+      await _seedRepository.store(seed: seed);
 
       // The current default script type for the wallets is BIP84
       const scriptType = ScriptType.bip84;

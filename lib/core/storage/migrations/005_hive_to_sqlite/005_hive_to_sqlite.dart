@@ -177,13 +177,13 @@ class Migration005 {
     }
   }
 
-  Future<List<EntropySeed>> _storeNewSeeds(List<OldWallet> oldWallets) async {
+  Future<List<Seed>> _storeNewSeeds(List<OldWallet> oldWallets) async {
     try {
       // mnemonic fingerprints are seed indexes
       // source fingerprints are passphrase indexes
       // mnemonic == source fingerprint for wallets without passphrases
 
-      final List<EntropySeed> seeds = [];
+      final List<Seed> seeds = [];
       for (final oldWallet in oldWallets) {
         final oldSeed = await _oldSeedRepository.fetch(
           fingerprint: oldWallet.getRelatedSeedStorageString(),
@@ -192,21 +192,20 @@ class Migration005 {
           final oldPassphrase = oldSeed.getPassphraseFromIndex(
             oldWallet.sourceFingerprint,
           );
-          final seed = await _newSeedRepository.createFromMnemonic(
-            mnemonicWords: oldSeed.mnemonicList(),
+          final seed = Seed.fromMnemonic(
+            words: oldSeed.mnemonicList(),
             passphrase: oldPassphrase.passphrase,
           );
+          await _newSeedRepository.store(seed: seed);
           seeds.add(seed);
           if (oldWallet.isLiquid()) {
-            final seed = await _newSeedRepository.createFromMnemonic(
-              mnemonicWords: oldSeed.mnemonicList(),
-            );
+            final seed = Seed.fromMnemonic(words: oldSeed.mnemonicList());
+            await _newSeedRepository.store(seed: seed);
             seeds.add(seed);
           }
         } else {
-          final seed = await _newSeedRepository.createFromMnemonic(
-            mnemonicWords: oldSeed.mnemonicList(),
-          );
+          final seed = Seed.fromMnemonic(words: oldSeed.mnemonicList());
+          await _newSeedRepository.store(seed: seed);
           seeds.add(seed);
         }
       }
@@ -270,10 +269,12 @@ class Migration005 {
           final oldPassphrase = oldSeed.getPassphraseFromIndex(
             oldWallet.sourceFingerprint,
           );
-          final newPassphraseSeed = await _newSeedRepository.createFromMnemonic(
-            mnemonicWords: oldSeed.mnemonicList(),
+          final newPassphraseSeed = Seed.fromMnemonic(
+            words: oldSeed.mnemonicList(),
             passphrase: oldPassphrase.passphrase,
           );
+          await _newSeedRepository.store(seed: newPassphraseSeed);
+
           final newWallet = await _newWalletRepository.createWallet(
             seed: newPassphraseSeed,
             scriptType: ScriptType.bip84,

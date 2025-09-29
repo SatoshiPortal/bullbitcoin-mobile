@@ -15,6 +15,23 @@ sealed class Seed with _$Seed {
     String? passphrase,
   }) = EntropySeed;
 
+  factory Seed.fromMnemonic({
+    required List<String> words,
+    Language language = Language.english,
+    String? passphrase,
+  }) {
+    final mnemonic = Mnemonic.fromWords(
+      words: words,
+      language: language,
+      passphrase: passphrase ?? '',
+    );
+
+    return EntropySeed(
+      entropy: Uint8List.fromList(mnemonic.entropy),
+      passphrase: mnemonic.passphrase,
+    );
+  }
+
   Mnemonic toMnemonic({Language language = Language.english}) =>
       Mnemonic(entropy, language, passphrase: passphrase ?? '');
 

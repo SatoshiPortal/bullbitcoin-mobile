@@ -8,17 +8,12 @@ class SeedRepository {
 
   const SeedRepository({required SeedDatasource source}) : _source = source;
 
-  Future<EntropySeed> createFromMnemonic({
-    required List<String> mnemonicWords,
-    String? passphrase,
-  }) async {
+  Future<void> store({required Seed seed}) async {
     try {
-      final model = SeedModel.fromMnemonic(
-        mnemonicWords: mnemonicWords,
-        passphrase: passphrase,
+      await _source.store(
+        fingerprint: seed.masterFingerprint,
+        seed: SeedModel.fromEntity(seed),
       );
-      await _source.store(fingerprint: model.masterFingerprint, seed: model);
-      return model.toEntity() as EntropySeed;
     } catch (e, stackTrace) {
       log.info(
         'Failed to create seed from mnemonic: $e',

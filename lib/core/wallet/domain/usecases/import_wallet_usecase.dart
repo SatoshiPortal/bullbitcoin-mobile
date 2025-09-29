@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -32,10 +33,11 @@ class ImportWalletUsecase {
               ? Network.bitcoinMainnet
               : Network.bitcoinTestnet;
 
-      final seed = await _seedRepository.createFromMnemonic(
-        mnemonicWords: mnemonicWords,
+      final seed = Seed.fromMnemonic(
+        words: mnemonicWords,
         passphrase: passphrase,
       );
+      await _seedRepository.store(seed: seed);
 
       final wallet = _wallet.createWallet(
         seed: seed,
