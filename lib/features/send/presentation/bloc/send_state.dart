@@ -83,6 +83,7 @@ abstract class SendState with _$SendState {
     // prepare
     String? unsignedPsbt,
     String? signedBitcoinPsbt,
+    String? signedBitcoinTx,
     String? signedLiquidTx,
     LnSendSwap? lightningSwap,
     ChainSwap? chainSwap,
