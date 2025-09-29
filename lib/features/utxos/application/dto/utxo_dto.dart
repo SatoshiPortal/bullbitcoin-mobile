@@ -1,0 +1,21 @@
+class UtxoDto {
+  final String walletId;
+  final String txId;
+  final int index;
+  final int valueSat;
+  final bool isSpendable;
+  final List<String> labels;
+  final List<String> addressLabels;
+  final List<String> transactionLabels;
+
+  UtxoDto({
+    required this.walletId,
+    required this.txId,
+    required this.index,
+    required this.valueSat,
+    required this.isSpendable,
+    required this.labels,
+    required this.addressLabels,
+    required this.transactionLabels,
+  });
+}
