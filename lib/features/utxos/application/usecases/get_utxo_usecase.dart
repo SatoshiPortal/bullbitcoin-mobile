@@ -1,25 +1,34 @@
+import 'package:bb_mobile/core/labels/domain/ports/labels_port.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/wallet_port.dart';
 import 'package:bb_mobile/features/utxos/application/dto/requests/get_utxo_request.dart';
 import 'package:bb_mobile/features/utxos/application/dto/responses/get_utxo_response.dart';
 import 'package:bb_mobile/features/utxos/application/dto/utxo_dto.dart';
-import 'package:bb_mobile/features/utxos/domain/ports/labels_port.dart';
-import 'package:bb_mobile/features/utxos/domain/ports/wallets_port.dart';
+import 'package:bb_mobile/features/utxos/domain/ports/utxos_port.dart';
 
-class GetUtxoUseCase {
+class GetUtxoUsecase {
   final LabelsPort _labelsPort;
-  final WalletsPort _walletsPort;
+  final WalletPort _walletPort;
+  final UtxosPort _utxosPort;
 
-  GetUtxoUseCase({
+  GetUtxoUsecase({
     required LabelsPort labelsPort,
-    required WalletsPort walletsPort,
+    required WalletPort walletPort,
+    required UtxosPort utxosPort,
   }) : _labelsPort = labelsPort,
-       _walletsPort = walletsPort;
+       _walletPort = walletPort,
+       _utxosPort = utxosPort;
 
   Future<GetUtxoResponse> execute(GetUtxoRequest request) async {
-    // TODO: Implement pagination using request.limit and request.offset
-    final utxo = await _walletsPort.getUtxo(
-      request.walletId,
-      request.txId,
-      request.index,
+    final wallet = await _walletPort.getWallet(request.walletId);
+
+    if (wallet == null) {
+      throw Exception('Wallet not found');
+    }
+
+    final utxo = await _utxosPort.getUtxoFromWallet(
+      txId: request.txId,
+      index: request.index,
+      wallet: wallet,
     );
 
     if (utxo == null) {
@@ -38,8 +47,9 @@ class GetUtxoUseCase {
       walletId: request.walletId,
       txId: utxo.txId,
       index: utxo.index,
+      address: utxo.address,
       valueSat: utxo.valueSat,
-      isSpendable: labels.firstOrNull?.isSpendable ?? true,
+      isSpendable: labels.firstOrNull?.spendable ?? true,
       labels: labels.map((e) => e.label).whereType<String>().toList(),
       addressLabels:
           addressLabels.map((e) => e.label).whereType<String>().toList(),

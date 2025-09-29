@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/utxos/frameworks_drivers/ui/routing/utxos_route.dart';
-import 'package:bb_mobile/features/utxos/frameworks_drivers/ui/widgets/utxo_card.dart';
+import 'package:bb_mobile/features/utxos/frameworks/ui/routing/utxos_route.dart';
+import 'package:bb_mobile/features/utxos/frameworks/ui/widgets/utxo_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

@@ -1,12 +1,9 @@
-import 'package:bb_mobile/features/utxos/interface_adapters/view_models/utxo_view_model.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'utxos_state.freezed.dart';
+part of 'utxos_bloc.dart';
 
 @freezed
 sealed class UtxosState with _$UtxosState {
   const factory UtxosState({
-    required List<UtxoViewModel> utxos,
+    @Default([]) List<UtxoViewModel> utxos,
     @Default(false) bool isLoading,
     Exception? exception,
   }) = _UtxosState;

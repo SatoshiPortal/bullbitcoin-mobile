@@ -2,6 +2,7 @@ class UtxoDto {
   final String walletId;
   final String txId;
   final int index;
+  final String address;
   final int valueSat;
   final bool isSpendable;
   final List<String> labels;
@@ -12,6 +13,7 @@ class UtxoDto {
     required this.walletId,
     required this.txId,
     required this.index,
+    required this.address,
     required this.valueSat,
     required this.isSpendable,
     required this.labels,

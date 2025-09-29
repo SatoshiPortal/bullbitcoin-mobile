@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/utxos/application/dto/utxo_dto.dart';
+
 class UtxoViewModel {
   final String walletId;
   final String txId;
@@ -20,4 +22,18 @@ class UtxoViewModel {
     required this.addressLabels,
     required this.transactionLabels,
   });
+
+  factory UtxoViewModel.fromDto(UtxoDto dto) {
+    return UtxoViewModel(
+      walletId: dto.walletId,
+      txId: dto.txId,
+      index: dto.index,
+      valueSat: dto.valueSat,
+      address: dto.address,
+      isSpendable: dto.isSpendable,
+      labels: dto.labels,
+      addressLabels: dto.addressLabels,
+      transactionLabels: dto.transactionLabels,
+    );
+  }
 }

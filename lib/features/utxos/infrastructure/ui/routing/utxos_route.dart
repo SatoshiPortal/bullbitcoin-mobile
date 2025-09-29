@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/utxos/frameworks_drivers/ui/screens/utxo_details_screen.dart';
-import 'package:bb_mobile/features/utxos/frameworks_drivers/ui/screens/utxos_screen.dart';
+import 'package:bb_mobile/features/utxos/frameworks/ui/screens/utxo_details_screen.dart';
+import 'package:bb_mobile/features/utxos/frameworks/ui/screens/utxos_screen.dart';
 import 'package:go_router/go_router.dart';
 
 enum UtxosRoute {

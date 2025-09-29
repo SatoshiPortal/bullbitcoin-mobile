@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/utxos/frameworks_drivers/ui/routing/utxos_route.dart';
+import 'package:bb_mobile/features/utxos/frameworks/ui/routing/utxos_route.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
