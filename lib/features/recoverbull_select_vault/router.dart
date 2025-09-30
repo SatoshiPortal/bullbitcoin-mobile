@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_file_content_usecase.dart';
@@ -48,8 +48,8 @@ class RecoverBullSelectVaultRouter {
                       current.selectedProvider != null,
               listener: (context, state) {
                 switch (state.selectedProvider) {
-                  case BackupProviderType.googleDrive ||
-                      BackupProviderType.custom:
+                  case VaultProvider.googleDrive ||
+                      VaultProvider.customLocation:
                     context.pushNamed(
                       RecoverBullSelectVault.selectVault.name,
                       extra: state.selectedProvider,
@@ -89,15 +89,15 @@ class RecoverBullSelectVaultRouter {
         name: RecoverBullSelectVault.selectVault.name,
         path: RecoverBullSelectVault.selectVault.path,
         builder: (context, state) {
-          final selectedProvider = state.extra as BackupProviderType?;
+          final selectedProvider = state.extra as VaultProvider?;
 
-          if (selectedProvider == BackupProviderType.googleDrive) {
+          if (selectedProvider == VaultProvider.googleDrive) {
             context.read<RecoverBullSelectVaultCubit>().fetchDriveBackups();
           }
 
           return switch (selectedProvider) {
-            BackupProviderType.googleDrive => const DriveVaultsListPage(),
-            BackupProviderType.custom => const SelectCustomLocationPage(),
+            VaultProvider.googleDrive => const DriveVaultsListPage(),
+            VaultProvider.customLocation => const SelectCustomLocationPage(),
             _ => const Scaffold(body: Placeholder()),
           };
         },

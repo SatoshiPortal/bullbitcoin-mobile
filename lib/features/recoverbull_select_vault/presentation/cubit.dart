@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_file_content_usecase.dart';
@@ -22,7 +22,7 @@ class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
        _selectFileFromPathUsecase = selectFileFromPathUsecase,
        super(const RecoverBullSelectVaultState());
 
-  Future<void> selectProvider(BackupProviderType provider) async {
+  Future<void> selectProvider(VaultProvider provider) async {
     emit(state.copyWith(selectedProvider: provider));
   }
 
@@ -68,7 +68,7 @@ class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
     emit(const RecoverBullSelectVaultState());
   }
 
-  void updateSelectedProvider(BackupProviderType provider) {
+  void updateSelectedProvider(VaultProvider provider) {
     emit(
       state.copyWith(
         selectedProvider: provider,
@@ -76,7 +76,7 @@ class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
         selectedVault: null,
       ),
     );
-    if (provider == BackupProviderType.googleDrive) {
+    if (provider == VaultProvider.googleDrive) {
       fetchDriveBackups();
     }
   }

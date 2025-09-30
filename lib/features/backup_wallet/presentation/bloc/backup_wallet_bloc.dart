@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
@@ -56,7 +56,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       emit(
         state.copyWith(
           status: BackupWalletStatus.loading,
-          vaultProvider: const VaultProvider.fileSystem(),
+          vaultProvider: VaultProvider.customLocation,
         ),
       );
       final filePath = await selectFolderPathUsecase.execute();
@@ -68,7 +68,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       // First update the state with the selected provider
       emit(
         state.copyWith(
-          vaultProvider: const VaultProvider.fileSystem(),
+          vaultProvider: VaultProvider.customLocation,
           status: BackupWalletStatus.success,
         ),
       );
@@ -98,7 +98,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       // First update the state with the selected provider
       emit(
         state.copyWith(
-          vaultProvider: const VaultProvider.googleDrive(),
+          vaultProvider: VaultProvider.googleDrive,
           status: BackupWalletStatus.success,
         ),
       );
@@ -125,11 +125,11 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       emit(state.copyWith(vault: encryptedVault));
 
       switch (state.vaultProvider) {
-        case FileSystem():
+        case VaultProvider.customLocation:
           await saveToFileSystemUsecase.execute(encryptedVault.toFile());
-        case GoogleDrive():
+        case VaultProvider.googleDrive:
           await saveToGoogleDriveUsecase.execute(encryptedVault.toFile());
-        case ICloud():
+        case VaultProvider.iCloud:
           throw UnimplementedError('iCloud backup not implemented');
       }
 

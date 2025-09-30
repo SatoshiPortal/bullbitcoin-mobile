@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -86,7 +86,7 @@ class TestWalletBackupBloc
       emit(state.copyWith(status: TestWalletBackupStatus.loading));
 
       await _connectToGoogleDriveUsecase.execute();
-      emit(state.copyWith(vaultProvider: const VaultProvider.googleDrive()));
+      emit(state.copyWith(vaultProvider: VaultProvider.googleDrive));
 
       final (content: fileContent, fileName: _) =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
@@ -112,12 +112,7 @@ class TestWalletBackupBloc
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      emit(
-        state.copyWith(
-          status: TestWalletBackupStatus.loading,
-          vaultProvider: const VaultProvider.fileSystem(),
-        ),
-      );
+      emit(state.copyWith(status: TestWalletBackupStatus.loading));
 
       final fileContent = await _selectFileFromPathUsecase.execute();
       if (fileContent.isEmpty || !EncryptedVault.isValid(fileContent)) {
@@ -126,14 +121,12 @@ class TestWalletBackupBloc
       }
 
       final encryptedVault = EncryptedVault(file: fileContent);
-      const vaultProvider = VaultProvider.fileSystem();
-      emit(state.copyWith());
 
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
           encryptedVault: encryptedVault,
-          vaultProvider: vaultProvider,
+          vaultProvider: VaultProvider.customLocation,
         ),
       );
     } catch (e) {
