@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.da
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_file_content_usecase.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/presentation/cubit.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/presentation/state.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/ui/drive_vaults_list_page.dart';
@@ -34,7 +34,7 @@ class RecoverBullSelectVaultRouter {
               fetchAllDriveFileMetadataUsecase:
                   locator<FetchAllDriveFileMetadataUsecase>(),
               fetchDriveBackupUsecase: locator<FetchVaultFromDriveUsecase>(),
-              selectFileFromPathUsecase: locator<SelectFileFromPathUsecase>(),
+              selectFileFromPathUsecase: locator<PickFileContentUsecase>(),
             ),
         child: MultiBlocListener(
           listeners: [
@@ -65,12 +65,12 @@ class RecoverBullSelectVaultRouter {
             >(
               listenWhen:
                   (previous, current) =>
-                      previous.selectedBackup == null &&
-                      current.selectedBackup != null,
+                      previous.selectedVault == null &&
+                      current.selectedVault != null,
               listener: (context, state) {
                 context.pushNamed(
                   RecoverBullSelectVault.vaultSelected.name,
-                  extra: state.selectedBackup,
+                  extra: state.selectedVault,
                 );
               },
             ),

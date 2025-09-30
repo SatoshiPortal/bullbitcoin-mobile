@@ -11,10 +11,10 @@ sealed class RecoverBullSelectVaultState with _$RecoverBullSelectVaultState {
   const factory RecoverBullSelectVaultState({
     @Default(null) BackupProviderType? selectedProvider,
     @Default(false) bool isLoading,
-    @Default(false) bool isSelectingBackup,
+    @Default(false) bool isSelectingVault,
     RecoverBullSelectVaultError? error,
     @Default([]) List<DriveFileMetadata> driveMetadata,
-    @Default(null) EncryptedVault? selectedBackup,
+    @Default(null) EncryptedVault? selectedVault,
     @Default(null) ({BigInt satoshis, int transactions})? walletStatus,
   }) = _RecoverBullSelectVaultState;
 

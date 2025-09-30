@@ -6,5 +6,5 @@ part 'backup_provider.freezed.dart';
 sealed class VaultProvider with _$VaultProvider {
   const factory VaultProvider.googleDrive() = GoogleDrive;
   const factory VaultProvider.iCloud() = ICloud;
-  const factory VaultProvider.fileSystem(String fileAsString) = FileSystem;
+  const factory VaultProvider.fileSystem() = FileSystem;
 }

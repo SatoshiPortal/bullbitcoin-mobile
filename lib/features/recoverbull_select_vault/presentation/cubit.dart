@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_file_content_usecase.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/errors.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,12 +11,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
   final FetchAllDriveFileMetadataUsecase _fetchAllDriveFileMetadataUsecase;
   final FetchVaultFromDriveUsecase _fetchDriveBackupUsecase;
-  final SelectFileFromPathUsecase _selectFileFromPathUsecase;
+  final PickFileContentUsecase _selectFileFromPathUsecase;
 
   RecoverBullSelectVaultCubit({
     required FetchAllDriveFileMetadataUsecase fetchAllDriveFileMetadataUsecase,
     required FetchVaultFromDriveUsecase fetchDriveBackupUsecase,
-    required SelectFileFromPathUsecase selectFileFromPathUsecase,
+    required PickFileContentUsecase selectFileFromPathUsecase,
   }) : _fetchAllDriveFileMetadataUsecase = fetchAllDriveFileMetadataUsecase,
        _fetchDriveBackupUsecase = fetchDriveBackupUsecase,
        _selectFileFromPathUsecase = selectFileFromPathUsecase,
@@ -45,25 +43,25 @@ class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
       emit(
         state.copyWith(
           error: null,
-          selectedBackup: null,
-          isSelectingBackup: true,
+          selectedVault: null,
+          isSelectingVault: true,
         ),
       );
       final vaultFile = await _fetchDriveBackupUsecase.execute(backupMetadata);
       final vault = EncryptedVault(file: vaultFile);
-      emit(state.copyWith(selectedBackup: vault, isSelectingBackup: false));
+      emit(state.copyWith(selectedVault: vault, isSelectingVault: false));
     } catch (e) {
       emit(
         state.copyWith(
           error: FetchAllDriveFilesError(),
-          isSelectingBackup: false,
+          isSelectingVault: false,
         ),
       );
     }
   }
 
   Future<void> clearSelectedBackup() async {
-    emit(state.copyWith(error: null, selectedBackup: null));
+    emit(state.copyWith(error: null, selectedVault: null));
   }
 
   Future<void> clearState() async {
@@ -75,7 +73,7 @@ class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
       state.copyWith(
         selectedProvider: provider,
         error: null,
-        selectedBackup: null,
+        selectedVault: null,
       ),
     );
     if (provider == BackupProviderType.googleDrive) {
@@ -85,19 +83,13 @@ class RecoverBullSelectVaultCubit extends Cubit<RecoverBullSelectVaultState> {
 
   Future<void> selectCustomLocationBackup() async {
     try {
-      final selectedFile = await _selectFileFromPathUsecase.execute();
-      if (selectedFile == null) {
-        emit(state.copyWith(error: FileNotSelectedError()));
-      }
+      final fileContent = await _selectFileFromPathUsecase.execute();
 
-      final fileSelectedContent = await File(selectedFile!).readAsString();
-
-      if (!EncryptedVault.isValid(fileSelectedContent)) {
+      if (!EncryptedVault.isValid(fileContent)) {
         emit(state.copyWith(error: RecoverbullBackupFileNotValidError()));
       }
-
-      final backup = EncryptedVault(file: fileSelectedContent);
-      emit(state.copyWith(selectedBackup: backup));
+      final vault = EncryptedVault(file: fileContent);
+      emit(state.copyWith(selectedVault: vault));
     } catch (e) {
       emit(state.copyWith(error: SelectFileFromPathError()));
     }

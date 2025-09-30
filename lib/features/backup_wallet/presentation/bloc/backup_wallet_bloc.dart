@@ -56,7 +56,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       emit(
         state.copyWith(
           status: BackupWalletStatus.loading,
-          vaultProvider: const VaultProvider.fileSystem(''),
+          vaultProvider: const VaultProvider.fileSystem(),
         ),
       );
       final filePath = await selectFolderPathUsecase.execute();
@@ -68,7 +68,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       // First update the state with the selected provider
       emit(
         state.copyWith(
-          vaultProvider: VaultProvider.fileSystem(filePath),
+          vaultProvider: const VaultProvider.fileSystem(),
           status: BackupWalletStatus.success,
         ),
       );
@@ -125,12 +125,8 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       emit(state.copyWith(vault: encryptedVault));
 
       switch (state.vaultProvider) {
-        case FileSystem(:final fileAsString):
-          if (fileAsString.isEmpty) throw Exception('No file path selected');
-          await saveToFileSystemUsecase.execute(
-            fileAsString,
-            encryptedVault.toFile(),
-          );
+        case FileSystem():
+          await saveToFileSystemUsecase.execute(encryptedVault.toFile());
         case GoogleDrive():
           await saveToGoogleDriveUsecase.execute(encryptedVault.toFile());
         case ICloud():
