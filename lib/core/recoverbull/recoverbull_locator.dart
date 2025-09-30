@@ -15,8 +15,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_va
 import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_file_content_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/tor/data/repository/tor_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -101,12 +100,8 @@ class RecoverbullLocator {
     locator.registerFactory<PickFileContentUsecase>(
       () => PickFileContentUsecase(),
     );
-
-    locator.registerFactory<SelectFolderPathUsecase>(
-      () => SelectFolderPathUsecase(locator<FileSystemRepository>()),
-    );
-    locator.registerFactory<SaveToFileSystemUsecase>(
-      () => SaveToFileSystemUsecase(locator<FileSystemRepository>()),
+    locator.registerFactory<SaveFileToSystemUsecase>(
+      () => SaveFileToSystemUsecase(),
     );
     locator.registerFactory<FetchAllDriveFileMetadataUsecase>(
       () => FetchAllDriveFileMetadataUsecase(locator<GoogleDriveRepository>()),

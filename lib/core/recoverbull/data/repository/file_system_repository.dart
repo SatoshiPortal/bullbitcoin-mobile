@@ -11,11 +11,7 @@ class FileSystemRepository {
     return fileContent;
   }
 
-  Future<String?> getDirectoryPath() async {
-    return await _fileStorageDataSource.pickDirectory();
-  }
-
-  Future<void> shareText(String text) async {
-    await _fileStorageDataSource.shareText(text);
+  Future<void> saveFile(String content, String filename) async {
+    await _fileStorageDataSource.saveFile(content, filename);
   }
 }

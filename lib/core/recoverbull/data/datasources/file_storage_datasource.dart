@@ -1,6 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:share_plus/share_plus.dart';
 
 class FileStorageDatasource {
   FileStorageDatasource();
@@ -9,17 +9,25 @@ class FileStorageDatasource {
     final result = await FilePicker.platform.pickFiles();
     if (result != null) return File(result.files.single.path!);
 
-    throw const FileSystemException('No file selected');
+    throw FileStorageException('No file selected');
   }
 
-  Future<String?> pickDirectory() async {
-    final result = await FilePicker.platform.getDirectoryPath();
-    if (result != null) return result;
+  Future<void> saveFile(String content, String filename) async {
+    final bytes = utf8.encode(content);
+    final result = await FilePicker.platform.saveFile(
+      bytes: bytes,
+      fileName: filename,
+    );
 
-    throw const FileSystemException('No directory selected');
+    if (result == null) throw FileStorageException('file not saved');
   }
+}
 
-  Future<void> shareText(String text) async {
-    await SharePlus.instance.share(ShareParams(text: text));
-  }
+class FileStorageException implements Exception {
+  final String message;
+
+  FileStorageException(this.message);
+
+  @override
+  String toString() => message;
 }
