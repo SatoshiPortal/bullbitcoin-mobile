@@ -5,7 +5,7 @@ class UtxoDto {
   final String address;
   final int valueSat;
   final bool isSpendable;
-  final List<String> labels;
+  final List<String> outputLabels;
   final List<String> addressLabels;
   final List<String> transactionLabels;
 
@@ -16,7 +16,7 @@ class UtxoDto {
     required this.address,
     required this.valueSat,
     required this.isSpendable,
-    required this.labels,
+    required this.outputLabels,
     required this.addressLabels,
     required this.transactionLabels,
   });

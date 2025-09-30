@@ -9,11 +9,9 @@ sealed class UtxosState with _$UtxosState {
   }) = _UtxosState;
   const UtxosState._();
 
-  UtxoViewModel? getUtxo(String txId, int index) {
+  UtxoViewModel? getUtxo(String outpoint) {
     try {
-      return utxos.firstWhere(
-        (utxo) => utxo.txId == txId && utxo.index == index,
-      );
+      return utxos.firstWhere((utxo) => utxo.outpoint == outpoint);
     } catch (e) {
       return null;
     }

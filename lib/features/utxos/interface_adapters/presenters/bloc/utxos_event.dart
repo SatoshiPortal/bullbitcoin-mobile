@@ -10,10 +10,9 @@ class UtxosLoaded extends UtxosEvent {
   UtxosLoaded(this.walletId, {this.limit, this.offset});
 }
 
-class UtxosDetailLoaded extends UtxosEvent {
+class UtxosUtxoDetailsLoaded extends UtxosEvent {
+  final String outpoint;
   final String walletId;
-  final String txId;
-  final int index;
 
-  UtxosDetailLoaded(this.walletId, {required this.txId, required this.index});
+  UtxosUtxoDetailsLoaded({required this.outpoint, required this.walletId});
 }

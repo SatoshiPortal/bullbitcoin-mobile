@@ -5,12 +5,12 @@ import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/labels/domain/ports/labels_port.dart';
 
 class LabelsFacade implements LabelsPort {
-  final GetAddresLabelsUsecase _getAddressLabelsUsecase;
+  final GetAddressLabelsUsecase _getAddressLabelsUsecase;
   final GetTransactionLabelsUsecase _getTransactionLabelsUsecase;
   final GetOutputLabelsUsecase _getOutputLabelsUsecase;
 
   LabelsFacade({
-    required GetAddresLabelsUsecase getAddressLabelsUsecase,
+    required GetAddressLabelsUsecase getAddressLabelsUsecase,
     required GetTransactionLabelsUsecase getTransactionLabelsUsecase,
     required GetOutputLabelsUsecase getOutputLabelsUsecase,
   }) : _getAddressLabelsUsecase = getAddressLabelsUsecase,

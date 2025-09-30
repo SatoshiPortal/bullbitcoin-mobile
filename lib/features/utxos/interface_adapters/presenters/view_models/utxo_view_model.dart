@@ -7,7 +7,7 @@ class UtxoViewModel {
   final int valueSat;
   final String address;
   final bool isSpendable;
-  final List<String> labels;
+  final List<String> outputLabels;
   final List<String> addressLabels;
   final List<String> transactionLabels;
 
@@ -18,10 +18,20 @@ class UtxoViewModel {
     required this.valueSat,
     required this.address,
     required this.isSpendable,
-    required this.labels,
+    required this.outputLabels,
     required this.addressLabels,
     required this.transactionLabels,
   });
+
+  String get outpoint => '$txId:$index';
+
+  List<String> get labels {
+    final allLabels = <String>{};
+    allLabels.addAll(outputLabels);
+    allLabels.addAll(addressLabels);
+    allLabels.addAll(transactionLabels);
+    return allLabels.toList();
+  }
 
   factory UtxoViewModel.fromDto(UtxoDto dto) {
     return UtxoViewModel(
@@ -31,7 +41,7 @@ class UtxoViewModel {
       valueSat: dto.valueSat,
       address: dto.address,
       isSpendable: dto.isSpendable,
-      labels: dto.labels,
+      outputLabels: dto.outputLabels,
       addressLabels: dto.addressLabels,
       transactionLabels: dto.transactionLabels,
     );

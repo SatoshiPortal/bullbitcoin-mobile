@@ -22,7 +22,7 @@ class UtxosBloc extends Bloc<UtxosEvent, UtxosState> {
        _getUtxoUsecase = getUtxoUsecase,
        super(const UtxosState()) {
     on<UtxosLoaded>(_onLoaded);
-    on<UtxosDetailLoaded>(_onDetailLoaded);
+    on<UtxosUtxoDetailsLoaded>(_onUtxoDetailsLoaded);
   }
 
   Future<void> _onLoaded(UtxosLoaded event, Emitter<UtxosState> emit) async {
@@ -54,27 +54,23 @@ class UtxosBloc extends Bloc<UtxosEvent, UtxosState> {
     }
   }
 
-  Future<void> _onDetailLoaded(
-    UtxosDetailLoaded event,
+  Future<void> _onUtxoDetailsLoaded(
+    UtxosUtxoDetailsLoaded event,
     Emitter<UtxosState> emit,
   ) async {
     emit(const UtxosState(isLoading: true));
     try {
+      final txId = event.outpoint.split(':').first;
+      final index = int.parse(event.outpoint.split(':').last);
       final response = await _getUtxoUsecase.execute(
-        GetUtxoRequest(
-          walletId: event.walletId,
-          txId: event.txId,
-          index: event.index,
-        ),
+        GetUtxoRequest(walletId: event.walletId, txId: txId, index: index),
       );
 
       final utxoViewModel = UtxoViewModel.fromDto(response.utxo);
 
       final updatedUtxos =
           List<UtxoViewModel>.from(state.utxos)
-            ..removeWhere(
-              (utxo) => utxo.txId == event.txId && utxo.index == event.index,
-            )
+            ..removeWhere((utxo) => utxo.txId == txId && utxo.index == index)
             ..add(utxoViewModel);
       emit(state.copyWith(utxos: updatedUtxos));
     } catch (e) {

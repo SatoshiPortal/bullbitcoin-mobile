@@ -31,7 +31,7 @@ class GetWalletUtxosUsecase {
     // Fetch labels for each UTXO
     final utxoDtos = await Future.wait(
       utxos.map((utxo) async {
-        final (labels, addressLabels, transactionLabels) =
+        final (outputLabels, addressLabels, transactionLabels) =
             await (
               _labelsPort.getUtxoLabels(txId: utxo.txId, index: utxo.index),
               _labelsPort.getAddressLabels(utxo.address),
@@ -44,8 +44,9 @@ class GetWalletUtxosUsecase {
           index: utxo.index,
           address: utxo.address,
           valueSat: utxo.valueSat,
-          isSpendable: labels.firstOrNull?.spendable ?? true,
-          labels: labels.map((e) => e.label).whereType<String>().toList(),
+          isSpendable: outputLabels.firstOrNull?.spendable ?? true,
+          outputLabels:
+              outputLabels.map((e) => e.label).whereType<String>().toList(),
           addressLabels:
               addressLabels.map((e) => e.label).whereType<String>().toList(),
           transactionLabels:

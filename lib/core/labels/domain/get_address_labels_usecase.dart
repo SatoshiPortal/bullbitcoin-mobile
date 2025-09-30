@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/labels/domain/label.dart';
 
-class GetAddresLabelsUsecase {
+class GetAddressLabelsUsecase {
   final LabelRepository _labelRepository;
 
-  GetAddresLabelsUsecase({required LabelRepository labelRepository})
+  GetAddressLabelsUsecase({required LabelRepository labelRepository})
     : _labelRepository = labelRepository;
 
   Future<List<AddressLabel>> execute(String address) async {
