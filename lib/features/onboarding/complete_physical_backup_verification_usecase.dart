@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
@@ -34,8 +35,6 @@ class CompletePhysicalBackupVerificationUsecase {
   }
 }
 
-class CompletePhysicalBackupVerificationException implements Exception {
-  final String message;
-
-  CompletePhysicalBackupVerificationException(this.message);
+class CompletePhysicalBackupVerificationException extends BullException {
+  CompletePhysicalBackupVerificationException(super.message);
 }

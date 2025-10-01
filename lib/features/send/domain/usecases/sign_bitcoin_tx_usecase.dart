@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 
 class SignBitcoinTxUsecase {
@@ -23,8 +24,6 @@ class SignBitcoinTxUsecase {
   }
 }
 
-class SignBitcoinTxException implements Exception {
-  final String message;
-
-  SignBitcoinTxException(this.message);
+class SignBitcoinTxException extends BullException {
+  SignBitcoinTxException(super.message);
 }

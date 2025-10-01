@@ -1,11 +1,15 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 
-class MinimumAmountThresholdException implements Exception {
+class MinimumAmountThresholdException extends BullException {
   final int minimumThresholdSats;
   final BitcoinUnit bitcoinUnit;
 
-  MinimumAmountThresholdException(this.minimumThresholdSats, this.bitcoinUnit);
+  MinimumAmountThresholdException(this.minimumThresholdSats, this.bitcoinUnit)
+    : super(
+        'Minimum balance threshold is $minimumThresholdSats ${bitcoinUnit.code}',
+      );
 
   String displayMessage() {
     if (bitcoinUnit == BitcoinUnit.btc) {
@@ -16,59 +20,48 @@ class MinimumAmountThresholdException implements Exception {
   }
 }
 
-class MaximumFeeThresholdException implements Exception {
+class MaximumFeeThresholdException extends BullException {
   final int maximumThreshold;
 
-  MaximumFeeThresholdException(this.maximumThreshold);
+  MaximumFeeThresholdException(this.maximumThreshold)
+    : super('Maximum fee threshold is $maximumThreshold%');
 
   String displayMessage() => 'Maximum fee threshold is $maximumThreshold%';
 }
 
-class AutoSwapProcessException implements Exception {
-  final String message;
+class AutoSwapProcessException extends BullException {
   final Object? error;
 
-  AutoSwapProcessException(this.message, {this.error});
+  AutoSwapProcessException(super.message, {this.error});
 
   @override
   String toString() => error != null ? '$message: $error' : message;
 }
 
-class FeeBlockException implements Exception {
+class FeeBlockException extends BullException {
   final double currentFeePercent;
   final double thresholdPercent;
 
   FeeBlockException({
     required this.currentFeePercent,
     required this.thresholdPercent,
-  });
-
-  @override
-  String toString() {
-    return 'Fee threshold exceeded: current ${currentFeePercent.toStringAsFixed(2)}%, limit ${thresholdPercent.toStringAsFixed(2)}%';
-  }
+  }) : super(
+         'Fee threshold exceeded: current ${currentFeePercent.toStringAsFixed(2)}%, limit ${thresholdPercent.toStringAsFixed(2)}%',
+       );
 }
 
-class BalanceThresholdException implements Exception {
+class BalanceThresholdException extends BullException {
   final int currentBalance;
   final int requiredBalance;
 
   BalanceThresholdException({
     required this.currentBalance,
     required this.requiredBalance,
-  });
-
-  @override
-  String toString() {
-    return 'Balance threshold not exceeded: current $currentBalance sats, required $requiredBalance sats';
-  }
+  }) : super(
+         'Balance threshold not exceeded: current $currentBalance sats, required $requiredBalance sats',
+       );
 }
 
-class AutoSwapDisabledException implements Exception {
-  final String message;
-
-  AutoSwapDisabledException(this.message);
-
-  @override
-  String toString() => message;
+class AutoSwapDisabledException extends BullException {
+  AutoSwapDisabledException(super.message);
 }

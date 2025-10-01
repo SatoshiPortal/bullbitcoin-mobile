@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 
@@ -30,8 +31,6 @@ class GetAvailableCurrenciesUsecase {
   }
 }
 
-class CurrenciesException implements Exception {
-  final String message;
-
-  CurrenciesException(this.message);
+class CurrenciesException extends BullException {
+  CurrenciesException(super.message);
 }

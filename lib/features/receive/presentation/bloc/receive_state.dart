@@ -293,31 +293,26 @@ abstract class ReceiveState with _$ReceiveState {
       Transaction(walletTransaction: tx, swap: lightningSwap, payjoin: payjoin);
 }
 
-@freezed
-sealed class AmountException with _$AmountException implements Exception {
-  const factory AmountException.belowSwapLimit(int limitAmountSat) =
-      BelowSwapLimitAmountException;
-  const factory AmountException.aboveSwapLimit(int limitAmountSat) =
-      AboveSwapLimitAmountException;
-  const factory AmountException.aboveBitcoinProtocolLimit(int limitAmountSat) =
-      AboveBitcoinProtocolLimitAmountException;
-  const AmountException._();
+class AmountException extends BullException {
+  AmountException(super.message);
+}
 
-  String get message {
-    switch (this) {
-      case BelowSwapLimitAmountException _:
-        return 'Amount below swap limit of ${FormatAmount.sats(limitAmountSat)}';
-      case AboveSwapLimitAmountException _:
-        return 'Amount above swap limit of ${FormatAmount.sats(limitAmountSat)}';
-      case AboveBitcoinProtocolLimitAmountException _:
-        return 'Amount above Bitcoin protocol limit.';
-    }
-  }
+class BelowSwapLimitAmountException extends AmountException {
+  final int limitAmountSat;
+  BelowSwapLimitAmountException(this.limitAmountSat)
+    : super('Amount below swap limit of ${FormatAmount.sats(limitAmountSat)}');
+}
+
+class AboveSwapLimitAmountException extends AmountException {
+  final int limitAmountSat;
+  AboveSwapLimitAmountException(this.limitAmountSat)
+    : super('Amount above swap limit of ${FormatAmount.sats(limitAmountSat)}');
 }
 
 class AboveBitcoinProtocolLimitAmountException extends AmountException {
-  @override
   final int limitAmountSat;
-  const AboveBitcoinProtocolLimitAmountException(this.limitAmountSat)
-    : super._();
+  AboveBitcoinProtocolLimitAmountException(this.limitAmountSat)
+    : super(
+        'Amount above Bitcoin protocol limit of ${FormatAmount.sats(limitAmountSat)}',
+      );
 }

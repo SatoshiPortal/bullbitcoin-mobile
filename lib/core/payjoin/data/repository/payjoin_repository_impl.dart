@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
@@ -403,8 +404,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       final inputPairs = _filterAvailableUtxos(unspentUtxos, lockedUtxos);
 
       if (inputPairs.isEmpty) {
-        throw const NoInputsToPayjoinException(
-          message: 'No inputs available to create a new payjoin proposal',
+        throw NoInputsToPayjoinException(
+          'No inputs available to create a new payjoin proposal',
         );
       }
 
@@ -466,8 +467,6 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 }
 
-class NoInputsToPayjoinException implements Exception {
-  final String? message;
-
-  const NoInputsToPayjoinException({this.message});
+class NoInputsToPayjoinException extends BullException {
+  NoInputsToPayjoinException(super.message);
 }
