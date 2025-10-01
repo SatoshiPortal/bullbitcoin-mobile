@@ -52,11 +52,13 @@ class RecoverBullVaultRecoveryPage extends StatelessWidget {
                       const Spacer(),
                       BBButton.big(
                         onPressed: cubit.importWallet,
-                        label: 'Continue',
+                        label: state.isImporting ? 'Importing…' : 'Continue',
                         bgColor: context.colour.secondary,
                         textColor: context.colour.onPrimary,
                         disabled:
-                            state.decryptedVault == null || state.isImported,
+                            state.decryptedVault == null ||
+                            state.isImported ||
+                            state.isImporting,
                       ),
                       const Gap(40),
                     ],
