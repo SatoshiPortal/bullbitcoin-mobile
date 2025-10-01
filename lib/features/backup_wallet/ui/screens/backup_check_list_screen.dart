@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -15,11 +16,11 @@ class BackCheckListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final defaultWallet = context.select(
-      (WalletBloc cubit) => cubit.state.wallets.firstWhere(
+      (WalletBloc cubit) => cubit.state.wallets.firstWhereOrNull(
         (wallet) => wallet.isDefault && wallet.network.isBitcoin,
       ),
     );
-    final lastPhysicalBackup = defaultWallet.latestPhysicalBackup;
+    final lastPhysicalBackup = defaultWallet?.latestPhysicalBackup;
 
     final instructions = backupInstructions();
     return Scaffold(

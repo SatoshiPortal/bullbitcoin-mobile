@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -224,11 +225,11 @@ class TestPhysicalBackupScreen extends StatelessWidget {
     );
 
     final defaultWallet = context.select(
-      (WalletBloc cubit) => cubit.state.wallets.firstWhere(
+      (WalletBloc cubit) => cubit.state.wallets.firstWhereOrNull(
         (wallet) => wallet.isDefault && wallet.network.isBitcoin,
       ),
     );
-    final lastPhysicalBackup = defaultWallet.latestPhysicalBackup;
+    final lastPhysicalBackup = defaultWallet?.latestPhysicalBackup;
 
     return SafeArea(
       child: SingleChildScrollView(
