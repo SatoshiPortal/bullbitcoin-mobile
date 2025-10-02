@@ -1,53 +1,33 @@
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
 
 class FileStorageDatasource {
-  final FilePicker _filePicker;
+  FileStorageDatasource();
 
-  FileStorageDatasource({FilePicker? filePicker})
-      : _filePicker = filePicker ?? FilePicker.platform;
+  Future<File> pickFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result != null) return File(result.files.single.path!);
 
-  Future<File> saveToFile(File file, String value) async {
-    return await file.writeAsString(value);
+    throw FileStorageException('No file selected');
   }
 
-  Future<void> deleteFile(String filePath) async {
-    final file = File(filePath);
-    if (file.existsSync()) {
-      await file.delete(recursive: true);
-    }
+  Future<void> saveFile(String content, String filename) async {
+    final bytes = utf8.encode(content);
+    final result = await FilePicker.platform.saveFile(
+      bytes: bytes,
+      fileName: filename,
+    );
+
+    if (result == null) throw FileStorageException('file not saved');
   }
+}
 
-  Future<String> getAppDirectory() async {
-    final appDocDir = await getApplicationDocumentsDirectory();
-    return appDocDir.path;
-  }
+class FileStorageException implements Exception {
+  final String message;
 
-  Future<String> getDownloadDirectory() async {
-    final downloadDir = await getDownloadsDirectory();
-    if (downloadDir == null) {
-      throw const FileSystemException('Could not get downloads directory');
-    }
-    return downloadDir.path;
-  }
+  FileStorageException(this.message);
 
-  Future<File?> pickFile() async {
-    final files = await _filePicker.pickFiles();
-    if (files == null) throw 'No file selected';
-
-    final path = files.files.single.path;
-    if (path == null) throw 'No data selected';
-
-    final file = File(path);
-
-    return file;
-  }
-
-  Future<String> getDirectoryPath() async {
-    final path = await _filePicker.getDirectoryPath();
-    if (path == null) throw 'No directory selected';
-    return path;
-  }
+  @override
+  String toString() => message;
 }

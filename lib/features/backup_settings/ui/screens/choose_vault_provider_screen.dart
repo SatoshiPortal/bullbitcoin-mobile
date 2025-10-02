@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
@@ -32,13 +32,13 @@ class _ChooseVaultProviderScreenState extends State<ChooseVaultProviderScreen> {
 class _Screen extends StatelessWidget {
   const _Screen();
 
-  void onProviderSelected(BuildContext context, BackupProviderType provider) {
+  void onProviderSelected(BuildContext context, VaultProvider provider) {
     switch (provider) {
-      case BackupProviderType.googleDrive:
+      case VaultProvider.googleDrive:
         context.read<BackupSettingsCubit>().selectGoogleDriveProvider();
-      case BackupProviderType.custom:
+      case VaultProvider.customLocation:
         context.read<BackupSettingsCubit>().selectFileSystemProvider();
-      case BackupProviderType.iCloud:
+      case VaultProvider.iCloud:
         log.info('iCloud, not supported yet');
     }
   }
