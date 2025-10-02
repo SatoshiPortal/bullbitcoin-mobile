@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_va
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/app_unlock/data/repositories/failed_unlock_attempts_repository_impl.dart';
 import 'package:bb_mobile/features/app_unlock/data/services/exponential_timeout_calculator.dart';
-import 'package:bb_mobile/features/app_unlock/domain/repositories/failed_unlock_attempts_repository.dart';
 import 'package:bb_mobile/features/app_unlock/domain/services/timeout_calculator.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
@@ -15,7 +14,7 @@ class AppUnlockLocator {
   static void setup() {
     // Repositories
     locator.registerLazySingleton<FailedUnlockAttemptsRepository>(
-      () => FailedUnlockAttemptsRepositoryImpl(
+      () => FailedUnlockAttemptsRepository(
         locator<KeyValueStorageDatasource<String>>(
           instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
         ),
