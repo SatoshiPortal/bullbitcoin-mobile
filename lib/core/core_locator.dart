@@ -79,9 +79,4 @@ class CoreLocator {
     Bip85DerivationsLocator.registerUsecases();
     LedgerLocator.registerUsecases();
   }
-
-  static void registerFacades() {
-    LabelsLocator.registerFacades();
-    WalletLocator.registerFacades();
-  }
 }

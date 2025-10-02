@@ -24,7 +24,8 @@ class BdkWalletFactory {
       throw ArgumentError('BdkWalletFactory can only create Bitcoin wallets');
     }
 
-    final network = wallet.network.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+    final network =
+        wallet.network.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
     final external = await bdk.Descriptor.create(
       descriptor: wallet.externalPublicDescriptor,

@@ -13,8 +13,8 @@ class UtxosAdapterCoordinator implements UtxosPort {
   const UtxosAdapterCoordinator({
     required BdkUtxosAdapter bdkUtxosAdapter,
     required LwkUtxosAdapter lwkUtxosAdapter,
-  })  : _bdkUtxosAdapter = bdkUtxosAdapter,
-        _lwkUtxosAdapter = lwkUtxosAdapter;
+  }) : _bdkUtxosAdapter = bdkUtxosAdapter,
+       _lwkUtxosAdapter = lwkUtxosAdapter;
 
   UtxosPort _getAdapterForWallet(Wallet wallet) {
     if (wallet.network.isBitcoin) {
@@ -31,13 +31,9 @@ class UtxosAdapterCoordinator implements UtxosPort {
     required String txId,
     required int index,
     required Wallet wallet,
-  }) async {
+  }) {
     final adapter = _getAdapterForWallet(wallet);
-    return adapter.getUtxoFromWallet(
-      txId: txId,
-      index: index,
-      wallet: wallet,
-    );
+    return adapter.getUtxoFromWallet(txId: txId, index: index, wallet: wallet);
   }
 
   @override
@@ -45,12 +41,8 @@ class UtxosAdapterCoordinator implements UtxosPort {
     Wallet wallet, {
     int? limit,
     int? offset,
-  }) async {
+  }) {
     final adapter = _getAdapterForWallet(wallet);
-    return adapter.getUtxosFromWallet(
-      wallet,
-      limit: limit,
-      offset: offset,
-    );
+    return adapter.getUtxosFromWallet(wallet, limit: limit, offset: offset);
   }
 }

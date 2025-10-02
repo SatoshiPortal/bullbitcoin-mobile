@@ -1,5 +1,6 @@
 class UtxoDto {
   final String walletId;
+  final String walletName;
   final String txId;
   final int index;
   final String address;
@@ -11,6 +12,7 @@ class UtxoDto {
 
   UtxoDto({
     required this.walletId,
+    required this.walletName,
     required this.txId,
     required this.index,
     required this.address,

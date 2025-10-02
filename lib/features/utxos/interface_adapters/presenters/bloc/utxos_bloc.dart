@@ -23,6 +23,7 @@ class UtxosBloc extends Bloc<UtxosEvent, UtxosState> {
        super(const UtxosState()) {
     on<UtxosLoaded>(_onLoaded);
     on<UtxosUtxoDetailsLoaded>(_onUtxoDetailsLoaded);
+    on<UtxosSetUtxoSpendable>(_onSetUtxoSpendable);
   }
 
   Future<void> _onLoaded(UtxosLoaded event, Emitter<UtxosState> emit) async {
@@ -78,5 +79,12 @@ class UtxosBloc extends Bloc<UtxosEvent, UtxosState> {
     } finally {
       emit(state.copyWith(isLoading: false));
     }
+  }
+
+  void _onSetUtxoSpendable(
+    UtxosSetUtxoSpendable event,
+    Emitter<UtxosState> emit,
+  ) {
+    // TODO: Use the use case to update the spendable status through the label port
   }
 }

@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/labels/domain/ports/labels_port.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/wallet_port.dart';
 import 'package:bb_mobile/features/utxos/application/dto/requests/get_wallet_utxos_request.dart';
 import 'package:bb_mobile/features/utxos/application/dto/responses/get_wallet_utxos_response.dart';
 import 'package:bb_mobile/features/utxos/application/dto/utxo_dto.dart';
+import 'package:bb_mobile/features/utxos/domain/ports/labels_port.dart';
 import 'package:bb_mobile/features/utxos/domain/ports/utxos_port.dart';
+import 'package:bb_mobile/features/utxos/domain/ports/wallet_port.dart';
 
 class GetWalletUtxosUsecase {
   final LabelsPort _labelsPort;
@@ -40,6 +40,7 @@ class GetWalletUtxosUsecase {
 
         return UtxoDto(
           walletId: request.walletId,
+          walletName: wallet.displayLabel,
           txId: utxo.txId,
           index: utxo.index,
           address: utxo.address,

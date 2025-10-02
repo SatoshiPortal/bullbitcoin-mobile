@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/wallet_port.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/utxos/domain/ports/wallet_port.dart';
 
 class WalletFacade implements WalletPort {
   final GetWalletUsecase _getWalletUsecase;

@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/labels/domain/get_address_labels_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/get_output_labels_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/get_transaction_labels_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/labels/domain/ports/labels_port.dart';
+import 'package:bb_mobile/features/utxos/domain/ports/labels_port.dart';
 
 class LabelsFacade implements LabelsPort {
   final GetAddressLabelsUsecase _getAddressLabelsUsecase;

@@ -1,11 +1,19 @@
+import 'package:bb_mobile/core/labels/domain/get_address_labels_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/get_output_labels_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/get_transaction_labels_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/utxos/application/usecases/get_utxo_usecase.dart';
 import 'package:bb_mobile/features/utxos/application/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/utxos/domain/ports/labels_port.dart';
 import 'package:bb_mobile/features/utxos/domain/ports/utxos_port.dart';
+import 'package:bb_mobile/features/utxos/domain/ports/wallet_port.dart';
 import 'package:bb_mobile/features/utxos/infrastructure/adapters/bdk_utxos_adapter.dart';
 import 'package:bb_mobile/features/utxos/infrastructure/adapters/lwk_utxos_adapter.dart';
 import 'package:bb_mobile/features/utxos/infrastructure/adapters/utxos_adapter_coordinator.dart';
 import 'package:bb_mobile/features/utxos/infrastructure/factories/bdk_wallet_factory.dart';
 import 'package:bb_mobile/features/utxos/infrastructure/factories/lwk_wallet_factory.dart';
+import 'package:bb_mobile/features/utxos/interface_adapters/facades/labels_facade.dart';
+import 'package:bb_mobile/features/utxos/interface_adapters/facades/wallet_facade.dart';
 import 'package:bb_mobile/features/utxos/interface_adapters/presenters/bloc/utxos_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -65,10 +73,24 @@ class UtxosLocator {
     );
   }
 
+  static void registerFacades() {
+    locator.registerLazySingleton<WalletPort>(
+      () => WalletFacade(getWalletUsecase: locator<GetWalletUsecase>()),
+    );
+    locator.registerLazySingleton<LabelsPort>(
+      () => LabelsFacade(
+        getAddressLabelsUsecase: locator<GetAddressLabelsUsecase>(),
+        getTransactionLabelsUsecase: locator<GetTransactionLabelsUsecase>(),
+        getOutputLabelsUsecase: locator<GetOutputLabelsUsecase>(),
+      ),
+    );
+  }
+
   static void setup() {
     registerFactories();
     registerAdapters();
     registerUseCases();
     registerBlocs();
+    registerFacades();
   }
 }

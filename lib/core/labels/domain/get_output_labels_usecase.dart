@@ -7,7 +7,7 @@ class GetOutputLabelsUsecase {
   GetOutputLabelsUsecase({required LabelRepository labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<List<OutputLabel>> execute(String txId, int index) async {
+  Future<List<OutputLabel>> execute(String txId, int index) {
     return _labelRepository.fetchOutputLabels(txId: txId, index: index);
   }
 }

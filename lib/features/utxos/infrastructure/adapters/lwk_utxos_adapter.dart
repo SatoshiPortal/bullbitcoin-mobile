@@ -6,9 +6,8 @@ import 'package:bb_mobile/features/utxos/infrastructure/factories/lwk_wallet_fac
 class LwkUtxosAdapter implements UtxosPort {
   final LwkWalletFactory _lwkWalletFactory;
 
-  const LwkUtxosAdapter({
-    required LwkWalletFactory lwkWalletFactory,
-  }) : _lwkWalletFactory = lwkWalletFactory;
+  const LwkUtxosAdapter({required LwkWalletFactory lwkWalletFactory})
+    : _lwkWalletFactory = lwkWalletFactory;
 
   @override
   Future<Utxo?> getUtxoFromWallet({
@@ -17,7 +16,9 @@ class LwkUtxosAdapter implements UtxosPort {
     required Wallet wallet,
   }) async {
     if (!wallet.network.isLiquid) {
-      throw ArgumentError('LwkUtxosAdapter can only be used with Liquid wallets');
+      throw ArgumentError(
+        'LwkUtxosAdapter can only be used with Liquid wallets',
+      );
     }
 
     try {
@@ -30,9 +31,10 @@ class LwkUtxosAdapter implements UtxosPort {
       );
 
       // For Liquid, we'll use the confidential address if available, otherwise the standard address
-      final address = matchingUtxo.address.confidential.isNotEmpty
-          ? matchingUtxo.address.confidential
-          : matchingUtxo.address.standard;
+      final address =
+          matchingUtxo.address.confidential.isNotEmpty
+              ? matchingUtxo.address.confidential
+              : matchingUtxo.address.standard;
 
       return Utxo(
         txId: matchingUtxo.outpoint.txid,
@@ -52,25 +54,29 @@ class LwkUtxosAdapter implements UtxosPort {
     int? offset,
   }) async {
     if (!wallet.network.isLiquid) {
-      throw ArgumentError('LwkUtxosAdapter can only be used with Liquid wallets');
+      throw ArgumentError(
+        'LwkUtxosAdapter can only be used with Liquid wallets',
+      );
     }
 
     final lwkWallet = await _lwkWalletFactory.createWallet(wallet);
     final lwkUtxos = await lwkWallet.utxos();
 
-    final utxos = lwkUtxos.map((utxo) {
-      // For Liquid, we'll use the confidential address if available, otherwise the standard address
-      final address = utxo.address.confidential.isNotEmpty
-          ? utxo.address.confidential
-          : utxo.address.standard;
+    final utxos =
+        lwkUtxos.map((utxo) {
+          // For Liquid, we'll use the confidential address if available, otherwise the standard address
+          final address =
+              utxo.address.confidential.isNotEmpty
+                  ? utxo.address.confidential
+                  : utxo.address.standard;
 
-      return Utxo(
-        txId: utxo.outpoint.txid,
-        index: utxo.outpoint.vout,
-        address: address,
-        valueSat: utxo.unblinded.value.toInt(),
-      );
-    }).toList();
+          return Utxo(
+            txId: utxo.outpoint.txid,
+            index: utxo.outpoint.vout,
+            address: address,
+            valueSat: utxo.unblinded.value.toInt(),
+          );
+        }).toList();
 
     final startIndex = offset ?? 0;
     final endIndex = limit != null ? startIndex + limit : utxos.length;

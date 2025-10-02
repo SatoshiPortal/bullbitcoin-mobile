@@ -11,7 +11,9 @@ class UtxoCard extends StatelessWidget {
     required this.index,
     required this.valueSat,
     required this.labels,
+    this.isSelected = false,
     this.onTap,
+    this.onLongPress,
   });
 
   final bool isSpendable;
@@ -19,24 +21,48 @@ class UtxoCard extends StatelessWidget {
   final int index;
   final int valueSat;
   final List<String> labels;
+  final bool isSelected;
   final Function()? onTap;
+  final Function()? onLongPress;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Card(
+        elevation: isSelected ? 4 : 1,
+        color:
+            isSelected ? context.colour.primary.withValues(alpha: 0.1) : null,
+        shape:
+            isSelected
+                ? RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(color: context.colour.primary, width: 2),
+                )
+                : null,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                isSpendable ? 'Spendable' : 'Unspendable',
-                style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.secondary,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    isSpendable ? 'Spendable' : 'Unspendable',
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.colour.secondary,
+                    ),
+                  ),
+                  if (isSelected)
+                    Icon(
+                      Icons.check_circle,
+                      color: context.colour.primary,
+                      size: 24,
+                    ),
+                ],
               ),
               const Gap(8),
               Row(
@@ -51,7 +77,6 @@ class UtxoCard extends StatelessWidget {
                   ),
                 ],
               ),
-
               const Gap(8),
               Row(
                 children: [
@@ -71,12 +96,18 @@ class UtxoCard extends StatelessWidget {
                 ],
               ),
               if (labels.isNotEmpty) ...[
-                const Gap(8),
-                Text(
-                  'Labels: ${labels.join(', ')}',
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.secondary,
-                  ),
+                const Gap(24),
+                Wrap(
+                  spacing: 8.0,
+                  children:
+                      labels
+                          .map(
+                            (label) => Chip(
+                              label: Text(label),
+                              backgroundColor: Colors.transparent,
+                            ),
+                          )
+                          .toList(),
                 ),
               ],
             ],

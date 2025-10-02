@@ -7,9 +7,8 @@ import 'package:bb_mobile/features/utxos/infrastructure/factories/bdk_wallet_fac
 class BdkUtxosAdapter implements UtxosPort {
   final BdkWalletFactory _bdkWalletFactory;
 
-  const BdkUtxosAdapter({
-    required BdkWalletFactory bdkWalletFactory,
-  }) : _bdkWalletFactory = bdkWalletFactory;
+  const BdkUtxosAdapter({required BdkWalletFactory bdkWalletFactory})
+    : _bdkWalletFactory = bdkWalletFactory;
 
   @override
   Future<Utxo?> getUtxoFromWallet({
@@ -18,7 +17,9 @@ class BdkUtxosAdapter implements UtxosPort {
     required Wallet wallet,
   }) async {
     if (!wallet.network.isBitcoin) {
-      throw ArgumentError('BdkUtxosAdapter can only be used with Bitcoin wallets');
+      throw ArgumentError(
+        'BdkUtxosAdapter can only be used with Bitcoin wallets',
+      );
     }
 
     try {
@@ -26,14 +27,16 @@ class BdkUtxosAdapter implements UtxosPort {
       final unspentList = bdkWallet.listUnspent();
 
       final matchingUnspent = unspentList.firstWhere(
-        (unspent) => unspent.outpoint.txid == txId && unspent.outpoint.vout == index,
+        (unspent) =>
+            unspent.outpoint.txid == txId && unspent.outpoint.vout == index,
         orElse: () => throw Exception('UTXO not found'),
       );
 
-      final address = await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
-        matchingUnspent.txout.scriptPubkey.bytes,
-        isTestnet: wallet.network.isTestnet,
-      );
+      final address =
+          await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+            matchingUnspent.txout.scriptPubkey.bytes,
+            isTestnet: wallet.network.isTestnet,
+          );
 
       return Utxo(
         txId: matchingUnspent.outpoint.txid,
@@ -53,7 +56,9 @@ class BdkUtxosAdapter implements UtxosPort {
     int? offset,
   }) async {
     if (!wallet.network.isBitcoin) {
-      throw ArgumentError('BdkUtxosAdapter can only be used with Bitcoin wallets');
+      throw ArgumentError(
+        'BdkUtxosAdapter can only be used with Bitcoin wallets',
+      );
     }
 
     final bdkWallet = await _bdkWalletFactory.createWallet(wallet);
@@ -61,10 +66,11 @@ class BdkUtxosAdapter implements UtxosPort {
 
     final utxos = <Utxo>[];
     for (final unspent in unspentList) {
-      final address = await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
-        unspent.txout.scriptPubkey.bytes,
-        isTestnet: wallet.network.isTestnet,
-      );
+      final address =
+          await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+            unspent.txout.scriptPubkey.bytes,
+            isTestnet: wallet.network.isTestnet,
+          );
 
       utxos.add(
         Utxo(

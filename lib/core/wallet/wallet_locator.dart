@@ -19,7 +19,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/wallet_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
@@ -37,7 +36,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/core/wallet/interface_adapters/wallet_facade.dart';
 import 'package:bb_mobile/locator.dart';
 
 class WalletLocator {
@@ -216,12 +214,6 @@ class WalletLocator {
         locator<SettingsRepository>(),
         locator<ElectrumServerRepository>(),
       ),
-    );
-  }
-
-  static void registerFacades() {
-    locator.registerLazySingleton<WalletPort>(
-      () => WalletFacade(getWalletUsecase: locator<GetWalletUsecase>()),
     );
   }
 }

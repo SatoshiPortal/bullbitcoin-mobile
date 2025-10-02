@@ -49,7 +49,6 @@ class AppLocator {
     await CoreLocator.registerRepositories();
     CoreLocator.registerServices();
     CoreLocator.registerUsecases();
-    CoreLocator.registerFacades();
 
     // Register feature-specific dependencies
     KeyServerLocator.setup();

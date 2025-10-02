@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/utxos/application/dto/utxo_dto.dart';
 
 class UtxoViewModel {
   final String walletId;
+  final String walletName;
   final String txId;
   final int index;
   final int valueSat;
@@ -13,6 +14,7 @@ class UtxoViewModel {
 
   const UtxoViewModel({
     required this.walletId,
+    required this.walletName,
     required this.txId,
     required this.index,
     required this.valueSat,
@@ -25,17 +27,17 @@ class UtxoViewModel {
 
   String get outpoint => '$txId:$index';
 
-  List<String> get labels {
-    final allLabels = <String>{};
-    allLabels.addAll(outputLabels);
-    allLabels.addAll(addressLabels);
-    allLabels.addAll(transactionLabels);
-    return allLabels.toList();
+  List<String> get inheritedLabels {
+    final inheritedLabels = <String>{};
+    inheritedLabels.addAll(addressLabels);
+    inheritedLabels.addAll(transactionLabels);
+    return inheritedLabels.toList();
   }
 
   factory UtxoViewModel.fromDto(UtxoDto dto) {
     return UtxoViewModel(
       walletId: dto.walletId,
+      walletName: dto.walletName,
       txId: dto.txId,
       index: dto.index,
       valueSat: dto.valueSat,

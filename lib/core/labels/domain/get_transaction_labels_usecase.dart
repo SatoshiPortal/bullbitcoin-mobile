@@ -7,7 +7,7 @@ class GetTransactionLabelsUsecase {
   GetTransactionLabelsUsecase({required LabelRepository labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<List<TxLabel>> execute(String txId) async {
+  Future<List<TxLabel>> execute(String txId) {
     return _labelRepository.fetchTransactionLabels(txId);
   }
 }

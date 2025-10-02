@@ -7,7 +7,7 @@ class GetAddressLabelsUsecase {
   GetAddressLabelsUsecase({required LabelRepository labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<List<AddressLabel>> execute(String address) async {
+  Future<List<AddressLabel>> execute(String address) {
     return _labelRepository.fetchAddressLabels(address);
   }
 }

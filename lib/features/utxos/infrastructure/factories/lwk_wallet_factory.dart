@@ -33,7 +33,8 @@ class LwkWalletFactory {
     }
 
     try {
-      final network = wallet.network.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
+      final network =
+          wallet.network.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
 
       final descriptor = lwk.Descriptor(
         ctDescriptor: wallet.externalPublicDescriptor,

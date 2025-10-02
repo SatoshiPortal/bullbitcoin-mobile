@@ -16,3 +16,10 @@ class UtxosUtxoDetailsLoaded extends UtxosEvent {
 
   UtxosUtxoDetailsLoaded({required this.outpoint, required this.walletId});
 }
+
+class UtxosSetUtxoSpendable extends UtxosEvent {
+  final String outpoint;
+  final bool isSpendable;
+
+  UtxosSetUtxoSpendable({required this.outpoint, required this.isSpendable});
+}
