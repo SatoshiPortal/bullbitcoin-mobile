@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 
+// TODO: Move this to a shared folder as it can be reused by all features that require
+//  Bdk wallet calls.
 class BdkWalletFactory {
   const BdkWalletFactory();
 
@@ -36,7 +38,7 @@ class BdkWalletFactory {
       network: network,
     );
 
-    // Use the same path generation as BdkWalletDatasource
+    // Use the same path generation as BdkWalletDatasource which should be deprecated
     final dbName = _getHexId(wallet.id);
     final dbPath = await _getDbPath(dbName);
     final dbConfig = bdk.DatabaseConfig.sqlite(

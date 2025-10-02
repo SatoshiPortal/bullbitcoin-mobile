@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
+// TODO: Move this to a shared folder as it can be reused by all features that require
+//  Lwk wallet calls.
 class LwkWalletFactory {
   const LwkWalletFactory();
 
@@ -40,7 +42,7 @@ class LwkWalletFactory {
         ctDescriptor: wallet.externalPublicDescriptor,
       );
 
-      // Use the same path generation as LwkWalletDatasource
+      // Use the same path generation as LwkWalletDatasource which should be deprecated
       final dbName = _getHexId(wallet.id);
       final dbPath = await _getDbPath(dbName);
 
