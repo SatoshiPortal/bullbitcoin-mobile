@@ -681,6 +681,54 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
     return ownerName;
   }
+
+  Future<Map<String, dynamic>> getBuyLimits({required String apiKey}) async {
+    final resp = await _http.post(
+      _ordersPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'getBuyLimits',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to get buy limits');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to get buy limits: $error');
+    }
+
+    return resp.data['result'] as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getSellLimits({required String apiKey}) async {
+    final resp = await _http.post(
+      _ordersPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'getSellLimits',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to get sell limits');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to get sell limits: $error');
+    }
+
+    return resp.data['result'] as Map<String, dynamic>;
+  }
 }
 
 class BullBitcoinApiMinAmountException implements Exception {
