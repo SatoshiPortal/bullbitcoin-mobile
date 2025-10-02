@@ -37,7 +37,7 @@ class _ScannerState extends State<QrScannerWidget> {
         }
       },
       resolution: widget.resolution,
-      showGallery: false, // doesn't work well
+      showGallery: true,
       tryInverted: true,
     );
   }
