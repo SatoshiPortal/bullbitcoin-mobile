@@ -1,9 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,6 +15,13 @@ class BackCheckListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final defaultWallet = context.select(
+      (WalletBloc cubit) => cubit.state.wallets.firstWhereOrNull(
+        (wallet) => wallet.isDefault && wallet.network.isBitcoin,
+      ),
+    );
+    final lastPhysicalBackup = defaultWallet?.latestPhysicalBackup;
+
     final instructions = backupInstructions();
     return Scaffold(
       appBar: AppBar(
@@ -28,7 +38,13 @@ class BackCheckListScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Gap(8),
+              if (lastPhysicalBackup != null) ...[
+                const Gap(8),
+                BBText(
+                  'Last backup test: ${lastPhysicalBackup.toString().substring(0, 19)}',
+                  style: context.font.bodyMedium,
+                ),
+              ],
               const Gap(24),
               for (final i in instructions) ...[
                 Row(
