@@ -13,8 +13,11 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
+import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -788,13 +791,16 @@ class _BottomButtons extends StatelessWidget {
     final wallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
+    final hasFinalizedTx = context.select(
+      (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (isBitcoinWallet) ...[
+          if (isBitcoinWallet && !hasFinalizedTx) ...[
             BBButton.big(
               label: 'Advanced Settings',
               onPressed: () {
@@ -817,8 +823,10 @@ class _BottomButtons extends StatelessWidget {
             ),
             const Gap(12),
           ],
-          if (wallet != null && wallet.signsRemotely)
-            const ShowPsbtButton()
+          if (wallet != null && wallet.signsRemotely && !hasFinalizedTx)
+            (wallet.signerDevice != null && wallet.signerDevice!.isLedger)
+                ? const SignLedgerButton()
+                : const ShowPsbtButton()
           else
             const ConfirmSendButton(),
         ],
@@ -832,11 +840,14 @@ class ConfirmSendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasFinalizedTx = context.select(
+      (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
+    );
     final disableSendButton = context.select(
       (SendCubit cubit) => cubit.state.disableConfirmSend,
     );
     return BBButton.big(
-      label: 'Confirm',
+      label: hasFinalizedTx ? 'Broadcast Transaction' : 'Confirm',
       onPressed: () {
         context.read<SendCubit>().onConfirmTransactionClicked();
       },
@@ -866,6 +877,9 @@ class _OnchainSendInfoSection extends StatelessWidget {
     );
     final formattedFiatEquivalent = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
+    );
+    final hasFinalizedTx = context.select(
+      (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
     );
     // final selectedFees = context.select(
     //   (SendCubit cubit) => cubit.state.selectedFee,
@@ -965,7 +979,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
             InfoRow(
               title: 'Fee Priority',
               details: InkWell(
-                onTap: () async {
+                onTap: hasFinalizedTx ? null : () async {
                   final selected = await _showFeeOptions(context);
 
                   if (selected != null) {
@@ -1707,6 +1721,58 @@ class ShowPsbtButton extends StatelessWidget {
           PsbtFlowRoutes.show.name,
           extra: (psbt: unsignedPsbt, signerDevice: signerDevice),
         );
+      },
+      bgColor: context.colour.secondary,
+      textColor: context.colour.onSecondary,
+    );
+  }
+}
+
+class SignLedgerButton extends StatelessWidget {
+  const SignLedgerButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final unsignedPsbt = context.select(
+      (SendCubit cubit) => cubit.state.unsignedPsbt,
+    );
+
+    final derivationPath = context.select(
+      (SendCubit cubit) =>
+          cubit.state.selectedWallet?.derivationPath,
+    );
+
+    final deviceType = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.signerDevice,
+    );
+
+    final scriptType = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
+    );
+
+    return BBButton.big(
+      label: 'Sign with Ledger',
+      onPressed: () async {
+        if (unsignedPsbt == null) return;
+
+        final result = await context.pushNamed<String>(
+          LedgerRoute.signTransaction.name,
+          extra: LedgerRouteParams(
+            psbt: unsignedPsbt,
+            derivationPath: derivationPath,
+            requestedDeviceType: deviceType,
+            scriptType: scriptType,
+          ),
+        );
+
+        if (result != null && context.mounted) {
+          SnackBarUtils.showSnackBar(
+            context,
+            'Transaction signed successfully with Ledger',
+          );
+          // Update the signedBitcoinTx with the result from Ledger
+          await context.read<SendCubit>().updateSignedBitcoinTx(result);
+        }
       },
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,

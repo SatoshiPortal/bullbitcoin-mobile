@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.da
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
     show CurrentKeyServerFlow;
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -13,10 +14,11 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
 import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
-    show BlocBuilder, BlocListener, BlocProvider, ReadContext;
+    show BlocBuilder, BlocListener, BlocProvider, ReadContext, SelectContext;
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -144,6 +146,13 @@ class _Screen extends StatelessWidget {
   }
 
   Widget _buildScaffold(BuildContext context) {
+    final defaultWallet = context.select(
+      (WalletBloc cubit) => cubit.state.wallets.firstWhereOrNull(
+        (wallet) => wallet.isDefault && wallet.network.isBitcoin,
+      ),
+    );
+    final lastEncryptedVaultBackup = defaultWallet?.latestEncryptedBackup;
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -158,6 +167,14 @@ class _Screen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (lastEncryptedVaultBackup != null) ...[
+              BBText(
+                'Last Known Encrypted Vault: ${lastEncryptedVaultBackup.toString().substring(0, 19)}',
+                style: context.font.bodyMedium,
+                textAlign: TextAlign.start,
+              ),
+              const Gap(16),
+            ],
             RecoverbullVaultProviderSelector(
               onProviderSelected:
                   (provider) => onProviderSelected(context, provider),
