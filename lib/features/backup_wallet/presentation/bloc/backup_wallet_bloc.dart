@@ -1,13 +1,12 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/backup_wallet/domain/usecases/save_to_google_drive_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,19 +17,17 @@ part 'backup_wallet_state.dart';
 
 class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   final CreateEncryptedVaultUsecase createEncryptedVaultUsecase;
-  final SelectFolderPathUsecase selectFolderPathUsecase;
   final ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase;
   final FetchLatestGoogleDriveVaultUsecase fetchLatestBackupUsecase;
   final DisconnectFromGoogleDriveUsecase disconnectFromGoogleDriveUsecase;
-  final SaveToFileSystemUsecase saveToFileSystemUsecase;
+  final SaveFileToSystemUsecase saveFileToSystemUsecase;
   final SaveToGoogleDriveUsecase saveToGoogleDriveUsecase;
   BackupWalletBloc({
     required this.createEncryptedVaultUsecase,
     required this.fetchLatestBackupUsecase,
     required this.connectToGoogleDriveUsecase,
     required this.disconnectFromGoogleDriveUsecase,
-    required this.selectFolderPathUsecase,
-    required this.saveToFileSystemUsecase,
+    required this.saveFileToSystemUsecase,
     required this.saveToGoogleDriveUsecase,
   }) : super(const BackupWalletState()) {
     on<OnFileSystemBackupSelected>(_onFileSystemBackupSelected);
@@ -53,22 +50,10 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     Emitter<BackupWalletState> emit,
   ) async {
     try {
-      emit(
-        state.copyWith(
-          status: BackupWalletStatus.loading,
-          vaultProvider: const VaultProvider.fileSystem(''),
-        ),
-      );
-      final filePath = await selectFolderPathUsecase.execute();
-      if (filePath == null) {
-        emit(state.copyWith(status: BackupWalletStatus.none));
-        return;
-      }
-
       // First update the state with the selected provider
       emit(
         state.copyWith(
-          vaultProvider: VaultProvider.fileSystem(filePath),
+          vaultProvider: VaultProvider.customLocation,
           status: BackupWalletStatus.success,
         ),
       );
@@ -98,7 +83,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       // First update the state with the selected provider
       emit(
         state.copyWith(
-          vaultProvider: const VaultProvider.googleDrive(),
+          vaultProvider: VaultProvider.googleDrive,
           status: BackupWalletStatus.success,
         ),
       );
@@ -118,28 +103,27 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
 
   Future<void> _startBackup(Emitter<BackupWalletState> emit) async {
     try {
-      emit(state.copyWith(status: BackupWalletStatus.loading));
-
       final encryptedVault = await createEncryptedVaultUsecase.execute();
 
-      emit(state.copyWith(vault: encryptedVault));
-
       switch (state.vaultProvider) {
-        case FileSystem(:final fileAsString):
-          if (fileAsString.isEmpty) throw Exception('No file path selected');
-          await saveToFileSystemUsecase.execute(
-            fileAsString,
-            encryptedVault.toFile(),
+        case VaultProvider.customLocation:
+          await saveFileToSystemUsecase.execute(
+            content: encryptedVault.toFile(),
+            filename: EncryptedVault(file: encryptedVault.toFile()).filename,
           );
-        case GoogleDrive():
+        case VaultProvider.googleDrive:
           await saveToGoogleDriveUsecase.execute(encryptedVault.toFile());
-        case ICloud():
+        case VaultProvider.iCloud:
           throw UnimplementedError('iCloud backup not implemented');
       }
 
-      emit(state.copyWith(status: BackupWalletStatus.success));
+      emit(
+        state.copyWith(
+          vault: encryptedVault,
+          status: BackupWalletStatus.success,
+        ),
+      );
     } catch (e) {
-      log.severe('Failed to save the backup: $e');
       emit(
         state.copyWith(
           status: BackupWalletStatus.error,
