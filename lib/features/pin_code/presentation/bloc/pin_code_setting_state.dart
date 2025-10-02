@@ -1,6 +1,14 @@
 part of 'pin_code_setting_bloc.dart';
 
-enum PinCodeSettingStatus { unlock, choose, confirm, success, failure }
+enum PinCodeSettingStatus {
+  unlock,
+  settings,
+  choose,
+  confirm,
+  success,
+  failure,
+  deleted,
+}
 
 @freezed
 sealed class PinCodeSettingState with _$PinCodeSettingState {

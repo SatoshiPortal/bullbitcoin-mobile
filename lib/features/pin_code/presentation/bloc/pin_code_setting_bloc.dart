@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/features/pin_code/domain/usecases/delete_pin_code_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,9 +14,11 @@ class PinCodeSettingBloc
     extends Bloc<PinCodeSettingEvent, PinCodeSettingState> {
   PinCodeSettingBloc({
     required SetPinCodeUsecase setPinCodeUsecase,
+    required DeletePinCodeUsecase deletePinCodeUsecase,
     int minPinCodeLength = 4,
     int maxPinCodeLength = 8,
   }) : _setPinCodeUsecase = setPinCodeUsecase,
+       _deletePinCodeUsecase = deletePinCodeUsecase,
        super(
          PinCodeSettingState(
            choosePinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
@@ -38,15 +41,33 @@ class PinCodeSettingBloc
     on<PinCodeSettingPinCodeObscureToggled>(
       _onPinCodeSettingPinCodeObscureToggled,
     );
+    on<PinCodeCreate>(_onCreatePin);
+    on<PinCodeDelete>(_onDeletePin);
   }
 
   final SetPinCodeUsecase _setPinCodeUsecase;
+  final DeletePinCodeUsecase _deletePinCodeUsecase;
 
   Future<void> _onStarted(
     PinCodeSettingStarted event,
     Emitter<PinCodeSettingState> emit,
   ) async {
+    emit(state.copyWith(status: PinCodeSettingStatus.settings));
+  }
+
+  Future<void> _onCreatePin(
+    PinCodeCreate event,
+    Emitter<PinCodeSettingState> emit,
+  ) async {
     emit(state.copyWith(status: PinCodeSettingStatus.choose));
+  }
+
+  Future<void> _onDeletePin(
+    PinCodeDelete event,
+    Emitter<PinCodeSettingState> emit,
+  ) async {
+    await _deletePinCodeUsecase.execute();
+    emit(state.copyWith(status: PinCodeSettingStatus.deleted));
   }
 
   Future<void> _onPinCodeNumberAdded(
