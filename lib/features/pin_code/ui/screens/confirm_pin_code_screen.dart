@@ -40,7 +40,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Gap(75),
+                  const Gap(30),
                   BBText(
                     'Confirm new pin',
                     textAlign: TextAlign.center,
@@ -49,7 +49,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                     ),
                     maxLines: 3,
                   ),
-                  const Gap(50),
+                  const Gap(30),
                   BlocSelector<
                     PinCodeSettingBloc,
                     PinCodeSettingState,
@@ -96,7 +96,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                           : const SizedBox.shrink();
                     },
                   ),
-                  const Gap(130),
+                  const Gap(30),
                   DialPad(
                     disableFeedback: true,
                     onNumberPressed:
