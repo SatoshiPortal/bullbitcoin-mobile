@@ -1,9 +1,8 @@
 import 'dart:ui';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
     show CurrentKeyServerFlow;
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -43,17 +42,17 @@ class _ChooseVaultProviderScreenState extends State<ChooseVaultProviderScreen> {
 class _Screen extends StatelessWidget {
   const _Screen();
 
-  void onProviderSelected(BuildContext context, BackupProviderType provider) {
+  void onProviderSelected(BuildContext context, VaultProvider provider) {
     switch (provider) {
-      case BackupProviderType.googleDrive:
+      case VaultProvider.googleDrive:
         context.read<BackupWalletBloc>().add(
           const OnGoogleDriveBackupSelected(),
         );
-      case BackupProviderType.custom:
+      case VaultProvider.customLocation:
         context.read<BackupWalletBloc>().add(
           const OnFileSystemBackupSelected(),
         );
-      case BackupProviderType.iCloud:
+      case VaultProvider.iCloud:
         log.info('iCloud, not supported yet');
     }
   }
@@ -91,16 +90,16 @@ class _Screen extends StatelessWidget {
               backgroundColor: context.colour.onSecondary,
               body: ProgressScreen(
                 title:
-                    state.vaultProvider is GoogleDrive
+                    state.vaultProvider == VaultProvider.googleDrive
                         ? "You will need to sign-in to Google Drive"
                         : "Saving to your device.",
                 description:
-                    state.vaultProvider is GoogleDrive
+                    state.vaultProvider == VaultProvider.googleDrive
                         ? "Google will ask you to share personal information with this app."
                         : "",
                 isLoading: true,
                 extras:
-                    state.vaultProvider is GoogleDrive
+                    state.vaultProvider == VaultProvider.googleDrive
                         ? [
                           Text.rich(
                             TextSpan(

@@ -127,11 +127,11 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
       case WithdrawRecipientType.sepaEur:
         return ['iban', 'isCorporate', 'isOwner'];
       case WithdrawRecipientType.speiClabeMxn:
-        return ['clabe', 'name', 'isOwner'];
+        return ['clabe', 'name'];
       case WithdrawRecipientType.speiSmsMxn:
-        return ['phoneNumber', 'institutionCode', 'name', 'isOwner'];
+        return ['phoneNumber', 'institutionCode', 'name'];
       case WithdrawRecipientType.speiCardMxn:
-        return ['debitCard', 'institutionCode', 'name', 'isOwner'];
+        return ['debitCard', 'institutionCode', 'name'];
       case WithdrawRecipientType.sinpeIbanUsd:
       case WithdrawRecipientType.sinpeIbanCrc:
         return ['iban', 'ownerName', 'isOwner'];
@@ -467,18 +467,23 @@ class _InteracEmailForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'Name',
-          'name',
-          'Enter recipient name',
+          'Email',
+          'email',
+          'Enter email address',
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
+        ),
+        const Gap(12),
         _buildInputField(
           context,
-          'Email',
-          'email',
-          'Enter email address',
+          'Name',
+          'name',
+          'Enter recipient name',
           formData,
           onFormDataChanged,
         ),
@@ -501,11 +506,6 @@ class _InteracEmailForm extends StatelessWidget {
           'Enter a label for this recipient',
           formData,
           onFormDataChanged,
-        ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
         ),
       ],
     );
@@ -738,15 +738,6 @@ class _BankTransferForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'Name',
-          'name',
-          'Enter recipient name',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
-        _buildInputField(
-          context,
           'Institution Number',
           'institutionNumber',
           'Enter institution number',
@@ -772,6 +763,20 @@ class _BankTransferForm extends StatelessWidget {
           onFormDataChanged,
         ),
         const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
+        ),
+        const Gap(12),
+        _buildInputField(
+          context,
+          'Name',
+          'name',
+          'Enter recipient name',
+          formData,
+          onFormDataChanged,
+        ),
+        const Gap(12),
         _buildInputField(
           context,
           'Default Comment (optional)',
@@ -788,11 +793,6 @@ class _BankTransferForm extends StatelessWidget {
           'Enter a label for this recipient',
           formData,
           onFormDataChanged,
-        ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
         ),
       ],
     );
@@ -826,6 +826,11 @@ class _SepaForm extends StatelessWidget {
           'Is this a corporate account?',
           formData,
           onFormDataChanged,
+        ),
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
@@ -863,11 +868,6 @@ class _SepaForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
       ],
     );
   }
@@ -889,15 +889,6 @@ class _SpeiClabeForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'Name',
-          'name',
-          'Enter recipient name',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
-        _buildInputField(
-          context,
           'CLABE',
           'clabe',
           'Enter CLABE number',
@@ -907,9 +898,9 @@ class _SpeiClabeForm extends StatelessWidget {
         const Gap(12),
         _buildInputField(
           context,
-          'Institution Code',
-          'institutionCode',
-          'Enter institution code',
+          'Name',
+          'name',
+          'Enter recipient name',
           formData,
           onFormDataChanged,
         ),
@@ -940,9 +931,9 @@ class _SpeiSmsForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'Name',
-          'name',
-          'Enter recipient name',
+          'Institution Code',
+          'institutionCode',
+          'Enter institution code',
           formData,
           onFormDataChanged,
         ),
@@ -958,9 +949,9 @@ class _SpeiSmsForm extends StatelessWidget {
         const Gap(12),
         _buildInputField(
           context,
-          'Institution Code',
-          'institutionCode',
-          'Enter institution code',
+          'Name',
+          'name',
+          'Enter recipient name',
           formData,
           onFormDataChanged,
         ),
@@ -994,9 +985,9 @@ class _SpeiCardForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'Name',
-          'name',
-          'Enter recipient name',
+          'Institution Code',
+          'institutionCode',
+          'Enter institution code',
           formData,
           onFormDataChanged,
         ),
@@ -1012,9 +1003,9 @@ class _SpeiCardForm extends StatelessWidget {
         const Gap(12),
         _buildInputField(
           context,
-          'Institution Code',
-          'institutionCode',
-          'Enter institution code',
+          'Name',
+          'name',
+          'Enter recipient name',
           formData,
           onFormDataChanged,
         ),
@@ -1053,6 +1044,11 @@ class _SinpeIbanForm extends StatelessWidget {
           'Enter IBAN',
           formData,
           onFormDataChanged,
+        ),
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(

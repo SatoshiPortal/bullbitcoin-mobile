@@ -54,7 +54,7 @@ class AppTheme {
                 ? SystemUiOverlayStyle.light
                 : SystemUiOverlayStyle.dark,
         elevation: 0,
-        scrolledUnderElevation: 32,
+        scrolledUnderElevation: 0,
         titleTextStyle: fonts.textTheme.headlineMedium!.copyWith(
           color: colours.secondary,
         ),

@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/screens/send_confirm_screen.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -15,6 +16,7 @@ import 'package:bb_mobile/features/swap/presentation/swap_state.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
@@ -70,7 +72,10 @@ class SwapAmountPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(title: 'Swap', onBack: () => context.pop()),
+        flexibleSpace: TopBar(
+          title: 'Internal Transfer',
+          onBack: () => context.pop(),
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -81,43 +86,45 @@ class SwapAmountPage extends StatelessWidget {
               backgroundColor: context.colour.onPrimary,
               foregroundColor: context.colour.primary,
             ),
-            const Expanded(
+            Expanded(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      SwapFromToDropdown(type: _SwapDropdownType.from),
-                      Gap(16),
-                      SwapAvailableBalance(),
-                      Gap(16),
-                      SizedBox(
-                        height: 142 * 2,
-                        child: Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.topCenter,
-                              child: SwapCard(type: _SwapCardType.pay),
+                      // Green info banner
+                      Builder(
+                        builder:
+                            (context) => InfoCard(
+                              description:
+                                  'Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet is for day-to-day spending.',
+                              tagColor: context.colour.inverseSurface,
+                              bgColor: context.colour.inverseSurface.withValues(
+                                alpha: 0.1,
+                              ),
                             ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: SwapCard(type: _SwapCardType.receive),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: SwapChangeButton(),
-                            ),
-                          ],
-                        ),
                       ),
-                      Gap(16),
-                      SwapFeesInformation(),
-                      Gap(32),
-                      SwapFromToDropdown(type: _SwapDropdownType.to),
-                      Gap(32),
-                      SwapCreationError(),
-                      Gap(40),
+                      const Gap(12),
+                      // Transfer From
+                      const SwapFromToDropdown(type: _SwapDropdownType.from),
+
+                      const Gap(12),
+                      // Transfer To
+                      const SwapFromToDropdown(type: _SwapDropdownType.to),
+                      const Gap(12),
+                      // Transfer Amount
+                      const SwapTransferAmountField(),
+                      const Gap(12),
+                      const SwapAvailableBalance(),
+                      const Gap(12),
+                      const SwapFeesInformation(),
+                      const Gap(12),
+                      const SwapCreationError(),
+                      const Gap(24),
                     ],
                   ),
                 ),
@@ -263,6 +270,124 @@ class SwapCard extends StatelessWidget {
   }
 }
 
+class SwapTransferAmountField extends StatelessWidget {
+  const SwapTransferAmountField({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final fromAmount = context.select(
+      (SwapCubit cubit) => cubit.state.fromAmount,
+    );
+    final toAmount = context.select(
+      (SwapCubit cubit) => cubit.state.toAmount.split(' ')[0],
+    );
+
+    final currency = context.select(
+      (SwapCubit cubit) => cubit.state.displayFromCurrencyCode,
+    );
+    final toCurrency = context.select(
+      (SwapCubit cubit) => cubit.state.displayToCurrencyCode,
+    );
+    final loadingWallets = context.select(
+      (SwapCubit cubit) => cubit.state.loadingWallets,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BBText('Transfer amount', style: context.font.bodyLarge),
+        const Gap(8),
+        Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 16.0,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (loadingWallets)
+                  const LoadingLineContent(
+                    padding: EdgeInsets.symmetric(vertical: 12.0),
+                  )
+                else
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: TextEditingController(text: fromAmount),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          style: context.font.displaySmall?.copyWith(
+                            color: context.colour.primary,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: '0',
+                            hintStyle: context.font.displaySmall?.copyWith(
+                              color: context.colour.primary,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                          onChanged: (value) {
+                            context.read<SwapCubit>().amountChanged(value);
+                          },
+                        ),
+                      ),
+                      const Gap(8.0),
+                      Text(
+                        currency,
+                        style: context.font.displaySmall?.copyWith(
+                          color: context.colour.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                const Gap(16),
+                if (loadingWallets)
+                  const LoadingLineContent(
+                    padding: EdgeInsets.symmetric(vertical: 12.0),
+                  )
+                else
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          context.read<SwapCubit>().switchFromAndToWallets();
+                        },
+                        child: Icon(
+                          Icons.swap_vert,
+                          color: context.colour.outline,
+                        ),
+                      ),
+                      const Gap(8.0),
+                      Text(
+                        '$toAmount $toCurrency',
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class SwapChangeButton extends StatelessWidget {
   const SwapChangeButton({super.key});
 
@@ -271,25 +396,25 @@ class SwapChangeButton extends StatelessWidget {
     final isLoading = context.select(
       (SwapCubit cubit) => cubit.state.loadingWallets,
     );
-    return Padding(
-      padding: const EdgeInsets.only(right: 16),
-      child: Material(
-        elevation: 2,
-        shadowColor: context.colour.secondary,
-        borderRadius: BorderRadius.circular(32),
-        child: Container(
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white,
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.swap_vert),
-            iconSize: 32,
-            onPressed: () {
-              if (isLoading) return;
-              context.read<SwapCubit>().switchFromAndToWallets();
-            },
-          ),
+    return Material(
+      elevation: 2,
+      shadowColor: context.colour.secondary,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: context.colour.surface,
+        ),
+        child: IconButton(
+          icon: const Icon(Icons.swap_vert),
+          iconSize: 16,
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            if (isLoading) return;
+            context.read<SwapCubit>().switchFromAndToWallets();
+          },
         ),
       ),
     );
@@ -444,7 +569,7 @@ class SwapFromToDropdown extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         BBText(
-          'Swap ${type == _SwapDropdownType.from ? 'from' : 'to'}',
+          'Transfer ${type == _SwapDropdownType.from ? 'from' : 'to'}',
           style: context.font.bodyLarge,
         ),
         const Gap(4),
@@ -548,7 +673,10 @@ class SwapConfirmPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(title: 'Swap', onBack: () => context.pop()),
+        flexibleSpace: TopBar(
+          title: 'Confirm Transfer',
+          onBack: () => context.pop(),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
@@ -601,7 +729,7 @@ class SwapProgressPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: const TopBar(title: 'Swap'),
+        flexibleSpace: const TopBar(title: 'Internal Transfer'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -620,10 +748,13 @@ class SwapProgressPage extends StatelessWidget {
                       image: AssetImage(Assets.animations.cubesLoading.path),
                     ),
                     const Gap(8),
-                    BBText('Swap Pending', style: context.font.headlineLarge),
+                    BBText(
+                      'Transfer Pending',
+                      style: context.font.headlineLarge,
+                    ),
                     const Gap(8),
                     BBText(
-                      'The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.',
+                      'The transfer is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.',
                       style: context.font.bodyMedium,
                       maxLines: 4,
                       textAlign: TextAlign.center,
@@ -631,10 +762,13 @@ class SwapProgressPage extends StatelessWidget {
                   ],
                   if (swap.status == SwapStatus.completed &&
                       swap.refundTxid == null) ...[
-                    BBText('Swap completed', style: context.font.headlineLarge),
+                    BBText(
+                      'Transfer completed',
+                      style: context.font.headlineLarge,
+                    ),
                     const Gap(8),
                     BBText(
-                      'Wow, you waited! The swap has completed sucessfully.',
+                      'Wow, you waited! The transfer has completed sucessfully.',
                       style: context.font.bodyMedium,
                       maxLines: 4,
                       textAlign: TextAlign.center,
@@ -642,12 +776,12 @@ class SwapProgressPage extends StatelessWidget {
                   ],
                   if (swap.status == SwapStatus.refundable) ...[
                     BBText(
-                      'Swap Refund In Progress',
+                      'Transfer Refund In Progress',
                       style: context.font.headlineLarge,
                     ),
                     const Gap(8),
                     BBText(
-                      'There was an error with the swap. Your refund is in progress.',
+                      'There was an error with the transfer. Your refund is in progress.',
                       style: context.font.bodyMedium,
                       maxLines: 4,
                       textAlign: TextAlign.center,
@@ -655,10 +789,13 @@ class SwapProgressPage extends StatelessWidget {
                   ],
                   if (swap.status == SwapStatus.completed &&
                       swap.refundTxid != null) ...[
-                    BBText('Swap Refunded', style: context.font.headlineLarge),
+                    BBText(
+                      'Transfer Refunded',
+                      style: context.font.headlineLarge,
+                    ),
                     const Gap(8),
                     BBText(
-                      'The swap has been sucessfully refunded.',
+                      'The transfer has been sucessfully refunded.',
                       style: context.font.bodyMedium,
                       maxLines: 4,
                       textAlign: TextAlign.center,

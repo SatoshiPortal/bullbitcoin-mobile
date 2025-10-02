@@ -31,7 +31,7 @@ class DriveVaultsListPage extends StatelessWidget {
         flexibleSpace: TopBar(
           onBack: () {
             cubit.clearSelectedBackup();
-            if (state.selectedBackup == null) context.pop();
+            if (state.selectedVault == null) context.pop();
           },
           title: "Drive Backups",
         ),
@@ -40,7 +40,7 @@ class DriveVaultsListPage extends StatelessWidget {
       body: Column(
         children: [
           FadingLinearProgress(
-            trigger: state.isLoading || state.isSelectingBackup,
+            trigger: state.isLoading || state.isSelectingVault,
             backgroundColor: context.colour.surface,
             foregroundColor: context.colour.primary,
             height: 2.0,
@@ -99,10 +99,10 @@ class _BackupItem extends StatelessWidget {
         ).format(driveFileMetadata.createdTime.toLocal()),
       ),
       onTap:
-          state.isSelectingBackup
+          state.isSelectingVault
               ? null
               : () => cubit.selectDriveBackup(driveFileMetadata),
-      enabled: !state.isSelectingBackup,
+      enabled: !state.isSelectingVault,
     );
   }
 }
