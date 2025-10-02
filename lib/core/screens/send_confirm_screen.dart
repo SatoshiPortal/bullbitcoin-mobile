@@ -48,7 +48,7 @@ class CommonSendConfirmTopArea extends StatelessWidget {
         if (_sendType == SendType.send)
           BBText('Confirm Send', style: context.font.bodyMedium)
         else
-          BBText('Confirm Swap', style: context.font.bodyMedium),
+          BBText('Confirm Transfer', style: context.font.bodyMedium),
         const Gap(4),
         BBText(
           _formattedConfirmedAmountBitcoin,
@@ -287,7 +287,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Swap ID',
+            title: 'Transfer ID',
             details: BBText(
               _swapId,
               style: context.font.bodyLarge,
@@ -410,7 +410,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                   'Network Fee',
                   fees.lockupFee! + fees.claimFee!,
                 ),
-                _feeRow(context, 'Boltz Fee', fees.boltzFee ?? 0),
+                _feeRow(context, 'Transfer Fee', fees.boltzFee ?? 0),
                 const Gap(4),
               ],
             ),
@@ -499,7 +499,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Swap ID',
+            title: 'Transfer ID',
             details: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,

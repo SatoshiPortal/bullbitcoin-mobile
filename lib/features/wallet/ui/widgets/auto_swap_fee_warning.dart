@@ -54,13 +54,13 @@ class AutoSwapFeeWarning extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BBText(
-            'Auto Swap Blocked',
+            'Auto Transfer Blocked',
             style: context.font.titleMedium,
             color: context.colour.error,
           ),
           const Gap(12),
           BBText(
-            'Attempting to swap $swapAmountBtc BTC. Current fee is $currentSwapFeePercent% of the swap amount and the fee threshold is set to ${autoSwapSettings.feeThresholdPercent}%',
+            'Attempting to transfer $swapAmountBtc BTC. Current fee is $currentSwapFeePercent% of the transfer amount and the fee threshold is set to ${autoSwapSettings.feeThresholdPercent}%',
             style: context.font.bodyMedium,
           ),
           const Gap(12),

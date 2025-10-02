@@ -392,30 +392,30 @@ extension SwapStatusMessage on Swap {
     } else if (isChainSwap) {
       switch (status) {
         case SwapStatus.pending:
-          return "Swap is not yet initialized.";
+          return "Transfer is not yet initialized.";
         case SwapStatus.paid:
-          return "Waiting for swap provider's payment to receive confirmation. This may take a while to complete.";
+          return "Waiting for transfer provider's payment to receive confirmation. This may take a while to complete.";
         case SwapStatus.claimable:
-          return "Swap is ready to be claimed.";
+          return "Transfer is ready to be claimed.";
         case SwapStatus.refundable:
-          return "Swap is ready to be refunded.";
+          return "Transfer is ready to be refunded.";
         case SwapStatus.canCoop:
-          return "Swap will complete momentarily.";
+          return "Transfer will complete momentarily.";
         case SwapStatus.completed:
           final swap = this;
           if (swap is ChainSwap && swap.refundTxid != null) {
-            return "Swap has been refunded.";
+            return "Transfer has been refunded.";
           } else {
-            return "Swap is completed successfully.";
+            return "Transfer is completed successfully.";
           }
         case SwapStatus.expired:
-          return "Swap Expired";
+          return "Transfer Expired";
         case SwapStatus.failed:
           final swap = this;
           if (swap is ChainSwap && swap.sendTxid != null) {
-            return "Swap will be refunded shortly.";
+            return "Transfer will be refunded shortly.";
           } else {
-            return "Swap Failed.";
+            return "Transfer Failed.";
           }
       }
     }

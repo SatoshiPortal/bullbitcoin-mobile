@@ -139,7 +139,7 @@ class _Header extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: BBText(
-                    'Auto Swap Settings',
+                    'Auto Transfer Settings',
                     style: context.font.headlineMedium,
                   ),
                 ),
@@ -170,7 +170,7 @@ class _EnabledToggle extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             BBText(
-              'Enable Auto Swap',
+              'Enable Auto Transfer',
               style: context.font.bodyLarge?.copyWith(
                 color: context.colour.secondary,
               ),
@@ -265,7 +265,7 @@ class _AmountThresholdField extends StatelessWidget {
         if (showInfo) ...[
           const Gap(4),
           BBText(
-            'When wallet balance exceeds double this amount, auto-swap will trigger to reduce balance to this level',
+            'When wallet balance exceeds double this amount, auto-transfer will trigger to reduce balance to this level',
             style: context.font.labelSmall?.copyWith(
               color: context.colour.surfaceContainer,
             ),
@@ -293,7 +293,7 @@ class _FeeThresholdField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          'Max Swap Fee',
+          'Max Transfer Fee',
           style: context.font.bodyLarge?.copyWith(
             color: context.colour.secondary,
           ),
@@ -338,7 +338,7 @@ class _FeeThresholdField extends StatelessWidget {
         if (showInfo) ...[
           const Gap(4),
           BBText(
-            'If total swap fee is above the set percentage, the auto-swap will be blocked',
+            'If total transfer fee is above the set percentage, the auto-transfer will be blocked',
             style: context.font.labelSmall?.copyWith(
               color: context.colour.surfaceContainer,
             ),
@@ -392,8 +392,8 @@ class _AlwaysBlockToggle extends StatelessWidget {
           const Gap(4),
           BBText(
             alwaysBlock
-                ? 'When enabled, auto-swaps with fees above the set limit will always be blocked'
-                : 'When disabled, you will be given the option to allow an auto-swap that is blocked due to high fees',
+                ? 'When enabled, auto-transfers with fees above the set limit will always be blocked'
+                : 'When disabled, you will be given the option to allow an auto-transfer that is blocked due to high fees',
             style: context.font.labelSmall?.copyWith(
               color: context.colour.surfaceContainer,
             ),
@@ -506,7 +506,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
         if (showInfo) ...[
           const Gap(4),
           BBText(
-            'Choose which Bitcoin wallet will receive the swapped funds (required)',
+            'Choose which Bitcoin wallet will receive the transferred funds (required)',
             style: context.font.labelSmall?.copyWith(
               color:
                   enabled && selectedWalletId == null

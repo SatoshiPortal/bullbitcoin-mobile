@@ -50,10 +50,10 @@ class SwapStatusDescription extends StatelessWidget {
               const Gap(8),
               BBText(
                 swap.status == SwapStatus.failed
-                    ? 'Swap Failed'
+                    ? (swap.isChainSwap ? 'Transfer Failed' : 'Swap Failed')
                     : swap.status == SwapStatus.expired
-                    ? 'Swap Expired'
-                    : 'Swap Status',
+                    ? (swap.isChainSwap ? 'Transfer Expired' : 'Swap Expired')
+                    : (swap.isChainSwap ? 'Transfer Status' : 'Swap Status'),
                 style: context.font.titleSmall?.copyWith(
                   color:
                       swap.status == SwapStatus.failed ||
@@ -132,25 +132,25 @@ class SwapStatusDescription extends StatelessWidget {
       switch (swap.status) {
         case SwapStatus.pending:
           return swap.type == SwapType.bitcoinToLiquid
-              ? 'Your swap has been created but not initiated yet.'
-              : 'Your swap has been created but not initiated yet.';
+              ? 'Your transfer has been created but not initiated yet.'
+              : 'Your transfer has been created but not initiated yet.';
         case SwapStatus.paid:
-          return 'Your transaction has been broadcasted. We are now waiting for the counterparty transaction to be confirmed.';
+          return 'Your transaction has been broadcasted. We are now waiting for the lockup transaction to be confirmed.';
         case SwapStatus.claimable:
-          return 'The counterparty transaction has been confirmed. We are now claiming the funds to complete your swap.';
+          return 'The lockup transaction has been confirmed. You are now claiming the funds to complete your transfer.';
         case SwapStatus.refundable:
-          return 'The swap will be refunded. Your funds will be returned to your wallet automatically.';
+          return 'The transfer will be refunded. Your funds will be returned to your wallet automatically.';
         case SwapStatus.completed:
-          return 'Your swap has been completed successfully! The funds should now be available in your wallet.';
+          return 'Your transfer has been completed successfully! The funds should now be available in your wallet.';
         case SwapStatus.failed:
-          return 'There was an issue with your swap. Please contact support if funds have not been returned within 24 hours.';
+          return 'There was an issue with your transfer. Please contact support if funds have not been returned within 24 hours.';
         case SwapStatus.expired:
-          return 'This swap has expired. Your funds will be automatically returned to your wallet.';
+          return 'This transfer has expired. Your funds will be automatically returned to your wallet.';
         default:
-          return 'Your swap is in progress. This process is automated and may take some time to complete.';
+          return 'Your transfer is in progress. This process is automated and may take some time to complete.';
       }
     }
-    return 'Your swap is in progress. This process is automated and may take some time to complete.';
+    return 'Your transfer is in progress. This process is automated and may take some time to complete.';
   }
 
   String _getAdditionalInfo() {
@@ -160,14 +160,18 @@ class SwapStatusDescription extends StatelessWidget {
 
     if (swap is ChainSwap &&
         (swap.status == SwapStatus.pending || swap.status == SwapStatus.paid)) {
-      return 'On-chain swaps may take some time to complete due to blockchain confirmation times.';
+      return 'On-chain transfers may take some time to complete due to blockchain confirmation times.';
     }
 
     if (swap.status == SwapStatus.claimable) {
-      return 'The swap will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the "Retry Swap Claim" button.';
+      return swap.isChainSwap
+          ? 'The transfer will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the "Retry Transfer Claim" button.'
+          : 'The swap will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the "Retry Swap Claim" button.';
     }
     if (swap.status == SwapStatus.refundable) {
-      return 'This swap will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the "Retry Swap Refund" button.';
+      return swap.isChainSwap
+          ? 'This transfer will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the "Retry Transfer Refund" button.'
+          : 'This swap will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the "Retry Swap Refund" button.';
     }
 
     return '';
