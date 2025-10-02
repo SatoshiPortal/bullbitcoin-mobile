@@ -49,7 +49,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
                 ),
                 SettingsEntryItem(
                   icon: Icons.swap_horiz,
-                  title: 'Auto Swap Settings',
+                  title: 'Auto Transfer Settings',
                   onTap: () {
                     AutoSwapSettingsRouter.showAutoSwapSettings(context);
                   },
