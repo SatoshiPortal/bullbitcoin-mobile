@@ -125,7 +125,7 @@ class _ActionRow extends StatelessWidget {
             const Gap(1),
             _ActionButton(
               icon: Assets.icons.swap.path,
-              label: 'Swap',
+              label: 'Transfer',
               onPressed: () {
                 context.pushNamed(SwapRoute.swap.name);
               },

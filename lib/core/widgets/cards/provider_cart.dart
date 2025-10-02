@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/cards/tag_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 
 class ProviderCard extends StatefulWidget {
-  final BackupProviderType provider;
+  final VaultProvider provider;
   final VoidCallback onTap;
 
   const ProviderCard({required this.provider, required this.onTap});

@@ -14,9 +14,6 @@ sealed class FundExchangeState with _$FundExchangeState {
   }) = _FundExchangeState;
   const FundExchangeState._();
 
-  bool get isFullyVerifiedKycLevel =>
-      userSummary?.isFullyVerifiedKycLevel == true;
-
   bool get failedToLoadFundingDetails =>
       getExchangeFundingDetailsException != null;
 }

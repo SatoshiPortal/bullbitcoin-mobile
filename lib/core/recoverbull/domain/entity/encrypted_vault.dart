@@ -24,7 +24,8 @@ class EncryptedVault {
   DateTime get createdAt =>
       DateTime.fromMillisecondsSinceEpoch(backup.createdAt);
 
-  String get filename => '${createdAt.toIso8601String()}_$id.json';
+  String get filename =>
+      '${createdAt.toIso8601String().substring(0, 10)}_encrypted_vault.json';
 }
 
 class EncryptedVaultException implements Exception {

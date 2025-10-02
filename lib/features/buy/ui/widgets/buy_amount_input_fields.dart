@@ -147,6 +147,12 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                         ),
                       ),
                       const Gap(8.0),
+                      Text(
+                        isFiatCurrencyInput ? bitcoinUnit.code : currency.code,
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
                       // CurrencyText(
                       //   amountSat ?? 0,
                       //   showFiat: !isFiatCurrencyInput,
