@@ -275,9 +275,6 @@ class SwapTransferAmountField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fromAmount = context.select(
-      (SwapCubit cubit) => cubit.state.fromAmount,
-    );
     final toAmount = context.select(
       (SwapCubit cubit) => cubit.state.toAmount.split(' ')[0],
     );
@@ -322,7 +319,6 @@ class SwapTransferAmountField extends StatelessWidget {
                     children: [
                       Expanded(
                         child: TextFormField(
-                          controller: TextEditingController(text: fromAmount),
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
