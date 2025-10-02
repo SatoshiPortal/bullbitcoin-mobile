@@ -1226,7 +1226,7 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  Future<void> broadcastTransaction() async {
+  Future<void> broadcastTransaction({bool isPsbt = true}) async {
     try {
       emit(state.copyWith(broadcastingTransaction: true));
 
@@ -1243,8 +1243,8 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(broadcastingTransaction: false));
         } else {
           final txId = await _broadcastBitcoinTxUsecase.execute(
-            state.signedBitcoinPsbt!,
-            isPsbt: true,
+            isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!,
+            isPsbt: isPsbt,
           );
           emit(state.copyWith(txId: txId));
         }
@@ -1304,17 +1304,19 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> onConfirmTransactionClicked() async {
     try {
-      await createTransaction();
-      await signTransaction();
-      // if (!state.isLightning) {
-      if (state.confirmTransactionException == null) {
-        emit(state.copyWith(step: SendStep.sending));
-      } else {
-        emit(state.copyWith(step: SendStep.confirm));
-        return;
+      if (state.signedBitcoinTx == null) {
+        await createTransaction();
+        await signTransaction();
+        // if (!state.isLightning) {
+        if (state.confirmTransactionException == null) {
+          emit(state.copyWith(step: SendStep.sending));
+        } else {
+          emit(state.copyWith(step: SendStep.confirm));
+          return;
+        }
       }
       // }
-      await broadcastTransaction();
+      await broadcastTransaction(isPsbt: state.signedBitcoinTx == null);
       if (state.confirmTransactionException != null) {
         emit(state.copyWith(step: SendStep.confirm));
         return;
@@ -1506,5 +1508,9 @@ class SendCubit extends Cubit<SendState> {
         ),
       );
     }
+  }
+
+  Future<void> updateSignedBitcoinTx(String signedTx) async {
+    emit(state.copyWith(signedBitcoinTx: signedTx));
   }
 }
