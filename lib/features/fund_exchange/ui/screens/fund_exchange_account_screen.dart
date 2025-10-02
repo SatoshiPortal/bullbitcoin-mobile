@@ -1,10 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -26,9 +22,6 @@ class FundExchangeAccountScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final isStarted = context.select(
       (FundExchangeBloc bloc) => bloc.state.isStarted,
-    );
-    final isFullyVerifiedKycLevel = context.select(
-      (FundExchangeBloc bloc) => bloc.state.isFullyVerifiedKycLevel,
     );
     final jurisdiction = context.select(
       (FundExchangeBloc bloc) => bloc.state.jurisdiction,
@@ -73,62 +66,40 @@ class FundExchangeAccountScreen extends StatelessWidget {
                   'Fund your account',
                   style: theme.textTheme.displaySmall,
                 ),
-                if (isStarted && !isFullyVerifiedKycLevel) ...[
-                  const Gap(24.0),
-                  InfoCard(
-                    title: 'KYC ID Verification Pending',
-                    description: 'You must complete ID Verification first',
-                    bgColor: context.colour.tertiary.withValues(alpha: 0.1),
-                    tagColor: context.colour.onTertiary,
-                  ),
-                  const Gap(16.0),
-                  BBButton.big(
-                    label: 'Complete KYC',
-                    onPressed: () {
-                      context.pushReplacementNamed(
-                        ExchangeRoute.exchangeKyc.name,
-                      );
-                    },
-                    bgColor: context.colour.primary,
-                    textColor: context.colour.onPrimary,
-                  ),
-                ] else ...[
-                  const Gap(8.0),
-                  BBText(
-                    'Select your country and payment method',
-                    style: theme.textTheme.headlineSmall,
-                  ),
-                  const Gap(24.0),
-                  if (!isStarted)
-                    const LoadingLineContent(height: 56)
-                  else
-                    const FundExchangeJurisdictionDropdown(),
-                  const Gap(24.0),
-                  if (!isStarted)
-                    const LoadingBoxContent(height: 200)
-                  else
-                    switch (jurisdiction) {
-                      FundingJurisdiction.canada =>
-                        const FundExchangeCanadaMethods(),
-                      FundingJurisdiction.europe =>
-                        const FundExchangeEuropeMethods(),
-                      FundingJurisdiction.mexico =>
-                        const FundExchangeMethodListTile(
-                          method: FundingMethod.speiTransfer,
-                          title: 'SPEI transfer',
-                          subtitle: 'Transfer funds using your CLABE',
-                        ),
-                      FundingJurisdiction.costaRica =>
-                        const FundExchangeCostaRicaMethods(),
-                      FundingJurisdiction.argentina =>
-                        const FundExchangeMethodListTile(
-                          method: FundingMethod.arsBankTransfer,
-                          title: 'Bank Transfer',
-                          subtitle:
-                              'Send a bank transfer from your bank account',
-                        ),
-                    },
-                ],
+                const Gap(8.0),
+                BBText(
+                  'Select your country and payment method',
+                  style: theme.textTheme.headlineSmall,
+                ),
+                const Gap(24.0),
+                if (!isStarted)
+                  const LoadingLineContent(height: 56)
+                else
+                  const FundExchangeJurisdictionDropdown(),
+                const Gap(24.0),
+                if (!isStarted)
+                  const LoadingBoxContent(height: 200)
+                else
+                  switch (jurisdiction) {
+                    FundingJurisdiction.canada =>
+                      const FundExchangeCanadaMethods(),
+                    FundingJurisdiction.europe =>
+                      const FundExchangeEuropeMethods(),
+                    FundingJurisdiction.mexico =>
+                      const FundExchangeMethodListTile(
+                        method: FundingMethod.speiTransfer,
+                        title: 'SPEI transfer',
+                        subtitle: 'Transfer funds using your CLABE',
+                      ),
+                    FundingJurisdiction.costaRica =>
+                      const FundExchangeCostaRicaMethods(),
+                    FundingJurisdiction.argentina =>
+                      const FundExchangeMethodListTile(
+                        method: FundingMethod.arsBankTransfer,
+                        title: 'Bank Transfer',
+                        subtitle: 'Send a bank transfer from your bank account',
+                      ),
+                  },
               ],
             ),
           ),
