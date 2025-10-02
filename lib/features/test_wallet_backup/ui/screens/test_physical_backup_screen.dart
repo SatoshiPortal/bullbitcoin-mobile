@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -11,6 +12,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -222,6 +224,13 @@ class TestPhysicalBackupScreen extends StatelessWidget {
       (TestWalletBackupBloc bloc) => bloc.state.mnemonic,
     );
 
+    final defaultWallet = context.select(
+      (WalletBloc cubit) => cubit.state.wallets.firstWhereOrNull(
+        (wallet) => wallet.isDefault && wallet.network.isBitcoin,
+      ),
+    );
+    final lastPhysicalBackup = defaultWallet?.latestPhysicalBackup;
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
@@ -249,6 +258,18 @@ class TestPhysicalBackupScreen extends StatelessWidget {
                   fontSize: 12,
                 ),
               ),
+              if (lastPhysicalBackup != null) ...[
+                BBText(
+                  'Last backup test: ${lastPhysicalBackup.toString().substring(0, 19)}',
+                  textAlign: TextAlign.center,
+                  style: context.font.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: context.colour.surface,
+                    letterSpacing: 0,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
               const Gap(32),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
