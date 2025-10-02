@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/app_unlock/domain/usecases/attempt_unlock_wit
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/get_latest_unlock_attempt_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
-import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_repository.dart';
+import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
 import 'package:bb_mobile/locator.dart';
 
 class AppUnlockLocator {

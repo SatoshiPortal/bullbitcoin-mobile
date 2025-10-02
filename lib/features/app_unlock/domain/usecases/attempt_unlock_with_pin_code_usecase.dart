@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/app_unlock/domain/repositories/failed_unlock_attempts_repository.dart';
 import 'package:bb_mobile/features/app_unlock/domain/services/timeout_calculator.dart';
+import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
 import 'package:bb_mobile/features/pin_code/domain/entities/unlock_attempt.dart';
-import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_repository.dart';
 
 class AttemptUnlockWithPinCodeUsecase {
   final PinCodeRepository _pinCodeRepository;
@@ -12,9 +12,9 @@ class AttemptUnlockWithPinCodeUsecase {
     required PinCodeRepository pinCodeRepository,
     required FailedUnlockAttemptsRepository failedUnlockAttemptsRepository,
     required TimeoutCalculator timeoutCalculator,
-  })  : _pinCodeRepository = pinCodeRepository,
-        _failedUnlockAttemptsRepository = failedUnlockAttemptsRepository,
-        _timeoutCalculator = timeoutCalculator;
+  }) : _pinCodeRepository = pinCodeRepository,
+       _failedUnlockAttemptsRepository = failedUnlockAttemptsRepository,
+       _timeoutCalculator = timeoutCalculator;
 
   Future<UnlockAttempt> execute(String pinCode) async {
     final isCorrectPinCode = await _pinCodeRepository.verifyPinCode(pinCode);

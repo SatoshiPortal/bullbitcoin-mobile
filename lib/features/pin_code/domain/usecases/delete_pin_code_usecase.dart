@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_repository.dart';
+import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
 
 class DeletePinCodeUsecase {
   final PinCodeRepository _pinCodeRepository;
