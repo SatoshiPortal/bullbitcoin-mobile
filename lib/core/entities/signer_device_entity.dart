@@ -1,11 +1,18 @@
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 
+enum QrType { none, bbqr, urqr }
+
 enum SignerDeviceEntity {
   coldcardQ,
+  jade,
+  keystone,
+  krux,
   ledgerNanoSPlus,
   ledgerNanoX,
   ledgerFlex,
-  ledgerStax;
+  ledgerStax,
+  passport,
+  seedsigner;
 
   String get displayName =>
       StringFormatting.camelCaseToTitleCase(name, separator: ' ');
@@ -14,4 +21,19 @@ enum SignerDeviceEntity {
 
   bool get supportsBluetooth =>
       isLedger && this != SignerDeviceEntity.ledgerNanoSPlus;
+
+  QrType get supportedQrType {
+    switch (this) {
+      case SignerDeviceEntity.coldcardQ:
+        return QrType.bbqr;
+      case SignerDeviceEntity.jade:
+      case SignerDeviceEntity.krux:
+      case SignerDeviceEntity.keystone:
+      case SignerDeviceEntity.passport:
+      case SignerDeviceEntity.seedsigner:
+        return QrType.urqr;
+      default:
+        return QrType.none;
+    }
+  }
 }
