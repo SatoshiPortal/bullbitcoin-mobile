@@ -85,15 +85,7 @@ class _Amounts extends StatelessWidget {
         Gap(32),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Spacer(),
-            Gap(31),
-            Gap(32),
-            _BtcTotalAmt(),
-            Gap(16),
-            EyeToggle(),
-            Spacer(),
-          ],
+          children: [Spacer(), _BtcTotalAmt(), Gap(16), EyeToggle(), Spacer()],
         ),
         Gap(12),
         _FiatAmt(),

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/core_locator.dart';
+import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
@@ -69,11 +70,14 @@ class AppLocator {
     ImportWatchOnlyLocator.setup();
     BroadcastSignedTxLocator.setup();
     SwapLocator.setup();
+
     ExchangeLocator.setup();
     BuyLocator.setup();
     SellLocator.setup();
     WithdrawLocator.setup();
     PayLocator.setup();
+    StatusLocator.setup();
+
     FundExchangeLocator.setup();
     AutoSwapLocator.setup();
     AddressViewLocator.setup();

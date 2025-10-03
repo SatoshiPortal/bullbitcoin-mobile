@@ -23,6 +23,11 @@ class WalletHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Trigger service status check when the screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WalletBloc>().add(const CheckServiceStatus());
+    });
+
     return GestureDetector(
       onPanEnd: (details) {
         // Only handle horizontal swipes with sufficient velocity
