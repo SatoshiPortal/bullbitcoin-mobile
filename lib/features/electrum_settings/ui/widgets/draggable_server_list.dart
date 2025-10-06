@@ -37,7 +37,6 @@ class _DraggableServerListState extends State<DraggableServerList> {
             padding: const EdgeInsets.only(bottom: 8),
             child: ServerListItem(
               server: server,
-              isGrayed: widget.customServers.isNotEmpty,
               onDelete: null, // Default servers can't be deleted
               onDragCompleted: () {
                 context.read<ElectrumSettingsBloc>().add(
@@ -56,9 +55,6 @@ class _DraggableServerListState extends State<DraggableServerList> {
             physics: const NeverScrollableScrollPhysics(),
             onReorder: (oldIndex, newIndex) {
               widget.onCustomServerReordered(oldIndex, newIndex);
-              context.read<ElectrumSettingsBloc>().add(
-                const SaveElectrumServerChanges(),
-              );
             },
             children: [
               for (final server in widget.customServers)

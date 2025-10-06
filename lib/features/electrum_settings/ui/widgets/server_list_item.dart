@@ -8,14 +8,12 @@ class ServerListItem extends StatelessWidget {
   const ServerListItem({
     super.key,
     required this.server,
-    this.isGrayed = false,
     this.onDragCompleted,
     this.isDraggable = false,
     this.onDelete,
   });
 
   final ElectrumServer server;
-  final bool isGrayed;
   final VoidCallback? onDragCompleted;
   final bool isDraggable;
   final VoidCallback? onDelete;
@@ -25,10 +23,7 @@ class ServerListItem extends StatelessWidget {
     final child = Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color:
-            isGrayed
-                ? context.colour.surface.withValues(alpha: 180)
-                : context.colour.surface,
+        color: context.colour.surface.withValues(alpha: 180),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: context.colour.outline, width: 1),
       ),
@@ -38,6 +33,7 @@ class ServerListItem extends StatelessWidget {
             Icon(
               Icons.drag_handle,
               color: context.colour.onSurface.withValues(alpha: 128),
+              size: 20,
             ),
             const SizedBox(width: 12),
           ],
@@ -45,59 +41,33 @@ class ServerListItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: BBText(
-                        server.displayUrl,
-                        style: context.font.bodyMedium?.copyWith(
-                          color:
-                              isGrayed
-                                  ? context.colour.onSurface.withValues(
-                                    alpha: 128,
-                                  )
-                                  : context.colour.onSurface,
-                        ),
-                      ),
-                    ),
-                    if (onDelete != null) ...[
-                      IconButton(
-                        icon: Icon(
-                          Icons.delete_outline,
-                          color: context.colour.error,
-                        ),
-                        onPressed: onDelete,
-                      ),
-                    ],
-                  ],
+                BBText(
+                  server.displayUrl,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.colour.onSurface,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 _buildStatusIndicator(context),
               ],
             ),
           ),
+          if (onDelete != null) ...[
+            const SizedBox(width: 8),
+            IconButton(
+              icon: Icon(
+                Icons.delete_outline,
+                color: context.colour.error,
+                size: 20,
+              ),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+              onPressed: onDelete,
+            ),
+          ],
         ],
       ),
     );
-
-    if (isDraggable) {
-      return Draggable<ElectrumServer>(
-        data: server,
-        feedback: Material(
-          color: Colors.transparent,
-          child: Opacity(
-            opacity: 0.7,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width - 32,
-              child: child,
-            ),
-          ),
-        ),
-        childWhenDragging: Opacity(opacity: 0.3, child: child),
-        onDragCompleted: onDragCompleted,
-        child: child,
-      );
-    }
 
     return child;
   }
@@ -119,10 +89,7 @@ class ServerListItem extends StatelessWidget {
         BBText(
           isConnected ? 'Connected' : 'Not Connected',
           style: context.font.bodySmall?.copyWith(
-            color:
-                isGrayed
-                    ? context.colour.onSurface.withValues(alpha: 128)
-                    : context.colour.onSurface,
+            color: context.colour.onSurface,
           ),
         ),
         if (server.network == Network.bitcoinTestnet ||

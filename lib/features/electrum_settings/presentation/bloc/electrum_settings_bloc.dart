@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_server_co
 import 'package:bb_mobile/core/electrum/domain/usecases/delete_electrum_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/reorder_custom_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/store_electrum_server_settings_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/try_connection_with_fallback_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
@@ -29,6 +30,7 @@ class ElectrumSettingsBloc
   final UpdateElectrumServerSettingsUsecase _updateElectrumServerSettings;
   final TryConnectionWithFallbackUsecase _tryConnectionWithFallback;
   final DeleteElectrumServerUsecase _deleteElectrumServer;
+  final ReorderCustomServersUsecase _reorderCustomServers;
   ElectrumSettingsBloc({
     required GetAllElectrumServersUsecase getAllElectrumServers,
     required StoreElectrumServerSettingsUsecase storeElectrumServerSettings,
@@ -38,6 +40,7 @@ class ElectrumSettingsBloc
     checkElectrumServerConnectivity,
     required TryConnectionWithFallbackUsecase tryConnectionWithFallback,
     required DeleteElectrumServerUsecase deleteElectrumServer,
+    required ReorderCustomServersUsecase reorderCustomServers,
   }) : _getAllElectrumServers = getAllElectrumServers,
        _storeElectrumServerSettings = storeElectrumServerSettings,
        _getPrioritizedServerUsecase = getPrioritizedServerUsecase,
@@ -45,6 +48,7 @@ class ElectrumSettingsBloc
        _updateElectrumServerSettings = updateElectrumServerSettings,
        _tryConnectionWithFallback = tryConnectionWithFallback,
        _deleteElectrumServer = deleteElectrumServer,
+       _reorderCustomServers = reorderCustomServers,
        super(const ElectrumSettingsState()) {
     on<LoadServers>(_onLoadServers);
     on<CheckServerStatus>(_onCheckServerStatus);
@@ -1169,45 +1173,24 @@ class ElectrumSettingsBloc
     Emitter<ElectrumSettingsState> emit,
   ) async {
     try {
-      // Get current servers for the network
-      final serversForNetwork =
-          state.electrumServers
-              .where((s) => s.network == event.network)
-              .toList();
+      emit(state.copyWith(status: ElectrumSettingsStatus.loading));
 
-      if (event.oldIndex < event.newIndex) {
-        // Moving down
-        final newIndex = event.newIndex - 1;
-        final server = serversForNetwork.removeAt(event.oldIndex);
-        serversForNetwork.insert(newIndex, server);
-      } else {
-        // Moving up
-        final server = serversForNetwork.removeAt(event.oldIndex);
-        serversForNetwork.insert(event.newIndex, server);
-      }
+      await _reorderCustomServers.execute(
+        network: event.network,
+        oldIndex: event.oldIndex,
+        newIndex: event.newIndex,
+      );
 
-      // Update priorities based on new order
-      final updatedServersForNetwork = <ElectrumServer>[];
-      for (var i = 0; i < serversForNetwork.length; i++) {
-        final server = serversForNetwork[i];
-        final updatedServer = server.copyWith(
-          priority: serversForNetwork.length - i,
-        );
-        updatedServersForNetwork.add(updatedServer);
+      // Reload all servers to get the updated state
+      final List<ElectrumServer> allServers = [];
+      final networks =
+          state.isSelectedNetworkLiquid
+              ? [Network.liquidMainnet, Network.liquidTestnet]
+              : [Network.bitcoinMainnet, Network.bitcoinTestnet];
 
-        await _updateElectrumServerSettings.execute(
-          electrumServer: updatedServer,
-        );
-      }
-
-      final allServers = List<ElectrumServer>.from(state.electrumServers);
-      for (final updatedServer in updatedServersForNetwork) {
-        final index = allServers.indexWhere(
-          (s) => _isSameServer(s, updatedServer),
-        );
-        if (index >= 0) {
-          allServers[index] = updatedServer;
-        }
+      for (final network in networks) {
+        final servers = await _getAllElectrumServers.execute(network: network);
+        allServers.addAll(servers);
       }
 
       emit(
@@ -1221,7 +1204,7 @@ class ElectrumSettingsBloc
       emit(
         state.copyWith(
           status: ElectrumSettingsStatus.error,
-          statusError: 'Failed to update server priorities',
+          statusError: 'Failed to reorder servers',
         ),
       );
     }
@@ -1246,8 +1229,16 @@ class ElectrumSettingsBloc
         return;
       }
 
-      final allServers = List<ElectrumServer>.from(state.electrumServers);
-      allServers.removeWhere((s) => s.url == event.server.url);
+      final List<ElectrumServer> allServers = [];
+      final networks =
+          state.isSelectedNetworkLiquid
+              ? [Network.liquidMainnet, Network.liquidTestnet]
+              : [Network.bitcoinMainnet, Network.bitcoinTestnet];
+
+      for (final network in networks) {
+        final servers = await _getAllElectrumServers.execute(network: network);
+        allServers.addAll(servers);
+      }
 
       emit(
         state.copyWith(
