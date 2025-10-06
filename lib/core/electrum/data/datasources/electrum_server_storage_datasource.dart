@@ -17,42 +17,28 @@ class ElectrumServerStorageDatasource {
     await _sqlite.into(_sqlite.electrumServers).insertOnConflictUpdate(row);
   }
 
-  // Fixed update method to ensure new server is stored after deletion
   Future<bool> update(ElectrumServerModel server) async {
-    // Start a transaction for atomic operation
-    return await _sqlite.transaction(() async {
-      final networkDeleted =
-          await _sqlite.managers.electrumServers
-              .filter(
-                (f) =>
-                    f.isLiquid.equals(server.isLiquid) &
-                    f.isTestnet.equals(server.isTestnet) &
-                    f.priority(0),
-              )
-              .delete();
-
-      log.fine(
-        'Deleted $networkDeleted existing custom servers for this network',
-      );
-
-      try {
-        await store(server);
-
-        // Double-check the server was stored
-        final checkServer = await fetchCustomServer(
-          network: server.toEntity().network,
-        );
-        if (checkServer != null) {
-          log.fine('Confirmed server was stored: ${checkServer.url}');
-          return true;
-        }
-      } catch (e) {
-        log.severe('Failed to store new server: $e');
-        return false;
-      }
-
+    try {
+      await store(server);
+      log.fine('Successfully stored/updated server: ${server.url}');
+      return true;
+    } catch (e) {
+      log.severe('Failed to store/update server: $e');
       return false;
-    });
+    }
+  }
+
+  /// Get the next available priority for a custom server
+  Future<int> getNextCustomServerPriority({required Network network}) async {
+    final existingCustomServers = await fetchCustomServers(network: network);
+
+    if (existingCustomServers.isEmpty) {
+      return 1;
+    }
+
+    final priorities = existingCustomServers.map((s) => s.priority).toList();
+    priorities.sort();
+    return priorities.last + 1;
   }
 
   /// Get a default server by provider type
@@ -74,7 +60,8 @@ class ElectrumServerStorageDatasource {
               (f) =>
                   f.isLiquid(network.isLiquid) &
                   f.isTestnet(network.isTestnet) &
-                  f.priority(priority),
+                  f.priority(priority) &
+                  f.isCustom(false),
             )
             .get();
 
@@ -83,61 +70,82 @@ class ElectrumServerStorageDatasource {
     return ElectrumServerModel.fromSqlite(rows.first);
   }
 
-  /// Get custom server for a specific network
-  Future<ElectrumServerModel?> fetchCustomServer({
+  /// Get custom servers for a specific network
+  Future<List<ElectrumServerModel>> fetchCustomServers({
     required Network network,
   }) async {
-    final row =
+    final rows =
         await _sqlite.managers.electrumServers
             .filter(
               (f) =>
                   f.isLiquid(network.isLiquid) &
                   f.isTestnet(network.isTestnet) &
-                  f.priority(0),
+                  f.isCustom(true),
             )
-            .getSingleOrNull();
-    if (row == null) return null;
-    return ElectrumServerModel.fromSqlite(row);
+            .get();
+
+    final servers =
+        rows.map((row) => ElectrumServerModel.fromSqlite(row)).toList();
+    servers.sort((a, b) => a.priority.compareTo(b.priority));
+    return servers;
   }
 
   Future<ElectrumServerModel> fetchPrioritizedServer({
     required Network network,
   }) async {
-    // First, try to find any active custom server
-    final activeCustom =
+    // First check if any custom servers exist for this network
+    final customServers =
         await _sqlite.managers.electrumServers
             .filter(
               (f) =>
                   f.isLiquid(network.isLiquid) &
                   f.isTestnet(network.isTestnet) &
-                  f.isActive(true) &
-                  f.priority(0),
-            )
-            .getSingleOrNull();
-    if (activeCustom != null) {
-      return ElectrumServerModel.fromSqlite(activeCustom);
-    }
-
-    // If no active servers found, get all servers by priority (fallback)
-    final allServers =
-        await _sqlite.managers.electrumServers
-            .filter(
-              (f) =>
-                  f.isLiquid(network.isLiquid) & f.isTestnet(network.isTestnet),
+                  f.isCustom(true),
             )
             .get();
 
-    if (allServers.isEmpty) {
+    // If custom servers exist, use ONLY custom servers for connection
+    if (customServers.isNotEmpty) {
+      // Sort custom servers by priority (1, 2, 3, ...)
+      customServers.sort((a, b) => a.priority.compareTo(b.priority));
+
+      // Return the first active custom server, or first custom server if none are active
+      final activeCustom = customServers.where((s) => s.isActive).toList();
+      if (activeCustom.isNotEmpty) {
+        activeCustom.sort((a, b) => a.priority.compareTo(b.priority));
+        return ElectrumServerModel.fromSqlite(activeCustom.first);
+      }
+      // If no custom servers are active, return the highest priority custom server
+      return ElectrumServerModel.fromSqlite(customServers.first);
+    }
+
+    // If no custom servers exist, use default servers for connection
+    final defaultServers =
+        await _sqlite.managers.electrumServers
+            .filter(
+              (f) =>
+                  f.isLiquid(network.isLiquid) &
+                  f.isTestnet(network.isTestnet) &
+                  f.isCustom(false), // Default servers have isCustom = false
+            )
+            .get();
+
+    if (defaultServers.isEmpty) {
       throw 'No servers found for network $network';
     }
 
-    // First try default Bull Bitcoin server
-    final bullBitcoin = allServers.firstWhere(
-      (row) => row.priority == 1,
-      orElse: () => allServers.first,
-    );
+    // Sort default servers by priority (1, 2, 3, ...)
+    defaultServers.sort((a, b) => a.priority.compareTo(b.priority));
 
-    return ElectrumServerModel.fromSqlite(bullBitcoin);
+    // Return the first active default server, or first default server if none are active
+    final activeDefault = defaultServers.where((s) => s.isActive).toList();
+    if (activeDefault.isNotEmpty) {
+      activeDefault.sort((a, b) => a.priority.compareTo(b.priority));
+      return ElectrumServerModel.fromSqlite(activeDefault.first);
+    }
+
+    // If no default servers are active, return the highest priority default server
+    return ElectrumServerModel.fromSqlite(defaultServers.first);
   }
 
   /// Delete a specific server by URL

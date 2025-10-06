@@ -47,7 +47,10 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
     );
   }
 
-  factory ElectrumServerModel.fromEntity(ElectrumServer entity) {
+  factory ElectrumServerModel.fromEntity(
+    ElectrumServer entity, {
+    int? customPriority,
+  }) {
     return ElectrumServerModel(
       url: entity.url,
       isTestnet: entity.network.isTestnet,
@@ -60,7 +63,7 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
       status: entity.status,
       isActive: entity.isActive,
       priority: switch (entity.electrumServerProvider) {
-        CustomElectrumServerProvider() => 0,
+        CustomElectrumServerProvider() => customPriority ?? 1,
         DefaultServerProvider(:final defaultServerProvider) =>
           switch (defaultServerProvider) {
             DefaultElectrumServerProvider.bullBitcoin => 1,

@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
@@ -49,7 +51,8 @@ class _ElectrumSettingsContentState extends State<ElectrumSettingsContent> {
               previous.status != current.status ||
               previous.stagedServers != current.stagedServers ||
               previous.selectedProvider != current.selectedProvider ||
-              previous.statusError != current.statusError,
+              previous.statusError != current.statusError ||
+              previous.electrumServers != current.electrumServers,
       builder: (context, state) {
         final currentNetwork = state.selectedNetwork;
 
@@ -244,58 +247,101 @@ class _AdvancedOptions extends StatelessWidget {
       text: currentServer?.stopGap.toString() ?? '',
     );
 
-    showDialog(
+    BlurredBottomSheet.show(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Advanced Options'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: timeoutController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Timeout (seconds)',
-                  ),
-                ),
-                TextField(
-                  controller: retryController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Retry Count'),
-                ),
-                TextField(
-                  controller: stopGapController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Stop Gap'),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  final timeout = int.tryParse(timeoutController.text);
-                  final retry = int.tryParse(retryController.text);
-                  final stopGap = int.tryParse(stopGapController.text);
-
-                  context.read<ElectrumSettingsBloc>().add(
-                    UpdateElectrumAdvancedOptions(
-                      timeout: timeout,
-                      retry: retry,
-                      stopGap: stopGap,
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.5,
+        ),
+        decoration: BoxDecoration(
+          color: context.colour.onPrimary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: BBText(
+                        'Advanced Options',
+                        style: context.font.headlineMedium,
+                      ),
                     ),
-                  );
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: timeoutController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Timeout (seconds)',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: retryController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Retry Count'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: stopGapController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Stop Gap'),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: BBButton.small(
+                      label: 'Cancel',
+                      onPressed: () => Navigator.of(context).pop(),
+                      bgColor: Colors.transparent,
+                      outlined: true,
+                      textStyle: context.font.headlineLarge,
+                      textColor: context.colour.secondary,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: BBButton.small(
+                      label: 'Save',
+                      onPressed: () {
+                        final timeout = int.tryParse(timeoutController.text);
+                        final retry = int.tryParse(retryController.text);
+                        final stopGap = int.tryParse(stopGapController.text);
 
-                  Navigator.pop(context);
-                },
-                child: const Text('Save'),
+                        context.read<ElectrumSettingsBloc>().add(
+                          UpdateElectrumAdvancedOptions(
+                            timeout: timeout,
+                            retry: retry,
+                            stopGap: stopGap,
+                          ),
+                        );
+
+                        Navigator.pop(context);
+                      },
+                      bgColor: context.colour.secondary,
+                      textStyle: context.font.headlineLarge,
+                      textColor: context.colour.onSecondary,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
+        ),
+      ),
     );
   }
 }

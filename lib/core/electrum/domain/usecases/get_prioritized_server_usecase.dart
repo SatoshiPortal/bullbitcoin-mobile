@@ -28,7 +28,7 @@ class GetPrioritizedServerUsecase {
     }
 
     // Try alternative default servers
-    final defaultServers = await electrumServerRepository.getAllDefaultServers(
+    final defaultServers = await electrumServerRepository.getDefaultServers(
       network: network,
     );
 
