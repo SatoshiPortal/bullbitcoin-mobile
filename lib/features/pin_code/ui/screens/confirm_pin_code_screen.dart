@@ -21,9 +21,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          return;
-        }
+        if (didPop) return;
         backHandler();
       },
       child: Scaffold(

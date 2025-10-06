@@ -30,9 +30,7 @@ class PinCodeRepository {
     return pin == pinCode;
   }
 
-  Future<void> deletePinCode() async {
-    await _storage.deleteValue(_key);
-  }
+  Future<void> deletePinCode() async => await _storage.deleteValue(_key);
 }
 
 class PinCodeNotSetException implements Exception {
