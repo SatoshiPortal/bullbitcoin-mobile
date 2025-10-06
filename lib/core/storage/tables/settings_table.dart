@@ -9,4 +9,5 @@ class Settings extends Table {
   TextColumn get currency => text()();
   BoolColumn get hideAmounts => boolean()();
   BoolColumn get isSuperuser => boolean()();
+  TextColumn get themeMode => text().withDefault(const Constant('system'))();
 }

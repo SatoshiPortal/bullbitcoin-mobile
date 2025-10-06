@@ -18,6 +18,7 @@ class SettingsDatasource {
         language: model.language.name,
         hideAmounts: model.hideAmounts,
         isSuperuser: model.isSuperuser,
+        themeMode: Value(model.themeMode.name),
       ),
     );
   }
@@ -33,6 +34,7 @@ class SettingsDatasource {
       currency: row.currency,
       hideAmounts: row.hideAmounts,
       isSuperuser: row.isSuperuser,
+      themeMode: AppThemeMode.fromName(row.themeMode),
     );
   }
 
@@ -69,6 +71,12 @@ class SettingsDatasource {
   Future<void> setIsSuperuser(bool isSuperuser) async {
     await _sqlite.managers.settings.update(
       (f) => f(id: const Value(1), isSuperuser: Value(isSuperuser)),
+    );
+  }
+
+  Future<void> setThemeMode(AppThemeMode themeMode) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(id: const Value(1), themeMode: Value(themeMode.name)),
     );
   }
 }

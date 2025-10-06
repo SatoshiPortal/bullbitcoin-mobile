@@ -95,6 +95,13 @@ class AllSettingsScreen extends StatelessWidget {
                   },
                 ),
                 SettingsEntryItem(
+                  icon: Icons.palette,
+                  title: 'Theme',
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.theme.name);
+                  },
+                ),
+                SettingsEntryItem(
                   icon: Icons.settings,
                   title: 'App Settings',
                   onTap: () {

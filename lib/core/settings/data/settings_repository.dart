@@ -26,6 +26,7 @@ class SettingsRepository {
     required Language language,
     required bool hideAmounts,
     required bool isSuperuser,
+    AppThemeMode themeMode = AppThemeMode.system,
   }) async {
     await _settingsDatasource.store(
       SettingsModel(
@@ -36,6 +37,7 @@ class SettingsRepository {
         currency: currency,
         hideAmounts: hideAmounts,
         isSuperuser: isSuperuser,
+        themeMode: themeMode,
       ),
     );
   }
@@ -50,6 +52,7 @@ class SettingsRepository {
       language: s.language,
       hideAmounts: s.hideAmounts,
       isSuperuser: s.isSuperuser,
+      themeMode: s.themeMode,
     );
   }
 
@@ -76,5 +79,9 @@ class SettingsRepository {
 
   Future<void> setIsSuperuser(bool superuser) async {
     await _settingsDatasource.setIsSuperuser(superuser);
+  }
+
+  Future<void> setThemeMode(AppThemeMode themeMode) async {
+    await _settingsDatasource.setThemeMode(themeMode);
   }
 }

@@ -167,21 +167,47 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             },
           ),
         ],
-        child: BlocSelector<SettingsCubit, SettingsState, Language?>(
-          selector: (settings) => settings.language,
-          builder:
-              (context, language) => MaterialApp.router(
-                title: 'BullBitcoin Wallet',
-                debugShowCheckedModeBanner: false,
-                routerConfig: AppRouter.router,
-                theme: AppTheme.themeData(AppThemeType.light),
-                locale: language?.locale,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: AppLocalizations.supportedLocales,
-                builder: (_, child) {
-                  return AppStartupWidget(app: child!);
-                },
+        child: BlocSelector<
+          SettingsCubit,
+          SettingsState,
+          (Language?, AppThemeMode?)
+        >(
+          selector:
+              (settings) => (
+                settings.language,
+                settings.storedSettings?.themeMode,
               ),
+          builder: (context, data) {
+            final (language, themeMode) = data;
+            final systemBrightness = MediaQuery.platformBrightnessOf(context);
+            final effectiveThemeMode = themeMode ?? AppThemeMode.system;
+
+            late final AppThemeType appThemeType;
+            switch (effectiveThemeMode) {
+              case AppThemeMode.light:
+                appThemeType = AppThemeType.light;
+              case AppThemeMode.dark:
+                appThemeType = AppThemeType.dark;
+              case AppThemeMode.system:
+                appThemeType =
+                    systemBrightness == Brightness.dark
+                        ? AppThemeType.dark
+                        : AppThemeType.light;
+            }
+
+            return MaterialApp.router(
+              title: 'BullBitcoin Wallet',
+              debugShowCheckedModeBanner: false,
+              routerConfig: AppRouter.router,
+              theme: AppTheme.themeData(appThemeType),
+              locale: language?.locale,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              builder: (_, child) {
+                return AppStartupWidget(app: child!);
+              },
+            );
+          },
         ),
       ),
     );

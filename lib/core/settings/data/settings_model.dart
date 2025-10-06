@@ -8,6 +8,7 @@ class SettingsModel {
   final String currency;
   final bool hideAmounts;
   final bool isSuperuser;
+  final AppThemeMode themeMode;
 
   const SettingsModel({
     required this.id,
@@ -17,5 +18,6 @@ class SettingsModel {
     required this.currency,
     required this.hideAmounts,
     required this.isSuperuser,
+    required this.themeMode,
   });
 }

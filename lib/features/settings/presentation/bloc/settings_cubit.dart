@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usec
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -24,6 +25,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetCurrencyUsecase setCurrencyUsecase,
     required SetHideAmountsUsecase setHideAmountsUsecase,
     required SetIsSuperuserUsecase setIsSuperuserUsecase,
+    required SetThemeModeUsecase setThemeModeUsecase,
     required GetOldSeedsUsecase getOldSeedsUsecase,
   }) : _setEnvironmentUsecase = setEnvironmentUsecase,
        _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
@@ -32,6 +34,7 @@ class SettingsCubit extends Cubit<SettingsState> {
        _setCurrencyUsecase = setCurrencyUsecase,
        _setHideAmountsUsecase = setHideAmountsUsecase,
        _setIsSuperuserUsecase = setIsSuperuserUsecase,
+       _setThemeModeUsecase = setThemeModeUsecase,
        _getOldSeedsUsecase = getOldSeedsUsecase,
        super(const SettingsState());
 
@@ -42,6 +45,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetCurrencyUsecase _setCurrencyUsecase;
   final SetHideAmountsUsecase _setHideAmountsUsecase;
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
+  final SetThemeModeUsecase _setThemeModeUsecase;
   final GetOldSeedsUsecase _getOldSeedsUsecase;
 
   Future<void> init() async {
@@ -126,6 +130,18 @@ class SettingsCubit extends Cubit<SettingsState> {
     await _setIsSuperuserUsecase.execute(active);
     emit(
       state.copyWith(storedSettings: settings?.copyWith(isSuperuser: active)),
+    );
+  }
+
+  Future<void> changeThemeMode(AppThemeMode themeMode) async {
+    final settings = state.storedSettings;
+    // Log the action
+    log.info(
+      'Theme mode changed to: ${themeMode.name} + currentThemeMode: ${settings?.themeMode.name}',
+    );
+    await _setThemeModeUsecase.execute(themeMode);
+    emit(
+      state.copyWith(storedSettings: settings?.copyWith(themeMode: themeMode)),
     );
   }
 
