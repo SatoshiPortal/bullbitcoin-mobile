@@ -78,10 +78,13 @@ class RecoverBullVaultRecoveryCubit
     if (state.decryptedVault == null || state.isImported) return;
 
     try {
+      emit(state.copyWith(isImporting: true));
       await _restoreVaultUsecase.execute(decryptedVault: state.decryptedVault!);
       emit(state.copyWith(isImported: true));
     } catch (e) {
       emit(state.copyWith(error: RecoverBullVaultRecoveryError(e.toString())));
+    } finally {
+      emit(state.copyWith(isImporting: false));
     }
   }
 }
