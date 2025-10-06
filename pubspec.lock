@@ -296,10 +296,10 @@ packages:
     dependency: transitive
     description:
       name: camera_platform_interface
-      sha256: ea1ef6ba79cdbed93df2d3eeef11542a90dec24dbcd9cde574926b86d7a09a10
+      sha256: "2f757024a48696ff4814a789b0bd90f5660c0fb25f393ab4564fb483327930e2"
       url: "https://pub.dev"
     source: hosted
-    version: "2.11.0"
+    version: "2.10.0"
   camera_web:
     dependency: transitive
     description:
@@ -1181,10 +1181,10 @@ packages:
     dependency: transitive
     description:
       name: ledger_usb_plus
-      sha256: "1b60c81081fe9f104aaa0ca27a9b4e27ffe62462752ea826a8a0a9b0596de33c"
+      sha256: "5dbc66c80dbb08098b54c62882a16dc23a995ed2e085d76d48415102c37911cb"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.6"
+    version: "1.0.7"
   lint:
     dependency: "direct dev"
     description:
@@ -1486,10 +1486,10 @@ packages:
     dependency: transitive
     description:
       name: pool
-      sha256: "978783255c543aa3586a1b3c21f6e9d720eb315376a915872c61ef8b5c20177d"
+      sha256: "20fe868b6314b322ea036ba325e6fc0711a22948856475e2c2b6306e8ab39c2a"
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.2"
+    version: "1.5.1"
   posix:
     dependency: transitive
     description:

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
@@ -55,6 +56,7 @@ class WalletLocator {
         saveAutoSwapSettingsUsecase: locator<SaveAutoSwapSettingsUsecase>(),
         autoSwapExecutionUsecase: locator<AutoSwapExecutionUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
+        checkAllServiceStatusUsecase: locator<CheckAllServiceStatusUsecase>(),
       ),
     );
   }

@@ -49,3 +49,13 @@ class ExecuteAutoSwap extends WalletEvent {
 class ExecuteAutoSwapFeeOverride extends WalletEvent {
   const ExecuteAutoSwapFeeOverride();
 }
+
+class CheckServiceStatus extends WalletEvent {
+  const CheckServiceStatus();
+}
+
+class ServiceStatusChecked extends WalletEvent {
+  final AllServicesStatus status;
+
+  const ServiceStatusChecked(this.status);
+}

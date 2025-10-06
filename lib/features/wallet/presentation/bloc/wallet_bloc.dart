@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
+import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
+import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
@@ -46,6 +48,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required SaveAutoSwapSettingsUsecase saveAutoSwapSettingsUsecase,
     required AutoSwapExecutionUsecase autoSwapExecutionUsecase,
     required DeleteWalletUsecase deleteWalletUsecase,
+    required CheckAllServiceStatusUsecase checkAllServiceStatusUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -61,6 +64,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _saveAutoSwapSettingsUsecase = saveAutoSwapSettingsUsecase,
        _autoSwapExecutionUsecase = autoSwapExecutionUsecase,
        _deleteWalletUsecase = deleteWalletUsecase,
+       _checkAllServiceStatusUsecase = checkAllServiceStatusUsecase,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -72,6 +76,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<ExecuteAutoSwap>(_onExecuteAutoSwap);
     on<ExecuteAutoSwapFeeOverride>(_onExecuteAutoSwapFeeOverride);
     on<WalletDeleted>(_onDeleted);
+    on<CheckServiceStatus>(_onCheckServiceStatus);
+    on<ServiceStatusChecked>(_onServiceStatusChecked);
 
     // Start listening to auto swap timer when bloc is created
   }
@@ -91,6 +97,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
   final AutoSwapExecutionUsecase _autoSwapExecutionUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
+  final CheckAllServiceStatusUsecase _checkAllServiceStatusUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -507,5 +514,42 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(autoSwapExecuting: false));
       log.severe('[WalletBloc] Failed to execute auto swap: $e');
     }
+  }
+
+  Future<void> _onCheckServiceStatus(
+    CheckServiceStatus event,
+    Emitter<WalletState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(isCheckingServiceStatus: true));
+
+      final defaultWallet =
+          state.defaultBitcoinWallet() ?? state.defaultLiquidWallet();
+      if (defaultWallet == null) {
+        emit(state.copyWith(isCheckingServiceStatus: false));
+        return;
+      }
+
+      final serviceStatus = await _checkAllServiceStatusUsecase.execute(
+        network: defaultWallet.network,
+      );
+
+      add(ServiceStatusChecked(serviceStatus));
+    } catch (e) {
+      log.severe('[WalletBloc] Failed to check service status: $e');
+      emit(state.copyWith(isCheckingServiceStatus: false));
+    }
+  }
+
+  void _onServiceStatusChecked(
+    ServiceStatusChecked event,
+    Emitter<WalletState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        serviceStatus: event.status,
+        isCheckingServiceStatus: false,
+      ),
+    );
   }
 }
