@@ -584,4 +584,58 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       throw Exception('Failed to create DCA: $e');
     }
   }
+
+  @override
+  Future<Map<String, dynamic>> getBuyLimits() async {
+    try {
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+
+      if (apiKeyModel == null) {
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw ApiKeyException(
+          'API key is inactive. Please login again to your Bull Bitcoin account.',
+        );
+      }
+
+      return await _bullbitcoinApiDatasource.getBuyLimits(
+        apiKey: apiKeyModel.key,
+      );
+    } catch (e) {
+      throw Exception('Failed to get buy limits: $e');
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getSellLimits() async {
+    try {
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+
+      if (apiKeyModel == null) {
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw ApiKeyException(
+          'API key is inactive. Please login again to your Bull Bitcoin account.',
+        );
+      }
+
+      return await _bullbitcoinApiDatasource.getSellLimits(
+        apiKey: apiKeyModel.key,
+      );
+    } catch (e) {
+      throw Exception('Failed to get sell limits: $e');
+    }
+  }
 }

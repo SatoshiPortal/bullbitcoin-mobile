@@ -6,16 +6,21 @@ sealed class DcaState with _$DcaState {
     ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
   }) = DcaInitialState;
-  const factory DcaState.buyInput({required UserSummary userSummary}) =
-      DcaBuyInputState;
+  const factory DcaState.buyInput({
+    required String? defaultLightningAddress,
+    required List<UserBalance> balances,
+    FiatCurrency? currency,
+  }) = DcaBuyInputState;
   const factory DcaState.walletSelection({
-    required UserSummary userSummary,
+    required String? defaultLightningAddress,
+    required List<UserBalance> balances,
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
   }) = DcaWalletSelectionState;
   const factory DcaState.confirmation({
-    required UserSummary userSummary,
+    required String? defaultLightningAddress,
+    required List<UserBalance> balances,
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
@@ -35,12 +40,15 @@ sealed class DcaState with _$DcaState {
   String? get defaultLightningAddress {
     return when(
       initial: (apiKeyException, getUserSummaryException) => null,
-      buyInput: (userSummary) => userSummary.autoBuy.addresses.lightning,
+      buyInput:
+          (defaultLightningAddress, balances, currency) =>
+              defaultLightningAddress,
       walletSelection:
-          (userSummary, amount, currency, frequency) =>
-              userSummary.autoBuy.addresses.lightning,
+          (defaultLightningAddress, balances, amount, currency, frequency) =>
+              defaultLightningAddress,
       confirmation: (
-        userSummary,
+        defaultLightningAddress,
+        balances,
         amount,
         currency,
         frequency,
@@ -50,7 +58,7 @@ sealed class DcaState with _$DcaState {
         isConfirmingDca,
         error,
       ) {
-        return userSummary.autoBuy.addresses.lightning;
+        return defaultLightningAddress;
       },
       success: (amount, currency, frequency) => null,
     );
@@ -58,14 +66,29 @@ sealed class DcaState with _$DcaState {
 
   DcaBuyInputState? get toCleanBuyInputState {
     return whenOrNull(
-      buyInput: (userSummary) {
-        return DcaBuyInputState(userSummary: userSummary);
+      buyInput: (defaultLightningAddress, balances, currency) {
+        return DcaBuyInputState(
+          defaultLightningAddress: defaultLightningAddress,
+          balances: balances,
+          currency: currency,
+        );
       },
-      walletSelection: (userSummary, amount, currency, frequency) {
-        return DcaBuyInputState(userSummary: userSummary);
+      walletSelection: (
+        defaultLightningAddress,
+        balances,
+        amount,
+        currency,
+        frequency,
+      ) {
+        return DcaBuyInputState(
+          defaultLightningAddress: defaultLightningAddress,
+          balances: balances,
+          currency: currency,
+        );
       },
       confirmation: (
-        userSummary,
+        defaultLightningAddress,
+        balances,
         amount,
         currency,
         frequency,
@@ -75,23 +98,35 @@ sealed class DcaState with _$DcaState {
         isConfirmingDca,
         error,
       ) {
-        return DcaBuyInputState(userSummary: userSummary);
+        return DcaBuyInputState(
+          defaultLightningAddress: defaultLightningAddress,
+          balances: balances,
+          currency: currency,
+        );
       },
     );
   }
 
   DcaWalletSelectionState? get toCleanWalletSelectionState {
     return whenOrNull(
-      walletSelection: (userSummary, amount, currency, frequency) {
+      walletSelection: (
+        defaultLightningAddress,
+        balances,
+        amount,
+        currency,
+        frequency,
+      ) {
         return DcaWalletSelectionState(
-          userSummary: userSummary,
+          defaultLightningAddress: defaultLightningAddress,
+          balances: balances,
           amount: amount,
           currency: currency,
           frequency: frequency,
         );
       },
       confirmation: (
-        userSummary,
+        defaultLightningAddress,
+        balances,
         amount,
         currency,
         frequency,
@@ -102,7 +137,8 @@ sealed class DcaState with _$DcaState {
         error,
       ) {
         return DcaWalletSelectionState(
-          userSummary: userSummary,
+          defaultLightningAddress: defaultLightningAddress,
+          balances: balances,
           amount: amount,
           currency: currency,
           frequency: frequency,
@@ -114,7 +150,8 @@ sealed class DcaState with _$DcaState {
   DcaConfirmationState? get toCleanConfirmationState {
     return whenOrNull(
       confirmation: (
-        userSummary,
+        defaultLightningAddress,
+        balances,
         amount,
         currency,
         frequency,
@@ -125,7 +162,8 @@ sealed class DcaState with _$DcaState {
         error,
       ) {
         return DcaConfirmationState(
-          userSummary: userSummary,
+          defaultLightningAddress: defaultLightningAddress,
+          balances: balances,
           amount: amount,
           currency: currency,
           frequency: frequency,
@@ -139,14 +177,16 @@ sealed class DcaState with _$DcaState {
     );
   }
 
-  FiatCurrency get currency {
+  FiatCurrency? get currency {
     return when(
-      initial: (apiKeyException, getUserSummaryException) => FiatCurrency.cad,
-      buyInput:
-          (userSummary) => FiatCurrency.fromCode(userSummary.currency ?? 'CAD'),
-      walletSelection: (userSummary, amount, currency, frequency) => currency,
+      initial: (apiKeyException, getUserSummaryException) => null,
+      buyInput: (defaultLightningAddress, balances, currency) => currency,
+      walletSelection:
+          (defaultLightningAddress, balances, amount, currency, frequency) =>
+              currency,
       confirmation: (
-        userSummary,
+        defaultLightningAddress,
+        balances,
         amount,
         currency,
         frequency,
@@ -164,11 +204,13 @@ sealed class DcaState with _$DcaState {
 
   List<UserBalance> get balances => when(
     initial: (apiKeyException, getUserSummaryException) => [],
-    buyInput: (userSummary) => userSummary.balances,
+    buyInput: (defaultLightningAddress, balances, currency) => balances,
     walletSelection:
-        (userSummary, amount, currency, frequency) => userSummary.balances,
+        (defaultLightningAddress, balances, amount, currency, frequency) =>
+            balances,
     confirmation: (
-      userSummary,
+      defaultLightningAddress,
+      balances,
       amount,
       currency,
       frequency,
@@ -178,7 +220,7 @@ sealed class DcaState with _$DcaState {
       isConfirmingDca,
       error,
     ) {
-      return userSummary.balances;
+      return balances;
     },
     success: (amount, currency, frequency) => [],
   );
@@ -191,7 +233,8 @@ extension DcaBuyInputStateX on DcaBuyInputState {
     required DcaBuyFrequency frequency,
   }) {
     return DcaWalletSelectionState(
-      userSummary: userSummary,
+      defaultLightningAddress: defaultLightningAddress,
+      balances: balances,
       amount: amount,
       currency: currency,
       frequency: frequency,
@@ -206,7 +249,8 @@ extension DcaWalletSelectionStateX on DcaWalletSelectionState {
     bool isDefaultLightningAddress = false,
   }) {
     return DcaConfirmationState(
-      userSummary: userSummary,
+      defaultLightningAddress: defaultLightningAddress,
+      balances: balances,
       amount: amount,
       currency: currency,
       frequency: frequency,
