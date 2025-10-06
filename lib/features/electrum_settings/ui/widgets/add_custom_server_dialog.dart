@@ -15,6 +15,7 @@ class AddCustomServerDialog extends StatefulWidget {
 
   static Future<void> show(BuildContext context) {
     final bloc = context.read<ElectrumSettingsBloc>();
+
     return BlurredBottomSheet.show(
       context: context,
       child: BlocProvider.value(
@@ -29,20 +30,20 @@ class AddCustomServerDialog extends StatefulWidget {
 }
 
 class _AddCustomServerDialogState extends State<AddCustomServerDialog> {
-  final mainnetController = TextEditingController();
-  final testnetController = TextEditingController();
+  final controller = TextEditingController();
   bool hasError = false;
 
   @override
   void dispose() {
-    mainnetController.dispose();
-    testnetController.dispose();
+    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final state = context.watch<ElectrumSettingsBloc>().state;
+    final isTestnet = state.isTestnet;
+    final networkName = isTestnet ? 'Testnet' : 'Mainnet';
 
     return Container(
       constraints: BoxConstraints(
@@ -90,9 +91,9 @@ class _AddCustomServerDialogState extends State<AddCustomServerDialog> {
                     children: [
                       const Gap(16),
                       TextField(
-                        controller: mainnetController,
+                        controller: controller,
                         decoration: InputDecoration(
-                          labelText: 'Mainnet Server URL',
+                          labelText: '$networkName Server URL',
                           labelStyle: context.font.labelLarge?.copyWith(
                             color: context.colour.onSurface.withValues(
                               alpha: 0.8,
@@ -123,66 +124,25 @@ class _AddCustomServerDialogState extends State<AddCustomServerDialog> {
                           ),
                           errorText:
                               state.statusError.isNotEmpty &&
-                                      state.statusError.contains('Mainnet')
+                                      state.statusError.contains(networkName)
                                   ? state.statusError
                                   : null,
                           errorStyle: TextStyle(color: context.colour.error),
                         ),
                         onChanged: (value) {
-                          widget.bloc.add(
-                            UpdateCustomServerMainnet(customServer: value),
-                          );
+                          if (isTestnet) {
+                            widget.bloc.add(
+                              UpdateCustomServerTestnet(customServer: value),
+                            );
+                          } else {
+                            widget.bloc.add(
+                              UpdateCustomServerMainnet(customServer: value),
+                            );
+                          }
                           if (hasError) setState(() => hasError = false);
                         },
                       ),
                       const Gap(16),
-                      TextField(
-                        controller: testnetController,
-                        decoration: InputDecoration(
-                          labelText: 'Testnet Server URL',
-                          labelStyle: context.font.labelLarge?.copyWith(
-                            color: context.colour.onSurface.withValues(
-                              alpha: 0.8,
-                            ),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: context.colour.outline,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: context.colour.primary,
-                              width: 2,
-                            ),
-                          ),
-                          hintText: 'testnet.electrum.example.com:60001',
-                          hintStyle: context.font.bodyMedium?.copyWith(
-                            color: context.colour.onSurface.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 20,
-                          ),
-                          errorText:
-                              state.statusError.isNotEmpty &&
-                                      state.statusError.contains('Testnet')
-                                  ? state.statusError
-                                  : null,
-                          errorStyle: TextStyle(color: context.colour.error),
-                        ),
-                        onChanged: (value) {
-                          widget.bloc.add(
-                            UpdateCustomServerTestnet(customServer: value),
-                          );
-                          if (hasError) setState(() => hasError = false);
-                        },
-                      ),
-                      const Gap(24),
                       BlocListener<ElectrumSettingsBloc, ElectrumSettingsState>(
                         listenWhen:
                             (previous, current) =>
@@ -191,15 +151,12 @@ class _AddCustomServerDialogState extends State<AddCustomServerDialog> {
                                 previous.status != current.status ||
                                 previous.statusError != current.statusError,
                         listener: (context, state) {
-                          if (state.saveSuccessful) {
-                            Navigator.pop(context);
-                          }
+                          if (state.saveSuccessful) Navigator.pop(context);
                         },
                         child: BBButton.big(
                           label: 'Add Server',
                           onPressed: () {
-                            if (mainnetController.text.trim().isEmpty &&
-                                testnetController.text.trim().isEmpty) {
+                            if (controller.text.trim().isEmpty) {
                               setState(() => hasError = true);
                               return;
                             }
@@ -211,16 +168,19 @@ class _AddCustomServerDialogState extends State<AddCustomServerDialog> {
                               );
                             }
 
-                            widget.bloc.add(
-                              UpdateCustomServerMainnet(
-                                customServer: mainnetController.text.trim(),
-                              ),
-                            );
-                            widget.bloc.add(
-                              UpdateCustomServerTestnet(
-                                customServer: testnetController.text.trim(),
-                              ),
-                            );
+                            if (isTestnet) {
+                              widget.bloc.add(
+                                UpdateCustomServerTestnet(
+                                  customServer: controller.text.trim(),
+                                ),
+                              );
+                            } else {
+                              widget.bloc.add(
+                                UpdateCustomServerMainnet(
+                                  customServer: controller.text.trim(),
+                                ),
+                              );
+                            }
 
                             widget.bloc.add(const SaveElectrumServerChanges());
                           },
@@ -231,13 +191,11 @@ class _AddCustomServerDialogState extends State<AddCustomServerDialog> {
                           bgColor: context.colour.secondary,
                         ),
                       ),
-                      if (hasError &&
-                          mainnetController.text.isEmpty &&
-                          testnetController.text.isEmpty)
+                      if (hasError && controller.text.isEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: BBText(
-                            'At least one server URL is required',
+                            'Server URL is required',
                             style: context.font.bodySmall?.copyWith(
                               color: context.colour.error,
                             ),
