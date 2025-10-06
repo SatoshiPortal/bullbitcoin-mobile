@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository_impl.dart';
-import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_repository.dart';
+import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
+import 'package:bb_mobile/features/pin_code/domain/usecases/delete_pin_code_usecase.dart';
+import 'package:bb_mobile/features/pin_code/domain/usecases/is_pin_code_set_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:bb_mobile/locator.dart';
@@ -12,7 +13,7 @@ class PinCodeLocator {
 
     // Repositories
     locator.registerLazySingleton<PinCodeRepository>(
-      () => PinCodeRepositoryImpl(
+      () => PinCodeRepository(
         locator<KeyValueStorageDatasource<String>>(
           instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
         ),
@@ -21,15 +22,24 @@ class PinCodeLocator {
 
     // Use cases
     locator.registerFactory<SetPinCodeUsecase>(
-      () => SetPinCodeUsecase(
-        pinCodeRepository: locator<PinCodeRepository>(),
-      ),
+      () => SetPinCodeUsecase(pinCodeRepository: locator<PinCodeRepository>()),
+    );
+
+    locator.registerFactory<DeletePinCodeUsecase>(
+      () =>
+          DeletePinCodeUsecase(pinCodeRepository: locator<PinCodeRepository>()),
+    );
+    locator.registerFactory<IsPinCodeSetUsecase>(
+      () =>
+          IsPinCodeSetUsecase(pinCodeRepository: locator<PinCodeRepository>()),
     );
 
     // Blocs
     locator.registerFactory<PinCodeSettingBloc>(
       () => PinCodeSettingBloc(
+        isPinCodeSetUsecase: locator<IsPinCodeSetUsecase>(),
         setPinCodeUsecase: locator<SetPinCodeUsecase>(),
+        deletePinCodeUsecase: locator<DeletePinCodeUsecase>(),
       ),
     );
   }
