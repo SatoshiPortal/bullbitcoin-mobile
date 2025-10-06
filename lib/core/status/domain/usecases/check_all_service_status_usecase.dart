@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
+import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -16,6 +17,7 @@ class CheckAllServiceStatusUsecase {
   final BoltzSwapRepository _testnetBoltzSwapRepository;
   final ExchangeRateRepository _exchangeRateRepository;
   final PayjoinRepository _payjoinRepository;
+  final FeesRepository _feesRepository;
 
   CheckAllServiceStatusUsecase({
     required ElectrumServerRepository electrumServerRepository,
@@ -23,11 +25,13 @@ class CheckAllServiceStatusUsecase {
     required BoltzSwapRepository testnetBoltzSwapRepository,
     required ExchangeRateRepository exchangeRateRepository,
     required PayjoinRepository payjoinRepository,
+    required FeesRepository feesRepository,
   }) : _electrumServerRepository = electrumServerRepository,
        _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
        _testnetBoltzSwapRepository = testnetBoltzSwapRepository,
        _exchangeRateRepository = exchangeRateRepository,
-       _payjoinRepository = payjoinRepository;
+       _payjoinRepository = payjoinRepository,
+       _feesRepository = feesRepository;
 
   Future<AllServicesStatus> execute({required Network network}) async {
     final now = DateTime.now();
@@ -40,6 +44,7 @@ class CheckAllServiceStatusUsecase {
         _checkBoltzService(network),
         _checkPayjoinService(),
         _checkPricerService(network),
+        _checkMempoolService(network),
       ]);
 
       return AllServicesStatus(
@@ -49,6 +54,7 @@ class CheckAllServiceStatusUsecase {
         boltz: results[3],
         payjoin: results[4],
         pricer: results[5],
+        mempool: results[6],
         lastChecked: now,
       );
     } catch (e) {
@@ -184,6 +190,25 @@ class CheckAllServiceStatusUsecase {
     }
   }
 
+  Future<ServiceStatusInfo> _checkMempoolService(Network network) async {
+    try {
+      // Test mempool connectivity by getting fees
+      await _feesRepository.getNetworkFees(network: network);
+
+      return ServiceStatusInfo(
+        status: ServiceStatus.online,
+        name: 'Mempool',
+        lastChecked: DateTime.now(),
+      );
+    } catch (e) {
+      return ServiceStatusInfo(
+        status: ServiceStatus.offline,
+        name: 'Mempool',
+        lastChecked: DateTime.now(),
+      );
+    }
+  }
+
   Future<ServiceStatusInfo> _checkInternetConnection() async {
     try {
       final result = await InternetAddress.lookup('bullbitcoin.com');
@@ -233,6 +258,11 @@ class CheckAllServiceStatusUsecase {
       pricer: ServiceStatusInfo(
         status: ServiceStatus.unknown,
         name: 'Pricer',
+        lastChecked: now,
+      ),
+      mempool: ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Mempool',
         lastChecked: now,
       ),
       lastChecked: now,

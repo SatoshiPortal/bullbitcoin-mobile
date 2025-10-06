@@ -28,6 +28,7 @@ sealed class AllServicesStatus with _$AllServicesStatus {
     required ServiceStatusInfo boltz,
     required ServiceStatusInfo payjoin,
     required ServiceStatusInfo pricer,
+    required ServiceStatusInfo mempool,
     required DateTime lastChecked,
   }) = _AllServicesStatus;
 
@@ -39,7 +40,8 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       liquidElectrum.isOnline &&
       boltz.isOnline &&
       payjoin.isOnline &&
-      pricer.isOnline;
+      pricer.isOnline &&
+      mempool.isOnline;
 
   bool get hasAnyServiceOffline => !allServicesOnline;
 }

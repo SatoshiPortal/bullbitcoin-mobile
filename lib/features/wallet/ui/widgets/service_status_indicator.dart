@@ -194,6 +194,8 @@ class ServiceStatusBottomSheet extends StatelessWidget {
                 _ServiceStatusItem(service: serviceStatus!.payjoin),
                 const SizedBox(height: 12),
                 _ServiceStatusItem(service: serviceStatus!.pricer),
+                const SizedBox(height: 12),
+                _ServiceStatusItem(service: serviceStatus!.mempool),
                 const SizedBox(height: 16),
                 BBText(
                   'Last checked: ${_formatDateTime(serviceStatus!.lastChecked)}',
