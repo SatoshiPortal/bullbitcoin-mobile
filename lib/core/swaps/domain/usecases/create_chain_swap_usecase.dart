@@ -43,20 +43,15 @@ class CreateChainSwapUsecase {
         throw Exception('Both wallets must be on the same network');
       }
 
+      if (bitcoinWallet.isWatchOnly && type == SwapType.bitcoinToLiquid) {
+        throw Exception(
+          'Cannot create Bitcoin To Liquid swap with watch-only bitcoin wallet',
+        );
+      }
+
       final isTestnet = bitcoinWallet.network.isTestnet;
       final swapRepository =
           isTestnet ? _swapRepositoryTestnet : _swapRepository;
-
-      final (bitcoinMnemonicSeed, liquidMnemonicSeed) =
-          await (
-            _seedRepository.get(bitcoinWallet.masterFingerprint),
-            _seedRepository.get(liquidWallet.masterFingerprint),
-          ).wait;
-
-      if (bitcoinMnemonicSeed is! MnemonicSeed ||
-          liquidMnemonicSeed is! MnemonicSeed) {
-        throw Exception('One or both seeds are not mnemonic seeds');
-      }
 
       final btcElectrumUrl =
           bitcoinWallet.network.isTestnet
@@ -70,6 +65,13 @@ class CreateChainSwapUsecase {
 
       switch (type) {
         case SwapType.bitcoinToLiquid:
+          final bitcoinMnemonicSeed = await _seedRepository.get(
+            bitcoinWallet.masterFingerprint,
+          );
+          if (bitcoinMnemonicSeed is! MnemonicSeed) {
+            throw Exception('Bitcoin wallet seed not found');
+          }
+
           return await swapRepository.createBitcoinToLiquidSwap(
             sendWalletMnemonic: bitcoinMnemonicSeed.mnemonicWords.join(' '),
             sendWalletId: bitcoinWalletId,
@@ -79,6 +81,13 @@ class CreateChainSwapUsecase {
             lbtcElectrumUrl: lbtcElectrumUrl,
           );
         case SwapType.liquidToBitcoin:
+          final liquidMnemonicSeed = await _seedRepository.get(
+            liquidWallet.masterFingerprint,
+          );
+          if (liquidMnemonicSeed is! MnemonicSeed) {
+            throw Exception('Liquid wallet seed not found');
+          }
+
           return await swapRepository.createLiquidToBitcoinSwap(
             sendWalletMnemonic: liquidMnemonicSeed.mnemonicWords.join(' '),
             sendWalletId: liquidWalletId,

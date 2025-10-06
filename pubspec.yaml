@@ -3,6 +3,7 @@ description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
 version: 5.4.5+96
 
+
 environment:
   sdk: ">=3.7.0 <4.0.0"
 dependencies:
