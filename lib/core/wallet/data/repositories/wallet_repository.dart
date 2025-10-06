@@ -122,8 +122,6 @@ class WalletRepository {
       watchOnlyDescriptor,
     );
 
-    await _walletMetadataDatasource.store(metadata);
-
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
 
@@ -131,6 +129,8 @@ class WalletRepository {
     for (final wallet in allWallets) {
       if (wallet.id == metadata.id) throw 'Wallet already exists';
     }
+
+    await _walletMetadataDatasource.store(metadata);
 
     // Return the created wallet entity
     return Wallet(
@@ -167,8 +167,6 @@ class WalletRepository {
       label: label,
     );
 
-    await _walletMetadataDatasource.store(metadata);
-
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
 
@@ -176,6 +174,8 @@ class WalletRepository {
     for (final wallet in allWallets) {
       if (wallet.id == metadata.id) throw 'Wallet already exists';
     }
+
+    await _walletMetadataDatasource.store(metadata);
 
     // Return the created wallet entity
     return Wallet(
