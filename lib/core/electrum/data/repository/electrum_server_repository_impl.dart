@@ -15,13 +15,69 @@ class ElectrumServerRepository {
   }) : _electrumServerStorage = electrumServerStorageDatasource;
 
   Future<void> storeElectrumServer({required ElectrumServer server}) async {
-    final model = ElectrumServerModel.fromEntity(server);
-    await _electrumServerStorage.store(model);
+    if (server.electrumServerProvider is CustomElectrumServerProvider) {
+      // For custom servers, calculate the next available priority
+      final nextPriority = await _electrumServerStorage
+          .getNextCustomServerPriority(network: server.network);
+      final model = ElectrumServerModel.fromEntity(
+        server,
+        customPriority: nextPriority,
+      );
+      await _electrumServerStorage.store(model);
+    } else {
+      // For default servers, use the standard fromEntity method
+      final model = ElectrumServerModel.fromEntity(server);
+      await _electrumServerStorage.store(model);
+    }
   }
 
   Future<void> updateElectrumServer({required ElectrumServer server}) async {
     final model = ElectrumServerModel.fromEntity(server);
     await _electrumServerStorage.update(model);
+  }
+
+  /// Reorder custom servers by updating their priorities
+  Future<void> reorderCustomServers({
+    required Network network,
+    required int oldIndex,
+    required int newIndex,
+  }) async {
+    // Get current custom servers for the network
+    final customServers = await _electrumServerStorage.fetchCustomServers(
+      network: network,
+    );
+
+    if (customServers.isEmpty) return;
+
+    // Sort by current priority to get correct order
+    customServers.sort((a, b) => a.priority.compareTo(b.priority));
+
+    // Validate indices
+    if (oldIndex < 0 ||
+        oldIndex >= customServers.length ||
+        newIndex < 0 ||
+        newIndex >= customServers.length) {
+      return;
+    }
+
+    // Reorder the list
+    if (oldIndex < newIndex) {
+      // Moving down - adjust for ReorderableListView behavior
+      final adjustedNewIndex = newIndex - 1;
+      final serverModel = customServers.removeAt(oldIndex);
+      customServers.insert(adjustedNewIndex, serverModel);
+    } else {
+      // Moving up
+      final serverModel = customServers.removeAt(oldIndex);
+      customServers.insert(newIndex, serverModel);
+    }
+
+    // Update priorities based on new order (1, 2, 3, ...)
+    for (var i = 0; i < customServers.length; i++) {
+      final serverModel = customServers[i];
+      final updatedModel = serverModel.copyWith(priority: i + 1);
+      await _electrumServerStorage.store(updatedModel);
+    }
   }
 
   /// Checks if a server is reachable by attempting a socket connection
@@ -82,13 +138,14 @@ class ElectrumServerRepository {
     return server;
   }
 
-  Future<List<ElectrumServer>> getAllDefaultServers({
+  Future<List<ElectrumServer>> getDefaultServers({
     required Network network,
   }) async {
     final List<ElectrumServer> servers = [];
+    // Fetch providers in priority order: bullBitcoin (1), blockstream (2)
     for (final provider in [
-      DefaultElectrumServerProvider.blockstream,
       DefaultElectrumServerProvider.bullBitcoin,
+      DefaultElectrumServerProvider.blockstream,
     ]) {
       // Try to get the server from storage
       final model = await _electrumServerStorage.fetchDefaultServerByProvider(
@@ -104,17 +161,15 @@ class ElectrumServerRepository {
     return servers;
   }
 
-  Future<ElectrumServer?> getCustomServer({required Network network}) async {
-    // Get custom server if available
-    final model = await _electrumServerStorage.fetchCustomServer(
+  Future<List<ElectrumServer>> getCustomServers({
+    required Network network,
+  }) async {
+    // Get all custom servers for a network
+    final models = await _electrumServerStorage.fetchCustomServers(
       network: network,
     );
 
-    if (model != null) {
-      final server = model.toEntity();
-      return server;
-    }
-    return null;
+    return models.map((model) => model.toEntity()).toList();
   }
 
   Future<List<ElectrumServer>> getElectrumServers({
@@ -122,14 +177,13 @@ class ElectrumServerRepository {
   }) async {
     final List<ElectrumServer> servers = [];
 
-    // Get custom server if available
-    final customServer = await getCustomServer(network: network);
-    if (customServer != null) {
-      servers.add(customServer);
-    }
+    // Always get all servers - both custom and default for UI display
+    final customServers = await getCustomServers(network: network);
+    servers.addAll(customServers);
 
-    final defaultServers = await getAllDefaultServers(network: network);
+    final defaultServers = await getDefaultServers(network: network);
     servers.addAll(defaultServers);
+
     return servers;
   }
 
@@ -143,5 +197,10 @@ class ElectrumServerRepository {
 
     final server = model.toEntity();
     return server;
+  }
+
+  /// Delete a server by URL
+  Future<bool> deleteElectrumServer({required String url}) async {
+    return await _electrumServerStorage.deleteServer(url);
   }
 }

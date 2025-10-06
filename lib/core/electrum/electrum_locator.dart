@@ -1,9 +1,12 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_server_connectivity_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/delete_electrum_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/reorder_custom_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/store_electrum_server_settings_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/try_connection_with_fallback_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/locator.dart';
@@ -45,9 +48,24 @@ class ElectrumLocator {
         electrumServerRepository: locator<ElectrumServerRepository>(),
       ),
     );
+    locator.registerLazySingleton<TryConnectionWithFallbackUsecase>(
+      () => TryConnectionWithFallbackUsecase(
+        electrumServerRepository: locator<ElectrumServerRepository>(),
+      ),
+    );
     locator.registerLazySingleton<GetPrioritizedServerUsecase>(
       () => GetPrioritizedServerUsecase(
         electrumServerRepository: locator<ElectrumServerRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<DeleteElectrumServerUsecase>(
+      () => DeleteElectrumServerUsecase(
+        electrumServerRepository: locator<ElectrumServerRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<ReorderCustomServersUsecase>(
+      () => ReorderCustomServersUsecase(
+        repository: locator<ElectrumServerRepository>(),
       ),
     );
   }

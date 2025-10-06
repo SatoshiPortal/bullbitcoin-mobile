@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_server_connectivity_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/delete_electrum_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/reorder_custom_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/store_electrum_server_settings_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/try_connection_with_fallback_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
@@ -25,6 +28,9 @@ class ElectrumSettingsBloc
   final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
   final CheckElectrumServerConnectivityUsecase _checkElectrumServerConnectivity;
   final UpdateElectrumServerSettingsUsecase _updateElectrumServerSettings;
+  final TryConnectionWithFallbackUsecase _tryConnectionWithFallback;
+  final DeleteElectrumServerUsecase _deleteElectrumServer;
+  final ReorderCustomServersUsecase _reorderCustomServers;
   ElectrumSettingsBloc({
     required GetAllElectrumServersUsecase getAllElectrumServers,
     required StoreElectrumServerSettingsUsecase storeElectrumServerSettings,
@@ -32,11 +38,17 @@ class ElectrumSettingsBloc
     required GetPrioritizedServerUsecase getPrioritizedServerUsecase,
     required CheckElectrumServerConnectivityUsecase
     checkElectrumServerConnectivity,
+    required TryConnectionWithFallbackUsecase tryConnectionWithFallback,
+    required DeleteElectrumServerUsecase deleteElectrumServer,
+    required ReorderCustomServersUsecase reorderCustomServers,
   }) : _getAllElectrumServers = getAllElectrumServers,
        _storeElectrumServerSettings = storeElectrumServerSettings,
        _getPrioritizedServerUsecase = getPrioritizedServerUsecase,
        _checkElectrumServerConnectivity = checkElectrumServerConnectivity,
        _updateElectrumServerSettings = updateElectrumServerSettings,
+       _tryConnectionWithFallback = tryConnectionWithFallback,
+       _deleteElectrumServer = deleteElectrumServer,
+       _reorderCustomServers = reorderCustomServers,
        super(const ElectrumSettingsState()) {
     on<LoadServers>(_onLoadServers);
     on<CheckServerStatus>(_onCheckServerStatus);
@@ -44,6 +56,9 @@ class ElectrumSettingsBloc
     on<ConfigureBitcoinSettings>(_onConfigureBitcoinSettings);
     on<UpdateCustomServerMainnet>(_onUpdateCustomServerMainnet);
     on<UpdateCustomServerTestnet>(_onUpdateCustomServerTestnet);
+    on<ToggleTestnet>(_onToggleTestnet);
+    on<ReorderServers>(_onReorderServers);
+    on<SetPrimaryServer>(_onSetPrimaryServer);
     on<UpdateElectrumAdvancedOptions>(_onUpdateElectrumAdvancedOptions);
     on<ToggleSelectedProvider>(_onToggleSelectedProvider);
     on<ToggleValidateDomain>(_onToggleDomainValidation);
@@ -51,6 +66,7 @@ class ElectrumSettingsBloc
     on<ToggleCustomServerActive>(_onToggleCustomServerActive);
     on<ToggleDefaultServerProvider>(_onToggleDefaultServerProvider);
     on<ToggleCustomServer>(_onToggleCustomServer);
+    on<DeleteCustomServer>(_onDeleteCustomServer);
   }
 
   Future<void> _onLoadServers(
@@ -133,28 +149,35 @@ class ElectrumSettingsBloc
         return;
       }
 
-      await Future.microtask(() async {
-        for (final server in serversToCheck) {
-          if (server.url.isEmpty) continue;
+      // Try connection with fallback logic
+      final (updatedServers, successfulIndex) = await _tryConnectionWithFallback
+          .execute(servers: serversToCheck);
 
-          final serverStatus = await _checkElectrumServerStatus(server);
-
-          if (!emit.isDone) {
-            emit(
-              state.copyWith(
-                status: ElectrumSettingsStatus.success,
-                electrumServers:
-                    state.electrumServers.map((s) {
-                      if (_isSameServer(s, server)) {
-                        return s.copyWith(status: serverStatus);
-                      }
-                      return s;
-                    }).toList(),
-              ),
-            );
+      if (!emit.isDone) {
+        // Update all servers with their new status
+        final allServers = List<ElectrumServer>.from(state.electrumServers);
+        for (final updatedServer in updatedServers) {
+          final index = allServers.indexWhere(
+            (s) => _isSameServer(s, updatedServer),
+          );
+          if (index >= 0) {
+            allServers[index] = updatedServer;
           }
         }
-      });
+
+        emit(
+          state.copyWith(
+            status: ElectrumSettingsStatus.success,
+            electrumServers: allServers,
+          ),
+        );
+
+        // If a successful server was found, suggest making it the primary
+        if (successfulIndex != null) {
+          final successfulServer = updatedServers[successfulIndex];
+          add(SetPrimaryServer(server: successfulServer));
+        }
+      }
     } catch (e) {
       log.severe('Error checking server status: $e');
       emit(
@@ -174,6 +197,32 @@ class ElectrumSettingsBloc
       state.copyWith(
         status: ElectrumSettingsStatus.loading,
         selectedNetwork: Network.liquidMainnet,
+      ),
+    );
+    add(LoadServers());
+  }
+
+  void _onToggleTestnet(
+    ToggleTestnet event,
+    Emitter<ElectrumSettingsState> emit,
+  ) {
+    final isCurrentlyTestnet =
+        state.selectedNetwork == Network.bitcoinTestnet ||
+        state.selectedNetwork == Network.liquidTestnet;
+
+    final newNetwork =
+        state.isSelectedNetworkLiquid
+            ? (isCurrentlyTestnet
+                ? Network.liquidMainnet
+                : Network.liquidTestnet)
+            : (isCurrentlyTestnet
+                ? Network.bitcoinMainnet
+                : Network.bitcoinTestnet);
+
+    emit(
+      state.copyWith(
+        status: ElectrumSettingsStatus.loading,
+        selectedNetwork: newNetwork,
       ),
     );
     add(LoadServers());
@@ -790,26 +839,17 @@ class ElectrumSettingsBloc
         }
       }
 
-      if (allSaved) {
-        final networksToCheck =
-            stagedServers.map((s) => s.network).toSet().toList();
-        for (final network in networksToCheck) {
-          final updatedServers = await _getAllElectrumServers.execute(
-            network: network,
-          );
-          for (final updated in updatedServers) {
-            _updateInMemoryServer(originalServers, updated);
-          }
-        }
-      }
-
       emit(
         state.copyWith(
-          status: ElectrumSettingsStatus.success,
-          electrumServers: originalServers,
-          stagedServers: [],
-          previousUrls: {}, // Clear previousUrls after save
+          status:
+              allSaved
+                  ? ElectrumSettingsStatus.success
+                  : ElectrumSettingsStatus.error,
+          electrumServers: allSaved ? originalServers : state.electrumServers,
+          stagedServers: allSaved ? [] : state.stagedServers,
+          previousUrls: allSaved ? {} : state.previousUrls,
           saveSuccessful: allSaved,
+          statusError: allSaved ? '' : 'Failed to save server changes',
         ),
       );
     } catch (e) {
@@ -1086,5 +1126,134 @@ class ElectrumSettingsBloc
       return a.defaultServerProvider == b.defaultServerProvider;
     }
     return false;
+  }
+
+  Future<void> _onSetPrimaryServer(
+    SetPrimaryServer event,
+    Emitter<ElectrumSettingsState> emit,
+  ) async {
+    try {
+      final allServers = List<ElectrumServer>.from(state.electrumServers);
+
+      // Update all servers with isActive = false
+      for (var i = 0; i < allServers.length; i++) {
+        if (allServers[i].network == event.server.network) {
+          allServers[i] = allServers[i].copyWith(isActive: false);
+        }
+      }
+
+      // Set the successful server as active
+      final index = allServers.indexWhere(
+        (s) => _isSameServer(s, event.server),
+      );
+      if (index >= 0) {
+        allServers[index] = event.server.copyWith(
+          isActive: true,
+          status: ElectrumServerStatus.online,
+        );
+
+        // Update the provider to match this server's provider
+        emit(
+          state.copyWith(
+            electrumServers: allServers,
+            selectedProvider: event.server.electrumServerProvider,
+          ),
+        );
+
+        // Save changes to persist the new primary server
+        add(const SaveElectrumServerChanges());
+      }
+    } catch (e) {
+      log.warning('Error setting primary server: $e');
+    }
+  }
+
+  Future<void> _onReorderServers(
+    ReorderServers event,
+    Emitter<ElectrumSettingsState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: ElectrumSettingsStatus.loading));
+
+      await _reorderCustomServers.execute(
+        network: event.network,
+        oldIndex: event.oldIndex,
+        newIndex: event.newIndex,
+      );
+
+      // Reload all servers to get the updated state
+      final List<ElectrumServer> allServers = [];
+      final networks =
+          state.isSelectedNetworkLiquid
+              ? [Network.liquidMainnet, Network.liquidTestnet]
+              : [Network.bitcoinMainnet, Network.bitcoinTestnet];
+
+      for (final network in networks) {
+        final servers = await _getAllElectrumServers.execute(network: network);
+        allServers.addAll(servers);
+      }
+
+      emit(
+        state.copyWith(
+          electrumServers: allServers,
+          status: ElectrumSettingsStatus.success,
+        ),
+      );
+    } catch (e) {
+      log.warning('Error reordering servers: $e');
+      emit(
+        state.copyWith(
+          status: ElectrumSettingsStatus.error,
+          statusError: 'Failed to reorder servers',
+        ),
+      );
+    }
+  }
+
+  Future<void> _onDeleteCustomServer(
+    DeleteCustomServer event,
+    Emitter<ElectrumSettingsState> emit,
+  ) async {
+    try {
+      final deleted = await _deleteElectrumServer.execute(
+        url: event.server.url,
+      );
+
+      if (!deleted) {
+        emit(
+          state.copyWith(
+            status: ElectrumSettingsStatus.error,
+            statusError: 'Failed to delete server',
+          ),
+        );
+        return;
+      }
+
+      final List<ElectrumServer> allServers = [];
+      final networks =
+          state.isSelectedNetworkLiquid
+              ? [Network.liquidMainnet, Network.liquidTestnet]
+              : [Network.bitcoinMainnet, Network.bitcoinTestnet];
+
+      for (final network in networks) {
+        final servers = await _getAllElectrumServers.execute(network: network);
+        allServers.addAll(servers);
+      }
+
+      emit(
+        state.copyWith(
+          electrumServers: allServers,
+          status: ElectrumSettingsStatus.success,
+        ),
+      );
+    } catch (e) {
+      log.warning('Error deleting server: $e');
+      emit(
+        state.copyWith(
+          status: ElectrumSettingsStatus.error,
+          statusError: 'Failed to delete server',
+        ),
+      );
+    }
   }
 }

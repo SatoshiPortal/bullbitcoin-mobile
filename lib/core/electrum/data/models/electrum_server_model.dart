@@ -21,13 +21,9 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
     @Default(ElectrumServerStatus.unknown) ElectrumServerStatus status,
     @Default(false) bool isActive,
     @Default(0) int priority,
+    @Default(false) bool isCustom,
   }) = _ElectrumServerModel;
   const ElectrumServerModel._();
-
-  /// Flag indicating if this is a custom active server
-  bool get isCustomServerActive {
-    return isActive;
-  }
 
   factory ElectrumServerModel.fromJson(Map<String, dynamic> json) =>
       _$ElectrumServerModelFromJson(json);
@@ -51,7 +47,10 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
     );
   }
 
-  factory ElectrumServerModel.fromEntity(ElectrumServer entity) {
+  factory ElectrumServerModel.fromEntity(
+    ElectrumServer entity, {
+    int? customPriority,
+  }) {
     return ElectrumServerModel(
       url: entity.url,
       isTestnet: entity.network.isTestnet,
@@ -64,13 +63,14 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
       status: entity.status,
       isActive: entity.isActive,
       priority: switch (entity.electrumServerProvider) {
-        CustomElectrumServerProvider() => 0,
+        CustomElectrumServerProvider() => customPriority ?? 1,
         DefaultServerProvider(:final defaultServerProvider) =>
           switch (defaultServerProvider) {
             DefaultElectrumServerProvider.bullBitcoin => 1,
             DefaultElectrumServerProvider.blockstream => 2,
           },
       },
+      isCustom: entity.electrumServerProvider is CustomElectrumServerProvider,
     );
   }
 
@@ -86,6 +86,7 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
       isLiquid: row.isLiquid,
       priority: row.priority,
       isActive: row.isActive,
+      isCustom: row.isCustom,
     );
   }
 
@@ -101,6 +102,7 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
       isLiquid: isLiquid,
       priority: priority,
       isActive: isActive,
+      isCustom: isCustom,
     );
   }
 }
