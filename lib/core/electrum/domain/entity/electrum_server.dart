@@ -22,6 +22,8 @@ sealed class ElectrumServer with _$ElectrumServer {
   }) = _ElectrumServer;
   const ElectrumServer._();
 
+  String get displayUrl => _normalizeUrl(url);
+
   ElectrumServerProvider get electrumServerProvider {
     // Normalize URL by removing protocol prefix for comparison
     final normalizedUrl = _normalizeUrl(url);

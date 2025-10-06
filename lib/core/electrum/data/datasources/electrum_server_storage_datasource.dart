@@ -139,4 +139,20 @@ class ElectrumServerStorageDatasource {
 
     return ElectrumServerModel.fromSqlite(bullBitcoin);
   }
+
+  /// Delete a specific server by URL
+  Future<bool> deleteServer(String url) async {
+    try {
+      final deleted =
+          await _sqlite.managers.electrumServers
+              .filter((f) => f.url.equals(url))
+              .delete();
+
+      log.fine('Deleted $deleted server(s) with URL: $url');
+      return deleted > 0;
+    } catch (e) {
+      log.severe('Failed to delete server: $e');
+      return false;
+    }
+  }
 }
