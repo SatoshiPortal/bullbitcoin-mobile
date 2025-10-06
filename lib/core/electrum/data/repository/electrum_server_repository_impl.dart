@@ -144,4 +144,9 @@ class ElectrumServerRepository {
     final server = model.toEntity();
     return server;
   }
+
+  /// Delete a server by URL
+  Future<bool> deleteElectrumServer({required String url}) async {
+    return await _electrumServerStorage.deleteServer(url);
+  }
 }

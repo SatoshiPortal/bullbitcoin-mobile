@@ -46,6 +46,10 @@ class ToggleValidateDomain extends ElectrumSettingsEvent {
   const ToggleValidateDomain();
 }
 
+class ToggleTestnet extends ElectrumSettingsEvent {
+  const ToggleTestnet();
+}
+
 class CheckServerStatus extends ElectrumSettingsEvent {
   final Network network;
   const CheckServerStatus({required this.network});
@@ -75,4 +79,29 @@ class ToggleCustomServer extends ElectrumSettingsEvent {
 class ToggleDefaultServerProvider extends ElectrumSettingsEvent {
   final DefaultElectrumServerProvider preset;
   ToggleDefaultServerProvider({required this.preset});
+}
+
+/// Event to set a server as primary after successful connection
+class SetPrimaryServer extends ElectrumSettingsEvent {
+  final ElectrumServer server;
+  const SetPrimaryServer({required this.server});
+}
+
+/// Event to reorder servers and update their priorities
+class ReorderServers extends ElectrumSettingsEvent {
+  final int oldIndex;
+  final int newIndex;
+  final Network network;
+
+  const ReorderServers({
+    required this.oldIndex,
+    required this.newIndex,
+    required this.network,
+  });
+}
+
+/// Event to delete a custom server
+class DeleteCustomServer extends ElectrumSettingsEvent {
+  final ElectrumServer server;
+  const DeleteCustomServer({required this.server});
 }
