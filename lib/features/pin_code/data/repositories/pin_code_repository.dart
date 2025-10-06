@@ -1,27 +1,23 @@
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_repository.dart';
 
-class PinCodeRepositoryImpl implements PinCodeRepository {
+class PinCodeRepository {
   final KeyValueStorageDatasource<String> _storage;
 
   static const _key =
       'securityKey'; // Use same key as in AuthCubit to stay backward compatible
 
-  PinCodeRepositoryImpl(this._storage);
+  PinCodeRepository(this._storage);
 
-  @override
   Future<bool> isPinCodeSet() async {
     final pin = await _storage.getValue(_key);
 
     return pin != null;
   }
 
-  @override
   Future<void> setPinCode(String pinCode) async {
     await _storage.saveValue(key: _key, value: pinCode);
   }
 
-  @override
   Future<bool> verifyPinCode(String pinCode) async {
     final pin = await _storage.getValue(_key);
 
@@ -34,10 +30,7 @@ class PinCodeRepositoryImpl implements PinCodeRepository {
     return pin == pinCode;
   }
 
-  @override
-  Future<void> deletePinCode() async {
-    await _storage.deleteValue(_key);
-  }
+  Future<void> deletePinCode() async => await _storage.deleteValue(_key);
 }
 
 class PinCodeNotSetException implements Exception {
