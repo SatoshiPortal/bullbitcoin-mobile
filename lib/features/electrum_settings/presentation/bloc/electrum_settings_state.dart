@@ -26,6 +26,10 @@ abstract class ElectrumSettingsState with _$ElectrumSettingsState {
   bool get isCustomServerSelected =>
       selectedProvider is CustomElectrumServerProvider;
 
+  bool get isTestnet =>
+      selectedNetwork == Network.bitcoinTestnet ||
+      selectedNetwork == Network.liquidTestnet;
+
   // Improved server lookup with better provider comparison
   ElectrumServer? getServerForNetworkAndProvider(
     Network network,
