@@ -1,6 +1,14 @@
 part of 'pin_code_setting_bloc.dart';
 
-enum PinCodeSettingStatus { unlock, choose, confirm, success, failure }
+enum PinCodeSettingStatus {
+  unlock,
+  settings,
+  choose,
+  confirm,
+  success,
+  failure,
+  deleted,
+}
 
 @freezed
 sealed class PinCodeSettingState with _$PinCodeSettingState {
@@ -14,6 +22,7 @@ sealed class PinCodeSettingState with _$PinCodeSettingState {
     @Default('') String pinCodeConfirmation,
     @Default(false) bool isConfirming,
     @Default(true) bool obscurePinCode,
+    @Default(false) bool isPinCodeSet,
     Object? error,
   }) = _PinCodeSettingState;
   const PinCodeSettingState._();

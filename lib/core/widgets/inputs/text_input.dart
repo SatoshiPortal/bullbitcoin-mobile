@@ -106,7 +106,7 @@ class _BBInputTextState extends State<BBInputText> {
           widget.onlyPaste
               ? TextInputType.none
               : widget.onlyNumbers
-              ? TextInputType.number
+              ? const TextInputType.numberWithOptions(decimal: true)
               : TextInputType.multiline,
       textInputAction:
           shouldPreventNewlines

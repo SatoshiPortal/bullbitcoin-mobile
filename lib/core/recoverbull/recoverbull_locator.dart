@@ -7,24 +7,21 @@ import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repositor
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_vault_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_encrypted_vault_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_file_content_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/tor/data/repository/tor_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:file_picker/file_picker.dart';
 
 class RecoverbullLocator {
   static Future<void> registerDatasources() async {
@@ -42,7 +39,7 @@ class RecoverbullLocator {
 
     // - FileStorageDataSource
     locator.registerLazySingleton<FileStorageDatasource>(
-      () => FileStorageDatasource(filePicker: FilePicker.platform),
+      () => FileStorageDatasource(),
     );
   }
 
@@ -52,7 +49,7 @@ class RecoverbullLocator {
     );
 
     locator.registerLazySingleton<FileSystemRepository>(
-      () => FileSystemRepository(locator<FileStorageDatasource>()),
+      () => FileSystemRepository(),
     );
 
     locator.registerSingletonWithDependencies<RecoverBullRepository>(
@@ -92,10 +89,6 @@ class RecoverbullLocator {
       ),
     );
 
-    locator.registerFactory<FetchEncryptedVaultFromFileSystemUsecase>(
-      () => FetchEncryptedVaultFromFileSystemUsecase(),
-    );
-
     locator.registerFactory<RestoreEncryptedVaultFromVaultKeyUsecase>(
       () => RestoreEncryptedVaultFromVaultKeyUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
@@ -104,15 +97,11 @@ class RecoverbullLocator {
       ),
     );
 
-    locator.registerFactory<SelectFileFromPathUsecase>(
-      () => SelectFileFromPathUsecase(locator<FileSystemRepository>()),
+    locator.registerFactory<PickFileContentUsecase>(
+      () => PickFileContentUsecase(),
     );
-
-    locator.registerFactory<SelectFolderPathUsecase>(
-      () => SelectFolderPathUsecase(locator<FileSystemRepository>()),
-    );
-    locator.registerFactory<SaveToFileSystemUsecase>(
-      () => SaveToFileSystemUsecase(locator<FileSystemRepository>()),
+    locator.registerFactory<SaveFileToSystemUsecase>(
+      () => SaveFileToSystemUsecase(),
     );
     locator.registerFactory<FetchAllDriveFileMetadataUsecase>(
       () => FetchAllDriveFileMetadataUsecase(locator<GoogleDriveRepository>()),

@@ -1,10 +1,8 @@
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
-import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_dca_settings_link.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
@@ -20,29 +18,6 @@ import 'package:sliver_tools/sliver_tools.dart';
 
 class ExchangeHomeScreen extends StatelessWidget {
   const ExchangeHomeScreen({super.key});
-
-  Widget? _buildDcaSubtitle(UserDca dca, BuildContext context) {
-    if (dca.amount == null ||
-        dca.currency == null ||
-        dca.frequency == null ||
-        dca.network == null ||
-        dca.address == null) {
-      return Text(
-        'Unable to get DCA configuration',
-        style: TextStyle(
-          color: context.colour.onSurface.withValues(alpha: 0.6),
-        ),
-      );
-    }
-
-    return ExchangeHomeDcaSettingsLink(
-      amount: dca.amount!,
-      currency: dca.currency!,
-      frequency: dca.frequency!,
-      network: dca.network!,
-      address: dca.address!,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,58 +58,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                             const Gap(12),
                             if (!isFullyVerified) const ExchangeHomeKycCard(),
                             const Gap(12),
-                            SwitchListTile(
-                              value: hasDcaActive,
-                              onChanged: (value) {
-                                if (value) {
-                                  // Activate DCA
-                                  context.pushNamed(DcaRoute.dca.name);
-                                } else {
-                                  // Deactivate DCA - show confirmation dialog
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext dialogContext) {
-                                      return AlertDialog(
-                                        backgroundColor: Colors.white,
-                                        title: const Text(
-                                          'Cancel Bitcoin Recurring Buy?',
-                                        ),
-                                        content: const Text(
-                                          "Your recurring Bitcoin purchase plan will stop, "
-                                          "and scheduled buys will end. "
-                                          "To restart, you'll need to set up a new plan.",
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(dialogContext).pop();
-                                            },
-                                            child: const Text('Cancel'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(dialogContext).pop();
-                                              context
-                                                  .read<ExchangeCubit>()
-                                                  .stopDca();
-                                            },
-                                            child: const Text(
-                                              'Yes, deactivate',
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                              title: const Text('Activate recurring buy'),
-
-                              subtitle:
-                                  hasDcaActive
-                                      ? _buildDcaSubtitle(dca!, context)
-                                      : null,
-                            ),
+                            DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
                             const Gap(12),
                             /*
                             SwitchListTile(
@@ -142,7 +66,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                               onChanged: (value) {},
                               title: const Text('Activate auto-buy'),
                             ),
-                            
+
                         const Gap(12),
                         ListTile(
                           title: const Text('View auto-sell address'),
@@ -151,6 +75,8 @@ class ExchangeHomeScreen extends StatelessWidget {
                         ),
                         const Gap(12),
                         */
+                            // Add bottom padding to account for fixed button bar
+                            const Gap(100),
                           ],
                         ),
                       ), // Bottom-aligned button

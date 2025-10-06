@@ -74,13 +74,12 @@ class TransactionDetailsTable extends StatelessWidget {
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
 
-    final swapFees =
-        (swap?.fees?.claimFee ?? 0) +
-        (swap?.fees?.boltzFee ?? 0) +
-        (swap?.fees?.lockupFee ?? 0);
+    final swapFees = (swap?.fees?.claimFee ?? 0) + (swap?.fees?.boltzFee ?? 0);
     final swapCounterpartTxId = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
     );
+
+    final txFee = swap != null ? swapFees : walletTransaction?.feeSat;
 
     return DetailsTable(
       items: [
@@ -156,11 +155,9 @@ class TransactionDetailsTable extends StatelessWidget {
               label: 'Transaction Fee',
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(
-                        walletTransaction.feeSat,
-                      ).toUpperCase()
+                      ? FormatAmount.sats(txFee ?? 0).toUpperCase()
                       : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(walletTransaction.feeSat),
+                        ConvertAmount.satsToBtc(txFee ?? 0),
                       ).toUpperCase(),
             ),
           DetailsTableItem(
@@ -685,15 +682,15 @@ class TransactionDetailsTable extends StatelessWidget {
             }
           })(),
         ],
-        // Swap info
+        // Transfer info
         if (swap != null) ...[
           DetailsTableItem(
-            label: 'Swap ID',
+            label: swap.isChainSwap ? 'Transfer ID' : 'Swap ID',
             displayValue: swap.id,
             copyValue: swap.id,
           ),
           DetailsTableItem(
-            label: 'Swap status',
+            label: swap.isChainSwap ? 'Transfer status' : 'Swap status',
             displayValue:
                 (swap.isChainSwap && (swap as ChainSwap).refundTxid != null ||
                         swap.isLnSendSwap &&
@@ -721,7 +718,8 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           if (swap.fees != null)
             DetailsTableItem(
-              label: 'Total Swap fees',
+              label:
+                  swap.isChainSwap ? 'Total Transfer fees' : 'Total Swap fees',
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
                       ? FormatAmount.sats(swapFees).toUpperCase()
@@ -731,14 +729,12 @@ class TransactionDetailsTable extends StatelessWidget {
               expandableChild: Column(
                 children: [
                   const Gap(4),
-
+                  _feeRow(context, 'Network Fee', swap.fees?.claimFee ?? 0),
                   _feeRow(
                     context,
-                    'Network Fee',
-                    (swap.fees?.lockupFee ?? 0) + (swap.fees?.claimFee ?? 0),
+                    swap.isChainSwap ? 'Transfer Fee' : 'Boltz Swap Fee',
+                    swap.fees?.boltzFee ?? 0,
                   ),
-
-                  _feeRow(context, 'Boltz Swap Fee', swap.fees?.boltzFee ?? 0),
                   const Gap(4),
                 ],
               ),

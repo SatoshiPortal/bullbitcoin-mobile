@@ -8,6 +8,53 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
+// TODO: Extract to a common package
+class AmountInputFormatter extends TextInputFormatter {
+  AmountInputFormatter(this.decimalPlaces);
+
+  final int decimalPlaces;
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    var newText = newValue.text.replaceAll(',', '.');
+
+    // Remove leading zeros except for "0." pattern
+    if (newText.length > 1) {
+      if (newText.startsWith('0') && !newText.startsWith('0.')) {
+        // Remove all leading zeros
+        newText = newText.replaceFirst(RegExp('^0+'), '');
+        // If everything was zeros, keep one zero
+        if (newText.isEmpty) {
+          newText = '0';
+        }
+      }
+    }
+
+    final regex = RegExp(r'^\d+\.?\d{0,' + '$decimalPlaces' + '}');
+    final match = regex.firstMatch(newText);
+
+    if (match != null) {
+      final validText = match.group(0) ?? '';
+      return TextEditingValue(
+        text: validText,
+        selection: TextSelection.collapsed(
+          offset: validText.length.clamp(0, validText.length),
+        ),
+      );
+    } else if (newText.isEmpty) {
+      return const TextEditingValue(
+        text: '',
+        selection: TextSelection.collapsed(offset: 0),
+      );
+    } else {
+      return oldValue;
+    }
+  }
+}
+
 class ExchangeAmountInputField extends StatelessWidget {
   const ExchangeAmountInputField({
     super.key,
@@ -40,12 +87,14 @@ class ExchangeAmountInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final amountInputDecimals =
-        _isFiatCurrencyInput ? _fiatCurrency!.decimals : _bitcoinUnit!.decimals;
+        _isFiatCurrencyInput
+            ? _fiatCurrency?.decimals ?? 2
+            : _bitcoinUnit!.decimals;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Enter amount', style: context.font.bodyMedium),
+        Text('Enter Amount', style: context.font.bodyMedium),
         const Gap(4.0),
         Card(
           elevation: 1,
@@ -78,15 +127,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                           ),
                           inputFormatters:
                               amountInputDecimals > 0
-                                  ? [
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(
-                                        r'^\d+\.?\d{0,'
-                                        '$amountInputDecimals'
-                                        '}',
-                                      ),
-                                    ),
-                                  ]
+                                  ? [AmountInputFormatter(amountInputDecimals)]
                                   : [FilteringTextInputFormatter.digitsOnly],
                           style: context.font.displaySmall?.copyWith(
                             color: context.colour.primary,

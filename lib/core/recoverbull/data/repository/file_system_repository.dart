@@ -1,34 +1,17 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/recoverbull/data/datasources/file_storage_datasource.dart';
 
 class FileSystemRepository {
-  final FileStorageDatasource _fileStorageDataSource;
+  final _fileStorageDataSource = FileStorageDatasource();
 
-  FileSystemRepository(this._fileStorageDataSource);
+  FileSystemRepository();
 
-  Future<String?> pickFile() async {
+  Future<String> pickFile() async {
     final file = await _fileStorageDataSource.pickFile();
-    return file?.path;
+    final fileContent = await file.readAsString();
+    return fileContent;
   }
 
-  Future<File> saveFile(File file, String content) async {
-    return await _fileStorageDataSource.saveToFile(file, content);
-  }
-
-  Future<void> deleteFile(String path) async {
-    await _fileStorageDataSource.deleteFile(path);
-  }
-
-  Future<String> getAppDirectory() async {
-    return await _fileStorageDataSource.getAppDirectory();
-  }
-
-  Future<String> getDownloadDirectory() async {
-    return await _fileStorageDataSource.getDownloadDirectory();
-  }
-
-  Future<String?> getDirectoryPath() async {
-    return await _fileStorageDataSource.getDirectoryPath();
+  Future<void> saveFile(String content, String filename) async {
+    await _fileStorageDataSource.saveFile(content, filename);
   }
 }

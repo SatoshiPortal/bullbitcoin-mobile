@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -31,7 +31,7 @@ class VaultSelectedPage extends StatelessWidget {
         flexibleSpace: TopBar(
           onBack: () {
             context.read<RecoverBullSelectVaultCubit>().clearState();
-            if (provider == BackupProviderType.custom) {
+            if (provider == VaultProvider.customLocation) {
               context.pop();
               context.pop();
             } else {

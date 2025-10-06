@@ -32,7 +32,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Gap(75),
+                const Gap(30),
                 BBText(
                   'Create new pin',
                   textAlign: TextAlign.center,
@@ -41,7 +41,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                   ),
                   maxLines: 3,
                 ),
-                const Gap(50),
+                const Gap(30),
                 BlocSelector<
                   PinCodeSettingBloc,
                   PinCodeSettingState,
@@ -86,7 +86,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                         : const SizedBox.shrink();
                   },
                 ),
-                const Gap(130),
+                const Gap(30),
                 DialPad(
                   onNumberPressed:
                       (value) => context.read<PinCodeSettingBloc>().add(

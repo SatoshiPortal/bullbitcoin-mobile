@@ -40,3 +40,11 @@ class PinCodeSettingPinCodeConfirmed extends PinCodeSettingEvent {
 class PinCodeSettingPinCodeObscureToggled extends PinCodeSettingEvent {
   const PinCodeSettingPinCodeObscureToggled();
 }
+
+class PinCodeCreate extends PinCodeSettingEvent {
+  const PinCodeCreate();
+}
+
+class PinCodeDelete extends PinCodeSettingEvent {
+  const PinCodeDelete();
+}
