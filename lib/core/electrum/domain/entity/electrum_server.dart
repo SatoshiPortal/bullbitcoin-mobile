@@ -19,6 +19,7 @@ sealed class ElectrumServer with _$ElectrumServer {
     @Default(true) bool validateDomain,
     @Default(ElectrumServerStatus.unknown) ElectrumServerStatus status,
     @Default(false) bool isActive,
+    @Default(1) int priority,
   }) = _ElectrumServer;
   const ElectrumServer._();
 
