@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_va
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/delete_pin_code_usecase.dart';
+import 'package:bb_mobile/features/pin_code/domain/usecases/is_pin_code_set_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:bb_mobile/locator.dart';
@@ -28,10 +29,15 @@ class PinCodeLocator {
       () =>
           DeletePinCodeUsecase(pinCodeRepository: locator<PinCodeRepository>()),
     );
+    locator.registerFactory<IsPinCodeSetUsecase>(
+      () =>
+          IsPinCodeSetUsecase(pinCodeRepository: locator<PinCodeRepository>()),
+    );
 
     // Blocs
     locator.registerFactory<PinCodeSettingBloc>(
       () => PinCodeSettingBloc(
+        isPinCodeSetUsecase: locator<IsPinCodeSetUsecase>(),
         setPinCodeUsecase: locator<SetPinCodeUsecase>(),
         deletePinCodeUsecase: locator<DeletePinCodeUsecase>(),
       ),
