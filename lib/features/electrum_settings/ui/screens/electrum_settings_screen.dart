@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -13,6 +12,7 @@ import 'package:bb_mobile/features/electrum_settings/ui/widgets/draggable_server
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ElectrumSettingsScreen extends StatelessWidget {
@@ -119,14 +119,9 @@ class _ElectrumSettingsContentState extends State<ElectrumSettingsContent> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      BBText(
-                        'Show Testnet Servers',
-                        style: context.font.bodyMedium,
-                      ),
+                      BBText('Testnet Servers', style: context.font.bodyMedium),
                       Switch(
-                        value:
-                            state.selectedNetwork == Network.bitcoinTestnet ||
-                            state.selectedNetwork == Network.liquidTestnet,
+                        value: state.isTestnet,
                         onChanged: (_) {
                           context.read<ElectrumSettingsBloc>().add(
                             const ToggleTestnet(),
@@ -137,7 +132,6 @@ class _ElectrumSettingsContentState extends State<ElectrumSettingsContent> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16.0),
@@ -153,21 +147,14 @@ class _ElectrumSettingsContentState extends State<ElectrumSettingsContent> {
                           ),
                         );
                       },
-                      onAddCustomServer: () {
-                        AddCustomServerDialog.show(context);
-                      },
+                      onAddCustomServer:
+                          () => AddCustomServerDialog.show(context),
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      _ValidateDomainSwitch(context: context, state: state),
-                      const SizedBox(height: 16),
-                      _AdvancedOptions(state: state),
-                    ],
-                  ),
+                  child: _AdvancedOptions(state: state),
                 ),
               ],
             ),
@@ -251,7 +238,7 @@ class _AdvancedOptions extends StatelessWidget {
       context: context,
       child: Container(
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.5,
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
         ),
         decoration: BoxDecoration(
           color: context.colour.onPrimary,
@@ -280,6 +267,8 @@ class _AdvancedOptions extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
+              _ValidateDomainSwitch(context: context, state: state),
+              const Gap(12),
               TextField(
                 controller: timeoutController,
                 keyboardType: TextInputType.number,
