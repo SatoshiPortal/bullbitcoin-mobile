@@ -44,6 +44,7 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
       validateDomain: validateDomain,
       status: status,
       isActive: isActive,
+      priority: priority,
     );
   }
 
