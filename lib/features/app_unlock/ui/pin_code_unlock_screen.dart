@@ -71,7 +71,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Gap(75),
+                  const Gap(30),
                   BBText(
                     'Enter your pin code to unlock',
                     textAlign: TextAlign.center,
@@ -80,7 +80,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                     ),
                     maxLines: 3,
                   ),
-                  const Gap(50),
+                  const Gap(30),
                   BlocSelector<AppUnlockBloc, AppUnlockState, (String, bool)>(
                     selector: (state) => (state.pinCode, state.obscurePinCode),
                     builder: (context, data) {
@@ -98,7 +98,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  const Gap(130),
+                  const Gap(30),
                   DialPad(
                     disableFeedback: true,
                     onNumberPressed:
