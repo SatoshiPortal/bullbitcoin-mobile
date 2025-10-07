@@ -98,7 +98,7 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
                               Text(
                                 'Who are you paying?',
                                 style: context.font.labelMedium?.copyWith(
-                                  color: context.colour.secondary,
+                                  color: context.colour.onSurface,
                                 ),
                               ),
                               const Gap(16.0),

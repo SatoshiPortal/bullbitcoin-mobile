@@ -42,7 +42,7 @@ class WithdrawRecipientCard extends StatelessWidget {
                   child: Text(
                     name,
                     style: context.font.headlineLarge?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                     ),
                   ),
                 ),
@@ -59,7 +59,7 @@ class WithdrawRecipientCard extends StatelessWidget {
             Text(
               recipient.recipientType.displayName,
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
             ),
             _buildAccountInfo(context, recipient),

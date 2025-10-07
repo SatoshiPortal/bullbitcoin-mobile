@@ -210,7 +210,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  Divider(color: context.colour.secondaryFixedDim),
+                  Divider(color: context.colour.outline),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -224,7 +224,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                         child: BBText(
                           StringFormatting.truncateMiddle(address),
                           style: context.font.labelLarge?.copyWith(
-                            color: context.colour.secondary,
+                            color: context.colour.onSurface,
                           ),
                         ),
                       ),
@@ -237,7 +237,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                       BBText(
                         addressType,
                         style: context.font.labelLarge?.copyWith(
-                          color: context.colour.secondary,
+                          color: context.colour.onSurface,
                         ),
                       ),
                     ],

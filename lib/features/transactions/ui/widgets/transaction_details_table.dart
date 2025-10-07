@@ -703,7 +703,7 @@ class TransactionDetailsTable extends StatelessWidget {
             expandableChild: BBText(
               swap.getDisplayMessage(),
               style: context.font.bodySmall?.copyWith(
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
               maxLines: 5,
             ),

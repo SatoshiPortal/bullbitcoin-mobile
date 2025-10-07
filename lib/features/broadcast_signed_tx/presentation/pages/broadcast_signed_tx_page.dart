@@ -67,7 +67,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                       );
                     },
                     bgColor: context.colour.onPrimary,
-                    textColor: context.colour.secondary,
+                    textColor: context.colour.onSurface,
                     iconData: Icons.qr_code_scanner,
                     outlined: true,
                   ),
@@ -79,7 +79,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                           BroadcastSignedTxRoute.broadcastScanNfc.name,
                         ),
                     bgColor: context.colour.onPrimary,
-                    textColor: context.colour.secondary,
+                    textColor: context.colour.onSurface,
                     iconData: Icons.nfc,
                     outlined: true,
                   ),

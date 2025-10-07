@@ -58,7 +58,7 @@ class RecoverWithBackupKeyScreen extends StatelessWidget {
                       child: BBText(
                         'Enter backup key',
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.secondary,
+                          color: context.colour.onSurface,
                         ),
                       ),
                     ),

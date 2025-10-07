@@ -86,13 +86,13 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.colour.surface,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: widget.action.title,
-          color: context.colour.secondaryFixed,
+          color: context.colour.surface,
           onBack: () => Navigator.of(context).pop(),
         ),
       ),
@@ -242,7 +242,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
             label: 'Need Help?',
             onPressed: () => _showInstructions(context),
             bgColor: context.colour.onSecondary,
-            textColor: context.colour.secondary,
+            textColor: context.colour.onSurface,
             outlined: true,
           ),
       ],

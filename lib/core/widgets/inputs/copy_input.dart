@@ -38,7 +38,7 @@ class CopyInput extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colour.onPrimary,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: context.colour.secondaryFixedDim),
+        border: Border.all(color: context.colour.outline),
       ),
       child: Row(
         children: [
@@ -59,7 +59,7 @@ class CopyInput extends StatelessWidget {
                         : Text(
                           text,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.secondary,
+                            color: context.colour.onSurface,
                           ),
                           maxLines: maxLines,
                           overflow: overflow,
@@ -73,7 +73,7 @@ class CopyInput extends StatelessWidget {
               iconSize: 20,
               icon: Icon(
                 Icons.visibility_outlined,
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
               onPressed: () {
                 _onShowValueModal(context, canCopy: canCopy);
@@ -84,7 +84,7 @@ class CopyInput extends StatelessWidget {
             IconButton(
               visualDensity: VisualDensity.compact,
               iconSize: 20,
-              icon: Icon(Icons.copy_sharp, color: context.colour.secondary),
+              icon: Icon(Icons.copy_sharp, color: context.colour.onSurface),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: clipboardText ?? text));
                 SnackBarUtils.showCopiedSnackBar(context);
@@ -102,7 +102,7 @@ class CopyInput extends StatelessWidget {
       context: context,
       builder:
           (context) => AlertDialog(
-            backgroundColor: Colors.white,
+            backgroundColor: context.colour.surface,
             title:
                 modalTitle != null
                     ? Text(

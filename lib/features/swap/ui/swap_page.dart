@@ -193,7 +193,7 @@ class SwapCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.colour.onPrimary,
           borderRadius: BorderRadius.circular(2),
-          border: Border.all(color: context.colour.secondaryFixedDim),
+          border: Border.all(color: context.colour.outline),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -238,7 +238,7 @@ class SwapCard extends StatelessWidget {
                                 context: context,
                                 isScrollControlled: true,
                                 backgroundColor:
-                                    context.colour.secondaryFixedDim,
+                                    context.colour.outline,
                                 constraints: const BoxConstraints(
                                   maxWidth: double.infinity,
                                 ),
@@ -448,8 +448,8 @@ class SwapAvailableBalance extends StatelessWidget {
           label: 'MAX',
           height: 30,
           width: 51,
-          bgColor: context.colour.secondaryFixedDim,
-          textColor: context.colour.secondary,
+          bgColor: context.colour.outline,
+          textColor: context.colour.onSurface,
           textStyle: context.font.labelLarge,
           disabled: context.select(
             (SwapCubit cubit) => loadingWallets || balance == 0,
@@ -589,7 +589,7 @@ class SwapFromToDropdown extends StatelessWidget {
                         ),
                         icon: Icon(
                           Icons.keyboard_arrow_down,
-                          color: context.colour.secondary,
+                          color: context.colour.onSurface,
                         ),
                         items: dropdownItems,
                         onChanged: (value) {

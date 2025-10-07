@@ -27,7 +27,7 @@ class BackupOptionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colour.surface,
           border: Border.all(color: context.colour.surface),
           boxShadow: [
             BoxShadow(
@@ -70,7 +70,7 @@ class BackupOptionCard extends StatelessWidget {
             SizedBox(
               width: 24,
               height: 24,
-              child: Icon(Icons.arrow_forward, color: context.colour.secondary),
+              child: Icon(Icons.arrow_forward, color: context.colour.onSurface),
             ),
           ],
         ),

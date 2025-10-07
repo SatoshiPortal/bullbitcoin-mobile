@@ -18,13 +18,13 @@ class RequestIdentifierScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
+      backgroundColor: context.colour.surface,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: 'Send',
-          color: context.colour.secondaryFixedDim,
+          color: context.colour.outline,
           onBack: () => context.pop(),
         ),
       ),
@@ -116,7 +116,7 @@ class PasteRequestWidget extends StatelessWidget {
       maxLines: 1,
       rightIcon: Icon(
         Icons.paste_sharp,
-        color: context.colour.secondary,
+        color: context.colour.onSurface,
         size: 20,
       ),
       onRightTap: () {

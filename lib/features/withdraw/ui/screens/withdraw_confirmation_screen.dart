@@ -60,7 +60,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                   Text(
                     'Confirm withdrawal',
                     style: context.font.headlineMedium?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                     ),
                   ),
                   const Gap(4.0),
@@ -595,7 +595,7 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Divider(color: context.colour.secondaryFixedDim, height: 1);
+    return Divider(color: context.colour.outline, height: 1);
   }
 }
 

@@ -47,14 +47,14 @@ class WithdrawSuccessScreen extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.check_circle,
-                        color: context.colour.secondary,
+                        color: context.colour.onSurface,
                         size: 64,
                       ),
                       const Gap(16),
                       Text(
                         'Withdrawal Initiated',
                         style: context.font.headlineLarge?.copyWith(
-                          color: context.colour.secondary,
+                          color: context.colour.onSurface,
                         ),
                       ),
                     ],

@@ -74,7 +74,7 @@ class LegacySeedViewScreen extends StatelessWidget {
                           BBText(
                             seed.mnemonic,
                             style: context.font.bodyMedium,
-                            color: context.colour.secondary,
+                            color: context.colour.onSurface,
                             maxLines: 5,
                           ),
                         ],

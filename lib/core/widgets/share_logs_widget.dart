@@ -173,13 +173,14 @@ class _ShareLogsWidgetState extends State<ShareLogsWidget> {
   Future<void> _shareFile(BuildContext context, File file) async {
     final messenger = ScaffoldMessenger.of(context);
     final theme = Theme.of(context);
+    final textColor = context.colour.onInverseSurface;
     if (!await file.exists()) {
       messenger.showSnackBar(
         SnackBar(
-          content: const Text(
+          content: Text(
             'No log file found.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: Colors.white),
+            style: TextStyle(fontSize: 14, color: textColor),
           ),
           duration: const Duration(seconds: 2),
           backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
@@ -203,7 +204,7 @@ class _ShareLogsWidgetState extends State<ShareLogsWidget> {
       Text(
         'Error sharing logs: $error',
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 14, color: Colors.white),
+        style: TextStyle(fontSize: 14, color: context.colour.onInverseSurface),
       ),
     );
   }

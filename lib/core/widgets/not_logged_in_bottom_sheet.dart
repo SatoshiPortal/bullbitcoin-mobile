@@ -58,7 +58,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
               BBText(
                 'Please log in to your Bull Bitcoin account to access exchange settings.',
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.secondary.withValues(alpha: 0.7),
+                  color: context.colour.onSurface.withValues(alpha: 0.7),
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 3,

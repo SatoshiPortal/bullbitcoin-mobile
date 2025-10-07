@@ -49,7 +49,7 @@ class OnboardingSplash extends StatelessWidget {
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 40,
                       fontWeight: FontWeight.w500,
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                       height: 1,
                     ),
                   ),

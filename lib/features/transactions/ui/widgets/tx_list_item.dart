@@ -32,7 +32,7 @@ class TxListItem extends StatelessWidget {
             : Icons.arrow_downward;
     final walletColor =
         isOrderType
-            ? context.colour.secondaryFixedDim
+            ? context.colour.outline
             : tx.isOngoingSwap
             ? context.colour.secondaryContainer.withValues(alpha: 0.3)
             : tx.isBitcoin
@@ -187,7 +187,7 @@ class TxListItem extends StatelessWidget {
                   child: BBText(
                     networkLabel,
                     style: context.font.labelSmall?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                     ),
                   ),
                 ),
@@ -260,7 +260,7 @@ class TxListItem extends StatelessWidget {
                         Icon(
                           Icons.sync,
                           size: 12.0,
-                          color: context.colour.secondary,
+                          color: context.colour.onSurface,
                         ),
                     ],
                   ),

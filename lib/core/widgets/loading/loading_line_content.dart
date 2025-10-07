@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -24,7 +25,11 @@ class LoadingLineContent extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(width: width, height: height, color: Colors.white),
+            Container(
+              width: width,
+              height: height,
+              color: context.colour.surface,
+            ),
           ],
         ),
       ),

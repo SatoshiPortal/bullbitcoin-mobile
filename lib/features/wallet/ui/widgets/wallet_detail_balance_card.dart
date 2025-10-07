@@ -70,7 +70,7 @@ class WalletDetailBalanceCard extends StatelessWidget {
                     CurrencyText(
                       balanceSat,
                       style: theme.textTheme.displaySmall?.copyWith(
-                        color: theme.colorScheme.onPrimary,
+                        color: context.colour.onPrimaryFixed,
                       ),
                       showFiat: false,
                     ),

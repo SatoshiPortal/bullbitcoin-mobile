@@ -152,7 +152,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
               description:
                   'You are not logged in. Please log in to continue using the pay feature.',
               tagColor: context.colour.error,
-              bgColor: context.colour.secondaryFixedDim,
+              bgColor: context.colour.outline,
               onTap: () {
                 context.goNamed(ExchangeRoute.exchangeHome.name);
               },
@@ -210,7 +210,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
         BBText(
           'Country',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -235,7 +235,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
               ),
               icon: Icon(
                 Icons.keyboard_arrow_down,
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
               items:
                   CountryConstants.countries.map((country) {
@@ -275,7 +275,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
         BBText(
           'Payout method',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -306,7 +306,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
             ),
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: context.colour.secondary,
+              color: context.colour.onSurface,
             ),
             items:
                 payoutMethodsForCountry.map((method) {
@@ -362,7 +362,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
                     child: BBText(
                       method.displayName,
                       style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.colour.onSurface,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -659,7 +659,7 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
                   title: BBText(
                     biller.payeeName,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                     ),
                   ),
                   onTap: () => _selectBiller(biller),
@@ -684,7 +684,7 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
         BBText(
           label,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -1187,7 +1187,7 @@ class _SinpeMovilFormState extends State<_SinpeMovilForm> {
         BBText(
           'Phone Number',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -1264,7 +1264,7 @@ Widget _buildInputField(
       BBText(
         label,
         style: context.font.bodyLarge?.copyWith(
-          color: context.colour.secondary,
+          color: context.colour.onSurface,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -1295,7 +1295,7 @@ Widget _buildCheckboxField(
       BBText(
         label,
         style: context.font.bodyLarge?.copyWith(
-          color: context.colour.secondary,
+          color: context.colour.onSurface,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -1334,7 +1334,7 @@ Widget _buildSecurityQuestionField(
       BBText(
         'Security Question',
         style: context.font.bodyLarge?.copyWith(
-          color: context.colour.secondary,
+          color: context.colour.onSurface,
           fontWeight: FontWeight.w500,
         ),
       ),

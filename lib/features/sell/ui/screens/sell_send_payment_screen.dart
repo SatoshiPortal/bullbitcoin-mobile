@@ -69,7 +69,7 @@ class SellSendPaymentScreen extends StatelessWidget {
             Text(
               'Confirm payment',
               style: context.font.headlineMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
             ),
             const Gap(4.0),
@@ -299,7 +299,7 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Divider(color: context.colour.secondaryFixedDim, height: 1);
+    return Divider(color: context.colour.outline, height: 1);
   }
 }
 
@@ -331,7 +331,7 @@ class _BottomButtons extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                backgroundColor: context.colour.secondaryFixed,
+                backgroundColor: context.colour.surface,
                 constraints: const BoxConstraints(maxWidth: double.infinity),
                 useSafeArea: true,
                 builder:
@@ -342,7 +342,7 @@ class _BottomButtons extends StatelessWidget {
               );
             },
             bgColor: Colors.transparent,
-            textColor: context.colour.secondary,
+            textColor: context.colour.onSurface,
             outlined: true,
             borderColor: context.colour.secondary,
           ),

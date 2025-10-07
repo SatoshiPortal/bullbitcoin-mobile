@@ -72,7 +72,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                 ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.colour.onSurface,
                 ),
                 value: selectedWallet?.id,
                 items: [

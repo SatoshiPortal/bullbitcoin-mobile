@@ -62,7 +62,7 @@ class BackupKeyWarningBottomSheet extends StatelessWidget {
                     BBText(
                       'Warning: Be careful where you save the backup key.',
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.colour.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 4,
@@ -89,7 +89,7 @@ class BackupKeyWarningBottomSheet extends StatelessWidget {
                             bgColor: Colors.transparent,
                             outlined: true,
                             textStyle: context.font.headlineLarge,
-                            textColor: context.colour.secondary,
+                            textColor: context.colour.onSurface,
                           ),
                         ),
                         const Gap(16),

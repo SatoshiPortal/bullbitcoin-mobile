@@ -43,7 +43,7 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
+      backgroundColor: context.colour.surface,
       body: Stack(
         fit: StackFit.expand,
         children: [

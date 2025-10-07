@@ -144,18 +144,15 @@ class WidgetStyles {
       contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(4),
-        borderSide: BorderSide(color: context.colour.secondaryFixedDim),
+        borderSide: BorderSide(color: context.colour.outline),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(4),
-        borderSide: BorderSide(color: context.colour.secondaryFixedDim),
+        borderSide: BorderSide(color: context.colour.outline),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(
-          color: context.colour.secondaryFixedDim,
-          width: 2.0,
-        ),
+        borderSide: BorderSide(color: context.colour.outline, width: 2.0),
       ),
     );
   }

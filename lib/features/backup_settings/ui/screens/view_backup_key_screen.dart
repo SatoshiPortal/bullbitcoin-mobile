@@ -66,9 +66,9 @@ class _Screen extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: context.colour.surface,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: context.colour.surface,
             forceMaterialTransparency: true,
             automaticallyImplyLeading: false,
             flexibleSpace: TopBar(

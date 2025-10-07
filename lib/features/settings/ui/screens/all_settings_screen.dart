@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
@@ -134,7 +135,7 @@ class AllSettingsScreen extends StatelessWidget {
             children: [
               if (appVersion != null)
                 ListTile(
-                  tileColor: theme.colorScheme.secondaryFixedDim,
+                  tileColor: context.colour.outline,
                   title: Center(
                     child: Text(
                       'App version: $appVersion',

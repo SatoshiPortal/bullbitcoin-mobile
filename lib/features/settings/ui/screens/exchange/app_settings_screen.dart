@@ -27,10 +27,13 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
         final theme = Theme.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
+            content: Text(
               'Settings saved successfully',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.white),
+              style: TextStyle(
+                fontSize: 14,
+                color: context.colour.onInverseSurface,
+              ),
             ),
             duration: const Duration(seconds: 2),
             backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
@@ -45,7 +48,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
         );
       },
       child: Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.colour.surface,
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
@@ -128,7 +131,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
         BBText(
           label,
           style: context.font.labelMedium?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -148,7 +151,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                 ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.colour.onSurface,
                 ),
                 items:
                     values

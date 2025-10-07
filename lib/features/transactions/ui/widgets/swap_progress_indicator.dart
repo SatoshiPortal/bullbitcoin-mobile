@@ -111,7 +111,7 @@ class SwapProgressIndicator extends StatelessWidget {
                                       border:
                                           isCurrent
                                               ? Border.all(
-                                                color: context.colour.secondary,
+                                                color: context.colour.onSurface,
                                                 width: 2,
                                               )
                                               : null,

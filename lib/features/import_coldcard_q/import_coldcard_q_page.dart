@@ -46,7 +46,7 @@ class ImportColdcardQPage extends StatelessWidget {
                         extra: SignerDeviceEntity.coldcardQ,
                       ),
                   bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  textColor: context.colour.onSurface,
                   outlined: true,
                 ),
 
@@ -56,7 +56,7 @@ class ImportColdcardQPage extends StatelessWidget {
                   onPressed:
                       () => ColdcardQInstructionsBottomSheet.show(context),
                   bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  textColor: context.colour.onSurface,
                   outlined: true,
                 ),
                 const Gap(16),
@@ -69,7 +69,7 @@ class ImportColdcardQPage extends StatelessWidget {
                         ),
                       ),
                   bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  textColor: context.colour.onSurface,
                   outlined: true,
                 ),
               ],

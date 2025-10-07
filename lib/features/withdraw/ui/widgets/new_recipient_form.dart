@@ -268,7 +268,7 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
           BBText(
             'Country',
             style: context.font.bodyLarge?.copyWith(
-              color: context.colour.secondary,
+              color: context.colour.onSurface,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -302,7 +302,7 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
         BBText(
           'Country',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -337,7 +337,7 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
         BBText(
           'Payout method',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -368,7 +368,7 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
             ),
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: context.colour.secondary,
+              color: context.colour.onSurface,
             ),
             items:
                 payoutMethodsForCountry.map((method) {
@@ -424,7 +424,7 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
                     child: BBText(
                       method.displayName,
                       style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.colour.onSurface,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -721,7 +721,7 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
                   title: BBText(
                     biller.payeeName,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                     ),
                   ),
                   onTap: () => _selectBiller(biller),
@@ -746,7 +746,7 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
         BBText(
           label,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -1194,7 +1194,7 @@ Widget _buildInputField(
       BBText(
         label,
         style: context.font.bodyLarge?.copyWith(
-          color: context.colour.secondary,
+          color: context.colour.onSurface,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -1225,7 +1225,7 @@ Widget _buildCheckboxField(
       BBText(
         label,
         style: context.font.bodyLarge?.copyWith(
-          color: context.colour.secondary,
+          color: context.colour.onSurface,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -1264,7 +1264,7 @@ Widget _buildSecurityQuestionField(
       BBText(
         'Security Question',
         style: context.font.bodyLarge?.copyWith(
-          color: context.colour.secondary,
+          color: context.colour.onSurface,
           fontWeight: FontWeight.w500,
         ),
       ),

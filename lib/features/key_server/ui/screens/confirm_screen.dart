@@ -51,7 +51,7 @@ class ConfirmScreen extends StatelessWidget {
                   'Password',
                   textAlign: TextAlign.start,
                   style: context.font.labelSmall?.copyWith(
-                    color: context.colour.secondary,
+                    color: context.colour.onSurface,
                   ),
                 )
               else

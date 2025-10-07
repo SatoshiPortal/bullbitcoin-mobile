@@ -115,7 +115,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
             Container(
               height: 1,
               width: double.infinity,
-              color: context.colour.secondaryFixedDim,
+              color: context.colour.outline,
             ),
             const Gap(16),
             _buildDetailRow(
@@ -183,7 +183,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
                       }
                     },
                     bgColor: Colors.transparent,
-                    textColor: context.colour.secondary,
+                    textColor: context.colour.onSurface,
                     outlined: true,
                     borderColor: context.colour.secondary,
                   ),
@@ -193,7 +193,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
                   child: BBButton.big(
                     label: 'Show QR code',
                     bgColor: Colors.transparent,
-                    textColor: context.colour.secondary,
+                    textColor: context.colour.onSurface,
                     outlined: true,
                     borderColor: context.colour.secondary,
                     onPressed: () {

@@ -16,7 +16,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
 
     if (state.isFetchingUserSummary) {
       return Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.colour.surface,
         appBar: AppBar(title: const Text('Account information')),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -24,7 +24,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
 
     if (userSummary == null) {
       return Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.colour.surface,
         appBar: AppBar(title: const Text('Account information')),
 
         body: Center(
@@ -37,7 +37,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.colour.surface,
       appBar: AppBar(title: const Text('Account information')),
       body: SafeArea(
         child: Padding(
@@ -105,7 +105,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
             BBText(
               label,
               style: context.font.headlineMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -117,7 +117,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                   BBText(
                     value,
                     style: context.font.bodyLarge?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -128,10 +128,13 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                       final theme = Theme.of(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const BBText(
+                          content: BBText(
                             'User number copied to clipboard',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: context.colour.onInverseSurface,
+                            ),
                           ),
                           duration: const Duration(seconds: 2),
                           backgroundColor: theme.colorScheme.onSurface
@@ -164,7 +167,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
               BBText(
                 value,
                 style: context.font.bodyLarge?.copyWith(
-                  color: context.colour.secondary,
+                  color: context.colour.onSurface,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -174,7 +177,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
         Container(
           width: double.infinity,
           height: 1,
-          color: context.colour.secondaryFixedDim,
+          color: context.colour.outline,
         ),
       ],
     );

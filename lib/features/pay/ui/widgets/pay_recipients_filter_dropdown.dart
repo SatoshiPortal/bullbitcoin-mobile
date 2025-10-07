@@ -58,7 +58,7 @@ class PayRecipientsFilterDropdown extends StatelessWidget {
             Text(
               'Country',
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -83,7 +83,7 @@ class PayRecipientsFilterDropdown extends StatelessWidget {
                   ),
                   icon: Icon(
                     Icons.keyboard_arrow_down,
-                    color: context.colour.secondary,
+                    color: context.colour.onSurface,
                   ),
                   items:
                       countryOptions.map((countryCode) {
@@ -148,7 +148,7 @@ class PayRecipientsFilterDropdown extends StatelessWidget {
                     ),
                     icon: Icon(
                       Icons.keyboard_arrow_down,
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                     ),
                     items:
                         typeOptions

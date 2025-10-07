@@ -1,13 +1,14 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class SnackBarUtils {
   static void showCopiedSnackBar(BuildContext context) {
     _showSnackBar(
       context,
-      const Text(
+      Text(
         'Copied to clipboard',
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 14, color: Colors.white),
+        style: TextStyle(fontSize: 14, color: context.colour.onInverseSurface),
       ),
     );
   }
@@ -18,7 +19,7 @@ class SnackBarUtils {
       Text(
         message,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 14, color: Colors.white),
+        style: TextStyle(fontSize: 14, color: context.colour.onInverseSurface),
       ),
     );
   }

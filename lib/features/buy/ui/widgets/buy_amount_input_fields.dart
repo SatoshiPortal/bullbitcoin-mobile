@@ -217,7 +217,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                 ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.colour.onSurface,
                 ),
                 items:
                     balances.keys

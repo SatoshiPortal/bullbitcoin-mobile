@@ -153,7 +153,7 @@ class _KeyServerStatusWidget extends StatelessWidget {
                               text: 'Key Server ',
                               style: context.font.labelLarge?.copyWith(
                                 fontSize: 12,
-                                color: context.colour.secondary,
+                                color: context.colour.onSurface,
                               ),
                             ),
 
@@ -243,7 +243,7 @@ class _TestBackupButton extends StatelessWidget {
       borderColor: context.colour.secondary,
       outlined: true,
       bgColor: Colors.transparent,
-      textColor: context.colour.secondary,
+      textColor: context.colour.onSurface,
     );
   }
 }
@@ -284,7 +284,7 @@ class _ExportVaultButton extends StatelessWidget {
                   : () => context.read<BackupSettingsCubit>().exportVault(),
           bgColor: Colors.transparent,
           disabled: state.status == BackupSettingsStatus.exporting,
-          textColor: context.colour.secondary,
+          textColor: context.colour.onSurface,
           borderColor: context.colour.secondary,
           outlined: true,
         );
@@ -320,7 +320,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
                   },
           bgColor: Colors.transparent,
           disabled: state.status == BackupSettingsStatus.viewingKey,
-          textColor: context.colour.secondary,
+          textColor: context.colour.onSurface,
           borderColor: context.colour.secondary,
           outlined: true,
         );

@@ -21,7 +21,7 @@ class AccountOwnershipWidget extends StatelessWidget {
         BBText(
           'Who does this account belong to?',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -78,7 +78,7 @@ class AccountOwnershipWidget extends StatelessWidget {
                   child: BBText(
                     label,
                     style: context.font.headlineSmall?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                     ),
                   ),
                 ),

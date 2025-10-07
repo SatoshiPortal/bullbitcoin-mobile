@@ -50,7 +50,7 @@ class _ShowBbqrView extends StatelessWidget {
                 Text(
                   'Part ${state.currentIndex + 1} of ${state.parts.length}',
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.secondary,
+                    color: context.colour.onSurface,
                   ),
                 ),
             ],

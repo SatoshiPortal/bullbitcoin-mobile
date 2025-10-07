@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class DetailsTable extends StatelessWidget {
@@ -26,8 +27,7 @@ class DetailsTable extends StatelessWidget {
         children: [
           for (int i = 0; i < items.length; i++) ...[
             items[i],
-            if (i != items.length - 1)
-              Divider(color: theme.colorScheme.secondaryFixedDim),
+            if (i != items.length - 1) Divider(color: context.colour.outline),
           ],
         ],
       ),

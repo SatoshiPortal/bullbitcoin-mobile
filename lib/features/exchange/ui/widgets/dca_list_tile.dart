@@ -92,7 +92,7 @@ class _DcaListTileState extends State<DcaListTile> {
                   context: context,
                   builder: (BuildContext dialogContext) {
                     return AlertDialog(
-                      backgroundColor: Colors.white,
+                      backgroundColor: context.colour.surface,
                       title: const Text('Cancel Bitcoin Recurring Buy?'),
                       content: const Text(
                         "Your recurring Bitcoin purchase plan will stop, "

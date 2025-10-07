@@ -95,7 +95,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
         context.goNamed(ExchangeRoute.exchangeHome.name);
       },
       child: Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.colour.surface,
         appBar: AppBar(
           title: BBText(
             'Order Details',
@@ -133,7 +133,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                     BBText(
                       'SINPE ENVIADO!',
                       style: context.font.headlineLarge?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.colour.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -141,7 +141,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                     BBText(
                       '${order.payoutAmount.toStringAsFixed(2)} ${order.payoutCurrency}',
                       style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.colour.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -149,7 +149,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                     BBText(
                       order.beneficiaryName ?? 'N/A',
                       style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.colour.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -157,7 +157,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                     BBText(
                       _formatSinpePhoneNumber(order.beneficiaryAccountNumber),
                       style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.colour.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -165,7 +165,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                     // BBText(
                     //   'COMPROBANTE:',
                     //   style: context.font.headlineSmall?.copyWith(
-                    //     color: context.colour.secondary,
+                    //     color: context.colour.onSurface,
                     //     fontWeight: FontWeight.bold,
                     //   ),
                     // ),
@@ -173,7 +173,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                     // BBText(
                     //   order.orderId,
                     //   style: context.font.bodyMedium?.copyWith(
-                    //     color: context.colour.secondary,
+                    //     color: context.colour.onSurface,
                     //     fontWeight: FontWeight.bold,
                     //   ),
                     // ),

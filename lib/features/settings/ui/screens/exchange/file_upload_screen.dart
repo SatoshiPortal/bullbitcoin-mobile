@@ -10,7 +10,7 @@ class ExchangeFileUploadScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.colour.surface,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
@@ -47,7 +47,7 @@ class ExchangeFileUploadScreen extends StatelessWidget {
                     Text(
                       'Upload any document',
                       style: context.font.bodyLarge?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.colour.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),

@@ -22,7 +22,7 @@ class SelectScriptTypePage extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: 'Import Mnemonic',
-          color: context.colour.secondaryFixed,
+          color: context.colour.surface,
           onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
@@ -136,7 +136,7 @@ class _WalletTypeCard extends StatelessWidget {
                     title,
                     style: context.font.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                     ),
                   ),
 

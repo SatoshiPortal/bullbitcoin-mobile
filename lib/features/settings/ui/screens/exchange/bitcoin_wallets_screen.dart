@@ -10,7 +10,7 @@ class ExchangeBitcoinWalletsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.colour.surface,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
@@ -53,7 +53,7 @@ class ExchangeBitcoinWalletsScreen extends StatelessWidget {
         Text(
           label,
           style: context.font.labelMedium?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
           ),
         ),
         const SizedBox(height: 12),
@@ -71,7 +71,7 @@ class ExchangeBitcoinWalletsScreen extends StatelessWidget {
             // TODO: Implement edit functionality
           },
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),

@@ -51,7 +51,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
                         ),
                         icon: Icon(
                           Icons.keyboard_arrow_down,
-                          color: context.colour.secondary,
+                          color: context.colour.onSurface,
                         ),
                         items:
                             currencies.map((currency) {

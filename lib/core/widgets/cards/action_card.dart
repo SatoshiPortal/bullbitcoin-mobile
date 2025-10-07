@@ -31,7 +31,7 @@ class ActionCard extends StatelessWidget {
             Container(
               // padding: const EdgeInsets.all(20),
               height: 70,
-              color: context.colour.secondaryFixed,
+              color: context.colour.surface,
               // color: Colors.red,
             ),
             // const Gap(2),
@@ -178,7 +178,12 @@ class _ActionButton extends StatelessWidget {
             spacing: 8,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(icon, height: 24, width: 24),
+              Image.asset(
+                icon,
+                height: 24,
+                width: 24,
+                color: context.colour.onSurface,
+              ),
               BBText(label, style: context.font.bodyLarge),
             ],
           ),

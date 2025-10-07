@@ -29,7 +29,7 @@ class LabeledTextInput extends StatelessWidget {
           label,
           style: context.font.labelMedium?.copyWith(
             fontWeight: FontWeight.w700,
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
             letterSpacing: 0,
             fontSize: 14,
           ),
@@ -54,7 +54,7 @@ class LabeledTextInput extends StatelessWidget {
             style: context.font.bodySmall?.copyWith(
               fontWeight: FontWeight.w700,
               fontSize: 14,
-              color: context.colour.secondary,
+              color: context.colour.onSurface,
             ),
             hintStyle: context.font.bodySmall?.copyWith(
               fontWeight: FontWeight.w700,

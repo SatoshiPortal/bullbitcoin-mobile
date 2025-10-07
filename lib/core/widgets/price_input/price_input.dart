@@ -107,7 +107,7 @@ class PriceInput extends StatelessWidget {
               },
               child: Icon(
                 Icons.arrow_drop_down,
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
                 size: 40,
               ),
             ),
@@ -134,7 +134,7 @@ class PriceInput extends StatelessWidget {
                   borderRadius: BorderRadius.circular(2),
                   borderSide: BorderSide.none,
                 ),
-                fillColor: context.colour.secondaryFixedDim,
+                fillColor: context.colour.surface,
                 filled: true,
                 hintText: 'Add note',
                 hintStyle: context.font.labelSmall!.copyWith(
@@ -153,7 +153,7 @@ class PriceInput extends StatelessWidget {
       useRootNavigator: true,
       context: context,
       isScrollControlled: true,
-      backgroundColor: context.colour.secondaryFixedDim,
+      backgroundColor: context.colour.surface,
       constraints: const BoxConstraints(maxWidth: double.infinity),
       builder: (context) {
         return CurrencyBottomSheet(
@@ -191,7 +191,7 @@ class CurrencyBottomSheet extends StatelessWidget {
             IconButton(
               iconSize: 20,
               onPressed: () => Navigator.pop(context),
-              color: context.colour.secondary,
+              color: context.colour.onSurface,
               icon: const Icon(Icons.close),
             ),
             const Gap(16),

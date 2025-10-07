@@ -51,7 +51,7 @@ class _NewRecipientScreenState extends State<NewRecipientScreen> {
                     BBText(
                       'Where and how should we send the money?',
                       style: context.font.headlineMedium?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.colour.onSurface,
                       ),
                       textAlign: TextAlign.center,
                     ),

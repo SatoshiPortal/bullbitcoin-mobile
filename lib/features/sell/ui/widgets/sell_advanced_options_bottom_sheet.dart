@@ -75,7 +75,7 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                backgroundColor: context.colour.secondaryFixed,
+                backgroundColor: context.colour.surface,
                 constraints: const BoxConstraints(maxWidth: double.infinity),
                 useSafeArea: true,
                 builder:

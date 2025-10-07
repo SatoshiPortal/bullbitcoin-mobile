@@ -304,7 +304,7 @@ class TestPhysicalBackupScreen extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: context.colour.secondaryFixedDim,
+                        color: context.colour.outline,
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(11),
                           topRight: Radius.circular(11),
@@ -318,7 +318,7 @@ class TestPhysicalBackupScreen extends StatelessWidget {
                         style: context.font.headlineMedium?.copyWith(
                           fontWeight: FontWeight.w500,
                           fontSize: 16,
-                          color: context.colour.secondary,
+                          color: context.colour.onSurface,
                         ),
                       ),
                     ),
@@ -387,7 +387,7 @@ class TestPhysicalBackupScreen extends StatelessWidget {
           style: context.font.headlineMedium?.copyWith(
             fontWeight: FontWeight.w700,
             fontSize: 12,
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
           ),
         ),
       ],
@@ -583,7 +583,7 @@ class VerificationWordItem extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(8, 0, 8, 20),
         // padding: EdgeInsets.only(left: padLeft, right: 4),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colour.surface,
           borderRadius: BorderRadius.circular(2.76),
           border: Border.all(color: context.colour.surface, width: 0.69),
           boxShadow: [
@@ -630,7 +630,7 @@ class VerificationWordItem extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
                       letterSpacing: 0.15,
-                      color: Colors.white,
+                      color: context.colour.onPrimary,
                     ),
                   ),
                 ),
@@ -645,7 +645,7 @@ class VerificationWordItem extends StatelessWidget {
               style: context.font.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
             ),
           ],
@@ -678,7 +678,7 @@ class RecoveryPhraseWord extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(8, 0, 8, 20),
         padding: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colour.surface,
           borderRadius: BorderRadius.circular(2.76),
           border: Border.all(color: context.colour.surface, width: 0.69),
           boxShadow: [
@@ -698,9 +698,9 @@ class RecoveryPhraseWord extends StatelessWidget {
                 width: 34.48,
                 height: 34.48,
                 decoration: BoxDecoration(
-                  color: context.colour.secondary,
+                  color: context.colour.onSurface,
                   border: Border.all(
-                    color: context.colour.secondary,
+                    color: context.colour.onSurface,
                     width: 0.82,
                   ),
                   borderRadius: BorderRadius.circular(2.46),
@@ -728,7 +728,7 @@ class RecoveryPhraseWord extends StatelessWidget {
                 style: context.font.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
-                  color: context.colour.secondary,
+                  color: context.colour.onSurface,
                 ),
               ),
             ),
@@ -754,7 +754,7 @@ class PassphraseWidget extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(8, 0, 8, 20),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colour.surface,
         borderRadius: BorderRadius.circular(2.76),
         border: Border.all(color: context.colour.surface, width: 0.69),
         boxShadow: [
@@ -779,7 +779,7 @@ class PassphraseWidget extends StatelessWidget {
             style: context.font.bodyLarge?.copyWith(
               fontWeight: FontWeight.w700,
               fontSize: 14,
-              color: context.colour.secondary,
+              color: context.colour.onSurface,
             ),
           ),
         ],

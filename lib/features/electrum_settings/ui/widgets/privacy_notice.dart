@@ -79,7 +79,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                             bgColor: Colors.transparent,
                             outlined: true,
                             textStyle: context.font.headlineLarge,
-                            textColor: context.colour.secondary,
+                            textColor: context.colour.onSurface,
                           ),
                         ),
                         const Gap(16),

@@ -172,7 +172,7 @@ class _EnabledToggle extends StatelessWidget {
             BBText(
               'Enable Auto Transfer',
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
             ),
             Switch(
@@ -219,7 +219,7 @@ class _AmountThresholdField extends StatelessWidget {
         BBText(
           'Max Instant Wallet Balance',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
           ),
         ),
         const Gap(8),
@@ -237,7 +237,7 @@ class _AmountThresholdField extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: context.colour.surface,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: context.colour.secondaryFixedDim),
+                    border: Border.all(color: context.colour.outline),
                   ),
                   child: BBText(
                     bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
@@ -295,7 +295,7 @@ class _FeeThresholdField extends StatelessWidget {
         BBText(
           'Max Transfer Fee',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
           ),
         ),
         const Gap(8),
@@ -313,7 +313,7 @@ class _FeeThresholdField extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: context.colour.surface,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: context.colour.secondaryFixedDim),
+                    border: Border.all(color: context.colour.outline),
                   ),
                   child: BBText('%', style: context.font.bodyMedium),
                 ),
@@ -368,7 +368,7 @@ class _AlwaysBlockToggle extends StatelessWidget {
             BBText(
               'Always Block High Fees',
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
             ),
             Switch(
@@ -428,7 +428,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
             BBText(
               'Recipient Bitcoin Wallet',
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
             ),
             if (enabled) ...[
@@ -494,7 +494,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
                   child: BBText(
                     wallet.label ?? 'Bitcoin Wallet',
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                     ),
                   ),
                 );

@@ -36,7 +36,7 @@ class ExchangeSecurityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.colour.surface,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,

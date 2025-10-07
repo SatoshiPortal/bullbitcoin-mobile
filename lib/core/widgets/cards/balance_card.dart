@@ -35,13 +35,13 @@ class BalanceCard extends StatelessWidget {
               BBText(
                 '${balance.currencyCode.toUpperCase()} account balance',
                 style: context.font.bodyLarge,
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
               const Spacer(),
               BBText(
                 '${_removeTrailingFiatZeros(balance.amount.toStringAsFixed(2))} ${balance.currencyCode.toUpperCase()}',
                 style: context.font.bodyLarge,
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
               const Gap(8),
               Icon(

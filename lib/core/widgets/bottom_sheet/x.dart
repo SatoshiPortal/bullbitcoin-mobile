@@ -56,7 +56,7 @@ class BlurredBottomSheet extends StatelessWidget {
         Positioned.fill(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-            child: Container(color: context.colour.secondary.withAlpha(25)),
+            child: Container(color: context.colour.onSurface.withAlpha(25)),
           ),
         ),
 

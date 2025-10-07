@@ -100,7 +100,7 @@ class CoinSelectTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  Divider(color: context.colour.secondaryFixedDim),
+                  Divider(color: context.colour.outline),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -114,7 +114,7 @@ class CoinSelectTile extends StatelessWidget {
                         child: BBText(
                           StringFormatting.truncateMiddle(address),
                           style: context.font.labelLarge?.copyWith(
-                            color: context.colour.secondary,
+                            color: context.colour.onSurface,
                           ),
                         ),
                       ),
@@ -127,7 +127,7 @@ class CoinSelectTile extends StatelessWidget {
                       BBText(
                         addressType,
                         style: context.font.labelLarge?.copyWith(
-                          color: context.colour.secondary,
+                          color: context.colour.onSurface,
                         ),
                       ),
                     ],

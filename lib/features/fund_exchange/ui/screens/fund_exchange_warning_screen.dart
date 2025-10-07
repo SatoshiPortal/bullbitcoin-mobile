@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
@@ -84,7 +85,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
               ),
               const Gap(24.0),
               CheckboxListTile(
-                tileColor: theme.colorScheme.secondaryFixedDim,
+                tileColor: context.colour.outline,
                 contentPadding: const EdgeInsets.all(8.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),

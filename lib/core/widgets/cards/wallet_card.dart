@@ -62,14 +62,14 @@ class WalletCard extends StatelessWidget {
                               BBText(
                                 title,
                                 style: context.font.bodyLarge,
-                                color: context.colour.secondary,
+                                color: context.colour.onSurface,
                               ),
                               const Gap(4),
                               CurrencyText(
                                 wallet.balanceSat.toInt(),
                                 showFiat: false,
                                 style: context.font.bodyLarge,
-                                color: context.colour.secondary,
+                                color: context.colour.onSurface,
                               ),
                             ],
                           ),

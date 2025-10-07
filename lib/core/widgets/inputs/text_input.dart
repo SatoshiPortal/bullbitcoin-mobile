@@ -87,7 +87,7 @@ class _BBInputTextState extends State<BBInputText> {
 
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(2),
-      borderSide: BorderSide(color: context.colour.secondaryFixedDim),
+      borderSide: BorderSide(color: context.colour.outline),
     );
   }
 
@@ -126,7 +126,7 @@ class _BBInputTextState extends State<BBInputText> {
       maxLines: widget.maxLines ?? (widget.obscure ? 1 : null),
       style:
           widget.style ??
-          context.font.headlineSmall?.copyWith(color: context.colour.secondary),
+          context.font.headlineSmall?.copyWith(color: context.colour.onSurface),
       onTap: () => widget.onEnter?.call(),
       onSubmitted: widget.onDone,
       textAlign: TextAlign.left,
@@ -148,7 +148,7 @@ class _BBInputTextState extends State<BBInputText> {
                   child: Text(
                     widget.fixedPrefix!,
                     style: context.font.bodyLarge?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

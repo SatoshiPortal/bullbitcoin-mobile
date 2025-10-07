@@ -32,7 +32,7 @@ class CommonSendConfirmTopArea extends StatelessWidget {
           height: 72,
           width: 72,
           decoration: BoxDecoration(
-            color: context.colour.secondaryFixedDim,
+            color: context.colour.outline,
             shape: BoxShape.circle,
           ),
           child:
@@ -106,7 +106,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
   final String _absoluteFees;
   final String _selectedFeeOptionTitle;
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.colour.secondaryFixedDim);
+    return Container(height: 1, color: context.colour.outline);
   }
 
   @override
@@ -231,7 +231,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
   final String _totalSwapFees;
 
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.colour.secondaryFixedDim);
+    return Container(height: 1, color: context.colour.outline);
   }
 
   @override
@@ -437,7 +437,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
   final Swap swap;
   final String absoluteFeesFormatted;
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.colour.secondaryFixedDim);
+    return Container(height: 1, color: context.colour.outline);
   }
 
   @override
@@ -585,7 +585,7 @@ class CommonSendBottomButtons extends StatelessWidget {
           //       showModalBottomSheet(
           //         context: context,
           //         isScrollControlled: true,
-          //         backgroundColor: context.colour.secondaryFixed,
+          //         backgroundColor: context.colour.surface,
           //         builder:
           //             (BuildContext buildContext) => BlocProvider.value(
           //               value: _blocProviderValue,
@@ -596,7 +596,7 @@ class CommonSendBottomButtons extends StatelessWidget {
           //     borderColor: context.colour.secondary,
           //     outlined: true,
           //     bgColor: Colors.transparent,
-          //     textColor: context.colour.secondary,
+          //     textColor: context.colour.onSurface,
           //   ),
           //   const Gap(12),
           // ],

@@ -89,7 +89,7 @@ class _Screen extends StatelessWidget {
               title: BBText(
                 "Choose vault location",
                 style: context.font.headlineMedium,
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
             ),
             body: Padding(

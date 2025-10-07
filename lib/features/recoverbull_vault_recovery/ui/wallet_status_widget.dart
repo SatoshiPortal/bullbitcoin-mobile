@@ -17,7 +17,7 @@ class WalletStatusWidget extends StatelessWidget {
           BBText(
             'Looking for balance and transactions…',
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.secondary,
+              color: context.colour.onSurface,
             ),
           ),
         ],
@@ -29,14 +29,14 @@ class WalletStatusWidget extends StatelessWidget {
         BBText(
           'Balance: ${state.totalBalance}',
           style: context.font.bodyMedium?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
           ),
         ),
         const Gap(4),
         BBText(
           'Transactions: ${state.totalTransactions}',
           style: context.font.bodyMedium?.copyWith(
-            color: context.colour.secondary,
+            color: context.colour.onSurface,
           ),
         ),
       ],

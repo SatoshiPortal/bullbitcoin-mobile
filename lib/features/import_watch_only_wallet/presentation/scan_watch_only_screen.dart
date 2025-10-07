@@ -109,10 +109,10 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
 void showCopiedSnackBar(BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: const Text(
+      content: Text(
         'Copied to clipboard',
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 14, color: Colors.white),
+        style: TextStyle(fontSize: 14, color: context.colour.onInverseSurface),
       ),
       duration: const Duration(seconds: 2),
       backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(204),

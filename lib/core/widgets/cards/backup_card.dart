@@ -18,7 +18,7 @@ class BackupCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: context.colour.secondary,
+          color: context.colour.onSurface,
           borderRadius: BorderRadius.circular(2),
         ),
         child: Row(

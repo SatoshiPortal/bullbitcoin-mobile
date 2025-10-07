@@ -58,7 +58,7 @@ class _NfcPageState extends State<NfcScannerWidget> {
             label: 'Scan NFC',
             onPressed: _scan,
             bgColor: context.colour.onPrimary,
-            textColor: context.colour.secondary,
+            textColor: context.colour.onSurface,
             iconData: Icons.nfc,
           ),
       ],

@@ -61,7 +61,7 @@ class ShowPsbtScreen extends StatelessWidget {
                                 context,
                               ),
                           bgColor: context.colour.onSecondary,
-                          textColor: context.colour.secondary,
+                          textColor: context.colour.onSurface,
                           outlined: true,
                         ),
                     ],

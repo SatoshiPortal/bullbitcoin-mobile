@@ -45,7 +45,7 @@ class HomeWarnings extends StatelessWidget {
                   title: warning.title,
                   description: warning.description,
                   tagColor: context.colour.error,
-                  bgColor: context.colour.secondaryFixedDim,
+                  bgColor: context.colour.outline,
                   onTap: () => context.pushNamed(warning.actionRoute),
                 ),
               ],

@@ -49,7 +49,7 @@ class PayWalletSelectionScreen extends StatelessWidget {
                   Text(
                     'Which wallet do you want to pay from?',
                     style: context.font.labelMedium?.copyWith(
-                      color: Colors.black,
+                      color: context.colour.onSurface,
                     ),
                   ),
                   const Gap(24.0),

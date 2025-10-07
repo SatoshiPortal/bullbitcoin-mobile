@@ -24,7 +24,7 @@ class EyeToggle extends StatelessWidget {
         ),
         child: Icon(
           !hide ? Icons.visibility : Icons.visibility_off,
-          color: context.colour.onPrimary,
+          color: context.colour.onPrimaryFixed,
           size: 20,
         ),
       ),

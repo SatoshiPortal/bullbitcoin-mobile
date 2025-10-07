@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -71,7 +72,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                     'The Bitcoin network fee will be deducted from the amount you receive and collected by the Bitcoin miners',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.black,
+                      color: context.colour.onSurface,
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -111,7 +112,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context, rootNavigator: true).pop();
                     },
-                    bgColor: Colors.white,
+                    bgColor: context.colour.surface,
                     textColor: theme.colorScheme.secondary,
                   ),
                 const Gap(16),

@@ -26,7 +26,7 @@ class WalletDetailsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.colour.surface,
       appBar: AppBar(
         title: const Text('Wallet Details'),
         actions: [

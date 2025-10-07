@@ -63,13 +63,13 @@ class SendAddressScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
+      backgroundColor: context.colour.surface,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: 'Send',
-          color: context.colour.secondaryFixedDim,
+          color: context.colour.outline,
           onBack: () => context.pop(),
         ),
       ),
@@ -192,7 +192,7 @@ class AddressField extends StatelessWidget {
       maxLines: 1,
       rightIcon: Icon(
         Icons.paste_sharp,
-        color: context.colour.secondary,
+        color: context.colour.onSurface,
         size: 20,
       ),
       onRightTap: () {
@@ -408,10 +408,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               isMax: _isMax,
                             ),
                             const Gap(48),
-                            Divider(
-                              height: 1,
-                              color: context.colour.secondaryFixedDim,
-                            ),
+                            Divider(height: 1, color: context.colour.outline),
                             BalanceRow(
                               balance: state.formattedWalletBalance(),
                               currencyCode: '',
@@ -761,7 +758,7 @@ class _HighFeeWarning extends StatelessWidget {
       description:
           'Total fee is ${feePercent.toStringAsFixed(2)}% of the amount you are sending',
       tagColor: context.colour.onError,
-      bgColor: context.colour.secondaryFixed,
+      bgColor: context.colour.surface,
     );
   }
 }
@@ -775,7 +772,7 @@ class _SlowPaymentWarning extends StatelessWidget {
       title: 'Slow Payment Warning',
       description: 'Bitcoin swaps will take time to confirm.',
       tagColor: context.colour.onError,
-      bgColor: context.colour.secondaryFixed,
+      bgColor: context.colour.surface,
     );
   }
 }
@@ -807,7 +804,7 @@ class _BottomButtons extends StatelessWidget {
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
-                  backgroundColor: context.colour.secondaryFixed,
+                  backgroundColor: context.colour.surface,
                   constraints: const BoxConstraints(maxWidth: double.infinity),
                   builder:
                       (BuildContext buildContext) => BlocProvider.value(
@@ -819,7 +816,7 @@ class _BottomButtons extends StatelessWidget {
               borderColor: context.colour.secondary,
               outlined: true,
               bgColor: Colors.transparent,
-              textColor: context.colour.secondary,
+              textColor: context.colour.onSurface,
             ),
             const Gap(12),
           ],
@@ -861,7 +858,7 @@ class ConfirmSendButton extends StatelessWidget {
 class _OnchainSendInfoSection extends StatelessWidget {
   const _OnchainSendInfoSection();
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.colour.secondaryFixedDim);
+    return Container(height: 1, color: context.colour.outline);
   }
 
   @override
@@ -979,15 +976,20 @@ class _OnchainSendInfoSection extends StatelessWidget {
             InfoRow(
               title: 'Fee Priority',
               details: InkWell(
-                onTap: hasFinalizedTx ? null : () async {
-                  final selected = await _showFeeOptions(context);
+                onTap:
+                    hasFinalizedTx
+                        ? null
+                        : () async {
+                          final selected = await _showFeeOptions(context);
 
-                  if (selected != null) {
-                    final fee = FeeSelectionName.fromString(selected);
-                    // ignore: use_build_context_synchronously
-                    await context.read<SendCubit>().feeOptionSelected(fee);
-                  }
-                },
+                          if (selected != null) {
+                            final fee = FeeSelectionName.fromString(selected);
+                            // ignore: use_build_context_synchronously
+                            await context.read<SendCubit>().feeOptionSelected(
+                              fee,
+                            );
+                          }
+                        },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -1039,7 +1041,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
 class _LnSwapSendInfoSection extends StatelessWidget {
   const _LnSwapSendInfoSection();
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.colour.secondaryFixedDim);
+    return Container(height: 1, color: context.colour.outline);
   }
 
   @override
@@ -1258,7 +1260,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
 class _ChainSwapSendInfoSection extends StatelessWidget {
   const _ChainSwapSendInfoSection();
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.colour.secondaryFixedDim);
+    return Container(height: 1, color: context.colour.outline);
   }
 
   @override
@@ -1430,7 +1432,7 @@ class SendConfirmTopArea extends StatelessWidget {
           height: 72,
           width: 72,
           decoration: BoxDecoration(
-            color: context.colour.secondaryFixedDim,
+            color: context.colour.outline,
             shape: BoxShape.circle,
           ),
           child: Image.asset(
@@ -1738,8 +1740,7 @@ class SignLedgerButton extends StatelessWidget {
     );
 
     final derivationPath = context.select(
-      (SendCubit cubit) =>
-          cubit.state.selectedWallet?.derivationPath,
+      (SendCubit cubit) => cubit.state.selectedWallet?.derivationPath,
     );
 
     final deviceType = context.select(

@@ -1,0 +1,1 @@
+- Need to fix the colours.dart file and add better values, and then update the entire app to use it. The app looks shitty after the changes I have made to it.

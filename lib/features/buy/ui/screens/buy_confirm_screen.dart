@@ -73,7 +73,7 @@ class BuyConfirmScreen extends StatelessWidget {
                     width: 72,
                     height: 72,
                     decoration: BoxDecoration(
-                      color: context.colour.secondaryFixedDim,
+                      color: context.colour.outline,
                       shape: BoxShape.circle,
                     ),
                     child: Image.asset(Assets.icons.btc.path),

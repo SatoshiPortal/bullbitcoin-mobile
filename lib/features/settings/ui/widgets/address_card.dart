@@ -31,7 +31,7 @@ class AddressCard extends StatelessWidget {
             Text(
               isUsed ? 'Used' : 'Unused',
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
             ),
             const Gap(8),
@@ -41,10 +41,13 @@ class AddressCard extends StatelessWidget {
                 final theme = Theme.of(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text(
+                    content: Text(
                       'Address copied to clipboard',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: context.colour.onInverseSurface,
+                      ),
                     ),
                     duration: const Duration(seconds: 2),
                     backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
@@ -75,7 +78,7 @@ class AddressCard extends StatelessWidget {
             Text(
               'Index: $index',
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
               ),
             ),
             const Gap(8),
@@ -84,13 +87,13 @@ class AddressCard extends StatelessWidget {
                 Text(
                   'Balance: ',
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.secondary,
+                    color: context.colour.onSurface,
                   ),
                 ),
                 CurrencyText(
                   balanceSat,
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.secondary,
+                    color: context.colour.onSurface,
                   ),
                   showFiat: false,
                 ),

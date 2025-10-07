@@ -90,25 +90,25 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     decoration: InputDecoration(
                       fillColor:
                           _useDefaultLightningAddress
-                              ? context.colour.secondaryFixedDim
+                              ? context.colour.outline
                               : context.colour.onPrimary,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim,
+                          color: context.colour.outline,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim,
+                          color: context.colour.outline,
                         ),
                       ),
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim.withValues(
+                          color: context.colour.outline.withValues(
                             alpha: 0.5,
                           ),
                         ),

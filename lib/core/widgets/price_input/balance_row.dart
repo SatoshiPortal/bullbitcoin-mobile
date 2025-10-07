@@ -42,7 +42,7 @@ class BalanceRow extends StatelessWidget {
                         TextSpan(
                           text: walletLabel,
                           style: context.font.labelMedium?.copyWith(
-                            color: context.colour.secondary,
+                            color: context.colour.onSurface,
                           ),
                         ),
                       ],
@@ -60,7 +60,7 @@ class BalanceRow extends StatelessWidget {
                       TextSpan(
                         text: '$balance $currencyCode',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.colour.secondary,
+                          color: context.colour.onSurface,
                         ),
                       ),
                     ],
@@ -74,8 +74,8 @@ class BalanceRow extends StatelessWidget {
               label: 'MAX',
               height: 30,
               width: 51,
-              bgColor: context.colour.secondaryFixedDim,
-              textColor: context.colour.secondary,
+              bgColor: context.colour.surface,
+              textColor: context.colour.onSurface,
               textStyle: context.font.labelLarge,
               onPressed: onMaxPressed,
             ),

@@ -14,7 +14,7 @@ class OpenTheCameraWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: context.colour.secondaryFixedDim,
+      color: context.colour.outline,
       child: Column(
         children: [
           const Gap(30),
@@ -51,7 +51,7 @@ class OpenTheCameraWidget extends StatelessWidget {
               label: 'Open the Camera',
               bgColor: Colors.transparent,
               borderColor: context.colour.surfaceContainer,
-              textColor: context.colour.secondary,
+              textColor: context.colour.onSurface,
             ),
           ),
           const Gap(24),

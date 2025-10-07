@@ -205,7 +205,7 @@ class MnemonicWordState extends State<MnemonicWord> {
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: context.colour.secondary),
+        border: Border.all(color: context.colour.outline),
         color: context.colour.onPrimary,
       ),
       height: 41,
@@ -466,7 +466,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
       underline: const SizedBox(),
       style: context.font.bodyMedium?.copyWith(
         fontWeight: FontWeight.w600,
-        color: context.colour.secondary,
+        color: context.colour.onSurface,
       ),
       dropdownColor: context.colour.onPrimary,
       borderRadius: BorderRadius.circular(4),
@@ -479,7 +479,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
                     '${length.words} words',
                     style: context.font.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                     ),
                   ),
                 ),

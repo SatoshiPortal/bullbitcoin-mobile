@@ -37,7 +37,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                   Text(
                     'How do you want to pay this invoice?',
                     style: context.font.labelMedium?.copyWith(
-                      color: Colors.black,
+                      color: context.colour.onSurface,
                     ),
                   ),
                   const Gap(24.0),

@@ -70,7 +70,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                   child: Text(
                     'Addresses',
                     style: context.font.headlineMedium?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colour.onSurface,
                     ),
                   ),
                 ),
@@ -154,7 +154,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                   child: BBButton.big(
                     label: 'Receive',
                     bgColor: Colors.transparent,
-                    textColor: context.colour.secondary,
+                    textColor: context.colour.onSurface,
                     outlined: true,
                     borderColor: context.colour.secondary,
                     onPressed: () {

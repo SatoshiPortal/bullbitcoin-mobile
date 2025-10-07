@@ -100,7 +100,7 @@ class _TransactionLabelBottomsheetState
                 onPressed: () {
                   context.pop();
                 },
-                color: context.colour.secondary,
+                color: context.colour.onSurface,
                 icon: const Icon(Icons.close_sharp),
               ),
             ],

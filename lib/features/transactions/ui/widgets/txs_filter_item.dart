@@ -26,7 +26,7 @@ class TxsFilterItem extends StatelessWidget {
           border: Border.all(
             color:
                 isSelected
-                    ? context.colour.secondaryFixedDim
+                    ? context.colour.outline
                     : context.colour.outline,
           ),
         ),

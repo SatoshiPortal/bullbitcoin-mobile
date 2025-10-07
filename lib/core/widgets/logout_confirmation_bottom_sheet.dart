@@ -57,7 +57,7 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
               BBText(
                 'Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access exchange features.',
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.secondary.withValues(alpha: 0.7),
+                  color: context.colour.onSurface.withValues(alpha: 0.7),
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 4,
@@ -70,8 +70,8 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                     child: BBButton.small(
                       label: 'Cancel',
                       onPressed: () => Navigator.of(context).pop(),
-                      bgColor: context.colour.secondaryFixed,
-                      textColor: context.colour.secondary,
+                      bgColor: context.colour.surface,
+                      textColor: context.colour.onSurface,
                     ),
                   ),
                   const SizedBox(width: 12),
