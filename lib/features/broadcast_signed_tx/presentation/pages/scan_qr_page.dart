@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_si
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_zxing/flutter_zxing.dart';
 import 'package:go_router/go_router.dart';
 
 class ScanQrPage extends StatelessWidget {
@@ -23,6 +24,7 @@ class ScanQrPage extends StatelessWidget {
             children: [
               QrScannerWidget(
                 onScanned: cubit.onQrScanned,
+                resolution: ResolutionPreset.max,
                 scanDelay:
                     state
                             .bbqr
