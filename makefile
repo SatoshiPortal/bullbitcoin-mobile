@@ -83,7 +83,15 @@ feature:
 
 docker-build:
 	@echo "🏗️ Building Docker image"
-	@ docker build -t bull-mobile .
+	@docker build -t bull-mobile-builder .
+	@echo "📦 Creating temporary container"
+	@docker create --name temp-bull bull-mobile-builder
+	@echo "📥 Copying APK to local machine"
+	@mkdir -p build/docker-output
+	@docker cp temp-bull:/app/build/app/outputs/flutter-apk/app-release.apk build/docker-output/
+	@echo "🧹 Cleaning up temporary container"
+	@docker rm temp-bull
+	@echo "✅ Unsigned APK available at: build/docker-output/app-release.apk"
 
 
 test: unit-test integration-test
