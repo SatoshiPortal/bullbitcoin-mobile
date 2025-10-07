@@ -92,6 +92,7 @@ class AppLocator {
     ReplaceByFeeLocator.setup();
     Bip85EntropyLocator.setup();
     RecoverBullSelectDriveVaultLocator.setup();
+    LedgerLocator.setup();
     ArkCoreLocator.setup();
   }
 }
