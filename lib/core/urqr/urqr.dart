@@ -392,10 +392,10 @@ class CryptoAccount {
   @override
   String toString() {
     if (masterFingerprint != null && derivationPath != null && xpub != null) {
-      return Descriptor.constructDescriptor(
-        masterFingerprint!,
-        derivationPath!,
-        xpub!,
+      return Descriptor.fromStrings(
+        fingerprint: masterFingerprint!,
+        path: derivationPath!,
+        xpub: xpub!,
       ).external;
     }
     return 'CryptoAccount(no key found)';
@@ -463,10 +463,10 @@ Map<String, String>? _parsePassportJsonDescriptors(Map<String, dynamic> data) {
           final String derivation = derivDyn.trim();
           final String xpub = xpubDyn.trim();
           result[key] =
-              Descriptor.constructDescriptor(
-                fingerprint,
-                derivation,
-                xpub,
+              Descriptor.fromStrings(
+                fingerprint: fingerprint,
+                path: derivation,
+                xpub: xpub,
               ).external;
         }
       }

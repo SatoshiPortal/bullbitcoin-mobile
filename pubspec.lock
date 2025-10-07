@@ -1615,9 +1615,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: bf0e04da8012bfb5b4015437ffc2c750dd15955f
-      resolved-ref: bf0e04da8012bfb5b4015437ffc2c750dd15955f
-      url: "https://github.com/ben-kaufman/dart-satoshifier.git"
+      ref: "07b20a075350c0adfa5a92abb6b858c12a022661"
+      resolved-ref: "07b20a075350c0adfa5a92abb6b858c12a022661"
+      url: "https://github.com/ethicnology/dart-satoshifier.git"
     source: git
     version: "0.0.1"
   share_plus:

@@ -38,10 +38,10 @@ class GetLedgerWatchOnlyWalletUsecase {
       scriptType: scriptType,
     );
 
-    final descriptor = Descriptor.constructDescriptor(
-      masterFingerprint,
-      derivationPath,
-      xpub,
+    final descriptor = Descriptor.fromStrings(
+      fingerprint: masterFingerprint,
+      path: derivationPath,
+      xpub: xpub,
     );
 
     final watchOnly = Satoshifier.watchOnlyDescriptor(descriptor: descriptor);
