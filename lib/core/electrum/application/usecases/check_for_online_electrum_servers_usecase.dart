@@ -5,12 +5,12 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environmen
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 
-class EnsureOnlineElectrumServersUsecase {
+class CheckForOnlineElectrumServersUsecase {
   final ElectrumServerRepository _electrumServerRepository;
   final EnvironmentPort _environmentPort;
   final ServerStatusPort _serverStatusPort;
 
-  const EnsureOnlineElectrumServersUsecase({
+  const CheckForOnlineElectrumServersUsecase({
     required ElectrumServerRepository electrumServerRepository,
     required EnvironmentPort environmentPort,
     required ServerStatusPort serverStatusPort,

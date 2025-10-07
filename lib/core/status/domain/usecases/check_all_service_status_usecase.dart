@@ -12,7 +12,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class CheckAllServiceStatusUsecase {
-  final ElectrumConnectivityPort _electrumConnectivityPort
+  final ElectrumConnectivityPort _electrumConnectivityPort;
   final BoltzSwapRepository _mainnetBoltzSwapRepository;
   final BoltzSwapRepository _testnetBoltzSwapRepository;
   final ExchangeRateRepository _exchangeRateRepository;
@@ -66,22 +66,11 @@ class CheckAllServiceStatusUsecase {
   Future<ServiceStatusInfo> _checkBitcoinElectrumServer(Network network) async {
     try {
       // Check Bitcoin Electrum servers
-      final bitcoinNetwork =
-          network == Network.bitcoinMainnet
-              ? Network.bitcoinMainnet
-              : Network.bitcoinTestnet;
-
-      final prioritizedServer = await _electrumServerRepository
-          .getPrioritizedServer(network: bitcoinNetwork);
-
-      final serverStatus = await _electrumServerRepository
-          .checkServerConnectivity(url: prioritizedServer.url);
+      final hasOnlineServers = await _electrumConnectivityPort
+          .checkServersInUseAreOnlineForNetwork(network);
 
       return ServiceStatusInfo(
-        status:
-            serverStatus == ElectrumServerStatus.online
-                ? ServiceStatus.online
-                : ServiceStatus.offline,
+        status: hasOnlineServers ? ServiceStatus.online : ServiceStatus.offline,
         name: 'Bitcoin Electrum',
         lastChecked: DateTime.now(),
       );
@@ -97,22 +86,12 @@ class CheckAllServiceStatusUsecase {
   Future<ServiceStatusInfo> _checkLiquidElectrumServer(Network network) async {
     try {
       // Check Liquid Electrum servers
-      final liquidNetwork =
-          network == Network.bitcoinMainnet
-              ? Network.liquidMainnet
-              : Network.liquidTestnet;
-
-      final prioritizedServer = await _electrumServerRepository
-          .getPrioritizedServer(network: liquidNetwork);
-
-      final serverStatus = await _electrumServerRepository
-          .checkServerConnectivity(url: prioritizedServer.url);
+      final hasOnlineServers = await _electrumConnectivityPort
+          .checkServersInUseAreOnlineForNetwork(network);
 
       return ServiceStatusInfo(
-        status:
-            serverStatus == ElectrumServerStatus.online
-                ? ServiceStatus.online
-                : ServiceStatus.offline,
+        status: hasOnlineServers ? ServiceStatus.online : ServiceStatus.offline,
+
         name: 'Liquid Electrum',
         lastChecked: DateTime.now(),
       );

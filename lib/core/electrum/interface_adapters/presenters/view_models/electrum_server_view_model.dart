@@ -10,6 +10,7 @@ sealed class ElectrumServerViewModel with _$ElectrumServerViewModel {
   const factory ElectrumServerViewModel({
     required String url,
     required ElectrumServerStatus status,
+    required int priority,
   }) = _ElectrumServerViewModel;
   const ElectrumServerViewModel._();
 

@@ -13,6 +13,7 @@ sealed class ElectrumSettingsState with _$ElectrumSettingsState {
     ElectrumAdvancedOptionsViewModel? liquidAdvancedOptions,
   }) = ElectrumSettingsLoadingState;
   const factory ElectrumSettingsState.loaded({
+    required ElectrumEnvironment environment,
     required List<ElectrumServerViewModel> defaultBitcoinServers,
     required List<ElectrumServerViewModel> customBitcoinServers,
     required List<ElectrumServerViewModel> defaultLiquidServers,
@@ -24,27 +25,30 @@ sealed class ElectrumSettingsState with _$ElectrumSettingsState {
     @Default(false) bool isDeletingCustomServer,
     @Default(false) bool isSavingAdvancedOptions,
     ElectrumServersError? electrumServersError,
-    NewCustomServerError? newCustomServerError,
+    AddCustomServerError? addCustomServerError,
     AdvancedOptionsError? advancedOptionsError,
   }) = ElectrumSettingsLoadedState;
   const ElectrumSettingsState._();
 
-  bool get isAddingCustomServerInProgress => maybeMap(
+  ElectrumEnvironment? get environment =>
+      maybeMap(loaded: (state) => state.environment, orElse: () => null);
+
+  bool get isAddingCustomServer => maybeMap(
     loaded: (state) => state.isAddingCustomServer,
     orElse: () => false,
   );
 
-  bool get isPrioritizingCustomServersInProgress => maybeMap(
+  bool get isPrioritizingCustomServer => maybeMap(
     loaded: (state) => state.isPrioritizingCustomServer,
     orElse: () => false,
   );
 
-  bool get isDeletingCustomServerInProgress => maybeMap(
+  bool get isDeletingCustomServer => maybeMap(
     loaded: (state) => state.isDeletingCustomServer,
     orElse: () => false,
   );
 
-  bool get isSavingAdvancedOptionsInProgress => maybeMap(
+  bool get isSavingAdvancedOptions => maybeMap(
     loaded: (state) => state.isSavingAdvancedOptions,
     orElse: () => false,
   );
@@ -58,5 +62,23 @@ sealed class ElectrumSettingsState with _$ElectrumSettingsState {
       bitcoinAdvancedOptions: bitcoinAdvancedOptions,
       liquidAdvancedOptions: liquidAdvancedOptions,
     );
+  }
+
+  List<ElectrumServerViewModel> getServersSortedByPriority({
+    required bool isLiquid,
+    required bool isCustom,
+  }) {
+    final servers =
+        isLiquid
+            ? (isCustom
+                ? customLiquidServers
+                : [...defaultLiquidServers, ...customLiquidServers])
+            : (isCustom
+                ? customBitcoinServers
+                : [...defaultBitcoinServers, ...customBitcoinServers]);
+
+    final sortedServers = [...servers];
+    sortedServers.sort((a, b) => a.priority.compareTo(b.priority));
+    return sortedServers;
   }
 }

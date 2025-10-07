@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/interface_adapters/facades/electrum_server_facade.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_and_settings_by_network_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_broadcast_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -39,8 +39,8 @@ class BlockchainLocator {
   static void registerFacades() {
     locator.registerLazySingleton<ElectrumServerPort>(
       () => ElectrumServerFacade(
-        getElectrumServersAndSettingByNetworkUsecase:
-            locator<GetElectrumServersAndSettingsByNetworkUsecase>(),
+        getElectrumServersToBroadcastUsecase:
+            locator<GetElectrumServersToBroadcastUsecase>(),
       ),
     );
   }

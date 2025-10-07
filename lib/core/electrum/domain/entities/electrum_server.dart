@@ -16,7 +16,38 @@ class ElectrumServer {
   }) : _url = url,
        _network = network,
        _isCustom = isCustom,
-       _priority = priority;
+       _priority = priority {
+    _validateUrl(url);
+  }
+
+  static void _validateUrl(String url) {
+    if (url.isEmpty) {
+      throw InvalidElectrumServerUrlError(url);
+    }
+
+    // Electrum server URLs can be:
+    // 1. host:port (e.g., "example.com:50001")
+    // 2. protocol://host:port (e.g., "ssl://example.com:50002", "tcp://example.com:50001")
+
+    final protocolPattern = RegExp(r'^(ssl|tcp|wss)://');
+    final urlWithoutProtocol = url.replaceFirst(protocolPattern, '');
+
+    // Check for host:port format
+    final hostPortPattern = RegExp(r'^([a-zA-Z0-9\-\.]+):(\d+)$');
+
+    if (!hostPortPattern.hasMatch(urlWithoutProtocol)) {
+      throw InvalidElectrumServerUrlError(url);
+    }
+
+    // Validate port is in valid range
+    final match = hostPortPattern.firstMatch(urlWithoutProtocol);
+    if (match != null) {
+      final port = int.tryParse(match.group(2)!);
+      if (port == null || port < 1 || port > 65535) {
+        throw InvalidElectrumServerUrlError(url);
+      }
+    }
+  }
 
   String get url => _url;
   ElectrumServerNetwork get network => _network;

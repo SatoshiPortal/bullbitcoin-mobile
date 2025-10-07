@@ -1,4 +1,7 @@
-import 'package:bb_mobile/core/electrum/application/usecases_old/check_electrum_server_connectivity_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_broadcast_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases_old/delete_electrum_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases_old/get_all_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases_old/get_prioritized_server_usecase.dart';
@@ -64,11 +67,34 @@ class ElectrumLocator {
   }
 
   static void registerUsecases() {
-    locator.registerLazySingleton<CheckElectrumServerConnectivityUsecase>(
-      () => CheckElectrumServerConnectivityUsecase(
+    locator.registerFactory<AddCustomServerUsecase>(
+      () => AddCustomServerUsecase(
         electrumServerRepository: locator<ElectrumServerRepository>(),
+        serverStatusPort: locator<ServerStatusPort>(),
       ),
     );
+    locator.registerFactory<CheckForOnlineElectrumServersUsecase>(
+      () => CheckForOnlineElectrumServersUsecase(
+        environmentPort: locator<EnvironmentPort>(),
+        electrumServerRepository: locator<ElectrumServerRepository>(),
+        serverStatusPort: locator<ServerStatusPort>(),
+      ),
+    );
+    locator.registerFactory<GetElectrumServersToBroadcastUsecase>(
+      () => GetElectrumServersToBroadcastUsecase(
+        electrumServerRepository: locator<ElectrumServerRepository>(),
+        electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<LoadElectrumServerDataUsecase>(
+      () => LoadElectrumServerDataUsecase(
+        electrumServerRepository: locator<ElectrumServerRepository>(),
+        electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
+        environmentPort: locator<EnvironmentPort>(),
+        serverStatusPort: locator<ServerStatusPort>(),
+      ),
+    );
+
     locator.registerLazySingleton<StoreElectrumServerSettingsUsecase>(
       () => StoreElectrumServerSettingsUsecase(
         repository: locator<ElectrumServerRepository>(),

@@ -1,18 +1,17 @@
 import 'package:bb_mobile/core/blockchain/domain/electrum_server.dart';
 import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/responses/get_electrum_servers_and_setting_by_network_response.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_and_settings_by_network_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_broadcast_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 
 class ElectrumServerFacade implements ElectrumServerPort {
-  final GetElectrumServersAndSettingsByNetworkUsecase
-  _getElectrumServersAndSettingByNetworkUsecase;
+  final GetElectrumServersToBroadcastUsecase
+  _getElectrumServersToBroadcastUsecase;
 
   ElectrumServerFacade({
-    required GetElectrumServersAndSettingsByNetworkUsecase
-    getElectrumServersAndSettingByNetworkUsecase,
-  }) : _getElectrumServersAndSettingByNetworkUsecase =
-           getElectrumServersAndSettingByNetworkUsecase;
+    required GetElectrumServersToBroadcastUsecase
+    getElectrumServersToBroadcastUsecase,
+  }) : _getElectrumServersToBroadcastUsecase =
+           getElectrumServersToBroadcastUsecase;
 
   @override
   Future<List<ElectrumServer>> getElectrumServers({
@@ -23,8 +22,8 @@ class ElectrumServerFacade implements ElectrumServerPort {
       isTestnet: isTestnet,
       isLiquid: isLiquid,
     );
-    final serversAndSetting =
-        await _getElectrumServersAndSettingByNetworkUsecase.execute(network);
+    final serversAndSetting = await _getElectrumServersToBroadcastUsecase
+        .execute(network: network);
     final settings = serversAndSetting.settings;
     final servers =
         serversAndSetting.servers

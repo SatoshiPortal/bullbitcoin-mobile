@@ -21,25 +21,17 @@ class BroadcastLiquidTransactionUsecase {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
 
-      final allElectrumServers = await _electrumServerPort.getElectrumServers(
+      final electrumServers = await _electrumServerPort.getElectrumServers(
         isTestnet: environment.isTestnet,
         isLiquid: true,
       );
 
       // If no Electrum servers are available, throw an error
-      if (allElectrumServers.isEmpty) {
+      if (electrumServers.isEmpty) {
         throw BroadcastTransactionException(
           'No Electrum servers available for Liquid network.',
         );
       }
-
-      // Filter out custom servers if they exist
-      final customServers =
-          allElectrumServers.where((server) => server.isCustom).toList();
-
-      // Use custom servers only if available, otherwise use default servers
-      final electrumServers =
-          customServers.isNotEmpty ? customServers : allElectrumServers;
 
       final txId = await _liquidBlockchain.broadcastTransaction(
         signedPset: signedPset,
