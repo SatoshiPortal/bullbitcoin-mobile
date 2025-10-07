@@ -56,10 +56,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
-  bip85_entropy:
-    git:
-      url: https://github.com/ethicnology/dart-bip85-entropy.git
-      ref: 5e1a9f8e5d7fc517034eddf3fe36f5271135cd73
+  bip85_entropy: ^1.0.2
   bip21_uri: ^2.1.3
   bip32_keys: ^3.0.1
   bip39_mnemonic: ^4.0.0

@@ -125,12 +125,11 @@ packages:
   bip85_entropy:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "5e1a9f8e5d7fc517034eddf3fe36f5271135cd73"
-      resolved-ref: "5e1a9f8e5d7fc517034eddf3fe36f5271135cd73"
-      url: "https://github.com/ethicnology/dart-bip85-entropy.git"
-    source: git
-    version: "1.0.0"
+      name: bip85_entropy
+      sha256: "1a0a2467831d25d3a0ce5740397daa67105c5b50795e3783c29bc377c7c9371f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   bitcoin_base:
     dependency: "direct main"
     description:
