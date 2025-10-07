@@ -62,6 +62,10 @@ class CoreLocator {
     SwapsLocator.registerServices();
   }
 
+  static void registerFacades() {
+    BlockchainLocator.registerFacades();
+  }
+
   static void registerUsecases() {
     ElectrumLocator.registerUsecases();
     BlockchainLocator.registerUsecases();

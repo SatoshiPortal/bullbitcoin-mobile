@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/electrum/data/datasources/electrum_remote_datasource.dart';
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_remote_datasource.dart';
+import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/transaction/data/transaction_repository.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
@@ -16,10 +17,9 @@ Future<void> main({bool isInitialized = false}) async {
 
   final sqlite = locator<SqliteDatabase>();
   final electrumDatasource = ElectrumRemoteDatasource(
-    server: const ElectrumServerModel(
+    server: ElectrumServerModel(
       url: ApiServiceConstants.bbElectrumUrl,
-      isTestnet: false,
-      isLiquid: false,
+      network: ElectrumServerNetwork.bitcoinMainnet,
     ),
   );
   final transactionRepository = TransactionRepository(

@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_server_connectivity_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/delete_electrum_server_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/reorder_custom_servers_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/store_electrum_server_settings_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/try_connection_with_fallback_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases_old/check_electrum_server_connectivity_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases_old/delete_electrum_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases_old/get_all_electrum_servers_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases_old/get_prioritized_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases_old/reorder_custom_servers_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases_old/store_electrum_server_settings_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases_old/try_connection_with_fallback_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases_old/update_electrum_server_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
 import 'package:flutter/foundation.dart';

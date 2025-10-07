@@ -2199,6 +2199,7 @@ final class Schema6 extends i0.VersionedSchema {
     payjoinSenders,
     payjoinReceivers,
     electrumServers,
+    electrumSettings,
     swaps,
     autoSwap,
     walletAddresses,
@@ -2345,18 +2346,24 @@ final class Schema6 extends i0.VersionedSchema {
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(url)'],
+      columns: [_column_58, _column_39, _column_64, _column_66, _column_106],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape16 electrumSettings = Shape16(
+    source: i0.VersionedTable(
+      entityName: 'electrum_settings',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(network)'],
       columns: [
-        _column_58,
-        _column_59,
+        _column_107,
+        _column_63,
         _column_60,
         _column_61,
         _column_62,
-        _column_63,
-        _column_39,
-        _column_64,
-        _column_65,
-        _column_66,
-        _column_106,
+        _column_59,
       ],
       attachedDatabase: database,
     ),
@@ -2452,22 +2459,10 @@ class Shape15 extends i0.VersionedTable {
   Shape15({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<String> get url =>
       columnsByName['url']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<String> get socks5 =>
-      columnsByName['socks5']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<int> get stopGap =>
-      columnsByName['stop_gap']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get timeout =>
-      columnsByName['timeout']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get retry =>
-      columnsByName['retry']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<bool> get validateDomain =>
-      columnsByName['validate_domain']! as i1.GeneratedColumn<bool>;
   i1.GeneratedColumn<bool> get isTestnet =>
       columnsByName['is_testnet']! as i1.GeneratedColumn<bool>;
   i1.GeneratedColumn<bool> get isLiquid =>
       columnsByName['is_liquid']! as i1.GeneratedColumn<bool>;
-  i1.GeneratedColumn<bool> get isActive =>
-      columnsByName['is_active']! as i1.GeneratedColumn<bool>;
   i1.GeneratedColumn<int> get priority =>
       columnsByName['priority']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<bool> get isCustom =>
@@ -2484,6 +2479,30 @@ i1.GeneratedColumn<bool> _column_106(String aliasedName) =>
         'CHECK ("is_custom" IN (0, 1))',
       ),
       defaultValue: const CustomExpression('0'),
+    );
+
+class Shape16 extends i0.VersionedTable {
+  Shape16({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get network =>
+      columnsByName['network']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<bool> get validateDomain =>
+      columnsByName['validate_domain']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<int> get stopGap =>
+      columnsByName['stop_gap']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get timeout =>
+      columnsByName['timeout']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get retry =>
+      columnsByName['retry']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get socks5 =>
+      columnsByName['socks5']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_107(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'network',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
     );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,

@@ -3504,44 +3504,6 @@ class ElectrumServers extends Table
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  late final GeneratedColumn<String> socks5 = GeneratedColumn<String>(
-    'socks5',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  late final GeneratedColumn<int> stopGap = GeneratedColumn<int>(
-    'stop_gap',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  late final GeneratedColumn<int> timeout = GeneratedColumn<int>(
-    'timeout',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  late final GeneratedColumn<int> retry = GeneratedColumn<int>(
-    'retry',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  late final GeneratedColumn<bool> validateDomain = GeneratedColumn<bool>(
-    'validate_domain',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("validate_domain" IN (0, 1))',
-    ),
-  );
   late final GeneratedColumn<bool> isTestnet = GeneratedColumn<bool>(
     'is_testnet',
     aliasedName,
@@ -3560,16 +3522,6 @@ class ElectrumServers extends Table
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'CHECK ("is_liquid" IN (0, 1))',
-    ),
-  );
-  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
-    'is_active',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_active" IN (0, 1))',
     ),
   );
   late final GeneratedColumn<int> priority = GeneratedColumn<int>(
@@ -3593,14 +3545,8 @@ class ElectrumServers extends Table
   @override
   List<GeneratedColumn> get $columns => [
     url,
-    socks5,
-    stopGap,
-    timeout,
-    retry,
-    validateDomain,
     isTestnet,
     isLiquid,
-    isActive,
     priority,
     isCustom,
   ];
@@ -3620,30 +3566,6 @@ class ElectrumServers extends Table
             DriftSqlType.string,
             data['${effectivePrefix}url'],
           )!,
-      socks5: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}socks5'],
-      ),
-      stopGap:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}stop_gap'],
-          )!,
-      timeout:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}timeout'],
-          )!,
-      retry:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}retry'],
-          )!,
-      validateDomain:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}validate_domain'],
-          )!,
       isTestnet:
           attachedDatabase.typeMapping.read(
             DriftSqlType.bool,
@@ -3653,11 +3575,6 @@ class ElectrumServers extends Table
           attachedDatabase.typeMapping.read(
             DriftSqlType.bool,
             data['${effectivePrefix}is_liquid'],
-          )!,
-      isActive:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_active'],
           )!,
       priority:
           attachedDatabase.typeMapping.read(
@@ -3681,26 +3598,14 @@ class ElectrumServers extends Table
 class ElectrumServersData extends DataClass
     implements Insertable<ElectrumServersData> {
   final String url;
-  final String? socks5;
-  final int stopGap;
-  final int timeout;
-  final int retry;
-  final bool validateDomain;
   final bool isTestnet;
   final bool isLiquid;
-  final bool isActive;
   final int priority;
   final bool isCustom;
   const ElectrumServersData({
     required this.url,
-    this.socks5,
-    required this.stopGap,
-    required this.timeout,
-    required this.retry,
-    required this.validateDomain,
     required this.isTestnet,
     required this.isLiquid,
-    required this.isActive,
     required this.priority,
     required this.isCustom,
   });
@@ -3708,16 +3613,8 @@ class ElectrumServersData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['url'] = Variable<String>(url);
-    if (!nullToAbsent || socks5 != null) {
-      map['socks5'] = Variable<String>(socks5);
-    }
-    map['stop_gap'] = Variable<int>(stopGap);
-    map['timeout'] = Variable<int>(timeout);
-    map['retry'] = Variable<int>(retry);
-    map['validate_domain'] = Variable<bool>(validateDomain);
     map['is_testnet'] = Variable<bool>(isTestnet);
     map['is_liquid'] = Variable<bool>(isLiquid);
-    map['is_active'] = Variable<bool>(isActive);
     map['priority'] = Variable<int>(priority);
     map['is_custom'] = Variable<bool>(isCustom);
     return map;
@@ -3726,15 +3623,8 @@ class ElectrumServersData extends DataClass
   ElectrumServersCompanion toCompanion(bool nullToAbsent) {
     return ElectrumServersCompanion(
       url: Value(url),
-      socks5:
-          socks5 == null && nullToAbsent ? const Value.absent() : Value(socks5),
-      stopGap: Value(stopGap),
-      timeout: Value(timeout),
-      retry: Value(retry),
-      validateDomain: Value(validateDomain),
       isTestnet: Value(isTestnet),
       isLiquid: Value(isLiquid),
-      isActive: Value(isActive),
       priority: Value(priority),
       isCustom: Value(isCustom),
     );
@@ -3747,14 +3637,8 @@ class ElectrumServersData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ElectrumServersData(
       url: serializer.fromJson<String>(json['url']),
-      socks5: serializer.fromJson<String?>(json['socks5']),
-      stopGap: serializer.fromJson<int>(json['stopGap']),
-      timeout: serializer.fromJson<int>(json['timeout']),
-      retry: serializer.fromJson<int>(json['retry']),
-      validateDomain: serializer.fromJson<bool>(json['validateDomain']),
       isTestnet: serializer.fromJson<bool>(json['isTestnet']),
       isLiquid: serializer.fromJson<bool>(json['isLiquid']),
-      isActive: serializer.fromJson<bool>(json['isActive']),
       priority: serializer.fromJson<int>(json['priority']),
       isCustom: serializer.fromJson<bool>(json['isCustom']),
     );
@@ -3764,14 +3648,8 @@ class ElectrumServersData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'url': serializer.toJson<String>(url),
-      'socks5': serializer.toJson<String?>(socks5),
-      'stopGap': serializer.toJson<int>(stopGap),
-      'timeout': serializer.toJson<int>(timeout),
-      'retry': serializer.toJson<int>(retry),
-      'validateDomain': serializer.toJson<bool>(validateDomain),
       'isTestnet': serializer.toJson<bool>(isTestnet),
       'isLiquid': serializer.toJson<bool>(isLiquid),
-      'isActive': serializer.toJson<bool>(isActive),
       'priority': serializer.toJson<int>(priority),
       'isCustom': serializer.toJson<bool>(isCustom),
     };
@@ -3779,43 +3657,22 @@ class ElectrumServersData extends DataClass
 
   ElectrumServersData copyWith({
     String? url,
-    Value<String?> socks5 = const Value.absent(),
-    int? stopGap,
-    int? timeout,
-    int? retry,
-    bool? validateDomain,
     bool? isTestnet,
     bool? isLiquid,
-    bool? isActive,
     int? priority,
     bool? isCustom,
   }) => ElectrumServersData(
     url: url ?? this.url,
-    socks5: socks5.present ? socks5.value : this.socks5,
-    stopGap: stopGap ?? this.stopGap,
-    timeout: timeout ?? this.timeout,
-    retry: retry ?? this.retry,
-    validateDomain: validateDomain ?? this.validateDomain,
     isTestnet: isTestnet ?? this.isTestnet,
     isLiquid: isLiquid ?? this.isLiquid,
-    isActive: isActive ?? this.isActive,
     priority: priority ?? this.priority,
     isCustom: isCustom ?? this.isCustom,
   );
   ElectrumServersData copyWithCompanion(ElectrumServersCompanion data) {
     return ElectrumServersData(
       url: data.url.present ? data.url.value : this.url,
-      socks5: data.socks5.present ? data.socks5.value : this.socks5,
-      stopGap: data.stopGap.present ? data.stopGap.value : this.stopGap,
-      timeout: data.timeout.present ? data.timeout.value : this.timeout,
-      retry: data.retry.present ? data.retry.value : this.retry,
-      validateDomain:
-          data.validateDomain.present
-              ? data.validateDomain.value
-              : this.validateDomain,
       isTestnet: data.isTestnet.present ? data.isTestnet.value : this.isTestnet,
       isLiquid: data.isLiquid.present ? data.isLiquid.value : this.isLiquid,
-      isActive: data.isActive.present ? data.isActive.value : this.isActive,
       priority: data.priority.present ? data.priority.value : this.priority,
       isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
     );
@@ -3825,14 +3682,8 @@ class ElectrumServersData extends DataClass
   String toString() {
     return (StringBuffer('ElectrumServersData(')
           ..write('url: $url, ')
-          ..write('socks5: $socks5, ')
-          ..write('stopGap: $stopGap, ')
-          ..write('timeout: $timeout, ')
-          ..write('retry: $retry, ')
-          ..write('validateDomain: $validateDomain, ')
           ..write('isTestnet: $isTestnet, ')
           ..write('isLiquid: $isLiquid, ')
-          ..write('isActive: $isActive, ')
           ..write('priority: $priority, ')
           ..write('isCustom: $isCustom')
           ..write(')'))
@@ -3840,109 +3691,56 @@ class ElectrumServersData extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(
-    url,
-    socks5,
-    stopGap,
-    timeout,
-    retry,
-    validateDomain,
-    isTestnet,
-    isLiquid,
-    isActive,
-    priority,
-    isCustom,
-  );
+  int get hashCode => Object.hash(url, isTestnet, isLiquid, priority, isCustom);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ElectrumServersData &&
           other.url == this.url &&
-          other.socks5 == this.socks5 &&
-          other.stopGap == this.stopGap &&
-          other.timeout == this.timeout &&
-          other.retry == this.retry &&
-          other.validateDomain == this.validateDomain &&
           other.isTestnet == this.isTestnet &&
           other.isLiquid == this.isLiquid &&
-          other.isActive == this.isActive &&
           other.priority == this.priority &&
           other.isCustom == this.isCustom);
 }
 
 class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
   final Value<String> url;
-  final Value<String?> socks5;
-  final Value<int> stopGap;
-  final Value<int> timeout;
-  final Value<int> retry;
-  final Value<bool> validateDomain;
   final Value<bool> isTestnet;
   final Value<bool> isLiquid;
-  final Value<bool> isActive;
   final Value<int> priority;
   final Value<bool> isCustom;
   final Value<int> rowid;
   const ElectrumServersCompanion({
     this.url = const Value.absent(),
-    this.socks5 = const Value.absent(),
-    this.stopGap = const Value.absent(),
-    this.timeout = const Value.absent(),
-    this.retry = const Value.absent(),
-    this.validateDomain = const Value.absent(),
     this.isTestnet = const Value.absent(),
     this.isLiquid = const Value.absent(),
-    this.isActive = const Value.absent(),
     this.priority = const Value.absent(),
     this.isCustom = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ElectrumServersCompanion.insert({
     required String url,
-    this.socks5 = const Value.absent(),
-    required int stopGap,
-    required int timeout,
-    required int retry,
-    required bool validateDomain,
     required bool isTestnet,
     required bool isLiquid,
-    required bool isActive,
     required int priority,
     this.isCustom = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : url = Value(url),
-       stopGap = Value(stopGap),
-       timeout = Value(timeout),
-       retry = Value(retry),
-       validateDomain = Value(validateDomain),
        isTestnet = Value(isTestnet),
        isLiquid = Value(isLiquid),
-       isActive = Value(isActive),
        priority = Value(priority);
   static Insertable<ElectrumServersData> custom({
     Expression<String>? url,
-    Expression<String>? socks5,
-    Expression<int>? stopGap,
-    Expression<int>? timeout,
-    Expression<int>? retry,
-    Expression<bool>? validateDomain,
     Expression<bool>? isTestnet,
     Expression<bool>? isLiquid,
-    Expression<bool>? isActive,
     Expression<int>? priority,
     Expression<bool>? isCustom,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (url != null) 'url': url,
-      if (socks5 != null) 'socks5': socks5,
-      if (stopGap != null) 'stop_gap': stopGap,
-      if (timeout != null) 'timeout': timeout,
-      if (retry != null) 'retry': retry,
-      if (validateDomain != null) 'validate_domain': validateDomain,
       if (isTestnet != null) 'is_testnet': isTestnet,
       if (isLiquid != null) 'is_liquid': isLiquid,
-      if (isActive != null) 'is_active': isActive,
       if (priority != null) 'priority': priority,
       if (isCustom != null) 'is_custom': isCustom,
       if (rowid != null) 'rowid': rowid,
@@ -3951,28 +3749,16 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
 
   ElectrumServersCompanion copyWith({
     Value<String>? url,
-    Value<String?>? socks5,
-    Value<int>? stopGap,
-    Value<int>? timeout,
-    Value<int>? retry,
-    Value<bool>? validateDomain,
     Value<bool>? isTestnet,
     Value<bool>? isLiquid,
-    Value<bool>? isActive,
     Value<int>? priority,
     Value<bool>? isCustom,
     Value<int>? rowid,
   }) {
     return ElectrumServersCompanion(
       url: url ?? this.url,
-      socks5: socks5 ?? this.socks5,
-      stopGap: stopGap ?? this.stopGap,
-      timeout: timeout ?? this.timeout,
-      retry: retry ?? this.retry,
-      validateDomain: validateDomain ?? this.validateDomain,
       isTestnet: isTestnet ?? this.isTestnet,
       isLiquid: isLiquid ?? this.isLiquid,
-      isActive: isActive ?? this.isActive,
       priority: priority ?? this.priority,
       isCustom: isCustom ?? this.isCustom,
       rowid: rowid ?? this.rowid,
@@ -3985,29 +3771,11 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
     if (url.present) {
       map['url'] = Variable<String>(url.value);
     }
-    if (socks5.present) {
-      map['socks5'] = Variable<String>(socks5.value);
-    }
-    if (stopGap.present) {
-      map['stop_gap'] = Variable<int>(stopGap.value);
-    }
-    if (timeout.present) {
-      map['timeout'] = Variable<int>(timeout.value);
-    }
-    if (retry.present) {
-      map['retry'] = Variable<int>(retry.value);
-    }
-    if (validateDomain.present) {
-      map['validate_domain'] = Variable<bool>(validateDomain.value);
-    }
     if (isTestnet.present) {
       map['is_testnet'] = Variable<bool>(isTestnet.value);
     }
     if (isLiquid.present) {
       map['is_liquid'] = Variable<bool>(isLiquid.value);
-    }
-    if (isActive.present) {
-      map['is_active'] = Variable<bool>(isActive.value);
     }
     if (priority.present) {
       map['priority'] = Variable<int>(priority.value);
@@ -4025,16 +3793,357 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
   String toString() {
     return (StringBuffer('ElectrumServersCompanion(')
           ..write('url: $url, ')
-          ..write('socks5: $socks5, ')
+          ..write('isTestnet: $isTestnet, ')
+          ..write('isLiquid: $isLiquid, ')
+          ..write('priority: $priority, ')
+          ..write('isCustom: $isCustom, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class ElectrumSettings extends Table
+    with TableInfo<ElectrumSettings, ElectrumSettingsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  ElectrumSettings(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> network = GeneratedColumn<String>(
+    'network',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<bool> validateDomain = GeneratedColumn<bool>(
+    'validate_domain',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("validate_domain" IN (0, 1))',
+    ),
+  );
+  late final GeneratedColumn<int> stopGap = GeneratedColumn<int>(
+    'stop_gap',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<int> timeout = GeneratedColumn<int>(
+    'timeout',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<int> retry = GeneratedColumn<int>(
+    'retry',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<String> socks5 = GeneratedColumn<String>(
+    'socks5',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    network,
+    validateDomain,
+    stopGap,
+    timeout,
+    retry,
+    socks5,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'electrum_settings';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {network};
+  @override
+  ElectrumSettingsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ElectrumSettingsData(
+      network:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}network'],
+          )!,
+      validateDomain:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}validate_domain'],
+          )!,
+      stopGap:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}stop_gap'],
+          )!,
+      timeout:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}timeout'],
+          )!,
+      retry:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}retry'],
+          )!,
+      socks5: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}socks5'],
+      ),
+    );
+  }
+
+  @override
+  ElectrumSettings createAlias(String alias) {
+    return ElectrumSettings(attachedDatabase, alias);
+  }
+}
+
+class ElectrumSettingsData extends DataClass
+    implements Insertable<ElectrumSettingsData> {
+  final String network;
+  final bool validateDomain;
+  final int stopGap;
+  final int timeout;
+  final int retry;
+  final String? socks5;
+  const ElectrumSettingsData({
+    required this.network,
+    required this.validateDomain,
+    required this.stopGap,
+    required this.timeout,
+    required this.retry,
+    this.socks5,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['network'] = Variable<String>(network);
+    map['validate_domain'] = Variable<bool>(validateDomain);
+    map['stop_gap'] = Variable<int>(stopGap);
+    map['timeout'] = Variable<int>(timeout);
+    map['retry'] = Variable<int>(retry);
+    if (!nullToAbsent || socks5 != null) {
+      map['socks5'] = Variable<String>(socks5);
+    }
+    return map;
+  }
+
+  ElectrumSettingsCompanion toCompanion(bool nullToAbsent) {
+    return ElectrumSettingsCompanion(
+      network: Value(network),
+      validateDomain: Value(validateDomain),
+      stopGap: Value(stopGap),
+      timeout: Value(timeout),
+      retry: Value(retry),
+      socks5:
+          socks5 == null && nullToAbsent ? const Value.absent() : Value(socks5),
+    );
+  }
+
+  factory ElectrumSettingsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ElectrumSettingsData(
+      network: serializer.fromJson<String>(json['network']),
+      validateDomain: serializer.fromJson<bool>(json['validateDomain']),
+      stopGap: serializer.fromJson<int>(json['stopGap']),
+      timeout: serializer.fromJson<int>(json['timeout']),
+      retry: serializer.fromJson<int>(json['retry']),
+      socks5: serializer.fromJson<String?>(json['socks5']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'network': serializer.toJson<String>(network),
+      'validateDomain': serializer.toJson<bool>(validateDomain),
+      'stopGap': serializer.toJson<int>(stopGap),
+      'timeout': serializer.toJson<int>(timeout),
+      'retry': serializer.toJson<int>(retry),
+      'socks5': serializer.toJson<String?>(socks5),
+    };
+  }
+
+  ElectrumSettingsData copyWith({
+    String? network,
+    bool? validateDomain,
+    int? stopGap,
+    int? timeout,
+    int? retry,
+    Value<String?> socks5 = const Value.absent(),
+  }) => ElectrumSettingsData(
+    network: network ?? this.network,
+    validateDomain: validateDomain ?? this.validateDomain,
+    stopGap: stopGap ?? this.stopGap,
+    timeout: timeout ?? this.timeout,
+    retry: retry ?? this.retry,
+    socks5: socks5.present ? socks5.value : this.socks5,
+  );
+  ElectrumSettingsData copyWithCompanion(ElectrumSettingsCompanion data) {
+    return ElectrumSettingsData(
+      network: data.network.present ? data.network.value : this.network,
+      validateDomain:
+          data.validateDomain.present
+              ? data.validateDomain.value
+              : this.validateDomain,
+      stopGap: data.stopGap.present ? data.stopGap.value : this.stopGap,
+      timeout: data.timeout.present ? data.timeout.value : this.timeout,
+      retry: data.retry.present ? data.retry.value : this.retry,
+      socks5: data.socks5.present ? data.socks5.value : this.socks5,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ElectrumSettingsData(')
+          ..write('network: $network, ')
+          ..write('validateDomain: $validateDomain, ')
           ..write('stopGap: $stopGap, ')
           ..write('timeout: $timeout, ')
           ..write('retry: $retry, ')
+          ..write('socks5: $socks5')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(network, validateDomain, stopGap, timeout, retry, socks5);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ElectrumSettingsData &&
+          other.network == this.network &&
+          other.validateDomain == this.validateDomain &&
+          other.stopGap == this.stopGap &&
+          other.timeout == this.timeout &&
+          other.retry == this.retry &&
+          other.socks5 == this.socks5);
+}
+
+class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
+  final Value<String> network;
+  final Value<bool> validateDomain;
+  final Value<int> stopGap;
+  final Value<int> timeout;
+  final Value<int> retry;
+  final Value<String?> socks5;
+  final Value<int> rowid;
+  const ElectrumSettingsCompanion({
+    this.network = const Value.absent(),
+    this.validateDomain = const Value.absent(),
+    this.stopGap = const Value.absent(),
+    this.timeout = const Value.absent(),
+    this.retry = const Value.absent(),
+    this.socks5 = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ElectrumSettingsCompanion.insert({
+    required String network,
+    required bool validateDomain,
+    required int stopGap,
+    required int timeout,
+    required int retry,
+    this.socks5 = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : network = Value(network),
+       validateDomain = Value(validateDomain),
+       stopGap = Value(stopGap),
+       timeout = Value(timeout),
+       retry = Value(retry);
+  static Insertable<ElectrumSettingsData> custom({
+    Expression<String>? network,
+    Expression<bool>? validateDomain,
+    Expression<int>? stopGap,
+    Expression<int>? timeout,
+    Expression<int>? retry,
+    Expression<String>? socks5,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (network != null) 'network': network,
+      if (validateDomain != null) 'validate_domain': validateDomain,
+      if (stopGap != null) 'stop_gap': stopGap,
+      if (timeout != null) 'timeout': timeout,
+      if (retry != null) 'retry': retry,
+      if (socks5 != null) 'socks5': socks5,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ElectrumSettingsCompanion copyWith({
+    Value<String>? network,
+    Value<bool>? validateDomain,
+    Value<int>? stopGap,
+    Value<int>? timeout,
+    Value<int>? retry,
+    Value<String?>? socks5,
+    Value<int>? rowid,
+  }) {
+    return ElectrumSettingsCompanion(
+      network: network ?? this.network,
+      validateDomain: validateDomain ?? this.validateDomain,
+      stopGap: stopGap ?? this.stopGap,
+      timeout: timeout ?? this.timeout,
+      retry: retry ?? this.retry,
+      socks5: socks5 ?? this.socks5,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (network.present) {
+      map['network'] = Variable<String>(network.value);
+    }
+    if (validateDomain.present) {
+      map['validate_domain'] = Variable<bool>(validateDomain.value);
+    }
+    if (stopGap.present) {
+      map['stop_gap'] = Variable<int>(stopGap.value);
+    }
+    if (timeout.present) {
+      map['timeout'] = Variable<int>(timeout.value);
+    }
+    if (retry.present) {
+      map['retry'] = Variable<int>(retry.value);
+    }
+    if (socks5.present) {
+      map['socks5'] = Variable<String>(socks5.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ElectrumSettingsCompanion(')
+          ..write('network: $network, ')
           ..write('validateDomain: $validateDomain, ')
-          ..write('isTestnet: $isTestnet, ')
-          ..write('isLiquid: $isLiquid, ')
-          ..write('isActive: $isActive, ')
-          ..write('priority: $priority, ')
-          ..write('isCustom: $isCustom, ')
+          ..write('stopGap: $stopGap, ')
+          ..write('timeout: $timeout, ')
+          ..write('retry: $retry, ')
+          ..write('socks5: $socks5, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6228,6 +6337,7 @@ class DatabaseAtV6 extends GeneratedDatabase {
   late final PayjoinSenders payjoinSenders = PayjoinSenders(this);
   late final PayjoinReceivers payjoinReceivers = PayjoinReceivers(this);
   late final ElectrumServers electrumServers = ElectrumServers(this);
+  late final ElectrumSettings electrumSettings = ElectrumSettings(this);
   late final Swaps swaps = Swaps(this);
   late final AutoSwap autoSwap = AutoSwap(this);
   late final WalletAddresses walletAddresses = WalletAddresses(this);
@@ -6244,6 +6354,7 @@ class DatabaseAtV6 extends GeneratedDatabase {
     payjoinSenders,
     payjoinReceivers,
     electrumServers,
+    electrumSettings,
     swaps,
     autoSwap,
     walletAddresses,
