@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:bip85/bip85.dart' as bip85;
+import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:hex/hex.dart';
 
 class RecoverbullBip85Utils {
