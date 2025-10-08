@@ -65,7 +65,7 @@ class PriceInput extends StatelessWidget {
                                 controller: amountController,
                                 focusNode: focusNode,
                                 keyboardType: TextInputType.none,
-                                showCursor: true,
+                                showCursor: false,
                                 readOnly: readOnly,
                                 cursorColor: context.colour.outline,
                                 cursorOpacityAnimates: true,
