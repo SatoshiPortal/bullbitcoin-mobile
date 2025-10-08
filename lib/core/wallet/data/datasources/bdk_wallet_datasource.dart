@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';

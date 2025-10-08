@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
