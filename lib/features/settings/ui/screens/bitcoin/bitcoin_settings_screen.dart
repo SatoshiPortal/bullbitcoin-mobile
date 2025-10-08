@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/autoswap/ui/autoswap_settings_router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/features/electrum_settings/ui/electrum_settings_router.dart';
+import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -44,7 +44,9 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   icon: Icons.settings_input_component,
                   title: 'Electrum Server Settings',
                   onTap: () {
-                    ElectrumSettingsRouter.showElectrumServerSettings(context);
+                    context.pushNamed(
+                      ElectrumSettingsRoute.electrumSettings.name,
+                    );
                   },
                 ),
                 SettingsEntryItem(

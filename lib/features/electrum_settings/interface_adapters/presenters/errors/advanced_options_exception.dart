@@ -3,19 +3,19 @@ sealed class AdvancedOptionsException implements Exception {
 }
 
 class InvalidStopGapException extends AdvancedOptionsException {
-  final int value;
+  final String value;
 
   InvalidStopGapException(this.value);
 }
 
 class InvalidTimeoutException extends AdvancedOptionsException {
-  final int value;
+  final String value;
 
   InvalidTimeoutException(this.value);
 }
 
 class InvalidRetryException extends AdvancedOptionsException {
-  final int value;
+  final String value;
 
   InvalidRetryException(this.value);
 }

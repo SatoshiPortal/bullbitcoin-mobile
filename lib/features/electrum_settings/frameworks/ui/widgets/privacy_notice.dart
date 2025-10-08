@@ -38,10 +38,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Gap(24),
-                    BBText(
-                      'Privacy Notice',
-                      style: context.font.headlineMedium,
-                    ),
+                    Text('Privacy Notice', style: context.font.headlineMedium),
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(false),
                       child: const Icon(Icons.close),
@@ -58,13 +55,13 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    BBText(
+                    Text(
                       'Privacy Notice: Using your own node ensures that no third party can link your IP address, with your transactions.',
                       style: context.font.bodyMedium,
                       maxLines: 4,
                     ),
                     const Gap(24),
-                    BBText(
+                    Text(
                       'However, If you view transactions via mempool by clicking your Transaction ID or Recipient Details page, this information will be known to BullBitcoin.',
                       maxLines: 4,
                       style: context.font.bodyMedium,

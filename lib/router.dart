@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
+import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
@@ -130,6 +131,7 @@ class AppRouter {
       Bip85EntropyRouter.route,
       RecoverBullSelectVaultRouter.route,
       RecoverBullVaultRecoveryRouter.route,
+      ElectrumSettingsRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );

@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_el
 import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/set_advanced_electrum_options_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
@@ -91,6 +92,11 @@ class ElectrumLocator {
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
         environmentPort: locator<EnvironmentPort>(),
         serverStatusPort: locator<ServerStatusPort>(),
+      ),
+    );
+    locator.registerFactory<SetAdvancedElectrumOptionsUsecase>(
+      () => SetAdvancedElectrumOptionsUsecase(
+        electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
       ),
     );
   }

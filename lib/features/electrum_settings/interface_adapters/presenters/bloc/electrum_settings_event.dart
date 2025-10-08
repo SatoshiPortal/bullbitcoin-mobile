@@ -5,43 +5,39 @@ sealed class ElectrumSettingsEvent {
 }
 
 class ElectrumSettingsLoaded extends ElectrumSettingsEvent {
-  const ElectrumSettingsLoaded();
+  final bool isLiquid;
+
+  const ElectrumSettingsLoaded({required this.isLiquid});
 }
 
 class ElectrumCustomServerAdded extends ElectrumSettingsEvent {
   final String url;
-  final bool isLiquid;
 
-  const ElectrumCustomServerAdded({required this.url, required this.isLiquid});
+  const ElectrumCustomServerAdded({required this.url});
 }
 
 class ElectrumCustomServersPrioritized extends ElectrumSettingsEvent {
-  final List<ElectrumServerViewModel> servers;
-  final bool isLiquid;
+  final int movedFromListIndex;
+  final int movedToListIndex;
 
   const ElectrumCustomServersPrioritized({
-    required this.servers,
-    required this.isLiquid,
+    required this.movedFromListIndex,
+    required this.movedToListIndex,
   });
 }
 
 class ElectrumCustomServerDeleted extends ElectrumSettingsEvent {
   final ElectrumServerViewModel server;
-  final bool isLiquid;
 
-  const ElectrumCustomServerDeleted({
-    required this.server,
-    required this.isLiquid,
-  });
+  const ElectrumCustomServerDeleted({required this.server});
 }
 
 class ElectrumAdvancedOptionsSaved extends ElectrumSettingsEvent {
-  final int stopGap;
-  final int timeout;
-  final int retry;
+  final String stopGap;
+  final String timeout;
+  final String retry;
   final bool validateDomain;
   final String? socks5;
-  final bool isLiquid;
 
   const ElectrumAdvancedOptionsSaved({
     required this.stopGap,
@@ -49,6 +45,9 @@ class ElectrumAdvancedOptionsSaved extends ElectrumSettingsEvent {
     required this.retry,
     required this.validateDomain,
     this.socks5,
-    required this.isLiquid,
   });
+}
+
+class ElectrumAdvancedOptionsReset extends ElectrumSettingsEvent {
+  const ElectrumAdvancedOptionsReset();
 }

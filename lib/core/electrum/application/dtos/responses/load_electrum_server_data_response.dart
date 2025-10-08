@@ -5,13 +5,11 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_sta
 class LoadElectrumServerDataResponse {
   final List<ElectrumServerDto> servers;
   final Map<String, ElectrumServerStatus> serverStatuses;
-  final ElectrumSettingsDto bitcoinSettings;
-  final ElectrumSettingsDto liquidSettings;
+  final ElectrumSettingsDto settings;
 
   LoadElectrumServerDataResponse({
     required this.servers,
     required this.serverStatuses,
-    required this.bitcoinSettings,
-    required this.liquidSettings,
+    required this.settings,
   });
 }

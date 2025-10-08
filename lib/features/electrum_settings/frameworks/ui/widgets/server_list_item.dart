@@ -1,20 +1,17 @@
-import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_server_view_model.dart';
 import 'package:flutter/material.dart';
 
 class ServerListItem extends StatelessWidget {
   const ServerListItem({
     super.key,
     required this.server,
-    this.onDragCompleted,
     this.isDraggable = false,
     this.onDelete,
   });
 
-  final ElectrumServer server;
-  final VoidCallback? onDragCompleted;
+  final ElectrumServerViewModel server;
   final bool isDraggable;
   final VoidCallback? onDelete;
 
@@ -41,8 +38,8 @@ class ServerListItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
-                  server.displayUrl,
+                Text(
+                  server.displayName,
                   style: context.font.bodyMedium?.copyWith(
                     color: context.colour.onSurface,
                   ),
@@ -86,29 +83,12 @@ class ServerListItem extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        BBText(
+        Text(
           isConnected ? 'Connected' : 'Not Connected',
           style: context.font.bodySmall?.copyWith(
             color: context.colour.onSurface,
           ),
         ),
-        if (server.network == Network.bitcoinTestnet ||
-            server.network == Network.liquidTestnet) ...[
-          const SizedBox(width: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: context.colour.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: BBText(
-              'TESTNET',
-              style: context.font.labelSmall?.copyWith(
-                color: context.colour.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ],
       ],
     );
   }

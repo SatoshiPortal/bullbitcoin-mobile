@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_settings_dto.dart';
+import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/responses/load_electrum_server_data_response.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
@@ -25,30 +26,29 @@ class LoadElectrumServerDataUsecase {
        _environmentPort = environmentPort,
        _serverStatusPort = serverStatusPort;
 
-  Future<LoadElectrumServerDataResponse> execute() async {
+  Future<LoadElectrumServerDataResponse> execute(
+    LoadElectrumServerDataRequest request,
+  ) async {
+    final isLiquid = request.isLiquid;
     final environment = await _environmentPort.getEnvironment();
 
     // Fetch servers and settings in parallel
     final (servers, settings) =
         await (
-          _electrumServerRepository.fetchAll(isTestnet: environment.isTestnet),
-          _electrumSettingsRepository.fetchByEnvironment(environment),
+          _electrumServerRepository.fetchAll(
+            isTestnet: environment.isTestnet,
+            isLiquid: isLiquid,
+          ),
+          _electrumSettingsRepository.fetchByNetwork(
+            ElectrumServerNetwork.fromEnvironment(
+              isTestnet: environment.isTestnet,
+              isLiquid: isLiquid,
+            ),
+          ),
         ).wait;
 
-    // Check that there is at least one server and setting for each network
-    final bitcoinSettings = settings.where((s) => !s.network.isLiquid);
-    final liquidSettings = settings.where((s) => s.network.isLiquid);
-    if (bitcoinSettings.isEmpty) {
-      throw Exception('No Bitcoin advanced settings found');
-    }
-    if (liquidSettings.isEmpty) {
-      throw Exception('No Liquid advanced settings found');
-    }
-    if (servers.where((s) => !s.network.isLiquid).isEmpty) {
-      throw Exception('No Bitcoin Electrum servers found');
-    }
-    if (servers.where((s) => s.network.isLiquid).isEmpty) {
-      throw Exception('No Liquid Electrum servers found');
+    if (servers.isEmpty) {
+      throw Exception('No Electrum servers found');
     }
 
     // Check server statuses
@@ -66,8 +66,7 @@ class LoadElectrumServerDataUsecase {
     return LoadElectrumServerDataResponse(
       servers: servers.map((e) => ElectrumServerDto.fromDomain(e)).toList(),
       serverStatuses: serverStatusMap,
-      bitcoinSettings: ElectrumSettingsDto.fromDomain(bitcoinSettings.first),
-      liquidSettings: ElectrumSettingsDto.fromDomain(liquidSettings.first),
+      settings: ElectrumSettingsDto.fromDomain(settings),
     );
   }
 }

@@ -40,6 +40,7 @@ class CoreLocator {
   }
 
   static void registerPorts() {
+    ElectrumLocator.registerPorts();
     BlockchainLocator.registerPorts();
     SwapsLocator.registerPorts();
     WalletLocator.registerPorts();
