@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -33,11 +34,6 @@ class GetOrderUsecase {
   }
 }
 
-class GetOrderException implements Exception {
-  final String message;
-
-  GetOrderException(this.message);
-
-  @override
-  String toString() => '[GetOrderUsecase]: $message';
+class GetOrderException extends BullException {
+  GetOrderException(super.message);
 }

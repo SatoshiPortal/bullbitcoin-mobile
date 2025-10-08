@@ -355,8 +355,7 @@ class SendCubit extends Cubit<SendState> {
               state.copyWith(
                 creatingSwap: false,
                 insufficientBalanceException: InsufficientBalanceException(
-                  message:
-                      'Not enough balance to pay this swap via Liquid and not within swap limits to pay via Bitcoin.',
+                  'Not enough balance to pay this swap via Liquid and not within swap limits to pay via Bitcoin.',
                 ),
                 loadingBestWallet: false,
               ),
@@ -447,7 +446,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             invalidBitcoinStringException: InvalidBitcoinStringException(
-              message: e.toString(),
+              e.toString(),
             ),
             loadingBestWallet: false,
             creatingSwap: false,
@@ -930,7 +929,7 @@ class SendCubit extends Cubit<SendState> {
       emit(
         state.copyWith(
           insufficientBalanceException: InsufficientBalanceException(
-            message: 'Not enough funds to cover amount and fees',
+            'Not enough funds to cover amount and fees',
           ),
           amountConfirmedClicked: false,
         ),

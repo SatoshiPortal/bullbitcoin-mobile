@@ -1,37 +1,31 @@
-class RecoverWalletError implements Exception {
-  const RecoverWalletError(this.message);
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-  final String message;
-
-  @override
-  String toString() {
-    return 'RecoverWalletError: $message';
-  }
+class RecoverWalletError extends BullException {
+  RecoverWalletError(super.message);
 }
 
 class TestFlowDefaultWalletAlreadyExistsError extends RecoverWalletError {
-  const TestFlowDefaultWalletAlreadyExistsError()
+  TestFlowDefaultWalletAlreadyExistsError()
     : super('This wallet already exists.');
 }
 
 class TestFlowWalletMismatchError extends RecoverWalletError {
-  const TestFlowWalletMismatchError()
+  TestFlowWalletMismatchError()
     : super(
         'A different default wallet already exists. You can only have one default wallet.',
       );
 }
 
 class BackupKeyDerivationFailedError extends RecoverWalletError {
-  const BackupKeyDerivationFailedError()
+  BackupKeyDerivationFailedError()
     : super('Local backup key derivation failed.');
 }
 
 class BackupVaultCorruptedError extends RecoverWalletError {
-  const BackupVaultCorruptedError()
-    : super('Selected backup file is corrupted.');
+  BackupVaultCorruptedError() : super('Selected backup file is corrupted.');
 }
 
 class BackupVaultMissingDerivationPathError extends RecoverWalletError {
-  const BackupVaultMissingDerivationPathError()
+  BackupVaultMissingDerivationPathError()
     : super('Backup file missing derivation path.');
 }

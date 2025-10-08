@@ -50,9 +50,9 @@ class RestoreEncryptedVaultFromVaultKeyUsecase {
             walletId: defaultWallet.id,
           );
           // These are only cases for test flows.
-          throw const TestFlowDefaultWalletAlreadyExistsError();
+          throw TestFlowDefaultWalletAlreadyExistsError();
         } else {
-          throw const TestFlowWalletMismatchError();
+          throw TestFlowWalletMismatchError();
         }
       }
 

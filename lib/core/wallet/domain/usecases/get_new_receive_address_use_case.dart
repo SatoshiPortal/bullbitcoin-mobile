@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 
@@ -25,8 +26,6 @@ class GetNewReceiveAddressUsecase {
   }
 }
 
-class GetNewReceiveAddressException implements Exception {
-  final String? message;
-
-  GetNewReceiveAddressException(this.message);
+class GetNewReceiveAddressException extends BullException {
+  GetNewReceiveAddressException(super.message);
 }

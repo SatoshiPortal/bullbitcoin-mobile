@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 
 class CalculateBitcoinAbsoluteFeesUsecase {
@@ -18,8 +19,6 @@ class CalculateBitcoinAbsoluteFeesUsecase {
   }
 }
 
-class CalculateBitcoinAbsoluteFeesException implements Exception {
-  final String message;
-
-  CalculateBitcoinAbsoluteFeesException(this.message);
+class CalculateBitcoinAbsoluteFeesException extends BullException {
+  CalculateBitcoinAbsoluteFeesException(super.message);
 }

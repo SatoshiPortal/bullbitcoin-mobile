@@ -1,8 +1,5 @@
-class Bip85EntropyError implements Exception {
-  final String message;
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-  Bip85EntropyError(this.message);
-
-  @override
-  String toString() => message;
+class Bip85EntropyError extends BullException {
+  Bip85EntropyError(super.message);
 }

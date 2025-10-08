@@ -1,9 +1,7 @@
-class ReplaceByFeeError implements Exception {
-  final String message;
-  ReplaceByFeeError(this.message);
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-  @override
-  String toString() => message;
+class ReplaceByFeeError extends BullException {
+  ReplaceByFeeError(super.message);
 }
 
 class NoFeeRateSelectedError extends ReplaceByFeeError {

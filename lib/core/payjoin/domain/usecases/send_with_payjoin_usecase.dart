@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -46,8 +47,6 @@ class SendWithPayjoinUsecase {
   }
 }
 
-class SendPayjoinException implements Exception {
-  final String message;
-
-  SendPayjoinException(this.message);
+class SendPayjoinException extends BullException {
+  SendPayjoinException(super.message);
 }

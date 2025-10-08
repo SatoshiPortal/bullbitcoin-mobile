@@ -111,7 +111,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       );
       final transaction = transactionsWithTxId.firstWhere(
         (tx) => tx.walletId == walletId,
-        orElse: () => throw const TransactionError.notFound(),
+        orElse: () => throw TransactionNotFoundError(),
       );
       final wallet = await _getWalletUsecase.execute(walletId);
 

@@ -27,9 +27,7 @@ class StoreBackupKeyIntoServerUsecase {
         path: vault.derivationPath,
       );
 
-      if (vaultKey != derivedKey) {
-        throw const KeyServerError.keyMismatch();
-      }
+      if (vaultKey != derivedKey) throw KeyServerError.keyMismatch();
 
       await _recoverBullRepository.storeVaultKey(
         vault.id,

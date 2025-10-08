@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -107,11 +108,6 @@ class TheDirtyUsecase {
   }
 }
 
-class CheckWalletStatusException implements Exception {
-  final String message;
-
-  CheckWalletStatusException(this.message);
-
-  @override
-  String toString() => message;
+class CheckWalletStatusException extends BullException {
+  CheckWalletStatusException(super.message);
 }

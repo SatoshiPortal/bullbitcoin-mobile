@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -34,8 +35,6 @@ class GetSwapUsecase {
   }
 }
 
-class GetSwapException implements Exception {
-  final String message;
-
-  GetSwapException(this.message);
+class GetSwapException extends BullException {
+  GetSwapException(super.message);
 }
