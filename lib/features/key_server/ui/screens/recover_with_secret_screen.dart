@@ -75,7 +75,7 @@ class RecoverWithSecretScreen extends StatelessWidget {
                 onlyPaste: state.authInputType == AuthInputType.pin,
                 onChanged: (String value) {
                   if (state.authInputType == AuthInputType.password) {
-                    cubit.enterKey(value);
+                    cubit.updatePassword(value);
                   }
                 },
               ),
@@ -96,8 +96,8 @@ class RecoverWithSecretScreen extends StatelessWidget {
               if (state.authInputType == AuthInputType.pin)
                 DialPad(
                   disableFeedback: true,
-                  onNumberPressed: cubit.enterKey,
-                  onBackspacePressed: cubit.backspaceKey,
+                  onChanged: cubit.updatePassword,
+                  mode: DialPadMode.pin,
                 )
               else
                 const SizedBox.shrink(),

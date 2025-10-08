@@ -504,17 +504,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     double exchangeRate = state.exchangeRate;
     String fiatCurrencyCode = state.fiatCurrencyCode;
 
-    if (![
+    if ([
       BitcoinUnit.btc.code,
       BitcoinUnit.sats.code,
     ].contains(event.currencyCode)) {
-      // If the currency is a fiat currency, retrieve the exchange rate and replace
-      //  the current exchange rate and fiat currency code.
-      fiatCurrencyCode = event.currencyCode;
-      exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: event.currencyCode,
-      );
-    } else {
       // If the currency is a bitcoin unit, set the fiat currency and exchange
       //  rate back to the currency from the settings.
       final currencyValues = await Future.wait([
@@ -524,6 +517,18 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       fiatCurrencyCode = (currencyValues[0] as SettingsEntity).currencyCode;
       exchangeRate = currencyValues[1] as double;
+
+      // If the currency is a bitcoin unit, set the bitcoin unit to the currency
+      emit(
+        state.copyWith(bitcoinUnit: BitcoinUnit.fromCode(event.currencyCode)),
+      );
+    } else {
+      // If the currency is a fiat currency, retrieve the exchange rate and replace
+      //  the current exchange rate and fiat currency code.
+      fiatCurrencyCode = event.currencyCode;
+      exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: event.currencyCode,
+      );
     }
 
     emit(

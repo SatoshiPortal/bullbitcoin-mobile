@@ -100,14 +100,11 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                   ),
                   const Gap(30),
                   DialPad(
+                    mode: DialPadMode.pin,
                     disableFeedback: true,
-                    onNumberPressed:
+                    onChanged:
                         (value) => context.read<AppUnlockBloc>().add(
-                          AppUnlockPinCodeNumberAdded(int.parse(value)),
-                        ),
-                    onBackspacePressed:
-                        () => context.read<AppUnlockBloc>().add(
-                          const AppUnlockPinCodeNumberRemoved(),
+                          AppUnlockPinCodeNumberChanged(value),
                         ),
                   ),
                 ],

@@ -88,13 +88,10 @@ class ChoosePinCodeScreen extends StatelessWidget {
                 ),
                 const Gap(30),
                 DialPad(
-                  onNumberPressed:
+                  mode: DialPadMode.pin,
+                  onChanged:
                       (value) => context.read<PinCodeSettingBloc>().add(
-                        PinCodeSettingPinCodeNumberAdded(int.parse(value)),
-                      ),
-                  onBackspacePressed:
-                      () => context.read<PinCodeSettingBloc>().add(
-                        const PinCodeSettingPinCodeNumberRemoved(),
+                        PinCodeSettingPinCodeChanged(value),
                       ),
                   disableFeedback: true,
                 ),

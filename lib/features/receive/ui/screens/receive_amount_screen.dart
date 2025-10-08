@@ -1,8 +1,9 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_entry.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_numberpad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -83,7 +84,19 @@ class _AmountPageState extends State<AmountPage> {
             amountController: _amountController,
             focusNode: _amountFocusNode,
           ),
-          ReceiveNumberPad(amountController: _amountController),
+          DialPad(
+            mode: switch (context.watch<ReceiveBloc>().state.bitcoinUnit) {
+              BitcoinUnit.btc => DialPadMode.double,
+              BitcoinUnit.sats => DialPadMode.int,
+              null => DialPadMode.int,
+            },
+            onChanged: (number) {
+              context.read<ReceiveBloc>().add(
+                ReceiveAmountInputChanged(number),
+              );
+              _amountController.text = number;
+            },
+          ),
           ReceiveAmountContinueButton(
             onContinueNavigation: widget.onContinueNavigation,
           ),

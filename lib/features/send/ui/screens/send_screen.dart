@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
@@ -266,7 +267,6 @@ class SendAmountScreen extends StatefulWidget {
 class _SendAmountScreenState extends State<SendAmountScreen> {
   late TextEditingController _amountController;
   late FocusNode _amountFocusNode;
-  bool _isMax = false;
 
   @override
   void initState() {
@@ -279,12 +279,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
       ),
     );
     _amountFocusNode = FocusNode();
-  }
-
-  void _setIsMax(bool isMax) {
-    setState(() {
-      _isMax = isMax;
-    });
   }
 
   @override
@@ -326,7 +320,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                 final amount = state.amount;
                 final currentCursor = _amountController.selection.baseOffset;
                 final safePosition =
-                    _isMax
+                    state.sendMax
                         ? amount.length
                         : math.min(currentCursor, amount.length);
 
@@ -390,7 +384,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               amountController: _amountController,
                               onNoteChanged: cubit.noteChanged,
                               onCurrencyChanged: (currencyCode) {
-                                _setIsMax(false);
                                 context.read<SendCubit>().onCurrencyChanged(
                                   currencyCode,
                                 );
@@ -404,8 +397,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       ? swapLimitsError.toString()
                                       : swapCreationError?.toString(),
                               focusNode: _amountFocusNode,
-                              readOnly: _isMax,
-                              isMax: _isMax,
+                              readOnly:
+                                  context.watch<SendCubit>().state.sendMax,
+                              isMax: context.watch<SendCubit>().state.sendMax,
                             ),
                             const Gap(48),
                             Divider(
@@ -417,126 +411,19 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               currencyCode: '',
                               showMax: !isLightning && !isChainSwap,
                               onMaxPressed: () {
-                                _setIsMax(true);
                                 context.read<SendCubit>().amountChanged(
-                                  isMax: true,
+                                  sendMax: true,
                                 );
                               },
                               walletLabel: selectedWalletLabel,
                             ),
                             DialPad(
-                              onNumberPressed: (number) async {
-                                // Unset max since user manually changed the amount
-                                _setIsMax(false);
-
-                                final selectionStart =
-                                    _amountController.selection.baseOffset;
-                                final selectionEnd =
-                                    _amountController.selection.extentOffset;
-                                final currentText = _amountController.text;
-                                String newAmount;
-
-                                if (selectionStart == -1) {
-                                  // Field is not focused, so just add to the end
-                                  newAmount = currentText + number;
-                                  _amountController.text = newAmount;
-                                } else {
-                                  // Field is focused
-                                  if (selectionStart == selectionEnd) {
-                                    // No selection, insert at cursor
-                                    newAmount =
-                                        currentText.substring(
-                                          0,
-                                          selectionStart,
-                                        ) +
-                                        number +
-                                        currentText.substring(selectionStart);
-                                  } else {
-                                    // Text is selected, replace selection
-                                    newAmount =
-                                        currentText.substring(
-                                          0,
-                                          selectionStart,
-                                        ) +
-                                        number +
-                                        currentText.substring(selectionEnd);
-                                  }
-
-                                  _amountController.text = newAmount;
-                                  // Update the cursor position after inserting
-                                  final newCursorPosition =
-                                      selectionStart + number.length;
-                                  _amountController
-                                      .selection = TextSelection.collapsed(
-                                    offset: newCursorPosition,
-                                  );
-                                }
-
-                                // Finally, inform the cubit of the change
-                                await context.read<SendCubit>().amountChanged(
-                                  amount: newAmount,
-                                );
+                              mode: switch (state.bitcoinUnit!) {
+                                BitcoinUnit.btc => DialPadMode.double,
+                                BitcoinUnit.sats => DialPadMode.int,
                               },
-                              onBackspacePressed: () async {
-                                // Unset max since user manually changed the amount
-                                _setIsMax(false);
-
-                                final selectionStart =
-                                    _amountController.selection.baseOffset;
-                                final selectionEnd =
-                                    _amountController.selection.extentOffset;
-                                final currentText = _amountController.text;
-                                String newAmount;
-
-                                if (selectionStart == -1) {
-                                  // Field is not focused, so just remove from the end
-                                  if (currentText.isNotEmpty) {
-                                    newAmount = currentText.substring(
-                                      0,
-                                      currentText.length - 1,
-                                    );
-                                  } else {
-                                    newAmount = currentText;
-                                  }
-
-                                  _amountController.text = newAmount;
-                                } else {
-                                  // Field is focused
-                                  int newCursorPosition = selectionStart;
-                                  if (selectionStart == selectionEnd) {
-                                    // No selection, remove before cursor
-                                    if (selectionStart > 0) {
-                                      newAmount =
-                                          currentText.substring(
-                                            0,
-                                            selectionStart - 1,
-                                          ) +
-                                          currentText.substring(selectionStart);
-                                      newCursorPosition = selectionStart - 1;
-                                    } else {
-                                      newAmount = currentText;
-                                    }
-                                    _amountController.text = newAmount;
-                                  } else {
-                                    // Text is selected, remove selection
-                                    newAmount =
-                                        currentText.substring(
-                                          0,
-                                          selectionStart,
-                                        ) +
-                                        currentText.substring(selectionEnd);
-                                  }
-
-                                  _amountController.text = newAmount;
-
-                                  // Update the cursor position after deleting
-                                  _amountController
-                                      .selection = TextSelection.collapsed(
-                                    offset: newCursorPosition,
-                                  );
-                                }
-
-                                // Finally, inform the cubit of the change
+                              onChanged: (newAmount) async {
+                                _amountController.text = newAmount;
                                 await context.read<SendCubit>().amountChanged(
                                   amount: newAmount,
                                 );
@@ -979,15 +866,20 @@ class _OnchainSendInfoSection extends StatelessWidget {
             InfoRow(
               title: 'Fee Priority',
               details: InkWell(
-                onTap: hasFinalizedTx ? null : () async {
-                  final selected = await _showFeeOptions(context);
+                onTap:
+                    hasFinalizedTx
+                        ? null
+                        : () async {
+                          final selected = await _showFeeOptions(context);
 
-                  if (selected != null) {
-                    final fee = FeeSelectionName.fromString(selected);
-                    // ignore: use_build_context_synchronously
-                    await context.read<SendCubit>().feeOptionSelected(fee);
-                  }
-                },
+                          if (selected != null) {
+                            final fee = FeeSelectionName.fromString(selected);
+                            // ignore: use_build_context_synchronously
+                            await context.read<SendCubit>().feeOptionSelected(
+                              fee,
+                            );
+                          }
+                        },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -1738,8 +1630,7 @@ class SignLedgerButton extends StatelessWidget {
     );
 
     final derivationPath = context.select(
-      (SendCubit cubit) =>
-          cubit.state.selectedWallet?.derivationPath,
+      (SendCubit cubit) => cubit.state.selectedWallet?.derivationPath,
     );
 
     final deviceType = context.select(

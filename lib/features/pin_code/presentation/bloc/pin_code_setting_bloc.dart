@@ -31,8 +31,7 @@ class PinCodeSettingBloc
          ),
        ) {
     on<PinCodeSettingStarted>(_onStarted);
-    on<PinCodeSettingPinCodeNumberAdded>(_onPinCodeNumberAdded);
-    on<PinCodeSettingPinCodeNumberRemoved>(_onPinCodeNumberRemoved);
+    on<PinCodeSettingPinCodeChanged>(_onPinCodeChanged);
     on<PinCodeSettingPinCodeConfirmationNumberAdded>(
       _onPinCodeConfirmationNumberAdded,
     );
@@ -82,30 +81,11 @@ class PinCodeSettingBloc
     );
   }
 
-  Future<void> _onPinCodeNumberAdded(
-    PinCodeSettingPinCodeNumberAdded event,
+  Future<void> _onPinCodeChanged(
+    PinCodeSettingPinCodeChanged event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    if (state.pinCode.length >= state.maxPinCodeLength) {
-      return;
-    }
-
-    emit(state.copyWith(pinCode: state.pinCode + event.number.toString()));
-  }
-
-  Future<void> _onPinCodeNumberRemoved(
-    PinCodeSettingPinCodeNumberRemoved event,
-    Emitter<PinCodeSettingState> emit,
-  ) async {
-    if (state.pinCode.isEmpty) {
-      return;
-    }
-
-    emit(
-      state.copyWith(
-        pinCode: state.pinCode.substring(0, state.pinCode.length - 1),
-      ),
-    );
+    emit(state.copyWith(pinCode: event.pinCode));
   }
 
   Future<void> _onPinCodeChosen(

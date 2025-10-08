@@ -688,13 +688,13 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
-  Future<void> amountChanged({String? amount, bool isMax = false}) async {
+  Future<void> amountChanged({String? amount, bool sendMax = false}) async {
     try {
       clearAllExceptions();
       String validatedAmount;
 
       if (amount == null) {
-        if (!isMax) {
+        if (!sendMax) {
           throw Exception('Amount should be provided if max is not selected');
         }
 
@@ -753,7 +753,7 @@ class SendCubit extends Cubit<SendState> {
         }
       }
 
-      emit(state.copyWith(amount: validatedAmount, sendMax: isMax));
+      emit(state.copyWith(amount: validatedAmount, sendMax: sendMax));
       await updateBestWallet();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
@@ -764,14 +764,7 @@ class SendCubit extends Cubit<SendState> {
     double exchangeRate = state.exchangeRate;
     String fiatCurrencyCode = state.fiatCurrencyCode;
 
-    if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(currencyCode)) {
-      // If the currency is a fiat currency, retrieve the exchange rate and replace
-      //  the current exchange rate and fiat currency code.
-      fiatCurrencyCode = currencyCode;
-      exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: currencyCode,
-      );
-    } else {
+    if ([BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(currencyCode)) {
       // If the currency is a bitcoin unit, set the fiat currency and exchange
       //  rate back to the currency from the settings.
       final currencyValues = await Future.wait([
@@ -781,6 +774,14 @@ class SendCubit extends Cubit<SendState> {
 
       fiatCurrencyCode = (currencyValues[0] as SettingsEntity).currencyCode;
       exchangeRate = currencyValues[1] as double;
+      emit(state.copyWith(bitcoinUnit: BitcoinUnit.fromCode(currencyCode)));
+    } else {
+      // If the currency is a fiat currency, retrieve the exchange rate and replace
+      //  the current exchange rate and fiat currency code.
+      fiatCurrencyCode = currencyCode;
+      exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: currencyCode,
+      );
     }
 
     emit(
@@ -788,7 +789,6 @@ class SendCubit extends Cubit<SendState> {
         inputAmountCurrencyCode: currencyCode,
         fiatCurrencyCode: fiatCurrencyCode,
         exchangeRate: exchangeRate,
-        amount: '', // Clear the amount when changing the currency
       ),
     );
   }

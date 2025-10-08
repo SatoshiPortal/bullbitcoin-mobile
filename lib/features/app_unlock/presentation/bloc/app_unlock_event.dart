@@ -8,9 +8,9 @@ class AppUnlockStarted extends AppUnlockEvent {
   const AppUnlockStarted();
 }
 
-class AppUnlockPinCodeNumberAdded extends AppUnlockEvent {
-  const AppUnlockPinCodeNumberAdded(this.number);
-  final int number;
+class AppUnlockPinCodeNumberChanged extends AppUnlockEvent {
+  const AppUnlockPinCodeNumberChanged(this.pinCode);
+  final String pinCode;
 }
 
 class AppUnlockPinCodeNumberRemoved extends AppUnlockEvent {

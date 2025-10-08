@@ -29,8 +29,7 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
          ),
        ) {
     on<AppUnlockStarted>(_onStarted);
-    on<AppUnlockPinCodeNumberAdded>(_onPinCodeNumberAdded);
-    on<AppUnlockPinCodeNumberRemoved>(_onPinCodeNumberRemoved);
+    on<AppUnlockPinCodeNumberChanged>(_onPinCodeNumberChanged);
     on<AppUnlockSubmitted>(_onSubmitted);
     on<AppUnlockCountdownTick>(_onCountdownTick);
     on<AppUnlockPinCodeObscureToggled>(_onPinCodeObscureToggled);
@@ -66,30 +65,11 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     }
   }
 
-  Future<void> _onPinCodeNumberAdded(
-    AppUnlockPinCodeNumberAdded event,
+  Future<void> _onPinCodeNumberChanged(
+    AppUnlockPinCodeNumberChanged event,
     Emitter<AppUnlockState> emit,
   ) async {
-    if (state.pinCode.length >= state.maxPinCodeLength) {
-      return;
-    }
-
-    emit(state.copyWith(pinCode: '${state.pinCode}${event.number}'));
-  }
-
-  Future<void> _onPinCodeNumberRemoved(
-    AppUnlockPinCodeNumberRemoved event,
-    Emitter<AppUnlockState> emit,
-  ) async {
-    if (state.pinCode.isEmpty) {
-      return;
-    }
-
-    emit(
-      state.copyWith(
-        pinCode: state.pinCode.substring(0, state.pinCode.length - 1),
-      ),
-    );
+    emit(state.copyWith(pinCode: event.pinCode));
   }
 
   Future<void> _onSubmitted(

@@ -40,13 +40,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     required this.decryptVaultUsecase,
   }) : super(const KeyServerState());
 
-  void backspaceKey() {
-    if (state.password.isEmpty) return;
-    updateKeyServerState(
-      password: state.password.substring(0, state.password.length - 1),
-    );
-  }
-
   Future<void> checkConnection() async {
     if (state.torStatus == TorStatus.connecting) {
       return;
@@ -100,13 +93,8 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     await storeKey();
   }
 
-  void enterKey(String value) {
-    updateKeyServerState(
-      password:
-          state.authInputType == AuthInputType.pin
-              ? state.password + value
-              : value,
-    );
+  void updatePassword(String value) {
+    updateKeyServerState(password: value);
   }
 
   void updateVaultKey(String value) {

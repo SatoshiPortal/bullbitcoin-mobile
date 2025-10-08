@@ -69,7 +69,7 @@ class ConfirmScreen extends StatelessWidget {
                 onlyPaste: state.authInputType == AuthInputType.pin,
                 onChanged: (value) {
                   if (state.authInputType == AuthInputType.password) {
-                    context.read<KeyServerCubit>().enterKey(value);
+                    context.read<KeyServerCubit>().updatePassword(value);
                   }
                 },
               ),
@@ -90,10 +90,9 @@ class ConfirmScreen extends StatelessWidget {
               if (state.authInputType == AuthInputType.pin)
                 DialPad(
                   disableFeedback: true,
-                  onNumberPressed:
-                      (e) => context.read<KeyServerCubit>().enterKey(e),
-                  onBackspacePressed:
-                      () => context.read<KeyServerCubit>().backspaceKey(),
+                  onChanged:
+                      (e) => context.read<KeyServerCubit>().updatePassword(e),
+                  mode: DialPadMode.pin,
                 )
               else
                 const SizedBox.shrink(),

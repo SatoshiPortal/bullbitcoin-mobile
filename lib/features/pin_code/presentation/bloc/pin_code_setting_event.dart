@@ -8,14 +8,10 @@ class PinCodeSettingStarted extends PinCodeSettingEvent {
   const PinCodeSettingStarted();
 }
 
-class PinCodeSettingPinCodeNumberAdded extends PinCodeSettingEvent {
-  final int number;
+class PinCodeSettingPinCodeChanged extends PinCodeSettingEvent {
+  final String pinCode;
 
-  const PinCodeSettingPinCodeNumberAdded(this.number);
-}
-
-class PinCodeSettingPinCodeNumberRemoved extends PinCodeSettingEvent {
-  const PinCodeSettingPinCodeNumberRemoved();
+  const PinCodeSettingPinCodeChanged(this.pinCode);
 }
 
 class PinCodeSettingPinCodeChosen extends PinCodeSettingEvent {

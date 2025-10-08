@@ -2,27 +2,88 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 
-class DialPad extends StatelessWidget {
+enum DialPadMode { int, double, pin }
+
+class DialPad extends StatefulWidget {
   const DialPad({
     super.key,
-    required this.onNumberPressed,
-    required this.onBackspacePressed,
+    required this.onChanged,
     this.disableFeedback = false,
+    required this.mode,
   });
 
-  final Function(String) onNumberPressed;
-  final Function() onBackspacePressed;
+  final Function(String) onChanged;
   final bool disableFeedback;
+  final DialPadMode mode;
+
+  @override
+  State<DialPad> createState() => _DialPadState();
+}
+
+class _DialPadState extends State<DialPad> {
+  late final TextEditingController controller;
+  bool get hasDot => controller.text.contains('.');
+
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void onTextChanged(String num) {
+    final text = controller.text;
+
+    switch (widget.mode) {
+      case DialPadMode.int:
+        final intValue = int.tryParse(text + num);
+        if (intValue == null) break;
+        controller.text = text + num;
+      case DialPadMode.double:
+        if (hasDot && num == '.') break;
+        if (!hasDot && num == '.') {
+          controller.text = text + num;
+          break;
+        }
+        if (!hasDot && num != '.') {
+          final intValue = int.tryParse(text + num);
+          if (intValue == null) break;
+          controller.text = intValue.toString();
+          break;
+        }
+        if (hasDot) {
+          final doubleValue = double.tryParse(text + num);
+          if (doubleValue == null) break;
+          controller.text = doubleValue.toString();
+          break;
+        }
+      case DialPadMode.pin:
+        controller.text += num;
+    }
+
+    widget.onChanged(controller.text);
+  }
+
+  void onBackspacePressed() {
+    if (controller.text.isEmpty) return;
+    controller.text = controller.text.substring(0, controller.text.length - 1);
+
+    widget.onChanged(controller.text);
+  }
 
   Widget numPadButton(BuildContext context, String num) {
     return Expanded(
       child: InkWell(
-        onTap: () => onNumberPressed(num),
-        splashFactory: disableFeedback ? NoSplash.splashFactory : null,
-        highlightColor: disableFeedback ? Colors.transparent : null,
+        onTap: () => onTextChanged(num),
+        splashFactory: widget.disableFeedback ? NoSplash.splashFactory : null,
+        highlightColor: widget.disableFeedback ? Colors.transparent : null,
         child: SizedBox(
           height: 64,
-
           child: Center(
             child: BBText(
               num,
@@ -38,12 +99,11 @@ class DialPad extends StatelessWidget {
   Widget backspaceButton(BuildContext context) {
     return Expanded(
       child: InkWell(
-        onTap: onBackspacePressed,
-        splashFactory: disableFeedback ? NoSplash.splashFactory : null,
-        highlightColor: disableFeedback ? Colors.transparent : null,
+        onTap: () => onBackspacePressed(),
+        splashFactory: widget.disableFeedback ? NoSplash.splashFactory : null,
+        highlightColor: widget.disableFeedback ? Colors.transparent : null,
         child: SizedBox(
           height: 64,
-
           child: Center(
             child: Icon(
               Icons.backspace_outlined,
@@ -84,7 +144,7 @@ class DialPad extends StatelessWidget {
           ),
           Row(
             children: [
-              numPadButton(context, '.'),
+              if (widget.mode == DialPadMode.double) numPadButton(context, '.'),
               numPadButton(context, '0'),
               backspaceButton(context),
             ],
