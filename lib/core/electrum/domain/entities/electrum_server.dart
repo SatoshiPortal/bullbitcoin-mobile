@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_server_error.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_server_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 
 class ElectrumServer {
@@ -22,7 +22,7 @@ class ElectrumServer {
 
   static void _validateUrl(String url) {
     if (url.isEmpty) {
-      throw InvalidElectrumServerUrlError(url);
+      throw InvalidElectrumServerUrlException(url);
     }
 
     // Electrum server URLs can be:
@@ -36,7 +36,7 @@ class ElectrumServer {
     final hostPortPattern = RegExp(r'^([a-zA-Z0-9\-\.]+):(\d+)$');
 
     if (!hostPortPattern.hasMatch(urlWithoutProtocol)) {
-      throw InvalidElectrumServerUrlError(url);
+      throw InvalidElectrumServerUrlException(url);
     }
 
     // Validate port is in valid range
@@ -44,7 +44,7 @@ class ElectrumServer {
     if (match != null) {
       final port = int.tryParse(match.group(2)!);
       if (port == null || port < 1 || port > 65535) {
-        throw InvalidElectrumServerUrlError(url);
+        throw InvalidElectrumServerUrlException(url);
       }
     }
   }
@@ -56,7 +56,7 @@ class ElectrumServer {
 
   void updatePriority(int newPriority) {
     if (newPriority < 0) {
-      throw InvalidPriorityError(newPriority);
+      throw InvalidPriorityException(newPriority);
     }
 
     _priority = newPriority;

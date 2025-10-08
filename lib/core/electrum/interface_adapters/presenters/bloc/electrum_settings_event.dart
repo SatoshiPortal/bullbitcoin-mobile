@@ -27,8 +27,12 @@ class ElectrumCustomServersPrioritized extends ElectrumSettingsEvent {
 
 class ElectrumCustomServerDeleted extends ElectrumSettingsEvent {
   final ElectrumServerViewModel server;
+  final bool isLiquid;
 
-  const ElectrumCustomServerDeleted({required this.server});
+  const ElectrumCustomServerDeleted({
+    required this.server,
+    required this.isLiquid,
+  });
 }
 
 class ElectrumAdvancedOptionsSaved extends ElectrumSettingsEvent {

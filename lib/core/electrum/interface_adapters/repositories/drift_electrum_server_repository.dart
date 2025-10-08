@@ -58,7 +58,7 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
   }
 
   @override
-  Future<void> delete(ElectrumServer server) {
-    return _datasource.deleteServer(server.url);
+  Future<void> delete({required String url}) {
+    return _datasource.deleteServer(url);
   }
 }

@@ -14,12 +14,8 @@ class BitcoinBlockchainRepository {
     String finalizedPsbt, {
     required List<ElectrumServer> electrumServers,
   }) async {
-    // Sort servers by priority (lower number = higher priority)
-    final sortedElectrumServers = List<ElectrumServer>.from(electrumServers)
-      ..sort((a, b) => a.priority.compareTo(b.priority));
-
-    for (int i = 0; i < sortedElectrumServers.length; i++) {
-      final electrumServer = sortedElectrumServers[i];
+    for (int i = 0; i < electrumServers.length; i++) {
+      final electrumServer = electrumServers[i];
 
       try {
         final txId = await _blockchain.broadcastPsbt(
@@ -40,12 +36,8 @@ class BitcoinBlockchainRepository {
     List<int> transaction, {
     required List<ElectrumServer> electrumServers,
   }) async {
-    // Sort servers by priority (lower number = higher priority)
-    final sortedElectrumServers = List<ElectrumServer>.from(electrumServers)
-      ..sort((a, b) => a.priority.compareTo(b.priority));
-
-    for (int i = 0; i < sortedElectrumServers.length; i++) {
-      final electrumServer = sortedElectrumServers[i];
+    for (int i = 0; i < electrumServers.length; i++) {
+      final electrumServer = electrumServers[i];
 
       try {
         final txId = await _blockchain.broadcastTransaction(

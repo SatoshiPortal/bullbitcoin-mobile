@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
-import 'package:bb_mobile/core/electrum/application/usecases_old/get_prioritized_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/dtos/requests/check_for_online_electrum_servers_request.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
@@ -41,7 +41,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required InitializeTorUsecase initializeTorUsecase,
     required CheckTorRequiredOnStartupUsecase
     checkForTorInitializationOnStartupUsecase,
-    required GetPrioritizedServerUsecase getBestAvailableServerUsecase,
     required GetUnconfirmedIncomingBalanceUsecase
     getUnconfirmedIncomingBalanceUsecase,
     required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
@@ -49,6 +48,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required AutoSwapExecutionUsecase autoSwapExecutionUsecase,
     required DeleteWalletUsecase deleteWalletUsecase,
     required CheckAllServiceStatusUsecase checkAllServiceStatusUsecase,
+    required CheckForOnlineElectrumServersUsecase
+    checkForOnlineElectrumServersUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -57,7 +58,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _initializeTorUsecase = initializeTorUsecase,
        _checkForTorInitializationOnStartupUsecase =
            checkForTorInitializationOnStartupUsecase,
-       _getPrioritizedServerUsecase = getBestAvailableServerUsecase,
        _getUnconfirmedIncomingBalanceUsecase =
            getUnconfirmedIncomingBalanceUsecase,
        _getAutoSwapSettingsUsecase = getAutoSwapSettingsUsecase,
@@ -65,6 +65,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _autoSwapExecutionUsecase = autoSwapExecutionUsecase,
        _deleteWalletUsecase = deleteWalletUsecase,
        _checkAllServiceStatusUsecase = checkAllServiceStatusUsecase,
+       _checkForOnlineElectrumServersUsecase =
+           checkForOnlineElectrumServersUsecase,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -90,7 +92,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final InitializeTorUsecase _initializeTorUsecase;
   final CheckTorRequiredOnStartupUsecase
   _checkForTorInitializationOnStartupUsecase;
-  final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
@@ -98,6 +99,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final AutoSwapExecutionUsecase _autoSwapExecutionUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
   final CheckAllServiceStatusUsecase _checkAllServiceStatusUsecase;
+  final CheckForOnlineElectrumServersUsecase
+  _checkForOnlineElectrumServersUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -358,11 +361,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     await Future.wait(
       defaultWallets.map((wallet) async {
-        final electrumServer = await _getPrioritizedServerUsecase.execute(
-          network: wallet.network,
-        );
+        final hasOnlineServer = await _checkForOnlineElectrumServersUsecase
+            .execute(
+              CheckForOnlineElectrumServersRequest(isLiquid: wallet.isLiquid),
+            );
 
-        if (electrumServer.status != ElectrumServerStatus.online) {
+        if (!hasOnlineServer) {
           if (wallet.isLiquid) {
             liquidServerDown = true;
           } else {

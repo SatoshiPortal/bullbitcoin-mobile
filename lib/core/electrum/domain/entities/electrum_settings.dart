@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_settings_error.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_settings_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 
 class ElectrumSettings {
@@ -44,13 +44,13 @@ class ElectrumSettings {
     String? Function()? newSocks5Supplier,
   }) {
     if (newStopGap != null && newStopGap < 0) {
-      throw InvalidStopGapError(newStopGap);
+      throw InvalidStopGapException(newStopGap);
     }
     if (newTimeout != null && newTimeout <= 0) {
-      throw InvalidTimeoutError(newTimeout);
+      throw InvalidTimeoutException(newTimeout);
     }
     if (newRetry != null && newRetry < 0) {
-      throw InvalidRetryError(newRetry);
+      throw InvalidRetryException(newRetry);
     }
     // TODO: Add validation for socks5 format or are there too many valid formats?
 

@@ -1,14 +1,8 @@
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_broadcast_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases_old/delete_electrum_server_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases_old/get_all_electrum_servers_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases_old/get_prioritized_server_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases_old/reorder_custom_servers_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases_old/store_electrum_server_settings_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases_old/try_connection_with_fallback_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases_old/update_electrum_server_settings_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
@@ -80,6 +74,11 @@ class ElectrumLocator {
         serverStatusPort: locator<ServerStatusPort>(),
       ),
     );
+    locator.registerFactory<DeleteCustomServerUsecase>(
+      () => DeleteCustomServerUsecase(
+        electrumServerRepository: locator<ElectrumServerRepository>(),
+      ),
+    );
     locator.registerFactory<GetElectrumServersToBroadcastUsecase>(
       () => GetElectrumServersToBroadcastUsecase(
         electrumServerRepository: locator<ElectrumServerRepository>(),
@@ -92,42 +91,6 @@ class ElectrumLocator {
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
         environmentPort: locator<EnvironmentPort>(),
         serverStatusPort: locator<ServerStatusPort>(),
-      ),
-    );
-
-    locator.registerLazySingleton<StoreElectrumServerSettingsUsecase>(
-      () => StoreElectrumServerSettingsUsecase(
-        repository: locator<ElectrumServerRepository>(),
-      ),
-    );
-    locator.registerLazySingleton<UpdateElectrumServerSettingsUsecase>(
-      () => UpdateElectrumServerSettingsUsecase(
-        repository: locator<ElectrumServerRepository>(),
-      ),
-    );
-    locator.registerLazySingleton<GetAllElectrumServersUsecase>(
-      () => GetAllElectrumServersUsecase(
-        electrumServerRepository: locator<ElectrumServerRepository>(),
-      ),
-    );
-    locator.registerLazySingleton<TryConnectionWithFallbackUsecase>(
-      () => TryConnectionWithFallbackUsecase(
-        electrumServerRepository: locator<ElectrumServerRepository>(),
-      ),
-    );
-    locator.registerLazySingleton<GetPrioritizedServerUsecase>(
-      () => GetPrioritizedServerUsecase(
-        electrumServerRepository: locator<ElectrumServerRepository>(),
-      ),
-    );
-    locator.registerLazySingleton<DeleteElectrumServerUsecase>(
-      () => DeleteElectrumServerUsecase(
-        electrumServerRepository: locator<ElectrumServerRepository>(),
-      ),
-    );
-    locator.registerLazySingleton<ReorderCustomServersUsecase>(
-      () => ReorderCustomServersUsecase(
-        repository: locator<ElectrumServerRepository>(),
       ),
     );
   }

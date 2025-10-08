@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/application/dtos/requests/check_for_online_electrum_servers_request.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
@@ -18,7 +19,8 @@ class CheckForOnlineElectrumServersUsecase {
        _environmentPort = environmentPort,
        _serverStatusPort = serverStatusPort;
 
-  Future<bool> execute({bool? isLiquid}) async {
+  Future<bool> execute(CheckForOnlineElectrumServersRequest request) async {
+    final isLiquid = request.isLiquid;
     final environment = await _environmentPort.getEnvironment();
 
     // Fetch servers in parallel

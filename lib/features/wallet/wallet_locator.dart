@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/application/usecases_old/get_prioritized_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -49,7 +49,8 @@ class WalletLocator {
         initializeTorUsecase: locator<InitializeTorUsecase>(),
         checkForTorInitializationOnStartupUsecase:
             locator<CheckTorRequiredOnStartupUsecase>(),
-        getBestAvailableServerUsecase: locator<GetPrioritizedServerUsecase>(),
+        checkForOnlineElectrumServersUsecase:
+            locator<CheckForOnlineElectrumServersUsecase>(),
         getUnconfirmedIncomingBalanceUsecase:
             locator<GetUnconfirmedIncomingBalanceUsecase>(),
         getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),

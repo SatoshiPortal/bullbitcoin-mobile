@@ -15,5 +15,5 @@ abstract class ElectrumServerRepository {
   Future<List<ElectrumServer>> fetchDefaultServers({
     required ElectrumServerNetwork network,
   });
-  Future<void> delete(ElectrumServer server);
+  Future<void> delete({required String url});
 }

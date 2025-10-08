@@ -1,7 +1,7 @@
+import 'package:bb_mobile/core/electrum/application/dtos/requests/add_custom_server_request.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 
 class AddCustomServerUsecase {
@@ -14,17 +14,12 @@ class AddCustomServerUsecase {
   }) : _electrumServerRepository = electrumServerRepository,
        _serverStatusPort = serverStatusPort;
 
-  Future<ElectrumServerStatus> execute({
-    required String url,
-    required ElectrumServerNetwork network,
-    required bool isCustom,
-    required int priority,
-  }) async {
+  Future<ElectrumServerStatus> execute(AddCustomServerRequest request) async {
     final server = ElectrumServer(
-      url: url,
-      network: network,
-      isCustom: isCustom,
-      priority: priority,
+      url: request.url,
+      network: request.network,
+      isCustom: request.isCustom,
+      priority: request.priority,
     );
 
     // Save the server and check its status concurrently
