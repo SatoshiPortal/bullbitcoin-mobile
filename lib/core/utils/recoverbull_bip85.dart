@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:bip85/bip85.dart' as bip85;
+import 'package:bip85_entropy/bip85_entropy.dart';
 import 'package:hex/hex.dart';
 
 class RecoverbullBip85Utils {
-  static final bip85.CustomApplication recoverbullApplication = bip85
-      .CustomApplication.fromNumber(1608);
+  static final CustomApplication recoverbullApplication =
+      CustomApplication.fromNumber(1608);
 
   static int findApplicationNumber(String path) {
     // Old format was using `m/` prefix, which was unnecessarirly added by rust-bip85 before I forked it.
@@ -21,13 +21,11 @@ class RecoverbullBip85Utils {
 
   static String generateBackupKeyPath() {
     final randomIndex = _getRandomIndex();
-    return formatRecoverBullPath(randomIndex);
+    return formatRecoverBullPath(randomIndex).toString();
   }
 
-  static String formatRecoverBullPath(int index) {
-    // /!\ The bip85 path should be finished by a single quote /!\
-    // /!\ We keep this typo to ensure encryption keys derived today are still valid with old vaults. /!\
-    return "${recoverbullApplication.number}'/0'/$index"; // <--- this should be $index'
+  static Bip85HardenedPath formatRecoverBullPath(int index) {
+    return Bip85HardenedPath("${recoverbullApplication.number}'/0'/$index'");
   }
 
   // m/1608'/0'/586053381' -> 0'/586053381
@@ -40,7 +38,7 @@ class RecoverbullBip85Utils {
 
   static String deriveBackupKey(String xprv, String path) {
     final clearedPath = clearPathFromPrefixAndAppNumber(path);
-    final derivation = bip85.Bip85Entropy.derive(
+    final derivation = Bip85Entropy.derive(
       xprvBase58: xprv,
       application: recoverbullApplication,
       path: clearedPath,

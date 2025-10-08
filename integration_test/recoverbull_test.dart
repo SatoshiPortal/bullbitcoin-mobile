@@ -30,11 +30,15 @@ Future<void> main({bool isInitialized = false}) async {
   final walletRepository = locator<WalletRepository>();
   final seedRepository = locator<SeedRepository>();
 
-  const backupZooMnemonicWithSevenZerosPassword =
+  const oldPathZooMnemonicWithSevenZerosPassword =
       """{"created_at":784044000000,"id":"09a6ed8f4de8fd73b73e2392ea78410b7b306d7090cd6f91ed91e7d1c1159799","ciphertext":"U2FiHun3tiRRzVIyJKWwPFmvnfzPJ/K/OzbASAoOIamOP4NRs8ADU7CR87NsxS5mp2dzbl3wgiquhCdQVABJXhHRpTQS7PlCwbbIg2Vj9o3PBoERCfeeD2KRv8uD+6HjNkm33zdHDK/dt1uAYUCcJtqP9ARhn+bUPlKBIW0XP/fIiH94LuU4+AXjN2WD8SBWX1VtS+CrORofA+eMLphLRh2ibzEGotvfrlp52/VjSd5sY3LGkr12lapLSfx4zILhgc2AqgUeFn4Nv8v8F6d3kZ372ikuie963MrncvTS4LxIVO723zX+Lp86bUcDXRtb6B4ZTVHhmRABGqYnviamf84dpcCbC2JhvPHBnOVGTMgf5KbIiBsCNFTKlRmaEnj2HSJLFeC6yBNop02jQ/XkgjFC+35Z7cvO2sKhB5Es0uo=","salt":"658d4287b027f95ae7e5b9f52a5439a4","path":"m/1608'/0'/586053381"}""";
+  const newPathZooMnemonicWithSevenZerosPassword =
+      """{"created_at":1759844619801,"id":"4958a5130b77d4359b88a541998351f04e595060e867e8ea5cd2e8efdc4cddaa","ciphertext":"wBeihGFKLoCQeSZhhX7Nh7zbMzt5If/5QayQ4MuzsQ1X8DgUFo+FbdpPx3KB8Xjwe25DknAc5TIU9zbIDoETIGCWZohvVt1sL5L+bweLVijbJlUQub0va3ZlYSR5QeHVfisaKlS2Psv5mqF9XK6vyq7fiM5qHnDeKG5edDblm8qEh/K/2Ogn9v1ZEKf2BJQFzpJxy7/sCAciZ0j+hY6SNkWVZIyQiLn9+mVGIEjKdPDadP8lvt8CYE4Y5vGfIKo2Mw5ziCdYHCZ+eiG6m+GK9yqdX4n3je1VffYFSIze5vNbgcdgM/uL9BJgiz3iC4d29ble1Uac8MleObrnScB7MCHuMVevwLdFm8kt+TGMbZ2t/MH/xxsUtTFJH7cjuz3ykZtIzfR+CPTkB3OZ637SunzYUcQ70mFzkk/e8xdLjZeKP1r27j6LQK/D84x2RVqB","salt":"08ddfdcc4abbc7e159e2bbd6773b80c3","path":"1608'/0'/632486385'"}""";
   const password = '0000000';
-  const vaultKey =
+  const oldPathVaultKey =
       '151a5a41f5eac5d49e67e0fad0bddd3beebe0f0e4b7739435997506cf12d9fce';
+  const newPathVaultKey =
+      '32255e6651db67fa5b5a44240b6a5d2189cb58666bcc3830c35aff5a2b01b84f';
   const expectedMnemonicWords = [
     'zoo',
     'zoo',
@@ -53,25 +57,16 @@ Future<void> main({bool isInitialized = false}) async {
   setUpAll(() async => await initializeTorUsecase.execute());
 
   group('Recoverbull', () {
-    test('Restore backup key from password', () async {
-      final backupKey = await restoreVaultKeyFromPasswordUsecase.execute(
-        vault: EncryptedVault(file: backupZooMnemonicWithSevenZerosPassword),
-        password: password,
-      );
-
-      expect(backupKey, isNotEmpty);
-    });
-
     test('Restore encrypted vault from backup key', () async {
-      final backupKey = await restoreVaultKeyFromPasswordUsecase.execute(
-        vault: EncryptedVault(file: backupZooMnemonicWithSevenZerosPassword),
+      final vaultKey = await restoreVaultKeyFromPasswordUsecase.execute(
+        vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
         password: password,
       );
-      expect(backupKey, isNotEmpty);
+      expect(vaultKey, oldPathVaultKey);
 
       await restoreEncryptedVaultFromVaultKeyUsecase.execute(
-        vault: EncryptedVault(file: backupZooMnemonicWithSevenZerosPassword),
-        vaultKey: backupKey,
+        vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
+        vaultKey: vaultKey,
       );
 
       final wallets = await walletRepository.getWallets(
@@ -90,17 +85,40 @@ Future<void> main({bool isInitialized = false}) async {
       expect(mnemonicSeedModel.mnemonicWords, equals(expectedMnemonicWords));
     });
 
-    test('Derive backup key from default wallet', () async {
-      final derivedKey = await deriveBackupKeyFromDefaultWalletUsecase.execute(
-        vault: EncryptedVault(file: backupZooMnemonicWithSevenZerosPassword),
+    test('Restore key from password (Key Server)', () async {
+      final vaultKey = await restoreVaultKeyFromPasswordUsecase.execute(
+        vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
+        password: password,
       );
-      expect(derivedKey, vaultKey);
+      expect(vaultKey, oldPathVaultKey);
     });
 
-    test('Decrypt vault from backup key', () {
+    test('OLD path: Derive key from default wallet', () async {
+      final derivedKey = await deriveBackupKeyFromDefaultWalletUsecase.execute(
+        vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
+      );
+      expect(derivedKey, oldPathVaultKey);
+    });
+
+    test('NEW path: Derive key from default wallet', () async {
+      final derivedKey = await deriveBackupKeyFromDefaultWalletUsecase.execute(
+        vault: EncryptedVault(file: newPathZooMnemonicWithSevenZerosPassword),
+      );
+      expect(derivedKey, newPathVaultKey);
+    });
+
+    test('OLD path: Decrypt vault from key', () {
       final decryptedVault = decryptVaultUsecase.execute(
-        vault: EncryptedVault(file: backupZooMnemonicWithSevenZerosPassword),
-        vaultKey: vaultKey,
+        vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
+        vaultKey: oldPathVaultKey,
+      );
+      expect(decryptedVault, isA<DecryptedVault>());
+    });
+
+    test('NEW path: Decrypt vault from key', () {
+      final decryptedVault = decryptVaultUsecase.execute(
+        vault: EncryptedVault(file: newPathZooMnemonicWithSevenZerosPassword),
+        vaultKey: newPathVaultKey,
       );
       expect(decryptedVault, isA<DecryptedVault>());
     });
