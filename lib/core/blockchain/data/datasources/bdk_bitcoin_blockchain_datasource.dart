@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/blockchain/domain/electrum_server.dart';
+import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class BdkBitcoinBlockchainDatasource {

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
@@ -10,6 +9,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:flutter/material.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
@@ -70,7 +70,7 @@ class LwkWalletDatasource {
 
   Future<void> sync({
     required WalletModel wallet,
-    required ElectrumServerModel electrumServer,
+    required ElectrumServer electrumServer,
   }) {
     // TODO: if needed, add these debugPrint to a filterable logger.debug
     // TODO: to avoid spamming the terminal with recurring prints

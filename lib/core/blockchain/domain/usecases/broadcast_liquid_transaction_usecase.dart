@@ -16,13 +16,12 @@ class BroadcastLiquidTransactionUsecase {
        _liquidBlockchain = liquidBlockchainRepository,
        _electrumServerPort = electrumServerPort;
 
-  Future<String> execute(String signedPset) async {
+  Future<String> execute(String signedPset, {bool? isTestnet}) async {
     try {
-      final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
+      isTestnet ??= (await _settingsRepository.fetch()).environment.isTestnet;
 
       final electrumServers = await _electrumServerPort.getElectrumServers(
-        isTestnet: environment.isTestnet,
+        isTestnet: isTestnet,
         isLiquid: true,
       );
 

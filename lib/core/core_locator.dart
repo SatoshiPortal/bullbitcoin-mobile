@@ -39,6 +39,12 @@ class CoreLocator {
     LedgerLocator.registerDatasources();
   }
 
+  static void registerPorts() {
+    BlockchainLocator.registerPorts();
+    SwapsLocator.registerPorts();
+    WalletLocator.registerPorts();
+  }
+
   static Future<void> registerRepositories() async {
     await TorLocator.registerRepositories();
     BlockchainLocator.registerRepositories();
@@ -60,10 +66,6 @@ class CoreLocator {
   static void registerServices() {
     SeedLocator.registerServices();
     SwapsLocator.registerServices();
-  }
-
-  static void registerFacades() {
-    BlockchainLocator.registerFacades();
   }
 
   static void registerUsecases() {

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
-import 'package:bb_mobile/core/blockchain/domain/electrum_server.dart';
+import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 
 class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {

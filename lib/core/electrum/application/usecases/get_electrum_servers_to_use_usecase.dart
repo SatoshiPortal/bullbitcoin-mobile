@@ -1,23 +1,23 @@
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_settings_dto.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/requests/get_electrum_servers_to_broadcast_request.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/responses/get_electrum_servers_to_broadcast_response.dart';
+import 'package:bb_mobile/core/electrum/application/dtos/requests/get_electrum_servers_to_use_request.dart';
+import 'package:bb_mobile/core/electrum/application/dtos/responses/get_electrum_servers_to_use_response.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 
-class GetElectrumServersToBroadcastUsecase {
+class GetElectrumServersToUseUsecase {
   final ElectrumServerRepository _electrumServerRepository;
   final ElectrumSettingsRepository _electrumSettingsRepository;
 
-  const GetElectrumServersToBroadcastUsecase({
+  const GetElectrumServersToUseUsecase({
     required ElectrumServerRepository electrumServerRepository,
     required ElectrumSettingsRepository electrumSettingsRepository,
   }) : _electrumServerRepository = electrumServerRepository,
        _electrumSettingsRepository = electrumSettingsRepository;
 
-  Future<GetElectrumServersToBroadcastResponse> execute(
-    GetElectrumServersToBroadcastRequest request,
+  Future<GetElectrumServersToUseResponse> execute(
+    GetElectrumServersToUseRequest request,
   ) async {
     final network = request.network;
     // Fetch servers and settings in parallel
@@ -38,7 +38,7 @@ class GetElectrumServersToBroadcastUsecase {
     serversToUse.sort((a, b) => a.priority.compareTo(b.priority));
 
     // Return the response DTO
-    return GetElectrumServersToBroadcastResponse(
+    return GetElectrumServersToUseResponse(
       servers:
           serversToUse.map((e) => ElectrumServerDto.fromDomain(e)).toList(),
       settings: ElectrumSettingsDto.fromDomain(settings),

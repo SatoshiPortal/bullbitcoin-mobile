@@ -19,3 +19,10 @@ class ElectrumServer {
     required this.isCustom,
   });
 }
+
+abstract class ElectrumServerPort {
+  Future<List<ElectrumServer>> getElectrumServers({
+    required bool isTestnet,
+    required bool isLiquid,
+  });
+}

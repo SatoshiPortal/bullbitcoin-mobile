@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:async/async.dart';
-import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -15,6 +13,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -24,17 +23,17 @@ class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
-  final ElectrumServerStorageDatasource _electrumServerStorage;
+  final ElectrumServerPort _electrumServerPort;
 
   WalletRepository({
     required WalletMetadataDatasource walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-    required ElectrumServerStorageDatasource electrumServerStorageDatasource,
+    required ElectrumServerPort electrumServerPort,
   }) : _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource,
-       _electrumServerStorage = electrumServerStorageDatasource {
+       _electrumServerPort = electrumServerPort {
     // Keep track of the last sync time in the wallet metadata
     _walletSyncFinishedStream.listen(_updateWalletSyncTime);
     // Start auto syncing wallets
@@ -482,27 +481,41 @@ class WalletRepository {
   }
 
   Future<void> _syncWallet(WalletModel wallet) async {
-    ElectrumServerModel? electrumServer;
     try {
       final isLiquid = wallet is PublicLwkWalletModel;
-      electrumServer = await _electrumServerStorage.fetchPrioritizedServer(
-        network: Network.fromEnvironment(
-          isTestnet: wallet.isTestnet,
-          isLiquid: isLiquid,
-        ),
+      final electrumServers = await _electrumServerPort.getElectrumServers(
+        isTestnet: wallet.isTestnet,
+        isLiquid: isLiquid,
       );
 
-      if (isLiquid) {
-        await _lwkWallet.sync(wallet: wallet, electrumServer: electrumServer);
-      } else {
-        await _bdkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+      for (int i = 0; i < electrumServers.length; i++) {
+        final electrumServer = electrumServers[i];
+        try {
+          if (isLiquid) {
+            await _lwkWallet.sync(
+              wallet: wallet,
+              electrumServer: electrumServer,
+            );
+          } else {
+            await _bdkWallet.sync(
+              wallet: wallet,
+              electrumServer: electrumServer,
+            );
+          }
+          return;
+        } catch (e, stackTrace) {
+          log.severe(
+            'sync wallet error: ${wallet.id} with electrum server: ${electrumServer.url}',
+            error: e,
+            trace: stackTrace,
+          );
+          if (i == electrumServers.length - 1) {
+            throw Exception('All Electrum servers failed to sync.');
+          }
+          continue;
+        }
       }
-    } catch (e, stackTrace) {
-      log.severe(
-        'sync wallet error: ${wallet.id} with electrum server: ${electrumServer?.url}',
-        error: e,
-        trace: stackTrace,
-      );
+    } catch (e) {
       rethrow;
     }
   }
