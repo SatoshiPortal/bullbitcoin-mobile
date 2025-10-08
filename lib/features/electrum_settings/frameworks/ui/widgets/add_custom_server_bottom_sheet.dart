@@ -101,16 +101,34 @@ class _AddCustomServerBottomSheetState
                   textInputAction: TextInputAction.done,
                   style: context.font.bodyLarge,
                   decoration: InputDecoration(
-                    labelText: '$network $environment Server URL',
-                    labelStyle: context.font.bodyMedium?.copyWith(
-                      color: context.colour.outline,
-                    ),
-                    border: InputBorder.none,
+                    fillColor: context.colour.onPrimary,
                     filled: true,
-                    fillColor: context.colour.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.colour.secondaryFixedDim,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.colour.secondaryFixedDim,
+                      ),
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.colour.secondaryFixedDim.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                    ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                      horizontal: 16.0,
+                    ),
+                    hintText: '$network $environment Server URL',
+                    hintStyle: context.font.bodyMedium?.copyWith(
+                      color: context.colour.outline,
                     ),
                   ),
                   onFieldSubmitted: (_) => _submit(),

@@ -121,7 +121,7 @@ class _SetAdvancedOptionsBottomSheetState
                       Expanded(
                         child: Text(
                           'Advanced Options',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: context.font.headlineMedium,
                         ),
                       ),
                       IconButton(
@@ -145,16 +145,33 @@ class _SetAdvancedOptionsBottomSheetState
                           keyboardType: TextInputType.number,
                           style: context.font.bodyLarge,
                           decoration: InputDecoration(
-                            labelText: 'Stop Gap',
-                            labelStyle: context.font.bodyMedium?.copyWith(
+                            hintText: 'Stop Gap',
+                            hintStyle: context.font.bodyMedium?.copyWith(
                               color: context.colour.outline,
                             ),
-                            border: InputBorder.none,
+                            fillColor: context.colour.onPrimary,
                             filled: true,
-                            fillColor: context.colour.surface,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: context.colour.secondaryFixedDim,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: context.colour.secondaryFixedDim,
+                              ),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: context.colour.secondaryFixedDim
+                                    .withValues(alpha: 0.5),
+                              ),
+                            ),
                             contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
+                              horizontal: 16.0,
                             ),
                           ),
                           validator: (v) {
@@ -180,16 +197,33 @@ class _SetAdvancedOptionsBottomSheetState
                           textInputAction: TextInputAction.next,
                           style: context.font.bodyLarge,
                           decoration: InputDecoration(
-                            labelText: 'Timeout (seconds)',
-                            labelStyle: context.font.bodyMedium?.copyWith(
+                            hintText: 'Timeout (seconds)',
+                            hintStyle: context.font.bodyMedium?.copyWith(
                               color: context.colour.outline,
                             ),
-                            border: InputBorder.none,
+                            fillColor: context.colour.onPrimary,
                             filled: true,
-                            fillColor: context.colour.surface,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: context.colour.secondaryFixedDim,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: context.colour.secondaryFixedDim,
+                              ),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: context.colour.secondaryFixedDim
+                                    .withValues(alpha: 0.5),
+                              ),
+                            ),
                             contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
+                              horizontal: 16.0,
                             ),
                           ),
                           validator: (v) {
@@ -210,16 +244,33 @@ class _SetAdvancedOptionsBottomSheetState
                           textInputAction: TextInputAction.done,
                           style: context.font.bodyLarge,
                           decoration: InputDecoration(
-                            labelText: 'Retry Count',
-                            labelStyle: context.font.bodyMedium?.copyWith(
+                            hintText: 'Retry Count',
+                            hintStyle: context.font.bodyMedium?.copyWith(
                               color: context.colour.outline,
                             ),
-                            border: InputBorder.none,
+                            fillColor: context.colour.onPrimary,
                             filled: true,
-                            fillColor: context.colour.surface,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: context.colour.secondaryFixedDim,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: context.colour.secondaryFixedDim,
+                              ),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: context.colour.secondaryFixedDim
+                                    .withValues(alpha: 0.5),
+                              ),
+                            ),
                             contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
+                              horizontal: 16.0,
                             ),
                           ),
                           validator: (v) {
@@ -236,18 +287,14 @@ class _SetAdvancedOptionsBottomSheetState
                         ),
                         const SizedBox(height: 12),
                         SwitchListTile.adaptive(
+                          shape: const RoundedRectangleBorder(
+                            side: BorderSide.none,
+                          ),
+                          tileColor: Colors.transparent,
                           title: const Text('Validate Domain'),
                           contentPadding: EdgeInsets.zero,
                           value: _validateDomain,
                           onChanged: (v) => setState(() => _validateDomain = v),
-                          activeColor: context.colour.onSecondary,
-                          activeTrackColor: context.colour.secondary,
-                          inactiveThumbColor: context.colour.onSecondary,
-                          inactiveTrackColor: context.colour.surface,
-                          trackOutlineColor:
-                              WidgetStateProperty.resolveWith<Color?>(
-                                (Set<WidgetState> states) => Colors.transparent,
-                              ),
                         ),
                       ],
                     ),
