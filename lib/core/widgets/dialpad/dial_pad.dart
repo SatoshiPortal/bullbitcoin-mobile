@@ -43,7 +43,7 @@ class _DialPadState extends State<DialPad> {
       case DialPadMode.int:
         final intValue = int.tryParse(text + num);
         if (intValue == null) break;
-        controller.text = text + num;
+        controller.text = intValue.toString();
       case DialPadMode.double:
         if (hasDot && num == '.') break;
         if (!hasDot && num == '.') {
