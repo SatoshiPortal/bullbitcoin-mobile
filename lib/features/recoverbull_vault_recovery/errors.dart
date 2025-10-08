@@ -1,7 +1,5 @@
-class RecoverBullVaultRecoveryError implements Exception {
-  final String message;
-  RecoverBullVaultRecoveryError(this.message);
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-  @override
-  String toString() => message;
+class RecoverBullVaultRecoveryError extends BullException {
+  RecoverBullVaultRecoveryError(super.message);
 }

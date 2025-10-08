@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 
 class PinCodeRepository {
@@ -23,7 +24,7 @@ class PinCodeRepository {
 
     if (pin == null) {
       throw PinCodeNotSetException(
-        message: 'Pin code is not set. Use create method to set it.',
+        'Pin code is not set. Use create method to set it.',
       );
     }
 
@@ -33,14 +34,10 @@ class PinCodeRepository {
   Future<void> deletePinCode() async => await _storage.deleteValue(_key);
 }
 
-class PinCodeNotSetException implements Exception {
-  final String message;
-
-  PinCodeNotSetException({required this.message});
+class PinCodeNotSetException extends BullException {
+  PinCodeNotSetException(super.message);
 }
 
-class InvalidPinCodeException implements Exception {
-  final String message;
-
-  InvalidPinCodeException({required this.message});
+class InvalidPinCodeException extends BullException {
+  InvalidPinCodeException(super.message);
 }

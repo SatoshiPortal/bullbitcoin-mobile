@@ -1,9 +1,7 @@
-class RecoverBullSelectVaultError implements Exception {
-  final String message;
-  RecoverBullSelectVaultError(this.message);
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-  @override
-  String toString() => message;
+class RecoverBullSelectVaultError extends BullException {
+  RecoverBullSelectVaultError(super.message);
 }
 
 class FetchAllDriveFilesError extends RecoverBullSelectVaultError {

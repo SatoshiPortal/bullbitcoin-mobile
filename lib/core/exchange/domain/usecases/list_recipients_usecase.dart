@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -39,11 +40,6 @@ class ListRecipientsUsecase {
   }
 }
 
-class ListRecipientsException implements Exception {
-  final String message;
-
-  ListRecipientsException(this.message);
-
-  @override
-  String toString() => '[ListRecipientsUsecase]: $message';
+class ListRecipientsException extends BullException {
+  ListRecipientsException(super.message);
 }

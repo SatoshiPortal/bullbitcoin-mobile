@@ -6,6 +6,8 @@ import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/errors.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
+import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
@@ -17,21 +19,65 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   BroadcastSignedTxCubit({
     required BroadcastBitcoinTransactionUsecase
     broadcastBitcoinTransactionUsecase,
+    String? unsignedPsbt,
   }) : _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
-       super(BroadcastSignedTxState(bbqr: Bbqr()));
+       super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
 
   Future<void> onQrScanned(String payload) async {
     try {
       emit(state.copyWith(error: null));
-      final (tx, bbqr) = await state.bbqr.scanTransaction(payload);
-      emit(state.copyWith(bbqr: bbqr));
-      if (tx != null) emit(state.copyWith(transaction: tx));
+      if (payload.startsWith('cHN')) {
+        // Jade returns a non-finalized PSBT, but BDK doesn't finalize transactions it did not sign itself
+        // So here we have to finalize the PSBT with bitcoin_base before we broadcast it
+        final psbt = Psbt.fromBase64(payload);
+        final builder = PsbtBuilder.fromPsbt(psbt);
+        String finalTx;
+        try {
+          finalTx = builder.finalizeAll().toHex();
+        } catch (e) {
+          if (state.unsignedPsbt == null) {
+            rethrow;
+          }
+
+          // Seedsigner doesn't return the original input data, so here we try to add inputs data from the unsigned tx
+
+          final psbt = await bdk.PartiallySignedTransaction.fromString(
+            state.unsignedPsbt!,
+          );
+          final signedPsbt = await bdk.PartiallySignedTransaction.fromString(
+            payload,
+          );
+
+          final tx = psbt.combine(signedPsbt);
+
+          final finalPsbt = Psbt.deserialize(tx.serialize());
+
+          final builder = PsbtBuilder.fromPsbt(finalPsbt);
+          finalTx = builder.finalizeAll().toHex();
+        }
+
+        emit(
+          state.copyWith(
+            transaction: ScannedTransaction(
+              format: TxFormat.hex,
+              data: finalTx,
+              tx: await RawBitcoinTxEntity.fromBytes(hex.decode(finalTx)),
+            ),
+          ),
+        );
+      } else {
+        final (tx, bbqr) = await state.bbqr.scanTransaction(payload);
+        emit(state.copyWith(bbqr: bbqr));
+        if (tx != null) emit(state.copyWith(transaction: tx));
+      }
     } catch (e) {
       emit(state.copyWith(error: UnexpectedError(e)));
     }
   }
 
-  Future<void> resetState() async => emit(BroadcastSignedTxState(bbqr: Bbqr()));
+  Future<void> resetState() async => emit(
+    BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: state.unsignedPsbt),
+  );
 
   Future<void> onNfcScanned(NFCTag tag) async {
     emit(state.copyWith(error: null));

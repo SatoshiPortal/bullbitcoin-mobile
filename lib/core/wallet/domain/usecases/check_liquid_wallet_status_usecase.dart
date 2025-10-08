@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -127,20 +130,10 @@ class TheDirtyLiquidUsecase {
   }
 }
 
-class CheckLiquidWalletStatusException implements Exception {
-  final String message;
-
-  CheckLiquidWalletStatusException(this.message);
-
-  @override
-  String toString() => message;
+class CheckLiquidWalletStatusException extends BullException {
+  CheckLiquidWalletStatusException(super.message);
 }
 
-class UnsupportedLwkNetworkException implements Exception {
-  final String message;
-
-  UnsupportedLwkNetworkException(this.message);
-
-  @override
-  String toString() => message;
+class UnsupportedLwkNetworkException extends BullException {
+  UnsupportedLwkNetworkException(super.message);
 }

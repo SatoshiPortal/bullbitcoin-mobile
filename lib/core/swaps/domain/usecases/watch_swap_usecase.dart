@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/swaps/data/services/swap_watcher.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -22,8 +23,6 @@ class WatchSwapUsecase {
   }
 }
 
-class WatchSwapException implements Exception {
-  final String message;
-
-  WatchSwapException(this.message);
+class WatchSwapException extends BullException {
+  WatchSwapException(super.message);
 }

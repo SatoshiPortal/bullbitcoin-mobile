@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 
 class SignLiquidTxUsecase {
@@ -23,8 +24,6 @@ class SignLiquidTxUsecase {
   }
 }
 
-class SignLiquidTxException implements Exception {
-  final String message;
-
-  SignLiquidTxException(this.message);
+class SignLiquidTxException extends BullException {
+  SignLiquidTxException(super.message);
 }

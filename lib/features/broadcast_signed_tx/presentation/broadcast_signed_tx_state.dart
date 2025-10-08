@@ -9,6 +9,7 @@ abstract class BroadcastSignedTxState with _$BroadcastSignedTxState {
   const factory BroadcastSignedTxState({
     required Bbqr bbqr,
     @Default(null) ParsedTx? transaction,
+    @Default(null) String? unsignedPsbt,
     @Default(false) bool isBroadcasted,
     @Default(null) Uri? pushTxUri,
     @Default(null) Exception? error,

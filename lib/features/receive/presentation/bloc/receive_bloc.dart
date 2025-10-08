@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/label_wallet_address_usecase.dart';
@@ -468,7 +469,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
                 : ConvertAmount.btcToSats(double.tryParse(amount) ?? 0);
       }
       if (inputSat > ConversionConstants.maxSatsAmount.toInt()) {
-        amountException = AmountException.aboveBitcoinProtocolLimit(
+        amountException = AboveBitcoinProtocolLimitAmountException(
           ConversionConstants.maxSatsAmount.toInt(),
         );
         amount = state.inputAmount;

@@ -1,10 +1,9 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-part 'transaction_error.freezed.dart';
+class TransactionError extends BullException {
+  TransactionError(super.message);
+}
 
-@freezed
-sealed class TransactionError with _$TransactionError implements Exception {
-  const factory TransactionError.notFound() = TransactionNotFoundError;
-
-  const TransactionError._();
+class TransactionNotFoundError extends TransactionError {
+  TransactionNotFoundError() : super('Transaction not found');
 }
