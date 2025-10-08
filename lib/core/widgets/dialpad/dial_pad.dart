@@ -59,7 +59,7 @@ class _DialPadState extends State<DialPad> {
         if (hasDot) {
           final doubleValue = double.tryParse(text + num);
           if (doubleValue == null) break;
-          controller.text = doubleValue.toString();
+          controller.text = text + num; // or you wont have 0
           break;
         }
       case DialPadMode.pin:
