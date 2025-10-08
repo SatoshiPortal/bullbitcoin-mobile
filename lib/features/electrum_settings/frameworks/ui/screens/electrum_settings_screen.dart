@@ -24,12 +24,15 @@ class ElectrumSettingsScreen extends StatelessWidget {
         title: const Text('Electrum Server Settings'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
-          child: FadingLinearProgress(
-            height: 3,
-            trigger: isLoading,
-            backgroundColor: context.colour.surface,
-            foregroundColor: context.colour.primary,
-          ),
+          child:
+              isLoading
+                  ? FadingLinearProgress(
+                    height: 3,
+                    trigger: isLoading,
+                    backgroundColor: context.colour.surface,
+                    foregroundColor: context.colour.primary,
+                  )
+                  : const SizedBox(height: 3),
         ),
       ),
       body: SafeArea(

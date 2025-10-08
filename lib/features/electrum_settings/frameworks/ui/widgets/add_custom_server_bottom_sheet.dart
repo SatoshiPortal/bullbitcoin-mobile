@@ -15,6 +15,7 @@ class AddCustomServerBottomSheet extends StatefulWidget {
     return showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
+      backgroundColor: context.colour.secondaryFixed,
       useSafeArea: true,
       showDragHandle: true,
       builder:
@@ -98,9 +99,19 @@ class _AddCustomServerBottomSheetState
                   focusNode: _focusNode,
                   autofocus: true,
                   textInputAction: TextInputAction.done,
+                  style: context.font.bodyLarge,
                   decoration: InputDecoration(
                     labelText: '$network $environment Server URL',
-                    border: const OutlineInputBorder(),
+                    labelStyle: context.font.bodyMedium?.copyWith(
+                      color: context.colour.outline,
+                    ),
+                    border: InputBorder.none,
+                    filled: true,
+                    fillColor: context.colour.surface,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                   ),
                   onFieldSubmitted: (_) => _submit(),
                   validator:

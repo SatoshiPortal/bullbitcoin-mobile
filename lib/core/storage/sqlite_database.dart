@@ -96,6 +96,8 @@ class SqliteDatabase extends _$SqliteDatabase {
         from3To4: Schema3To4.migrate,
         from4To5: Schema4To5.migrate,
         from5To6: (m, schema) async {
+          // Create ElectrumSettings table
+          await m.createTable(schema.electrumSettings);
           // Seed the new table with ElectrumSettings default values
           await _seedDefaultElectrumSettings();
           // Add isCustom column to electrum_servers table with default value false

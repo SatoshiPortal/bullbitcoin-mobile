@@ -14,6 +14,7 @@ class SetAdvancedOptionsBottomSheet extends StatefulWidget {
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      backgroundColor: context.colour.secondaryFixed,
       useSafeArea: true,
       showDragHandle: true,
       builder:
@@ -132,19 +133,30 @@ class _SetAdvancedOptionsBottomSheetState
                         focusNode: _stopGapNode,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
+                        style: context.font.bodyLarge,
+                        decoration: InputDecoration(
                           labelText: 'Stop Gap',
+                          labelStyle: context.font.bodyMedium?.copyWith(
+                            color: context.colour.outline,
+                          ),
+                          border: InputBorder.none,
+                          filled: true,
+                          fillColor: context.colour.surface,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
                         validator: (v) {
                           if (v == null || v.trim().isEmpty) {
-                            return 'Stop Gap can’t be empty';
+                            return "Stop Gap can't be empty";
                           }
                           final n = int.tryParse(v.trim());
                           if (n == null) {
                             return 'Enter a valid number';
                           }
                           if (n < 0) {
-                            return 'Stop Gap can’t be negative';
+                            return "Stop Gap can't be negative";
                           }
                           return null;
                         },
@@ -156,12 +168,23 @@ class _SetAdvancedOptionsBottomSheetState
                         focusNode: _timeoutNode,
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
+                        style: context.font.bodyLarge,
+                        decoration: InputDecoration(
                           labelText: 'Timeout (seconds)',
+                          labelStyle: context.font.bodyMedium?.copyWith(
+                            color: context.colour.outline,
+                          ),
+                          border: InputBorder.none,
+                          filled: true,
+                          fillColor: context.colour.surface,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
                         validator: (v) {
                           final value = v?.trim() ?? '';
-                          if (value.isEmpty) return 'Timeout can’t be empty';
+                          if (value.isEmpty) return "Timeout can't be empty";
                           final n = int.tryParse(value);
                           if (n == null) return 'Enter a valid number';
                           if (n <= 0) return 'Timeout must be positive';
@@ -173,21 +196,30 @@ class _SetAdvancedOptionsBottomSheetState
                       TextFormField(
                         controller: _retry,
                         focusNode: _retryNode,
-                        minLines: 2,
-                        maxLines: 5,
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.done,
-                        decoration: const InputDecoration(
+                        style: context.font.bodyLarge,
+                        decoration: InputDecoration(
                           labelText: 'Retry Count',
+                          labelStyle: context.font.bodyMedium?.copyWith(
+                            color: context.colour.outline,
+                          ),
+                          border: InputBorder.none,
+                          filled: true,
+                          fillColor: context.colour.surface,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
                         validator: (v) {
                           final value = v?.trim() ?? '';
                           if (value.isEmpty) {
-                            return 'Retry Count can’t be empty';
+                            return "Retry Count can't be empty";
                           }
                           final n = int.tryParse(value);
-                          if (n == null) return 'Enter a valid number';
-                          if (n < 0) return 'Retry Count can’t be negative';
+                          if (n == null) return "Enter a valid number";
+                          if (n < 0) return "Retry Count can't be negative";
                           return null;
                         },
                         onFieldSubmitted: (_) => _confirm(),

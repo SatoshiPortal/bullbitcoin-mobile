@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class DeleteCustomServerDialog {
@@ -8,10 +9,13 @@ class DeleteCustomServerDialog {
   ) {
     return showDialog<bool>(
       context: context,
+
       builder:
           (BuildContext dialogContext) => AlertDialog(
+            backgroundColor: context.colour.onSecondary,
             title: const Text('Delete Custom Server'),
             content: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 if (isLastCustomServer)
                   const Text(

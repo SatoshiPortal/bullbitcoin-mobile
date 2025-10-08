@@ -15,12 +15,10 @@ sealed class ElectrumServerViewModel with _$ElectrumServerViewModel {
   const ElectrumServerViewModel._();
 
   String get displayName {
-    final uri = Uri.tryParse(url);
-    if (uri == null) {
-      return url; // Fallback to the raw URL if parsing fails
+    // Remove scheme if present (e.g., "ssl://" or "tcp://")
+    if (url.contains('://')) {
+      return url.split('://').last;
     }
-
-    // Display without the scheme
-    return uri.host + (uri.hasPort ? ':${uri.port}' : '');
+    return url;
   }
 }

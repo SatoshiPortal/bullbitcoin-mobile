@@ -109,6 +109,8 @@ class ElectrumSettingsBloc
       emit(
         state.copyWith(electrumServersError: LoadFailedException(e.toString())),
       );
+    } finally {
+      emit(state.copyWith(isLoadingData: false));
     }
   }
 
