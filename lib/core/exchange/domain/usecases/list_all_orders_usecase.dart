@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -41,11 +42,6 @@ class ListAllOrdersUsecase {
   }
 }
 
-class ListAllOrdersException implements Exception {
-  final String message;
-
-  ListAllOrdersException(this.message);
-
-  @override
-  String toString() => '[ListAllOrdersUsecase]: $message';
+class ListAllOrdersException extends BullException {
+  ListAllOrdersException(super.message);
 }

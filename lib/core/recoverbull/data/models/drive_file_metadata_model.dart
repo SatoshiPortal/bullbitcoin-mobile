@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
@@ -29,12 +30,10 @@ class DriveFileMetadataModel {
   }
 }
 
-class DriveFileMetadataException implements Exception {
-  final String message;
-
-  DriveFileMetadataException(this.message);
+class DriveFileMetadataException extends BullException {
+  DriveFileMetadataException(super.message);
 }
 
-class InvalidDriveFileMetadataException extends DriveFileMetadataException {
+class InvalidDriveFileMetadataException extends BullException {
   InvalidDriveFileMetadataException() : super('Invalid drive file metadata');
 }

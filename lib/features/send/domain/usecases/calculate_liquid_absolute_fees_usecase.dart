@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 
 class CalculateLiquidAbsoluteFeesUsecase {
@@ -19,8 +20,6 @@ class CalculateLiquidAbsoluteFeesUsecase {
   }
 }
 
-class CalculateLiquidAbsoluteFeesException implements Exception {
-  final String message;
-
-  CalculateLiquidAbsoluteFeesException(this.message);
+class CalculateLiquidAbsoluteFeesException extends BullException {
+  CalculateLiquidAbsoluteFeesException(super.message);
 }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -24,8 +25,6 @@ class ImportWatchOnlyXpubUsecase {
   }
 }
 
-class ImportWatchOnlyXpubException implements Exception {
-  final String message;
-
-  ImportWatchOnlyXpubException(this.message);
+class ImportWatchOnlyXpubException extends BullException {
+  ImportWatchOnlyXpubException(super.message);
 }

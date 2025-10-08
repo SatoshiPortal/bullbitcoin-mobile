@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -82,8 +83,6 @@ class CreateDefaultWalletsUsecase {
   }
 }
 
-class CreateDefaultWalletsException implements Exception {
-  final String message;
-
-  CreateDefaultWalletsException(this.message);
+class CreateDefaultWalletsException extends BullException {
+  CreateDefaultWalletsException(super.message);
 }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 
@@ -20,8 +21,6 @@ class GetPayjoinByIdUsecase {
   }
 }
 
-class GetPayjoinByIdException implements Exception {
-  final String message;
-
-  GetPayjoinByIdException(this.message);
+class GetPayjoinByIdException extends BullException {
+  GetPayjoinByIdException(super.message);
 }

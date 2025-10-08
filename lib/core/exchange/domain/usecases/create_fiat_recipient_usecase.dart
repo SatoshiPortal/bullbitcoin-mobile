@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/new_recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
@@ -42,11 +43,6 @@ class CreateFiatRecipientUsecase {
   }
 }
 
-class CreateFiatRecipientException implements Exception {
-  final String message;
-
-  CreateFiatRecipientException(this.message);
-
-  @override
-  String toString() => '[CreateFiatRecipientUsecase]: $message';
+class CreateFiatRecipientException extends BullException {
+  CreateFiatRecipientException(super.message);
 }

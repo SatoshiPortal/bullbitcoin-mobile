@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/labeled_text_input.dart';
@@ -514,13 +515,8 @@ class _HintChip extends StatelessWidget {
   }
 }
 
-class MnemonicException implements Exception {
-  final String message;
-
-  MnemonicException(this.message);
-
-  @override
-  String toString() => message;
+class MnemonicException extends BullException {
+  MnemonicException(super.message);
 }
 
 class EmptyMnemonicWordsError extends MnemonicException {

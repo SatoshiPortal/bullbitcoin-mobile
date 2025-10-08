@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -31,11 +32,6 @@ class GetNetworkFeesUsecase {
   }
 }
 
-class GetNetworkFeesException implements Exception {
-  final String message;
-
-  GetNetworkFeesException(this.message);
-
-  @override
-  String toString() => '[GetNetworkFeesUsecase]: $message';
+class GetNetworkFeesException extends BullException {
+  GetNetworkFeesException(super.message);
 }

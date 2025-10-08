@@ -1,10 +1,7 @@
-class ImportMnemonicError implements Exception {
-  final String message;
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-  ImportMnemonicError(this.message);
-
-  @override
-  String toString() => message;
+class ImportMnemonicError extends BullException {
+  ImportMnemonicError(super.message);
 }
 
 class MnemonicIsNullError extends ImportMnemonicError {

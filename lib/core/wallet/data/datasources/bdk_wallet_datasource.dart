@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
-
+import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
@@ -700,20 +701,14 @@ class BdkWalletDatasource {
   }
 }
 
-class FailedToSignPsbtException implements Exception {
-  final String message;
-
-  FailedToSignPsbtException(this.message);
+class FailedToSignPsbtException extends BullException {
+  FailedToSignPsbtException(super.message);
 }
 
-class UnsupportedBdkNetworkException implements Exception {
-  final String message;
-
-  UnsupportedBdkNetworkException(this.message);
+class UnsupportedBdkNetworkException extends BullException {
+  UnsupportedBdkNetworkException(super.message);
 }
 
-class NoSpendableUtxoException implements Exception {
-  final String message;
-
-  NoSpendableUtxoException(this.message);
+class NoSpendableUtxoException extends BullException {
+  NoSpendableUtxoException(super.message);
 }

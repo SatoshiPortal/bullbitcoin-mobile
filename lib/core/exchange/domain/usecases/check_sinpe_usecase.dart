@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -32,11 +33,6 @@ class CheckSinpeUsecase {
   }
 }
 
-class CheckSinpeException implements Exception {
-  final String message;
-
-  CheckSinpeException(this.message);
-
-  @override
-  String toString() => '[CheckSinpeUsecase]: $message';
+class CheckSinpeException extends BullException {
+  CheckSinpeException(super.message);
 }

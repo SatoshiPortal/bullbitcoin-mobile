@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class MnemonicGenerator {
@@ -15,8 +16,6 @@ class MnemonicGenerator {
   }
 }
 
-class FailedToGenerateMnemonicException implements Exception {
-  final String message;
-
-  FailedToGenerateMnemonicException(this.message);
+class FailedToGenerateMnemonicException extends BullException {
+  FailedToGenerateMnemonicException(super.message);
 }

@@ -1,9 +1,7 @@
-class BroadcastSignedTxError implements Exception {
-  final String message;
-  BroadcastSignedTxError(this.message);
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-  @override
-  String toString() => message;
+class BroadcastSignedTxError extends BullException {
+  BroadcastSignedTxError(super.message);
 }
 
 class InvalidTxError extends BroadcastSignedTxError {

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
@@ -32,8 +33,6 @@ class CompleteEncryptedVaultVerificationUsecase {
   }
 }
 
-class CompleteEncryptedVaultVerificationException implements Exception {
-  final String message;
-
-  CompleteEncryptedVaultVerificationException(this.message);
+class CompleteEncryptedVaultVerificationException extends BullException {
+  CompleteEncryptedVaultVerificationException(super.message);
 }
