@@ -18,9 +18,9 @@ class ArkSetupPage extends StatelessWidget {
         child: Column(
           children: [
             const Text('''
-Ark is still experimental. We are going to create a new Ark wallet using your default mnemonic.
+Ark is still experimental. We are going to create a new Ark wallet using a bip85 derivation from your default mnemonic.
 
-By continuing, you acknowledge the risk of losing funds if you have not properly backed up both your default mnemonic.
+By continuing, you acknowledge the risk of losing funds if you have not properly backed up both your default mnemonic and the derivation path.
             '''),
 
             BlocBuilder<ArkSetupCubit, ArkSetupState>(
