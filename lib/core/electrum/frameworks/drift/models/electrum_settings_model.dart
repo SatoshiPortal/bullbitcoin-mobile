@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:drift/drift.dart';
 
 class ElectrumSettingsModel {
   final ElectrumServerNetwork network;
@@ -52,14 +53,14 @@ class ElectrumSettingsModel {
     );
   }
 
-  ElectrumSettingsRow toSqlite() {
-    return ElectrumSettingsRow(
+  ElectrumSettingsCompanion toSqlite() {
+    return ElectrumSettingsCompanion.insert(
       network: network,
       validateDomain: validateDomain,
       stopGap: stopGap,
       timeout: timeout,
       retry: retry,
-      socks5: socks5,
+      socks5: Value(socks5), // Should be nullable, so use Value
     );
   }
 }

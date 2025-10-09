@@ -106,7 +106,12 @@ class BdkWalletDatasource {
           config: bdk.BlockchainConfig.electrum(
             config: bdk.ElectrumConfig(
               url: electrumServer.url,
-              socks5: electrumServer.socks5,
+              // Only set the socks5 if it's not empty,
+              //  otherwise bdk will throw an error
+              socks5:
+                  electrumServer.socks5?.isNotEmpty == true
+                      ? electrumServer.socks5
+                      : null,
               retry: electrumServer.retry,
               timeout: electrumServer.timeout,
               stopGap: BigInt.from(electrumServer.stopGap),
@@ -116,9 +121,9 @@ class BdkWalletDatasource {
         );
 
         await bdkWallet.sync(blockchain: blockchain);
-        // debugPrint('Sync completed for wallet: ${wallet.id}');
+        //debugPrint('Sync completed for wallet: ${wallet.id} with server ${electrumServer.url}',);
       } catch (e) {
-        // debugPrint('Sync error for wallet ${wallet.id}: $e');
+        // debugPrint('Sync error for wallet ${wallet.id} with server ${electrumServer.url}: $e');
         rethrow;
       } finally {
         // Notify that the wallet has been synced through a stream for other

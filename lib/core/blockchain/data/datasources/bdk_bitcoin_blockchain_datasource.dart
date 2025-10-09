@@ -34,7 +34,12 @@ class BdkBitcoinBlockchainDatasource {
       config: bdk.BlockchainConfig.electrum(
         config: bdk.ElectrumConfig(
           url: electrumServer.url,
-          socks5: electrumServer.socks5,
+          // Only set the socks5 if it's not empty,
+          //  otherwise bdk will throw an error
+          socks5:
+              electrumServer.socks5?.isNotEmpty == true
+                  ? electrumServer.socks5
+                  : null,
           retry: electrumServer.retry,
           timeout: electrumServer.timeout,
           stopGap: BigInt.from(electrumServer.stopGap),

@@ -1,13 +1,17 @@
+import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
+import 'package:bb_mobile/core/electrum/application/dtos/electrum_settings_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/add_custom_server_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/delete_custom_server_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_advanced_electrum_options_request.dart';
+import 'package:bb_mobile/core/electrum/application/dtos/requests/set_custom_servers_priority_request.dart';
 import 'package:bb_mobile/core/electrum/application/errors/set_advanced_electrum_options_exception.dart'
     as advanced_options_application_errors;
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/set_advanced_electrum_options_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/set_custom_servers_priority_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_settings_exception.dart'
     as advanced_options_domain_errors;
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
@@ -27,17 +31,20 @@ class ElectrumSettingsBloc
     extends Bloc<ElectrumSettingsEvent, ElectrumSettingsState> {
   final LoadElectrumServerDataUsecase _loadElectrumServerDataUsecase;
   final AddCustomServerUsecase _addCustomServerUsecase;
+  final SetCustomServersPriorityUsecase _setCustomServersPriorityUsecase;
   final DeleteCustomServerUsecase _deleteCustomServerUsecase;
   final SetAdvancedElectrumOptionsUsecase _setAdvancedElectrumOptionsUsecase;
 
   ElectrumSettingsBloc({
     required LoadElectrumServerDataUsecase loadElectrumServerDataUsecase,
     required AddCustomServerUsecase addCustomServerUsecase,
+    required SetCustomServersPriorityUsecase setCustomServersPriorityUsecase,
     required DeleteCustomServerUsecase deleteCustomServerUsecase,
     required SetAdvancedElectrumOptionsUsecase
     setAdvancedElectrumOptionsUsecase,
   }) : _loadElectrumServerDataUsecase = loadElectrumServerDataUsecase,
        _addCustomServerUsecase = addCustomServerUsecase,
+       _setCustomServersPriorityUsecase = setCustomServersPriorityUsecase,
        _deleteCustomServerUsecase = deleteCustomServerUsecase,
        _setAdvancedElectrumOptionsUsecase = setAdvancedElectrumOptionsUsecase,
        super(const ElectrumSettingsState()) {
@@ -132,10 +139,12 @@ class ElectrumSettingsBloc
 
     try {
       final request = AddCustomServerRequest(
-        url: event.url,
-        network: network,
-        isCustom: true,
-        priority: priority,
+        server: ElectrumServerDto(
+          url: event.url,
+          network: network,
+          isCustom: true,
+          priority: priority,
+        ),
       );
       final status = await _addCustomServerUsecase.execute(request);
 
@@ -162,7 +171,73 @@ class ElectrumSettingsBloc
   Future<void> _onCustomServersPrioritized(
     ElectrumCustomServersPrioritized event,
     Emitter<ElectrumSettingsState> emit,
-  ) async {}
+  ) async {
+    emit(
+      state.copyWith(
+        isPrioritizingCustomServer: true,
+        electrumServersError: null,
+      ),
+    );
+    final currentServers = state.getServersSortedByPriority(isCustom: true);
+    final oldIndex = event.movedFromListIndex;
+    final newIndex = event.movedToListIndex;
+
+    try {
+      final reorderedServers = List<ElectrumServerViewModel>.from(
+        currentServers,
+      );
+      if (oldIndex < newIndex) {
+        reorderedServers.insert(
+          newIndex - 1,
+          reorderedServers.removeAt(oldIndex),
+        );
+      } else {
+        reorderedServers.insert(newIndex, reorderedServers.removeAt(oldIndex));
+      }
+
+      final response = await _setCustomServersPriorityUsecase.execute(
+        SetCustomServersPriorityRequest(
+          servers:
+              reorderedServers
+                  .map(
+                    (e) => ElectrumServerDto(
+                      isCustom: true,
+                      url: e.url,
+                      network: ElectrumServerNetwork.fromEnvironment(
+                        isTestnet:
+                            state.environment == ElectrumEnvironment.testnet,
+                        isLiquid: state.isLiquid,
+                      ),
+                      priority: e.priority,
+                    ),
+                  )
+                  .toList(),
+        ),
+      );
+      final updatedServers =
+          response.servers
+              .map(
+                (dto) => ElectrumServerViewModel(
+                  url: dto.url,
+                  status:
+                      currentServers
+                          .firstWhere((s) => s.url == dto.url)
+                          .status, // Preserve existing status
+                  priority: dto.priority,
+                ),
+              )
+              .toList();
+      emit(state.copyWith(customServers: updatedServers));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          electrumServersError: SavePriorityFailedException(e.toString()),
+        ),
+      );
+    } finally {
+      emit(state.copyWith(isPrioritizingCustomServer: false));
+    }
+  }
 
   Future<void> _onCustomServerDeleted(
     ElectrumCustomServerDeleted event,
@@ -220,12 +295,14 @@ class ElectrumSettingsBloc
 
     try {
       final request = SetAdvancedElectrumOptionsRequest(
-        stopGap: stopGap,
-        timeout: timeout,
-        retry: retry,
-        validateDomain: event.validateDomain,
-        socks5: event.socks5 ?? '',
-        network: network,
+        options: ElectrumSettingsDto(
+          stopGap: stopGap,
+          timeout: timeout,
+          retry: retry,
+          validateDomain: event.validateDomain,
+          socks5: event.socks5,
+          network: network,
+        ),
       );
       await _setAdvancedElectrumOptionsUsecase.execute(request);
 

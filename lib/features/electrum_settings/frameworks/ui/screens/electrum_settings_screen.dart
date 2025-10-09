@@ -74,7 +74,12 @@ class ElectrumSettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: TextButton(
                 onPressed: () => SetAdvancedOptionsBottomSheet.show(context),
-                child: const Text('Advanced Options'),
+                child: Text(
+                  'Advanced Options',
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.colour.primary,
+                  ),
+                ),
               ),
             ),
           ],

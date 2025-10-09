@@ -27,10 +27,12 @@ class DraggableServerList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final defaultServers = context.select(
-      (ElectrumSettingsBloc bloc) => bloc.state.defaultServers,
+      (ElectrumSettingsBloc bloc) =>
+          bloc.state.getServersSortedByPriority(isCustom: false),
     );
     final customServers = context.select(
-      (ElectrumSettingsBloc bloc) => bloc.state.customServers,
+      (ElectrumSettingsBloc bloc) =>
+          bloc.state.getServersSortedByPriority(isCustom: true),
     );
     final electrumServersError = context.select(
       (ElectrumSettingsBloc bloc) => bloc.state.electrumServersError,
@@ -65,6 +67,13 @@ class DraggableServerList extends StatelessWidget {
             'Custom Servers',
             style: context.font.titleSmall?.copyWith(
               color: context.colour.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '(Long press to drag and change priority)',
+            style: context.font.bodySmall?.copyWith(
+              color: context.colour.onSurface.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 8),
