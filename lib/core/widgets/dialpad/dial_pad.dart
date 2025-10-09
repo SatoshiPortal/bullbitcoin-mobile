@@ -21,59 +21,45 @@ class DialPad extends StatefulWidget {
 }
 
 class _DialPadState extends State<DialPad> {
-  late final TextEditingController controller;
-  bool get hasDot => controller.text.contains('.');
-
-  @override
-  void initState() {
-    super.initState();
-    controller = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+  String text = '';
+  bool get hasDot => text.contains('.');
 
   void onTextChanged(String num) {
-    final text = controller.text;
-
     switch (widget.mode) {
       case DialPadMode.int:
         final intValue = int.tryParse(text + num);
         if (intValue == null) break;
-        controller.text = intValue.toString();
+        text = intValue.toString();
       case DialPadMode.double:
         if (hasDot && num == '.') break;
         if (!hasDot && num == '.') {
-          controller.text = text + num;
+          text = text + num;
           break;
         }
         if (!hasDot && num != '.') {
           final intValue = int.tryParse(text + num);
           if (intValue == null) break;
-          controller.text = intValue.toString();
+          text = intValue.toString();
           break;
         }
         if (hasDot) {
           final doubleValue = double.tryParse(text + num);
           if (doubleValue == null) break;
-          controller.text = text + num; // or you wont have 0
+          text = text + num; // or you wont have 0
           break;
         }
       case DialPadMode.pin:
-        controller.text += num;
+        text += num;
     }
 
-    widget.onChanged(controller.text);
+    widget.onChanged(text);
   }
 
   void onBackspacePressed() {
-    if (controller.text.isEmpty) return;
-    controller.text = controller.text.substring(0, controller.text.length - 1);
+    if (text.isEmpty) return;
+    text = text.substring(0, text.length - 1);
 
-    widget.onChanged(controller.text);
+    widget.onChanged(text);
   }
 
   Widget numPadButton(BuildContext context, String num) {
