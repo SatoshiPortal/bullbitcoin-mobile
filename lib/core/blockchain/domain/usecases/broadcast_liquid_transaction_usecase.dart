@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -5,20 +6,35 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 class BroadcastLiquidTransactionUsecase {
   final LiquidBlockchainRepository _liquidBlockchain;
   final SettingsRepository _settingsRepository;
+  final ElectrumServerPort _electrumServerPort;
 
   BroadcastLiquidTransactionUsecase({
     required LiquidBlockchainRepository liquidBlockchainRepository,
     required SettingsRepository settingsRepository,
+    required ElectrumServerPort electrumServerPort,
   }) : _settingsRepository = settingsRepository,
-       _liquidBlockchain = liquidBlockchainRepository;
+       _liquidBlockchain = liquidBlockchainRepository,
+       _electrumServerPort = electrumServerPort;
 
-  Future<String> execute(String signedPset) async {
+  Future<String> execute(String signedPset, {bool? isTestnet}) async {
     try {
-      final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
+      isTestnet ??= (await _settingsRepository.fetch()).environment.isTestnet;
+
+      final electrumServers = await _electrumServerPort.getElectrumServers(
+        isTestnet: isTestnet,
+        isLiquid: true,
+      );
+
+      // If no Electrum servers are available, throw an error
+      if (electrumServers.isEmpty) {
+        throw BroadcastTransactionException(
+          'No Electrum servers available for Liquid network.',
+        );
+      }
+
       final txId = await _liquidBlockchain.broadcastTransaction(
         signedPset: signedPset,
-        isTestnet: environment.isTestnet,
+        electrumServers: electrumServers,
       );
 
       return txId;

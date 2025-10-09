@@ -1,18 +1,17 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
-import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
+import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class CheckAllServiceStatusUsecase {
-  final ElectrumServerRepository _electrumServerRepository;
+  final ElectrumConnectivityPort _electrumConnectivityPort;
   final BoltzSwapRepository _mainnetBoltzSwapRepository;
   final BoltzSwapRepository _testnetBoltzSwapRepository;
   final ExchangeRateRepository _exchangeRateRepository;
@@ -20,13 +19,13 @@ class CheckAllServiceStatusUsecase {
   final FeesRepository _feesRepository;
 
   CheckAllServiceStatusUsecase({
-    required ElectrumServerRepository electrumServerRepository,
+    required ElectrumConnectivityPort electrumConnectivityPort,
     required BoltzSwapRepository mainnetBoltzSwapRepository,
     required BoltzSwapRepository testnetBoltzSwapRepository,
     required ExchangeRateRepository exchangeRateRepository,
     required PayjoinRepository payjoinRepository,
     required FeesRepository feesRepository,
-  }) : _electrumServerRepository = electrumServerRepository,
+  }) : _electrumConnectivityPort = electrumConnectivityPort,
        _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
        _testnetBoltzSwapRepository = testnetBoltzSwapRepository,
        _exchangeRateRepository = exchangeRateRepository,
@@ -66,22 +65,13 @@ class CheckAllServiceStatusUsecase {
   Future<ServiceStatusInfo> _checkBitcoinElectrumServer(Network network) async {
     try {
       // Check Bitcoin Electrum servers
-      final bitcoinNetwork =
-          network == Network.bitcoinMainnet
-              ? Network.bitcoinMainnet
-              : Network.bitcoinTestnet;
-
-      final prioritizedServer = await _electrumServerRepository
-          .getPrioritizedServer(network: bitcoinNetwork);
-
-      final serverStatus = await _electrumServerRepository
-          .checkServerConnectivity(url: prioritizedServer.url);
+      final hasOnlineServers = await _electrumConnectivityPort
+          .checkServersInUseAreOnlineForNetwork(
+            network.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
+          );
 
       return ServiceStatusInfo(
-        status:
-            serverStatus == ElectrumServerStatus.online
-                ? ServiceStatus.online
-                : ServiceStatus.offline,
+        status: hasOnlineServers ? ServiceStatus.online : ServiceStatus.offline,
         name: 'Bitcoin Electrum',
         lastChecked: DateTime.now(),
       );
@@ -97,22 +87,14 @@ class CheckAllServiceStatusUsecase {
   Future<ServiceStatusInfo> _checkLiquidElectrumServer(Network network) async {
     try {
       // Check Liquid Electrum servers
-      final liquidNetwork =
-          network == Network.bitcoinMainnet
-              ? Network.liquidMainnet
-              : Network.liquidTestnet;
-
-      final prioritizedServer = await _electrumServerRepository
-          .getPrioritizedServer(network: liquidNetwork);
-
-      final serverStatus = await _electrumServerRepository
-          .checkServerConnectivity(url: prioritizedServer.url);
+      final hasOnlineServers = await _electrumConnectivityPort
+          .checkServersInUseAreOnlineForNetwork(
+            network.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+          );
 
       return ServiceStatusInfo(
-        status:
-            serverStatus == ElectrumServerStatus.online
-                ? ServiceStatus.online
-                : ServiceStatus.offline,
+        status: hasOnlineServers ? ServiceStatus.online : ServiceStatus.offline,
+
         name: 'Liquid Electrum',
         lastChecked: DateTime.now(),
       );
