@@ -9,33 +9,13 @@ class SettingsDatasource {
   SettingsDatasource({required SqliteDatabase sqlite}) : _sqlite = sqlite;
 
   Future<void> store(SettingsModel model) async {
-    await _sqlite.managers.settings.create(
-      (s) => s(
-        id: Value(model.id),
-        environment: model.environment.name,
-        bitcoinUnit: model.bitcoinUnit.name,
-        currency: model.currency,
-        language: model.language.name,
-        hideAmounts: model.hideAmounts,
-        isSuperuser: model.isSuperuser,
-        isDevModeEnabled: model.isDevModeEnabled,
-      ),
-    );
+    await _sqlite.into(_sqlite.settings).insert(model.toSqlite());
   }
 
   Future<SettingsModel> fetch() async {
     final row =
         await _sqlite.managers.settings.filter((f) => f.id(1)).getSingle();
-    return SettingsModel(
-      id: row.id,
-      environment: Environment.fromName(row.environment),
-      bitcoinUnit: BitcoinUnit.fromName(row.bitcoinUnit),
-      language: Language.fromName(row.language),
-      currency: row.currency,
-      hideAmounts: row.hideAmounts,
-      isSuperuser: row.isSuperuser,
-      isDevModeEnabled: row.isDevModeEnabled,
-    );
+    return SettingsModel.fromSqlite(row);
   }
 
   Future<void> setEnvironment(Environment env) async {
