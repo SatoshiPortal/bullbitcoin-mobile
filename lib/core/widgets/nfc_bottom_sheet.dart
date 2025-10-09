@@ -84,7 +84,7 @@ class NfcBottomSheet {
             color: context.colour.surface,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           ),
-          height: 412,
+          height: 450,
           child: Column(
             children: [
               BBText(
