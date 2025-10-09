@@ -79,7 +79,7 @@ class TransactionDetailsTable extends StatelessWidget {
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
     );
 
-    final txFee = swap != null ? swapFees : walletTransaction?.feeSat;
+    final txFee = walletTransaction?.feeSat;
 
     return DetailsTable(
       items: [
