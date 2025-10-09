@@ -97,6 +97,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                         const PinCodeSettingPinCodeNumberRemoved(),
                       ),
                   disableFeedback: true,
+                  onlyDigits: true,
                 ),
               ],
             ),
