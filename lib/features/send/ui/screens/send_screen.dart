@@ -429,121 +429,24 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                 walletLabel: selectedWalletLabel,
                               ),
                             ),
-                            DialPad(
-                              onNumberPressed: (number) async {
-                                // Unset max since user manually changed the amount
-                                _setIsMax(false);
-
-                                final selectionStart =
-                                    _amountController.selection.baseOffset;
-                                final selectionEnd =
-                                    _amountController.selection.extentOffset;
-                                final currentText = _amountController.text;
-                                String newAmount;
-
-                                if (selectionStart == -1) {
-                                  // Field is not focused, so just add to the end
-                                  newAmount = currentText + number;
-                                  _amountController.text = newAmount;
-                                } else {
-                                  // Field is focused
-                                  if (selectionStart == selectionEnd) {
-                                    // No selection, insert at cursor
-                                    newAmount =
-                                        currentText.substring(
-                                          0,
-                                          selectionStart,
-                                        ) +
-                                        number +
-                                        currentText.substring(selectionStart);
-                                  } else {
-                                    // Text is selected, replace selection
-                                    newAmount =
-                                        currentText.substring(
-                                          0,
-                                          selectionStart,
-                                        ) +
-                                        number +
-                                        currentText.substring(selectionEnd);
-                                  }
-
-                                  _amountController.text = newAmount;
-                                  // Update the cursor position after inserting
-                                  final newCursorPosition =
-                                      selectionStart + number.length;
-                                  _amountController
-                                      .selection = TextSelection.collapsed(
-                                    offset: newCursorPosition,
-                                  );
-                                }
-
-                                // Finally, inform the cubit of the change
-                                await context.read<SendCubit>().amountChanged(
-                                  amount: newAmount,
+                            Builder(
+                              builder: (context) {
+                                final inputCurrency =
+                                    context.select<SendCubit, String>(
+                                  (cubit) => cubit.state.inputAmountCurrencyCode,
                                 );
-                              },
-                              onBackspacePressed: () async {
-                                // Unset max since user manually changed the amount
-                                _setIsMax(false);
 
-                                final selectionStart =
-                                    _amountController.selection.baseOffset;
-                                final selectionEnd =
-                                    _amountController.selection.extentOffset;
-                                final currentText = _amountController.text;
-                                String newAmount;
-
-                                if (selectionStart == -1) {
-                                  // Field is not focused, so just remove from the end
-                                  if (currentText.isNotEmpty) {
-                                    newAmount = currentText.substring(
-                                      0,
-                                      currentText.length - 1,
+                                return AmountDialPad(
+                                  controller: _amountController,
+                                  inputCurrencyCode: inputCurrency,
+                                  onAmountChanged: () {
+                                    // Unset max since user manually changed the amount
+                                    _setIsMax(false);
+                                    // Inform the cubit of the change
+                                    context.read<SendCubit>().amountChanged(
+                                      amount: _amountController.text,
                                     );
-                                  } else {
-                                    newAmount = currentText;
-                                  }
-
-                                  _amountController.text = newAmount;
-                                } else {
-                                  // Field is focused
-                                  int newCursorPosition = selectionStart;
-                                  if (selectionStart == selectionEnd) {
-                                    // No selection, remove before cursor
-                                    if (selectionStart > 0) {
-                                      newAmount =
-                                          currentText.substring(
-                                            0,
-                                            selectionStart - 1,
-                                          ) +
-                                          currentText.substring(selectionStart);
-                                      newCursorPosition = selectionStart - 1;
-                                    } else {
-                                      newAmount = currentText;
-                                    }
-                                    _amountController.text = newAmount;
-                                  } else {
-                                    // Text is selected, remove selection
-                                    newAmount =
-                                        currentText.substring(
-                                          0,
-                                          selectionStart,
-                                        ) +
-                                        currentText.substring(selectionEnd);
-                                  }
-
-                                  _amountController.text = newAmount;
-
-                                  // Update the cursor position after deleting
-                                  _amountController
-                                      .selection = TextSelection.collapsed(
-                                    offset: newCursorPosition,
-                                  );
-                                }
-
-                                // Finally, inform the cubit of the change
-                                await context.read<SendCubit>().amountChanged(
-                                  amount: newAmount,
+                                  },
                                 );
                               },
                             ),

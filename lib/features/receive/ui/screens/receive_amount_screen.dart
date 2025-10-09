@@ -71,8 +71,10 @@ class _AmountPageState extends State<AmountPage> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ReceiveBloc, ReceiveState>(
-      listenWhen: (previous, current) =>
-          previous.inputAmountCurrencyCode != current.inputAmountCurrencyCode,
+      listenWhen:
+          (previous, current) =>
+              previous.inputAmountCurrencyCode !=
+              current.inputAmountCurrencyCode,
       listener: (context, state) {
         // Clear the controller when currency changes
         _amountController.clear();
