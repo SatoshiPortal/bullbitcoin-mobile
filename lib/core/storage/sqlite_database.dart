@@ -101,8 +101,15 @@ class SqliteDatabase extends _$SqliteDatabase {
           // Seed the new table with ElectrumSettings default values
           await _seedDefaultElectrumSettings();
           // Add isCustom column to electrum_servers table with default value false
+          // and remove columns that are now part of electrum_settings table
           final electrumServers = schema.electrumServers;
           await m.addColumn(electrumServers, electrumServers.isCustom);
+          await m.dropColumn(electrumServers, 'socks5');
+          await m.dropColumn(electrumServers, 'stop_gap');
+          await m.dropColumn(electrumServers, 'timeout');
+          await m.dropColumn(electrumServers, 'retry');
+          await m.dropColumn(electrumServers, 'validate_domain');
+          await m.dropColumn(electrumServers, 'is_active');
         },
       ),
     );
