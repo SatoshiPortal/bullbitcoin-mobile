@@ -1,12 +1,13 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
-import 'package:bb_mobile/core/electrum/frameworks/drift/tables/electrum_servers_table.dart';
-import 'package:bb_mobile/core/electrum/frameworks/drift/tables/electrum_settings_table.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_3_to_4.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_4_to_5.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_5_to_6.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
+import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
+import 'package:bb_mobile/core/storage/tables/electrum_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
@@ -95,22 +96,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         },
         from3To4: Schema3To4.migrate,
         from4To5: Schema4To5.migrate,
-        from5To6: (m, schema) async {
-          // Create ElectrumSettings table
-          await m.createTable(schema.electrumSettings);
-          // Seed the new table with ElectrumSettings default values
-          await _seedDefaultElectrumSettings();
-          // Add isCustom column to electrum_servers table with default value false
-          // and remove columns that are now part of electrum_settings table
-          final electrumServers = schema.electrumServers;
-          await m.addColumn(electrumServers, electrumServers.isCustom);
-          await m.dropColumn(electrumServers, 'socks5');
-          await m.dropColumn(electrumServers, 'stop_gap');
-          await m.dropColumn(electrumServers, 'timeout');
-          await m.dropColumn(electrumServers, 'retry');
-          await m.dropColumn(electrumServers, 'validate_domain');
-          await m.dropColumn(electrumServers, 'is_active');
-        },
+        from5To6: Schema5To6.migrate,
       ),
     );
   }
@@ -126,6 +112,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         currency: 'CAD',
         hideAmounts: false,
         isSuperuser: false,
+        isDevModeEnabled: false,
       ),
     );
   }
