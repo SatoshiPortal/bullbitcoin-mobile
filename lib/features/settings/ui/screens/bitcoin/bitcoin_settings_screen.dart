@@ -23,6 +23,9 @@ class BitcoinSettingsScreen extends StatelessWidget {
     final hasLegacySeeds = context.select(
       (SettingsCubit cubit) => cubit.state.hasLegacySeeds ?? false,
     );
+    final isDevModeEnabled = context.select(
+      (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Bitcoin Settings')),
@@ -88,20 +91,20 @@ class BitcoinSettingsScreen extends StatelessWidget {
                     isSuperUser: true,
                     trailing: TestnetModeSwitch(),
                   ),
-                if (isSuperuser)
+                if (isSuperuser && isDevModeEnabled)
                   SettingsEntryItem(
                     icon: Icons.science,
                     title: 'BIP85 Deterministic Entropies',
-                    isSuperUser: isSuperuser,
+                    isSuperUser: isSuperuser && isDevModeEnabled,
                     onTap:
                         () =>
                             context.pushNamed(Bip85EntropyRoute.bip85Home.name),
                   ),
-                if (isSuperuser)
+                if (isSuperuser && isDevModeEnabled)
                   SettingsEntryItem(
                     icon: Icons.science,
-                    title: 'Ark (danger zone)',
-                    isSuperUser: isSuperuser,
+                    title: 'Ark',
+                    isSuperUser: isSuperuser && isDevModeEnabled,
                     onTap: () => context.pushNamed(ArkSetupRoute.arkSetup.name),
                   ),
               ],
