@@ -95,10 +95,10 @@ class NfcBottomSheet {
               Expanded(
                 child: NfcScannerWidget(
                   onScanned: (NFCTag tag) async {
-                    await onNfcAction(tag);
                     if (context.mounted) {
                       Navigator.of(context).pop();
                     }
+                    await onNfcAction(tag);
                   },
                 ),
               ),
