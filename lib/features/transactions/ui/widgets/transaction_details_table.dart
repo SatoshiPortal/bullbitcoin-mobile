@@ -730,7 +730,11 @@ class TransactionDetailsTable extends StatelessWidget {
               expandableChild: Column(
                 children: [
                   const Gap(4),
-                  _feeRow(context, 'Network Fee', swap.fees?.claimFee ?? 0),
+                  _feeRow(
+                    context,
+                    'Network Fee',
+                    (swap.fees?.lockupFee ?? 0) + (swap.fees?.claimFee ?? 0),
+                  ),
                   _feeRow(
                     context,
                     swap.isChainSwap ? 'Transfer Fee' : 'Boltz Swap Fee',
