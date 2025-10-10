@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/storage/database_seeds.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_0_to_1.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_1_to_2.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_2_to_3.dart';
