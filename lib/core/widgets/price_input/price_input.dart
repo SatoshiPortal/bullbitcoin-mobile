@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -6,7 +7,6 @@ import 'package:gap/gap.dart';
 class PriceInput extends StatelessWidget {
   const PriceInput({
     super.key,
-
     required this.currency,
     required this.amountEquivalent,
     required this.availableCurrencies,
@@ -65,6 +65,9 @@ class PriceInput extends StatelessWidget {
                                 controller: amountController,
                                 focusNode: focusNode,
                                 keyboardType: TextInputType.none,
+                                inputFormatters: [
+                                  AmountInputFormatter(currency),
+                                ],
                                 showCursor: !readOnly,
                                 readOnly: readOnly,
                                 cursorColor: context.colour.outline,

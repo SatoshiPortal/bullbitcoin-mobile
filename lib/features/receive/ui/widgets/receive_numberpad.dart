@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
+import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,90 +11,105 @@ class ReceiveNumberPad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final inputCurrency = context.select<ReceiveBloc, String>(
+      (bloc) => bloc.state.inputAmountCurrencyCode,
+    );
+    final formatter = AmountInputFormatter(inputCurrency);
+
     return DialPad(
       onNumberPressed: (number) {
-        final selectionStart = amountController.selection.baseOffset;
-        final selectionEnd = amountController.selection.extentOffset;
-        final currentText = amountController.text;
-        String newAmount;
+        final currentValue = amountController.value;
+        final selectionStart = currentValue.selection.baseOffset;
+        final selectionEnd = currentValue.selection.extentOffset;
+        final currentText = currentValue.text;
+
+        // Build new text by inserting/replacing at selection
+        final String newText;
+        final int newCursorPos;
 
         if (selectionStart == -1) {
-          // Field is not focused, so just add to the end
-          newAmount = currentText + number;
-          amountController.text = newAmount;
+          // Field is not focused, add to end
+          newText = currentText + number;
+          newCursorPos = newText.length;
+        } else if (selectionStart == selectionEnd) {
+          // No selection, insert at cursor
+          newText =
+              currentText.substring(0, selectionStart) +
+              number +
+              currentText.substring(selectionStart);
+          newCursorPos = selectionStart + number.length;
         } else {
-          // Field is focused
-          if (selectionStart == selectionEnd) {
-            // No selection, insert at cursor
-            newAmount =
-                currentText.substring(0, selectionStart) +
-                number +
-                currentText.substring(selectionStart);
-          } else {
-            // Text is selected, replace selection
-            newAmount =
-                currentText.substring(0, selectionStart) +
-                number +
-                currentText.substring(selectionEnd);
-          }
-
-          amountController.text = newAmount;
-          // Update the cursor position after inserting
-          final newCursorPosition = selectionStart + number.length;
-          amountController.selection = TextSelection.collapsed(
-            offset: newCursorPosition,
-          );
+          // Replace selection
+          newText =
+              currentText.substring(0, selectionStart) +
+              number +
+              currentText.substring(selectionEnd);
+          newCursorPos = selectionStart + number.length;
         }
 
-        // Finally, inform the bloc of the change
-        context.read<ReceiveBloc>().add(ReceiveAmountInputChanged(newAmount));
+        // Apply formatter (it handles cursor positioning)
+        final formattedValue = formatter.formatEditUpdate(
+          currentValue,
+          TextEditingValue(
+            text: newText,
+            selection: TextSelection.collapsed(offset: newCursorPos),
+          ),
+        );
+
+        amountController.value = formattedValue;
+        context.read<ReceiveBloc>().add(
+          ReceiveAmountInputChanged(formattedValue.text),
+        );
       },
       onBackspacePressed: () {
-        final selectionStart = amountController.selection.baseOffset;
-        final selectionEnd = amountController.selection.extentOffset;
-        final currentText = amountController.text;
-        String newAmount;
+        final currentValue = amountController.value;
+        final selectionStart = currentValue.selection.baseOffset;
+        final selectionEnd = currentValue.selection.extentOffset;
+        final currentText = currentValue.text;
+
+        // Build new text by removing at selection
+        final String newText;
+        final int newCursorPos;
 
         if (selectionStart == -1) {
-          // Field is not focused, so just remove from the end
-          if (currentText.isNotEmpty) {
-            newAmount = currentText.substring(0, currentText.length - 1);
+          // Field is not focused, remove from end
+          newText =
+              currentText.isNotEmpty
+                  ? currentText.substring(0, currentText.length - 1)
+                  : currentText;
+          newCursorPos = newText.length;
+        } else if (selectionStart == selectionEnd) {
+          // No selection, remove before cursor
+          if (selectionStart > 0) {
+            newText =
+                currentText.substring(0, selectionStart - 1) +
+                currentText.substring(selectionStart);
+            newCursorPos = selectionStart - 1;
           } else {
-            newAmount = currentText;
+            newText = currentText;
+            newCursorPos = 0;
           }
-
-          amountController.text = newAmount;
         } else {
-          // Field is focused
-          int newCursorPosition = selectionStart;
-          if (selectionStart == selectionEnd) {
-            // No selection, remove before cursor
-            if (selectionStart > 0) {
-              newAmount =
-                  currentText.substring(0, selectionStart - 1) +
-                  currentText.substring(selectionStart);
-              newCursorPosition = selectionStart - 1;
-            } else {
-              newAmount = currentText;
-            }
-            amountController.text = newAmount;
-          } else {
-            // Text is selected, remove selection
-            newAmount =
-                currentText.substring(0, selectionStart) +
-                currentText.substring(selectionEnd);
-          }
-
-          amountController.text = newAmount;
-
-          // Update the cursor position after deleting
-          amountController.selection = TextSelection.collapsed(
-            offset: newCursorPosition,
-          );
+          // Remove selection
+          newText =
+              currentText.substring(0, selectionStart) +
+              currentText.substring(selectionEnd);
+          newCursorPos = selectionStart;
         }
 
-        // Finally, inform the cubit of the change
-        context.read<ReceiveBloc>().add(ReceiveAmountInputChanged(newAmount));
+        // Apply formatter (it handles cursor positioning)
+        final formattedValue = formatter.formatEditUpdate(
+          currentValue,
+          TextEditingValue(
+            text: newText,
+            selection: TextSelection.collapsed(offset: newCursorPos),
+          ),
+        );
+
+        amountController.value = formattedValue;
+        context.read<ReceiveBloc>().add(
+          ReceiveAmountInputChanged(formattedValue.text),
+        );
       },
     );
   }
