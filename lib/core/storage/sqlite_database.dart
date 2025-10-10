@@ -1,5 +1,7 @@
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/database_seeds.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_0_to_1.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_1_to_2.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_2_to_3.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_3_to_4.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_4_to_5.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_5_to_6.dart';
@@ -16,8 +18,6 @@ import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_addresses_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
@@ -68,119 +68,13 @@ class SqliteDatabase extends _$SqliteDatabase {
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
-      onCreate: (Migrator m) async {
-        await m.createAll();
-
-        // Seed database with default values
-        // !Important! If future migrations add columns that require default
-        //  values as well, the seeding of that column has to be done in the
-        //  migration step as well, since either the onCreate or the migration
-        //  steps get executed, not both. Make sure in the migration you only
-        //  seed the new columns and don't overwrite any existing data.
-        await Future.wait([
-          _seedDefaultSettings(),
-          _seedDefaultElectrumServers(),
-          _seedDefaultElectrumSettings(),
-          _seedDefaultAutoSwap(),
-        ]);
-      },
+      onCreate: Schema0To1.onCreate,
       onUpgrade: stepByStep(
-        from1To2: (m, schema) async {
-          // Create AutoSwap table (without recipientWalletId column) and seed it
-          await m.createTable(schema.autoSwap);
-          await _seedDefaultAutoSwap();
-        },
-        from2To3: (m, schema) async {
-          // Create WalletAddressHistory table
-          await m.createTable(schema.walletAddressHistory);
-        },
+        from1To2: Schema1To2.migrate,
+        from2To3: Schema2To3.migrate,
         from3To4: Schema3To4.migrate,
         from4To5: Schema4To5.migrate,
         from5To6: Schema5To6.migrate,
-      ),
-    );
-  }
-
-  Future<void> _seedDefaultSettings() async {
-    log.info('[SqliteDatabase] seeding default settings...');
-    await into(settings).insert(
-      SettingsRow(
-        id: 1,
-        environment: Environment.mainnet.name,
-        bitcoinUnit: BitcoinUnit.sats.name,
-        language: Language.unitedStatesEnglish.name,
-        currency: 'CAD',
-        hideAmounts: false,
-        isSuperuser: false,
-        isDevModeEnabled: false,
-      ),
-    );
-  }
-
-  Future<void> _seedDefaultElectrumServers() async {
-    final serversData = [
-      (ApiServiceConstants.bbElectrumUrl, false, false, 0),
-      (ApiServiceConstants.bbLiquidElectrumUrlPath, false, true, 0),
-      (ApiServiceConstants.publicElectrumUrl, false, false, 1),
-      (ApiServiceConstants.publicLiquidElectrumUrlPath, false, true, 1),
-      (ApiServiceConstants.publicElectrumTestUrl, true, false, 0),
-      (ApiServiceConstants.publicliquidElectrumTestUrlPath, true, true, 0),
-    ];
-
-    for (final (url, isTestnet, isLiquid, priority) in serversData) {
-      final server = ElectrumServerRow(
-        url: url,
-        isTestnet: isTestnet,
-        isLiquid: isLiquid,
-        priority: priority,
-        isCustom: false,
-      );
-
-      await into(electrumServers).insertOnConflictUpdate(server);
-    }
-  }
-
-  Future<void> _seedDefaultElectrumSettings() async {
-    final networks = [
-      ElectrumServerNetwork.bitcoinMainnet,
-      ElectrumServerNetwork.bitcoinTestnet,
-      ElectrumServerNetwork.liquidMainnet,
-      ElectrumServerNetwork.liquidTestnet,
-    ];
-
-    for (final network in networks) {
-      final settings = ElectrumSettingsRow(
-        network: network,
-        validateDomain: true,
-        stopGap: 20,
-        timeout: 5,
-        retry: 5,
-      );
-
-      await into(electrumSettings).insertOnConflictUpdate(settings);
-    }
-  }
-
-  Future<void> _seedDefaultAutoSwap() async {
-    log.info('[SqliteDatabase] seeding default auto swap settings...');
-    await into(autoSwap).insert(
-      const AutoSwapRow(
-        id: 1,
-        enabled: false,
-        balanceThresholdSats: 1000000,
-        feeThresholdPercent: 3.0,
-        blockTillNextExecution: false,
-        alwaysBlock: false,
-      ),
-    );
-    await into(autoSwap).insert(
-      const AutoSwapRow(
-        id: 2,
-        enabled: false,
-        balanceThresholdSats: 1000000,
-        feeThresholdPercent: 3.0,
-        blockTillNextExecution: false,
-        alwaysBlock: false,
       ),
     );
   }
