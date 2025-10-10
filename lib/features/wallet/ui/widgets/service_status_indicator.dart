@@ -43,10 +43,6 @@ class _ServiceStatusIndicatorState extends State<ServiceStatusIndicator>
         final serviceStatus = state.serviceStatus;
         final isChecking = state.isCheckingServiceStatus;
 
-        if (serviceStatus == null && !isChecking) {
-          return const SizedBox.shrink();
-        }
-
         // Determine if we should pulse (only for error states)
         final shouldPulse = _shouldPulse(serviceStatus, isChecking);
 
@@ -60,15 +56,15 @@ class _ServiceStatusIndicatorState extends State<ServiceStatusIndicator>
         return GestureDetector(
           onTap: () => _showStatusBottomSheet(context, serviceStatus),
           child: Padding(
-            padding: const EdgeInsets.all(4.0),
+            padding: const EdgeInsets.all(12.0),
             child: AnimatedBuilder(
               animation: _animation,
               builder: (context, child) {
                 return Transform.scale(
                   scale: shouldPulse ? _animation.value : 1.0,
                   child: Container(
-                    width: 15,
-                    height: 15,
+                    width: 24,
+                    height: 24,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _getStatusColor(
@@ -77,21 +73,7 @@ class _ServiceStatusIndicatorState extends State<ServiceStatusIndicator>
                         isChecking,
                       ),
                     ),
-                    child:
-                        isChecking
-                            ? Center(
-                              child: SizedBox(
-                                width: 8,
-                                height: 8,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 1.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    context.colour.onPrimary,
-                                  ),
-                                ),
-                              ),
-                            )
-                            : null,
+                    child: null,
                   ),
                 );
               },
@@ -117,18 +99,18 @@ class _ServiceStatusIndicatorState extends State<ServiceStatusIndicator>
     bool isChecking,
   ) {
     if (isChecking) {
-      return context.colour.primary;
+      return context.colour.onPrimary;
     }
 
     if (serviceStatus == null) {
-      return context.colour.surfaceContainerHighest;
+      return context.colour.onPrimary.withAlpha(128);
     }
 
     return serviceStatus.allServicesOnline
         ? context.colour.inverseSurface
         : serviceStatus.hasAnyServiceOffline
         ? context.colour.error
-        : context.colour.surfaceContainerHighest;
+        : context.colour.onPrimary.withAlpha(128);
   }
 
   void _showStatusBottomSheet(
