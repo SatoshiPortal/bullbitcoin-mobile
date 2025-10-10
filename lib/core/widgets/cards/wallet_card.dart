@@ -114,7 +114,7 @@ class WalletCard extends StatelessWidget {
                     trigger: isSyncing,
                     backgroundColor: context.colour.surface,
                     foregroundColor: context.colour.onSecondaryFixed,
-                    height: 4.0,
+                    height: 3.0,
                   ),
                 ),
               ],
