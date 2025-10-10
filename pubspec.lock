@@ -49,6 +49,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.7.0"
+  ark_wallet:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: f2094abd6fe9d8632a4a717c3683cc4a376068d0
+      resolved-ref: f2094abd6fe9d8632a4a717c3683cc4a376068d0
+      url: "https://github.com/ethicnology/dart-ark-wallet"
+    source: git
+    version: "0.0.1"
   async:
     dependency: "direct main"
     description:

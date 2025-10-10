@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -19,6 +18,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
@@ -36,6 +36,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/core/wallet/interface_adapters/electrum_server_facade.dart';
 import 'package:bb_mobile/locator.dart';
 
 class WalletLocator {
@@ -61,6 +62,15 @@ class WalletLocator {
     );
   }
 
+  static void registerPorts() {
+    locator.registerLazySingleton<ElectrumServerPort>(
+      () => ElectrumServerFacade(
+        getElectrumServersToUseUsecase:
+            locator<GetElectrumServersToUseUsecase>(),
+      ),
+    );
+  }
+
   static void registerRepositories() {
     locator.registerLazySingleton<BitcoinWalletRepository>(
       () => BitcoinWalletRepository(
@@ -83,8 +93,7 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
-        electrumServerStorageDatasource:
-            locator<ElectrumServerStorageDatasource>(),
+        electrumServerPort: locator<ElectrumServerPort>(),
       ),
     );
 
@@ -114,7 +123,7 @@ class WalletLocator {
         labelDatasource: locator<LabelDatasource>(),
         bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
         lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
-        electrumServerStorage: locator<ElectrumServerStorageDatasource>(),
+        electrumServerPort: locator<ElectrumServerPort>(),
       ),
     );
   }
@@ -206,13 +215,13 @@ class WalletLocator {
     locator.registerFactory<TheDirtyUsecase>(
       () => TheDirtyUsecase(
         locator<SettingsRepository>(),
-        locator<ElectrumServerRepository>(),
+        locator<ElectrumServerPort>(),
       ),
     );
     locator.registerFactory<TheDirtyLiquidUsecase>(
       () => TheDirtyLiquidUsecase(
         locator<SettingsRepository>(),
-        locator<ElectrumServerRepository>(),
+        locator<ElectrumServerPort>(),
       ),
     );
   }

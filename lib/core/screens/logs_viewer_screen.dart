@@ -19,7 +19,7 @@ class LogsViewerScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: List.generate(sessionLogs.length, (index) {
-              final logLine = sessionLogs[index];
+              final logLine = sessionLogs.reversed.toList()[index];
 
               return Row(
                 children: [

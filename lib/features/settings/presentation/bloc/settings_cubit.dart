@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +25,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetCurrencyUsecase setCurrencyUsecase,
     required SetHideAmountsUsecase setHideAmountsUsecase,
     required SetIsSuperuserUsecase setIsSuperuserUsecase,
+    required SetIsDevModeUsecase setIsDevModeUsecase,
     required GetOldSeedsUsecase getOldSeedsUsecase,
   }) : _setEnvironmentUsecase = setEnvironmentUsecase,
        _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
@@ -33,6 +35,7 @@ class SettingsCubit extends Cubit<SettingsState> {
        _setHideAmountsUsecase = setHideAmountsUsecase,
        _setIsSuperuserUsecase = setIsSuperuserUsecase,
        _getOldSeedsUsecase = getOldSeedsUsecase,
+       _setIsDevModeUsecase = setIsDevModeUsecase,
        super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -43,6 +46,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetHideAmountsUsecase _setHideAmountsUsecase;
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
   final GetOldSeedsUsecase _getOldSeedsUsecase;
+  final SetIsDevModeUsecase _setIsDevModeUsecase;
 
   Future<void> init() async {
     final (storedSettings, appInfo) =
@@ -57,9 +61,8 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> toggleTestnetMode(bool active) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Testnet mode toggled: $active + currentEnvironment: ${settings?.environment.name}',
+    log.config(
+      'Testnet mode toggled: $active was ${settings?.environment.name}',
     );
     final environment = active ? Environment.testnet : Environment.mainnet;
     await _setEnvironmentUsecase.execute(environment);
@@ -72,9 +75,8 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> toggleSatsUnit(bool active) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Bitcoin unit toggled: $active + currentBitcoinUnit: ${settings?.bitcoinUnit.name}',
+    log.config(
+      'Bitcoin unit toggled: $active was ${settings?.bitcoinUnit.name}',
     );
     final unit = active ? BitcoinUnit.sats : BitcoinUnit.btc;
     await _setBitcoinUnitUsecase.execute(unit);
@@ -83,9 +85,8 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> changeLanguage(Language language) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Language changed to: ${language.name} + currentLanguage: ${settings?.language?.name}',
+    log.config(
+      'Language changed to: ${language.name} was ${settings?.language?.name}',
     );
     await _setLanguageUsecase.execute(language);
     emit(
@@ -95,9 +96,8 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> changeCurrency(String currencyCode) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Currency changed to: $currencyCode + currentCurrency: ${settings?.currencyCode}',
+    log.config(
+      'Currency changed to: $currencyCode was ${settings?.currencyCode}',
     );
     await _setCurrencyUsecase.execute(currencyCode);
     emit(
@@ -109,20 +109,14 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> toggleHideAmounts(bool hide) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Hide amounts toggled: $hide + currentHideAmounts: ${settings?.hideAmounts}',
-    );
+    log.config('Hide amounts toggled: $hide was ${settings?.hideAmounts}');
     await _setHideAmountsUsecase.execute(hide);
     emit(state.copyWith(storedSettings: settings?.copyWith(hideAmounts: hide)));
   }
 
   Future<void> toggleSuperuserMode(bool active) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Superuser mode toggled: $active + currentSuperuserMode: ${settings?.isSuperuser}',
-    );
+    log.config('Superuser mode toggled: $active was ${settings?.isSuperuser}');
     await _setIsSuperuserUsecase.execute(active);
     emit(
       state.copyWith(storedSettings: settings?.copyWith(isSuperuser: active)),
@@ -132,5 +126,16 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> checkHasLegacySeeds() async {
     final seeds = await _getOldSeedsUsecase.execute();
     emit(state.copyWith(hasLegacySeeds: seeds.isNotEmpty));
+  }
+
+  Future<void> toggleDevMode(bool isEnabled) async {
+    final settings = state.storedSettings;
+    log.config('DevMode toggled: $isEnabled was ${settings?.isDevModeEnabled}');
+    await _setIsDevModeUsecase.execute(isEnabled);
+    emit(
+      state.copyWith(
+        storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+      ),
+    );
   }
 }

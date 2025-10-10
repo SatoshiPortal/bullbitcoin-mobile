@@ -28,7 +28,7 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: EdgeInsets.only(left: 16.0),
         child: ServiceStatusIndicator(),
       ),
-      leadingWidth: 32,
+      leadingWidth: 48,
       actionsIconTheme: IconThemeData(
         color: context.colour.onPrimary,
         size: 24,

@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:typed_data';
-
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
@@ -14,6 +12,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -25,11 +24,8 @@ extension NetworkX on Network {
         return bdk.Network.bitcoin;
       case Network.bitcoinTestnet:
         return bdk.Network.testnet;
-      case Network.liquidMainnet:
-      case Network.liquidTestnet:
-        throw UnsupportedBdkNetworkException(
-          'Liquid network is not supported by BDK',
-        );
+      default:
+        throw UnsupportedBdkNetworkException('$name is not supported by BDK');
     }
   }
 }
@@ -85,7 +81,7 @@ class BdkWalletDatasource {
 
   Future<void> sync({
     required WalletModel wallet,
-    required ElectrumServerModel electrumServer,
+    required ElectrumServer electrumServer,
   }) {
     // putIfAbsent ensures only one sync starts for each wallet ID,
     //  all others await the same Future.
@@ -107,7 +103,12 @@ class BdkWalletDatasource {
           config: bdk.BlockchainConfig.electrum(
             config: bdk.ElectrumConfig(
               url: electrumServer.url,
-              socks5: electrumServer.socks5,
+              // Only set the socks5 if it's not empty,
+              //  otherwise bdk will throw an error
+              socks5:
+                  electrumServer.socks5?.isNotEmpty == true
+                      ? electrumServer.socks5
+                      : null,
               retry: electrumServer.retry,
               timeout: electrumServer.timeout,
               stopGap: BigInt.from(electrumServer.stopGap),
@@ -117,9 +118,9 @@ class BdkWalletDatasource {
         );
 
         await bdkWallet.sync(blockchain: blockchain);
-        // debugPrint('Sync completed for wallet: ${wallet.id}');
+        //debugPrint('Sync completed for wallet: ${wallet.id} with server ${electrumServer.url}',);
       } catch (e) {
-        // debugPrint('Sync error for wallet ${wallet.id}: $e');
+        // debugPrint('Sync error for wallet ${wallet.id} with server ${electrumServer.url}: $e');
         rethrow;
       } finally {
         // Notify that the wallet has been synced through a stream for other

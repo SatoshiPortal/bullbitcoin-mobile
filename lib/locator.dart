@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/ark/locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
@@ -46,6 +47,11 @@ class AppLocator {
     // Register core dependencies first
     CoreLocator.register();
     await CoreLocator.registerDatasources();
+    // Note: since the WalletLocator repositories depend on ports for electrum servers,
+    // we need to make sure the ports are registered before the repositories
+    // This is a hack though as normally repositories should not depend on ports
+    // The proper solution is to refactor the code to remove this dependency
+    CoreLocator.registerPorts();
     await CoreLocator.registerRepositories();
     CoreLocator.registerServices();
     CoreLocator.registerUsecases();
@@ -89,5 +95,6 @@ class AppLocator {
     RecoverBullSelectDriveVaultLocator.setup();
     LedgerLocator.setup();
     UtxosLocator.setup();
+    ArkCoreLocator.setup();
   }
 }

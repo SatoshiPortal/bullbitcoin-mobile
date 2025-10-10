@@ -9,4 +9,6 @@ class Settings extends Table {
   TextColumn get currency => text()();
   BoolColumn get hideAmounts => boolean()();
   BoolColumn get isSuperuser => boolean()();
+  BoolColumn get isDevModeEnabled =>
+      boolean().withDefault(const Constant(false))();
 }
