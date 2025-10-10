@@ -2268,7 +2268,7 @@ final class Schema6 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape3 settings = Shape3(
+  late final Shape15 settings = Shape15(
     source: i0.VersionedTable(
       entityName: 'settings',
       withoutRowId: false,
@@ -2282,6 +2282,7 @@ final class Schema6 extends i0.VersionedSchema {
         _column_35,
         _column_36,
         _column_37,
+        _column_106,
       ],
       attachedDatabase: database,
     ),
@@ -2340,25 +2341,25 @@ final class Schema6 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape15 electrumServers = Shape15(
+  late final Shape16 electrumServers = Shape16(
     source: i0.VersionedTable(
       entityName: 'electrum_servers',
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(url)'],
-      columns: [_column_58, _column_39, _column_64, _column_66, _column_106],
+      columns: [_column_58, _column_39, _column_64, _column_66, _column_107],
       attachedDatabase: database,
     ),
     alias: null,
   );
-  late final Shape16 electrumSettings = Shape16(
+  late final Shape17 electrumSettings = Shape17(
     source: i0.VersionedTable(
       entityName: 'electrum_settings',
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(network)'],
       columns: [
-        _column_107,
+        _column_108,
         _column_63,
         _column_60,
         _column_61,
@@ -2457,6 +2458,38 @@ final class Schema6 extends i0.VersionedSchema {
 
 class Shape15 extends i0.VersionedTable {
   Shape15({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get environment =>
+      columnsByName['environment']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get bitcoinUnit =>
+      columnsByName['bitcoin_unit']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get language =>
+      columnsByName['language']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get currency =>
+      columnsByName['currency']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<bool> get hideAmounts =>
+      columnsByName['hide_amounts']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<bool> get isSuperuser =>
+      columnsByName['is_superuser']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<bool> get isDevModeEnabled =>
+      columnsByName['is_dev_mode_enabled']! as i1.GeneratedColumn<bool>;
+}
+
+i1.GeneratedColumn<bool> _column_106(String aliasedName) =>
+    i1.GeneratedColumn<bool>(
+      'is_dev_mode_enabled',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.bool,
+      defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
+        'CHECK ("is_dev_mode_enabled" IN (0, 1))',
+      ),
+      defaultValue: const CustomExpression('0'),
+    );
+
+class Shape16 extends i0.VersionedTable {
+  Shape16({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<String> get url =>
       columnsByName['url']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<bool> get isTestnet =>
@@ -2469,7 +2502,7 @@ class Shape15 extends i0.VersionedTable {
       columnsByName['is_custom']! as i1.GeneratedColumn<bool>;
 }
 
-i1.GeneratedColumn<bool> _column_106(String aliasedName) =>
+i1.GeneratedColumn<bool> _column_107(String aliasedName) =>
     i1.GeneratedColumn<bool>(
       'is_custom',
       aliasedName,
@@ -2481,8 +2514,8 @@ i1.GeneratedColumn<bool> _column_106(String aliasedName) =>
       defaultValue: const CustomExpression('0'),
     );
 
-class Shape16 extends i0.VersionedTable {
-  Shape16({required super.source, required super.alias}) : super.aliased();
+class Shape17 extends i0.VersionedTable {
+  Shape17({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<String> get network =>
       columnsByName['network']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<bool> get validateDomain =>
@@ -2497,7 +2530,7 @@ class Shape16 extends i0.VersionedTable {
       columnsByName['socks5']! as i1.GeneratedColumn<String>;
 }
 
-i1.GeneratedColumn<String> _column_107(String aliasedName) =>
+i1.GeneratedColumn<String> _column_108(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'network',
       aliasedName,

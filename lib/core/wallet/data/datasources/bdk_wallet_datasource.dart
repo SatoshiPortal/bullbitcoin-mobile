@@ -24,11 +24,8 @@ extension NetworkX on Network {
         return bdk.Network.bitcoin;
       case Network.bitcoinTestnet:
         return bdk.Network.testnet;
-      case Network.liquidMainnet:
-      case Network.liquidTestnet:
-        throw UnsupportedBdkNetworkException(
-          'Liquid network is not supported by BDK',
-        );
+      default:
+        throw UnsupportedBdkNetworkException('$name is not supported by BDK');
     }
   }
 }

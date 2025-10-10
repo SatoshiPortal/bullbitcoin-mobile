@@ -59,3 +59,8 @@ class ServiceStatusChecked extends WalletEvent {
 
   const ServiceStatusChecked(this.status);
 }
+
+class RefreshArkWalletBalance extends WalletEvent {
+  final int? amount;
+  const RefreshArkWalletBalance({this.amount});
+}

@@ -1776,6 +1776,17 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
       'CHECK ("is_superuser" IN (0, 1))',
     ),
   );
+  late final GeneratedColumn<bool> isDevModeEnabled = GeneratedColumn<bool>(
+    'is_dev_mode_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_dev_mode_enabled" IN (0, 1))',
+    ),
+    defaultValue: const CustomExpression('0'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1785,6 +1796,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     currency,
     hideAmounts,
     isSuperuser,
+    isDevModeEnabled,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1832,6 +1844,11 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
             DriftSqlType.bool,
             data['${effectivePrefix}is_superuser'],
           )!,
+      isDevModeEnabled:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_dev_mode_enabled'],
+          )!,
     );
   }
 
@@ -1849,6 +1866,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final String currency;
   final bool hideAmounts;
   final bool isSuperuser;
+  final bool isDevModeEnabled;
   const SettingsData({
     required this.id,
     required this.environment,
@@ -1857,6 +1875,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.currency,
     required this.hideAmounts,
     required this.isSuperuser,
+    required this.isDevModeEnabled,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1868,6 +1887,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['currency'] = Variable<String>(currency);
     map['hide_amounts'] = Variable<bool>(hideAmounts);
     map['is_superuser'] = Variable<bool>(isSuperuser);
+    map['is_dev_mode_enabled'] = Variable<bool>(isDevModeEnabled);
     return map;
   }
 
@@ -1880,6 +1900,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       currency: Value(currency),
       hideAmounts: Value(hideAmounts),
       isSuperuser: Value(isSuperuser),
+      isDevModeEnabled: Value(isDevModeEnabled),
     );
   }
 
@@ -1896,6 +1917,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       currency: serializer.fromJson<String>(json['currency']),
       hideAmounts: serializer.fromJson<bool>(json['hideAmounts']),
       isSuperuser: serializer.fromJson<bool>(json['isSuperuser']),
+      isDevModeEnabled: serializer.fromJson<bool>(json['isDevModeEnabled']),
     );
   }
   @override
@@ -1909,6 +1931,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'currency': serializer.toJson<String>(currency),
       'hideAmounts': serializer.toJson<bool>(hideAmounts),
       'isSuperuser': serializer.toJson<bool>(isSuperuser),
+      'isDevModeEnabled': serializer.toJson<bool>(isDevModeEnabled),
     };
   }
 
@@ -1920,6 +1943,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     String? currency,
     bool? hideAmounts,
     bool? isSuperuser,
+    bool? isDevModeEnabled,
   }) => SettingsData(
     id: id ?? this.id,
     environment: environment ?? this.environment,
@@ -1928,6 +1952,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     currency: currency ?? this.currency,
     hideAmounts: hideAmounts ?? this.hideAmounts,
     isSuperuser: isSuperuser ?? this.isSuperuser,
+    isDevModeEnabled: isDevModeEnabled ?? this.isDevModeEnabled,
   );
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
@@ -1942,6 +1967,10 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           data.hideAmounts.present ? data.hideAmounts.value : this.hideAmounts,
       isSuperuser:
           data.isSuperuser.present ? data.isSuperuser.value : this.isSuperuser,
+      isDevModeEnabled:
+          data.isDevModeEnabled.present
+              ? data.isDevModeEnabled.value
+              : this.isDevModeEnabled,
     );
   }
 
@@ -1954,7 +1983,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('language: $language, ')
           ..write('currency: $currency, ')
           ..write('hideAmounts: $hideAmounts, ')
-          ..write('isSuperuser: $isSuperuser')
+          ..write('isSuperuser: $isSuperuser, ')
+          ..write('isDevModeEnabled: $isDevModeEnabled')
           ..write(')'))
         .toString();
   }
@@ -1968,6 +1998,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     currency,
     hideAmounts,
     isSuperuser,
+    isDevModeEnabled,
   );
   @override
   bool operator ==(Object other) =>
@@ -1979,7 +2010,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.language == this.language &&
           other.currency == this.currency &&
           other.hideAmounts == this.hideAmounts &&
-          other.isSuperuser == this.isSuperuser);
+          other.isSuperuser == this.isSuperuser &&
+          other.isDevModeEnabled == this.isDevModeEnabled);
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -1990,6 +2022,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<String> currency;
   final Value<bool> hideAmounts;
   final Value<bool> isSuperuser;
+  final Value<bool> isDevModeEnabled;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.environment = const Value.absent(),
@@ -1998,6 +2031,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.currency = const Value.absent(),
     this.hideAmounts = const Value.absent(),
     this.isSuperuser = const Value.absent(),
+    this.isDevModeEnabled = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -2007,6 +2041,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     required String currency,
     required bool hideAmounts,
     required bool isSuperuser,
+    this.isDevModeEnabled = const Value.absent(),
   }) : environment = Value(environment),
        bitcoinUnit = Value(bitcoinUnit),
        language = Value(language),
@@ -2021,6 +2056,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<String>? currency,
     Expression<bool>? hideAmounts,
     Expression<bool>? isSuperuser,
+    Expression<bool>? isDevModeEnabled,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2030,6 +2066,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (currency != null) 'currency': currency,
       if (hideAmounts != null) 'hide_amounts': hideAmounts,
       if (isSuperuser != null) 'is_superuser': isSuperuser,
+      if (isDevModeEnabled != null) 'is_dev_mode_enabled': isDevModeEnabled,
     });
   }
 
@@ -2041,6 +2078,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<String>? currency,
     Value<bool>? hideAmounts,
     Value<bool>? isSuperuser,
+    Value<bool>? isDevModeEnabled,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -2050,6 +2088,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       currency: currency ?? this.currency,
       hideAmounts: hideAmounts ?? this.hideAmounts,
       isSuperuser: isSuperuser ?? this.isSuperuser,
+      isDevModeEnabled: isDevModeEnabled ?? this.isDevModeEnabled,
     );
   }
 
@@ -2077,6 +2116,9 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (isSuperuser.present) {
       map['is_superuser'] = Variable<bool>(isSuperuser.value);
     }
+    if (isDevModeEnabled.present) {
+      map['is_dev_mode_enabled'] = Variable<bool>(isDevModeEnabled.value);
+    }
     return map;
   }
 
@@ -2089,7 +2131,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('language: $language, ')
           ..write('currency: $currency, ')
           ..write('hideAmounts: $hideAmounts, ')
-          ..write('isSuperuser: $isSuperuser')
+          ..write('isSuperuser: $isSuperuser, ')
+          ..write('isDevModeEnabled: $isDevModeEnabled')
           ..write(')'))
         .toString();
   }
