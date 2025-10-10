@@ -68,7 +68,7 @@ class PriceInput extends StatelessWidget {
                                 inputFormatters: [
                                   AmountInputFormatter(currency),
                                 ],
-                                showCursor: true,
+                                showCursor: !readOnly,
                                 readOnly: readOnly,
                                 cursorColor: context.colour.outline,
                                 cursorOpacityAnimates: true,
