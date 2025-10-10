@@ -126,6 +126,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         currency: 'CAD',
         hideAmounts: false,
         isSuperuser: false,
+        isDevModeEnabled: false,
       ),
     );
   }
