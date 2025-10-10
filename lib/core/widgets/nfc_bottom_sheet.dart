@@ -81,7 +81,7 @@ class NfcBottomSheet {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: context.colour.surface,
+            color: context.colour.onPrimary,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           ),
           height: 450,
