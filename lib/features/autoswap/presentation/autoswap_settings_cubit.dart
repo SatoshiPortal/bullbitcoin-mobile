@@ -50,7 +50,8 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         environment: environment,
       );
       final bitcoinWallets = allWallets.where((w) => !w.isLiquid).toList();
-
+      final defaultBitcoinWallet =
+          bitcoinWallets.where((w) => w.isDefault).firstOrNull;
       String amountThresholdInput;
       if (settings.bitcoinUnit == BitcoinUnit.btc) {
         // Convert sats to BTC for display
@@ -72,7 +73,8 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           alwaysBlock: autoSwapSettings.alwaysBlock,
           bitcoinUnit: settings.bitcoinUnit,
           availableBitcoinWallets: bitcoinWallets,
-          selectedBitcoinWalletId: autoSwapSettings.recipientWalletId,
+          selectedBitcoinWalletId:
+              autoSwapSettings.recipientWalletId ?? defaultBitcoinWallet?.id,
         ),
       );
     } catch (e) {

@@ -74,13 +74,12 @@ class TransactionDetailsTable extends StatelessWidget {
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
 
-    final swapFees = (swap?.fees?.claimFee ?? 0) + (swap?.fees?.boltzFee ?? 0);
+    final swapFees = swap?.fees?.totalFees(swap.amountSat) ?? 0;
     final swapCounterpartTxId = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
     );
 
-    final txFee = swap != null ? swapFees : walletTransaction?.feeSat;
-
+    final txFee = walletTransaction?.feeSat;
     return DetailsTable(
       items: [
         if (txId != null)
@@ -729,7 +728,11 @@ class TransactionDetailsTable extends StatelessWidget {
               expandableChild: Column(
                 children: [
                   const Gap(4),
-                  _feeRow(context, 'Network Fee', swap.fees?.claimFee ?? 0),
+                  _feeRow(
+                    context,
+                    'Network Fee',
+                    (swap.fees?.lockupFee ?? 0) + (swap.fees?.claimFee ?? 0),
+                  ),
                   _feeRow(
                     context,
                     swap.isChainSwap ? 'Transfer Fee' : 'Boltz Swap Fee',

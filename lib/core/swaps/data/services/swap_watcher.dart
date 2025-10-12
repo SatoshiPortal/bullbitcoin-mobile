@@ -187,11 +187,13 @@ class SwapWatcherService {
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
       String refundTxid;
+      int actualFeesUsed;
       try {
+        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
           swapId: swap.id,
           bitcoinAddress: refundAddress,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
         );
       } catch (e, st) {
         log.severe(
@@ -205,10 +207,11 @@ class SwapWatcherService {
           isCooperative: false,
         );
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
+        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
           swapId: swap.id,
           bitcoinAddress: refundAddress,
-          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           cooperate: false,
         );
       }
@@ -217,6 +220,7 @@ class SwapWatcherService {
         refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
@@ -300,11 +304,13 @@ class SwapWatcherService {
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
       String refundTxid;
+      int actualFeesUsed;
       try {
+        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
           swapId: swap.id,
           liquidAddress: refundAddress,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
         );
       } catch (e, st) {
         log.severe(
@@ -318,10 +324,11 @@ class SwapWatcherService {
           isCooperative: false,
         );
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
+        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
           swapId: swap.id,
           liquidAddress: refundAddress,
-          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           cooperate: false,
         );
       }
@@ -330,6 +337,7 @@ class SwapWatcherService {
         refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
@@ -465,10 +473,12 @@ class SwapWatcherService {
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
       String refundTxid;
+      int actualFeesUsed;
       try {
+        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           bitcoinRefundAddress: refundAddress,
         );
       } catch (e, st) {
@@ -484,9 +494,10 @@ class SwapWatcherService {
           refundAddressForChainSwaps: refundAddress,
         );
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
+        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           bitcoinRefundAddress: refundAddress,
           cooperate: false,
         );
@@ -496,6 +507,7 @@ class SwapWatcherService {
         refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
@@ -594,10 +606,12 @@ class SwapWatcherService {
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
       String refundTxid;
+      int actualFeesUsed;
       try {
+        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           liquidRefundAddress: refundAddress,
         );
       } catch (e, st) {
@@ -612,9 +626,10 @@ class SwapWatcherService {
           isCooperative: false,
         );
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
+        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           liquidRefundAddress: refundAddress,
           cooperate: false,
         );
@@ -624,6 +639,7 @@ class SwapWatcherService {
         refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
