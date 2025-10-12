@@ -73,13 +73,13 @@ class TransactionDetailsTable extends StatelessWidget {
     final swap = transaction?.swap;
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
+    final txFee = walletTransaction?.feeSat;
 
-    final swapFees = swap?.fees?.totalFees(swap.amountSat) ?? 0;
+    // Calculate total fees using the swap entity method
+    final totalSwapFees = swap?.aggregateSwapFees(txFee) ?? 0;
     final swapCounterpartTxId = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
     );
-
-    final txFee = walletTransaction?.feeSat;
     return DetailsTable(
       items: [
         if (txId != null)
@@ -149,7 +149,7 @@ class TransactionDetailsTable extends StatelessWidget {
                         ConvertAmount.satsToBtc(amountSat ?? 0),
                       ).toUpperCase(),
             ),
-          if (transaction?.isOutgoing == true)
+          if (transaction?.isOutgoing == true && swap == null)
             DetailsTableItem(
               label: 'Transaction Fee',
               displayValue:
@@ -718,12 +718,12 @@ class TransactionDetailsTable extends StatelessWidget {
           if (swap.fees != null)
             DetailsTableItem(
               label:
-                  swap.isChainSwap ? 'Total Transfer fees' : 'Total Swap fees',
+                  swap.type.isChain ? 'Total Transfer fees' : 'Total Swap fees',
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swapFees).toUpperCase()
+                      ? FormatAmount.sats(totalSwapFees).toUpperCase()
                       : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(swapFees),
+                        ConvertAmount.satsToBtc(totalSwapFees),
                       ).toUpperCase(),
               expandableChild: Column(
                 children: [
@@ -731,11 +731,11 @@ class TransactionDetailsTable extends StatelessWidget {
                   _feeRow(
                     context,
                     'Network Fee',
-                    (swap.fees?.lockupFee ?? 0) + (swap.fees?.claimFee ?? 0),
+                    swap.aggregateNetworkFees(txFee),
                   ),
                   _feeRow(
                     context,
-                    swap.isChainSwap ? 'Transfer Fee' : 'Boltz Swap Fee',
+                    swap.type.isChain ? 'Transfer Fee' : 'Boltz Swap Fee',
                     swap.fees?.boltzFee ?? 0,
                   ),
                   const Gap(4),
