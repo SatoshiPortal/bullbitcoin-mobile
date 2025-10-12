@@ -62,6 +62,7 @@ abstract class SwapState with _$SwapState {
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,
     @Default(false) bool creatingSwap,
+    @Default(false) bool loadingFees,
     @Default(false) bool buildingTransaction,
     @Default(false) bool signingTransaction,
     @Default(false) bool broadcastingTransaction,
@@ -382,10 +383,16 @@ abstract class SwapState with _$SwapState {
       fromAmountSat == 0 ||
       toAmountSat <= 0 ||
       fromWalletBalance < fromAmountSat ||
-      creatingSwap;
+      creatingSwap ||
+      selectedFeeList == null ||
+      (bitcoinAbsoluteFees == null && liquidAbsoluteFees == null);
 
   bool get disableSendSwapButton =>
-      broadcastingTransaction || signingTransaction || buildingTransaction;
+      broadcastingTransaction ||
+      signingTransaction ||
+      buildingTransaction ||
+      selectedFeeList == null ||
+      (bitcoinAbsoluteFees == null && liquidAbsoluteFees == null);
 
   SwapLimits? get swapLimits {
     if (fromWalletNetwork == WalletNetwork.bitcoin &&
