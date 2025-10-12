@@ -323,8 +323,9 @@ extension SwapFeePercent on Swap {
     final txFee = absoluteTxFees ?? 0;
 
     if (type.isChain) {
-      // For chain swaps: add txFee to total swap fees
-      return (fees?.totalFees(amountSat) ?? 0) + txFee;
+      // For chain swaps: never add txFee to total transfer fees
+      // txFee is shown separately in Network Fee breakdown
+      return fees?.totalFees(amountSat) ?? 0;
     } else if (type.isReverse) {
       // For reverse swaps: use original total fees logic
       return fees?.totalFees(amountSat) ?? 0;
@@ -344,13 +345,10 @@ extension SwapFeePercent on Swap {
     final txFee = absoluteTxFees ?? 0;
 
     if (type.isChain) {
-      // For chain swaps: lockup + claim + txFee
-      return (fees?.lockupFee ?? 0) + (fees?.claimFee ?? 0) + txFee;
+      return (fees?.lockupFee ?? 0) + (fees?.claimFee ?? 0);
     } else if (type.isReverse) {
-      // For reverse swaps: lockup + claim
       return (fees?.lockupFee ?? 0) + (fees?.claimFee ?? 0);
     } else if (type.isSubmarine) {
-      // For submarine swaps: txFee + claimFee
       return txFee + (fees?.claimFee ?? 0);
     } else {
       return (fees?.lockupFee ?? 0) + (fees?.claimFee ?? 0);
