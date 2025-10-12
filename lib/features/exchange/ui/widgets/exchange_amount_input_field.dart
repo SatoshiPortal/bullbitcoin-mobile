@@ -2,58 +2,11 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
-
-// TODO: Extract to a common package
-class AmountInputFormatter extends TextInputFormatter {
-  AmountInputFormatter(this.decimalPlaces);
-
-  final int decimalPlaces;
-
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    var newText = newValue.text.replaceAll(',', '.');
-
-    // Remove leading zeros except for "0." pattern
-    if (newText.length > 1) {
-      if (newText.startsWith('0') && !newText.startsWith('0.')) {
-        // Remove all leading zeros
-        newText = newText.replaceFirst(RegExp('^0+'), '');
-        // If everything was zeros, keep one zero
-        if (newText.isEmpty) {
-          newText = '0';
-        }
-      }
-    }
-
-    final regex = RegExp(r'^\d+\.?\d{0,' + '$decimalPlaces' + '}');
-    final match = regex.firstMatch(newText);
-
-    if (match != null) {
-      final validText = match.group(0) ?? '';
-      return TextEditingValue(
-        text: validText,
-        selection: TextSelection.collapsed(
-          offset: validText.length.clamp(0, validText.length),
-        ),
-      );
-    } else if (newText.isEmpty) {
-      return const TextEditingValue(
-        text: '',
-        selection: TextSelection.collapsed(offset: 0),
-      );
-    } else {
-      return oldValue;
-    }
-  }
-}
 
 class ExchangeAmountInputField extends StatelessWidget {
   const ExchangeAmountInputField({
@@ -90,6 +43,10 @@ class ExchangeAmountInputField extends StatelessWidget {
         _isFiatCurrencyInput
             ? _fiatCurrency?.decimals ?? 2
             : _bitcoinUnit!.decimals;
+    final inputCurrency =
+        _isFiatCurrencyInput
+            ? _fiatCurrency?.code ?? 'CAD'
+            : _bitcoinUnit?.code ?? 'BTC';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,10 +82,9 @@ class ExchangeAmountInputField extends StatelessWidget {
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          inputFormatters:
-                              amountInputDecimals > 0
-                                  ? [AmountInputFormatter(amountInputDecimals)]
-                                  : [FilteringTextInputFormatter.digitsOnly],
+                          inputFormatters: [
+                            AmountInputFormatter(inputCurrency),
+                          ],
                           style: context.font.displaySmall?.copyWith(
                             color: context.colour.primary,
                           ),

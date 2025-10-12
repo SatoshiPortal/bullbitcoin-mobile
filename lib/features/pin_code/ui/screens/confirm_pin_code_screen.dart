@@ -97,6 +97,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                   const Gap(30),
                   DialPad(
                     disableFeedback: true,
+                    onlyDigits: true,
                     onNumberPressed:
                         (value) => context.read<PinCodeSettingBloc>().add(
                           PinCodeSettingPinCodeConfirmationNumberAdded(
