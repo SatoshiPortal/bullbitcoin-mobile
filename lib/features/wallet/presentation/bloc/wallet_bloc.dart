@@ -86,7 +86,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<ServiceStatusChecked>(_onServiceStatusChecked);
     on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
 
-    // Start listening to auto swap timer when bloc is created
+    // Start periodic service status checks every 15 seconds
+    _serviceStatusTimer = Timer.periodic(const Duration(seconds: 15), (timer) {
+      add(const CheckServiceStatus());
+    });
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -108,12 +111,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   _checkForOnlineElectrumServersUsecase;
   final GetArkWalletUsecase _getArkWalletUsecase;
 
+  Timer? _serviceStatusTimer;
+
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
   StreamSubscription? _autoSwapSubscription;
 
   @override
   Future<void> close() {
+    _serviceStatusTimer?.cancel();
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();
     _autoSwapSubscription?.cancel();
