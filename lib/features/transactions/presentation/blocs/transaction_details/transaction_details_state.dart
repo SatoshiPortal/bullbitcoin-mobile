@@ -67,6 +67,34 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     }
   }
 
+  /// Calculates the actual amount sent (received by recipient)
+  /// For swaps: amount - txFee + aggregateSwapFees
+  /// For regular transactions: amount - txFee
+  int getAmountSent() {
+    final swap = this.swap;
+    final txFee = walletTransaction?.feeSat ?? 0;
+    final amount = walletTransaction?.amountSat ?? 0;
+
+    if (swap == null) {
+      return amount + txFee;
+    }
+
+    if (swap.type.isSubmarine) {
+      return amount + txFee;
+    } else if (swap.type.isChain) {
+      return amount + aggregateNetworkFees();
+    } else {
+      return amount + txFee;
+    }
+  }
+
+  int getAmountReceived() {
+    final amount = walletTransaction?.amountSat ?? 0;
+    // For incoming transactions, amountSat is already the net amount received
+    // after all fees have been deducted
+    return amount;
+  }
+
   /*
   bool
   get isOngoingPayjoin {

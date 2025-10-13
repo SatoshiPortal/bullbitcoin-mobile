@@ -63,7 +63,6 @@ class TransactionDetailsTable extends StatelessWidget {
     final toAddress = transaction?.toAddress;
     final addressLabels =
         transaction?.walletTransaction?.toAddressLabels?.join(', ') ?? '';
-    final amountSat = transaction?.amountSat;
     final isOrder = transaction?.isOrder ?? false;
     final walletTransaction = transaction?.walletTransaction;
     final bitcoinUnit = context.select(
@@ -81,6 +80,12 @@ class TransactionDetailsTable extends StatelessWidget {
     );
     final swapNetworkFees = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.aggregateNetworkFees(),
+    );
+    final amountSent = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.getAmountSent(),
+    );
+    final amountReceived = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.getAmountReceived(),
     );
     final swapCounterpartTxId = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
@@ -138,9 +143,17 @@ class TransactionDetailsTable extends StatelessWidget {
                     : 'Amount sent',
             displayValue:
                 bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(amountSat ?? 0).toUpperCase()
+                    ? FormatAmount.sats(
+                      transaction?.isIncoming == true
+                          ? amountReceived
+                          : amountSent,
+                    ).toUpperCase()
                     : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(amountSat ?? 0),
+                      ConvertAmount.satsToBtc(
+                        transaction?.isIncoming == true
+                            ? amountReceived
+                            : amountSent,
+                      ),
                     ).toUpperCase(),
           ),
         if (walletTransaction != null) ...[
@@ -149,9 +162,9 @@ class TransactionDetailsTable extends StatelessWidget {
               label: 'Amount received',
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(amountSat ?? 0).toUpperCase()
+                      ? FormatAmount.sats(amountReceived).toUpperCase()
                       : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(amountSat ?? 0),
+                        ConvertAmount.satsToBtc(amountReceived),
                       ).toUpperCase(),
             ),
           if (transaction?.isOutgoing == true && swap == null)
