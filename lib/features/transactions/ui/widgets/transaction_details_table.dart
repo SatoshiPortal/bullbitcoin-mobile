@@ -75,8 +75,13 @@ class TransactionDetailsTable extends StatelessWidget {
     final order = transaction?.order;
     final txFee = walletTransaction?.feeSat;
 
-    // Calculate total fees using the swap entity method
-    final totalSwapFees = swap?.aggregateSwapFees(txFee) ?? 0;
+    // Calculate total fees using the transaction details state method
+    final totalSwapFees = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.aggregateSwapFees(),
+    );
+    final swapNetworkFees = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.aggregateNetworkFees(),
+    );
     final swapCounterpartTxId = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
     );
@@ -728,11 +733,7 @@ class TransactionDetailsTable extends StatelessWidget {
               expandableChild: Column(
                 children: [
                   const Gap(4),
-                  _feeRow(
-                    context,
-                    'Network Fee',
-                    swap.aggregateNetworkFees(txFee),
-                  ),
+                  _feeRow(context, 'Network Fee', swapNetworkFees),
                   _feeRow(
                     context,
                     swap.type.isChain ? 'Transfer Fee' : 'Boltz Swap Fee',

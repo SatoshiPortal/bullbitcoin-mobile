@@ -316,44 +316,6 @@ extension SwapFeePercent on Swap {
     final feePercent = getFeeAsPercentOfAmount();
     return feePercent > 5.0;
   }
-
-  /// Calculates the total aggregated fees for display in transaction details
-  /// Takes into account the actual transaction fees paid
-  int aggregateSwapFees(int? absoluteTxFees) {
-    final txFee = absoluteTxFees ?? 0;
-
-    if (type.isChain) {
-      // For chain swaps: never add txFee to total transfer fees
-      // txFee is shown separately in Network Fee breakdown
-      return fees?.totalFees(amountSat) ?? 0;
-    } else if (type.isReverse) {
-      // For reverse swaps: use original total fees logic
-      return fees?.totalFees(amountSat) ?? 0;
-    } else if (type.isSubmarine) {
-      // For submarine swaps: subtract lockupFee and add txFee
-      final originalSwapFees = fees?.totalFees(amountSat) ?? 0;
-      final lockupFee = fees?.lockupFee ?? 0;
-      return originalSwapFees - lockupFee + txFee;
-    } else {
-      return fees?.totalFees(amountSat) ?? 0;
-    }
-  }
-
-  /// Calculates the network fee portion for display in transaction details
-  /// Takes into account the actual transaction fees paid
-  int aggregateNetworkFees(int? absoluteTxFees) {
-    final txFee = absoluteTxFees ?? 0;
-
-    if (type.isChain) {
-      return (fees?.lockupFee ?? 0) + (fees?.claimFee ?? 0);
-    } else if (type.isReverse) {
-      return (fees?.lockupFee ?? 0) + (fees?.claimFee ?? 0);
-    } else if (type.isSubmarine) {
-      return txFee + (fees?.claimFee ?? 0);
-    } else {
-      return (fees?.lockupFee ?? 0) + (fees?.claimFee ?? 0);
-    }
-  }
 }
 
 class SwapLimits {

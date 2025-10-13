@@ -1244,7 +1244,7 @@ class BoltzDatasource {
         creationTime: DateTime.now().millisecondsSinceEpoch,
         boltzFees:
             (reverseFees.btcFees.percentage * swap.outAmount.toInt() / 100)
-                    .round()
+                    .ceil()
                 as int?,
         lockupFees: reverseFees.btcFees.minerFees.lockup.toInt() as int?,
         claimFees: reverseFees.btcFees.minerFees.claim.toInt() as int?,
@@ -1375,7 +1375,7 @@ class BoltzDatasource {
               isReceiveWalletExternal == true ? receiveWalletId : null,
           boltzFees:
               (chainFees.btcFees.percentage * swap.outAmount.toInt() / 100)
-                      .round()
+                      .ceil()
                   as int?,
           lockupFees:
               chainFees.lbtcFees.userLockup.toInt() +
@@ -1402,7 +1402,7 @@ class BoltzDatasource {
               isReceiveWalletExternal == true ? receiveWalletId : null,
           boltzFees:
               (chainFees.btcFees.percentage * swap.outAmount.toInt() / 100)
-                      .round()
+                      .ceil()
                   as int?,
           lockupFees:
               chainFees.btcFees.userLockup.toInt() +
