@@ -22,7 +22,7 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_new_receive_address_use_case.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
@@ -41,7 +41,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required GetSettingsUsecase getSettingsUsecase,
     required ConvertSatsToCurrencyAmountUsecase
     convertSatsToCurrencyAmountUsecase,
-    required GetNewReceiveAddressUsecase getNewReceiveAddressUsecase,
+    required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required CreateReceiveSwapUsecase createReceiveSwapUsecase,
     required ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase,
     required BroadcastOriginalTransactionUsecase
@@ -57,7 +57,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
        _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
        _getSettingsUsecase = getSettingsUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
-       _getNewReceiveAddressUsecase = getNewReceiveAddressUsecase,
+       _getReceiveAddressUsecase = getReceiveAddressUsecase,
        _createReceiveSwapUsecase = createReceiveSwapUsecase,
        _receiveWithPayjoinUsecase = receiveWithPayjoinUsecase,
        _broadcastOriginalTransactionUsecase =
@@ -90,7 +90,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
-  final GetNewReceiveAddressUsecase _getNewReceiveAddressUsecase;
+  final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final ReceiveWithPayjoinUsecase _receiveWithPayjoinUsecase;
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
@@ -180,7 +180,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       var bitcoinAddress = state.bitcoinAddress;
       if (bitcoinAddress == null) {
         // If the bitcoin address is not set yet, we need to get it from the wallet
-        final address = await _getNewReceiveAddressUsecase.execute(
+        final address = await _getReceiveAddressUsecase.execute(
           walletId: wallet.id,
         );
         bitcoinAddress = address;
@@ -390,7 +390,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       var liquidAddress = state.liquidAddress;
       if (liquidAddress == null) {
         // If the liquid address is not set yet, we need to get it from the wallet
-        final address = await _getNewReceiveAddressUsecase.execute(
+        final address = await _getReceiveAddressUsecase.execute(
           walletId: wallet.id,
         );
         liquidAddress = address;
@@ -671,9 +671,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
       final walletId = state.wallet!.id;
 
-      final address = await _getNewReceiveAddressUsecase.execute(
+      final address = await _getReceiveAddressUsecase.execute(
         walletId: walletId,
-        forceUnseenLiquidAddress: true,
+        generateNew: true,
       );
 
       switch (state.type) {

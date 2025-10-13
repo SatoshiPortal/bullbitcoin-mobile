@@ -24,13 +24,49 @@ class WalletAddressRepository {
        _lwkWallet = lwkWalletDatasource,
        _walletAddressHistoryDatasource = walletAddressHistoryDatasource;
 
-  // TODO: Split this function in two: one that really generates a new/unseen address
-  // and one that returns the last unused address, which may have been seen before
-  // The forceUnseenLiquidAddress is just a temporary quick fix to avoid too many
-  // unused addresses being generated that exceed the stop gap, a better solution is needed.
-  Future<WalletAddress> getNewReceiveAddress({
+  Future<WalletAddress> getLastUnusedReceiveAddress({
     required String walletId,
-    bool forceUnseenLiquidAddress = false,
+  }) async {
+    int index;
+    String address;
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+
+    if (metadata == null) {
+      throw WalletError.notFound(walletId);
+    }
+
+    final walletModel = WalletModel.fromMetadata(metadata);
+
+    if (walletModel is PublicBdkWalletModel) {
+      index = await _bdkWallet.getLastUnusedAddressIndex(wallet: walletModel);
+      address = await _bdkWallet.getAddressByIndex(index, wallet: walletModel);
+    } else {
+      final ({String confidential, int index, String standard}) addressInfo =
+          await _lwkWallet.getNewAddress(wallet: walletModel);
+
+      index = addressInfo.index;
+      address = addressInfo.confidential;
+    }
+
+    final walletAddressModel = WalletAddressModel(
+      walletId: walletId,
+      index: index,
+      address: address,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    // Store the address in the wallet address history so we don't generate it again
+    // and so we can track its usage.
+    await _walletAddressHistoryDatasource.store(walletAddressModel);
+
+    final walletAddress = WalletAddressMapper.toEntity(walletAddressModel);
+
+    return walletAddress;
+  }
+
+  Future<WalletAddress> generateNewReceiveAddress({
+    required String walletId,
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
@@ -52,29 +88,27 @@ class WalletAddressRepository {
       ({String confidential, int index, String standard}) addressInfo =
           await _lwkWallet.getNewAddress(wallet: walletModel);
 
-      if (forceUnseenLiquidAddress) {
-        // Since lwk doesn't increment the index until funds are received on an address,
-        //  we need to check for address re-use ourselves, as the user might have
-        //  already seen and shared the address without having received funds on it yet.
-        final addressInHistory = await _walletAddressHistoryDatasource.fetch(
-          addressInfo.confidential,
-        );
+      // Since lwk doesn't increment the index until funds are received on an address,
+      //  we need to check for address re-use ourselves, as the user might have
+      //  already seen and shared the address without having received funds on it yet.
+      final addressInHistory = await _walletAddressHistoryDatasource.fetch(
+        addressInfo.confidential,
+      );
 
-        if (addressInHistory != null) {
-          // Address is already in history, so it has been generated before.
-          // Get the latest index from the history.
-          final latestWalletAddressInHistory =
-              await _walletAddressHistoryDatasource.getByWalletId(
-                walletId,
-                limit: 1,
-                descending: true,
-              );
-          // Generate a new address with the next index.
-          addressInfo = await _lwkWallet.getAddressByIndex(
-            latestWalletAddressInHistory.first.index + 1,
-            wallet: walletModel,
-          );
-        }
+      if (addressInHistory != null) {
+        // Address is already in history, so it has been generated before.
+        // Get the latest index from the history.
+        final latestWalletAddressInHistory =
+            await _walletAddressHistoryDatasource.getByWalletId(
+              walletId,
+              limit: 1,
+              descending: true,
+            );
+        // Generate a new address with the next index.
+        addressInfo = await _lwkWallet.getAddressByIndex(
+          latestWalletAddressInHistory.first.index + 1,
+          wallet: walletModel,
+        );
       }
 
       index = addressInfo.index;
