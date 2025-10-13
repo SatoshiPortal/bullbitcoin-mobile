@@ -5,6 +5,8 @@ import 'package:bb_mobile/core/electrum/application/dtos/requests/delete_custom_
 import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_advanced_electrum_options_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_custom_servers_priority_request.dart';
+import 'package:bb_mobile/core/electrum/application/errors/electrum_servers_exception.dart'
+    as electrum_servers_application_errors;
 import 'package:bb_mobile/core/electrum/application/errors/set_advanced_electrum_options_exception.dart'
     as advanced_options_application_errors;
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
@@ -157,6 +159,12 @@ class ElectrumSettingsBloc
       );
       final updatedCustomServers = [...state.customServers, newServer];
       emit(state.copyWith(customServers: updatedCustomServers));
+    } on electrum_servers_application_errors.ElectrumServerAlreadyExistsException {
+      emit(
+        state.copyWith(
+          electrumServersError: ElectrumServerAlreadyExistsException(),
+        ),
+      );
     } catch (e) {
       // If there's an error, emit the error state
       emit(

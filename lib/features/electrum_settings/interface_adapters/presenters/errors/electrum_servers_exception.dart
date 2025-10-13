@@ -20,6 +20,10 @@ class AddFailedException extends ElectrumServersException {
   AddFailedException([this.reason]);
 }
 
+class ElectrumServerAlreadyExistsException extends ElectrumServersException {
+  ElectrumServerAlreadyExistsException() : super();
+}
+
 class DeleteFailedException extends ElectrumServersException {
   final String? reason;
 
