@@ -63,7 +63,6 @@ class TransactionDetailsTable extends StatelessWidget {
     final toAddress = transaction?.toAddress;
     final addressLabels =
         transaction?.walletTransaction?.toAddressLabels?.join(', ') ?? '';
-    final amountSat = transaction?.amountSat;
     final isOrder = transaction?.isOrder ?? false;
     final walletTransaction = transaction?.walletTransaction;
     final bitcoinUnit = context.select(
@@ -73,14 +72,24 @@ class TransactionDetailsTable extends StatelessWidget {
     final swap = transaction?.swap;
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
+    final txFee = walletTransaction?.feeSat;
 
-    final swapFees = (swap?.fees?.claimFee ?? 0) + (swap?.fees?.boltzFee ?? 0);
+    // Calculate total fees using the transaction details state method
+    final totalSwapFees = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.aggregateSwapFees(),
+    );
+    final swapNetworkFees = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.aggregateNetworkFees(),
+    );
+    final amountSent = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.getAmountSent(),
+    );
+    final amountReceived = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.getAmountReceived(),
+    );
     final swapCounterpartTxId = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
     );
-
-    final txFee = swap != null ? swapFees : walletTransaction?.feeSat;
-
     return DetailsTable(
       items: [
         if (txId != null)
@@ -134,9 +143,17 @@ class TransactionDetailsTable extends StatelessWidget {
                     : 'Amount sent',
             displayValue:
                 bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(amountSat ?? 0).toUpperCase()
+                    ? FormatAmount.sats(
+                      transaction?.isIncoming == true
+                          ? amountReceived
+                          : amountSent,
+                    ).toUpperCase()
                     : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(amountSat ?? 0),
+                      ConvertAmount.satsToBtc(
+                        transaction?.isIncoming == true
+                            ? amountReceived
+                            : amountSent,
+                      ),
                     ).toUpperCase(),
           ),
         if (walletTransaction != null) ...[
@@ -145,12 +162,12 @@ class TransactionDetailsTable extends StatelessWidget {
               label: 'Amount received',
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(amountSat ?? 0).toUpperCase()
+                      ? FormatAmount.sats(amountReceived).toUpperCase()
                       : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(amountSat ?? 0),
+                        ConvertAmount.satsToBtc(amountReceived),
                       ).toUpperCase(),
             ),
-          if (transaction?.isOutgoing == true)
+          if (transaction?.isOutgoing == true && swap == null)
             DetailsTableItem(
               label: 'Transaction Fee',
               displayValue:
@@ -719,20 +736,20 @@ class TransactionDetailsTable extends StatelessWidget {
           if (swap.fees != null)
             DetailsTableItem(
               label:
-                  swap.isChainSwap ? 'Total Transfer fees' : 'Total Swap fees',
+                  swap.type.isChain ? 'Total Transfer fees' : 'Total Swap fees',
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swapFees).toUpperCase()
+                      ? FormatAmount.sats(totalSwapFees).toUpperCase()
                       : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(swapFees),
+                        ConvertAmount.satsToBtc(totalSwapFees),
                       ).toUpperCase(),
               expandableChild: Column(
                 children: [
                   const Gap(4),
-                  _feeRow(context, 'Network Fee', swap.fees?.claimFee ?? 0),
+                  _feeRow(context, 'Network Fee', swapNetworkFees),
                   _feeRow(
                     context,
-                    swap.isChainSwap ? 'Transfer Fee' : 'Boltz Swap Fee',
+                    swap.type.isChain ? 'Transfer Fee' : 'Boltz Swap Fee',
                     swap.fees?.boltzFee ?? 0,
                   ),
                   const Gap(4),
