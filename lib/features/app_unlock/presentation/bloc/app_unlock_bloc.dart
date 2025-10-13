@@ -74,7 +74,12 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
       return;
     }
 
-    emit(state.copyWith(pinCode: '${state.pinCode}${event.number}'));
+    emit(
+      state.copyWith(
+        pinCode: '${state.pinCode}${event.number}',
+        showError: false,
+      ),
+    );
   }
 
   Future<void> _onPinCodeNumberRemoved(
@@ -111,6 +116,8 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
           isVerifying: false,
           failedAttempts: attemptResult.failedAttempts,
           timeoutSeconds: attemptResult.timeout,
+          pinCode: attemptResult.success ? state.pinCode : '',
+          showError: !attemptResult.success,
         ),
       );
     } catch (e) {

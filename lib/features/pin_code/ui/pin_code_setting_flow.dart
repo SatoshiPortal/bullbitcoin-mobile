@@ -41,6 +41,11 @@ class PinCodeSettingFlow extends StatelessWidget {
           selector: (state) => state.status,
           builder: (context, status) {
             switch (status) {
+              case PinCodeSettingStatus.initializing:
+                return const StatusScreen(
+                  title: 'Loading',
+                  description: 'Checking PIN status',
+                );
               case PinCodeSettingStatus.unlock:
                 return PinCodeUnlockScreen(
                   onSuccess:
