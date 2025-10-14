@@ -1,15 +1,14 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class LogsViewerScreen extends StatelessWidget {
-  const LogsViewerScreen({super.key});
+  final List<String> logs;
+
+  const LogsViewerScreen({super.key, required this.logs});
 
   @override
   Widget build(BuildContext context) {
-    final sessionLogs = log.session;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Session logs')),
       body: SingleChildScrollView(
@@ -18,8 +17,8 @@ class LogsViewerScreen extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: List.generate(sessionLogs.length, (index) {
-              final logLine = sessionLogs.reversed.toList()[index];
+            children: List.generate(logs.length, (index) {
+              final logLine = logs.reversed.toList()[index];
 
               return Row(
                 children: [

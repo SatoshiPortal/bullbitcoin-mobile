@@ -60,7 +60,7 @@ class _ShareLogsWidgetState extends State<ShareLogsWidget> {
             if (navigator != null) {
               navigator.push(
                 MaterialPageRoute(
-                  builder: (context) => const LogsViewerScreen(),
+                  builder: (context) => LogsViewerScreen(logs: log.session),
                 ),
               );
             } else {
