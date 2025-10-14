@@ -10,7 +10,6 @@ export 'package:logging_colorful/logging_colorful.dart';
 Logger log = Logger.init();
 
 class Logger {
-  final session = <String>[];
   final Directory dir;
   final dep.LoggerColorful logger;
 
@@ -18,7 +17,7 @@ class Logger {
 
   File get logsFile => File('${dir.path}/$_logFilename');
 
-  Future<List<String>> get logs async {
+  Future<List<String>> readLogs() async {
     try {
       final logs = await logsFile.readAsString();
       return logs.split('\n').where((e) => e.isNotEmpty).toList();
@@ -42,10 +41,7 @@ class Logger {
       final tsvLine = sanitizedContent.join('\t');
 
       // We don't want to keep the info session in memory, they should be written to file
-      if (record.level != dep.Level.INFO) {
-        session.add(tsvLine);
-        appendToLogFile(tsvLine);
-      }
+      if (record.level != dep.Level.INFO) appendToLogFile(tsvLine);
 
       if (kDebugMode) {
         // remove timestamp and errors
@@ -154,7 +150,6 @@ class Logger {
 
   Future<void> deleteLogs() async {
     await logsFile.writeAsString('');
-    session.clear();
     log.shout('Logs deleted');
   }
 }
