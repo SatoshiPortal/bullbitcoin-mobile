@@ -161,7 +161,6 @@ class _ShareLogsWidgetState extends State<ShareLogsWidget> {
 
   Future<void> _shareSessionLogs(BuildContext context) async {
     try {
-      await log.dumpSessionToFile();
       if (!context.mounted) return;
       await _shareFile(context, log.sessionLogs);
     } catch (e) {
