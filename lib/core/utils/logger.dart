@@ -17,8 +17,11 @@ class Logger {
 
   static const _migrationFilename = 'bull_migration_logs.tsv';
   static const _sessionFilename = 'bull_session_logs.tsv';
+  static const _unifiedFilename = 'bull_logs.tsv';
+
   File get sessionLogs => File('${dir.path}/$_sessionFilename');
   File get migrationLogs => File('${dir.path}/$_migrationFilename');
+  File get logs => File('${dir.path}/$_unifiedFilename');
 
   Logger._(this.encryptionKey, this.dir, this.logger) {
     dep.Logger.root.level = dep.Level.ALL;
@@ -34,7 +37,10 @@ class Logger {
       final tsvLine = sanitizedContent.join('\t');
 
       // We don't want to keep the info session in memory, they should be written to file
-      if (record.level != dep.Level.INFO) session.add(tsvLine);
+      if (record.level != dep.Level.INFO) {
+        session.add(tsvLine);
+        logs.writeAsString('$tsvLine\n', mode: FileMode.append);
+      }
 
       if (kDebugMode) {
         // remove timestamp and errors
@@ -127,10 +133,7 @@ class Logger {
 
     final sanitizedContent = content.map((e) => logger.sanitize(e)).toList();
     final tsvLine = sanitizedContent.join('\t');
-    await appendToMigrationFile(tsvLine);
-  }
-
-  Future<void> appendToMigrationFile(String message) async {
-    await migrationLogs.writeAsString('$message\n', mode: FileMode.append);
+    await migrationLogs.writeAsString('$tsvLine\n', mode: FileMode.append);
+    await logs.writeAsString('$tsvLine\n', mode: FileMode.append);
   }
 }
