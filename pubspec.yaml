@@ -129,6 +129,12 @@ dev_dependencies:
   flutter_gen_runner: any
   drift_dev: ^2.26.1
 
+dependency_overrides:
+  socks5_proxy:
+    git:
+      url: https://github.com/LacticWhale/socks_dart
+      ref: 317f086e51ed0d66546b58077d2b94e247ce9ffa
+
 flutter:
   generate: true # Needed for code generation, for example for internationalization
   uses-material-design: true
