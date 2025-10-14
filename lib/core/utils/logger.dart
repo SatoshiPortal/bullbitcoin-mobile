@@ -151,4 +151,10 @@ class Logger {
   Future<void> appendToLogFile(String log) async {
     await logsFile.writeAsString('$log\n', mode: FileMode.append);
   }
+
+  Future<void> deleteLogs() async {
+    await logsFile.writeAsString('');
+    session.clear();
+    log.shout('Logs deleted');
+  }
 }

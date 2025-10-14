@@ -149,7 +149,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                 textColor: context.colour.onPrimary,
               ),
               const SizedBox(height: 24),
-              const ShareLogsWidget(migrationLogs: true, sessionLogs: true),
+              const ShareLogsWidget(),
             ],
           ),
         ),
