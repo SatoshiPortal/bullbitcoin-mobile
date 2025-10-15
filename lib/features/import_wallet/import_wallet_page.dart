@@ -1,6 +1,7 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
 import 'package:bb_mobile/features/connect_hardware_wallet/router.dart';
-import 'package:bb_mobile/features/import_coldcard_q/router.dart';
+import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -37,7 +38,8 @@ class ImportWalletPage extends StatelessWidget {
                   title: 'Coldcard Q',
                   onTap:
                       () => context.pushNamed(
-                        ImportColdcardQRoute.importColdcardQ.name,
+                        ImportColdcardRoute.importColdcard.name,
+                        extra: SignerDeviceEntity.coldcardQ,
                       ),
                 ),
               ],

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/transaction_details_widget.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
@@ -73,6 +74,21 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                   const Gap(32),
                   BBButton.small(
+                    label: 'NFC',
+                    onPressed: () => NfcBottomSheet.showReadNfc(
+                      context: context,
+                      title: 'Tap your Coldcard to receive signed transaction via NFC',
+                      onDataReceived: (payload) async {
+                        await cubit.onQrScanned(payload);
+                      },
+                    ),
+                    bgColor: context.colour.onPrimary,
+                    textColor: context.colour.secondary,
+                    iconData: Icons.nfc,
+                    outlined: true,
+                  ),
+                  const Gap(32),
+                  BBButton.small(
                     label: 'PushTx',
                     onPressed:
                         () => context.pushNamed(
@@ -80,7 +96,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                         ),
                     bgColor: context.colour.onPrimary,
                     textColor: context.colour.secondary,
-                    iconData: Icons.nfc,
+                    iconData: Icons.contactless_outlined,
                     outlined: true,
                   ),
                 ],
