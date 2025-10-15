@@ -491,8 +491,8 @@
 				CURRENT_PROJECT_VERSION = 96;
 				DEVELOPMENT_TEAM = BX99T32YGS;
 				ENABLE_BITCODE = NO;
-				FLUTTER_BUILD_NAME = 6.0.0;
-				FLUTTER_BUILD_NUMBER = 99;
+				FLUTTER_BUILD_NAME = 5.4.5;
+				FLUTTER_BUILD_NUMBER = 96;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BULL;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
@@ -681,8 +681,8 @@
 				CURRENT_PROJECT_VERSION = 96;
 				DEVELOPMENT_TEAM = BX99T32YGS;
 				ENABLE_BITCODE = NO;
-				FLUTTER_BUILD_NAME = 6.0.0;
-				FLUTTER_BUILD_NUMBER = 99;
+				FLUTTER_BUILD_NAME = 5.4.5;
+				FLUTTER_BUILD_NUMBER = 96;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BULL;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
@@ -709,8 +709,8 @@
 				CURRENT_PROJECT_VERSION = 96;
 				DEVELOPMENT_TEAM = BX99T32YGS;
 				ENABLE_BITCODE = NO;
-				FLUTTER_BUILD_NAME = 6.0.0;
-				FLUTTER_BUILD_NUMBER = 99;
+				FLUTTER_BUILD_NAME = 5.4.5;
+				FLUTTER_BUILD_NUMBER = 96;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BULL;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
