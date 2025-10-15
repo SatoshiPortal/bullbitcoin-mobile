@@ -38,6 +38,8 @@ Ark is still experimental.
 Your Ark wallet is derived from your main wallet's seed phrase. No additional backup is needed, your existing wallet backup restores your Ark funds too.
 
 By continuing, you acknowledge the experimental nature of Ark and the risk of losing funds.
+
+Developer note : Ark secret is derived from the main wallet seed using an arbitrary BIP-85 derivation (index 11811).
             '''),
                       const Spacer(),
                       if (error != null) ...[
