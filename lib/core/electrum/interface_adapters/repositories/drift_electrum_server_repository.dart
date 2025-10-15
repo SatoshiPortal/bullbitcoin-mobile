@@ -25,6 +25,12 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
   }
 
   @override
+  Future<ElectrumServer?> fetchByUrl(String url) async {
+    final server = await _datasource.fetchByUrl(url);
+    return server?.toEntity();
+  }
+
+  @override
   Future<List<ElectrumServer>> fetchAll({
     bool? isTestnet,
     bool? isLiquid,

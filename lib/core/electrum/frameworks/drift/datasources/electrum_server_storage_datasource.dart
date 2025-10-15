@@ -42,6 +42,16 @@ class ElectrumServerStorageDatasource {
     }
   }
 
+  /// Fetch a server by its URL
+  Future<ElectrumServerModel?> fetchByUrl(String url) async {
+    final row =
+        await _sqlite.managers.electrumServers
+            .filter((f) => f.url.equals(url))
+            .getSingleOrNull();
+
+    return row == null ? null : ElectrumServerModel.fromSqlite(row);
+  }
+
   Future<List<ElectrumServerModel>> fetchAllServers({
     bool? isTestnet,
     bool? isLiquid,

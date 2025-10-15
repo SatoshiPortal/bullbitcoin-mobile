@@ -18,5 +18,7 @@ class InvalidElectrumServerUrlException extends ElectrumServerException {
   final String url;
 
   InvalidElectrumServerUrlException(this.url)
-    : super('Invalid Electrum server URL: $url. Expected format: host:port or protocol://host:port');
+    : super(
+        'Invalid Electrum server URL: $url. Expected format: host:port or protocol://host:port',
+      );
 }
