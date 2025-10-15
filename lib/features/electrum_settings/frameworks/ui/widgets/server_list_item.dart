@@ -51,15 +51,44 @@ class ServerListItem extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          server.displayName,
-                          style: context.font.bodyMedium?.copyWith(
-                            color: context.colour.onSurface,
-                            decoration:
-                                disabled
-                                    ? TextDecoration.lineThrough
-                                    : TextDecoration.none,
-                          ),
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                server.displayName,
+                                style: context.font.bodyMedium?.copyWith(
+                                  color: context.colour.onSurface,
+                                  decoration:
+                                      disabled
+                                          ? TextDecoration.lineThrough
+                                          : TextDecoration.none,
+                                ),
+                              ),
+                            ),
+                            if (server.protocol != null) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: context.colour.tertiary.withValues(
+                                    alpha: 0.15,
+                                  ),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  server.protocol!.toUpperCase(),
+                                  style: context.font.bodySmall?.copyWith(
+                                    color: context.colour.onTertiary,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                       if (disabled) ...[

@@ -21,4 +21,12 @@ sealed class ElectrumServerViewModel with _$ElectrumServerViewModel {
     }
     return url;
   }
+
+  String? get protocol {
+    // Extract protocol if present (e.g., "ssl" or "tcp")
+    if (url.contains('://')) {
+      return url.split('://').first;
+    }
+    return null;
+  }
 }
