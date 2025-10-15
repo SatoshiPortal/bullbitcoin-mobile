@@ -66,10 +66,13 @@ class AmountInputFormatter extends TextInputFormatter {
       // If characters were removed (by leading zero logic or regex truncation)
       if (charsRemovedByLeadingZeroLogic > 0) {
         // Leading zeros removed: keep cursor at original position
-        newOffset = oldValue.selection.baseOffset;
+        newOffset = oldValue.selection.baseOffset.clamp(0, validText.length);
       } else if (charsRemovedByRegex > 0) {
         // Text truncated by regex (invalid chars or excess decimals): move to end
         newOffset = validText.length;
+      } else if (oldValue.selection.baseOffset == -1) {
+        // Field was unfocused, preserve the new offset from the caller (dial pad)
+        newOffset = newValue.selection.baseOffset.clamp(0, validText.length);
       } else {
         // Normal case: adjust cursor by the text length difference
         final lengthDifference = validText.length - oldValue.text.length;
