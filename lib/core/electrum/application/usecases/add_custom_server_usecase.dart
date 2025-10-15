@@ -15,10 +15,9 @@ class AddCustomServerUsecase {
        _serverStatusPort = serverStatusPort;
 
   Future<ElectrumServerStatus> execute(AddCustomServerRequest request) async {
-    final server = ElectrumServer(
+    final server = ElectrumServer.createCustom(
       url: request.url,
       network: request.network,
-      isCustom: request.isCustom,
       priority: request.priority,
     );
 

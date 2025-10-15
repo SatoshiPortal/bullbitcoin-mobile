@@ -65,29 +65,27 @@ class ServerListItem extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            if (server.protocol != null) ...[
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: context.colour.tertiary.withValues(
+                                  alpha: 0.15,
                                 ),
-                                decoration: BoxDecoration(
-                                  color: context.colour.tertiary.withValues(
-                                    alpha: 0.15,
-                                  ),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  server.protocol!.toUpperCase(),
-                                  style: context.font.bodySmall?.copyWith(
-                                    color: context.colour.onTertiary,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                server.protocol.toUpperCase(),
+                                style: context.font.bodySmall?.copyWith(
+                                  color: context.colour.onTertiary,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            ],
+                            ),
                           ],
                         ),
                       ),

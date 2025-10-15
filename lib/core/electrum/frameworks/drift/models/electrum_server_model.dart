@@ -16,7 +16,7 @@ class ElectrumServerModel {
   });
 
   ElectrumServer toEntity() {
-    return ElectrumServer(
+    return ElectrumServer.existing(
       url: url,
       network: network,
       priority: priority,
