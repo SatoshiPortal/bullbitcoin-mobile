@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bip85/bip85.dart' as bip85;
+import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:convert/convert.dart';
 import 'package:drift/drift.dart';
 
@@ -129,6 +129,16 @@ class Bip85Datasource {
       await _sqlite.managers.bip85Derivations
           .filter((b) => b.path(path))
           .update((b) => b(status: const Value(Bip85StatusColumn.revoked)));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> reactivate(String path) async {
+    try {
+      await _sqlite.managers.bip85Derivations
+          .filter((b) => b.path(path))
+          .update((b) => b(status: const Value(Bip85StatusColumn.active)));
     } catch (e) {
       rethrow;
     }

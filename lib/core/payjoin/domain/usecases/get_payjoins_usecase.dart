@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -33,11 +34,6 @@ class GetPayjoinsUsecase {
   }
 }
 
-class GetPayjoinsException implements Exception {
-  final String message;
-
-  GetPayjoinsException(this.message);
-
-  @override
-  String toString() => '[GetPayjoinsUsecase]: $message';
+class GetPayjoinsException extends BullException {
+  GetPayjoinsException(super.message);
 }

@@ -1,17 +1,19 @@
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
+import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart'
+    as dirty_dependency;
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 // This usecase has to be reworked, it has been implemented this way because of deadline
 class TheDirtyUsecase {
-  TheDirtyUsecase(this._settingsRepository, this._electrumServerRepository);
+  TheDirtyUsecase(this._settingsRepository, this._electrumServerPort);
   final SettingsRepository _settingsRepository;
-  final ElectrumServerRepository _electrumServerRepository;
+  final ElectrumServerPort _electrumServerPort;
 
   Future<({BigInt satoshis, int transactions})> call(
     bip39.Mnemonic mnemonic,
@@ -82,19 +84,37 @@ class TheDirtyUsecase {
         databaseConfig: const bdk.DatabaseConfig.memory(),
       );
 
-      final electrumServer = await _electrumServerRepository
-          .getPrioritizedServer(network: network);
-
-      final electrumServerModel = ElectrumServerModel.fromEntity(
-        electrumServer,
+      final electrumServers = await _electrumServerPort.getElectrumServers(
+        isTestnet: network.isTestnet,
+        isLiquid: network.isLiquid,
       );
 
-      final blockchain =
-          await BdkBitcoinBlockchainDatasource.createBlockchainFromElectrumServer(
-            electrumServerModel,
-          );
+      for (int i = 0; i < electrumServers.length; i++) {
+        try {
+          final electrumServer = electrumServers[i];
+          final blockchain =
+              await BdkBitcoinBlockchainDatasource.createBlockchainFromElectrumServer(
+                dirty_dependency.ElectrumServer(
+                  url: electrumServer.url,
+                  socks5: electrumServer.socks5,
+                  retry: electrumServer.retry,
+                  timeout: electrumServer.timeout,
+                  stopGap: electrumServer.stopGap,
+                  validateDomain: electrumServer.validateDomain,
+                  priority: electrumServer.priority,
+                  isCustom: electrumServer.isCustom,
+                ),
+              );
 
-      await wallet.sync(blockchain: blockchain);
+          await wallet.sync(blockchain: blockchain);
+          break; // Exit the loop if sync is successful
+        } catch (e) {
+          log.warning('Failed to sync with ${electrumServers[i].url}: $e');
+          if (i == electrumServers.length - 1) {
+            throw Exception('All Electrum servers failed to sync.');
+          }
+        }
+      }
 
       final balance = wallet.getBalance();
       final transactions = wallet.listTransactions(includeRaw: true);
@@ -107,11 +127,6 @@ class TheDirtyUsecase {
   }
 }
 
-class CheckWalletStatusException implements Exception {
-  final String message;
-
-  CheckWalletStatusException(this.message);
-
-  @override
-  String toString() => message;
+class CheckWalletStatusException extends BullException {
+  CheckWalletStatusException(super.message);
 }

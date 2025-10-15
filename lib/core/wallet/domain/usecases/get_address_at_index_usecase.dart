@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 
@@ -25,8 +26,6 @@ class GetAddressAtIndexUsecase {
   }
 }
 
-class GetAddressAtIndexException implements Exception {
-  final String? message;
-
-  GetAddressAtIndexException(this.message);
+class GetAddressAtIndexException extends BullException {
+  GetAddressAtIndexException(super.message);
 }

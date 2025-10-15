@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -33,11 +34,6 @@ class ConfirmBuyOrderUsecase {
   }
 }
 
-class ConfirmBuyOrderException implements Exception {
-  final String message;
-
-  ConfirmBuyOrderException(this.message);
-
-  @override
-  String toString() => '[ConfirmBuyOrderUsecase]: $message';
+class ConfirmBuyOrderException extends BullException {
+  ConfirmBuyOrderException(super.message);
 }

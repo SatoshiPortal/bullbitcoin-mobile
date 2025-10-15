@@ -69,7 +69,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                width: 200,
+                width: 220,
                 child: DropdownButtonFormField<SignerDeviceEntity?>(
                   alignment: Alignment.centerLeft,
                   decoration: const InputDecoration(
@@ -87,7 +87,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                             (value) => DropdownMenuItem<SignerDeviceEntity?>(
                               value: value,
                               child: BBText(
-                                value?.displayName ?? 'Not supported',
+                                value?.displayName ?? 'Unkown',
                                 style: context.font.headlineSmall,
                               ),
                             ),

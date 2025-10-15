@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:typed_data';
-
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
+import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
@@ -13,6 +12,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -24,11 +24,8 @@ extension NetworkX on Network {
         return bdk.Network.bitcoin;
       case Network.bitcoinTestnet:
         return bdk.Network.testnet;
-      case Network.liquidMainnet:
-      case Network.liquidTestnet:
-        throw UnsupportedBdkNetworkException(
-          'Liquid network is not supported by BDK',
-        );
+      default:
+        throw UnsupportedBdkNetworkException('$name is not supported by BDK');
     }
   }
 }
@@ -84,7 +81,7 @@ class BdkWalletDatasource {
 
   Future<void> sync({
     required WalletModel wallet,
-    required ElectrumServerModel electrumServer,
+    required ElectrumServer electrumServer,
   }) {
     // putIfAbsent ensures only one sync starts for each wallet ID,
     //  all others await the same Future.
@@ -106,7 +103,12 @@ class BdkWalletDatasource {
           config: bdk.BlockchainConfig.electrum(
             config: bdk.ElectrumConfig(
               url: electrumServer.url,
-              socks5: electrumServer.socks5,
+              // Only set the socks5 if it's not empty,
+              //  otherwise bdk will throw an error
+              socks5:
+                  electrumServer.socks5?.isNotEmpty == true
+                      ? electrumServer.socks5
+                      : null,
               retry: electrumServer.retry,
               timeout: electrumServer.timeout,
               stopGap: BigInt.from(electrumServer.stopGap),
@@ -116,9 +118,9 @@ class BdkWalletDatasource {
         );
 
         await bdkWallet.sync(blockchain: blockchain);
-        // debugPrint('Sync completed for wallet: ${wallet.id}');
+        //debugPrint('Sync completed for wallet: ${wallet.id} with server ${electrumServer.url}',);
       } catch (e) {
-        // debugPrint('Sync error for wallet ${wallet.id}: $e');
+        // debugPrint('Sync error for wallet ${wallet.id} with server ${electrumServer.url}: $e');
         rethrow;
       } finally {
         // Notify that the wallet has been synced through a stream for other
@@ -391,18 +393,12 @@ class BdkWalletDatasource {
     required WalletModel wallet,
   }) async {
     final bdkWallet = await _createWallet(wallet);
-    // Get the last unused address instead of increasing the address right away
-    //  so we start at index 0.
     final addressInfo = bdkWallet.getAddress(
-      addressIndex: const bdk.AddressIndex.lastUnused(),
+      addressIndex: const bdk.AddressIndex.increase(),
     );
 
     final index = addressInfo.index;
     final address = addressInfo.address.asString();
-
-    // Now increase the address index so the next call to getAddress
-    //  will return a new address with the next index.
-    bdkWallet.getAddress(addressIndex: const bdk.AddressIndex.increase());
 
     return (index: index, address: address);
   }
@@ -700,20 +696,14 @@ class BdkWalletDatasource {
   }
 }
 
-class FailedToSignPsbtException implements Exception {
-  final String message;
-
-  FailedToSignPsbtException(this.message);
+class FailedToSignPsbtException extends BullException {
+  FailedToSignPsbtException(super.message);
 }
 
-class UnsupportedBdkNetworkException implements Exception {
-  final String message;
-
-  UnsupportedBdkNetworkException(this.message);
+class UnsupportedBdkNetworkException extends BullException {
+  UnsupportedBdkNetworkException(super.message);
 }
 
-class NoSpendableUtxoException implements Exception {
-  final String message;
-
-  NoSpendableUtxoException(this.message);
+class NoSpendableUtxoException extends BullException {
+  NoSpendableUtxoException(super.message);
 }

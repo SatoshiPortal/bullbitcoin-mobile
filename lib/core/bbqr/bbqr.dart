@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr_options.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -116,16 +117,7 @@ class Bbqr {
   }
 }
 
-class BbqrError implements Exception {
-  final String message;
-
-  BbqrError(this.message);
-
-  @override
-  String toString() => message;
-}
-
-class FailedToParseBbqr extends BbqrError {
+class FailedToParseBbqr extends BullException {
   FailedToParseBbqr()
     : super('The scanned transaction is neither a PSBT nor a hex string');
 }

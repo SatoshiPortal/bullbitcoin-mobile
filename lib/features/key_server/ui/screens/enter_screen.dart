@@ -44,7 +44,7 @@ class EnterScreen extends StatelessWidget {
                 ),
                 maxLines: 3,
               ),
-              const Gap(60),
+              const Gap(30),
               if (state.authInputType == AuthInputType.password)
                 BBText(
                   'Password',
@@ -91,7 +91,7 @@ class EnterScreen extends StatelessWidget {
                 )
               else
                 const SizedBox.shrink(),
-              const Gap(72),
+              const Gap(30),
               BBButton.small(
                 label:
                     'Pick a ${state.authInputType == AuthInputType.pin ? 'password' : 'pin'} instead >>',
@@ -108,6 +108,7 @@ class EnterScreen extends StatelessWidget {
               if (state.authInputType == AuthInputType.pin)
                 DialPad(
                   disableFeedback: true,
+                  onlyDigits: true,
                   onNumberPressed:
                       (e) => context.read<KeyServerCubit>().enterKey(e),
                   onBackspacePressed:

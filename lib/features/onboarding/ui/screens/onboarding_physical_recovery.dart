@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/app_bar.dart';
@@ -42,33 +43,65 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
               context.goNamed(WalletRoute.walletHome.name);
             }
           },
-          child: Scaffold(
-            appBar: const OnboardingAppBar(),
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: SingleChildScrollView(
-                  reverse: true,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      MnemonicWidget(
-                        initialLength: bip39.MnemonicLength.words12,
-                        allowMultipleMnemonicLength: false,
-                        allowLabel: false,
-                        allowPassphrase: false,
-                        submitLabel: 'Recover',
-                        onSubmit: (mnemonic) {
-                          context.read<OnboardingBloc>().add(
-                            OnboardingRecoverWalletClicked(mnemonic: mnemonic),
-                          );
-                        },
+          child: BlocBuilder<OnboardingBloc, OnboardingState>(
+            builder: (context, state) {
+              return Scaffold(
+                appBar: const OnboardingAppBar(),
+                body: Column(
+                  children: [
+                    FadingLinearProgress(
+                      trigger:
+                          state.onboardingStepStatus ==
+                          OnboardingStepStatus.loading,
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      foregroundColor: Theme.of(context).colorScheme.primary,
+                      height: 2.0,
+                    ),
+                    Expanded(
+                      child: SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                IgnorePointer(
+                                  ignoring:
+                                      state.onboardingStepStatus ==
+                                      OnboardingStepStatus.loading,
+                                  child: Opacity(
+                                    opacity:
+                                        state.onboardingStepStatus ==
+                                                OnboardingStepStatus.loading
+                                            ? 0.5
+                                            : 1.0,
+                                    child: MnemonicWidget(
+                                      initialLength:
+                                          bip39.MnemonicLength.words12,
+                                      allowMultipleMnemonicLength: true,
+                                      allowLabel: false,
+                                      allowPassphrase: false,
+                                      submitLabel: 'Recover',
+                                      onSubmit: (mnemonic) {
+                                        context.read<OnboardingBloc>().add(
+                                          OnboardingRecoverWalletClicked(
+                                            mnemonic: mnemonic,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
+              );
+            },
           ),
         );
       },

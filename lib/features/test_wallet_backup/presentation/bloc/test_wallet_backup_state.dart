@@ -62,7 +62,7 @@ abstract class TestWalletBackupState with _$TestWalletBackupState {
     @Default('') String passphrase,
     @Default(TestWalletBackupStatus.none) TestWalletBackupStatus status,
     @Default('') String statusError,
-    @Default(VaultProvider.googleDrive()) VaultProvider vaultProvider,
+    @Default(VaultProvider.googleDrive) VaultProvider vaultProvider,
     @Default(null) EncryptedVault? encryptedVault,
     @Default(false) bool transitioning,
   }) = _TestWalletBackupState;

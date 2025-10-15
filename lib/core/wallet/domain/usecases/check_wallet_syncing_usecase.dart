@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CheckWalletSyncingUsecase {
@@ -19,8 +20,6 @@ class CheckWalletSyncingUsecase {
   }
 }
 
-class CheckAnyWalletSyncingException implements Exception {
-  final String message;
-
-  CheckAnyWalletSyncingException(this.message);
+class CheckAnyWalletSyncingException extends BullException {
+  CheckAnyWalletSyncingException(super.message);
 }

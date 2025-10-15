@@ -13,7 +13,7 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 enum RecipientsTab {
-  newRecipient(displayValue: 'New beneficiary'),
+  newRecipient(displayValue: 'New recipient'),
   myRecipients(displayValue: 'My fiat recipients');
 
   final String displayValue;

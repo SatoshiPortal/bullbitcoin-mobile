@@ -1,5 +1,6 @@
 import 'dart:math' show pow;
 
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/data/models/cad_biller_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/dca_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_model.dart';
@@ -681,24 +682,72 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
     return ownerName;
   }
+
+  Future<Map<String, dynamic>> getBuyLimits({required String apiKey}) async {
+    final resp = await _http.post(
+      _ordersPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'getBuyLimits',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to get buy limits');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to get buy limits: $error');
+    }
+
+    return resp.data['result'] as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getSellLimits({required String apiKey}) async {
+    final resp = await _http.post(
+      _ordersPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'getSellLimits',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to get sell limits');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to get sell limits: $error');
+    }
+
+    return resp.data['result'] as Map<String, dynamic>;
+  }
 }
 
-class BullBitcoinApiMinAmountException implements Exception {
+class BullBitcoinApiMinAmountException extends BullException {
   final double minAmount;
   final String currency;
 
   BullBitcoinApiMinAmountException({
     required this.minAmount,
     required this.currency,
-  });
+  }) : super('Minimum amount is $minAmount $currency');
 }
 
-class BullBitcoinApiMaxAmountException implements Exception {
+class BullBitcoinApiMaxAmountException extends BullException {
   final double maxAmount;
   final String currency;
 
   BullBitcoinApiMaxAmountException({
     required this.maxAmount,
     required this.currency,
-  });
+  }) : super('Maximum amount is $maxAmount $currency');
 }

@@ -56,7 +56,9 @@ class RecoverBullVaultRecoveryPage extends StatelessWidget {
                         bgColor: context.colour.secondary,
                         textColor: context.colour.onPrimary,
                         disabled:
-                            state.decryptedVault == null || state.isImported,
+                            state.decryptedVault == null ||
+                            state.isImported ||
+                            state.isImporting,
                       ),
                       const Gap(40),
                     ],

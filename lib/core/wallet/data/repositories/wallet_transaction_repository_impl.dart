@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -10,8 +9,8 @@ import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dar
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_transaction_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
@@ -19,19 +18,21 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final LabelDatasource _labelDatasource;
   final BdkWalletDatasource _bdkWalletTransactionDatasource;
   final LwkWalletDatasource _lwkWalletTransactionDatasource;
-  final ElectrumServerStorageDatasource _electrumServerStorage;
+  // TODO: We should not pass a port into a repository, this is a dirty hack for now
+  //  the syncing should be extracted from fetching the data
+  final ElectrumServerPort _electrumServerPort;
 
   WalletTransactionRepositoryImpl({
     required WalletMetadataDatasource walletMetadataDatasource,
     required LabelDatasource labelDatasource,
     required BdkWalletDatasource bdkWalletTransactionDatasource,
     required LwkWalletDatasource lwkWalletTransactionDatasource,
-    required ElectrumServerStorageDatasource electrumServerStorage,
+    required ElectrumServerPort electrumServerPort,
   }) : _labelDatasource = labelDatasource,
        _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWalletTransactionDatasource = bdkWalletTransactionDatasource,
        _lwkWalletTransactionDatasource = lwkWalletTransactionDatasource,
-       _electrumServerStorage = electrumServerStorage;
+       _electrumServerPort = electrumServerPort;
 
   @override
   Future<List<WalletTransaction>> getWalletTransactions({
@@ -191,28 +192,41 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
             )
             .toList();
 
+    // TODO: We should extract syncing from fetching the data,
+    //  passing the getElectrumServers function here is a dirty hack for now
     if (sync) {
       await Future.wait(
         walletModels.map((walletModel) async {
           final isLiquid = walletModel is PublicLwkWalletModel;
 
-          final electrumServer = await _electrumServerStorage
-              .fetchPrioritizedServer(
-                network: Network.fromEnvironment(
-                  isTestnet: walletModel.isTestnet,
-                  isLiquid: isLiquid,
-                ),
-              );
+          final electrumServers = await _electrumServerPort.getElectrumServers(
+            isTestnet: walletModel.isTestnet,
+            isLiquid: isLiquid,
+          );
 
-          return isLiquid
-              ? _lwkWalletTransactionDatasource.sync(
-                wallet: walletModel,
-                electrumServer: electrumServer,
-              )
-              : _bdkWalletTransactionDatasource.sync(
-                wallet: walletModel,
-                electrumServer: electrumServer,
-              );
+          for (int i = 0; i < electrumServers.length; i++) {
+            try {
+              final electrumServer = electrumServers[i];
+              if (isLiquid) {
+                await _lwkWalletTransactionDatasource.sync(
+                  wallet: walletModel,
+                  electrumServer: electrumServer,
+                );
+              } else {
+                await _bdkWalletTransactionDatasource.sync(
+                  wallet: walletModel,
+                  electrumServer: electrumServer,
+                );
+              }
+              return;
+            } catch (e) {
+              // Log the error and try the next server
+              if (i == electrumServers.length - 1) {
+                throw Exception('All Electrum servers failed to sync.');
+              }
+              continue;
+            }
+          }
         }),
       );
     }

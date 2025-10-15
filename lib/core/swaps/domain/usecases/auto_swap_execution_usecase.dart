@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
@@ -8,6 +7,7 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/ports/blockchain_port.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -19,7 +19,7 @@ class AutoSwapExecutionUsecase {
   final BoltzSwapRepository _testnetRepository;
   final WalletRepository _walletRepository;
   final LiquidWalletRepository _liquidWalletRepository;
-  final LiquidBlockchainRepository _liquidBlockchainRepository;
+  final BlockchainPort _blockchainPort;
   final SeedRepository _seedRepository;
   final WalletTransactionRepository _walletTxRepository;
   final LabelRepository _labelRepository;
@@ -29,7 +29,7 @@ class AutoSwapExecutionUsecase {
     required BoltzSwapRepository testnetRepository,
     required WalletRepository walletRepository,
     required LiquidWalletRepository liquidWalletRepository,
-    required LiquidBlockchainRepository liquidBlockchainRepository,
+    required BlockchainPort blockchainPort,
     required SeedRepository seedRepository,
     required WalletTransactionRepository walletTxRepository,
     required LabelRepository labelRepository,
@@ -37,7 +37,7 @@ class AutoSwapExecutionUsecase {
        _testnetRepository = testnetRepository,
        _walletRepository = walletRepository,
        _liquidWalletRepository = liquidWalletRepository,
-       _liquidBlockchainRepository = liquidBlockchainRepository,
+       _blockchainPort = blockchainPort,
        _seedRepository = seedRepository,
        _walletTxRepository = walletTxRepository,
        _labelRepository = labelRepository;
@@ -170,7 +170,7 @@ class AutoSwapExecutionUsecase {
     );
 
     debugPrint('Broadcasting transaction...');
-    final txid = await _liquidBlockchainRepository.broadcastTransaction(
+    final txid = await _blockchainPort.broadcastLiquidTransaction(
       signedPset: signedPset,
       isTestnet: defaultLiquidWallet.isTestnet,
     );

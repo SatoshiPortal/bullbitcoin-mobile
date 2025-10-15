@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -23,6 +23,7 @@ abstract class SwapState with _$SwapState {
     @Default(true) bool loadingWallets,
     @Default([]) List<Wallet> fromWallets,
     @Default([]) List<Wallet> toWallets,
+    @Default([]) List<Wallet> watchOnlyBitcoinWallets,
     @Default(WalletNetwork.liquid) WalletNetwork fromWalletNetwork,
     @Default(WalletNetwork.bitcoin) WalletNetwork toWalletNetwork,
     String? fromWalletId,
@@ -61,6 +62,7 @@ abstract class SwapState with _$SwapState {
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,
     @Default(false) bool creatingSwap,
+    @Default(false) bool loadingFees,
     @Default(false) bool buildingTransaction,
     @Default(false) bool signingTransaction,
     @Default(false) bool broadcastingTransaction,
@@ -381,10 +383,16 @@ abstract class SwapState with _$SwapState {
       fromAmountSat == 0 ||
       toAmountSat <= 0 ||
       fromWalletBalance < fromAmountSat ||
-      creatingSwap;
+      creatingSwap ||
+      selectedFeeList == null ||
+      (bitcoinAbsoluteFees == null && liquidAbsoluteFees == null);
 
   bool get disableSendSwapButton =>
-      broadcastingTransaction || signingTransaction || buildingTransaction;
+      broadcastingTransaction ||
+      signingTransaction ||
+      buildingTransaction ||
+      selectedFeeList == null ||
+      (bitcoinAbsoluteFees == null && liquidAbsoluteFees == null);
 
   SwapLimits? get swapLimits {
     if (fromWalletNetwork == WalletNetwork.bitcoin &&

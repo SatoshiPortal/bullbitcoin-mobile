@@ -25,7 +25,7 @@ class DcaWalletRadioList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Select Bitcoin wallet type', style: context.font.bodyMedium),
+        Text('Select Bitcoin Wallet Type', style: context.font.bodyMedium),
         const Gap(4),
         ...DcaNetwork.values.map((walletType) {
           return Column(

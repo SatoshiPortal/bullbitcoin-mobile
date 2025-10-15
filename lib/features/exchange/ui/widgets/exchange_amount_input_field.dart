@@ -2,9 +2,9 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
@@ -40,12 +40,18 @@ class ExchangeAmountInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final amountInputDecimals =
-        _isFiatCurrencyInput ? _fiatCurrency!.decimals : _bitcoinUnit!.decimals;
+        _isFiatCurrencyInput
+            ? _fiatCurrency?.decimals ?? 2
+            : _bitcoinUnit!.decimals;
+    final inputCurrency =
+        _isFiatCurrencyInput
+            ? _fiatCurrency?.code ?? 'CAD'
+            : _bitcoinUnit?.code ?? 'BTC';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Enter amount', style: context.font.bodyMedium),
+        Text('Enter Amount', style: context.font.bodyMedium),
         const Gap(4.0),
         Card(
           elevation: 1,
@@ -76,18 +82,9 @@ class ExchangeAmountInputField extends StatelessWidget {
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          inputFormatters:
-                              amountInputDecimals > 0
-                                  ? [
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(
-                                        r'^\d+\.?\d{0,'
-                                        '$amountInputDecimals'
-                                        '}',
-                                      ),
-                                    ),
-                                  ]
-                                  : [FilteringTextInputFormatter.digitsOnly],
+                          inputFormatters: [
+                            AmountInputFormatter(inputCurrency),
+                          ],
                           style: context.font.displaySmall?.copyWith(
                             color: context.colour.primary,
                           ),

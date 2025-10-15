@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -175,20 +176,14 @@ class LocalPayjoinDatasource {
   }
 }
 
-class CreateReceiverException implements Exception {
-  final String message;
-
-  CreateReceiverException(this.message);
+class CreateReceiverException extends BullException {
+  CreateReceiverException(super.message);
 }
 
-class CreateSenderException implements Exception {
-  final String message;
-
-  CreateSenderException(this.message);
+class CreateSenderException extends BullException {
+  CreateSenderException(super.message);
 }
 
-class UpdateException implements Exception {
-  final String message;
-
-  UpdateException(this.message);
+class UpdateException extends BullException {
+  UpdateException(super.message);
 }

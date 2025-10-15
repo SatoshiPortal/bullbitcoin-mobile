@@ -87,7 +87,7 @@ Future<void> main({bool isInitialized = false}) async {
     debugPrint('Receiver balance: $receiverBalance');
 
     if (senderBalance == BigInt.zero) {
-      final address = await addressRepository.getNewReceiveAddress(
+      final address = await addressRepository.generateNewReceiveAddress(
         walletId: senderWallet.id,
       );
       debugPrint(
@@ -95,7 +95,7 @@ Future<void> main({bool isInitialized = false}) async {
       );
     }
     if (receiverBalance == BigInt.zero) {
-      final address = await addressRepository.getNewReceiveAddress(
+      final address = await addressRepository.generateNewReceiveAddress(
         walletId: receiverWallet.id,
       );
       debugPrint(
@@ -138,7 +138,7 @@ Future<void> main({bool isInitialized = false}) async {
 
       test('should work with one receiver and one sender', () async {
         // Generate receiver address
-        final address = await addressRepository.getNewReceiveAddress(
+        final address = await addressRepository.generateNewReceiveAddress(
           walletId: receiverWallet.id,
         );
         debugPrint('Receive address generated: ${address.address}');
@@ -223,7 +223,7 @@ Future<void> main({bool isInitialized = false}) async {
         //  payjoin directory for the first time.
         const expireAfterSec = PayjoinConstants.directoryPollingInterval - 1;
         // Generate receiver address from receiver wallet
-        final address = await addressRepository.getNewReceiveAddress(
+        final address = await addressRepository.generateNewReceiveAddress(
           walletId: receiverWallet.id,
         );
 
@@ -288,7 +288,7 @@ Future<void> main({bool isInitialized = false}) async {
             debugPrint('Receiver utxos: ${receiverUtxos.length}');
             debugPrint('Sender utxos: ${senderUtxos.length}');
             if (receiverUtxos.length < numberOfPayjoins) {
-              final address = await addressRepository.getNewReceiveAddress(
+              final address = await addressRepository.generateNewReceiveAddress(
                 walletId: receiverWallet.id,
               );
               debugPrint(
@@ -296,7 +296,7 @@ Future<void> main({bool isInitialized = false}) async {
               );
             }
             if (senderUtxos.length < numberOfPayjoins) {
-              final address = await addressRepository.getNewReceiveAddress(
+              final address = await addressRepository.generateNewReceiveAddress(
                 walletId: senderWallet.id,
               );
               debugPrint(

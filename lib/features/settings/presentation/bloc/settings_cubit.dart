@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
@@ -6,8 +7,10 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -24,7 +27,9 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetCurrencyUsecase setCurrencyUsecase,
     required SetHideAmountsUsecase setHideAmountsUsecase,
     required SetIsSuperuserUsecase setIsSuperuserUsecase,
+    required SetIsDevModeUsecase setIsDevModeUsecase,
     required GetOldSeedsUsecase getOldSeedsUsecase,
+    required RevokeArkUsecase revokeArkUsecase,
   }) : _setEnvironmentUsecase = setEnvironmentUsecase,
        _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
        _getSettingsUsecase = getSettingsUsecase,
@@ -33,6 +38,8 @@ class SettingsCubit extends Cubit<SettingsState> {
        _setHideAmountsUsecase = setHideAmountsUsecase,
        _setIsSuperuserUsecase = setIsSuperuserUsecase,
        _getOldSeedsUsecase = getOldSeedsUsecase,
+       _setIsDevModeUsecase = setIsDevModeUsecase,
+       _revokeArkUsecase = revokeArkUsecase,
        super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -43,6 +50,8 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetHideAmountsUsecase _setHideAmountsUsecase;
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
   final GetOldSeedsUsecase _getOldSeedsUsecase;
+  final SetIsDevModeUsecase _setIsDevModeUsecase;
+  final RevokeArkUsecase _revokeArkUsecase;
 
   Future<void> init() async {
     final (storedSettings, appInfo) =
@@ -57,9 +66,8 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> toggleTestnetMode(bool active) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Testnet mode toggled: $active + currentEnvironment: ${settings?.environment.name}',
+    log.config(
+      'Testnet mode toggled: $active was ${settings?.environment.name}',
     );
     final environment = active ? Environment.testnet : Environment.mainnet;
     await _setEnvironmentUsecase.execute(environment);
@@ -72,9 +80,8 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> toggleSatsUnit(bool active) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Bitcoin unit toggled: $active + currentBitcoinUnit: ${settings?.bitcoinUnit.name}',
+    log.config(
+      'Bitcoin unit toggled: $active was ${settings?.bitcoinUnit.name}',
     );
     final unit = active ? BitcoinUnit.sats : BitcoinUnit.btc;
     await _setBitcoinUnitUsecase.execute(unit);
@@ -83,9 +90,8 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> changeLanguage(Language language) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Language changed to: ${language.name} + currentLanguage: ${settings?.language?.name}',
+    log.config(
+      'Language changed to: ${language.name} was ${settings?.language?.name}',
     );
     await _setLanguageUsecase.execute(language);
     emit(
@@ -95,9 +101,8 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> changeCurrency(String currencyCode) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Currency changed to: $currencyCode + currentCurrency: ${settings?.currencyCode}',
+    log.config(
+      'Currency changed to: $currencyCode was ${settings?.currencyCode}',
     );
     await _setCurrencyUsecase.execute(currencyCode);
     emit(
@@ -109,20 +114,14 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> toggleHideAmounts(bool hide) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Hide amounts toggled: $hide + currentHideAmounts: ${settings?.hideAmounts}',
-    );
+    log.config('Hide amounts toggled: $hide was ${settings?.hideAmounts}');
     await _setHideAmountsUsecase.execute(hide);
     emit(state.copyWith(storedSettings: settings?.copyWith(hideAmounts: hide)));
   }
 
   Future<void> toggleSuperuserMode(bool active) async {
     final settings = state.storedSettings;
-    // Log the action
-    log.info(
-      'Superuser mode toggled: $active + currentSuperuserMode: ${settings?.isSuperuser}',
-    );
+    log.config('Superuser mode toggled: $active was ${settings?.isSuperuser}');
     await _setIsSuperuserUsecase.execute(active);
     emit(
       state.copyWith(storedSettings: settings?.copyWith(isSuperuser: active)),
@@ -132,5 +131,30 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> checkHasLegacySeeds() async {
     final seeds = await _getOldSeedsUsecase.execute();
     emit(state.copyWith(hasLegacySeeds: seeds.isNotEmpty));
+  }
+
+  Future<void> toggleDevMode(
+    bool isEnabled, {
+    WalletBloc? walletBloc,
+  }) async {
+    final settings = state.storedSettings;
+
+    // If disabling dev mode, revoke Ark first
+    if (!isEnabled && settings?.isDevModeEnabled == true) {
+      try {
+        await _revokeArkUsecase.execute();
+        // Only trigger refresh if walletBloc is provided
+        walletBloc?.add(const RefreshArkWalletBalance());
+      } catch (e) {
+        log.severe('Failed to revoke Ark: $e');
+      }
+    }
+
+    await _setIsDevModeUsecase.execute(isEnabled);
+    emit(
+      state.copyWith(
+        storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+      ),
+    );
   }
 }

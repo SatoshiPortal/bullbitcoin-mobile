@@ -12,6 +12,7 @@ sealed class RecoverBullVaultRecoveryState
     @Default(null) DecryptedVault? decryptedVault,
     @Default(null) ({BigInt satoshis, int transactions})? bip84Status,
     @Default(null) ({BigInt satoshis, int transactions})? liquidStatus,
+    @Default(false) bool isImporting,
     @Default(false) bool isImported,
   }) = _RecoverBullVaultRecoveryState;
 
@@ -29,5 +30,6 @@ sealed class RecoverBullVaultRecoveryState
     return bitcoinTransactions + liquidTransactions;
   }
 
-  bool get isStillLoading => bip84Status == null || liquidStatus == null;
+  bool get isStillLoading =>
+      bip84Status == null || liquidStatus == null || isImporting;
 }

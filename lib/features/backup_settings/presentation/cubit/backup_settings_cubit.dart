@@ -1,12 +1,10 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_vault_key_from_default_seed_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_encrypted_vault_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_file_content_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -21,24 +19,18 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   BackupSettingsCubit({
     required GetWalletsUsecase getWalletsUsecase,
     required SettingsRepository settingsRepository,
-    required SelectFolderPathUsecase selectFolderPathUsecase,
-    required SaveToFileSystemUsecase saveToFileSystemUsecase,
+    required SaveFileToSystemUsecase saveFileToSystemUsecase,
     required CreateVaultKeyFromDefaultSeedUsecase
     createBackupKeyFromDefaultSeedUsecase,
-    required SelectFileFromPathUsecase selectFileFromPathUsecase,
-    required FetchEncryptedVaultFromFileSystemUsecase
-    fetchEncryptedVaultFromFileSystemUsecase,
+    required PickFileContentUsecase selectFileFromPathUsecase,
     required FetchLatestGoogleDriveVaultUsecase
     fetchLatestGoogleDriveBackupUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
-       _selectFolderPathUsecase = selectFolderPathUsecase,
-       _saveToFileSystemUsecase = saveToFileSystemUsecase,
+       _saveFileToSystemUsecase = saveFileToSystemUsecase,
        _createBackupKeyFromDefaultSeedUsecase =
            createBackupKeyFromDefaultSeedUsecase,
        _selectFileFromPathUsecase = selectFileFromPathUsecase,
-       _fetchEncryptedVaultFromFileSystemUsecase =
-           fetchEncryptedVaultFromFileSystemUsecase,
        _fetchLatestGoogleDriveBackupUsecase =
            fetchLatestGoogleDriveBackupUsecase,
        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
@@ -47,14 +39,11 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
        super(BackupSettingsState());
 
   final GetWalletsUsecase _getWalletsUsecase;
-  final SelectFolderPathUsecase _selectFolderPathUsecase;
-  final SaveToFileSystemUsecase _saveToFileSystemUsecase;
+  final SaveFileToSystemUsecase _saveFileToSystemUsecase;
   final CreateVaultKeyFromDefaultSeedUsecase
   _createBackupKeyFromDefaultSeedUsecase;
   final SettingsRepository _settingsRepository;
-  final SelectFileFromPathUsecase _selectFileFromPathUsecase;
-  final FetchEncryptedVaultFromFileSystemUsecase
-  _fetchEncryptedVaultFromFileSystemUsecase;
+  final PickFileContentUsecase _selectFileFromPathUsecase;
   final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveBackupUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
 
@@ -112,13 +101,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       await _connectToGoogleDriveUsecase.execute();
       final (content: content, fileName: _) =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
-      final folderPath = await _selectFolderPathUsecase.execute();
-      if (folderPath == null) {
-        emit(state.copyWith(status: BackupSettingsStatus.initial));
-        return;
-      }
 
-      await _saveToFileSystemUsecase.execute(folderPath, content);
+      await _saveFileToSystemUsecase.execute(
+        content: content,
+        filename: EncryptedVault(file: content).filename,
+      );
+
       emit(
         state.copyWith(
           status: BackupSettingsStatus.success,
@@ -149,7 +137,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         emit(
           state.copyWith(
             status: BackupSettingsStatus.error,
-            error: const BackupKeyDerivationFailedError(),
+            error: BackupKeyDerivationFailedError(),
           ),
         );
 
@@ -182,16 +170,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
   }
 
-  Future<String?> selectBackupFile() async {
-    return await _selectFileFromPathUsecase.execute();
-  }
-
-  Future<String> readBackupFile(String filePath) async {
-    final encryptedVault = await _fetchEncryptedVaultFromFileSystemUsecase
-        .execute(filePath);
-    return encryptedVault.toFile();
-  }
-
   Future<void> selectGoogleDriveProvider() async {
     try {
       emit(state.copyWith(status: BackupSettingsStatus.loading, error: null));
@@ -220,16 +198,18 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       emit(state.copyWith(status: BackupSettingsStatus.loading, error: null));
 
       // Select backup file from file system
-      final filePath = await _selectFileFromPathUsecase.execute();
-      if (filePath == null) {
-        emit(state.copyWith(status: BackupSettingsStatus.initial));
+      final fileContent = await _selectFileFromPathUsecase.execute();
+      if (fileContent.isEmpty || !EncryptedVault.isValid(fileContent)) {
+        emit(
+          state.copyWith(
+            status: BackupSettingsStatus.error,
+            error: 'Invalid backupfile',
+          ),
+        );
         return;
       }
 
-      // Read the backup file content
-      final encryptedVault = await _fetchEncryptedVaultFromFileSystemUsecase
-          .execute(filePath);
-      final content = encryptedVault.toFile();
+      final content = EncryptedVault(file: fileContent).toFile();
 
       emit(
         state.copyWith(

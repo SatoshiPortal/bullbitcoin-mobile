@@ -45,7 +45,7 @@ class ConfirmScreen extends StatelessWidget {
                 ),
                 maxLines: 2,
               ),
-              const Gap(47),
+              const Gap(30),
               if (state.authInputType == AuthInputType.password)
                 BBText(
                   'Password',
@@ -73,7 +73,7 @@ class ConfirmScreen extends StatelessWidget {
                   }
                 },
               ),
-              const Gap(72),
+              const Gap(30),
               BBButton.big(
                 label:
                     'Use ${state.authInputType == AuthInputType.pin ? 'password' : 'PIN'} instead >>',
@@ -90,6 +90,7 @@ class ConfirmScreen extends StatelessWidget {
               if (state.authInputType == AuthInputType.pin)
                 DialPad(
                   disableFeedback: true,
+                  onlyDigits: true,
                   onNumberPressed:
                       (e) => context.read<KeyServerCubit>().enterKey(e),
                   onBackspacePressed:

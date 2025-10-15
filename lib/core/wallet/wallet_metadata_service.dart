@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
@@ -246,8 +247,6 @@ class WalletMetadataService {
   }
 }
 
-class MnemonicSeedNeededException implements Exception {
-  final String message;
-
-  MnemonicSeedNeededException(this.message);
+class MnemonicSeedNeededException extends BullException {
+  MnemonicSeedNeededException(super.message);
 }

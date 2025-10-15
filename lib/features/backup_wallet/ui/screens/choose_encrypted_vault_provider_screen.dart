@@ -1,10 +1,10 @@
 import 'dart:ui';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
     show CurrentKeyServerFlow;
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -13,10 +13,11 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
 import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
-    show BlocBuilder, BlocListener, BlocProvider, ReadContext;
+    show BlocBuilder, BlocListener, BlocProvider, ReadContext, SelectContext;
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -41,17 +42,17 @@ class _ChooseVaultProviderScreenState extends State<ChooseVaultProviderScreen> {
 class _Screen extends StatelessWidget {
   const _Screen();
 
-  void onProviderSelected(BuildContext context, BackupProviderType provider) {
+  void onProviderSelected(BuildContext context, VaultProvider provider) {
     switch (provider) {
-      case BackupProviderType.googleDrive:
+      case VaultProvider.googleDrive:
         context.read<BackupWalletBloc>().add(
           const OnGoogleDriveBackupSelected(),
         );
-      case BackupProviderType.custom:
+      case VaultProvider.customLocation:
         context.read<BackupWalletBloc>().add(
           const OnFileSystemBackupSelected(),
         );
-      case BackupProviderType.iCloud:
+      case VaultProvider.iCloud:
         log.info('iCloud, not supported yet');
     }
   }
@@ -89,16 +90,16 @@ class _Screen extends StatelessWidget {
               backgroundColor: context.colour.onSecondary,
               body: ProgressScreen(
                 title:
-                    state.vaultProvider is GoogleDrive
+                    state.vaultProvider == VaultProvider.googleDrive
                         ? "You will need to sign-in to Google Drive"
                         : "Saving to your device.",
                 description:
-                    state.vaultProvider is GoogleDrive
+                    state.vaultProvider == VaultProvider.googleDrive
                         ? "Google will ask you to share personal information with this app."
                         : "",
                 isLoading: true,
                 extras:
-                    state.vaultProvider is GoogleDrive
+                    state.vaultProvider == VaultProvider.googleDrive
                         ? [
                           Text.rich(
                             TextSpan(
@@ -144,6 +145,13 @@ class _Screen extends StatelessWidget {
   }
 
   Widget _buildScaffold(BuildContext context) {
+    final defaultWallet = context.select(
+      (WalletBloc cubit) => cubit.state.wallets.firstWhereOrNull(
+        (wallet) => wallet.isDefault && wallet.network.isBitcoin,
+      ),
+    );
+    final lastEncryptedVaultBackup = defaultWallet?.latestEncryptedBackup;
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -158,6 +166,14 @@ class _Screen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (lastEncryptedVaultBackup != null) ...[
+              BBText(
+                'Last Known Encrypted Vault: ${lastEncryptedVaultBackup.toString().substring(0, 19)}',
+                style: context.font.bodyMedium,
+                textAlign: TextAlign.start,
+              ),
+              const Gap(16),
+            ],
             RecoverbullVaultProviderSelector(
               onProviderSelected:
                   (provider) => onProviderSelected(context, provider),

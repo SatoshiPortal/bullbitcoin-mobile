@@ -13,7 +13,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_new_receive_address_use_case.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
@@ -35,7 +35,7 @@ class ReceiveLocator {
                   .boltzTestnetSwapRepositoryInstanceName,
         ),
         seedRepository: locator<SeedRepository>(),
-        getNewAddressUsecase: locator<GetNewReceiveAddressUsecase>(),
+        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         labelRepository: locator<LabelRepository>(),
       ),
     );
@@ -48,7 +48,7 @@ class ReceiveLocator {
         getSettingsUsecase: locator<GetSettingsUsecase>(),
         convertSatsToCurrencyAmountUsecase:
             locator<ConvertSatsToCurrencyAmountUsecase>(),
-        getNewReceiveAddressUsecase: locator<GetNewReceiveAddressUsecase>(),
+        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         createReceiveSwapUsecase: locator<CreateReceiveSwapUsecase>(),
         receiveWithPayjoinUsecase: locator<ReceiveWithPayjoinUsecase>(),
         broadcastOriginalTransactionUsecase:

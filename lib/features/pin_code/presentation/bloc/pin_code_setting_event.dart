@@ -4,6 +4,10 @@ sealed class PinCodeSettingEvent {
   const PinCodeSettingEvent();
 }
 
+class PinCodeSettingInitialized extends PinCodeSettingEvent {
+  const PinCodeSettingInitialized();
+}
+
 class PinCodeSettingStarted extends PinCodeSettingEvent {
   const PinCodeSettingStarted();
 }
@@ -39,4 +43,12 @@ class PinCodeSettingPinCodeConfirmed extends PinCodeSettingEvent {
 
 class PinCodeSettingPinCodeObscureToggled extends PinCodeSettingEvent {
   const PinCodeSettingPinCodeObscureToggled();
+}
+
+class PinCodeCreate extends PinCodeSettingEvent {
+  const PinCodeCreate();
+}
+
+class PinCodeDelete extends PinCodeSettingEvent {
+  const PinCodeDelete();
 }

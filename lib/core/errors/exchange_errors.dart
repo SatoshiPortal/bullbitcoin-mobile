@@ -1,8 +1,5 @@
-class ApiKeyException implements Exception {
-  final String message;
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-  ApiKeyException(this.message);
-
-  @override
-  String toString() => '[ApiKeyException]: $message';
+class ApiKeyException extends BullException {
+  ApiKeyException(super.message);
 }

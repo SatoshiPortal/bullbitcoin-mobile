@@ -15,7 +15,7 @@ void main() {
     Network.bitcoinMainnet,
   );
 
-  final validRecoverbullCustomPaths = [
+  final recoverbullPathWithMissingLastSingleQuote = [
     "m/1608'/0'/586053381",
     "1608'/0'/586053381",
   ];
@@ -24,7 +24,7 @@ void main() {
       '151a5a41f5eac5d49e67e0fad0bddd3beebe0f0e4b7739435997506cf12d9fce';
 
   group('Recoverbull Bip85', () {
-    for (final path in validRecoverbullCustomPaths) {
+    for (final path in recoverbullPathWithMissingLastSingleQuote) {
       test('deriveBackupKey', () {
         final derivedKey = RecoverbullBip85Utils.deriveBackupKey(xprv, path);
         expect(derivedKey, expectedKeyForPath);

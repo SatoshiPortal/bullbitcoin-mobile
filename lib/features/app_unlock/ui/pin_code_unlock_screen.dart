@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -65,54 +64,80 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
           ),
         ),
         body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Gap(75),
-                  BBText(
-                    'Enter your pin code to unlock',
-                    textAlign: TextAlign.center,
-                    style: context.font.headlineMedium?.copyWith(
-                      color: context.colour.outline,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Gap(30),
+                        Text(
+                          'Enter your pin code to unlock',
+                          textAlign: TextAlign.center,
+                          style: context.font.headlineMedium?.copyWith(
+                            color: context.colour.outline,
+                          ),
+                          maxLines: 3,
+                        ),
+                        const Gap(30),
+                        BlocSelector<AppUnlockBloc, AppUnlockState, (String, bool)>(
+                          selector: (state) => (state.pinCode, state.obscurePinCode),
+                          builder: (context, data) {
+                            final (pinCode, obscurePinCode) = data;
+                            return BBInputText(
+                              value: pinCode,
+                              obscure: obscurePinCode,
+                              onRightTap:
+                                  () => context.read<AppUnlockBloc>().add(
+                                    AppUnlockPinCodeObscureToggled(),
+                                  ),
+                              rightIcon: const Icon(Icons.visibility_off_outlined),
+                              onlyNumbers: true,
+                              onChanged: (value) {},
+                            );
+                          },
+                        ),
+                        const Gap(2),
+                        BlocSelector<AppUnlockBloc, AppUnlockState, (bool, int)>(
+                          selector: (state) => (state.showError, state.failedAttempts),
+                          builder: (context, data) {
+                            final (showError, failedAttempts) = data;
+                            return showError && failedAttempts > 0
+                                ? Text(
+                                  'Incorrect PIN. Please try again. ($failedAttempts failed ${failedAttempts == 1 ? "attempt" : "attempts"})',
+                                  textAlign: TextAlign.start,
+                                  style: context.font.labelSmall?.copyWith(
+                                    color: context.colour.error,
+                                  ),
+                                )
+                                : const SizedBox.shrink();
+                          },
+                        ),
+                      ],
                     ),
-                    maxLines: 3,
                   ),
-                  const Gap(50),
-                  BlocSelector<AppUnlockBloc, AppUnlockState, (String, bool)>(
-                    selector: (state) => (state.pinCode, state.obscurePinCode),
-                    builder: (context, data) {
-                      final (pinCode, obscurePinCode) = data;
-                      return BBInputText(
-                        value: pinCode,
-                        obscure: obscurePinCode,
-                        onRightTap:
-                            () => context.read<AppUnlockBloc>().add(
-                              AppUnlockPinCodeObscureToggled(),
-                            ),
-                        rightIcon: const Icon(Icons.visibility_off_outlined),
-                        onlyNumbers: true,
-                        onChanged: (value) {},
-                      );
-                    },
-                  ),
-                  const Gap(130),
-                  DialPad(
-                    disableFeedback: true,
-                    onNumberPressed:
-                        (value) => context.read<AppUnlockBloc>().add(
-                          AppUnlockPinCodeNumberAdded(int.parse(value)),
-                        ),
-                    onBackspacePressed:
-                        () => context.read<AppUnlockBloc>().add(
-                          const AppUnlockPinCodeNumberRemoved(),
-                        ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: DialPad(
+                  disableFeedback: true,
+                  onlyDigits: true,
+                  onNumberPressed:
+                      (value) => context.read<AppUnlockBloc>().add(
+                        AppUnlockPinCodeNumberAdded(int.parse(value)),
+                      ),
+                  onBackspacePressed:
+                      () => context.read<AppUnlockBloc>().add(
+                        const AppUnlockPinCodeNumberRemoved(),
+                      ),
+                ),
+              ),
+              const Gap(16),
+            ],
           ),
         ),
         bottomNavigationBar: SafeArea(

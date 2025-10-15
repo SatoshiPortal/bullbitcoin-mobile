@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_funding_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -43,11 +44,6 @@ class GetExchangeFundingDetailsUsecase {
   }
 }
 
-class GetExchangeFundingDetailsException implements Exception {
-  final String message;
-
-  GetExchangeFundingDetailsException(this.message);
-
-  @override
-  String toString() => '[GetExchangeFundingDetailsUsecase]: $message';
+class GetExchangeFundingDetailsException extends BullException {
+  GetExchangeFundingDetailsException(super.message);
 }

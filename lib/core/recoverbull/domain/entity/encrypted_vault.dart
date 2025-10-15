@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
@@ -24,19 +25,15 @@ class EncryptedVault {
   DateTime get createdAt =>
       DateTime.fromMillisecondsSinceEpoch(backup.createdAt);
 
-  String get filename => '${createdAt.toIso8601String()}_$id.json';
+  String get filename =>
+      '${createdAt.toIso8601String().substring(0, 10)}_encrypted_vault.json';
 }
 
-class EncryptedVaultException implements Exception {
-  final String message;
-
-  EncryptedVaultException(this.message);
-
-  @override
-  String toString() => message;
+class EncryptedVaultException extends BullException {
+  EncryptedVaultException(super.message);
 }
 
-class EncryptedVaultMissingPath extends EncryptedVaultException {
+class EncryptedVaultMissingPath extends BullException {
   EncryptedVaultMissingPath()
     : super('Encrypted vault derivationPath is missing path');
 }

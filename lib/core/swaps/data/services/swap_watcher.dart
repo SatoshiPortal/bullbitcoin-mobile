@@ -166,9 +166,8 @@ class SwapWatcherService {
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;
       } else {
-        final address = await _walletAddressRepository.getNewReceiveAddress(
-          walletId: swap.sendWalletId,
-        );
+        final address = await _walletAddressRepository
+            .generateNewReceiveAddress(walletId: swap.sendWalletId);
         refundAddress = address.address;
         final updatedSwap = swap.copyWith(refundAddress: refundAddress);
         await _boltzRepo.updateSwap(swap: updatedSwap);
@@ -187,11 +186,13 @@ class SwapWatcherService {
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
       String refundTxid;
+      int actualFeesUsed;
       try {
+        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
           swapId: swap.id,
           bitcoinAddress: refundAddress,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
         );
       } catch (e, st) {
         log.severe(
@@ -205,10 +206,11 @@ class SwapWatcherService {
           isCooperative: false,
         );
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
+        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
           swapId: swap.id,
           bitcoinAddress: refundAddress,
-          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           cooperate: false,
         );
       }
@@ -217,6 +219,7 @@ class SwapWatcherService {
         refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
@@ -280,9 +283,8 @@ class SwapWatcherService {
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;
       } else {
-        final address = await _walletAddressRepository.getNewReceiveAddress(
-          walletId: swap.sendWalletId,
-        );
+        final address = await _walletAddressRepository
+            .generateNewReceiveAddress(walletId: swap.sendWalletId);
         refundAddress = address.address;
         final updatedSwap = swap.copyWith(refundAddress: refundAddress);
         await _boltzRepo.updateSwap(swap: updatedSwap);
@@ -300,11 +302,13 @@ class SwapWatcherService {
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
       String refundTxid;
+      int actualFeesUsed;
       try {
+        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
           swapId: swap.id,
           liquidAddress: refundAddress,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
         );
       } catch (e, st) {
         log.severe(
@@ -318,10 +322,11 @@ class SwapWatcherService {
           isCooperative: false,
         );
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
+        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
           swapId: swap.id,
           liquidAddress: refundAddress,
-          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           cooperate: false,
         );
       }
@@ -330,6 +335,7 @@ class SwapWatcherService {
         refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
@@ -387,9 +393,25 @@ class SwapWatcherService {
     try {
       String finalClaimAddress;
       if (swap.receiveWalletId != null) {
-        final claimAddress = await _walletAddressRepository
-            .getNewReceiveAddress(walletId: swap.receiveWalletId!);
+        if (swap.receiveAddress != null) {
+          // Use existing receive address if available
+          if (swap.receiveAddress!.startsWith('bitcoin:')) {
+            final uri = bip21.decode(swap.receiveAddress!);
+            final address = uri.address;
+            finalClaimAddress = address;
+          } else {
+            finalClaimAddress = swap.receiveAddress!;
+          }
+        } else {
+          // Generate new address and store it in the swap model
+          final claimAddress = await _walletAddressRepository
+            .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
         finalClaimAddress = claimAddress.address;
+          finalClaimAddress = claimAddress.address;
+          final updatedSwap = swap.copyWith(receiveAddress: finalClaimAddress);
+          await _boltzRepo.updateSwap(swap: updatedSwap);
+        }
+
       } else {
         if (swap.receiveAddress!.startsWith('bitcoin:')) {
           final uri = bip21.decode(swap.receiveAddress!);
@@ -444,9 +466,8 @@ class SwapWatcherService {
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;
       } else {
-        final address = await _walletAddressRepository.getNewReceiveAddress(
-          walletId: swap.sendWalletId,
-        );
+        final address = await _walletAddressRepository
+            .generateNewReceiveAddress(walletId: swap.sendWalletId);
         refundAddress = address.address;
         final updatedSwap = swap.copyWith(refundAddress: refundAddress);
         await _boltzRepo.updateSwap(swap: updatedSwap);
@@ -465,10 +486,12 @@ class SwapWatcherService {
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
       String refundTxid;
+      int actualFeesUsed;
       try {
+        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           bitcoinRefundAddress: refundAddress,
         );
       } catch (e, st) {
@@ -484,9 +507,10 @@ class SwapWatcherService {
           refundAddressForChainSwaps: refundAddress,
         );
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
+        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           bitcoinRefundAddress: refundAddress,
           cooperate: false,
         );
@@ -496,6 +520,7 @@ class SwapWatcherService {
         refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
@@ -514,9 +539,25 @@ class SwapWatcherService {
     try {
       String finalClaimAddress;
       if (swap.receiveWalletId != null) {
-        final claimAddress = await _walletAddressRepository
-            .getNewReceiveAddress(walletId: swap.receiveWalletId!);
-        finalClaimAddress = claimAddress.address;
+        if (swap.receiveAddress != null) {
+          // Use existing receive address if available
+          if (swap.receiveAddress!.startsWith('liquidnetwork:') ||
+              swap.receiveAddress!.startsWith('liquidtestnet:')) {
+            final uri = bip21.decode(swap.receiveAddress!);
+            final address = uri.address;
+            finalClaimAddress = address;
+          } else {
+            finalClaimAddress = swap.receiveAddress!;
+          }
+        } else {
+          // Generate new address and store it in the swap model
+          final claimAddress = await _walletAddressRepository
+            .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
+          finalClaimAddress = claimAddress.address;
+          final updatedSwap = swap.copyWith(receiveAddress: finalClaimAddress);
+          await _boltzRepo.updateSwap(swap: updatedSwap);
+        }
+
       } else {
         if (swap.receiveAddress!.startsWith('liquidnetwork:') ||
             swap.receiveAddress!.startsWith('liquidtestnet:')) {
@@ -573,9 +614,8 @@ class SwapWatcherService {
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;
       } else {
-        final address = await _walletAddressRepository.getNewReceiveAddress(
-          walletId: swap.sendWalletId,
-        );
+        final address = await _walletAddressRepository
+            .generateNewReceiveAddress(walletId: swap.sendWalletId);
         refundAddress = address.address;
         final updatedSwap = swap.copyWith(refundAddress: refundAddress);
         await _boltzRepo.updateSwap(swap: updatedSwap);
@@ -594,10 +634,12 @@ class SwapWatcherService {
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
       String refundTxid;
+      int actualFeesUsed;
       try {
+        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           liquidRefundAddress: refundAddress,
         );
       } catch (e, st) {
@@ -612,9 +654,10 @@ class SwapWatcherService {
           isCooperative: false,
         );
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
+        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
         refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: scriptPathFeeOptions.fastest.value.toInt(),
+          absoluteFees: actualFeesUsed,
           liquidRefundAddress: refundAddress,
           cooperate: false,
         );
@@ -624,6 +667,7 @@ class SwapWatcherService {
         refundAddress: refundAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {

@@ -140,6 +140,10 @@ class SwapCubit extends Cubit<SwapState> {
 
       if (state.selectedFeeList == null) {
         await loadFees();
+        // Wait for fees to be loaded
+        while (state.loadingFees || state.selectedFeeList == null) {
+          await Future.delayed(const Duration(milliseconds: 100));
+        }
       }
 
       final networkFee = state.selectedFeeList!.fastest;
@@ -207,12 +211,13 @@ class SwapCubit extends Cubit<SwapState> {
 
       if (state.bitcoinUnit == BitcoinUnit.sats) {
         emit(state.copyWith(fromAmount: maxAmount.toString()));
-        emit(state.copyWith(toAmount: state.calculateToAmount));
       } else {
         final validatedAmount = ConvertAmount.satsToBtc(maxAmount);
         emit(state.copyWith(fromAmount: validatedAmount.toString()));
-        emit(state.copyWith(toAmount: state.calculateToAmount));
       }
+
+      // Calculate toAmount after setting fromAmount
+      emit(state.copyWith(toAmount: state.calculateToAmount));
       emit(state.copyWith(sendMax: true));
       // check swap limits
       if (swapLimits!.min > maxAmount) {
@@ -251,11 +256,13 @@ class SwapCubit extends Cubit<SwapState> {
     final wallets = await _getWalletsUsecase.execute();
 
     final liquidWallets = wallets.where((w) => w.isLiquid).toList();
-    final bitcoinWallets =
+    final bitcoinSignerWallets =
         wallets.where((w) => !w.isLiquid && w.signsLocally).toList();
-    final defaultBitcoinWallet = bitcoinWallets.firstWhere(
+    final watchOnlyBitcoinWallets =
+        wallets.where((w) => !w.isLiquid && !w.signsLocally).toList();
+    final defaultBitcoinWallet = bitcoinSignerWallets.firstWhere(
       (w) => w.isDefault,
-      orElse: () => bitcoinWallets.first,
+      orElse: () => bitcoinSignerWallets.first,
     );
 
     final settings = await _getSettingsUsecase.execute();
@@ -286,11 +293,11 @@ class SwapCubit extends Cubit<SwapState> {
     emit(
       state.copyWith(
         fromWallets: liquidWallets,
-        toWallets: bitcoinWallets,
+        toWallets: bitcoinSignerWallets, // Start with signing wallets only
+        watchOnlyBitcoinWallets: watchOnlyBitcoinWallets,
         loadingWallets: false,
         fiatCurrencyCodes: currencies,
         fiatCurrencyCode: selectedFiatCurrencyCode,
-
         exchangeRate: exchangeRate,
       ),
     );
@@ -319,6 +326,7 @@ class SwapCubit extends Cubit<SwapState> {
   Future<void> loadFees() async {
     if (state.fromWallet == null && state.toWallet == null) return;
     try {
+      emit(state.copyWith(loadingFees: true));
       final fromNetworkFees = await _getNetworkFeesUsecase.execute(
         isLiquid: state.fromWallet!.network.isLiquid,
       );
@@ -342,10 +350,11 @@ class SwapCubit extends Cubit<SwapState> {
           customFee: null,
           selectedFee: fromNetworkFees.fastest,
           selectedFeeOption: FeeSelection.fastest,
+          loadingFees: false,
         ),
       );
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: e.toString(), loadingFees: false));
     }
   }
 
@@ -360,10 +369,21 @@ class SwapCubit extends Cubit<SwapState> {
       newSelectedFeeList = state.liquidFeeList;
       newSelectedFee = state.liquidFeeList?.fastest;
     }
+
+    List<Wallet> newFromWallets = [];
+    List<Wallet> newToWallets = [];
+
+    if (newFromNetwork == WalletNetwork.bitcoin) {
+      newFromWallets = state.toWallets;
+      newToWallets = state.fromWallets;
+    } else {
+      newToWallets = [...state.toWallets, ...state.watchOnlyBitcoinWallets];
+    }
+
     emit(
       state.copyWith(
-        fromWallets: state.toWallets,
-        toWallets: state.fromWallets,
+        fromWallets: newFromWallets,
+        toWallets: newToWallets,
         fromWalletNetwork: state.toWalletNetwork,
         toWalletNetwork: state.fromWalletNetwork,
         selectedFromCurrencyCode: state.selectedToCurrencyCode,
@@ -517,7 +537,17 @@ class SwapCubit extends Cubit<SwapState> {
       );
 
       _watchChainSwap(swap.id);
-      await loadFees();
+
+      // Ensure fees are loaded before proceeding
+      if (state.selectedFeeList == null) {
+        await loadFees();
+      }
+
+      // Wait for fees to be loaded
+      while (state.loadingFees || state.selectedFeeList == null) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+
       emit(state.copyWith(amountConfirmedClicked: false));
       await Future.delayed(const Duration(milliseconds: 1000));
       emit(

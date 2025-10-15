@@ -1,4 +1,6 @@
+import 'package:bb_mobile/core/ark/locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
+import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
@@ -16,6 +18,7 @@ import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
 import 'package:bb_mobile/features/key_server/key_server_locator.dart';
+import 'package:bb_mobile/features/ledger/ledger_locator.dart';
 import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
@@ -43,6 +46,11 @@ class AppLocator {
     // Register core dependencies first
     CoreLocator.register();
     await CoreLocator.registerDatasources();
+    // Note: since the WalletLocator repositories depend on ports for electrum servers,
+    // we need to make sure the ports are registered before the repositories
+    // This is a hack though as normally repositories should not depend on ports
+    // The proper solution is to refactor the code to remove this dependency
+    CoreLocator.registerPorts();
     await CoreLocator.registerRepositories();
     CoreLocator.registerServices();
     CoreLocator.registerUsecases();
@@ -68,11 +76,14 @@ class AppLocator {
     ImportWatchOnlyLocator.setup();
     BroadcastSignedTxLocator.setup();
     SwapLocator.setup();
+
     ExchangeLocator.setup();
     BuyLocator.setup();
     SellLocator.setup();
     WithdrawLocator.setup();
     PayLocator.setup();
+    StatusLocator.setup();
+
     FundExchangeLocator.setup();
     AutoSwapLocator.setup();
     AddressViewLocator.setup();
@@ -81,5 +92,7 @@ class AppLocator {
     ReplaceByFeeLocator.setup();
     Bip85EntropyLocator.setup();
     RecoverBullSelectDriveVaultLocator.setup();
+    LedgerLocator.setup();
+    ArkCoreLocator.setup();
   }
 }

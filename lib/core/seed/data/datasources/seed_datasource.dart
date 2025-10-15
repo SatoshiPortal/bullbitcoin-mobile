@@ -1,4 +1,6 @@
 import 'dart:convert';
+
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -45,8 +47,6 @@ class SeedDatasource {
       '${SecureStorageKeyPrefixConstants.seed}$fingerprint';
 }
 
-class SeedNotFoundException implements Exception {
-  final String message;
-
-  const SeedNotFoundException(this.message);
+class SeedNotFoundException extends BullException {
+  SeedNotFoundException(super.message);
 }

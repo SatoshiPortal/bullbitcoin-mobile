@@ -1,22 +1,19 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
 class TheDirtyLiquidUsecase {
-  TheDirtyLiquidUsecase(
-    this._settingsRepository,
-    this._electrumServerRepository,
-  );
+  TheDirtyLiquidUsecase(this._settingsRepository, this._electrumServerPort);
   final SettingsRepository _settingsRepository;
-  final ElectrumServerRepository _electrumServerRepository;
+  final ElectrumServerPort _electrumServerPort;
 
   Future<({BigInt satoshis, int transactions})> call(
     bip39.Mnemonic mnemonic,
@@ -49,17 +46,26 @@ class TheDirtyLiquidUsecase {
         descriptor: descriptor,
       );
 
-      final electrumServer = await _electrumServerRepository
-          .getPrioritizedServer(network: network);
-
-      final electrumServerModel = ElectrumServerModel.fromEntity(
-        electrumServer,
+      final electrumServers = await _electrumServerPort.getElectrumServers(
+        isTestnet: network.isTestnet,
+        isLiquid: network.isLiquid,
       );
 
-      await wallet.sync_(
-        electrumUrl: electrumServerModel.url,
-        validateDomain: electrumServerModel.validateDomain,
-      );
+      for (int i = 0; i < electrumServers.length; i++) {
+        try {
+          final electrumServer = electrumServers[i];
+          await wallet.sync_(
+            electrumUrl: electrumServer.url,
+            validateDomain: electrumServer.validateDomain,
+          );
+          break; // Exit the loop if sync is successful
+        } catch (e) {
+          log.warning('Failed to sync with ${electrumServers[i].url}: $e');
+          if (i == electrumServers.length - 1) {
+            throw Exception('All Electrum servers failed to sync.');
+          }
+        }
+      }
 
       final balances = await wallet.balances();
       final transactions = await wallet.txs();
@@ -122,20 +128,10 @@ class TheDirtyLiquidUsecase {
   }
 }
 
-class CheckLiquidWalletStatusException implements Exception {
-  final String message;
-
-  CheckLiquidWalletStatusException(this.message);
-
-  @override
-  String toString() => message;
+class CheckLiquidWalletStatusException extends BullException {
+  CheckLiquidWalletStatusException(super.message);
 }
 
-class UnsupportedLwkNetworkException implements Exception {
-  final String message;
-
-  UnsupportedLwkNetworkException(this.message);
-
-  @override
-  String toString() => message;
+class UnsupportedLwkNetworkException extends BullException {
+  UnsupportedLwkNetworkException(super.message);
 }

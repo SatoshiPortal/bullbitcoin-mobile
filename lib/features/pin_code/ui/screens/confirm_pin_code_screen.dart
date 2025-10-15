@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,9 +20,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          return;
-        }
+        if (didPop) return;
         backHandler();
       },
       child: Scaffold(
@@ -34,85 +31,92 @@ class ConfirmPinCodeScreen extends StatelessWidget {
           flexibleSpace: TopBar(onBack: backHandler, title: "Authentication"),
         ),
         body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Gap(75),
-                  BBText(
-                    'Confirm new pin',
-                    textAlign: TextAlign.center,
-                    style: context.font.headlineMedium?.copyWith(
-                      color: context.colour.outline,
-                    ),
-                    maxLines: 3,
-                  ),
-                  const Gap(50),
-                  BlocSelector<
-                    PinCodeSettingBloc,
-                    PinCodeSettingState,
-                    (String, bool)
-                  >(
-                    selector:
-                        (state) => (
-                          state.pinCodeConfirmation,
-                          state.obscurePinCode,
-                        ),
-                    builder: (context, data) {
-                      final (pinCode, obscurePinCode) = data;
-                      return BBInputText(
-                        value: pinCode,
-                        obscure: obscurePinCode,
-                        onRightTap:
-                            () => context.read<PinCodeSettingBloc>().add(
-                              const PinCodeSettingPinCodeObscureToggled(),
-                            ),
-                        rightIcon:
-                            obscurePinCode
-                                ? const Icon(Icons.visibility_off_outlined)
-                                : const Icon(Icons.visibility_outlined),
-                        onlyNumbers: true,
-                        onChanged: (value) {},
-                      );
-                    },
-                  ),
-                  const Gap(2),
-                  BlocSelector<PinCodeSettingBloc, PinCodeSettingState, bool>(
-                    selector:
-                        (state) =>
-                            state.pinCode != state.pinCodeConfirmation &&
-                            state.pinCodeConfirmation.isNotEmpty,
-                    builder: (context, hasError) {
-                      return hasError
-                          ? BBText(
-                            'PINs do not match',
-                            textAlign: TextAlign.start,
-                            style: context.font.labelSmall?.copyWith(
-                              color: context.colour.error,
-                            ),
-                          )
-                          : const SizedBox.shrink();
-                    },
-                  ),
-                  const Gap(130),
-                  DialPad(
-                    disableFeedback: true,
-                    onNumberPressed:
-                        (value) => context.read<PinCodeSettingBloc>().add(
-                          PinCodeSettingPinCodeConfirmationNumberAdded(
-                            int.parse(value),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Gap(30),
+                        Text(
+                          'Confirm new pin',
+                          textAlign: TextAlign.center,
+                          style: context.font.headlineMedium?.copyWith(
+                            color: context.colour.outline,
                           ),
+                          maxLines: 3,
                         ),
-                    onBackspacePressed:
-                        () => context.read<PinCodeSettingBloc>().add(
-                          const PinCodeSettingPinCodeConfirmationNumberRemoved(),
+                        const Gap(30),
+                        BlocSelector<
+                          PinCodeSettingBloc,
+                          PinCodeSettingState,
+                          (String, bool)
+                        >(
+                          selector:
+                              (state) => (
+                                state.pinCodeConfirmation,
+                                state.obscurePinCode,
+                              ),
+                          builder: (context, data) {
+                            final (pinCode, obscurePinCode) = data;
+                            return BBInputText(
+                              value: pinCode,
+                              obscure: obscurePinCode,
+                              onRightTap:
+                                  () => context.read<PinCodeSettingBloc>().add(
+                                    const PinCodeSettingPinCodeObscureToggled(),
+                                  ),
+                              rightIcon:
+                                  obscurePinCode
+                                      ? const Icon(Icons.visibility_off_outlined)
+                                      : const Icon(Icons.visibility_outlined),
+                              onlyNumbers: true,
+                              onChanged: (value) {},
+                            );
+                          },
                         ),
+                        const Gap(2),
+                        BlocSelector<PinCodeSettingBloc, PinCodeSettingState, bool>(
+                          selector: (state) => state.showConfirmationError,
+                          builder: (context, showError) {
+                            return showError
+                                ? Text(
+                                  'PINs do not match',
+                                  textAlign: TextAlign.start,
+                                  style: context.font.labelSmall?.copyWith(
+                                    color: context.colour.error,
+                                  ),
+                                )
+                                : const SizedBox.shrink();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: DialPad(
+                  disableFeedback: true,
+                  onlyDigits: true,
+                  onNumberPressed:
+                      (value) => context.read<PinCodeSettingBloc>().add(
+                        PinCodeSettingPinCodeConfirmationNumberAdded(
+                          int.parse(value),
+                        ),
+                      ),
+                  onBackspacePressed:
+                      () => context.read<PinCodeSettingBloc>().add(
+                        const PinCodeSettingPinCodeConfirmationNumberRemoved(),
+                      ),
+                ),
+              ),
+              const Gap(16),
+            ],
           ),
         ),
         bottomNavigationBar: SafeArea(
@@ -149,11 +153,9 @@ class _ConfirmButton extends StatelessWidget {
             bgColor:
                 canConfirm ? context.colour.secondary : context.colour.outline,
             onPressed: () {
-              if (canConfirm) {
-                context.read<PinCodeSettingBloc>().add(
-                  const PinCodeSettingPinCodeConfirmed(),
-                );
-              }
+              context.read<PinCodeSettingBloc>().add(
+                const PinCodeSettingPinCodeConfirmed(),
+              );
             },
             textColor: context.colour.onSecondary,
           );

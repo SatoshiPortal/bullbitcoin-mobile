@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/data/services/swap_watcher.dart';
+import 'package:bb_mobile/core/swaps/domain/ports/blockchain_port.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
@@ -22,6 +23,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecas
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/interface_adapters/blockchain_adapter.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
@@ -51,8 +53,7 @@ class SwapsLocator {
         isTestnet: true,
       ),
       instanceName:
-          LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
+          LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
     );
 
     locator.registerLazySingleton<BoltzSwapRepository>(
@@ -62,6 +63,15 @@ class SwapsLocator {
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+    );
+  }
+
+  static void registerPorts() {
+    locator.registerLazySingleton<BlockchainPort>(
+      () => BlockchainAdapter(
+        broadcastLiquidTransactionUsecase:
+            locator<BroadcastLiquidTransactionUsecase>(),
+      ),
     );
   }
 
@@ -223,7 +233,7 @@ class SwapsLocator {
         ),
         walletRepository: locator<WalletRepository>(),
         liquidWalletRepository: locator<LiquidWalletRepository>(),
-        liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
+        blockchainPort: locator<BlockchainPort>(),
         seedRepository: locator<SeedRepository>(),
         walletTxRepository: locator<WalletTransactionRepository>(),
         labelRepository: locator<LabelRepository>(),

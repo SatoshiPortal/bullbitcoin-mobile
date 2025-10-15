@@ -64,7 +64,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                         ),
                         const Gap(12),
                         BBText(
-                          'Connect your Bull Bitcoin exchange account',
+                          'Recommended Bitcoin Exchange',
                           style: context.font.headlineSmall?.copyWith(
                             color: context.colour.onSecondary,
                           ),
@@ -152,14 +152,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               BBText(
-                                'Apple devices with the App Store',
-                                style: context.font.bodySmall?.copyWith(
-                                  color: context.colour.onSecondary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              BBText(
-                                "Exchange services are currently only available on Android devices. iOS users must use Bull Bitcoin's web platform, pending approval by Apple Review.",
+                                'Cryptocurrency exchange services are not available in the Bull Bitcoin mobile application.',
                                 style: context.font.bodySmall?.copyWith(
                                   color: context.colour.onSecondary,
                                 ),

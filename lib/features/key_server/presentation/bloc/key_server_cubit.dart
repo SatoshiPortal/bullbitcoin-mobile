@@ -381,7 +381,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
             final isLastAttempt = attempt == maxRetries - 1;
             if (isLastAttempt) {
               emit(state.copyWith(torStatus: TorStatus.offline));
-              throw const KeyServerError.failedToConnect();
+              throw KeyServerError.failedToConnect();
             }
             await Future.delayed(retryDelay);
           }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 
@@ -35,8 +36,6 @@ class BroadcastOriginalTransactionUsecase {
   }
 }
 
-class BroadcastOriginalTransactionException implements Exception {
-  final String message;
-
-  BroadcastOriginalTransactionException(this.message);
+class BroadcastOriginalTransactionException extends BullException {
+  BroadcastOriginalTransactionException(super.message);
 }

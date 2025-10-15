@@ -1,9 +1,7 @@
-class TemplateError implements Exception {
-  final String message;
-  TemplateError(this.message);
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-  @override
-  String toString() => message;
+class TemplateError extends BullException {
+  TemplateError(super.message);
 }
 
 class NoIpAddressError extends TemplateError {

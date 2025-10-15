@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -24,11 +25,6 @@ class DeleteExchangeApiKeyUsecase {
   }
 }
 
-class DeleteExchangeApiKeyException implements Exception {
-  final String message;
-
-  DeleteExchangeApiKeyException(this.message);
-
-  @override
-  String toString() => '[SaveExchangeApiKeyUsecase]: $message';
+class DeleteExchangeApiKeyException extends BullException {
+  DeleteExchangeApiKeyException(super.message);
 }

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bip85/bip85.dart' as bip85;
+import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:drift/drift.dart';
 
 @DataClassName('Bip85DerivationRow')
