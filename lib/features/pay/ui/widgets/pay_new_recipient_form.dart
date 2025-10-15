@@ -143,7 +143,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
         return ['debitCard', 'institutionCode', 'name'];
       case WithdrawRecipientType.sinpeIbanUsd:
       case WithdrawRecipientType.sinpeIbanCrc:
-        return ['iban', 'ownerName', 'isOwner'];
+        return ['iban', 'ownerName'];
       case WithdrawRecipientType.sinpeMovilCrc:
         return ['phoneNumber', 'ownerName'];
     }
