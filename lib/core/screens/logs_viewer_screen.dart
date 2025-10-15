@@ -8,11 +8,9 @@ class LogsViewerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reversedLogs = logs.reversed.toList();
-
     return Scaffold(
       appBar: AppBar(title: const Text('Logs')),
-      body: LogsViewerWidget(logs: reversedLogs),
+      body: LogsViewerWidget(logs: logs),
     );
   }
 }

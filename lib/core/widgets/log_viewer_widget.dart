@@ -24,9 +24,16 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
   DateTime? _endDate;
 
   List<String> get _filteredLogs {
-    if (_startDate == null && _endDate == null) return widget.logs;
+    final result = widget.logs;
+    result.sort((a, b) {
+      final partsA = a.split('\t');
+      final partsB = b.split('\t');
+      return partsA[0].compareTo(partsB[0]);
+    });
 
-    return widget.logs.where((log) {
+    if (_startDate == null && _endDate == null) return result;
+
+    return result.where((log) {
       final parts = log.split('\t');
       if (parts.isEmpty) return false;
 
@@ -155,7 +162,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                       'WARNING' => Colors.orange,
                       'SEVERE' => Colors.red,
                       'SHOUT' => Colors.purple,
-                      _ => throw Exception('Invalid log level: ${parts[1]}'),
+                      _ => Colors.grey,
                     };
                     iconColor = colorForLevel;
                   }
