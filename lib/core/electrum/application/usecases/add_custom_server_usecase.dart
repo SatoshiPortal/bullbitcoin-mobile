@@ -23,11 +23,11 @@ class AddCustomServerUsecase {
     );
 
     final existingServer = await _electrumServerRepository.fetchByUrl(
-      request.url,
+      server.url,
     );
     if (existingServer != null) {
       // If the server already exists, throw an error
-      throw ElectrumServerAlreadyExistsException(request.url);
+      throw ElectrumServerAlreadyExistsException(server.url);
     }
 
     // Save the server and check its status concurrently

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
@@ -13,17 +14,12 @@ class SetAdvancedOptionsBottomSheet extends StatefulWidget {
   static Future<void> show(BuildContext context) {
     final bloc = context.read<ElectrumSettingsBloc>();
 
-    return showModalBottomSheet<void>(
+    return BlurredBottomSheet.show<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.colour.secondaryFixed,
-      useSafeArea: true,
-      showDragHandle: true,
-      builder:
-          (ctx) => BlocProvider.value(
-            value: bloc,
-            child: const SetAdvancedOptionsBottomSheet(),
-          ),
+      child: BlocProvider.value(
+        value: bloc,
+        child: const SetAdvancedOptionsBottomSheet(),
+      ),
     );
   }
 
