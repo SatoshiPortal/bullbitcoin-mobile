@@ -17,15 +17,14 @@ class SetCustomServersPriorityUsecase {
     // Update each server's priority based on its position in the list
     final servers =
         request.servers.indexed.map((record) {
-          final dto = record.$2;
-          // Rehydrate the domain entity from the DTO
+          final (index, dto) = record;
           final server = ElectrumServer.existing(
             url: dto.url,
             network: dto.network,
             isCustom: dto.isCustom,
             priority: dto.priority,
           );
-          server.updatePriority(record.$1);
+          server.updatePriority(index);
           return server;
         }).toList();
 
