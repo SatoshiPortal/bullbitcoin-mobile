@@ -216,14 +216,6 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(
-          'Country',
-          style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const Gap(8),
         Container(
           height: 56,
           padding: const EdgeInsets.symmetric(horizontal: 16),
