@@ -86,12 +86,6 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   BBButton.small(
-                    onPressed: () => context.pop(),
-                    label: 'Cancel',
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
-                  ),
-                  BBButton.small(
                     onPressed: () async {
                       context.goNamed(WalletRoute.walletHome.name);
                       await log.deleteLogs();
@@ -99,6 +93,12 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                     label: 'Delete',
                     bgColor: context.colour.primary,
                     textColor: context.colour.onPrimary,
+                  ),
+                  BBButton.small(
+                    onPressed: () => context.pop(),
+                    label: 'Cancel',
+                    bgColor: context.colour.secondary,
+                    textColor: context.colour.onSecondary,
                   ),
                 ],
               ),
@@ -152,25 +152,6 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                BBButton.small(
-                  onPressed: () => _confirmDeleteLogs(context),
-                  label: 'Delete',
-                  bgColor: context.colour.primary,
-                  textColor: context.colour.onPrimary,
-                ),
-                BBButton.small(
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onSecondary,
-                  onPressed: _shareLogs,
-                  label: 'Share',
-                ),
-              ],
-            ),
-            const Gap(8),
-
             BBButton.big(
               bgColor: context.colour.secondary,
               textColor: context.colour.onSecondary,
@@ -266,6 +247,24 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
             ),
           ),
         ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            BBButton.small(
+              onPressed: () => _confirmDeleteLogs(context),
+              label: 'Delete',
+              bgColor: context.colour.primary,
+              textColor: context.colour.onPrimary,
+            ),
+            BBButton.small(
+              bgColor: context.colour.secondary,
+              textColor: context.colour.onSecondary,
+              onPressed: _shareLogs,
+              label: 'Share',
+            ),
+          ],
+        ),
+        const Gap(16),
       ],
     );
   }
