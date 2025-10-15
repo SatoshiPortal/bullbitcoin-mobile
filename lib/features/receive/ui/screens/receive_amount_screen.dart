@@ -59,6 +59,18 @@ class _AmountPageState extends State<AmountPage> {
       }
     });
     _amountFocusNode = FocusNode();
+
+    // When focus changes, reset selection if unfocused
+    _amountFocusNode.addListener(() {
+      if (!_amountFocusNode.hasFocus) {
+        // Field lost focus, reset selection to end without showing cursor
+        final currentText = _amountController.text;
+        _amountController.value = TextEditingValue(
+          text: currentText,
+          selection: TextSelection.collapsed(offset: currentText.length),
+        );
+      }
+    });
   }
 
   @override
