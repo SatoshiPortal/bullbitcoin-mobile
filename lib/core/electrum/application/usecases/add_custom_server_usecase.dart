@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/application/dtos/requests/add_custom_server_request.dart';
+import 'package:bb_mobile/core/electrum/application/errors/electrum_servers_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
@@ -20,6 +21,14 @@ class AddCustomServerUsecase {
       network: request.network,
       priority: request.priority,
     );
+
+    final existingServer = await _electrumServerRepository.fetchByUrl(
+      request.url,
+    );
+    if (existingServer != null) {
+      // If the server already exists, throw an error
+      throw ElectrumServerAlreadyExistsException(request.url);
+    }
 
     // Save the server and check its status concurrently
     final (_, status) =

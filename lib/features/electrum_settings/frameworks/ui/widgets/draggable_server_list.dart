@@ -22,6 +22,7 @@ class DraggableServerList extends StatelessWidget {
         'Failed to add custom server${r != null ? ': $r' : ''}',
       DeleteFailedException(reason: final r) =>
         'Failed to delete custom server${r != null ? ': $r' : ''}',
+      ElectrumServerAlreadyExistsException() => 'This server already exists',
     };
   }
 

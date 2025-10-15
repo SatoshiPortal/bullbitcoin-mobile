@@ -9,6 +9,7 @@ abstract class ElectrumServerRepository {
     bool? isLiquid,
     bool? isCustom,
   });
+  Future<ElectrumServer?> fetchByUrl(String url);
   Future<List<ElectrumServer>> fetchCustomServers({
     required ElectrumServerNetwork network,
   });
