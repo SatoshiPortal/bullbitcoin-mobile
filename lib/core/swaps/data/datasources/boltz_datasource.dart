@@ -916,6 +916,7 @@ class BoltzDatasource {
                 if (swapModel is LnReceiveSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.completed.name,
+                    completionTime: DateTime.now().millisecondsSinceEpoch,
                   );
                 }
 
@@ -977,6 +978,7 @@ class BoltzDatasource {
                 if (swapModel is LnSendSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.completed.name,
+                    completionTime: DateTime.now().millisecondsSinceEpoch,
                   );
                 }
 
