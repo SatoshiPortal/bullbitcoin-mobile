@@ -24,9 +24,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
   DateTime? _endDate;
 
   List<String> get _filteredLogs {
-    if (_startDate == null && _endDate == null) {
-      return widget.logs;
-    }
+    if (_startDate == null && _endDate == null) return widget.logs;
 
     return widget.logs.where((log) {
       final parts = log.split('\t');
@@ -35,9 +33,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
       try {
         final timestamp = DateTime.parse(parts[0]);
 
-        if (_startDate != null && timestamp.isBefore(_startDate!)) {
-          return false;
-        }
+        if (_startDate != null && timestamp.isBefore(_startDate!)) return false;
 
         if (_endDate != null) {
           final endOfDay = DateTime(
@@ -57,56 +53,6 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
         return false;
       }
     }).toList();
-  }
-
-  Future<void> _confirmDeleteLogs(BuildContext context) async {
-    await BlurredBottomSheet.show(
-      context: context,
-      child: Container(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.3,
-        ),
-        decoration: BoxDecoration(
-          color: context.colour.onPrimary,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              const Gap(16),
-              BBText('Delete logs', style: context.font.headlineMedium),
-              const Gap(16),
-              BBText(
-                'Are you sure you want to delete all logs? This action cannot be undone.',
-                style: context.font.bodyMedium,
-              ),
-              const Gap(16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  BBButton.small(
-                    onPressed: () async {
-                      context.goNamed(WalletRoute.walletHome.name);
-                      await log.deleteLogs();
-                    },
-                    label: 'Delete',
-                    bgColor: context.colour.primary,
-                    textColor: context.colour.onPrimary,
-                  ),
-                  BBButton.small(
-                    onPressed: () => context.pop(),
-                    label: 'Cancel',
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   Future<void> _selectDateRange() async {
@@ -251,7 +197,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             BBButton.small(
-              onPressed: () => _confirmDeleteLogs(context),
+              onPressed: () => _showConfirmDeleteLogsBottomSheet(context),
               label: 'Delete',
               bgColor: context.colour.primary,
               textColor: context.colour.onPrimary,
@@ -272,4 +218,54 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
+}
+
+Future<void> _showConfirmDeleteLogsBottomSheet(BuildContext context) async {
+  await BlurredBottomSheet.show(
+    context: context,
+    child: Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.3,
+      ),
+      decoration: BoxDecoration(
+        color: context.colour.onPrimary,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          children: [
+            const Gap(16),
+            BBText('Delete logs', style: context.font.headlineMedium),
+            const Gap(16),
+            BBText(
+              'Are you sure you want to delete all logs? This action cannot be undone.',
+              style: context.font.bodyMedium,
+            ),
+            const Gap(16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                BBButton.small(
+                  onPressed: () async {
+                    context.goNamed(WalletRoute.walletHome.name);
+                    await log.deleteLogs();
+                  },
+                  label: 'Delete',
+                  bgColor: context.colour.primary,
+                  textColor: context.colour.onPrimary,
+                ),
+                BBButton.small(
+                  onPressed: () => context.pop(),
+                  label: 'Cancel',
+                  bgColor: context.colour.secondary,
+                  textColor: context.colour.onSecondary,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
