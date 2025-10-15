@@ -2,8 +2,10 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environmen
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
@@ -97,6 +99,12 @@ class _AddCustomServerBottomSheetState
                     focusNode: _focusNode,
                     autofocus: true,
                     textInputAction: TextInputAction.done,
+                    inputFormatters: [
+                      // No whitespace allowed
+                      FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                      // Force lowercase
+                      LowerCaseTextFormatter(),
+                    ],
                     style: context.font.bodyLarge,
                     decoration: InputDecoration(
                       fillColor: context.colour.onPrimary,
