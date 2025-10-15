@@ -26,7 +26,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_new_receive_address_use_case.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
@@ -182,8 +182,8 @@ class WalletLocator {
         utxoRepository: locator<WalletUtxoRepository>(),
       ),
     );
-    locator.registerFactory<GetNewReceiveAddressUsecase>(
-      () => GetNewReceiveAddressUsecase(
+    locator.registerFactory<GetReceiveAddressUsecase>(
+      () => GetReceiveAddressUsecase(
         walletAddressRepository: locator<WalletAddressRepository>(),
       ),
     );
