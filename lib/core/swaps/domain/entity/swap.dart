@@ -70,10 +70,12 @@ abstract class SwapFees with _$SwapFees {
 
   int totalFees(int? amount) {
     int total = 0;
-    if (boltzFee != null) total += boltzFee!;
-    if (boltzFee == null) {
+    // Always use percentage-based calculation for Boltz fees to ensure proper rounding
+    if (boltzPercent != null) {
       final boltzFee = boltzFeeFromPercent(amount ?? 0);
       total += boltzFee;
+    } else if (boltzFee != null) {
+      total += boltzFee!;
     }
     if (lockupFee != null) total += lockupFee!;
     if (claimFee != null) total += claimFee!;
