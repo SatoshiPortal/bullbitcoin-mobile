@@ -72,23 +72,36 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
   /// For regular transactions: amount - txFee
   int getAmountSent() {
     final swap = this.swap;
+    final payjoin = this.payjoin;
     final txFee = walletTransaction?.feeSat ?? 0;
-    final amount = walletTransaction?.amountSat ?? 0;
-
-    if (swap == null) {
-      return amount + txFee;
+    final amount = walletTransaction?.amountSat;
+    if (payjoin != null) {
+      return payjoin.amountSat ?? 0;
     }
 
-    if (swap.type.isSubmarine) {
-      return amount + txFee;
-    } else if (swap.type.isChain) {
-      return amount + aggregateNetworkFees();
+    if (swap != null && swap.type.isSubmarine) {
+      if (amount != null) {
+        return amount + txFee;
+      } else {
+        return swap.amountSat + aggregateSwapFees();
+      }
+    } else if (swap != null && swap.type.isChain) {
+      return amount ?? 0 + aggregateNetworkFees();
+    } else if (swap != null && swap.type.isReverse) {
+      if (amount != null) {
+        return amount + txFee;
+      } else {
+        return swap.amountSat + aggregateSwapFees();
+      }
     } else {
-      return amount + txFee;
+      return amount ?? 0 + txFee;
     }
   }
 
   int getAmountReceived() {
+    if (payjoin != null) {
+      return payjoin?.amountSat ?? 0;
+    }
     final amount = walletTransaction?.amountSat ?? 0;
     return amount;
   }
