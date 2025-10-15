@@ -55,14 +55,6 @@ class PayRecipientsFilterDropdown extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Country',
-              style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const Gap(8.0),
             Container(
               height: 56,
               padding: const EdgeInsets.symmetric(horizontal: 16),

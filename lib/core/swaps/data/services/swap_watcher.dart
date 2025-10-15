@@ -393,9 +393,25 @@ class SwapWatcherService {
     try {
       String finalClaimAddress;
       if (swap.receiveWalletId != null) {
-        final claimAddress = await _walletAddressRepository
+        if (swap.receiveAddress != null) {
+          // Use existing receive address if available
+          if (swap.receiveAddress!.startsWith('bitcoin:')) {
+            final uri = bip21.decode(swap.receiveAddress!);
+            final address = uri.address;
+            finalClaimAddress = address;
+          } else {
+            finalClaimAddress = swap.receiveAddress!;
+          }
+        } else {
+          // Generate new address and store it in the swap model
+          final claimAddress = await _walletAddressRepository
             .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
         finalClaimAddress = claimAddress.address;
+          finalClaimAddress = claimAddress.address;
+          final updatedSwap = swap.copyWith(receiveAddress: finalClaimAddress);
+          await _boltzRepo.updateSwap(swap: updatedSwap);
+        }
+
       } else {
         if (swap.receiveAddress!.startsWith('bitcoin:')) {
           final uri = bip21.decode(swap.receiveAddress!);
@@ -523,9 +539,25 @@ class SwapWatcherService {
     try {
       String finalClaimAddress;
       if (swap.receiveWalletId != null) {
-        final claimAddress = await _walletAddressRepository
+        if (swap.receiveAddress != null) {
+          // Use existing receive address if available
+          if (swap.receiveAddress!.startsWith('liquidnetwork:') ||
+              swap.receiveAddress!.startsWith('liquidtestnet:')) {
+            final uri = bip21.decode(swap.receiveAddress!);
+            final address = uri.address;
+            finalClaimAddress = address;
+          } else {
+            finalClaimAddress = swap.receiveAddress!;
+          }
+        } else {
+          // Generate new address and store it in the swap model
+          final claimAddress = await _walletAddressRepository
             .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
-        finalClaimAddress = claimAddress.address;
+          finalClaimAddress = claimAddress.address;
+          final updatedSwap = swap.copyWith(receiveAddress: finalClaimAddress);
+          await _boltzRepo.updateSwap(swap: updatedSwap);
+        }
+
       } else {
         if (swap.receiveAddress!.startsWith('liquidnetwork:') ||
             swap.receiveAddress!.startsWith('liquidtestnet:')) {

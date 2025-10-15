@@ -90,8 +90,6 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
 
   int getAmountReceived() {
     final amount = walletTransaction?.amountSat ?? 0;
-    // For incoming transactions, amountSat is already the net amount received
-    // after all fees have been deducted
     return amount;
   }
 

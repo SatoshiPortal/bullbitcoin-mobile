@@ -12,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 enum RecipientsTab {
-  newRecipient(displayValue: 'New beneficiary'),
+  newRecipient(displayValue: 'New recipients'),
   myRecipients(displayValue: 'My fiat recipients');
 
   final String displayValue;
@@ -210,7 +210,7 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
 
     return BlocBuilder<PayBloc, PayState>(
       builder: (context, state) {
-        final allEligibleRecipients = state.recipients;
+        final allEligibleRecipients = state.eligibleRecipientsByCurrency;
         final filteredRecipients = _applyFilters(allEligibleRecipients);
         final isLoadingRecipients =
             state is PayRecipientInputState && state.isLoadingRecipients;

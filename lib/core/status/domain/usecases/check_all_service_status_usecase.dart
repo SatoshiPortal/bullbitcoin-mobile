@@ -86,7 +86,6 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkLiquidElectrumServer(Network network) async {
     try {
-      // Check Liquid Electrum servers
       final hasOnlineServers = await _electrumConnectivityPort
           .checkServersInUseAreOnlineForNetwork(
             network.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
@@ -109,14 +108,14 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkBoltzService(Network network) async {
     try {
-      // Choose the appropriate repository based on network
       final boltzRepository =
           network == Network.bitcoinMainnet
               ? _mainnetBoltzSwapRepository
               : _testnetBoltzSwapRepository;
 
-      // Try to get swap limits as a way to test Boltz connectivity
-      await boltzRepository.getSwapLimitsAndFees(SwapType.bitcoinToLightning);
+      await boltzRepository.updateSwapLimitsAndFees(
+        SwapType.bitcoinToLightning,
+      );
 
       return ServiceStatusInfo(
         status: ServiceStatus.online,
@@ -152,7 +151,6 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkPricerService(Network network) async {
     try {
-      // Test with a small amount to check if the pricer is working
       final price = await _exchangeRateRepository.getCurrencyValue(
         amountSat: BigInt.from(100000000), // 1 BTC in sats
         currency: 'USD',
