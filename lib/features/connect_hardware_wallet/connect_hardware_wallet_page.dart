@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/import_coldcard_q/router.dart';
+import 'package:bb_mobile/features/import_coldcard/coldcard_device_selection_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:flutter/material.dart';
@@ -32,10 +32,8 @@ class ConnectHardwareWalletPage extends StatelessWidget {
                 child: Column(
                   children: [
                     TabMenuVerticalButton(
-                      title: 'Coldcard Q',
-                      onTap: () => context.pushNamed(
-                        ImportColdcardQRoute.importColdcardQ.name,
-                      ),
+                      title: 'Coldcard',
+                      onTap: () => ColdcardDeviceSelectionBottomSheet.show(context),
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(

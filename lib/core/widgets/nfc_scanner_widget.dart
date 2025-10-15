@@ -42,9 +42,13 @@ class _NfcPageState extends State<NfcScannerWidget> {
     final loadingWidget =
         widget.loadingWidget ??
         Center(
-          child: Gif(
-            image: AssetImage(Assets.animations.nfcPoll.path),
-            autostart: Autostart.loop,
+          child: SizedBox(
+            width: 250,
+            height: 250,
+            child: Gif(
+              image: AssetImage(Assets.animations.nfcPoll.path),
+              autostart: Autostart.loop,
+            ),
           ),
         );
 

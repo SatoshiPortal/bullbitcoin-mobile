@@ -96,24 +96,54 @@ class QrDeviceInstructions {
     );
   }
 
-  static Future<void> showColdcardInstructions(BuildContext context) {
+  static Future<void> showColdcardQInstructions(BuildContext context) {
     return InstructionsBottomSheet.show(
       context,
       title: 'Coldcard Q Instructions',
       instructions: const [
         'Login to your Coldcard Q device',
         'Add a passphrase if you have one (optional)',
-        'Select "Scan any QR code" option',
-        'Scan the QR code shown in the Bull wallet',
-        'If you have trouble scanning:',
-        '   - Increase screen brightness on your device',
-        '   - Move the red laser up and down over QR code',
-        '   - Try moving your device back a little bit',
-        'Once the transaction is imported in your Coldcard, review the destination address and the amount.',
-        'Click the buttons to sign the transaction on your Coldcard.',
-        'The Coldcard Q will then show you its own QR code.',
+        'Choose your preferred method:',
+        'For QR Code:',
+        '   - Select "Scan any QR code" option',
+        '   - Scan the QR code shown in the Bull wallet',
+        '   - If you have trouble scanning:',
+        '     • Increase screen brightness on your device',
+        '     • Move the red laser up and down over QR code',
+        '     • Try moving your device back a little bit',
+        'For NFC:',
+        '   - Select "Ready to Sign" then tap the NFC button',
+        '   - Tap your phone to the Coldcard Q device',
+        '   - Wait for the transaction to be transferred',
+        'Once the transaction is imported in your Coldcard Q, review the destination address and the amount.',
+        'Click the buttons to sign the transaction on your Coldcard Q.',
+        'The Coldcard Q will then show you its own QR code or prepare for NFC transfer.',
         'Click "I\'m done" in the Bull Bitcoin wallet.',
-        'The Bull Bitcoin wallet will ask you to scan the QR code on the Coldcard. Scan it.',
+        'The Bull Bitcoin wallet will ask you to scan the QR code or use NFC to receive the signed transaction:',
+        '   - For QR: Scan the QR code on the Coldcard Q',
+        '   - For NFC: Tap your phone to the Coldcard Q device',
+        'The transaction will be imported in the Bull Bitcoin wallet.',
+        "It's now ready to broadcast! As soon as you click broadcast, the transaction will be published on the Bitcoin network and the funds will be sent.",
+      ],
+    );
+  }
+
+  static Future<void> showColdcardMk4Instructions(BuildContext context) {
+    return InstructionsBottomSheet.show(
+      context,
+      title: 'Coldcard Mk4 Instructions',
+      instructions: const [
+        'Login to your Coldcard Mk4 device',
+        'Add a passphrase if you have one (optional)',
+        'For NFC:',
+        '   - Select "Ready to Sign" then tap the number 3 button',
+        '   - Tap your phone to the Coldcard Mk4 device',
+        '   - Wait for the transaction to be transferred',
+        'Once the transaction is imported in your Coldcard Mk4, review the destination address and the amount.',
+        'Click the buttons to sign the transaction on your Coldcard Mk4.',
+        'The Coldcard Mk4 will then prepare for NFC transfer.',
+        'The Bull Bitcoin wallet will ask you to use NFC to receive the signed transaction:',
+        '   - Tap your phone to the Coldcard Mk4 device',
         'The transaction will be imported in the Bull Bitcoin wallet.',
         "It's now ready to broadcast! As soon as you click broadcast, the transaction will be published on the Bitcoin network and the funds will be sent.",
       ],
