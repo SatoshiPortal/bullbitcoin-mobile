@@ -21,4 +21,14 @@ sealed class ElectrumServerViewModel with _$ElectrumServerViewModel {
     }
     return url;
   }
+
+  String get protocol {
+    // Extract protocol if present (e.g., "ssl" or "tcp")
+    if (url.contains('://')) {
+      return url.split('://').first;
+    }
+    // Default to 'ssl' if no protocol specified, for Liquid servers that
+    // don't require a scheme for example but always use SSL automatically.
+    return 'ssl';
+  }
 }

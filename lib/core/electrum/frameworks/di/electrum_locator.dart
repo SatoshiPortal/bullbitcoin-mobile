@@ -12,8 +12,8 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_re
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_settings_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/socket/datasources/socket_connectivity_datasource.dart';
+import 'package:bb_mobile/core/electrum/interface_adapters/adapters/environment_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/server_status_adapter.dart';
-import 'package:bb_mobile/core/electrum/interface_adapters/facades/environment_facade.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -53,7 +53,7 @@ class ElectrumLocator {
   static void registerPorts() {
     locator.registerLazySingleton<EnvironmentPort>(
       () =>
-          EnvironmentFacade(getSettingsUsecase: locator<GetSettingsUsecase>()),
+          EnvironmentAdapter(getSettingsUsecase: locator<GetSettingsUsecase>()),
     );
     locator.registerLazySingleton<ServerStatusPort>(
       () => ServerStatusAdapter(

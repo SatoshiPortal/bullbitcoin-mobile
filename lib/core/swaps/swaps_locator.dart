@@ -23,7 +23,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecas
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/interface_adapters/blockchain_facade.dart';
+import 'package:bb_mobile/core/swaps/interface_adapters/blockchain_adapter.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
@@ -68,7 +68,7 @@ class SwapsLocator {
 
   static void registerPorts() {
     locator.registerLazySingleton<BlockchainPort>(
-      () => BlockchainFacade(
+      () => BlockchainAdapter(
         broadcastLiquidTransactionUsecase:
             locator<BroadcastLiquidTransactionUsecase>(),
       ),

@@ -66,4 +66,20 @@ class Bip85Repository {
       rethrow;
     }
   }
+
+  Future<void> revoke(String path) async {
+    try {
+      await _datasource.revoke(path);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> reactivate(String path) async {
+    try {
+      await _datasource.reactivate(path);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

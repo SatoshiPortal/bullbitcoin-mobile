@@ -2,10 +2,10 @@ import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 
-class EnvironmentFacade implements EnvironmentPort {
+class EnvironmentAdapter implements EnvironmentPort {
   final GetSettingsUsecase _getSettingsUsecase;
 
-  EnvironmentFacade({required GetSettingsUsecase getSettingsUsecase})
+  EnvironmentAdapter({required GetSettingsUsecase getSettingsUsecase})
     : _getSettingsUsecase = getSettingsUsecase;
 
   @override

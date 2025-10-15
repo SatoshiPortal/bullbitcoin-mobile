@@ -31,10 +31,10 @@ class AppSettingsScreen extends StatelessWidget {
                   },
                 ),
                 if (isSuperuser)
-                  SettingsEntryItem(
+                  const SettingsEntryItem(
                     icon: Icons.developer_mode,
                     title: 'Dev Mode',
-                    onTap: () => DevModeSwitch.show(context),
+                    trailing: DevModeSwitch(),
                   ),
               ],
             ),

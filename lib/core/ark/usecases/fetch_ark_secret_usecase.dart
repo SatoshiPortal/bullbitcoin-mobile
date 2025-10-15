@@ -22,7 +22,8 @@ class FetchArkSecretUsecase {
     Bip85DerivationEntity? arkDerivation;
     for (final derivation in derivations) {
       if (derivation.application == Bip85Application.hex &&
-          derivation.index == Ark.bip85Index) {
+          derivation.index == Ark.bip85Index &&
+          derivation.status == Bip85Status.active) {
         arkDerivation = derivation;
       }
     }

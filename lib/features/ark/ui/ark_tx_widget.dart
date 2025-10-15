@@ -2,11 +2,12 @@ import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/mempool_url.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -49,87 +50,46 @@ class ArkTxWidget extends StatelessWidget {
       ArkTransactionType.redeem => Icons.redeem,
     };
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8.0),
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: context.colour.onPrimary,
-        borderRadius: BorderRadius.circular(2.0),
-        boxShadow: const [],
-      ),
-      child: Column(
+    return InkWell(
+      onTap: () {
+        context.pushNamed(
+          ArkRoute.arkTransactionDetails.name,
+          extra: tx,
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8.0),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: context.colour.onPrimary,
+          borderRadius: BorderRadius.circular(2.0),
+          boxShadow: const [],
+        ),
+        child: Row(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: context.colour.onPrimary,
-                      borderRadius: BorderRadius.circular(2.0),
-                      border: Border.all(color: context.colour.surface),
-                    ),
-                    child: Icon(icon, color: context.colour.secondary),
-                  ),
-                  const Gap(8.0),
-                  CurrencyText(
-                    sats,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                    fiatAmount: null,
-                    fiatCurrency: null,
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: context.colour.secondary,
-                  borderRadius: BorderRadius.circular(2.0),
-                ),
-                child: BBText(
-                  transactionType.name,
-                  style: context.font.labelMedium?.copyWith(
-                    color: context.colour.onSecondary,
-                  ),
-                ),
-              ),
-            ],
+          Container(
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: context.colour.onPrimary,
+              borderRadius: BorderRadius.circular(2.0),
+              border: Border.all(color: context.colour.surface),
+            ),
+            child: Icon(icon, color: context.colour.secondary),
           ),
-
-          // Container(
-          //   padding: const EdgeInsets.all(5.0),
-          //   decoration: BoxDecoration(
-          //     color: context.colour.secondary,
-          //     borderRadius: BorderRadius.circular(2.0),
-          //   ),
-          //   child:
-          // ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              const Gap(4.0),
-              if (date != null)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    BBText(
-                      timeago.format(date),
-                      style: context.font.labelSmall?.copyWith(
-                        color: context.colour.outline,
-                      ),
-                    ),
-                  ],
+          const Gap(16.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CurrencyText(
+                  sats,
+                  showFiat: false,
+                  style: context.font.bodyLarge,
+                  fiatAmount: null,
+                  fiatCurrency: null,
                 ),
-
-              if (tx is ark_wallet.Transaction_Boarding)
-                DetailsTableItem(
-                  label: 'Transaction ID',
-                  displayValue: StringFormatting.truncateMiddle(txid),
-                  copyValue: txid,
-                  displayWidget: GestureDetector(
+                if (tx is ark_wallet.Transaction_Boarding)
+                  GestureDetector(
                     onTap: () async {
                       await launchUrl(
                         Uri.parse(
@@ -139,14 +99,55 @@ class ArkTxWidget extends StatelessWidget {
                     },
                     child: Text(
                       StringFormatting.truncateMiddle(txid),
-                      style: TextStyle(color: context.colour.primary),
-                      textAlign: TextAlign.end,
+                      style: context.font.labelSmall?.copyWith(
+                        color: context.colour.primary,
+                      ),
                     ),
                   ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 4.0,
+                  vertical: 2.0,
+                ),
+                decoration: BoxDecoration(
+                  color: context.colour.secondary,
+                  borderRadius: BorderRadius.circular(2.0),
+                ),
+                child: BBText(
+                  StringFormatting.capitalize(transactionType.name),
+                  style: context.font.labelSmall?.copyWith(
+                    color: context.colour.onSecondary,
+                  ),
+                ),
+              ),
+              const Gap(4.0),
+              if (date != null)
+                Row(
+                  children: [
+                    BBText(
+                      timeago.format(date),
+                      style: context.font.labelSmall?.copyWith(
+                        color: context.colour.outline,
+                      ),
+                    ),
+                    const Gap(4.0),
+                    Icon(
+                      Icons.check_circle,
+                      size: 12.0,
+                      color: context.colour.inverseSurface,
+                    ),
+                  ],
                 ),
             ],
           ),
         ],
+        ),
       ),
     );
   }
