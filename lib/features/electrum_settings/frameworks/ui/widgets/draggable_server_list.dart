@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/electrum_settings/interface_adapters/presente
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/electrum_servers_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 
 class DraggableServerList extends StatelessWidget {
   const DraggableServerList({super.key});
@@ -41,14 +42,6 @@ class DraggableServerList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (electrumServersError != null) ...[
-          InfoCard(
-            description: _getErrorMessage(electrumServersError),
-            tagColor: context.colour.error,
-            bgColor: context.colour.error.withValues(alpha: 0.1),
-          ),
-          const SizedBox(height: 16),
-        ],
         Text(
           'Default Servers',
           style: context.font.titleSmall?.copyWith(
@@ -56,10 +49,22 @@ class DraggableServerList extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
+        if (customServers.isNotEmpty) ...[
+          InfoCard(
+            description:
+                'To protect your privacy, default servers are not used when custom servers are configured.',
+            tagColor: context.colour.onTertiary,
+            bgColor: context.colour.tertiary.withValues(alpha: 0.1),
+          ),
+          const SizedBox(height: 8),
+        ],
         ...defaultServers.map(
           (server) => Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: ServerListItem(server: server),
+            child: ServerListItem(
+              server: server,
+              disabled: customServers.isNotEmpty,
+            ),
           ),
         ),
         if (customServers.isNotEmpty) ...[
@@ -114,7 +119,15 @@ class DraggableServerList extends StatelessWidget {
             ],
           ),
         ],
-        const SizedBox(height: 16),
+        const Gap(16),
+        if (electrumServersError != null) ...[
+          InfoCard(
+            description: _getErrorMessage(electrumServersError),
+            tagColor: context.colour.error,
+            bgColor: context.colour.error.withValues(alpha: 0.1),
+          ),
+          const Gap(16),
+        ],
         TextButton.icon(
           onPressed: () async {
             final newServerUrl = await AddCustomServerBottomSheet.show(context);

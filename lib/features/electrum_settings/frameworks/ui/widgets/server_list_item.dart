@@ -8,61 +8,121 @@ class ServerListItem extends StatelessWidget {
     super.key,
     required this.server,
     this.isDraggable = false,
+    this.disabled = false,
     this.onDelete,
   });
 
   final ElectrumServerViewModel server;
   final bool isDraggable;
+  final bool disabled;
   final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
-    final child = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: context.colour.surface.withValues(alpha: 180),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: context.colour.outline, width: 1),
-      ),
-      child: Row(
-        children: [
-          if (isDraggable) ...[
-            Icon(
-              Icons.drag_handle,
-              color: context.colour.onSurface.withValues(alpha: 128),
-              size: 20,
-            ),
-            const SizedBox(width: 12),
-          ],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  server.displayName,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                _buildStatusIndicator(context),
-              ],
-            ),
+    final child = Opacity(
+      opacity: disabled ? 0.5 : 1.0,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: context.colour.surface.withValues(alpha: 180),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color:
+                disabled
+                    ? context.colour.outline.withValues(alpha: 128)
+                    : context.colour.outline,
+            width: 1,
           ),
-          if (onDelete != null) ...[
-            const SizedBox(width: 8),
-            IconButton(
-              icon: Icon(
-                Icons.delete_outline,
-                color: context.colour.error,
+        ),
+        child: Row(
+          children: [
+            if (isDraggable) ...[
+              Icon(
+                Icons.drag_handle,
+                color: context.colour.onSurface.withValues(alpha: 128),
                 size: 20,
               ),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-              onPressed: onDelete,
+              const SizedBox(width: 12),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                server.displayName,
+                                style: context.font.bodyMedium?.copyWith(
+                                  color: context.colour.onSurface,
+                                  decoration:
+                                      disabled
+                                          ? TextDecoration.lineThrough
+                                          : TextDecoration.none,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: context.colour.tertiary.withValues(
+                                  alpha: 0.15,
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                server.protocol.toUpperCase(),
+                                style: context.font.bodySmall?.copyWith(
+                                  color: context.colour.onTertiary,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (disabled) ...[
+                        const SizedBox(width: 8),
+                        Text(
+                          'Not Used',
+                          style: context.font.bodySmall?.copyWith(
+                            color: context.colour.onSurface.withValues(
+                              alpha: 153,
+                            ),
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  _buildStatusIndicator(context),
+                ],
+              ),
             ),
+            if (onDelete != null) ...[
+              const SizedBox(width: 8),
+              IconButton(
+                icon: Icon(
+                  Icons.delete_outline,
+                  color: context.colour.error,
+                  size: 20,
+                ),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                onPressed: onDelete,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
 
@@ -70,7 +130,7 @@ class ServerListItem extends StatelessWidget {
   }
 
   Widget _buildStatusIndicator(BuildContext context) {
-    final isConnected = server.status == ElectrumServerStatus.online;
+    final isOnline = server.status == ElectrumServerStatus.online;
 
     return Row(
       children: [
@@ -79,12 +139,12 @@ class ServerListItem extends StatelessWidget {
           height: 8,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isConnected ? Colors.green : Colors.amber,
+            color: isOnline ? Colors.green : Colors.amber,
           ),
         ),
         const SizedBox(width: 8),
         Text(
-          isConnected ? 'Connected' : 'Not Connected',
+          isOnline ? 'Online' : 'Offline',
           style: context.font.bodySmall?.copyWith(
             color: context.colour.onSurface,
           ),

@@ -16,19 +16,18 @@ class AddCustomServerUsecase {
        _serverStatusPort = serverStatusPort;
 
   Future<ElectrumServerStatus> execute(AddCustomServerRequest request) async {
-    final server = ElectrumServer(
+    final server = ElectrumServer.createCustom(
       url: request.url,
       network: request.network,
-      isCustom: request.isCustom,
       priority: request.priority,
     );
 
     final existingServer = await _electrumServerRepository.fetchByUrl(
-      request.url,
+      server.url,
     );
     if (existingServer != null) {
       // If the server already exists, throw an error
-      throw ElectrumServerAlreadyExistsException(request.url);
+      throw ElectrumServerAlreadyExistsException(server.url);
     }
 
     // Save the server and check its status concurrently

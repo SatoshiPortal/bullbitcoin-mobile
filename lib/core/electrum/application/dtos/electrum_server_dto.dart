@@ -22,13 +22,4 @@ class ElectrumServerDto {
       isCustom: domain.isCustom,
     );
   }
-
-  ElectrumServer toDomain({String? id}) {
-    return ElectrumServer(
-      url: url,
-      network: network,
-      priority: priority,
-      isCustom: isCustom,
-    );
-  }
 }
