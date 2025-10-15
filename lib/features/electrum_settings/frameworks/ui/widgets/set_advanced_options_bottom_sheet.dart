@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/advanced_options_exception.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,10 @@ class _SetAdvancedOptionsBottomSheetState
     _timeout = TextEditingController(text: options?.timeout.toString());
     _retry = TextEditingController(text: options?.retry.toString());
     _validateDomain = options?.validateDomain ?? true;
+
+    // Add listeners to trigger rebuild when values change
+    _stopGap.addListener(() => setState(() {}));
+    _timeout.addListener(() => setState(() {}));
   }
 
   @override
@@ -87,6 +92,25 @@ class _SetAdvancedOptionsBottomSheetState
       UnknownException(reason: final r) =>
         'An error occurred${r != null ? ': $r' : ''}',
     };
+  }
+
+  int _getRecommendedTimeoutSeconds({
+    required int stopGap,
+    int retries = 1,
+    double rps = 10.0, // assumed requests per second
+    double safety = 2.0, // multiplier for slow servers
+    int baseSeconds = 4,
+    int minSeconds = 5,
+    int maxSeconds = 300,
+  }) {
+    if (stopGap <= 20) return minSeconds;
+
+    final totalRequests = 2 * stopGap;
+    final estimatedSeconds = totalRequests / rps;
+    final raw = baseSeconds + (estimatedSeconds * safety / retries);
+
+    final clamped = raw.clamp(minSeconds.toDouble(), maxSeconds.toDouble());
+    return clamped.round();
   }
 
   @override
@@ -139,7 +163,15 @@ class _SetAdvancedOptionsBottomSheetState
                     SingleChildScrollView(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text(
+                            'Stop Gap',
+                            style: context.font.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           TextFormField(
                             controller: _stopGap,
                             focusNode: _stopGapNode,
@@ -196,6 +228,13 @@ class _SetAdvancedOptionsBottomSheetState
                                 (_) => _timeoutNode.requestFocus(),
                           ),
                           const SizedBox(height: 12),
+                          Text(
+                            'Timeout (seconds)',
+                            style: context.font.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           TextFormField(
                             controller: _timeout,
                             focusNode: _timeoutNode,
@@ -240,11 +279,54 @@ class _SetAdvancedOptionsBottomSheetState
                               final n = int.tryParse(value);
                               if (n == null) return 'Enter a valid number';
                               if (n <= 0) return 'Timeout must be positive';
+                              if (n > ElectrumSettings.maxTimeout) {
+                                return "Timeout seems too high. (Max. ${ElectrumSettings.maxTimeout} seconds)";
+                              }
                               return null;
                             },
                             onFieldSubmitted: (_) => _retryNode.requestFocus(),
                           ),
+                          Builder(
+                            builder: (context) {
+                              final stopGapValue = int.tryParse(
+                                _stopGap.text.trim(),
+                              );
+                              final timeoutValue = int.tryParse(
+                                _timeout.text.trim(),
+                              );
+
+                              if (stopGapValue != null &&
+                                  timeoutValue != null) {
+                                final recommended =
+                                    _getRecommendedTimeoutSeconds(
+                                      stopGap: stopGapValue,
+                                    );
+                                if (timeoutValue < recommended) {
+                                  return Column(
+                                    children: [
+                                      const SizedBox(height: 8),
+                                      InfoCard(
+                                        description:
+                                            'Your timeout ($timeoutValue seconds) is lower than the recommended value ($recommended seconds) for this Stop Gap.',
+                                        tagColor: context.colour.primary,
+                                        bgColor: context.colour.primary
+                                            .withValues(alpha: 0.1),
+                                      ),
+                                    ],
+                                  );
+                                }
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
                           const SizedBox(height: 12),
+                          Text(
+                            'Retry Count',
+                            style: context.font.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           TextFormField(
                             controller: _retry,
                             focusNode: _retryNode,

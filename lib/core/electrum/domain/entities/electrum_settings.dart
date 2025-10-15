@@ -12,6 +12,7 @@ class ElectrumSettings {
   String? _socks5;
 
   static const int maxStopGap = 3000;
+  static const int maxTimeout = 300; // 5 minutes
 
   ElectrumSettings({
     required int stopGap,
@@ -70,7 +71,7 @@ class ElectrumSettings {
   }
 
   void _ensureValidTimeout(int timeout) {
-    if (timeout <= 0) {
+    if (timeout <= 0 || timeout > maxTimeout) {
       throw InvalidTimeoutException(timeout);
     }
   }
