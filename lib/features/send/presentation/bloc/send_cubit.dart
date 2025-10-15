@@ -781,7 +781,10 @@ class SendCubit extends Cubit<SendState> {
       }
 
       emit(state.copyWith(amount: validatedAmount, sendMax: isMax));
-      await updateBestWallet();
+      // Don't update wallet when MAX is clicked to avoid changing network and triggering chain swaps
+      if (!isMax) {
+        await updateBestWallet();
+      }
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
