@@ -12,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 enum RecipientsTab {
-  newRecipient(displayValue: 'New beneficiary'),
+  newRecipient(displayValue: 'New recipients'),
   myRecipients(displayValue: 'My fiat recipients');
 
   final String displayValue;
