@@ -55,28 +55,31 @@ class _ServiceStatusIndicatorState extends State<ServiceStatusIndicator>
 
         return GestureDetector(
           onTap: () => _showStatusBottomSheet(context, serviceStatus),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: shouldPulse ? _animation.value : 1.0,
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _getStatusColor(
-                        context,
-                        serviceStatus,
-                        isChecking,
+          child: SizedBox(
+            width: 128,
+            height: 128,
+            child: Center(
+              child: AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: shouldPulse ? _animation.value : 1.0,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _getStatusColor(
+                          context,
+                          serviceStatus,
+                          isChecking,
+                        ),
                       ),
+                      child: null,
                     ),
-                    child: null,
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         );

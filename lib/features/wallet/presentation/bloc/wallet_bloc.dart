@@ -86,8 +86,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<ServiceStatusChecked>(_onServiceStatusChecked);
     on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
 
-    // Start periodic service status checks every 15 seconds
-    _serviceStatusTimer = Timer.periodic(const Duration(seconds: 15), (timer) {
+    // Start periodic service status checks every 60 seconds
+    _serviceStatusTimer = Timer.periodic(const Duration(seconds: 60), (timer) {
       add(const CheckServiceStatus());
     });
   }
