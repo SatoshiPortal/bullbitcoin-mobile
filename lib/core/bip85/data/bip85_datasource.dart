@@ -134,6 +134,16 @@ class Bip85Datasource {
     }
   }
 
+  Future<void> reactivate(String path) async {
+    try {
+      await _sqlite.managers.bip85Derivations
+          .filter((b) => b.path(path))
+          .update((b) => b(status: const Value(Bip85StatusColumn.active)));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // We should not use _store without properly formatting the derivation path.
   Future<void> _store(Bip85DerivationModel bip85) async {
     try {

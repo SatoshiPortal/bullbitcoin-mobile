@@ -50,8 +50,12 @@ class WalletCards extends StatelessWidget {
       (WalletBloc bloc) => bloc.state.syncStatus,
     );
 
-    final arkWallet = context.watch<WalletBloc>().state.arkWallet;
-    final arkBalanceSat = context.watch<WalletBloc>().state.arkBalanceSat;
+    final arkWallet = context.select(
+      (WalletBloc bloc) => bloc.state.arkWallet,
+    );
+    final arkBalanceSat = context.select(
+      (WalletBloc bloc) => bloc.state.arkBalanceSat,
+    );
 
     return Padding(
       padding: padding ?? const EdgeInsets.all(13.0),
