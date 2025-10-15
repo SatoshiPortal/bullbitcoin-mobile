@@ -57,8 +57,16 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
   List<WithdrawRecipientType> get payoutMethodsForCountry {
     if (selectedCountry == null) return [];
 
+    // Get currency from the pay bloc to filter by currency, not just country
+    final payBloc = context.read<PayBloc>();
+    final currentCurrency = payBloc.state.currency;
+
     return WithdrawRecipientType.values.where((type) {
-      return type.countryCode == selectedCountry;
+      // First filter by country code
+      if (type.countryCode != selectedCountry) return false;
+
+      // Then filter by currency code to ensure we only show the right currency recipients
+      return type.currencyCode == currentCurrency.code;
     }).toList();
   }
 

@@ -210,7 +210,7 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
 
     return BlocBuilder<PayBloc, PayState>(
       builder: (context, state) {
-        final allEligibleRecipients = state.recipients;
+        final allEligibleRecipients = state.eligibleRecipientsByCurrency;
         final filteredRecipients = _applyFilters(allEligibleRecipients);
         final isLoadingRecipients =
             state is PayRecipientInputState && state.isLoadingRecipients;
