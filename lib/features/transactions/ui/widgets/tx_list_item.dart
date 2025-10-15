@@ -56,8 +56,10 @@ class TxListItem extends StatelessWidget {
             : null;
     final date =
         tx.isSwap
-            ? (tx.swap?.completionTime != null
-                ? timeago.format(tx.swap!.completionTime!)
+            ? (!tx.isOngoingSwap
+                ? (tx.swap?.completionTime != null
+                    ? timeago.format(tx.swap!.completionTime!)
+                    : null)
                 : null)
             : isOrderType
             ? (tx.order?.completedAt != null
@@ -219,11 +221,11 @@ class TxListItem extends StatelessWidget {
                       ),
                     ],
                   )
-                else if (date != null)
+                else if (date != null || !tx.isOngoingSwap)
                   Row(
                     children: [
                       BBText(
-                        date,
+                        date ?? '',
                         style: context.font.labelSmall?.copyWith(
                           color:
                               tx.isOngoingSwap
