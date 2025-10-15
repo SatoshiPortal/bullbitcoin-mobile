@@ -18,3 +18,7 @@ class ArkDerivationNotFoundError extends ArkError {
 class ArkWalletIsNotInitializedError extends ArkError {
   ArkWalletIsNotInitializedError() : super('Ark wallet is not initialized');
 }
+
+class ArkRequiresDevModeError extends ArkError {
+  ArkRequiresDevModeError() : super('Ark requires dev mode to be enabled');
+}

@@ -73,4 +73,6 @@ class ArkWalletEntity {
     address: address,
     selectRecoverableVtxos: selectRecoverableVtxos,
   );
+
+  ark_wallet.ServerInfo get serverInfo => wallet.serverInfo();
 }
