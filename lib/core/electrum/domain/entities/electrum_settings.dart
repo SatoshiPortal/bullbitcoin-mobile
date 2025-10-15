@@ -11,6 +11,8 @@ class ElectrumSettings {
   final ElectrumServerNetwork _network;
   String? _socks5;
 
+  static const int maxStopGap = 3000;
+
   ElectrumSettings({
     required int stopGap,
     required int timeout,
@@ -43,14 +45,14 @@ class ElectrumSettings {
     // `newSocks5Supplier: () => null` to clear the value and make socks5 null
     String? Function()? newSocks5Supplier,
   }) {
-    if (newStopGap != null && newStopGap < 0) {
-      throw InvalidStopGapException(newStopGap);
+    if (newStopGap != null) {
+      _ensureValidStopGap(newStopGap);
     }
-    if (newTimeout != null && newTimeout <= 0) {
-      throw InvalidTimeoutException(newTimeout);
+    if (newTimeout != null) {
+      _ensureValidTimeout(newTimeout);
     }
-    if (newRetry != null && newRetry < 0) {
-      throw InvalidRetryException(newRetry);
+    if (newRetry != null) {
+      _ensureValidRetry(newRetry);
     }
     // TODO: Add validation for socks5 format or are there too many valid formats?
 
@@ -59,5 +61,23 @@ class ElectrumSettings {
     _retry = newRetry ?? _retry;
     _validateDomain = newValidateDomain ?? _validateDomain;
     _socks5 = newSocks5Supplier != null ? newSocks5Supplier() : _socks5;
+  }
+
+  void _ensureValidStopGap(int stopGap) {
+    if (stopGap < 0 || stopGap > maxStopGap) {
+      throw InvalidStopGapException(stopGap);
+    }
+  }
+
+  void _ensureValidTimeout(int timeout) {
+    if (timeout <= 0) {
+      throw InvalidTimeoutException(timeout);
+    }
+  }
+
+  void _ensureValidRetry(int retry) {
+    if (retry < 0) {
+      throw InvalidRetryException(retry);
+    }
   }
 }

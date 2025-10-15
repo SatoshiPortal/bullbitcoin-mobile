@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
@@ -186,6 +187,9 @@ class _SetAdvancedOptionsBottomSheetState
                               if (n < 0) {
                                 return "Stop Gap can't be negative";
                               }
+                              if (n > ElectrumSettings.maxStopGap) {
+                                return "Stop Gap seems too high. (Max. ${ElectrumSettings.maxStopGap})";
+                              }
                               return null;
                             },
                             onFieldSubmitted:
@@ -230,8 +234,9 @@ class _SetAdvancedOptionsBottomSheetState
                             ),
                             validator: (v) {
                               final value = v?.trim() ?? '';
-                              if (value.isEmpty)
+                              if (value.isEmpty) {
                                 return "Timeout can't be empty";
+                              }
                               final n = int.tryParse(value);
                               if (n == null) return 'Enter a valid number';
                               if (n <= 0) return 'Timeout must be positive';
