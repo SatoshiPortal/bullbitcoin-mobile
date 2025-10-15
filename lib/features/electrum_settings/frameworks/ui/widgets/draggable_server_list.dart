@@ -55,10 +55,22 @@ class DraggableServerList extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
+        if (customServers.isNotEmpty) ...[
+          InfoCard(
+            description:
+                'To protect your privacy, default servers are not used when custom servers are configured.',
+            tagColor: context.colour.onTertiary,
+            bgColor: context.colour.tertiary.withValues(alpha: 0.1),
+          ),
+          const SizedBox(height: 8),
+        ],
         ...defaultServers.map(
           (server) => Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: ServerListItem(server: server),
+            child: ServerListItem(
+              server: server,
+              disabled: customServers.isNotEmpty,
+            ),
           ),
         ),
         if (customServers.isNotEmpty) ...[

@@ -29,7 +29,7 @@ class ElectrumServer {
     // 1. host:port (e.g., "example.com:50001")
     // 2. protocol://host:port (e.g., "ssl://example.com:50002", "tcp://example.com:50001")
 
-    final protocolPattern = RegExp('^(ssl|tcp|wss)://');
+    final protocolPattern = RegExp('^(tcp|ssl|ws|wss|rpc)://');
     final urlWithoutProtocol = url.replaceFirst(protocolPattern, '');
 
     // Check for host:port format
