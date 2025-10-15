@@ -393,18 +393,12 @@ class BdkWalletDatasource {
     required WalletModel wallet,
   }) async {
     final bdkWallet = await _createWallet(wallet);
-    // Get the last unused address instead of increasing the address right away
-    //  so we start at index 0.
     final addressInfo = bdkWallet.getAddress(
-      addressIndex: const bdk.AddressIndex.lastUnused(),
+      addressIndex: const bdk.AddressIndex.increase(),
     );
 
     final index = addressInfo.index;
     final address = addressInfo.address.asString();
-
-    // Now increase the address index so the next call to getAddress
-    //  will return a new address with the next index.
-    bdkWallet.getAddress(addressIndex: const bdk.AddressIndex.increase());
 
     return (index: index, address: address);
   }

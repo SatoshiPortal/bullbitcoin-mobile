@@ -166,9 +166,8 @@ class SwapWatcherService {
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;
       } else {
-        final address = await _walletAddressRepository.getNewReceiveAddress(
-          walletId: swap.sendWalletId,
-        );
+        final address = await _walletAddressRepository
+            .generateNewReceiveAddress(walletId: swap.sendWalletId);
         refundAddress = address.address;
         final updatedSwap = swap.copyWith(refundAddress: refundAddress);
         await _boltzRepo.updateSwap(swap: updatedSwap);
@@ -284,9 +283,8 @@ class SwapWatcherService {
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;
       } else {
-        final address = await _walletAddressRepository.getNewReceiveAddress(
-          walletId: swap.sendWalletId,
-        );
+        final address = await _walletAddressRepository
+            .generateNewReceiveAddress(walletId: swap.sendWalletId);
         refundAddress = address.address;
         final updatedSwap = swap.copyWith(refundAddress: refundAddress);
         await _boltzRepo.updateSwap(swap: updatedSwap);
@@ -407,11 +405,13 @@ class SwapWatcherService {
         } else {
           // Generate new address and store it in the swap model
           final claimAddress = await _walletAddressRepository
-              .getNewReceiveAddress(walletId: swap.receiveWalletId!);
+            .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
+        finalClaimAddress = claimAddress.address;
           finalClaimAddress = claimAddress.address;
           final updatedSwap = swap.copyWith(receiveAddress: finalClaimAddress);
           await _boltzRepo.updateSwap(swap: updatedSwap);
         }
+
       } else {
         if (swap.receiveAddress!.startsWith('bitcoin:')) {
           final uri = bip21.decode(swap.receiveAddress!);
@@ -466,9 +466,8 @@ class SwapWatcherService {
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;
       } else {
-        final address = await _walletAddressRepository.getNewReceiveAddress(
-          walletId: swap.sendWalletId,
-        );
+        final address = await _walletAddressRepository
+            .generateNewReceiveAddress(walletId: swap.sendWalletId);
         refundAddress = address.address;
         final updatedSwap = swap.copyWith(refundAddress: refundAddress);
         await _boltzRepo.updateSwap(swap: updatedSwap);
@@ -553,11 +552,12 @@ class SwapWatcherService {
         } else {
           // Generate new address and store it in the swap model
           final claimAddress = await _walletAddressRepository
-              .getNewReceiveAddress(walletId: swap.receiveWalletId!);
+            .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
           finalClaimAddress = claimAddress.address;
           final updatedSwap = swap.copyWith(receiveAddress: finalClaimAddress);
           await _boltzRepo.updateSwap(swap: updatedSwap);
         }
+
       } else {
         if (swap.receiveAddress!.startsWith('liquidnetwork:') ||
             swap.receiveAddress!.startsWith('liquidtestnet:')) {
@@ -614,9 +614,8 @@ class SwapWatcherService {
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;
       } else {
-        final address = await _walletAddressRepository.getNewReceiveAddress(
-          walletId: swap.sendWalletId,
-        );
+        final address = await _walletAddressRepository
+            .generateNewReceiveAddress(walletId: swap.sendWalletId);
         refundAddress = address.address;
         final updatedSwap = swap.copyWith(refundAddress: refundAddress);
         await _boltzRepo.updateSwap(swap: updatedSwap);

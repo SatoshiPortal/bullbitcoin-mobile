@@ -37,6 +37,7 @@ class Bull {
 
     final logDirectory = await getApplicationDocumentsDirectory();
     log = Logger.init(directory: logDirectory);
+    await log.ensureLogsExist();
 
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization

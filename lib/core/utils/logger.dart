@@ -10,17 +10,24 @@ export 'package:logging_colorful/logging_colorful.dart';
 Logger log = Logger.init();
 
 class Logger {
-  final session = <String>[];
-  final String? encryptionKey;
   final Directory dir;
   final dep.LoggerColorful logger;
 
-  static const _migrationFilename = 'bull_migration_logs.tsv';
-  static const _sessionFilename = 'bull_session_logs.tsv';
-  File get sessionLogs => File('${dir.path}/$_sessionFilename');
-  File get migrationLogs => File('${dir.path}/$_migrationFilename');
+  static const _logFilename = 'bull_logs.tsv';
 
-  Logger._(this.encryptionKey, this.dir, this.logger) {
+  File get logsFile => File('${dir.path}/$_logFilename');
+
+  Future<List<String>> readLogs() async {
+    try {
+      final logs = await logsFile.readAsString();
+      return logs.split('\n').where((e) => e.isNotEmpty).toList();
+    } catch (e) {
+      severe('Failed to read logs: $e');
+      rethrow;
+    }
+  }
+
+  Logger._(this.dir, this.logger) {
     dep.Logger.root.level = dep.Level.ALL;
 
     dep.Logger.root.onRecord.listen((record) {
@@ -34,7 +41,7 @@ class Logger {
       final tsvLine = sanitizedContent.join('\t');
 
       // We don't want to keep the info session in memory, they should be written to file
-      if (record.level != dep.Level.INFO) session.add(tsvLine);
+      if (record.level != dep.Level.INFO) appendToLogFile(tsvLine);
 
       if (kDebugMode) {
         // remove timestamp and errors
@@ -44,23 +51,30 @@ class Logger {
     });
   }
 
-  Logger.init({
-    String? encryptionKey,
-    String name = 'Logger',
-    Directory? directory,
-  }) : this._(
-         encryptionKey,
-         directory ?? Directory.current,
-         // iOS emulator doesn't support colors –> https://github.com/flutter/flutter/issues/20663
-         // We don't want colors in release mode either
-         dep.LoggerColorful(
-           name,
-           disabledColors: Platform.isIOS || kReleaseMode,
-         ),
-       );
+  Logger.init({String name = 'Logger', Directory? directory})
+    : this._(
+        directory ?? Directory.current,
+        // iOS emulator doesn't support colors –> https://github.com/flutter/flutter/issues/20663
+        // We don't want colors in release mode either
+        dep.LoggerColorful(
+          name,
+          disabledColors: Platform.isIOS || kReleaseMode,
+        ),
+      );
 
-  Future<void> dumpSessionToFile() async {
-    await sessionLogs.writeAsString(session.join('\n'));
+  Future<void> ensureLogsExist() async {
+    try {
+      if (await logsFile.exists()) {
+        final logsBytes = await logsFile.readAsBytes();
+        fine('Logs exists: ${logsBytes.length / 1000} kB');
+        return;
+      } else {
+        await logsFile.create(recursive: true);
+        fine('Logs created');
+      }
+    } catch (e) {
+      severe('Logs existence: $e');
+    }
   }
 
   /// Logs information messages that are part of the normal operation of the app.
@@ -127,10 +141,15 @@ class Logger {
 
     final sanitizedContent = content.map((e) => logger.sanitize(e)).toList();
     final tsvLine = sanitizedContent.join('\t');
-    await appendToMigrationFile(tsvLine);
+    await appendToLogFile(tsvLine);
   }
 
-  Future<void> appendToMigrationFile(String message) async {
-    await migrationLogs.writeAsString('$message\n', mode: FileMode.append);
+  Future<void> appendToLogFile(String log) async {
+    await logsFile.writeAsString('$log\n', mode: FileMode.append);
+  }
+
+  Future<void> deleteLogs() async {
+    await logsFile.writeAsString('');
+    log.shout('Logs deleted');
   }
 }
