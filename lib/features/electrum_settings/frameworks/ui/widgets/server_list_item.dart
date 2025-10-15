@@ -70,7 +70,7 @@ class ServerListItem extends StatelessWidget {
   }
 
   Widget _buildStatusIndicator(BuildContext context) {
-    final isConnected = server.status == ElectrumServerStatus.online;
+    final isOnline = server.status == ElectrumServerStatus.online;
 
     return Row(
       children: [
@@ -79,12 +79,12 @@ class ServerListItem extends StatelessWidget {
           height: 8,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isConnected ? Colors.green : Colors.amber,
+            color: isOnline ? Colors.green : Colors.amber,
           ),
         ),
         const SizedBox(width: 8),
         Text(
-          isConnected ? 'Connected' : 'Not Connected',
+          isOnline ? 'Online' : 'Offline',
           style: context.font.bodySmall?.copyWith(
             color: context.colour.onSurface,
           ),
