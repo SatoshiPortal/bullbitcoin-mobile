@@ -26,7 +26,7 @@ class Schema6To7 {
     // Recreate the table to remove the DEFAULT constraint from is_custom
     await m.alterTable(
       TableMigration(
-        schema7.electrumServers, // your GeneratedDatabase table instance
+        schema7.electrumServers,
         // map every column to itself to copy data during rebuild
         columnTransformer: {
           schema7.electrumServers.url: schema7.electrumServers.url,
