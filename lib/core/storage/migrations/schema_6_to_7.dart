@@ -22,5 +22,20 @@ class Schema6To7 {
       variables: defaultServerUrls.map((url) => Variable<String>(url)).toList(),
       updates: {schema7.electrumServers},
     );
+
+    // Recreate the table to remove the DEFAULT constraint from is_custom
+    await m.alterTable(
+      TableMigration(
+        schema7.electrumServers, // your GeneratedDatabase table instance
+        // map every column to itself to copy data during rebuild
+        columnTransformer: {
+          schema7.electrumServers.url: schema7.electrumServers.url,
+          schema7.electrumServers.isTestnet: schema7.electrumServers.isTestnet,
+          schema7.electrumServers.isLiquid: schema7.electrumServers.isLiquid,
+          schema7.electrumServers.priority: schema7.electrumServers.priority,
+          schema7.electrumServers.isCustom: schema7.electrumServers.isCustom,
+        },
+      ),
+    );
   }
 }
