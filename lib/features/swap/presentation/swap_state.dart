@@ -248,10 +248,7 @@ abstract class SwapState with _$SwapState {
   int get toAmountSat {
     int amountSat = 0;
     if (toAmount.isNotEmpty) {
-      if (isOutAmountFiat) {
-        final amountFiat = double.tryParse(toAmount) ?? 0;
-        amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
-      } else if (bitcoinUnit == BitcoinUnit.sats) {
+      if (bitcoinUnit == BitcoinUnit.sats) {
         amountSat = int.tryParse(toAmount) ?? 0;
       } else {
         final amountBtc = double.tryParse(toAmount) ?? 0;
@@ -277,14 +274,7 @@ abstract class SwapState with _$SwapState {
       }
     }
 
-    if (isOutAmountFiat) {
-      // Convert to fiat and format
-      final amountFiat = ConvertAmount.btcToFiat(
-        ConvertAmount.satsToBtc(amountSat),
-        exchangeRate,
-      );
-      return amountFiat.toString();
-    } else if (bitcoinUnit == BitcoinUnit.btc) {
+    if (bitcoinUnit == BitcoinUnit.btc) {
       return ConvertAmount.satsToBtc(amountSat).toString();
     } else {
       return amountSat.toString();
@@ -384,8 +374,8 @@ abstract class SwapState with _$SwapState {
       toAmountSat <= 0 ||
       fromWalletBalance < fromAmountSat ||
       creatingSwap ||
-      selectedFeeList == null ||
-      (bitcoinAbsoluteFees == null && liquidAbsoluteFees == null);
+      (selectedFeeList == null && sendMax) ||
+      (sendMax && (bitcoinAbsoluteFees == null && liquidAbsoluteFees == null));
 
   bool get disableSendSwapButton =>
       broadcastingTransaction ||

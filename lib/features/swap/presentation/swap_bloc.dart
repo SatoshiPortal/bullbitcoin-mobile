@@ -289,6 +289,13 @@ class SwapCubit extends Cubit<SwapState> {
     );
 
     await loadSwapLimits();
+    // if (state.selectedFeeList == null) {
+    //   await loadFees();
+    //   // Wait for fees to be loaded
+    //   while (state.loadingFees || state.selectedFeeList == null) {
+    //     await Future.delayed(const Duration(milliseconds: 100));
+    //   }
+    // }
 
     emit(
       state.copyWith(
@@ -338,9 +345,11 @@ class SwapCubit extends Cubit<SwapState> {
       if (state.fromWallet!.network == Network.bitcoinMainnet ||
           state.fromWallet!.network == Network.bitcoinTestnet) {
         bitcoinFeeList = fromNetworkFees;
+        liquidFeeList = toNetworkFees;
       } else if (state.fromWallet!.network == Network.liquidMainnet ||
           state.fromWallet!.network == Network.liquidTestnet) {
-        liquidFeeList = toNetworkFees;
+        liquidFeeList = fromNetworkFees;
+        bitcoinFeeList = toNetworkFees;
       }
       emit(
         state.copyWith(
@@ -360,6 +369,8 @@ class SwapCubit extends Cubit<SwapState> {
 
   void switchFromAndToWallets() {
     final newFromNetwork = state.toWalletNetwork;
+    final newToNetwork = state.fromWalletNetwork;
+
     FeeOptions? newSelectedFeeList;
     NetworkFee? newSelectedFee;
     if (newFromNetwork == WalletNetwork.bitcoin) {
@@ -374,26 +385,47 @@ class SwapCubit extends Cubit<SwapState> {
     List<Wallet> newToWallets = [];
 
     if (newFromNetwork == WalletNetwork.bitcoin) {
-      newFromWallets = state.toWallets;
+      // Switching to Bitcoin from wallets - include watch-only wallets
+      newFromWallets = [...state.toWallets, ...state.watchOnlyBitcoinWallets];
       newToWallets = state.fromWallets;
     } else {
-      newToWallets = [...state.toWallets, ...state.watchOnlyBitcoinWallets];
+      // Switching to Liquid from wallets - only signing wallets
+      newFromWallets = state.toWallets;
+      newToWallets = state.fromWallets;
+    }
+
+    // Ensure we have valid wallet selections
+    String? newFromWalletId = state.toWalletId;
+    String? newToWalletId = state.fromWalletId;
+
+    // Validate that the selected wallet IDs exist in the new lists
+    if (newFromWalletId != null &&
+        !newFromWallets.any((w) => w.id == newFromWalletId)) {
+      newFromWalletId =
+          newFromWallets.isNotEmpty ? newFromWallets.first.id : null;
+    }
+    if (newToWalletId != null &&
+        !newToWallets.any((w) => w.id == newToWalletId)) {
+      newToWalletId = newToWallets.isNotEmpty ? newToWallets.first.id : null;
     }
 
     emit(
       state.copyWith(
         fromWallets: newFromWallets,
         toWallets: newToWallets,
-        fromWalletNetwork: state.toWalletNetwork,
-        toWalletNetwork: state.fromWalletNetwork,
+        fromWalletNetwork: newFromNetwork,
+        toWalletNetwork: newToNetwork,
         selectedFromCurrencyCode: state.selectedToCurrencyCode,
         selectedToCurrencyCode: state.selectedFromCurrencyCode,
-        fromWalletId: state.toWalletId,
-        toWalletId: state.fromWalletId,
+        fromWalletId: newFromWalletId,
+        toWalletId: newToWalletId,
         selectedFeeList: newSelectedFeeList,
         selectedFee: newSelectedFee,
       ),
     );
+
+    // Load fees for the new wallet configuration
+    // loadFees();
   }
 
   void updateSelectedFromWallet(String walletId) {
