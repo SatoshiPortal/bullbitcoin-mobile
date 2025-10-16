@@ -322,6 +322,7 @@ class SwapTransferAmountField extends StatelessWidget {
                     children: [
                       Expanded(
                         child: TextFormField(
+                          key: ValueKey(fromAmount),
                           initialValue: fromAmount,
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
