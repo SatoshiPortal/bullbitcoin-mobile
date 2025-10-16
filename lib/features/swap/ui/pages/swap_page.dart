@@ -37,8 +37,8 @@ class _SwapPageState extends State<SwapPage> {
       body: SafeArea(
         child: Form(
           key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             child: ScrollableColumn(children: []),
           ),
         ),
