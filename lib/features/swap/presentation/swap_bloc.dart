@@ -289,6 +289,13 @@ class SwapCubit extends Cubit<SwapState> {
     );
 
     await loadSwapLimits();
+    // if (state.selectedFeeList == null) {
+    //   await loadFees();
+    //   // Wait for fees to be loaded
+    //   while (state.loadingFees || state.selectedFeeList == null) {
+    //     await Future.delayed(const Duration(milliseconds: 100));
+    //   }
+    // }
 
     emit(
       state.copyWith(
@@ -338,9 +345,11 @@ class SwapCubit extends Cubit<SwapState> {
       if (state.fromWallet!.network == Network.bitcoinMainnet ||
           state.fromWallet!.network == Network.bitcoinTestnet) {
         bitcoinFeeList = fromNetworkFees;
+        liquidFeeList = toNetworkFees;
       } else if (state.fromWallet!.network == Network.liquidMainnet ||
           state.fromWallet!.network == Network.liquidTestnet) {
-        liquidFeeList = toNetworkFees;
+        liquidFeeList = fromNetworkFees;
+        bitcoinFeeList = toNetworkFees;
       }
       emit(
         state.copyWith(
@@ -414,6 +423,9 @@ class SwapCubit extends Cubit<SwapState> {
         selectedFee: newSelectedFee,
       ),
     );
+
+    // Load fees for the new wallet configuration
+    // loadFees();
   }
 
   void updateSelectedFromWallet(String walletId) {
