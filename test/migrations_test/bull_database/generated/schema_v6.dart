@@ -1776,13 +1776,16 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
       'CHECK ("is_superuser" IN (0, 1))',
     ),
   );
-  late final GeneratedColumn<String> themeMode = GeneratedColumn<String>(
-    'theme_mode',
+  late final GeneratedColumn<bool> isDevModeEnabled = GeneratedColumn<bool>(
+    'is_dev_mode_enabled',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultValue: const CustomExpression('\'system\''),
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_dev_mode_enabled" IN (0, 1))',
+    ),
+    defaultValue: const CustomExpression('0'),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -1793,7 +1796,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     currency,
     hideAmounts,
     isSuperuser,
-    themeMode,
+    isDevModeEnabled,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1841,10 +1844,10 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
             DriftSqlType.bool,
             data['${effectivePrefix}is_superuser'],
           )!,
-      themeMode:
+      isDevModeEnabled:
           attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}theme_mode'],
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_dev_mode_enabled'],
           )!,
     );
   }
@@ -1863,7 +1866,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final String currency;
   final bool hideAmounts;
   final bool isSuperuser;
-  final String themeMode;
+  final bool isDevModeEnabled;
   const SettingsData({
     required this.id,
     required this.environment,
@@ -1872,7 +1875,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.currency,
     required this.hideAmounts,
     required this.isSuperuser,
-    required this.themeMode,
+    required this.isDevModeEnabled,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1884,7 +1887,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['currency'] = Variable<String>(currency);
     map['hide_amounts'] = Variable<bool>(hideAmounts);
     map['is_superuser'] = Variable<bool>(isSuperuser);
-    map['theme_mode'] = Variable<String>(themeMode);
+    map['is_dev_mode_enabled'] = Variable<bool>(isDevModeEnabled);
     return map;
   }
 
@@ -1897,7 +1900,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       currency: Value(currency),
       hideAmounts: Value(hideAmounts),
       isSuperuser: Value(isSuperuser),
-      themeMode: Value(themeMode),
+      isDevModeEnabled: Value(isDevModeEnabled),
     );
   }
 
@@ -1914,7 +1917,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       currency: serializer.fromJson<String>(json['currency']),
       hideAmounts: serializer.fromJson<bool>(json['hideAmounts']),
       isSuperuser: serializer.fromJson<bool>(json['isSuperuser']),
-      themeMode: serializer.fromJson<String>(json['themeMode']),
+      isDevModeEnabled: serializer.fromJson<bool>(json['isDevModeEnabled']),
     );
   }
   @override
@@ -1928,7 +1931,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'currency': serializer.toJson<String>(currency),
       'hideAmounts': serializer.toJson<bool>(hideAmounts),
       'isSuperuser': serializer.toJson<bool>(isSuperuser),
-      'themeMode': serializer.toJson<String>(themeMode),
+      'isDevModeEnabled': serializer.toJson<bool>(isDevModeEnabled),
     };
   }
 
@@ -1940,7 +1943,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     String? currency,
     bool? hideAmounts,
     bool? isSuperuser,
-    String? themeMode,
+    bool? isDevModeEnabled,
   }) => SettingsData(
     id: id ?? this.id,
     environment: environment ?? this.environment,
@@ -1949,7 +1952,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     currency: currency ?? this.currency,
     hideAmounts: hideAmounts ?? this.hideAmounts,
     isSuperuser: isSuperuser ?? this.isSuperuser,
-    themeMode: themeMode ?? this.themeMode,
+    isDevModeEnabled: isDevModeEnabled ?? this.isDevModeEnabled,
   );
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
@@ -1964,7 +1967,10 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           data.hideAmounts.present ? data.hideAmounts.value : this.hideAmounts,
       isSuperuser:
           data.isSuperuser.present ? data.isSuperuser.value : this.isSuperuser,
-      themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
+      isDevModeEnabled:
+          data.isDevModeEnabled.present
+              ? data.isDevModeEnabled.value
+              : this.isDevModeEnabled,
     );
   }
 
@@ -1978,7 +1984,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('currency: $currency, ')
           ..write('hideAmounts: $hideAmounts, ')
           ..write('isSuperuser: $isSuperuser, ')
-          ..write('themeMode: $themeMode')
+          ..write('isDevModeEnabled: $isDevModeEnabled')
           ..write(')'))
         .toString();
   }
@@ -1992,7 +1998,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     currency,
     hideAmounts,
     isSuperuser,
-    themeMode,
+    isDevModeEnabled,
   );
   @override
   bool operator ==(Object other) =>
@@ -2005,7 +2011,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.currency == this.currency &&
           other.hideAmounts == this.hideAmounts &&
           other.isSuperuser == this.isSuperuser &&
-          other.themeMode == this.themeMode);
+          other.isDevModeEnabled == this.isDevModeEnabled);
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -2016,7 +2022,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<String> currency;
   final Value<bool> hideAmounts;
   final Value<bool> isSuperuser;
-  final Value<String> themeMode;
+  final Value<bool> isDevModeEnabled;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.environment = const Value.absent(),
@@ -2025,7 +2031,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.currency = const Value.absent(),
     this.hideAmounts = const Value.absent(),
     this.isSuperuser = const Value.absent(),
-    this.themeMode = const Value.absent(),
+    this.isDevModeEnabled = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -2035,7 +2041,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     required String currency,
     required bool hideAmounts,
     required bool isSuperuser,
-    this.themeMode = const Value.absent(),
+    this.isDevModeEnabled = const Value.absent(),
   }) : environment = Value(environment),
        bitcoinUnit = Value(bitcoinUnit),
        language = Value(language),
@@ -2050,7 +2056,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<String>? currency,
     Expression<bool>? hideAmounts,
     Expression<bool>? isSuperuser,
-    Expression<String>? themeMode,
+    Expression<bool>? isDevModeEnabled,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2060,7 +2066,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (currency != null) 'currency': currency,
       if (hideAmounts != null) 'hide_amounts': hideAmounts,
       if (isSuperuser != null) 'is_superuser': isSuperuser,
-      if (themeMode != null) 'theme_mode': themeMode,
+      if (isDevModeEnabled != null) 'is_dev_mode_enabled': isDevModeEnabled,
     });
   }
 
@@ -2072,7 +2078,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<String>? currency,
     Value<bool>? hideAmounts,
     Value<bool>? isSuperuser,
-    Value<String>? themeMode,
+    Value<bool>? isDevModeEnabled,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -2082,7 +2088,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       currency: currency ?? this.currency,
       hideAmounts: hideAmounts ?? this.hideAmounts,
       isSuperuser: isSuperuser ?? this.isSuperuser,
-      themeMode: themeMode ?? this.themeMode,
+      isDevModeEnabled: isDevModeEnabled ?? this.isDevModeEnabled,
     );
   }
 
@@ -2110,8 +2116,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (isSuperuser.present) {
       map['is_superuser'] = Variable<bool>(isSuperuser.value);
     }
-    if (themeMode.present) {
-      map['theme_mode'] = Variable<String>(themeMode.value);
+    if (isDevModeEnabled.present) {
+      map['is_dev_mode_enabled'] = Variable<bool>(isDevModeEnabled.value);
     }
     return map;
   }
@@ -2126,7 +2132,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('currency: $currency, ')
           ..write('hideAmounts: $hideAmounts, ')
           ..write('isSuperuser: $isSuperuser, ')
-          ..write('themeMode: $themeMode')
+          ..write('isDevModeEnabled: $isDevModeEnabled')
           ..write(')'))
         .toString();
   }
@@ -3541,12 +3547,327 @@ class ElectrumServers extends Table
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  late final GeneratedColumn<String> socks5 = GeneratedColumn<String>(
-    'socks5',
+  late final GeneratedColumn<bool> isTestnet = GeneratedColumn<bool>(
+    'is_testnet',
     aliasedName,
-    true,
-    type: DriftSqlType.string,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_testnet" IN (0, 1))',
+    ),
+  );
+  late final GeneratedColumn<bool> isLiquid = GeneratedColumn<bool>(
+    'is_liquid',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_liquid" IN (0, 1))',
+    ),
+  );
+  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
+    'priority',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<bool> isCustom = GeneratedColumn<bool>(
+    'is_custom',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
     requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_custom" IN (0, 1))',
+    ),
+    defaultValue: const CustomExpression('0'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    url,
+    isTestnet,
+    isLiquid,
+    priority,
+    isCustom,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'electrum_servers';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {url};
+  @override
+  ElectrumServersData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ElectrumServersData(
+      url:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}url'],
+          )!,
+      isTestnet:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_testnet'],
+          )!,
+      isLiquid:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_liquid'],
+          )!,
+      priority:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}priority'],
+          )!,
+      isCustom:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_custom'],
+          )!,
+    );
+  }
+
+  @override
+  ElectrumServers createAlias(String alias) {
+    return ElectrumServers(attachedDatabase, alias);
+  }
+}
+
+class ElectrumServersData extends DataClass
+    implements Insertable<ElectrumServersData> {
+  final String url;
+  final bool isTestnet;
+  final bool isLiquid;
+  final int priority;
+  final bool isCustom;
+  const ElectrumServersData({
+    required this.url,
+    required this.isTestnet,
+    required this.isLiquid,
+    required this.priority,
+    required this.isCustom,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['url'] = Variable<String>(url);
+    map['is_testnet'] = Variable<bool>(isTestnet);
+    map['is_liquid'] = Variable<bool>(isLiquid);
+    map['priority'] = Variable<int>(priority);
+    map['is_custom'] = Variable<bool>(isCustom);
+    return map;
+  }
+
+  ElectrumServersCompanion toCompanion(bool nullToAbsent) {
+    return ElectrumServersCompanion(
+      url: Value(url),
+      isTestnet: Value(isTestnet),
+      isLiquid: Value(isLiquid),
+      priority: Value(priority),
+      isCustom: Value(isCustom),
+    );
+  }
+
+  factory ElectrumServersData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ElectrumServersData(
+      url: serializer.fromJson<String>(json['url']),
+      isTestnet: serializer.fromJson<bool>(json['isTestnet']),
+      isLiquid: serializer.fromJson<bool>(json['isLiquid']),
+      priority: serializer.fromJson<int>(json['priority']),
+      isCustom: serializer.fromJson<bool>(json['isCustom']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'url': serializer.toJson<String>(url),
+      'isTestnet': serializer.toJson<bool>(isTestnet),
+      'isLiquid': serializer.toJson<bool>(isLiquid),
+      'priority': serializer.toJson<int>(priority),
+      'isCustom': serializer.toJson<bool>(isCustom),
+    };
+  }
+
+  ElectrumServersData copyWith({
+    String? url,
+    bool? isTestnet,
+    bool? isLiquid,
+    int? priority,
+    bool? isCustom,
+  }) => ElectrumServersData(
+    url: url ?? this.url,
+    isTestnet: isTestnet ?? this.isTestnet,
+    isLiquid: isLiquid ?? this.isLiquid,
+    priority: priority ?? this.priority,
+    isCustom: isCustom ?? this.isCustom,
+  );
+  ElectrumServersData copyWithCompanion(ElectrumServersCompanion data) {
+    return ElectrumServersData(
+      url: data.url.present ? data.url.value : this.url,
+      isTestnet: data.isTestnet.present ? data.isTestnet.value : this.isTestnet,
+      isLiquid: data.isLiquid.present ? data.isLiquid.value : this.isLiquid,
+      priority: data.priority.present ? data.priority.value : this.priority,
+      isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ElectrumServersData(')
+          ..write('url: $url, ')
+          ..write('isTestnet: $isTestnet, ')
+          ..write('isLiquid: $isLiquid, ')
+          ..write('priority: $priority, ')
+          ..write('isCustom: $isCustom')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(url, isTestnet, isLiquid, priority, isCustom);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ElectrumServersData &&
+          other.url == this.url &&
+          other.isTestnet == this.isTestnet &&
+          other.isLiquid == this.isLiquid &&
+          other.priority == this.priority &&
+          other.isCustom == this.isCustom);
+}
+
+class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
+  final Value<String> url;
+  final Value<bool> isTestnet;
+  final Value<bool> isLiquid;
+  final Value<int> priority;
+  final Value<bool> isCustom;
+  final Value<int> rowid;
+  const ElectrumServersCompanion({
+    this.url = const Value.absent(),
+    this.isTestnet = const Value.absent(),
+    this.isLiquid = const Value.absent(),
+    this.priority = const Value.absent(),
+    this.isCustom = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ElectrumServersCompanion.insert({
+    required String url,
+    required bool isTestnet,
+    required bool isLiquid,
+    required int priority,
+    this.isCustom = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : url = Value(url),
+       isTestnet = Value(isTestnet),
+       isLiquid = Value(isLiquid),
+       priority = Value(priority);
+  static Insertable<ElectrumServersData> custom({
+    Expression<String>? url,
+    Expression<bool>? isTestnet,
+    Expression<bool>? isLiquid,
+    Expression<int>? priority,
+    Expression<bool>? isCustom,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (url != null) 'url': url,
+      if (isTestnet != null) 'is_testnet': isTestnet,
+      if (isLiquid != null) 'is_liquid': isLiquid,
+      if (priority != null) 'priority': priority,
+      if (isCustom != null) 'is_custom': isCustom,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ElectrumServersCompanion copyWith({
+    Value<String>? url,
+    Value<bool>? isTestnet,
+    Value<bool>? isLiquid,
+    Value<int>? priority,
+    Value<bool>? isCustom,
+    Value<int>? rowid,
+  }) {
+    return ElectrumServersCompanion(
+      url: url ?? this.url,
+      isTestnet: isTestnet ?? this.isTestnet,
+      isLiquid: isLiquid ?? this.isLiquid,
+      priority: priority ?? this.priority,
+      isCustom: isCustom ?? this.isCustom,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (isTestnet.present) {
+      map['is_testnet'] = Variable<bool>(isTestnet.value);
+    }
+    if (isLiquid.present) {
+      map['is_liquid'] = Variable<bool>(isLiquid.value);
+    }
+    if (priority.present) {
+      map['priority'] = Variable<int>(priority.value);
+    }
+    if (isCustom.present) {
+      map['is_custom'] = Variable<bool>(isCustom.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ElectrumServersCompanion(')
+          ..write('url: $url, ')
+          ..write('isTestnet: $isTestnet, ')
+          ..write('isLiquid: $isLiquid, ')
+          ..write('priority: $priority, ')
+          ..write('isCustom: $isCustom, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class ElectrumSettings extends Table
+    with TableInfo<ElectrumSettings, ElectrumSettingsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  ElectrumSettings(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> network = GeneratedColumn<String>(
+    'network',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<bool> validateDomain = GeneratedColumn<bool>(
+    'validate_domain',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("validate_domain" IN (0, 1))',
+    ),
   );
   late final GeneratedColumn<int> stopGap = GeneratedColumn<int>(
     'stop_gap',
@@ -3569,86 +3890,43 @@ class ElectrumServers extends Table
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  late final GeneratedColumn<bool> validateDomain = GeneratedColumn<bool>(
-    'validate_domain',
+  late final GeneratedColumn<String> socks5 = GeneratedColumn<String>(
+    'socks5',
     aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("validate_domain" IN (0, 1))',
-    ),
-  );
-  late final GeneratedColumn<bool> isTestnet = GeneratedColumn<bool>(
-    'is_testnet',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_testnet" IN (0, 1))',
-    ),
-  );
-  late final GeneratedColumn<bool> isLiquid = GeneratedColumn<bool>(
-    'is_liquid',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_liquid" IN (0, 1))',
-    ),
-  );
-  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
-    'is_active',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_active" IN (0, 1))',
-    ),
-  );
-  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
-    'priority',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   @override
   List<GeneratedColumn> get $columns => [
-    url,
-    socks5,
+    network,
+    validateDomain,
     stopGap,
     timeout,
     retry,
-    validateDomain,
-    isTestnet,
-    isLiquid,
-    isActive,
-    priority,
+    socks5,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'electrum_servers';
+  static const String $name = 'electrum_settings';
   @override
-  Set<GeneratedColumn> get $primaryKey => {url};
+  Set<GeneratedColumn> get $primaryKey => {network};
   @override
-  ElectrumServersData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ElectrumSettingsData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ElectrumServersData(
-      url:
+    return ElectrumSettingsData(
+      network:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
-            data['${effectivePrefix}url'],
+            data['${effectivePrefix}network'],
           )!,
-      socks5: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}socks5'],
-      ),
+      validateDomain:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}validate_domain'],
+          )!,
       stopGap:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
@@ -3664,318 +3942,211 @@ class ElectrumServers extends Table
             DriftSqlType.int,
             data['${effectivePrefix}retry'],
           )!,
-      validateDomain:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}validate_domain'],
-          )!,
-      isTestnet:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_testnet'],
-          )!,
-      isLiquid:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_liquid'],
-          )!,
-      isActive:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_active'],
-          )!,
-      priority:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}priority'],
-          )!,
+      socks5: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}socks5'],
+      ),
     );
   }
 
   @override
-  ElectrumServers createAlias(String alias) {
-    return ElectrumServers(attachedDatabase, alias);
+  ElectrumSettings createAlias(String alias) {
+    return ElectrumSettings(attachedDatabase, alias);
   }
 }
 
-class ElectrumServersData extends DataClass
-    implements Insertable<ElectrumServersData> {
-  final String url;
-  final String? socks5;
+class ElectrumSettingsData extends DataClass
+    implements Insertable<ElectrumSettingsData> {
+  final String network;
+  final bool validateDomain;
   final int stopGap;
   final int timeout;
   final int retry;
-  final bool validateDomain;
-  final bool isTestnet;
-  final bool isLiquid;
-  final bool isActive;
-  final int priority;
-  const ElectrumServersData({
-    required this.url,
-    this.socks5,
+  final String? socks5;
+  const ElectrumSettingsData({
+    required this.network,
+    required this.validateDomain,
     required this.stopGap,
     required this.timeout,
     required this.retry,
-    required this.validateDomain,
-    required this.isTestnet,
-    required this.isLiquid,
-    required this.isActive,
-    required this.priority,
+    this.socks5,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['url'] = Variable<String>(url);
-    if (!nullToAbsent || socks5 != null) {
-      map['socks5'] = Variable<String>(socks5);
-    }
+    map['network'] = Variable<String>(network);
+    map['validate_domain'] = Variable<bool>(validateDomain);
     map['stop_gap'] = Variable<int>(stopGap);
     map['timeout'] = Variable<int>(timeout);
     map['retry'] = Variable<int>(retry);
-    map['validate_domain'] = Variable<bool>(validateDomain);
-    map['is_testnet'] = Variable<bool>(isTestnet);
-    map['is_liquid'] = Variable<bool>(isLiquid);
-    map['is_active'] = Variable<bool>(isActive);
-    map['priority'] = Variable<int>(priority);
+    if (!nullToAbsent || socks5 != null) {
+      map['socks5'] = Variable<String>(socks5);
+    }
     return map;
   }
 
-  ElectrumServersCompanion toCompanion(bool nullToAbsent) {
-    return ElectrumServersCompanion(
-      url: Value(url),
-      socks5:
-          socks5 == null && nullToAbsent ? const Value.absent() : Value(socks5),
+  ElectrumSettingsCompanion toCompanion(bool nullToAbsent) {
+    return ElectrumSettingsCompanion(
+      network: Value(network),
+      validateDomain: Value(validateDomain),
       stopGap: Value(stopGap),
       timeout: Value(timeout),
       retry: Value(retry),
-      validateDomain: Value(validateDomain),
-      isTestnet: Value(isTestnet),
-      isLiquid: Value(isLiquid),
-      isActive: Value(isActive),
-      priority: Value(priority),
+      socks5:
+          socks5 == null && nullToAbsent ? const Value.absent() : Value(socks5),
     );
   }
 
-  factory ElectrumServersData.fromJson(
+  factory ElectrumSettingsData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ElectrumServersData(
-      url: serializer.fromJson<String>(json['url']),
-      socks5: serializer.fromJson<String?>(json['socks5']),
+    return ElectrumSettingsData(
+      network: serializer.fromJson<String>(json['network']),
+      validateDomain: serializer.fromJson<bool>(json['validateDomain']),
       stopGap: serializer.fromJson<int>(json['stopGap']),
       timeout: serializer.fromJson<int>(json['timeout']),
       retry: serializer.fromJson<int>(json['retry']),
-      validateDomain: serializer.fromJson<bool>(json['validateDomain']),
-      isTestnet: serializer.fromJson<bool>(json['isTestnet']),
-      isLiquid: serializer.fromJson<bool>(json['isLiquid']),
-      isActive: serializer.fromJson<bool>(json['isActive']),
-      priority: serializer.fromJson<int>(json['priority']),
+      socks5: serializer.fromJson<String?>(json['socks5']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'url': serializer.toJson<String>(url),
-      'socks5': serializer.toJson<String?>(socks5),
+      'network': serializer.toJson<String>(network),
+      'validateDomain': serializer.toJson<bool>(validateDomain),
       'stopGap': serializer.toJson<int>(stopGap),
       'timeout': serializer.toJson<int>(timeout),
       'retry': serializer.toJson<int>(retry),
-      'validateDomain': serializer.toJson<bool>(validateDomain),
-      'isTestnet': serializer.toJson<bool>(isTestnet),
-      'isLiquid': serializer.toJson<bool>(isLiquid),
-      'isActive': serializer.toJson<bool>(isActive),
-      'priority': serializer.toJson<int>(priority),
+      'socks5': serializer.toJson<String?>(socks5),
     };
   }
 
-  ElectrumServersData copyWith({
-    String? url,
-    Value<String?> socks5 = const Value.absent(),
+  ElectrumSettingsData copyWith({
+    String? network,
+    bool? validateDomain,
     int? stopGap,
     int? timeout,
     int? retry,
-    bool? validateDomain,
-    bool? isTestnet,
-    bool? isLiquid,
-    bool? isActive,
-    int? priority,
-  }) => ElectrumServersData(
-    url: url ?? this.url,
-    socks5: socks5.present ? socks5.value : this.socks5,
+    Value<String?> socks5 = const Value.absent(),
+  }) => ElectrumSettingsData(
+    network: network ?? this.network,
+    validateDomain: validateDomain ?? this.validateDomain,
     stopGap: stopGap ?? this.stopGap,
     timeout: timeout ?? this.timeout,
     retry: retry ?? this.retry,
-    validateDomain: validateDomain ?? this.validateDomain,
-    isTestnet: isTestnet ?? this.isTestnet,
-    isLiquid: isLiquid ?? this.isLiquid,
-    isActive: isActive ?? this.isActive,
-    priority: priority ?? this.priority,
+    socks5: socks5.present ? socks5.value : this.socks5,
   );
-  ElectrumServersData copyWithCompanion(ElectrumServersCompanion data) {
-    return ElectrumServersData(
-      url: data.url.present ? data.url.value : this.url,
-      socks5: data.socks5.present ? data.socks5.value : this.socks5,
-      stopGap: data.stopGap.present ? data.stopGap.value : this.stopGap,
-      timeout: data.timeout.present ? data.timeout.value : this.timeout,
-      retry: data.retry.present ? data.retry.value : this.retry,
+  ElectrumSettingsData copyWithCompanion(ElectrumSettingsCompanion data) {
+    return ElectrumSettingsData(
+      network: data.network.present ? data.network.value : this.network,
       validateDomain:
           data.validateDomain.present
               ? data.validateDomain.value
               : this.validateDomain,
-      isTestnet: data.isTestnet.present ? data.isTestnet.value : this.isTestnet,
-      isLiquid: data.isLiquid.present ? data.isLiquid.value : this.isLiquid,
-      isActive: data.isActive.present ? data.isActive.value : this.isActive,
-      priority: data.priority.present ? data.priority.value : this.priority,
+      stopGap: data.stopGap.present ? data.stopGap.value : this.stopGap,
+      timeout: data.timeout.present ? data.timeout.value : this.timeout,
+      retry: data.retry.present ? data.retry.value : this.retry,
+      socks5: data.socks5.present ? data.socks5.value : this.socks5,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('ElectrumServersData(')
-          ..write('url: $url, ')
-          ..write('socks5: $socks5, ')
+    return (StringBuffer('ElectrumSettingsData(')
+          ..write('network: $network, ')
+          ..write('validateDomain: $validateDomain, ')
           ..write('stopGap: $stopGap, ')
           ..write('timeout: $timeout, ')
           ..write('retry: $retry, ')
-          ..write('validateDomain: $validateDomain, ')
-          ..write('isTestnet: $isTestnet, ')
-          ..write('isLiquid: $isLiquid, ')
-          ..write('isActive: $isActive, ')
-          ..write('priority: $priority')
+          ..write('socks5: $socks5')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-    url,
-    socks5,
-    stopGap,
-    timeout,
-    retry,
-    validateDomain,
-    isTestnet,
-    isLiquid,
-    isActive,
-    priority,
-  );
+  int get hashCode =>
+      Object.hash(network, validateDomain, stopGap, timeout, retry, socks5);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is ElectrumServersData &&
-          other.url == this.url &&
-          other.socks5 == this.socks5 &&
+      (other is ElectrumSettingsData &&
+          other.network == this.network &&
+          other.validateDomain == this.validateDomain &&
           other.stopGap == this.stopGap &&
           other.timeout == this.timeout &&
           other.retry == this.retry &&
-          other.validateDomain == this.validateDomain &&
-          other.isTestnet == this.isTestnet &&
-          other.isLiquid == this.isLiquid &&
-          other.isActive == this.isActive &&
-          other.priority == this.priority);
+          other.socks5 == this.socks5);
 }
 
-class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
-  final Value<String> url;
-  final Value<String?> socks5;
+class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
+  final Value<String> network;
+  final Value<bool> validateDomain;
   final Value<int> stopGap;
   final Value<int> timeout;
   final Value<int> retry;
-  final Value<bool> validateDomain;
-  final Value<bool> isTestnet;
-  final Value<bool> isLiquid;
-  final Value<bool> isActive;
-  final Value<int> priority;
+  final Value<String?> socks5;
   final Value<int> rowid;
-  const ElectrumServersCompanion({
-    this.url = const Value.absent(),
-    this.socks5 = const Value.absent(),
+  const ElectrumSettingsCompanion({
+    this.network = const Value.absent(),
+    this.validateDomain = const Value.absent(),
     this.stopGap = const Value.absent(),
     this.timeout = const Value.absent(),
     this.retry = const Value.absent(),
-    this.validateDomain = const Value.absent(),
-    this.isTestnet = const Value.absent(),
-    this.isLiquid = const Value.absent(),
-    this.isActive = const Value.absent(),
-    this.priority = const Value.absent(),
+    this.socks5 = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  ElectrumServersCompanion.insert({
-    required String url,
-    this.socks5 = const Value.absent(),
+  ElectrumSettingsCompanion.insert({
+    required String network,
+    required bool validateDomain,
     required int stopGap,
     required int timeout,
     required int retry,
-    required bool validateDomain,
-    required bool isTestnet,
-    required bool isLiquid,
-    required bool isActive,
-    required int priority,
+    this.socks5 = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : url = Value(url),
+  }) : network = Value(network),
+       validateDomain = Value(validateDomain),
        stopGap = Value(stopGap),
        timeout = Value(timeout),
-       retry = Value(retry),
-       validateDomain = Value(validateDomain),
-       isTestnet = Value(isTestnet),
-       isLiquid = Value(isLiquid),
-       isActive = Value(isActive),
-       priority = Value(priority);
-  static Insertable<ElectrumServersData> custom({
-    Expression<String>? url,
-    Expression<String>? socks5,
+       retry = Value(retry);
+  static Insertable<ElectrumSettingsData> custom({
+    Expression<String>? network,
+    Expression<bool>? validateDomain,
     Expression<int>? stopGap,
     Expression<int>? timeout,
     Expression<int>? retry,
-    Expression<bool>? validateDomain,
-    Expression<bool>? isTestnet,
-    Expression<bool>? isLiquid,
-    Expression<bool>? isActive,
-    Expression<int>? priority,
+    Expression<String>? socks5,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (url != null) 'url': url,
-      if (socks5 != null) 'socks5': socks5,
+      if (network != null) 'network': network,
+      if (validateDomain != null) 'validate_domain': validateDomain,
       if (stopGap != null) 'stop_gap': stopGap,
       if (timeout != null) 'timeout': timeout,
       if (retry != null) 'retry': retry,
-      if (validateDomain != null) 'validate_domain': validateDomain,
-      if (isTestnet != null) 'is_testnet': isTestnet,
-      if (isLiquid != null) 'is_liquid': isLiquid,
-      if (isActive != null) 'is_active': isActive,
-      if (priority != null) 'priority': priority,
+      if (socks5 != null) 'socks5': socks5,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  ElectrumServersCompanion copyWith({
-    Value<String>? url,
-    Value<String?>? socks5,
+  ElectrumSettingsCompanion copyWith({
+    Value<String>? network,
+    Value<bool>? validateDomain,
     Value<int>? stopGap,
     Value<int>? timeout,
     Value<int>? retry,
-    Value<bool>? validateDomain,
-    Value<bool>? isTestnet,
-    Value<bool>? isLiquid,
-    Value<bool>? isActive,
-    Value<int>? priority,
+    Value<String?>? socks5,
     Value<int>? rowid,
   }) {
-    return ElectrumServersCompanion(
-      url: url ?? this.url,
-      socks5: socks5 ?? this.socks5,
+    return ElectrumSettingsCompanion(
+      network: network ?? this.network,
+      validateDomain: validateDomain ?? this.validateDomain,
       stopGap: stopGap ?? this.stopGap,
       timeout: timeout ?? this.timeout,
       retry: retry ?? this.retry,
-      validateDomain: validateDomain ?? this.validateDomain,
-      isTestnet: isTestnet ?? this.isTestnet,
-      isLiquid: isLiquid ?? this.isLiquid,
-      isActive: isActive ?? this.isActive,
-      priority: priority ?? this.priority,
+      socks5: socks5 ?? this.socks5,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3983,11 +4154,11 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (url.present) {
-      map['url'] = Variable<String>(url.value);
+    if (network.present) {
+      map['network'] = Variable<String>(network.value);
     }
-    if (socks5.present) {
-      map['socks5'] = Variable<String>(socks5.value);
+    if (validateDomain.present) {
+      map['validate_domain'] = Variable<bool>(validateDomain.value);
     }
     if (stopGap.present) {
       map['stop_gap'] = Variable<int>(stopGap.value);
@@ -3998,20 +4169,8 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
     if (retry.present) {
       map['retry'] = Variable<int>(retry.value);
     }
-    if (validateDomain.present) {
-      map['validate_domain'] = Variable<bool>(validateDomain.value);
-    }
-    if (isTestnet.present) {
-      map['is_testnet'] = Variable<bool>(isTestnet.value);
-    }
-    if (isLiquid.present) {
-      map['is_liquid'] = Variable<bool>(isLiquid.value);
-    }
-    if (isActive.present) {
-      map['is_active'] = Variable<bool>(isActive.value);
-    }
-    if (priority.present) {
-      map['priority'] = Variable<int>(priority.value);
+    if (socks5.present) {
+      map['socks5'] = Variable<String>(socks5.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -4021,17 +4180,13 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
 
   @override
   String toString() {
-    return (StringBuffer('ElectrumServersCompanion(')
-          ..write('url: $url, ')
-          ..write('socks5: $socks5, ')
+    return (StringBuffer('ElectrumSettingsCompanion(')
+          ..write('network: $network, ')
+          ..write('validateDomain: $validateDomain, ')
           ..write('stopGap: $stopGap, ')
           ..write('timeout: $timeout, ')
           ..write('retry: $retry, ')
-          ..write('validateDomain: $validateDomain, ')
-          ..write('isTestnet: $isTestnet, ')
-          ..write('isLiquid: $isLiquid, ')
-          ..write('isActive: $isActive, ')
-          ..write('priority: $priority, ')
+          ..write('socks5: $socks5, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6225,6 +6380,7 @@ class DatabaseAtV6 extends GeneratedDatabase {
   late final PayjoinSenders payjoinSenders = PayjoinSenders(this);
   late final PayjoinReceivers payjoinReceivers = PayjoinReceivers(this);
   late final ElectrumServers electrumServers = ElectrumServers(this);
+  late final ElectrumSettings electrumSettings = ElectrumSettings(this);
   late final Swaps swaps = Swaps(this);
   late final AutoSwap autoSwap = AutoSwap(this);
   late final WalletAddresses walletAddresses = WalletAddresses(this);
@@ -6241,6 +6397,7 @@ class DatabaseAtV6 extends GeneratedDatabase {
     payjoinSenders,
     payjoinReceivers,
     electrumServers,
+    electrumSettings,
     swaps,
     autoSwap,
     walletAddresses,

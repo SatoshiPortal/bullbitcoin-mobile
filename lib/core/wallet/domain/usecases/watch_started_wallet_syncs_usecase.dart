@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
@@ -22,8 +23,6 @@ class WatchStartedWalletSyncsUsecase {
   }
 }
 
-class WatchStartedWalletSyncsException implements Exception {
-  final String message;
-
-  WatchStartedWalletSyncsException(this.message);
+class WatchStartedWalletSyncsException extends BullException {
+  WatchStartedWalletSyncsException(super.message);
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:file_picker/file_picker.dart';
 
 class FileStorageDatasource {
@@ -23,11 +24,6 @@ class FileStorageDatasource {
   }
 }
 
-class FileStorageException implements Exception {
-  final String message;
-
-  FileStorageException(this.message);
-
-  @override
-  String toString() => message;
+class FileStorageException extends BullException {
+  FileStorageException(super.message);
 }

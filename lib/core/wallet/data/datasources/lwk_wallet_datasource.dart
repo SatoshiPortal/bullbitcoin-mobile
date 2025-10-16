@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:flutter/material.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
@@ -70,7 +71,7 @@ class LwkWalletDatasource {
 
   Future<void> sync({
     required WalletModel wallet,
-    required ElectrumServerModel electrumServer,
+    required ElectrumServer electrumServer,
   }) {
     // TODO: if needed, add these debugPrint to a filterable logger.debug
     // TODO: to avoid spamming the terminal with recurring prints
@@ -596,17 +597,12 @@ extension NetworkX on Network {
         return lwk.Network.mainnet;
       case Network.liquidTestnet:
         return lwk.Network.testnet;
-      case Network.bitcoinMainnet:
-      case Network.bitcoinTestnet:
-        throw UnsupportedLwkNetworkException(
-          'Bitcoin network is not supported by LWK',
-        );
+      default:
+        throw UnsupportedLwkNetworkException('$name is not supported by LWK');
     }
   }
 }
 
-class UnsupportedLwkNetworkException implements Exception {
-  final String message;
-
-  UnsupportedLwkNetworkException(this.message);
+class UnsupportedLwkNetworkException extends BullException {
+  UnsupportedLwkNetworkException(super.message);
 }

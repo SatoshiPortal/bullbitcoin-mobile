@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:isolate';
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -806,32 +807,22 @@ class InMemorySenderPersister implements DartSenderPersister {
   bool get isDisposed => _store.isEmpty;
 }
 
-class PayjoinNotFoundException implements Exception {
-  final String message;
-
-  PayjoinNotFoundException(this.message);
+class PayjoinNotFoundException extends BullException {
+  PayjoinNotFoundException(super.message);
 }
 
-class ReceiveCreationException implements Exception {
-  final String message;
-
-  ReceiveCreationException(this.message);
+class ReceiveCreationException extends BullException {
+  ReceiveCreationException(super.message);
 }
 
-class NoValidPayjoinBip21Exception implements Exception {
-  final String message;
-
-  NoValidPayjoinBip21Exception(this.message);
+class NoValidPayjoinBip21Exception extends BullException {
+  NoValidPayjoinBip21Exception(super.message);
 }
 
-class PayjoinExpiredException implements Exception {
-  final String message;
-
-  PayjoinExpiredException(this.message);
+class PayjoinExpiredException extends BullException {
+  PayjoinExpiredException(super.message);
 }
 
-class OhttpRelaysUnavailableException implements Exception {
-  final String message;
-
-  OhttpRelaysUnavailableException(this.message);
+class OhttpRelaysUnavailableException extends BullException {
+  OhttpRelaysUnavailableException(super.message);
 }

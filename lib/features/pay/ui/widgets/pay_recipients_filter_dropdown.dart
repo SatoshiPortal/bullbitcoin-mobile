@@ -55,14 +55,6 @@ class PayRecipientsFilterDropdown extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Country',
-              style: context.font.bodyLarge?.copyWith(
-                color: context.colour.onSurface,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const Gap(8.0),
             Container(
               height: 56,
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -83,7 +75,7 @@ class PayRecipientsFilterDropdown extends StatelessWidget {
                   ),
                   icon: Icon(
                     Icons.keyboard_arrow_down,
-                    color: context.colour.onSurface,
+                    color: context.colour.secondary,
                   ),
                   items:
                       countryOptions.map((countryCode) {
@@ -148,7 +140,7 @@ class PayRecipientsFilterDropdown extends StatelessWidget {
                     ),
                     icon: Icon(
                       Icons.keyboard_arrow_down,
-                      color: context.colour.onSurface,
+                      color: context.colour.secondary,
                     ),
                     items:
                         typeOptions

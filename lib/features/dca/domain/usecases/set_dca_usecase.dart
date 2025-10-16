@@ -56,9 +56,8 @@ class SetDcaUsecase {
       }
 
       final defaultWallet = wallets.first;
-      final walletAddress = await _walletAddressRepository.getNewReceiveAddress(
-        walletId: defaultWallet.id,
-      );
+      final walletAddress = await _walletAddressRepository
+          .generateNewReceiveAddress(walletId: defaultWallet.id);
       address = walletAddress.address;
     }
 

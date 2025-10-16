@@ -14,11 +14,13 @@ class WalletDetailBalanceCard extends StatelessWidget {
     required this.balanceSat,
     required this.isLiquid,
     required this.signer,
+    this.hasSyncingIndicator = true,
   });
 
   final int balanceSat;
   final bool isLiquid;
   final SignerEntity signer;
+  final bool hasSyncingIndicator;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +59,7 @@ class WalletDetailBalanceCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          const TxsSyncingIndicator(),
+          if (hasSyncingIndicator) const TxsSyncingIndicator(),
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,

@@ -1,73 +1,41 @@
-class SwapCreationException implements Exception {
-  final String message;
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 
-  SwapCreationException(this.message);
+class SwapCreationException extends BullException {
+  SwapCreationException(super.message);
 
-  @override
-  String toString() => message;
   String get displayMessage => 'Failed to create swap.';
 }
 
-class InsufficientBalanceException implements Exception {
-  final String message;
-
-  InsufficientBalanceException({
-    this.message = 'Not enough balance to cover this payment',
-  });
-
-  @override
-  String toString() => message;
+class InsufficientBalanceException extends BullException {
+  InsufficientBalanceException([
+    super.message = 'Not enough balance to cover this payment',
+  ]);
 }
 
-class InvalidBitcoinStringException implements Exception {
-  final String message;
-
-  InvalidBitcoinStringException({
-    this.message = 'Invalid Bitcoin Payment Address or Invoice',
-  });
-
-  @override
-  String toString() => message;
+class InvalidBitcoinStringException extends BullException {
+  InvalidBitcoinStringException([
+    super.message = 'Invalid Bitcoin Payment Address or Invoice',
+  ]);
 }
 
-class SwapLimitsException implements Exception {
-  final String message;
-
-  SwapLimitsException(this.message);
-
-  @override
-  String toString() => message;
+class SwapLimitsException extends BullException {
+  SwapLimitsException(super.message);
 }
 
-class BuildTransactionException implements Exception {
-  final String message;
-
-  BuildTransactionException(this.message);
-
-  @override
-  String toString() => message;
+class BuildTransactionException extends BullException {
+  BuildTransactionException(super.message);
 
   String get title => 'Build Failed';
 }
 
-class ConfirmTransactionException implements Exception {
-  final String message;
-
-  ConfirmTransactionException(this.message);
-
-  @override
-  String toString() => message;
+class ConfirmTransactionException extends BullException {
+  ConfirmTransactionException(super.message);
 
   String get title => 'Confirmation Failed';
 }
 
-class BroadcastTransactionException implements Exception {
-  final String message;
-
-  BroadcastTransactionException(this.message);
-
-  @override
-  String toString() => message;
+class BroadcastTransactionException extends BullException {
+  BroadcastTransactionException(super.message);
 
   String get title => 'Broadcast Failed';
 }

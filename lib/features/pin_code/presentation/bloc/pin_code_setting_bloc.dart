@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/features/pin_code/domain/usecases/delete_pin_code_usecase.dart';
+import 'package:bb_mobile/features/pin_code/domain/usecases/is_pin_code_set_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,9 +15,13 @@ class PinCodeSettingBloc
     extends Bloc<PinCodeSettingEvent, PinCodeSettingState> {
   PinCodeSettingBloc({
     required SetPinCodeUsecase setPinCodeUsecase,
+    required DeletePinCodeUsecase deletePinCodeUsecase,
+    required IsPinCodeSetUsecase isPinCodeSetUsecase,
     int minPinCodeLength = 4,
     int maxPinCodeLength = 8,
   }) : _setPinCodeUsecase = setPinCodeUsecase,
+       _deletePinCodeUsecase = deletePinCodeUsecase,
+       _isPinCodeSetUsecase = isPinCodeSetUsecase,
        super(
          PinCodeSettingState(
            choosePinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
@@ -24,6 +30,7 @@ class PinCodeSettingBloc
            maxPinCodeLength: maxPinCodeLength,
          ),
        ) {
+    on<PinCodeSettingInitialized>(_onInitialized);
     on<PinCodeSettingStarted>(_onStarted);
     on<PinCodeSettingPinCodeNumberAdded>(_onPinCodeNumberAdded);
     on<PinCodeSettingPinCodeNumberRemoved>(_onPinCodeNumberRemoved);
@@ -38,15 +45,63 @@ class PinCodeSettingBloc
     on<PinCodeSettingPinCodeObscureToggled>(
       _onPinCodeSettingPinCodeObscureToggled,
     );
+    on<PinCodeCreate>(_onCreatePin);
+    on<PinCodeDelete>(_onDeletePin);
+
+    add(const PinCodeSettingInitialized());
+  }
+
+  Future<void> _onInitialized(
+    PinCodeSettingInitialized event,
+    Emitter<PinCodeSettingState> emit,
+  ) async {
+    final isPinCodeSet = await _isPinCodeSetUsecase.execute();
+    if (!isPinCodeSet) {
+      emit(
+        state.copyWith(
+          status: PinCodeSettingStatus.choose,
+          isPinCodeSet: false,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(status: PinCodeSettingStatus.unlock, isPinCodeSet: true),
+      );
+    }
   }
 
   final SetPinCodeUsecase _setPinCodeUsecase;
+  final DeletePinCodeUsecase _deletePinCodeUsecase;
+  final IsPinCodeSetUsecase _isPinCodeSetUsecase;
 
   Future<void> _onStarted(
     PinCodeSettingStarted event,
     Emitter<PinCodeSettingState> emit,
   ) async {
+    final isPinCodeSet = await _isPinCodeSetUsecase.execute();
+    emit(
+      state.copyWith(
+        status: PinCodeSettingStatus.settings,
+        isPinCodeSet: isPinCodeSet,
+      ),
+    );
+  }
+
+  Future<void> _onCreatePin(
+    PinCodeCreate event,
+    Emitter<PinCodeSettingState> emit,
+  ) async {
     emit(state.copyWith(status: PinCodeSettingStatus.choose));
+  }
+
+  Future<void> _onDeletePin(
+    PinCodeDelete event,
+    Emitter<PinCodeSettingState> emit,
+  ) async {
+    await _deletePinCodeUsecase.execute();
+    emit(
+      state.copyWith(status: PinCodeSettingStatus.deleted, isPinCodeSet: false),
+    );
   }
 
   Future<void> _onPinCodeNumberAdded(
@@ -79,7 +134,12 @@ class PinCodeSettingBloc
     PinCodeSettingPinCodeChosen event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    emit(state.copyWith(status: PinCodeSettingStatus.confirm));
+    emit(
+      state.copyWith(
+        status: PinCodeSettingStatus.confirm,
+        showConfirmationError: false,
+      ),
+    );
   }
 
   Future<void> _onPinCodeConfirmationNumberAdded(
@@ -94,6 +154,7 @@ class PinCodeSettingBloc
       state.copyWith(
         pinCodeConfirmation:
             state.pinCodeConfirmation + event.number.toString(),
+        showConfirmationError: false,
       ),
     );
   }
@@ -112,6 +173,7 @@ class PinCodeSettingBloc
           0,
           state.pinCodeConfirmation.length - 1,
         ),
+        showConfirmationError: false,
       ),
     );
   }
@@ -120,6 +182,11 @@ class PinCodeSettingBloc
     PinCodeSettingPinCodeConfirmed event,
     Emitter<PinCodeSettingState> emit,
   ) async {
+    if (state.pinCode != state.pinCodeConfirmation) {
+      emit(state.copyWith(showConfirmationError: true));
+      return;
+    }
+
     emit(state.copyWith(isConfirming: true));
     try {
       await _setPinCodeUsecase.execute(state.pinCode);

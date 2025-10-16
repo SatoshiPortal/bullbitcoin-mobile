@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/swaps/data/services/swap_watcher.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 
@@ -16,8 +17,6 @@ class ProcessSwapUsecase {
   }
 }
 
-class ProcessSwapException implements Exception {
-  final String message;
-
-  ProcessSwapException(this.message);
+class ProcessSwapException extends BullException {
+  ProcessSwapException(super.message);
 }

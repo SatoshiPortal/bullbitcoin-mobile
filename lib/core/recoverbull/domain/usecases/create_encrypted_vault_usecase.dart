@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
@@ -88,8 +89,6 @@ class CreateEncryptedVaultUsecase {
   }
 }
 
-class CreateEncryptedVaultException implements Exception {
-  final String message;
-
-  CreateEncryptedVaultException(this.message);
+class CreateEncryptedVaultException extends BullException {
+  CreateEncryptedVaultException(super.message);
 }

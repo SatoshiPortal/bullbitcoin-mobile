@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/cad_biller.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -33,11 +34,6 @@ class ListCadBillersUsecase {
   }
 }
 
-class ListCadBillersException implements Exception {
-  final String message;
-
-  ListCadBillersException(this.message);
-
-  @override
-  String toString() => '[ListCadBillersUsecase]: $message';
+class ListCadBillersException extends BullException {
+  ListCadBillersException(super.message);
 }

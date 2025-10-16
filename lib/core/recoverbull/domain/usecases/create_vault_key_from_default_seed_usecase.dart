@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
@@ -50,8 +51,6 @@ class CreateVaultKeyFromDefaultSeedUsecase {
   }
 }
 
-class CreateBackupKeyFromDefaultSeedException implements Exception {
-  final String message;
-
-  CreateBackupKeyFromDefaultSeedException(this.message);
+class CreateBackupKeyFromDefaultSeedException extends BullException {
+  CreateBackupKeyFromDefaultSeedException(super.message);
 }

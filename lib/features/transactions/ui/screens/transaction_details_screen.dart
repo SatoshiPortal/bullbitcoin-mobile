@@ -102,7 +102,10 @@ class TransactionDetailsScreen extends StatelessWidget {
                 if (swap != null && swap.requiresAction) ...[
                   BBButton.big(
                     disabled: retryingSwap,
-                    label: 'Retry Transfer $swapAction',
+                    label:
+                        isChainSwap
+                            ? 'Retry Transfer $swapAction'
+                            : 'Retry Swap $swapAction',
                     onPressed: () async {
                       await context.read<TransactionDetailsCubit>().processSwap(
                         swap,

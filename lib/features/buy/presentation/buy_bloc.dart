@@ -13,7 +13,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_new_receive_address_use_case.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
@@ -29,7 +29,7 @@ part 'buy_state.dart';
 class BuyBloc extends Bloc<BuyEvent, BuyState> {
   BuyBloc({
     required GetWalletsUsecase getWalletsUsecase,
-    required GetNewReceiveAddressUsecase getNewReceiveAddressUsecase,
+    required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
     required ConfirmBuyOrderUsecase confirmBuyOrderUsecase,
     required CreateBuyOrderUsecase createBuyOrderUsecase,
@@ -40,7 +40,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required AccelerateBuyOrderUsecase accelerateBuyOrderUsecase,
     required GetSettingsUsecase getSettingsUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
-       _getNewReceiveAddressUsecase = getNewReceiveAddressUsecase,
+       _getReceiveAddressUsecase = getReceiveAddressUsecase,
        _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _confirmBuyOrderUsecase = confirmBuyOrderUsecase,
        _createBuyOrderUsecase = createBuyOrderUsecase,
@@ -64,7 +64,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
-  final GetNewReceiveAddressUsecase _getNewReceiveAddressUsecase;
+  final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final ConfirmBuyOrderUsecase _confirmBuyOrderUsecase;
   final CreateBuyOrderUsecase _createBuyOrderUsecase;
@@ -240,7 +240,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       String toAddress;
       if (wallet != null) {
         // If a wallet is selected, fetch the receive address for it.
-        final walletAddress = await _getNewReceiveAddressUsecase.execute(
+        final walletAddress = await _getReceiveAddressUsecase.execute(
           walletId: wallet.id,
         );
         toAddress = walletAddress.address;
@@ -279,7 +279,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           emit(state.copyWith(convertSatsToCurrencyAmountException: e));
         }
       }
-    } on GetNewReceiveAddressException catch (e) {
+    } on GetReceiveAddressException catch (e) {
       log.severe('[BuyBloc] _onCreateOrder GetNewReceiveAddressException: $e');
       emit(state.copyWith(getNewReceiveAddressException: e));
     } finally {

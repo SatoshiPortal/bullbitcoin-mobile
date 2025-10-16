@@ -87,6 +87,7 @@ abstract class SettingsEntity with _$SettingsEntity {
     required String currencyCode,
     bool? hideAmounts,
     bool? isSuperuser,
+    bool? isDevModeEnabled,
     @Default(AppThemeMode.system) AppThemeMode themeMode,
   }) = _SettingsEntity;
   const SettingsEntity._();

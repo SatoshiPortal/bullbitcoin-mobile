@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/electrum/data/datasources/electrum_remote_datasource.dart'
+import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_remote_datasource.dart'
     show ElectrumRemoteDatasource;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';

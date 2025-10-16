@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/service_status_indicator.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +24,11 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       systemOverlayStyle: SystemUiOverlayStyle.light,
       centerTitle: true,
       title: const TopBarBullLogo(enableSuperuserTapUnlocker: true),
+      leading: const Padding(
+        padding: EdgeInsets.only(left: 16.0),
+        child: ServiceStatusIndicator(),
+      ),
+      leadingWidth: 48,
       actionsIconTheme: IconThemeData(
         color: context.colour.onPrimaryFixed,
         size: 24,

@@ -87,7 +87,7 @@ class GetTransactionsByTxIdUsecase {
       } else if (order != null) {
         return [Transaction(order: order)];
       } else {
-        throw const TransactionError.notFound();
+        throw TransactionNotFoundError();
       }
     } on TransactionNotFoundError {
       log.warning('No Transaction with txId $txId found.');

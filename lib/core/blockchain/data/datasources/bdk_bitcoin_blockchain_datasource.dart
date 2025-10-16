@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class BdkBitcoinBlockchainDatasource {
@@ -8,7 +8,7 @@ class BdkBitcoinBlockchainDatasource {
 
   Future<String> broadcastPsbt(
     String finalizedPsbt, {
-    required ElectrumServerModel electrumServer,
+    required ElectrumServer electrumServer,
   }) async {
     final blockchain = await createBlockchainFromElectrumServer(electrumServer);
     final psbt = await bdk.PartiallySignedTransaction.fromString(finalizedPsbt);
@@ -19,7 +19,7 @@ class BdkBitcoinBlockchainDatasource {
 
   Future<String> broadcastTransaction(
     Uint8List transaction, {
-    required ElectrumServerModel electrumServer,
+    required ElectrumServer electrumServer,
   }) async {
     final blockchain = await createBlockchainFromElectrumServer(electrumServer);
     final tx = await bdk.Transaction.fromBytes(transactionBytes: transaction);
@@ -28,13 +28,18 @@ class BdkBitcoinBlockchainDatasource {
   }
 
   static Future<bdk.Blockchain> createBlockchainFromElectrumServer(
-    ElectrumServerModel electrumServer,
+    ElectrumServer electrumServer,
   ) async {
     final blockchain = await bdk.Blockchain.create(
       config: bdk.BlockchainConfig.electrum(
         config: bdk.ElectrumConfig(
           url: electrumServer.url,
-          socks5: electrumServer.socks5,
+          // Only set the socks5 if it's not empty,
+          //  otherwise bdk will throw an error
+          socks5:
+              electrumServer.socks5?.isNotEmpty == true
+                  ? electrumServer.socks5
+                  : null,
           retry: electrumServer.retry,
           timeout: electrumServer.timeout,
           stopGap: BigInt.from(electrumServer.stopGap),

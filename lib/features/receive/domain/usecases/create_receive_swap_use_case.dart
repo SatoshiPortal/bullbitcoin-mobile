@@ -6,14 +6,14 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_new_receive_address_use_case.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 
 class CreateReceiveSwapUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
   final BoltzSwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
-  final GetNewReceiveAddressUsecase _getNewAddressUsecase;
+  final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final LabelRepository _labelRepository;
 
   CreateReceiveSwapUsecase({
@@ -21,13 +21,13 @@ class CreateReceiveSwapUsecase {
     required BoltzSwapRepository swapRepository,
     required BoltzSwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
-    required GetNewReceiveAddressUsecase getNewAddressUsecase,
+    required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required LabelRepository labelRepository,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
        _swapRepositoryTestnet = swapRepositoryTestnet,
        _seedRepository = seedRepository,
-       _getNewAddressUsecase = getNewAddressUsecase,
+       _getReceiveAddressUsecase = getReceiveAddressUsecase,
        _labelRepository = labelRepository;
 
   Future<LnReceiveSwap> execute({
@@ -78,7 +78,7 @@ class CreateReceiveSwapUsecase {
               ? ApiServiceConstants.publicElectrumTestUrl
               : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
-      final claimAddress = await _getNewAddressUsecase.execute(
+      final claimAddress = await _getReceiveAddressUsecase.execute(
         walletId: walletId,
       );
 

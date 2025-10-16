@@ -1,10 +1,9 @@
-import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_server_connectivity_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/store_electrum_server_settings_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
-
-import 'package:bb_mobile/features/electrum_settings/presentation/bloc/electrum_settings_bloc.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/set_advanced_electrum_options_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/set_custom_servers_priority_usecase.dart';
+import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 
 class ElectrumSettingsLocator {
@@ -12,15 +11,13 @@ class ElectrumSettingsLocator {
     // Register the bloc
     locator.registerFactory<ElectrumSettingsBloc>(
       () => ElectrumSettingsBloc(
-        getAllElectrumServers: locator<GetAllElectrumServersUsecase>(),
-        storeElectrumServerSettings:
-            locator<StoreElectrumServerSettingsUsecase>(),
-        getPrioritizedServerUsecase: locator<GetPrioritizedServerUsecase>(),
-        checkElectrumServerConnectivity:
-            locator<CheckElectrumServerConnectivityUsecase>(),
-
-        updateElectrumServerSettings:
-            locator<UpdateElectrumServerSettingsUsecase>(),
+        loadElectrumServerDataUsecase: locator<LoadElectrumServerDataUsecase>(),
+        addCustomServerUsecase: locator<AddCustomServerUsecase>(),
+        setCustomServersPriorityUsecase:
+            locator<SetCustomServersPriorityUsecase>(),
+        deleteCustomServerUsecase: locator<DeleteCustomServerUsecase>(),
+        setAdvancedElectrumOptionsUsecase:
+            locator<SetAdvancedElectrumOptionsUsecase>(),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -36,13 +37,11 @@ class ConvertSatsToCurrencyAmountUsecase {
         currency: currency,
       );
     } catch (e) {
-      throw ConvertSatsToCurrencyAmountException('$e');
+      throw ConvertSatsToCurrencyAmountException(e.toString());
     }
   }
 }
 
-class ConvertSatsToCurrencyAmountException implements Exception {
-  final String message;
-
-  ConvertSatsToCurrencyAmountException(this.message);
+class ConvertSatsToCurrencyAmountException extends BullException {
+  ConvertSatsToCurrencyAmountException(super.message);
 }

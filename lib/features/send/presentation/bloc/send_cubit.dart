@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/lightning.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -355,8 +356,7 @@ class SendCubit extends Cubit<SendState> {
               state.copyWith(
                 creatingSwap: false,
                 insufficientBalanceException: InsufficientBalanceException(
-                  message:
-                      'Not enough balance to pay this swap via Liquid and not within swap limits to pay via Bitcoin.',
+                  'Not enough balance to pay this swap via Liquid and not within swap limits to pay via Bitcoin.',
                 ),
                 loadingBestWallet: false,
               ),
@@ -430,6 +430,32 @@ class SendCubit extends Cubit<SendState> {
           await createTransaction();
         }
         return;
+      }
+      if (state.paymentRequest!.isLnAddress) {
+        try {
+          final lnAddressPaymentRequest =
+              state.paymentRequest! as LnAddressPaymentRequest;
+
+          // Validate the LNURL by trying to create an invoice with a dummy amount
+          // This uses the same function that will be used when creating the actual swap
+          const dummyAmount = 1000; // 1000 sats dummy amount
+          await invoiceFromLnAddress(
+            lnAddress: lnAddressPaymentRequest.address,
+            amountSat: dummyAmount,
+          );
+
+          // If successful, proceed to amount step
+          emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
+        } catch (e) {
+          // If LNURL validation fails, set error and stay on address step
+          emit(
+            state.copyWith(
+              loadingBestWallet: false,
+              invalidBitcoinStringException: InvalidBitcoinStringException(),
+            ),
+          );
+          return;
+        }
       } else {
         emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
         return;
@@ -447,7 +473,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             invalidBitcoinStringException: InvalidBitcoinStringException(
-              message: e.toString(),
+              e.toString(),
             ),
             loadingBestWallet: false,
             creatingSwap: false,
@@ -755,7 +781,10 @@ class SendCubit extends Cubit<SendState> {
       }
 
       emit(state.copyWith(amount: validatedAmount, sendMax: isMax));
-      await updateBestWallet();
+      // Don't update wallet when MAX is clicked to avoid changing network and triggering chain swaps
+      if (!isMax) {
+        await updateBestWallet();
+      }
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -930,7 +959,7 @@ class SendCubit extends Cubit<SendState> {
       emit(
         state.copyWith(
           insufficientBalanceException: InsufficientBalanceException(
-            message: 'Not enough funds to cover amount and fees',
+            'Not enough funds to cover amount and fees',
           ),
           amountConfirmedClicked: false,
         ),

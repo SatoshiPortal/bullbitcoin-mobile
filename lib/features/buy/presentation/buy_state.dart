@@ -17,7 +17,7 @@ sealed class BuyState with _$BuyState {
     GetWalletsException? getWalletsException,
     Wallet? selectedWallet,
     @Default('') String bitcoinAddressInput,
-    GetNewReceiveAddressException? getNewReceiveAddressException,
+    GetReceiveAddressException? getNewReceiveAddressException,
     @Default(false) bool isCreatingOrder,
     BuyError? createOrderBuyError,
     @Default(false) bool isRefreshingOrder,

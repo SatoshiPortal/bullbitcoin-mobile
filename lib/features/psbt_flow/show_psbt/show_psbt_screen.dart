@@ -2,12 +2,9 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/features/psbt_flow/show_bbqr/show_bbqr_widget.dart';
-import 'package:bb_mobile/features/psbt_flow/show_psbt/coldcard_q_instructions_bottom_sheet.dart';
-import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_cubit.dart';
-import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_state.dart';
+import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_widget.dart';
+import 'package:bb_mobile/features/psbt_flow/show_psbt/device_instructions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,68 +16,72 @@ class ShowPsbtScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ShowPsbtCubit()..generateBbqr(psbt),
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Sign transaction')),
-        body: BlocBuilder<ShowPsbtCubit, ShowPsbtState>(
-          builder: (context, state) {
-            if (state.error != null) {
-              return Center(
-                child: Text(
-                  state.error!,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.error,
+    return Scaffold(
+      appBar: AppBar(title: const Text('Sign transaction')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              children: [
+                if (signerDevice != null &&
+                    signerDevice!.supportedQrType != QrType.none) ...[
+                  ShowAnimatedQrWidget(
+                    key: ValueKey(
+                      '${psbt.hashCode}_${signerDevice!.supportedQrType}',
+                    ),
+                    psbt: psbt,
+                    qrType: signerDevice!.supportedQrType,
+                    showSlider: signerDevice!.supportedQrType == QrType.urqr,
                   ),
-                ),
-              );
-            }
-
-            if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      if (signerDevice != null &&
-                          signerDevice == SignerDeviceEntity.coldcardQ) ...[
-                        ShowBbqrWidget(parts: state.bbqrParts),
-                        const Gap(16),
-                      ],
-
-                      if (signerDevice != null)
-                        BBButton.small(
-                          label: 'Instructions',
-                          onPressed:
-                              () => ColdcardQInstructionsBottomSheet.show(
-                                context,
-                              ),
-                          bgColor: context.colour.onSecondary,
-                          textColor: context.colour.onSurface,
-                          outlined: true,
-                        ),
-                    ],
-                  ),
-
-                  BBButton.big(
-                    label: "I'm done",
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onPrimary,
-                    onPressed: () {
-                      context.pushNamed(
-                        BroadcastSignedTxRoute.broadcastHome.name,
-                      );
-                    },
-                  ),
+                  const Gap(16),
                 ],
-              ),
-            );
-          },
+
+                if (signerDevice != null)
+                  BBButton.small(
+                    label: 'Instructions',
+                    onPressed: () {
+                      switch (signerDevice) {
+                        case SignerDeviceEntity.jade:
+                          QrDeviceInstructions.showJadeInstructions(context);
+                        case SignerDeviceEntity.krux:
+                          QrDeviceInstructions.showKruxInstructions(context);
+                        case SignerDeviceEntity.keystone:
+                          QrDeviceInstructions.showKeystoneInstructions(
+                            context,
+                          );
+                        case SignerDeviceEntity.passport:
+                          QrDeviceInstructions.showPassportInstructions(
+                            context,
+                          );
+                        case SignerDeviceEntity.seedsigner:
+                          QrDeviceInstructions.showSeedSignerInstructions(
+                            context,
+                          );
+                        default:
+                          break;
+                      }
+                    },
+                    bgColor: context.colour.onSecondary,
+                    textColor: context.colour.secondary,
+                    outlined: true,
+                  ),
+              ],
+            ),
+
+            BBButton.big(
+              label: "I'm done",
+              bgColor: context.colour.secondary,
+              textColor: context.colour.onPrimary,
+              onPressed: () {
+                context.pushNamed(
+                  BroadcastSignedTxRoute.broadcastHome.name,
+                  extra: psbt,
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

@@ -45,7 +45,7 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
       case FiatCurrency.crc:
         return 'CR';
       case FiatCurrency.usd:
-        return 'CR'; // Default fallback
+        return 'CR';
       case FiatCurrency.ars:
         return 'ARS';
     }
@@ -148,8 +148,22 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
   List<WithdrawRecipientType> get payoutMethodsForCountry {
     if (selectedCountry == null) return [];
 
+    // Get currency from the withdraw bloc
+    final withdrawBloc = context.read<WithdrawBloc>();
+    final currentState = withdrawBloc.state;
+    final currentCurrency = currentState.currency;
+
     return WithdrawRecipientType.values.where((type) {
-      return type.countryCode == selectedCountry;
+      // First filter by country code
+      if (type.countryCode != selectedCountry) return false;
+
+      // In recipientInput state, only filter by country to allow all recipient types for that country
+      // In other states, filter by both country and currency
+      if (currentState is WithdrawRecipientInputState) {
+        return true; // Show all recipient types for the selected country
+      } else {
+        return type.currencyCode == currentCurrency.code;
+      }
     }).toList();
   }
 
@@ -157,6 +171,9 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
     setState(() {
       selectedPayoutMethod = method;
       formData.clear();
+      if (method == WithdrawRecipientType.sepaEur) {
+        formData['isOwner'] = 'true'; // Set default value
+      }
     });
   }
 
@@ -179,25 +196,19 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
   List<String> _getRequiredFields(WithdrawRecipientType method) {
     switch (method) {
       case WithdrawRecipientType.interacEmailCad:
-        return [
-          'email',
-          'name',
-          'securityQuestion',
-          'securityAnswer',
-          'isOwner',
-        ];
+        return ['email', 'name', 'securityQuestion', 'securityAnswer'];
       case WithdrawRecipientType.billPaymentCad:
         return ['payeeName', 'payeeCode', 'payeeAccountNumber'];
       case WithdrawRecipientType.bankTransferCad:
-        return [
-          'institutionNumber',
-          'transitNumber',
-          'accountNumber',
-          'name',
-          'isOwner',
-        ];
+        return ['institutionNumber', 'transitNumber', 'accountNumber', 'name'];
       case WithdrawRecipientType.sepaEur:
-        return ['iban', 'isCorporate', 'isOwner'];
+        final requiredFields = ['iban'];
+        if (formData['isCorporate'] == 'true') {
+          requiredFields.add('corporateName');
+        } else {
+          requiredFields.addAll(['firstname', 'lastname']);
+        }
+        return requiredFields;
       case WithdrawRecipientType.speiClabeMxn:
         return ['clabe', 'name'];
       case WithdrawRecipientType.speiSmsMxn:
@@ -206,7 +217,7 @@ class _NewRecipientFormState extends State<NewRecipientForm> {
         return ['debitCard', 'institutionCode', 'name'];
       case WithdrawRecipientType.sinpeIbanUsd:
       case WithdrawRecipientType.sinpeIbanCrc:
-        return ['iban', 'ownerName', 'isOwner'];
+        return ['iban', 'ownerName'];
       case WithdrawRecipientType.sinpeMovilCrc:
         return ['phoneNumber', 'ownerName'];
     }
@@ -531,11 +542,6 @@ class _InteracEmailForm extends StatelessWidget {
           onFormDataChanged,
         ),
         const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
-        const Gap(12),
         _buildInputField(
           context,
           'Name',
@@ -563,6 +569,11 @@ class _InteracEmailForm extends StatelessWidget {
           'Enter a label for this recipient',
           formData,
           onFormDataChanged,
+        ),
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
         ),
       ],
     );
@@ -825,11 +836,6 @@ class _BankTransferForm extends StatelessWidget {
           onFormDataChanged,
         ),
         const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
-        const Gap(12),
         _buildInputField(
           context,
           'Name',
@@ -856,17 +862,27 @@ class _BankTransferForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
+        ),
       ],
     );
   }
 }
 
-class _SepaForm extends StatelessWidget {
+class _SepaForm extends StatefulWidget {
   const _SepaForm({required this.formData, required this.onFormDataChanged});
 
   final Map<String, dynamic> formData;
   final Function(String, String) onFormDataChanged;
 
+  @override
+  State<_SepaForm> createState() => _SepaFormState();
+}
+
+class _SepaFormState extends State<_SepaForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -877,8 +893,8 @@ class _SepaForm extends StatelessWidget {
           'IBAN',
           'iban',
           'Enter IBAN',
-          formData,
-          onFormDataChanged,
+          widget.formData,
+          widget.onFormDataChanged,
         ),
         const Gap(12),
         _buildCheckboxField(
@@ -886,49 +902,54 @@ class _SepaForm extends StatelessWidget {
           'Corporate',
           'isCorporate',
           'Is this a corporate account?',
-          formData,
-          onFormDataChanged,
+          widget.formData,
+          widget.onFormDataChanged,
         ),
         const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
-        const Gap(12),
-        _buildInputField(
-          context,
-          'First Name',
-          'firstname',
-          'Enter first name',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
-        _buildInputField(
-          context,
-          'Last Name',
-          'lastname',
-          'Enter last name',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
-        _buildInputField(
-          context,
-          'Corporate Name (optional)',
-          'corporateName',
-          'Enter corporate name',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
+        if (widget.formData['isCorporate'] != 'true') ...[
+          _buildInputField(
+            context,
+            'First Name',
+            'firstname',
+            'Enter first name',
+            widget.formData,
+            widget.onFormDataChanged,
+          ),
+          const Gap(12),
+          _buildInputField(
+            context,
+            'Last Name',
+            'lastname',
+            'Enter last name',
+            widget.formData,
+            widget.onFormDataChanged,
+          ),
+          const Gap(12),
+        ],
+        if (widget.formData['isCorporate'] == 'true') ...[
+          const Gap(12),
+          _buildInputField(
+            context,
+            'Corporate Name',
+            'corporateName',
+            'Enter corporate name',
+            widget.formData,
+            widget.onFormDataChanged,
+          ),
+          const Gap(12),
+        ],
         _buildInputField(
           context,
           'Label (optional)',
           'label',
           'Enter a label for this recipient',
-          formData,
-          onFormDataChanged,
+          widget.formData,
+          widget.onFormDataChanged,
+        ),
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: widget.formData,
+          onFormDataChanged: widget.onFormDataChanged,
         ),
       ],
     );
@@ -1106,11 +1127,6 @@ class _SinpeIbanForm extends StatelessWidget {
           'Enter IBAN',
           formData,
           onFormDataChanged,
-        ),
-        const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(

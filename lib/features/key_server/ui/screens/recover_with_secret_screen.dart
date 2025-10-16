@@ -96,6 +96,7 @@ class RecoverWithSecretScreen extends StatelessWidget {
               if (state.authInputType == AuthInputType.pin)
                 DialPad(
                   disableFeedback: true,
+                  onlyDigits: true,
                   onNumberPressed: cubit.enterKey,
                   onBackspacePressed: cubit.backspaceKey,
                 )

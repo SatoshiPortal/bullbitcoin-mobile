@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ark_wallet/ark_wallet.dart';
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
@@ -31,10 +32,12 @@ class Bull {
       PConfig.initializeApp(),
       dotenv.load(isOptional: true),
       LibBbqr.init(),
+      LibArk.init(),
     ]);
 
     final logDirectory = await getApplicationDocumentsDirectory();
     log = Logger.init(directory: logDirectory);
+    await log.ensureLogsExist();
 
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization

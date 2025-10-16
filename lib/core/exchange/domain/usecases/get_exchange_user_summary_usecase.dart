@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
@@ -42,11 +43,6 @@ class GetExchangeUserSummaryUsecase {
   }
 }
 
-class GetExchangeUserSummaryException implements Exception {
-  final String message;
-
-  GetExchangeUserSummaryException(this.message);
-
-  @override
-  String toString() => '[GetUserSummaryUsecase]: $message';
+class GetExchangeUserSummaryException extends BullException {
+  GetExchangeUserSummaryException(super.message);
 }

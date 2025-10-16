@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
@@ -18,8 +19,6 @@ class GetWalletUsecase {
   }
 }
 
-class GetWalletException implements Exception {
-  final String message;
-
-  GetWalletException(this.message);
+class GetWalletException extends BullException {
+  GetWalletException(super.message);
 }

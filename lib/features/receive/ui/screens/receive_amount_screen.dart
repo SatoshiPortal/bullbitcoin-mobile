@@ -59,6 +59,18 @@ class _AmountPageState extends State<AmountPage> {
       }
     });
     _amountFocusNode = FocusNode();
+
+    // When focus changes, reset selection if unfocused
+    _amountFocusNode.addListener(() {
+      if (!_amountFocusNode.hasFocus) {
+        // Field lost focus, reset selection to end without showing cursor
+        final currentText = _amountController.text;
+        _amountController.value = TextEditingValue(
+          text: currentText,
+          selection: TextSelection.collapsed(offset: currentText.length),
+        );
+      }
+    });
   }
 
   @override
@@ -70,24 +82,34 @@ class _AmountPageState extends State<AmountPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
+    return BlocListener<ReceiveBloc, ReceiveState>(
+      listenWhen:
+          (previous, current) =>
+              previous.inputAmountCurrencyCode !=
+              current.inputAmountCurrencyCode,
+      listener: (context, state) {
+        // Clear the controller when currency changes
+        _amountController.clear();
       },
-      behavior: HitTestBehavior.translucent,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ReceiveAmountEntry(
-            amountController: _amountController,
-            focusNode: _amountFocusNode,
-          ),
-          ReceiveNumberPad(amountController: _amountController),
-          ReceiveAmountContinueButton(
-            onContinueNavigation: widget.onContinueNavigation,
-          ),
-        ],
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        behavior: HitTestBehavior.translucent,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ReceiveAmountEntry(
+              amountController: _amountController,
+              focusNode: _amountFocusNode,
+            ),
+            ReceiveNumberPad(amountController: _amountController),
+            ReceiveAmountContinueButton(
+              onContinueNavigation: widget.onContinueNavigation,
+            ),
+          ],
+        ),
       ),
     );
   }

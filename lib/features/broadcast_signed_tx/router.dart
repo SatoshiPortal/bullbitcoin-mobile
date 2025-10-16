@@ -19,11 +19,14 @@ enum BroadcastSignedTxRoute {
 
 class BroadcastSignedTxRouter {
   static final route = ShellRoute(
-    builder:
-        (context, state, child) => BlocProvider(
-          create: (_) => locator<BroadcastSignedTxCubit>(),
-          child: child,
-        ),
+    builder: (context, state, child) {
+      final unsignedPsbt = state.extra is String ? state.extra! as String : null;
+
+      return BlocProvider(
+        create: (_) => locator<BroadcastSignedTxCubit>(param1: unsignedPsbt),
+        child: child,
+      );
+    },
     routes: [
       GoRoute(
         name: BroadcastSignedTxRoute.broadcastHome.name,

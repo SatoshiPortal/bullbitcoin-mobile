@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -8,6 +9,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_en
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_zxing/flutter_zxing.dart';
 import 'package:go_router/go_router.dart';
 import 'package:satoshifier/satoshifier.dart';
 
@@ -22,6 +24,7 @@ class ScanWatchOnlyScreen extends StatefulWidget {
 
 class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
   String _scanned = '';
+  bool _handled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +34,28 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
         fit: StackFit.expand,
         children: [
           QrScannerWidget(
+            scanDelay:
+                widget.signerDevice?.supportedQrType == QrType.urqr
+                    ? Duration.zero
+                    : const Duration(milliseconds: 100),
+            resolution: ResolutionPreset.max,
             onScanned: (data) async {
+              if (_handled) return;
+              _handled = true;
               setState(() => _scanned = data);
               try {
-                final watchOnly = await Satoshifier.parse(data);
+                String signerData = data;
+                if (widget.signerDevice == SignerDeviceEntity.krux) {
+                  signerData = Descriptor.parse(data).external;
+                } else if (widget.signerDevice == SignerDeviceEntity.passport) {
+                  final selectedDescriptor = await _choosePassportDerivation(
+                    context,
+                    data,
+                  );
+                  if (selectedDescriptor == null) return;
+                  signerData = selectedDescriptor;
+                }
+                final watchOnly = await Satoshifier.parse(signerData);
 
                 if (watchOnly is WatchOnlyDescriptor) {
                   final watchOnlyDescriptor = WatchOnlyWalletEntity.descriptor(
@@ -123,4 +144,63 @@ void showCopiedSnackBar(BuildContext context) {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
   );
+}
+
+// Passport exports multiple derivations so we need to let the user choose which one to use
+Future<String?> _choosePassportDerivation(
+  BuildContext context,
+  String data,
+) async {
+  try {
+    final parsed = json.decode(data);
+    if (parsed is! Map<String, dynamic>) return null;
+
+    final options = <Map<String, String>>[];
+
+    void addIfPresent(String key, String label) {
+      if (!parsed.containsKey(key)) return;
+      final descriptor = parsed[key];
+      if (descriptor is String) {
+        options.add({'key': key, 'label': label, 'descriptor': descriptor});
+      }
+    }
+
+    addIfPresent('bip84', 'Segwit (BIP84)');
+    addIfPresent('bip49', 'Nested Segwit (BIP49)');
+    addIfPresent('bip44', 'Legacy (BIP44)');
+
+    if (options.isEmpty) return null;
+    if (options.length == 1) return options.first['descriptor'];
+
+    if (!context.mounted) return null;
+    final choice = await showModalBottomSheet<Map<String, String>>(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(
+                  'Select derivation',
+                  style: Theme.of(ctx).textTheme.titleMedium,
+                ),
+              ),
+              for (final opt in options)
+                ListTile(
+                  title: Text(opt['label'] ?? ''),
+                  onTap: () => Navigator.of(ctx).pop(opt),
+                ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+    return choice?['descriptor'];
+  } catch (_) {
+    return null;
+  }
 }

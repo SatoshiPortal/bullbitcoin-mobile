@@ -14,7 +14,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
-import 'package:bip85/bip85.dart' as bip85;
+import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {

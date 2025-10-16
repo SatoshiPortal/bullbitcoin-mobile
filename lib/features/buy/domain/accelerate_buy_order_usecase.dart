@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -33,11 +34,6 @@ class AccelerateBuyOrderUsecase {
   }
 }
 
-class AccelerateBuyOrderException implements Exception {
-  final String message;
-
-  AccelerateBuyOrderException(this.message);
-
-  @override
-  String toString() => '[AccelerateBuyOrderUsecase]: $message';
+class AccelerateBuyOrderException extends BullException {
+  AccelerateBuyOrderException(super.message);
 }

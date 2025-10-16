@@ -15,4 +15,5 @@ sealed class SettingsState with _$SettingsState {
   String? get currencyCode => storedSettings?.currencyCode;
   bool? get hideAmounts => storedSettings?.hideAmounts;
   bool? get isSuperuser => storedSettings?.isSuperuser;
+  bool? get isDevModeEnabled => storedSettings?.isDevModeEnabled;
 }

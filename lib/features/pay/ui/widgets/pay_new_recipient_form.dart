@@ -57,8 +57,22 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
   List<WithdrawRecipientType> get payoutMethodsForCountry {
     if (selectedCountry == null) return [];
 
+    // Get currency from the pay bloc
+    final payBloc = context.read<PayBloc>();
+    final currentState = payBloc.state;
+    final currentCurrency = currentState.currency;
+
     return WithdrawRecipientType.values.where((type) {
-      return type.countryCode == selectedCountry;
+      // First filter by country code
+      if (type.countryCode != selectedCountry) return false;
+
+      // In recipientInput state, only filter by country to allow all recipient types for that country
+      // In other states, filter by both country and currency
+      if (currentState is PayRecipientInputState) {
+        return true; // Show all recipient types for the selected country
+      } else {
+        return type.currencyCode == currentCurrency.code;
+      }
     }).toList();
   }
 
@@ -66,6 +80,9 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
     setState(() {
       selectedPayoutMethod = method;
       formData.clear();
+      if (method == WithdrawRecipientType.sepaEur) {
+        formData['isOwner'] = 'false'; // Set default value
+      }
     });
   }
 
@@ -125,7 +142,13 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
           'isOwner',
         ];
       case WithdrawRecipientType.sepaEur:
-        return ['iban', 'isCorporate', 'isOwner'];
+        final requiredFields = ['iban'];
+        if (formData['isCorporate'] == 'true') {
+          requiredFields.add('corporateName');
+        } else {
+          requiredFields.addAll(['firstname', 'lastname']);
+        }
+        return requiredFields;
       case WithdrawRecipientType.speiClabeMxn:
         return ['clabe', 'name'];
       case WithdrawRecipientType.speiSmsMxn:
@@ -134,7 +157,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
         return ['debitCard', 'institutionCode', 'name'];
       case WithdrawRecipientType.sinpeIbanUsd:
       case WithdrawRecipientType.sinpeIbanCrc:
-        return ['iban', 'ownerName', 'isOwner'];
+        return ['iban', 'ownerName'];
       case WithdrawRecipientType.sinpeMovilCrc:
         return ['phoneNumber', 'ownerName'];
     }
@@ -152,7 +175,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
               description:
                   'You are not logged in. Please log in to continue using the pay feature.',
               tagColor: context.colour.error,
-              bgColor: context.colour.outline,
+              bgColor: context.colour.secondaryFixedDim,
               onTap: () {
                 context.goNamed(ExchangeRoute.exchangeHome.name);
               },
@@ -207,14 +230,6 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(
-          'Country',
-          style: context.font.bodyLarge?.copyWith(
-            color: context.colour.onSurface,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const Gap(8),
         Container(
           height: 56,
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -235,7 +250,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
               ),
               icon: Icon(
                 Icons.keyboard_arrow_down,
-                color: context.colour.onSurface,
+                color: context.colour.secondary,
               ),
               items:
                   CountryConstants.countries.map((country) {
@@ -275,7 +290,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
         BBText(
           'Payout method',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.onSurface,
+            color: context.colour.secondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -306,7 +321,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
             ),
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: context.colour.onSurface,
+              color: context.colour.secondary,
             ),
             items:
                 payoutMethodsForCountry.map((method) {
@@ -362,7 +377,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
                     child: BBText(
                       method.displayName,
                       style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.onSurface,
+                        color: context.colour.secondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -474,11 +489,6 @@ class _InteracEmailForm extends StatelessWidget {
           onFormDataChanged,
         ),
         const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
-        const Gap(12),
         _buildInputField(
           context,
           'Name',
@@ -506,6 +516,11 @@ class _InteracEmailForm extends StatelessWidget {
           'Enter a label for this recipient',
           formData,
           onFormDataChanged,
+        ),
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
         ),
       ],
     );
@@ -659,7 +674,7 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
                   title: BBText(
                     biller.payeeName,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.onSurface,
+                      color: context.colour.secondary,
                     ),
                   ),
                   onTap: () => _selectBiller(biller),
@@ -684,7 +699,7 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
         BBText(
           label,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.onSurface,
+            color: context.colour.secondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -763,11 +778,6 @@ class _BankTransferForm extends StatelessWidget {
           onFormDataChanged,
         ),
         const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
-        const Gap(12),
         _buildInputField(
           context,
           'Name',
@@ -794,17 +804,27 @@ class _BankTransferForm extends StatelessWidget {
           formData,
           onFormDataChanged,
         ),
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: formData,
+          onFormDataChanged: onFormDataChanged,
+        ),
       ],
     );
   }
 }
 
-class _SepaForm extends StatelessWidget {
+class _SepaForm extends StatefulWidget {
   const _SepaForm({required this.formData, required this.onFormDataChanged});
 
   final Map<String, dynamic> formData;
   final Function(String, String) onFormDataChanged;
 
+  @override
+  State<_SepaForm> createState() => _SepaFormState();
+}
+
+class _SepaFormState extends State<_SepaForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -815,8 +835,8 @@ class _SepaForm extends StatelessWidget {
           'IBAN',
           'iban',
           'Enter IBAN',
-          formData,
-          onFormDataChanged,
+          widget.formData,
+          widget.onFormDataChanged,
         ),
         const Gap(12),
         _buildCheckboxField(
@@ -824,49 +844,54 @@ class _SepaForm extends StatelessWidget {
           'Corporate',
           'isCorporate',
           'Is this a corporate account?',
-          formData,
-          onFormDataChanged,
+          widget.formData,
+          widget.onFormDataChanged,
         ),
         const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
-        const Gap(12),
-        _buildInputField(
-          context,
-          'First Name',
-          'firstname',
-          'Enter first name',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
-        _buildInputField(
-          context,
-          'Last Name',
-          'lastname',
-          'Enter last name',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
-        _buildInputField(
-          context,
-          'Corporate Name (optional)',
-          'corporateName',
-          'Enter corporate name',
-          formData,
-          onFormDataChanged,
-        ),
-        const Gap(12),
+        if (widget.formData['isCorporate'] != 'true') ...[
+          _buildInputField(
+            context,
+            'First Name',
+            'firstname',
+            'Enter first name',
+            widget.formData,
+            widget.onFormDataChanged,
+          ),
+          const Gap(12),
+          _buildInputField(
+            context,
+            'Last Name',
+            'lastname',
+            'Enter last name',
+            widget.formData,
+            widget.onFormDataChanged,
+          ),
+          const Gap(12),
+        ],
+        if (widget.formData['isCorporate'] == 'true') ...[
+          const Gap(12),
+          _buildInputField(
+            context,
+            'Corporate Name',
+            'corporateName',
+            'Enter corporate name',
+            widget.formData,
+            widget.onFormDataChanged,
+          ),
+          const Gap(12),
+        ],
         _buildInputField(
           context,
           'Label (optional)',
           'label',
           'Enter a label for this recipient',
-          formData,
-          onFormDataChanged,
+          widget.formData,
+          widget.onFormDataChanged,
+        ),
+        const Gap(12),
+        AccountOwnershipWidget(
+          formData: widget.formData,
+          onFormDataChanged: widget.onFormDataChanged,
         ),
       ],
     );
@@ -1046,11 +1071,6 @@ class _SinpeIbanForm extends StatelessWidget {
           onFormDataChanged,
         ),
         const Gap(12),
-        AccountOwnershipWidget(
-          formData: formData,
-          onFormDataChanged: onFormDataChanged,
-        ),
-        const Gap(12),
         _buildInputField(
           context,
           'Owner Name',
@@ -1187,7 +1207,7 @@ class _SinpeMovilFormState extends State<_SinpeMovilForm> {
         BBText(
           'Phone Number',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.onSurface,
+            color: context.colour.secondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -1264,7 +1284,7 @@ Widget _buildInputField(
       BBText(
         label,
         style: context.font.bodyLarge?.copyWith(
-          color: context.colour.onSurface,
+          color: context.colour.secondary,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -1295,7 +1315,7 @@ Widget _buildCheckboxField(
       BBText(
         label,
         style: context.font.bodyLarge?.copyWith(
-          color: context.colour.onSurface,
+          color: context.colour.secondary,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -1334,7 +1354,7 @@ Widget _buildSecurityQuestionField(
       BBText(
         'Security Question',
         style: context.font.bodyLarge?.copyWith(
-          color: context.colour.onSurface,
+          color: context.colour.secondary,
           fontWeight: FontWeight.w500,
         ),
       ),
