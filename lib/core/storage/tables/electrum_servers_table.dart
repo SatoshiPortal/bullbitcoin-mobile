@@ -6,7 +6,7 @@ class ElectrumServers extends Table {
   BoolColumn get isTestnet => boolean()();
   BoolColumn get isLiquid => boolean()();
   IntColumn get priority => integer()();
-  BoolColumn get isCustom => boolean().withDefault(const Constant(false))();
+  BoolColumn get isCustom => boolean()();
 
   @override
   Set<Column> get primaryKey => {url};

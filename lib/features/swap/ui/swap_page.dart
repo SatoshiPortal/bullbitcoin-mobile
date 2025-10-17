@@ -270,8 +270,29 @@ class SwapCard extends StatelessWidget {
   }
 }
 
-class SwapTransferAmountField extends StatelessWidget {
+class SwapTransferAmountField extends StatefulWidget {
   const SwapTransferAmountField({super.key});
+
+  @override
+  State<SwapTransferAmountField> createState() =>
+      _SwapTransferAmountFieldState();
+}
+
+class _SwapTransferAmountFieldState extends State<SwapTransferAmountField> {
+  late TextEditingController _controller;
+  String _lastFromAmount = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -291,6 +312,12 @@ class SwapTransferAmountField extends StatelessWidget {
     final loadingWallets = context.select(
       (SwapCubit cubit) => cubit.state.loadingWallets,
     );
+
+    // Only update controller if fromAmount changed externally (not from user typing)
+    if (fromAmount != _lastFromAmount && fromAmount != _controller.text) {
+      _controller.text = fromAmount;
+      _lastFromAmount = fromAmount;
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,8 +349,7 @@ class SwapTransferAmountField extends StatelessWidget {
                     children: [
                       Expanded(
                         child: TextFormField(
-                          key: ValueKey(fromAmount),
-                          initialValue: fromAmount,
+                          controller: _controller,
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
