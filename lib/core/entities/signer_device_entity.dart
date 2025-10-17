@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 enum QrType { none, bbqr, urqr }
 
 enum SignerDeviceEntity {
+  bitbox02,
   coldcardQ,
   jade,
   keystone,
@@ -18,6 +19,8 @@ enum SignerDeviceEntity {
       StringFormatting.camelCaseToTitleCase(name, separator: ' ');
 
   bool get isLedger => name.startsWith('ledger');
+
+  bool get isBitBox => name.startsWith('bitbox');
 
   bool get supportsBluetooth =>
       isLedger && this != SignerDeviceEntity.ledgerNanoSPlus;

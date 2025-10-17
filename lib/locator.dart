@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/backup_wallet/backup_wallet_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
+import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/buy_locator.dart';
@@ -93,6 +94,7 @@ class AppLocator {
     Bip85EntropyLocator.setup();
     RecoverBullSelectDriveVaultLocator.setup();
     LedgerLocator.setup();
+    BitBoxLocator.setup();
     ArkCoreLocator.setup();
   }
 }

@@ -1,6 +1,11 @@
+import 'dart:io' show Platform;
+
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
+import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
@@ -45,6 +50,18 @@ class ConnectHardwareWalletPage extends StatelessWidget {
                       ),
                     ),
                     const Gap(16),
+                    if (Platform.isAndroid) ...[
+                      TabMenuVerticalButton(
+                        title: 'BitBox02',
+                        onTap: () => context.pushNamed(
+                          BitBoxRoute.importBitBox.name,
+                          extra: const BitBoxRouteParams(
+                            requestedDeviceType: SignerDeviceEntity.bitbox02,
+                          ),
+                        ),
+                      ),
+                      const Gap(16),
+                    ],
                     TabMenuVerticalButton(
                       title: 'Blockstream Jade',
                       onTap: () => context.pushNamed(
