@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 
 enum LedgerRoute {
   importLedger('/ledger-import'),
-  signTransaction('/ledger-sign-transaction'),
-  verifyAddress('/ledger-verify-address');
+  ledgerSignTransaction('/ledger-sign-transaction'),
+  ledgerVerifyAddress('/ledger-verify-address');
 
   final String path;
 
@@ -22,8 +22,8 @@ class LedgerRouter {
               const LedgerActionScreen(action: LedgerAction.importWallet()),
     ),
     GoRoute(
-      name: LedgerRoute.signTransaction.name,
-      path: LedgerRoute.signTransaction.path,
+      name: LedgerRoute.ledgerSignTransaction.name,
+      path: LedgerRoute.ledgerSignTransaction.path,
       builder: (context, state) {
         final extra = state.extra as LedgerRouteParams?;
         return LedgerActionScreen(
@@ -33,8 +33,8 @@ class LedgerRouter {
       },
     ),
     GoRoute(
-      name: LedgerRoute.verifyAddress.name,
-      path: LedgerRoute.verifyAddress.path,
+      name: LedgerRoute.ledgerVerifyAddress.name,
+      path: LedgerRoute.ledgerVerifyAddress.path,
       builder: (context, state) {
         final extra = state.extra as LedgerRouteParams?;
         return LedgerActionScreen(
