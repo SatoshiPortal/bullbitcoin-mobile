@@ -116,6 +116,13 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   },
                 ),
                 SettingsEntryItem(
+                  icon: Icons.palette,
+                  title: 'Theme',
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.theme.name);
+                  },
+                ),
+                SettingsEntryItem(
                   icon: Icons.settings,
                   title: context.loc.settingsAppSettingsTitle,
                   onTap: () {

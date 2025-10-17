@@ -71,4 +71,10 @@ class SettingsDatasource {
       (f) => f(id: const Value(1), torProxyPort: Value(port)),
     );
   }
+
+  Future<void> setThemeMode(AppThemeMode themeMode) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(id: const Value(1), themeMode: Value(themeMode.name)),
+    );
+  }
 }

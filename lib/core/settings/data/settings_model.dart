@@ -12,6 +12,7 @@ class SettingsModel {
   final bool isDevModeEnabled;
   final bool useTorProxy;
   final int torProxyPort;
+  final AppThemeMode themeMode;
 
   const SettingsModel({
     required this.id,
@@ -24,6 +25,7 @@ class SettingsModel {
     required this.isDevModeEnabled,
     required this.useTorProxy,
     required this.torProxyPort,
+    required this.themeMode,
   });
 
   SettingsRow toSqlite() {
@@ -38,6 +40,7 @@ class SettingsModel {
       isDevModeEnabled: isDevModeEnabled,
       useTorProxy: useTorProxy,
       torProxyPort: torProxyPort,
+      themeMode: themeMode.name,
     );
   }
 
@@ -53,6 +56,7 @@ class SettingsModel {
       isDevModeEnabled: row.isDevModeEnabled,
       useTorProxy: row.useTorProxy,
       torProxyPort: row.torProxyPort,
+      themeMode: AppThemeMode.fromName(row.themeMode),
     );
   }
 }

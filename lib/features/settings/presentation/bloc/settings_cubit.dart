@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -28,6 +29,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetHideAmountsUsecase setHideAmountsUsecase,
     required SetIsSuperuserUsecase setIsSuperuserUsecase,
     required SetIsDevModeUsecase setIsDevModeUsecase,
+    required SetThemeModeUsecase setThemeModeUsecase,
     required GetOldSeedsUsecase getOldSeedsUsecase,
     required RevokeArkUsecase revokeArkUsecase,
   }) : _setEnvironmentUsecase = setEnvironmentUsecase,
@@ -37,6 +39,7 @@ class SettingsCubit extends Cubit<SettingsState> {
        _setCurrencyUsecase = setCurrencyUsecase,
        _setHideAmountsUsecase = setHideAmountsUsecase,
        _setIsSuperuserUsecase = setIsSuperuserUsecase,
+       _setThemeModeUsecase = setThemeModeUsecase,
        _getOldSeedsUsecase = getOldSeedsUsecase,
        _setIsDevModeUsecase = setIsDevModeUsecase,
        _revokeArkUsecase = revokeArkUsecase,
@@ -49,6 +52,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetCurrencyUsecase _setCurrencyUsecase;
   final SetHideAmountsUsecase _setHideAmountsUsecase;
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
+  final SetThemeModeUsecase _setThemeModeUsecase;
   final GetOldSeedsUsecase _getOldSeedsUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
   final RevokeArkUsecase _revokeArkUsecase;
@@ -128,15 +132,23 @@ class SettingsCubit extends Cubit<SettingsState> {
     );
   }
 
+  Future<void> changeThemeMode(AppThemeMode themeMode) async {
+    final settings = state.storedSettings;
+    log.info(
+      'Theme mode changed to: ${themeMode.name} + currentThemeMode: ${settings?.themeMode.name}',
+    );
+    await _setThemeModeUsecase.execute(themeMode);
+    emit(
+      state.copyWith(storedSettings: settings?.copyWith(themeMode: themeMode)),
+    );
+  }
+
   Future<void> checkHasLegacySeeds() async {
     final seeds = await _getOldSeedsUsecase.execute();
     emit(state.copyWith(hasLegacySeeds: seeds.isNotEmpty));
   }
 
-  Future<void> toggleDevMode(
-    bool isEnabled, {
-    WalletBloc? walletBloc,
-  }) async {
+  Future<void> toggleDevMode(bool isEnabled, {WalletBloc? walletBloc}) async {
     final settings = state.storedSettings;
 
     // If disabling dev mode, revoke Ark first
