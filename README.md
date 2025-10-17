@@ -1,10 +1,10 @@
 [![Analyze](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/analyze.yml/badge.svg)](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/analyze.yml) [![Build](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/build.yml/badge.svg)](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/build.yml)
 
-# About Bull Bitcoin Mobile
+# About BULL Wallet
 
-Bull Bitcoin Mobile is a self-custodial Bitcoin and Liquid Network which offers non-custodial atomic swaps across Bitcoin, Lightning and Liquid. The wallet philosophy is to provide advanced features that give users the maximum control, while still being easy to use for beginners. Our goal is to make sure that anyone can take self-custody of their Bitcoin, even in a high fee environment. Our driving principle is to create a user experience which nudges the user into implementing best practices.
+BULL Wallet is a self-custodial Bitcoin and Liquid Network which offers non-custodial atomic swaps across Bitcoin, Lightning and Liquid. The wallet philosophy is to provide advanced features that give users the maximum control, while still being easy to use for beginners. Our goal is to make sure that anyone can take self-custody of their Bitcoin, even in a high fee environment. Our driving principle is to create a user experience which nudges the user into implementing best practices.
 
-Following the cypherpunk ethos, the Bull Bitcoin Mobile wallet is fully open-source and trustless.
+Following the cypherpunk ethos, the BULL Wallet wallet is fully open-source and trustless.
 
 ## Wallet basics
 
@@ -94,15 +94,15 @@ Automated selection of the wallet can be overridden by the user at any time. Thi
 - Users can freeze a specific UTXO. It will be added to a list of unspendable UTXOs, and will never be used when making transactions unless specifically overridden. Unfreezing a utxo will make the utxo spendable again.
 - Combination of "send full amount" and "coin selection": a user can specify a utxo and spend that utxo's entire balance. The network fee will be deducted from the amount sent. This prevents the creation of any change output when moving a UTXO from one wallet to another.
 
-## Planned integration with the Bull Bitcoin exchange 
+## Integration with the Bull Bitcoin exchange 
 
 Our mission is to facilitate and encourage the self-custody of Bitcoin by providing an integrated experience that combines a Bitcoin Wallet, Bitcoin Payments service and a Bitcoin Exchange (on-ramp, off-ramp). For this reason, the wallet will be fully integrated with the Bull Bitcoin API. Users will be able to manage their Bull Bitcoin accounts, buy Bitcoin and sell Bitcoin. This integration will be fully open-source. Use of the Bull Bitcoin exchange is fully optional. Users do not need to register for a Bull Bitcoin account to use all wallet features.
 
 Non-custodial Bitcoin exchanges and payment processors such as Bull Bitcoin have existed for over a decade. When a user purchases Bitcoin, the user must first provide a Bitcoin address to the exchange. The exchange will send the Bitcoin directly to the user’s own Bitcoin wallet as soon as the Bitcoin purchase is confirmed.
 
-The primary issue with non-custodial exchanges is that they require users to set up a Bitcoin Wallet using a separate mobile, desktop or web app before being able to purchase Bitcoin. This creates a sub-optimal and confusing user experience, forcing the end-user to use two separate applications, sharing data (bitcoin addresses) back-and-forth between the two.  Custodial exchanges provide a cleaner and more friendly user experience by providing a Bitcoin balance, a fiat balance, and a mechanism to move funds from a fiat balance to a Bitcoin balance within the same user interface. Bull Bitcoin Mobile solves the problem of having a single, integrated experience within a single mobile application without requiring the user to give up self-custody.
+The primary issue with non-custodial exchanges is that they require users to set up a Bitcoin Wallet using a separate mobile, desktop or web app before being able to purchase Bitcoin. This creates a sub-optimal and confusing user experience, forcing the end-user to use two separate applications, sharing data (bitcoin addresses) back-and-forth between the two.  Custodial exchanges provide a cleaner and more friendly user experience by providing a Bitcoin balance, a fiat balance, and a mechanism to move funds from a fiat balance to a Bitcoin balance within the same user interface. BULL Wallet solves the problem of having a single, integrated experience within a single mobile application without requiring the user to give up self-custody.
 
-When installing the Bull Bitcoin Mobile app, a self-custodial wallet will be created, regardless of whether the user is a Bull Bitcoin user or not. The user will access the Bull Bitcoin exchange from the same application. When purchasing Bitcoin, the mobile app will automatically create a Bitcoin receiving address and provide it to Bull Bitcoin’s servers as a new payout address and Bull Bitcoin will send the Bitcoin directly to the mobile wallet. There is no need to share the xpub of the wallet to Bull Bitcoin’s servers. Users of Bull Bitcoin Mobile can also specify an external Bitcoin address, they do not need to use the Bull Bitcoin wallet. 
+When installing the BULL Wallet app, a self-custodial wallet will be created, regardless of whether the user is a Bull Bitcoin user or not. The user will access the Bull Bitcoin exchange from the same application. When purchasing Bitcoin, the mobile app will automatically create a Bitcoin receiving address and provide it to Bull Bitcoin’s servers as a new payout address and Bull Bitcoin will send the Bitcoin directly to the mobile wallet. There is no need to share the xpub of the wallet to Bull Bitcoin’s servers. Users of BULL Wallet can also specify an external Bitcoin address, they do not need to use the Bull Bitcoin wallet. 
 
 When spending or selling Bitcoin, the exchange will create a payment invoice (BIP21) that will automatically be opened by the same application. All the user has to do is to confirm or reject that transaction. The experience will be functionally the same as that of a custodial exchange, with the exception that the user will have to do a backup of the Bitcoin wallet.
 
@@ -112,21 +112,21 @@ Suggestion to this roadmap can be proposed as Github issues.
 
 - [x] Bumping replace-by-fee transactions
 - [ ] Re-implement smarter coin selection and labelling
-- [ ] One mnemonic: new wallets are always created as a BIP39 passphrase
-- [ ] Good UX/UI for creating PSBTs from watch-only wallets
-- [ ] Good UX/UI for decoding and broadcasting PSBTs
-- [ ] Better UX/UI for importing watch-only wallets
-- [ ] Integration of Coinkite's BBQR library to export public keys, export PSBTs and import PSBTs
+- [x] One mnemonic: new wallets are always created as a BIP39 passphrase
+- [x] Good UX/UI for creating PSBTs from watch-only wallets
+- [x] Good UX/UI for decoding and broadcasting PSBTs
+- [x] Better UX/UI for importing watch-only wallets
+- [x] Integration of Coinkite's BBQR library to export public keys, export PSBTs and import PSBTs
 - [x] Bitcoin <> Liquid network swaps (depends on Boltz backend update)
 - [ ] Integrate a client-side passphrase strength estimator
-- [ ] Encrypted cloud backups connected to a key server, similar to photon-sdk
+- [x] Encrypted cloud backups connected to a key server: RecoverBull
 - [ ] Store persistent encrypted wallet backup on device
 - [ ] Biometric authentication
 - [ ] Show fiat value of transactions at the approximated time they were made
 - [ ] Spanish and French translations
 - [x] Payjoin integration
 - [ ] Integrate Bull Bitcoin Fee multiple
-- [ ] Auto-consolidation mode for spend
+- [x] Auto-consolidation mode for spend
 - [ ] Small UTXO warning and consolidation suggestions
 - [ ] Configurable mempool explorer URLs
 - [ ] Configurable swap provider (similar to Electrum server)
