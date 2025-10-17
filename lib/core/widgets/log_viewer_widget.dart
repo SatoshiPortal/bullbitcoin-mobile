@@ -28,7 +28,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
     result.sort((a, b) {
       final partsA = a.split('\t');
       final partsB = b.split('\t');
-      return partsA[0].compareTo(partsB[0]);
+      return partsB[0].compareTo(partsA[0]);
     });
 
     if (_startDate == null && _endDate == null) return result;
@@ -98,7 +98,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredLogs = _filteredLogs.reversed.toList();
+    final logs = _filteredLogs;
 
     return Column(
       children: [
@@ -121,7 +121,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 BBText(
-                  'Showing ${filteredLogs.length} of ${widget.logs.length} logs',
+                  'Showing ${logs.length} of ${widget.logs.length} logs',
                   style: context.font.bodySmall?.copyWith(
                     color: context.colour.onSurface.withValues(alpha: 0.6),
                   ),
@@ -146,8 +146,8 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
               scrollDirection: Axis.horizontal,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: List.generate(filteredLogs.length, (index) {
-                  final logLine = filteredLogs[index];
+                children: List.generate(logs.length, (index) {
+                  final logLine = logs[index];
                   final parts = logLine.split('\t');
 
                   // color for level
@@ -170,10 +170,12 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                   // remove milliseconds from datetime
                   final displayParts = parts.toList();
                   if (displayParts.isNotEmpty && displayParts[0].length > 7) {
-                    displayParts[0] = displayParts[0].substring(
-                      0,
-                      displayParts[0].length - 7,
-                    );
+                    try {
+                      displayParts[0] = displayParts[0].substring(
+                        0,
+                        displayParts[0].length - 7,
+                      );
+                    } catch (_) {}
                   }
                   final displayText = displayParts.join(' | ');
 
