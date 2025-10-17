@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/storage/migrations/schema_2_to_3.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_3_to_4.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_4_to_5.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_5_to_6.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_6_to_7.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
@@ -44,7 +45,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -75,6 +76,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from3To4: Schema3To4.migrate,
         from4To5: Schema4To5.migrate,
         from5To6: Schema5To6.migrate,
+        from6To7: Schema6To7.migrate,
       ),
     );
   }

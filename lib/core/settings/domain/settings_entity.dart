@@ -59,6 +59,19 @@ enum Language {
   }
 }
 
+enum AppThemeMode {
+  light,
+  dark,
+  system;
+
+  factory AppThemeMode.fromName(String name) {
+    return AppThemeMode.values.firstWhere(
+      (themeMode) => themeMode.name == name,
+      orElse: () => AppThemeMode.system,
+    );
+  }
+}
+
 extension LanguageExtension on Language {
   Locale get locale => Locale(languageCode, countryCode);
   bool isLocale(Locale locale) =>
@@ -75,6 +88,7 @@ abstract class SettingsEntity with _$SettingsEntity {
     bool? hideAmounts,
     bool? isSuperuser,
     bool? isDevModeEnabled,
+    @Default(AppThemeMode.system) AppThemeMode themeMode,
   }) = _SettingsEntity;
   const SettingsEntity._();
 }

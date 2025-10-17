@@ -19,6 +19,7 @@ class DatabaseSeeds {
             hideAmounts: false,
             isSuperuser: false,
             isDevModeEnabled: false,
+            themeMode: 'system',
           ),
         );
   }

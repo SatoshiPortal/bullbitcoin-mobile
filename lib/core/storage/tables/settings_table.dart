@@ -11,4 +11,5 @@ class Settings extends Table {
   BoolColumn get isSuperuser => boolean()();
   BoolColumn get isDevModeEnabled =>
       boolean().withDefault(const Constant(false))();
+  TextColumn get themeMode => text().withDefault(const Constant('system'))();
 }
