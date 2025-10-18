@@ -104,9 +104,11 @@ class SwapWatcherService {
               return;
           }
 
+        case SwapStatus.completed:
+          await _processCompletedSwap(swap: swap);
+
         case SwapStatus.pending:
         case SwapStatus.paid:
-        case SwapStatus.completed:
         case SwapStatus.expired:
         case SwapStatus.failed:
           return;
@@ -405,13 +407,12 @@ class SwapWatcherService {
         } else {
           // Generate new address and store it in the swap model
           final claimAddress = await _walletAddressRepository
-            .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
-        finalClaimAddress = claimAddress.address;
+              .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
+          finalClaimAddress = claimAddress.address;
           finalClaimAddress = claimAddress.address;
           final updatedSwap = swap.copyWith(receiveAddress: finalClaimAddress);
           await _boltzRepo.updateSwap(swap: updatedSwap);
         }
-
       } else {
         if (swap.receiveAddress!.startsWith('bitcoin:')) {
           final uri = bip21.decode(swap.receiveAddress!);
@@ -552,12 +553,11 @@ class SwapWatcherService {
         } else {
           // Generate new address and store it in the swap model
           final claimAddress = await _walletAddressRepository
-            .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
+              .generateNewReceiveAddress(walletId: swap.receiveWalletId!);
           finalClaimAddress = claimAddress.address;
           final updatedSwap = swap.copyWith(receiveAddress: finalClaimAddress);
           await _boltzRepo.updateSwap(swap: updatedSwap);
         }
-
       } else {
         if (swap.receiveAddress!.startsWith('liquidnetwork:') ||
             swap.receiveAddress!.startsWith('liquidtestnet:')) {
@@ -673,6 +673,37 @@ class SwapWatcherService {
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinRefund"}',
+        error: e,
+        trace: st,
+      );
+      rethrow;
+    }
+  }
+
+  Future<void> _processCompletedSwap({required Swap swap}) async {
+    try {
+      log.info(
+        '{"swapId": "${swap.id}", "status": "completed", "function": "_processCompletedSwap"}',
+      );
+
+      switch (swap.type) {
+        case SwapType.lightningToBitcoin:
+        case SwapType.lightningToLiquid:
+          if (swap is LnReceiveSwap && swap.receiveTxid == null) {
+            final updatedSwap = swap.copyWith(status: SwapStatus.claimable);
+            await _boltzRepo.updateSwap(swap: updatedSwap);
+          } else {
+            return;
+          }
+        case SwapType.bitcoinToLightning:
+        case SwapType.liquidToLightning:
+        case SwapType.liquidToBitcoin:
+        case SwapType.bitcoinToLiquid:
+          return;
+      }
+    } catch (e, st) {
+      log.severe(
+        '{"swapId": "${swap.id}", "function": "_processCompletedWithoutTransaction"}',
         error: e,
         trace: st,
       );
