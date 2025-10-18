@@ -11,9 +11,9 @@ class AmountInputFormatter extends TextInputFormatter {
     TextEditingValue newValue,
   ) {
     final decimalPlaces =
-        inputCurrencyCode == 'sats'
+        (inputCurrencyCode == 'sats' || inputCurrencyCode == 'L-sats')
             ? 0
-            : inputCurrencyCode == 'BTC'
+            : inputCurrencyCode == 'BTC' || inputCurrencyCode == 'L-BTC'
             ? 8
             : 2; // Fiat currencies default to 2 decimals, can be adjusted if needed with a map
 

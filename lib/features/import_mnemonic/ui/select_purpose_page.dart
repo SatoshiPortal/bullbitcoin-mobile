@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
@@ -54,6 +55,14 @@ class SelectScriptTypePage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  BBText(
+                    'All three wallet types are syncing and their balance and transactions will appear soon. You can wait until sync completes or proceed to import if you are sure which wallet type you wish to import.',
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.colour.onSurfaceVariant,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const Gap(24),
                   Column(
                     children: [
                       _WalletTypeCard(
@@ -81,7 +90,7 @@ class SelectScriptTypePage extends StatelessWidget {
                   const Gap(16),
 
                   BBButton.big(
-                    label: state.isLoading ? 'Importing…' : 'Continue',
+                    label: 'Continue',
                     onPressed: cubit.import,
                     bgColor: context.colour.secondary,
                     textColor: context.colour.onPrimary,
@@ -117,11 +126,11 @@ class _WalletTypeCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: context.colour.surface, width: 1),
+          color: context.colour.secondaryFixed,
+          border: Border.all(color: context.colour.outline, width: 1),
           boxShadow: [
             BoxShadow(
-              color: context.colour.surface,
+              color: context.colour.shadow,
               offset: isSelected ? const Offset(0, 6) : const Offset(0, 2),
             ),
           ],
@@ -145,20 +154,23 @@ class _WalletTypeCard extends StatelessWidget {
                     BBText(
                       'Balance: ${status?.satoshis.toString() ?? '0'}',
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.surface,
+                        color: context.colour.onSurfaceVariant,
                       ),
                     ),
                     const Gap(4),
                     BBText(
                       'Transactions: ${status?.transactions.toString() ?? '0'}',
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.surface,
+                        color: context.colour.onSurfaceVariant,
                       ),
                     ),
                   ],
                   if (status == null) ...[
                     const Gap(8),
-                    const Center(child: CircularProgressIndicator()),
+                    const LoadingLineContent(
+                      height: 8,
+                      padding: EdgeInsets.zero,
+                    ),
                   ],
                 ],
               ),

@@ -300,7 +300,10 @@ class SwapCubit extends Cubit<SwapState> {
     emit(
       state.copyWith(
         fromWallets: liquidWallets,
-        toWallets: bitcoinSignerWallets, // Start with signing wallets only
+        toWallets: [
+          ...bitcoinSignerWallets,
+          ...watchOnlyBitcoinWallets,
+        ], // Include both signing and watch-only wallets
         watchOnlyBitcoinWallets: watchOnlyBitcoinWallets,
         loadingWallets: false,
         fiatCurrencyCodes: currencies,
@@ -385,13 +388,27 @@ class SwapCubit extends Cubit<SwapState> {
     List<Wallet> newToWallets = [];
 
     if (newFromNetwork == WalletNetwork.bitcoin) {
-      // Switching to Bitcoin from wallets - include watch-only wallets
-      newFromWallets = [...state.toWallets, ...state.watchOnlyBitcoinWallets];
+      // Switching to Bitcoin from wallets - only signing wallets (no watch-only)
+      final bitcoinSignerWallets =
+          state.toWallets.where((w) => w.signsLocally).toList();
+      newFromWallets = bitcoinSignerWallets;
       newToWallets = state.fromWallets;
     } else {
       // Switching to Liquid from wallets - only signing wallets
       newFromWallets = state.toWallets;
-      newToWallets = state.fromWallets;
+      // When toWallets becomes Bitcoin, include both signing and watch-only wallets
+      if (newToNetwork == WalletNetwork.bitcoin) {
+        final bitcoinSignerWallets =
+            state.fromWallets
+                .where((w) => !w.isLiquid && w.signsLocally)
+                .toList();
+        newToWallets = [
+          ...bitcoinSignerWallets,
+          ...state.watchOnlyBitcoinWallets,
+        ];
+      } else {
+        newToWallets = state.fromWallets;
+      }
     }
 
     // Ensure we have valid wallet selections

@@ -127,11 +127,14 @@ class _BG extends StatelessWidget {
         ),
         Opacity(
           opacity: 0.1,
-          child: Image.asset(
-            Assets.backgrounds.bgLong.path,
-            fit: BoxFit.cover,
-            height: double.infinity,
-            width: double.infinity,
+          child: Transform.rotate(
+            angle: 3.141,
+            child: Image.asset(
+              Assets.backgrounds.bgLong.path,
+              fit: BoxFit.cover,
+              height: double.infinity,
+              width: double.infinity,
+            ),
           ),
         ),
       ],
