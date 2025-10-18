@@ -505,7 +505,10 @@ class BoltzSwapRepository {
                   (swap is ChainSwap &&
                       swap.status == SwapStatus.completed &&
                       swap.receiveTxid == null &&
-                      swap.refundTxid == null)),
+                      swap.refundTxid == null) ||
+                  (swap is LnReceiveSwap &&
+                      swap.status == SwapStatus.completed &&
+                      swap.receiveTxid == null)),
         )
         .toList();
   }
