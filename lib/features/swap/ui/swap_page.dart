@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
+import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -16,7 +17,6 @@ import 'package:bb_mobile/features/swap/presentation/swap_state.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
@@ -353,9 +353,7 @@ class _SwapTransferAmountFieldState extends State<SwapTransferAmountField> {
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
+                          inputFormatters: [AmountInputFormatter(currency)],
                           style: context.font.displaySmall?.copyWith(
                             color: context.colour.primary,
                           ),
