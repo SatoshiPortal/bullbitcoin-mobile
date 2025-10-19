@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/i
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_method_widget.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/watch_only_details_widget.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,8 @@ class ImportWatchOnlyScreen extends StatelessWidget {
         body: BlocConsumer<ImportWatchOnlyCubit, ImportWatchOnlyState>(
           listener: (context, state) {
             if (state.importedWallet != null) {
+              // Trigger wallet refresh before navigating to home
+              context.read<WalletBloc>().add(const WalletStarted());
               context.goNamed(WalletRoute.walletHome.name);
             }
             if (state.error.isNotEmpty) {
