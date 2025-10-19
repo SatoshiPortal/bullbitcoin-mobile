@@ -51,7 +51,7 @@ class ImportMnemonicRouter {
                     previous.wallet == null && current.wallet != null,
             listener: (context, state) {
               // Trigger wallet refresh before navigating to home
-              context.read<WalletBloc>().add(const WalletRefreshed());
+              context.read<WalletBloc>().add(const WalletStarted());
               context.goNamed(WalletRoute.walletHome.name);
             },
             child: const SelectScriptTypePage(),
