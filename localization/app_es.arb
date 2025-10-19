@@ -1,0 +1,55 @@
+{
+  "@@locale": "es",
+  "onboardingScreenTitle": "Bienvenido",
+  "@onboardingScreenTitle": {
+    "description": "El título de la pantalla de inicio"
+  },
+  "onboardingCreateWalletButtonLabel": "Crear billetera",
+  "@onboardingCreateWalletButtonLabel": {
+    "description": "La etiqueta del botón para crear una billetera desde la pantalla de inicio"
+  },
+  "onboardingRecoverWalletButtonLabel": "Recuperar billetera",
+  "@onboardingRecoverWalletButtonLabel": {
+    "description": "La etiqueta del botón para recuperar una billetera desde la pantalla de inicio"
+  },
+  "settingsScreenTitle": "Ajustes",
+  "@settingsScreenTitle": {
+    "description": "El título de la pantalla de ajustes"
+  },
+  "testnetModeSettingsLabel": "Modo Testnet",
+  "@testnetModeSettingsLabel": {
+    "description": "La etiqueta de la configuración del modo Testnet"
+  },
+  "satsBitcoinUnitSettingsLabel": "Mostrar unidad en sats",
+  "@satsBitcoinUnitSettingsLabel": {
+    "description": "La etiqueta para cambiar la unidad de Bitcoin a sats en ajustes"
+  },
+  "pinCodeSettingsLabel": "Código PIN",
+  "@pinCodeSettingsLabel": {
+    "description": "La etiqueta del botón para acceder a la configuración del código PIN"
+  },
+  "languageSettingsLabel": "Idioma",
+  "@languageSettingsLabel": {
+    "description": "La etiqueta del botón para acceder a la configuración de idioma"
+  },
+  "backupSettingsLabel": "Copia de seguridad de billetera",
+  "@backupSettingsLabel": {
+    "description": "La etiqueta del botón para acceder a la configuración de copia de seguridad"
+  },
+  "electrumServerSettingsLabel": "Servidor Electrum (nodo Bitcoin)",
+  "@electrumServerSettingsLabel": {
+    "description": "La etiqueta del botón para acceder a la configuración del servidor Electrum"
+  },
+  "fiatCurrencySettingsLabel": "Moneda fiduciaria",
+  "@fiatCurrencySettingsLabel": {
+    "description": "La etiqueta del botón para acceder a la configuración de moneda fiduciaria"
+  },
+  "languageSettingsScreenTitle": "Idioma",
+  "@languageSettingsScreenTitle": {
+    "description": "El título de la pantalla de configuración de idioma"
+  },
+  "backupSettingsScreenTitle": "Configuración de copia de seguridad",
+  "@backupSettingsScreenTitle": {
+    "description": "El título de la pantalla de configuración de copia de seguridad"
+  }
+}
