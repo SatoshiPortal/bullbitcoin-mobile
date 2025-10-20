@@ -16,6 +16,7 @@ class ArkWalletEntity {
         network: Ark.network,
         esplora: Ark.esplora,
         server: Ark.server,
+        boltz: Ark.boltz,
       );
       return ArkWalletEntity(wallet: wallet);
     } catch (e) {

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
+import 'package:bb_mobile/features/ark_setup/router.dart';
 // import 'package:bb_mobile/features/ark_setup/router.dart';
 import 'package:bb_mobile/features/autoswap/ui/autoswap_settings_router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
@@ -100,14 +101,13 @@ class BitcoinSettingsScreen extends StatelessWidget {
                         () =>
                             context.pushNamed(Bip85EntropyRoute.bip85Home.name),
                   ),
-                // TODO: Ark feature temporarily hidden due to stability issues with the API, enable it later
-                // if (isSuperuser && isDevModeEnabled)
-                //   SettingsEntryItem(
-                //     icon: Icons.science,
-                //     title: 'Ark',
-                //     isSuperUser: isSuperuser && isDevModeEnabled,
-                //     onTap: () => context.pushNamed(ArkSetupRoute.arkSetup.name),
-                //   ),
+                if (isSuperuser && isDevModeEnabled)
+                  SettingsEntryItem(
+                    icon: Icons.science,
+                    title: 'Ark',
+                    isSuperUser: isSuperuser && isDevModeEnabled,
+                    onTap: () => context.pushNamed(ArkSetupRoute.arkSetup.name),
+                  ),
               ],
             ),
           ),
