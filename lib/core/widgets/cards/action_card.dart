@@ -50,6 +50,30 @@ class _ActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hideExchangeFeatures =
+        context.watch<SettingsCubit>().state.hideExchangeFeatures ?? false;
+
+    // If exchange features are hidden, only show Transfer button
+    if (hideExchangeFeatures) {
+      return Material(
+        elevation: 2,
+        color: Colors.transparent,
+        child: SizedBox(
+          height: 80,
+          child: _ActionButton(
+            icon: Assets.icons.swap.path,
+            label: 'Transfer',
+            onPressed: () {
+              context.pushNamed(SwapRoute.swap.name);
+            },
+            position: _ButtonPosition.first,
+            disabled: false,
+          ),
+        ),
+      );
+    }
+
+    // Default view with all buttons
     return Material(
       elevation: 2,
       shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),

@@ -13,6 +13,7 @@ class SettingsModel {
   final bool useTorProxy;
   final int torProxyPort;
   final AppThemeMode themeMode;
+  final bool hideExchangeFeatures;
 
   const SettingsModel({
     required this.id,
@@ -26,6 +27,7 @@ class SettingsModel {
     required this.useTorProxy,
     required this.torProxyPort,
     required this.themeMode,
+    required this.hideExchangeFeatures,
   });
 
   SettingsRow toSqlite() {
@@ -41,6 +43,7 @@ class SettingsModel {
       useTorProxy: useTorProxy,
       torProxyPort: torProxyPort,
       themeMode: themeMode.name,
+      hideExchangeFeatures: hideExchangeFeatures,
     );
   }
 
@@ -57,6 +60,7 @@ class SettingsModel {
       useTorProxy: row.useTorProxy,
       torProxyPort: row.torProxyPort,
       themeMode: AppThemeMode.fromName(row.themeMode),
+      hideExchangeFeatures: row.hideExchangeFeatures,
     );
   }
 }
