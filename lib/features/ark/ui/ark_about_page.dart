@@ -28,7 +28,7 @@ class ArkAboutPage extends StatelessWidget {
           children: [
             const _CopyField(label: 'Server URL', value: Ark.server),
             const SizedBox(height: 18),
-            _CopyField(label: 'Server pubkey', value: serverInfo.pk),
+            _CopyField(label: 'Server pubkey', value: serverInfo.signerPubkey),
             const SizedBox(height: 18),
             _CopyField(
               label: 'Forfeit address',
@@ -41,7 +41,7 @@ class ArkAboutPage extends StatelessWidget {
             const SizedBox(height: 18),
             _InfoField(
               label: 'Session duration',
-              value: _formatDuration(serverInfo.roundInterval),
+              value: _formatDuration(serverInfo.sessionDuration),
             ),
             const SizedBox(height: 18),
             _InfoField(

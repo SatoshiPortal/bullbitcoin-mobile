@@ -4,4 +4,5 @@ class Ark {
   static const network = 'bitcoin';
   static const esplora = 'https://mempool.space/api';
   static const server = 'https://bitcoin-beta.arkade.sh';
+  static const boltz = 'https://api.boltz.exchange';
 }
