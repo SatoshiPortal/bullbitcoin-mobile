@@ -38,6 +38,7 @@ class SettingsRepository implements domain.SettingsRepository {
     bool isErrorReportingEnabled = false,
     String? exchangeTestnetBasicAuthUsername,
     String? exchangeTestnetBasicAuthPassword,
+    required bool hideExchangeFeatures,
   }) async {
     await _settingsDatasource.store(
       SettingsModel(
@@ -55,6 +56,7 @@ class SettingsRepository implements domain.SettingsRepository {
         isErrorReportingEnabled: isErrorReportingEnabled,
         exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
         exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
+        hideExchangeFeatures: hideExchangeFeatures,
       ),
     );
   }
@@ -77,6 +79,7 @@ class SettingsRepository implements domain.SettingsRepository {
       isErrorReportingEnabled: s.isErrorReportingEnabled,
       exchangeTestnetBasicAuthUsername: s.exchangeTestnetBasicAuthUsername,
       exchangeTestnetBasicAuthPassword: s.exchangeTestnetBasicAuthPassword,
+      hideExchangeFeatures: s.hideExchangeFeatures,
     );
   }
 
@@ -148,5 +151,10 @@ class SettingsRepository implements domain.SettingsRepository {
     // Sync [Report]'s boot-time mirror so the next cold start's Sentry
     // init can seed consent before the locator is available.
     await Report.updateConsent(enabled);
+  }
+
+  @override
+  Future<void> setHideExchangeFeatures(bool hide) async {
+    await _settingsDatasource.setHideExchangeFeatures(hide);
   }
 }
