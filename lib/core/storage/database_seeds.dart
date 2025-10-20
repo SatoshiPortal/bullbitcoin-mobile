@@ -15,7 +15,7 @@ class DatabaseSeeds {
             environment: Environment.mainnet.name,
             bitcoinUnit: BitcoinUnit.sats.name,
             language: Language.unitedStatesEnglish.name,
-            currency: 'CAD',
+            currency: 'USD',
             hideAmounts: false,
             isSuperuser: false,
             isDevModeEnabled: false,
