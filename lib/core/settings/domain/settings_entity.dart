@@ -75,6 +75,7 @@ abstract class SettingsEntity with _$SettingsEntity {
     bool? hideAmounts,
     bool? isSuperuser,
     bool? isDevModeEnabled,
+    bool? hideExchangeFeatures,
   }) = _SettingsEntity;
   const SettingsEntity._();
 }

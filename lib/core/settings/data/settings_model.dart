@@ -10,6 +10,7 @@ class SettingsModel {
   final bool hideAmounts;
   final bool isSuperuser;
   final bool isDevModeEnabled;
+  final bool hideExchangeFeatures;
 
   const SettingsModel({
     required this.id,
@@ -20,6 +21,7 @@ class SettingsModel {
     required this.hideAmounts,
     required this.isSuperuser,
     required this.isDevModeEnabled,
+    required this.hideExchangeFeatures,
   });
 
   SettingsRow toSqlite() {
@@ -32,6 +34,7 @@ class SettingsModel {
       hideAmounts: hideAmounts,
       isSuperuser: isSuperuser,
       isDevModeEnabled: isDevModeEnabled,
+      hideExchangeFeatures: hideExchangeFeatures,
     );
   }
 
@@ -45,6 +48,7 @@ class SettingsModel {
       hideAmounts: row.hideAmounts,
       isSuperuser: row.isSuperuser,
       isDevModeEnabled: row.isDevModeEnabled,
+      hideExchangeFeatures: row.hideExchangeFeatures,
     );
   }
 }

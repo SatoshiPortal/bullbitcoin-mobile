@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_hide_exchange_features_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
@@ -50,6 +51,12 @@ class SettingsLocator {
       ),
     );
 
+    locator.registerFactory<SetHideExchangeFeaturesUsecase>(
+      () => SetHideExchangeFeaturesUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
     // Blocs
     locator.registerFactory<SettingsCubit>(
       () => SettingsCubit(
@@ -62,6 +69,7 @@ class SettingsLocator {
         setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
         getOldSeedsUsecase: locator<GetOldSeedsUsecase>(),
         setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),
+        setHideExchangeFeaturesUsecase: locator<SetHideExchangeFeaturesUsecase>(),
         revokeArkUsecase: locator<RevokeArkUsecase>(),
       ),
     );

@@ -52,6 +52,8 @@ class AppRouter {
       ShellRoute(
         builder: (context, state, child) {
           final location = state.uri.toString();
+          final hideExchangeFeatures =
+              context.watch<SettingsCubit>().state.hideExchangeFeatures ?? false;
           final tabIndex =
               location.startsWith(ExchangeRoute.exchangeHome.path) ? 1 : 0;
           final isExchangeLanding = location.contains(
@@ -65,7 +67,7 @@ class AppRouter {
             extendBodyBehindAppBar: true,
             body: child,
             bottomNavigationBar:
-                isExchangeLanding
+                isExchangeLanding || hideExchangeFeatures
                     ? null
                     : BottomNavigationBar(
                       currentIndex: tabIndex,
