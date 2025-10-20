@@ -4,10 +4,6 @@
   "@onboardingScreenTitle": {
     "description": "El título de la pantalla de inicio"
   },
-  "onboardingSubtitle": "Su bóveda autocustodiada para Bitcoin, Lightning y Liquid",
-  "@onboardingSubtitle": {
-    "description": "El subtítulo de la pantalla de inicio"
-  },
   "onboardingCreateWalletButtonLabel": "Crear billetera",
   "@onboardingCreateWalletButtonLabel": {
     "description": "La etiqueta del botón para crear una billetera desde la pantalla de inicio"
@@ -16,61 +12,9 @@
   "@onboardingRecoverWalletButtonLabel": {
     "description": "La etiqueta del botón para recuperar una billetera desde la pantalla de inicio"
   },
-  "onboardingCreateWalletScreenTitle": "Crear nueva billetera",
-  "@onboardingCreateWalletScreenTitle": {
-    "description": "El título de la pantalla de creación de billetera"
-  },
-  "onboardingRecoverWalletScreenTitle": "Recuperar billetera",
-  "@onboardingRecoverWalletScreenTitle": {
-    "description": "El título de la pantalla de recuperación de billetera"
-  },
-  "onboardingCreateWalletInstructions": "Anote su frase de recuperación de 12 palabras y guárdela en un lugar seguro. Necesitará esta frase para recuperar su billetera.",
-  "@onboardingCreateWalletInstructions": {
-    "description": "Instrucciones mostradas al crear una nueva billetera"
-  },
-  "onboardingRecoverWalletInstructions": "Ingrese su frase de recuperación de 12 palabras para restaurar su billetera.",
-  "@onboardingRecoverWalletInstructions": {
-    "description": "Instrucciones mostradas al recuperar una billetera"
-  },
-  "onboardingContinueButtonLabel": "Continuar",
-  "@onboardingContinueButtonLabel": {
-    "description": "La etiqueta del botón para continuar durante la incorporación"
-  },
-  "onboardingBackButtonLabel": "Atrás",
-  "@onboardingBackButtonLabel": {
-    "description": "La etiqueta del botón para volver atrás durante la incorporación"
-  },
-  "onboardingConfirmButtonLabel": "Confirmar",
-  "@onboardingConfirmButtonLabel": {
-    "description": "La etiqueta del botón para confirmar durante la incorporación"
-  },
-  "onboardingSkipButtonLabel": "Omitir",
-  "@onboardingSkipButtonLabel": {
-    "description": "La etiqueta del botón para omitir un paso durante la incorporación"
-  },
   "settingsScreenTitle": "Ajustes",
   "@settingsScreenTitle": {
     "description": "El título de la pantalla de ajustes"
-  },
-  "settingsGeneralSectionTitle": "General",
-  "@settingsGeneralSectionTitle": {
-    "description": "El título de la sección de configuración general"
-  },
-  "settingsSecuritySectionTitle": "Seguridad",
-  "@settingsSecuritySectionTitle": {
-    "description": "El título de la sección de configuración de seguridad"
-  },
-  "settingsNetworkSectionTitle": "Red",
-  "@settingsNetworkSectionTitle": {
-    "description": "El título de la sección de configuración de red"
-  },
-  "settingsAdvancedSectionTitle": "Avanzado",
-  "@settingsAdvancedSectionTitle": {
-    "description": "El título de la sección de configuración avanzada"
-  },
-  "settingsAboutSectionTitle": "Acerca de",
-  "@settingsAboutSectionTitle": {
-    "description": "El título de la sección acerca de en la configuración"
   },
   "languageSettingsLabel": "Idioma",
   "@languageSettingsLabel": {
@@ -84,49 +28,13 @@
   "@fiatCurrencySettingsLabel": {
     "description": "La etiqueta del botón para acceder a la configuración de moneda fiduciaria"
   },
-  "fiatCurrencySettingsScreenTitle": "Moneda fiduciaria",
-  "@fiatCurrencySettingsScreenTitle": {
-    "description": "El título de la pantalla de configuración de moneda fiduciaria"
-  },
   "satsBitcoinUnitSettingsLabel": "Mostrar unidad en sats",
   "@satsBitcoinUnitSettingsLabel": {
     "description": "La etiqueta para cambiar la unidad de Bitcoin a sats en ajustes"
   },
-  "satsBitcoinUnitSettingsDescription": "Mostrar los montos de Bitcoin en sats en lugar de BTC",
-  "@satsBitcoinUnitSettingsDescription": {
-    "description": "La descripción para la configuración de unidad de Bitcoin"
-  },
-  "hideBalanceSettingsLabel": "Ocultar saldo",
-  "@hideBalanceSettingsLabel": {
-    "description": "La etiqueta para la configuración de ocultar saldo"
-  },
-  "hideBalanceSettingsDescription": "Ocultar los saldos en la pantalla principal",
-  "@hideBalanceSettingsDescription": {
-    "description": "La descripción para la configuración de ocultar saldo"
-  },
   "pinCodeSettingsLabel": "Código PIN",
   "@pinCodeSettingsLabel": {
     "description": "La etiqueta del botón para acceder a la configuración del código PIN"
-  },
-  "pinCodeSettingsScreenTitle": "Código PIN",
-  "@pinCodeSettingsScreenTitle": {
-    "description": "El título de la pantalla de configuración del código PIN"
-  },
-  "enablePinCodeSettingsLabel": "Habilitar código PIN",
-  "@enablePinCodeSettingsLabel": {
-    "description": "La etiqueta para habilitar el código PIN"
-  },
-  "changePinCodeSettingsLabel": "Cambiar código PIN",
-  "@changePinCodeSettingsLabel": {
-    "description": "La etiqueta del botón para cambiar el código PIN"
-  },
-  "biometricsSettingsLabel": "Biometría",
-  "@biometricsSettingsLabel": {
-    "description": "La etiqueta para la configuración de biometría"
-  },
-  "biometricsSettingsDescription": "Usar huella digital o reconocimiento facial para desbloquear",
-  "@biometricsSettingsDescription": {
-    "description": "La descripción para la configuración de biometría"
   },
   "backupSettingsLabel": "Copia de seguridad de billetera",
   "@backupSettingsLabel": {
@@ -136,809 +44,29 @@
   "@backupSettingsScreenTitle": {
     "description": "AppBar title for backup settings screen"
   },
-  "viewRecoveryPhraseSettingsLabel": "Ver frase de recuperación",
-  "@viewRecoveryPhraseSettingsLabel": {
-    "description": "La etiqueta del botón para ver la frase de recuperación"
-  },
-  "backupWalletSettingsLabel": "Hacer copia de seguridad de billetera",
-  "@backupWalletSettingsLabel": {
-    "description": "La etiqueta del botón para hacer copia de seguridad de la billetera"
-  },
-  "verifyBackupSettingsLabel": "Verificar copia de seguridad",
-  "@verifyBackupSettingsLabel": {
-    "description": "La etiqueta del botón para verificar la copia de seguridad"
-  },
   "testnetModeSettingsLabel": "Modo Testnet",
   "@testnetModeSettingsLabel": {
     "description": "La etiqueta de la configuración del modo Testnet"
-  },
-  "testnetModeSettingsDescription": "Usar la red de prueba de Bitcoin en lugar de la red principal",
-  "@testnetModeSettingsDescription": {
-    "description": "La descripción para la configuración del modo Testnet"
   },
   "electrumServerSettingsLabel": "Servidor Electrum (nodo Bitcoin)",
   "@electrumServerSettingsLabel": {
     "description": "La etiqueta del botón para acceder a la configuración del servidor Electrum"
   },
-  "electrumServerSettingsScreenTitle": "Servidor Electrum",
-  "@electrumServerSettingsScreenTitle": {
-    "description": "El título de la pantalla de configuración del servidor Electrum"
-  },
-  "electrumServerUrlLabel": "URL del servidor",
-  "@electrumServerUrlLabel": {
-    "description": "La etiqueta para el campo de URL del servidor Electrum"
-  },
-  "electrumServerPortLabel": "Puerto",
-  "@electrumServerPortLabel": {
-    "description": "La etiqueta para el campo de puerto del servidor Electrum"
-  },
-  "electrumServerUseSSLLabel": "Usar SSL",
-  "@electrumServerUseSSLLabel": {
-    "description": "La etiqueta para la casilla de verificación de SSL del servidor Electrum"
-  },
-  "electrumServerSaveButtonLabel": "Guardar",
-  "@electrumServerSaveButtonLabel": {
-    "description": "La etiqueta del botón para guardar la configuración del servidor Electrum"
-  },
-  "electrumServerResetButtonLabel": "Restablecer a predeterminado",
-  "@electrumServerResetButtonLabel": {
-    "description": "La etiqueta del botón para restablecer la configuración del servidor Electrum"
-  },
-  "electrumServerTestConnectionButtonLabel": "Probar conexión",
-  "@electrumServerTestConnectionButtonLabel": {
-    "description": "La etiqueta del botón para probar la conexión del servidor Electrum"
-  },
-  "liquidServerSettingsLabel": "Servidor Liquid (nodo Liquid)",
-  "@liquidServerSettingsLabel": {
-    "description": "La etiqueta del botón para acceder a la configuración del servidor Liquid"
-  },
-  "liquidServerSettingsScreenTitle": "Servidor Liquid",
-  "@liquidServerSettingsScreenTitle": {
-    "description": "El título de la pantalla de configuración del servidor Liquid"
-  },
-  "lightningNodeSettingsLabel": "Nodo Lightning",
-  "@lightningNodeSettingsLabel": {
-    "description": "La etiqueta del botón para acceder a la configuración del nodo Lightning"
-  },
-  "lightningNodeSettingsScreenTitle": "Nodo Lightning",
-  "@lightningNodeSettingsScreenTitle": {
-    "description": "El título de la pantalla de configuración del nodo Lightning"
-  },
-  "torSettingsLabel": "Red Tor",
-  "@torSettingsLabel": {
-    "description": "La etiqueta para la configuración de red Tor"
-  },
-  "torSettingsDescription": "Enrutar conexiones a través de la red Tor para mayor privacidad",
-  "@torSettingsDescription": {
-    "description": "La descripción para la configuración de red Tor"
-  },
-  "explorerSettingsLabel": "Explorador de bloques",
-  "@explorerSettingsLabel": {
-    "description": "La etiqueta del botón para acceder a la configuración del explorador de bloques"
-  },
-  "explorerSettingsScreenTitle": "Explorador de bloques",
-  "@explorerSettingsScreenTitle": {
-    "description": "El título de la pantalla de configuración del explorador de bloques"
-  },
-  "bitcoinExplorerLabel": "Explorador de Bitcoin",
-  "@bitcoinExplorerLabel": {
-    "description": "La etiqueta para la configuración del explorador de Bitcoin"
-  },
-  "liquidExplorerLabel": "Explorador de Liquid",
-  "@liquidExplorerLabel": {
-    "description": "La etiqueta para la configuración del explorador de Liquid"
-  },
-  "transactionHistorySettingsLabel": "Historial de transacciones",
-  "@transactionHistorySettingsLabel": {
-    "description": "La etiqueta del botón para acceder a la configuración del historial de transacciones"
-  },
-  "transactionHistorySettingsScreenTitle": "Historial de transacciones",
-  "@transactionHistorySettingsScreenTitle": {
-    "description": "El título de la pantalla de configuración del historial de transacciones"
-  },
-  "clearTransactionHistoryButtonLabel": "Limpiar historial",
-  "@clearTransactionHistoryButtonLabel": {
-    "description": "La etiqueta del botón para limpiar el historial de transacciones"
-  },
-  "exportTransactionHistoryButtonLabel": "Exportar historial",
-  "@exportTransactionHistoryButtonLabel": {
-    "description": "La etiqueta del botón para exportar el historial de transacciones"
-  },
-  "developerModeSettingsLabel": "Modo desarrollador",
-  "@developerModeSettingsLabel": {
-    "description": "La etiqueta para la configuración del modo desarrollador"
-  },
-  "developerModeSettingsDescription": "Habilitar opciones avanzadas para desarrolladores",
-  "@developerModeSettingsDescription": {
-    "description": "La descripción para la configuración del modo desarrollador"
-  },
-  "debugLogsSettingsLabel": "Registros de depuración",
-  "@debugLogsSettingsLabel": {
-    "description": "La etiqueta del botón para acceder a los registros de depuración"
-  },
-  "debugLogsSettingsScreenTitle": "Registros de depuración",
-  "@debugLogsSettingsScreenTitle": {
-    "description": "El título de la pantalla de registros de depuración"
-  },
-  "exportLogsButtonLabel": "Exportar registros",
-  "@exportLogsButtonLabel": {
-    "description": "La etiqueta del botón para exportar registros de depuración"
-  },
-  "clearLogsButtonLabel": "Limpiar registros",
-  "@clearLogsButtonLabel": {
-    "description": "La etiqueta del botón para limpiar registros de depuración"
-  },
-  "appVersionLabel": "Versión de la aplicación",
-  "@appVersionLabel": {
-    "description": "La etiqueta para la información de la versión de la aplicación"
-  },
-  "buildNumberLabel": "Número de compilación",
-  "@buildNumberLabel": {
-    "description": "La etiqueta para la información del número de compilación"
-  },
-  "licenseLabel": "Licencia",
-  "@licenseLabel": {
-    "description": "La etiqueta del botón para ver la información de licencia"
-  },
-  "termsOfServiceLabel": "Términos de servicio",
-  "@termsOfServiceLabel": {
-    "description": "La etiqueta del botón para ver los términos de servicio"
-  },
-  "privacyPolicyLabel": "Política de privacidad",
-  "@privacyPolicyLabel": {
-    "description": "La etiqueta del botón para ver la política de privacidad"
-  },
-  "supportLabel": "Soporte",
-  "@supportLabel": {
-    "description": "La etiqueta del botón para acceder a soporte"
-  },
-  "websiteLabel": "Sitio web",
-  "@websiteLabel": {
-    "description": "La etiqueta del botón para visitar el sitio web"
-  },
-  "socialMediaLabel": "Redes sociales",
-  "@socialMediaLabel": {
-    "description": "La etiqueta para la sección de redes sociales"
-  },
-  "rateAppLabel": "Calificar aplicación",
-  "@rateAppLabel": {
-    "description": "La etiqueta del botón para calificar la aplicación"
-  },
-  "shareAppLabel": "Compartir aplicación",
-  "@shareAppLabel": {
-    "description": "La etiqueta del botón para compartir la aplicación"
-  },
-  "autoLockTimeoutSettingsLabel": "Tiempo de bloqueo automático",
-  "@autoLockTimeoutSettingsLabel": {
-    "description": "La etiqueta para la configuración de tiempo de bloqueo automático"
-  },
-  "autoLockTimeoutSettingsScreenTitle": "Tiempo de bloqueo automático",
-  "@autoLockTimeoutSettingsScreenTitle": {
-    "description": "El título de la pantalla de configuración de tiempo de bloqueo automático"
-  },
-  "autoLockImmediateLabel": "Inmediato",
-  "@autoLockImmediateLabel": {
-    "description": "La etiqueta para bloqueo automático inmediato"
-  },
-  "autoLock1MinuteLabel": "1 minuto",
-  "@autoLock1MinuteLabel": {
-    "description": "La etiqueta para bloqueo automático después de 1 minuto"
-  },
-  "autoLock5MinutesLabel": "5 minutos",
-  "@autoLock5MinutesLabel": {
-    "description": "La etiqueta para bloqueo automático después de 5 minutos"
-  },
-  "autoLock15MinutesLabel": "15 minutos",
-  "@autoLock15MinutesLabel": {
-    "description": "La etiqueta para bloqueo automático después de 15 minutos"
-  },
-  "autoLock30MinutesLabel": "30 minutos",
-  "@autoLock30MinutesLabel": {
-    "description": "La etiqueta para bloqueo automático después de 30 minutos"
-  },
-  "autoLock1HourLabel": "1 hora",
-  "@autoLock1HourLabel": {
-    "description": "La etiqueta para bloqueo automático después de 1 hora"
-  },
-  "autoLockNeverLabel": "Nunca",
-  "@autoLockNeverLabel": {
-    "description": "La etiqueta para nunca bloquear automáticamente"
-  },
-  "notificationsSettingsLabel": "Notificaciones",
-  "@notificationsSettingsLabel": {
-    "description": "La etiqueta del botón para acceder a la configuración de notificaciones"
-  },
-  "notificationsSettingsScreenTitle": "Notificaciones",
-  "@notificationsSettingsScreenTitle": {
-    "description": "El título de la pantalla de configuración de notificaciones"
-  },
-  "enableNotificationsLabel": "Habilitar notificaciones",
-  "@enableNotificationsLabel": {
-    "description": "La etiqueta para habilitar notificaciones"
-  },
-  "transactionNotificationsLabel": "Notificaciones de transacciones",
-  "@transactionNotificationsLabel": {
-    "description": "La etiqueta para notificaciones de transacciones"
-  },
-  "priceAlertsLabel": "Alertas de precio",
-  "@priceAlertsLabel": {
-    "description": "La etiqueta para alertas de precio"
-  },
-  "themeSettingsLabel": "Tema",
-  "@themeSettingsLabel": {
-    "description": "La etiqueta del botón para acceder a la configuración de tema"
-  },
-  "themeSettingsScreenTitle": "Tema",
-  "@themeSettingsScreenTitle": {
-    "description": "El título de la pantalla de configuración de tema"
-  },
-  "themeLightLabel": "Claro",
-  "@themeLightLabel": {
-    "description": "La etiqueta para el tema claro"
-  },
-  "themeDarkLabel": "Oscuro",
-  "@themeDarkLabel": {
-    "description": "La etiqueta para el tema oscuro"
-  },
-  "themeSystemLabel": "Sistema",
-  "@themeSystemLabel": {
-    "description": "La etiqueta para el tema del sistema"
-  },
-  "deleteWalletSettingsLabel": "Eliminar billetera",
-  "@deleteWalletSettingsLabel": {
-    "description": "La etiqueta del botón para eliminar la billetera"
-  },
-  "deleteWalletConfirmationTitle": "Eliminar billetera",
-  "@deleteWalletConfirmationTitle": {
-    "description": "El título del diálogo de confirmación de eliminación de billetera"
-  },
-  "deleteWalletConfirmationMessage": "¿Está seguro de que desea eliminar esta billetera? Esta acción no se puede deshacer. Asegúrese de tener su frase de recuperación respaldada.",
-  "@deleteWalletConfirmationMessage": {
-    "description": "El mensaje del diálogo de confirmación de eliminación de billetera"
-  },
-  "deleteWalletConfirmButtonLabel": "Eliminar",
-  "@deleteWalletConfirmButtonLabel": {
-    "description": "La etiqueta del botón para confirmar la eliminación de billetera"
-  },
-  "cancelButtonLabel": "Cancelar",
-  "@cancelButtonLabel": {
-    "description": "La etiqueta del botón para cancelar una acción"
-  },
-  "saveButtonLabel": "Guardar",
-  "@saveButtonLabel": {
-    "description": "La etiqueta del botón para guardar cambios"
-  },
-  "resetButtonLabel": "Restablecer",
-  "@resetButtonLabel": {
-    "description": "La etiqueta del botón para restablecer cambios"
-  },
   "confirmButtonLabel": "Confirmar",
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"
-  },
-  "backButtonLabel": "Atrás",
-  "@backButtonLabel": {
-    "description": "La etiqueta del botón para volver a la pantalla anterior"
-  },
-  "closeButtonLabel": "Cerrar",
-  "@closeButtonLabel": {
-    "description": "La etiqueta del botón para cerrar un diálogo o pantalla"
-  },
-  "doneButtonLabel": "Hecho",
-  "@doneButtonLabel": {
-    "description": "La etiqueta del botón para indicar finalización"
-  },
-  "nextButtonLabel": "Siguiente",
-  "@nextButtonLabel": {
-    "description": "La etiqueta del botón para continuar al siguiente paso"
-  },
-  "okButtonLabel": "OK",
-  "@okButtonLabel": {
-    "description": "La etiqueta del botón para reconocer un mensaje"
-  },
-  "yesButtonLabel": "Sí",
-  "@yesButtonLabel": {
-    "description": "La etiqueta del botón para confirmar con sí"
-  },
-  "noButtonLabel": "No",
-  "@noButtonLabel": {
-    "description": "La etiqueta del botón para negar con no"
-  },
-  "sendScreenTitle": "Enviar",
-  "@sendScreenTitle": {
-    "description": "El título de la pantalla de envío"
-  },
-  "receiveScreenTitle": "Recibir",
-  "@receiveScreenTitle": {
-    "description": "El título de la pantalla de recepción"
-  },
-  "sendBitcoinTabLabel": "Bitcoin",
-  "@sendBitcoinTabLabel": {
-    "description": "La etiqueta de la pestaña para enviar Bitcoin"
-  },
-  "sendLightningTabLabel": "Lightning",
-  "@sendLightningTabLabel": {
-    "description": "La etiqueta de la pestaña para enviar Lightning"
-  },
-  "sendLiquidTabLabel": "Liquid",
-  "@sendLiquidTabLabel": {
-    "description": "La etiqueta de la pestaña para enviar Liquid"
-  },
-  "receiveBitcoinTabLabel": "Bitcoin",
-  "@receiveBitcoinTabLabel": {
-    "description": "La etiqueta de la pestaña para recibir Bitcoin"
-  },
-  "receiveLightningTabLabel": "Lightning",
-  "@receiveLightningTabLabel": {
-    "description": "La etiqueta de la pestaña para recibir Lightning"
-  },
-  "receiveLiquidTabLabel": "Liquid",
-  "@receiveLiquidTabLabel": {
-    "description": "La etiqueta de la pestaña para recibir Liquid"
-  },
-  "recipientAddressLabel": "Dirección del destinatario",
-  "@recipientAddressLabel": {
-    "description": "La etiqueta para el campo de dirección del destinatario"
-  },
-  "recipientAddressHint": "Ingrese la dirección o escanee el código QR",
-  "@recipientAddressHint": {
-    "description": "El texto de sugerencia para el campo de dirección del destinatario"
   },
   "amountLabel": "Monto",
   "@amountLabel": {
     "description": "Label for transaction amount display"
   },
-  "amountHint": "Ingrese el monto",
-  "@amountHint": {
-    "description": "El texto de sugerencia para el campo de monto"
-  },
-  "sendMaxButtonLabel": "Máximo",
-  "@sendMaxButtonLabel": {
-    "description": "La etiqueta del botón para enviar el monto máximo"
-  },
   "networkFeeLabel": "Tarifa de red",
   "@networkFeeLabel": {
     "description": "Breakdown component showing network fee portion"
   },
-  "feeRateLabel": "Tasa de tarifa",
-  "@feeRateLabel": {
-    "description": "La etiqueta para la información de tasa de tarifa"
-  },
   "feePriorityLabel": "Prioridad de tarifa",
   "@feePriorityLabel": {
     "description": "Label for fee selection priority option"
-  },
-  "feeLowPriorityLabel": "Baja",
-  "@feeLowPriorityLabel": {
-    "description": "La etiqueta para tarifa de prioridad baja"
-  },
-  "feeMediumPriorityLabel": "Media",
-  "@feeMediumPriorityLabel": {
-    "description": "La etiqueta para tarifa de prioridad media"
-  },
-  "feeHighPriorityLabel": "Alta",
-  "@feeHighPriorityLabel": {
-    "description": "La etiqueta para tarifa de prioridad alta"
-  },
-  "feeCustomPriorityLabel": "Personalizada",
-  "@feeCustomPriorityLabel": {
-    "description": "La etiqueta para tarifa personalizada"
-  },
-  "estimatedConfirmationTimeLabel": "Tiempo de confirmación estimado",
-  "@estimatedConfirmationTimeLabel": {
-    "description": "La etiqueta para el tiempo de confirmación estimado"
-  },
-  "totalAmountLabel": "Monto total",
-  "@totalAmountLabel": {
-    "description": "La etiqueta para el monto total (monto + tarifa)"
-  },
-  "descriptionLabel": "Descripción",
-  "@descriptionLabel": {
-    "description": "La etiqueta para el campo de descripción"
-  },
-  "descriptionHint": "Agregar nota (opcional)",
-  "@descriptionHint": {
-    "description": "El texto de sugerencia para el campo de descripción"
-  },
-  "memoLabel": "Memo",
-  "@memoLabel": {
-    "description": "La etiqueta para el campo de memo"
-  },
-  "memoHint": "Agregar memo (opcional)",
-  "@memoHint": {
-    "description": "El texto de sugerencia para el campo de memo"
-  },
-  "sendButtonLabel": "Enviar",
-  "@sendButtonLabel": {
-    "description": "La etiqueta del botón para enviar una transacción"
-  },
-  "scanQRCodeButtonLabel": "Escanear código QR",
-  "@scanQRCodeButtonLabel": {
-    "description": "La etiqueta del botón para escanear un código QR"
-  },
-  "pasteButtonLabel": "Pegar",
-  "@pasteButtonLabel": {
-    "description": "La etiqueta del botón para pegar desde el portapapeles"
-  },
-  "clearButtonLabel": "Limpiar",
-  "@clearButtonLabel": {
-    "description": "La etiqueta del botón para limpiar un campo"
-  },
-  "confirmTransactionTitle": "Confirmar transacción",
-  "@confirmTransactionTitle": {
-    "description": "El título de la pantalla de confirmación de transacción"
-  },
-  "confirmSendLabel": "Confirmar envío",
-  "@confirmSendLabel": {
-    "description": "La etiqueta del botón para confirmar el envío de una transacción"
-  },
-  "transactionDetailsTitle": "Detalles de la transacción",
-  "@transactionDetailsTitle": {
-    "description": "El título de la pantalla de detalles de transacción"
-  },
-  "sendingToLabel": "Enviando a",
-  "@sendingToLabel": {
-    "description": "La etiqueta para mostrar la dirección del destinatario en la confirmación"
-  },
-  "youAreSendingLabel": "Está enviando",
-  "@youAreSendingLabel": {
-    "description": "La etiqueta para mostrar el monto que se está enviando"
-  },
-  "youWillPayLabel": "Usted pagará",
-  "@youWillPayLabel": {
-    "description": "La etiqueta para mostrar el monto total incluyendo tarifas"
-  },
-  "receiveAddressLabel": "Su dirección de recepción",
-  "@receiveAddressLabel": {
-    "description": "La etiqueta para mostrar la dirección de recepción"
-  },
-  "receiveInvoiceLabel": "Su factura de Lightning",
-  "@receiveInvoiceLabel": {
-    "description": "La etiqueta para mostrar la factura de Lightning"
-  },
-  "copyAddressButtonLabel": "Copiar dirección",
-  "@copyAddressButtonLabel": {
-    "description": "La etiqueta del botón para copiar la dirección"
-  },
-  "copyInvoiceButtonLabel": "Copiar factura",
-  "@copyInvoiceButtonLabel": {
-    "description": "La etiqueta del botón para copiar la factura"
-  },
-  "shareAddressButtonLabel": "Compartir dirección",
-  "@shareAddressButtonLabel": {
-    "description": "La etiqueta del botón para compartir la dirección"
-  },
-  "shareInvoiceButtonLabel": "Compartir factura",
-  "@shareInvoiceButtonLabel": {
-    "description": "La etiqueta del botón para compartir la factura"
-  },
-  "showQRCodeButtonLabel": "Mostrar código QR",
-  "@showQRCodeButtonLabel": {
-    "description": "La etiqueta del botón para mostrar el código QR"
-  },
-  "generateNewAddressButtonLabel": "Generar nueva dirección",
-  "@generateNewAddressButtonLabel": {
-    "description": "La etiqueta del botón para generar una nueva dirección"
-  },
-  "createInvoiceButtonLabel": "Crear factura",
-  "@createInvoiceButtonLabel": {
-    "description": "La etiqueta del botón para crear una factura de Lightning"
-  },
-  "invoiceAmountLabel": "Monto de factura",
-  "@invoiceAmountLabel": {
-    "description": "La etiqueta para el campo de monto de factura"
-  },
-  "invoiceDescriptionLabel": "Descripción de factura",
-  "@invoiceDescriptionLabel": {
-    "description": "La etiqueta para el campo de descripción de factura"
-  },
-  "invoiceExpiryLabel": "Expiración de factura",
-  "@invoiceExpiryLabel": {
-    "description": "La etiqueta para la configuración de expiración de factura"
-  },
-  "invoice15MinutesLabel": "15 minutos",
-  "@invoice15MinutesLabel": {
-    "description": "La etiqueta para expiración de factura de 15 minutos"
-  },
-  "invoice1HourLabel": "1 hora",
-  "@invoice1HourLabel": {
-    "description": "La etiqueta para expiración de factura de 1 hora"
-  },
-  "invoice6HoursLabel": "6 horas",
-  "@invoice6HoursLabel": {
-    "description": "La etiqueta para expiración de factura de 6 horas"
-  },
-  "invoice24HoursLabel": "24 horas",
-  "@invoice24HoursLabel": {
-    "description": "La etiqueta para expiración de factura de 24 horas"
-  },
-  "addressCopiedMessage": "Dirección copiada al portapapeles",
-  "@addressCopiedMessage": {
-    "description": "El mensaje mostrado cuando se copia una dirección"
-  },
-  "invoiceCopiedMessage": "Factura copiada al portapapeles",
-  "@invoiceCopiedMessage": {
-    "description": "El mensaje mostrado cuando se copia una factura"
-  },
-  "transactionSentMessage": "Transacción enviada con éxito",
-  "@transactionSentMessage": {
-    "description": "El mensaje mostrado cuando se envía una transacción con éxito"
-  },
-  "transactionBroadcastedMessage": "Transacción transmitida",
-  "@transactionBroadcastedMessage": {
-    "description": "El mensaje mostrado cuando se transmite una transacción"
-  },
-  "transactionConfirmedMessage": "Transacción confirmada",
-  "@transactionConfirmedMessage": {
-    "description": "El mensaje mostrado cuando se confirma una transacción"
-  },
-  "paymentReceivedMessage": "Pago recibido",
-  "@paymentReceivedMessage": {
-    "description": "El mensaje mostrado cuando se recibe un pago"
-  },
-  "invalidAddressError": "Dirección inválida",
-  "@invalidAddressError": {
-    "description": "El mensaje de error para una dirección inválida"
-  },
-  "invalidAmountError": "Monto inválido",
-  "@invalidAmountError": {
-    "description": "El mensaje de error para un monto inválido"
-  },
-  "insufficientBalanceError": "Saldo insuficiente",
-  "@insufficientBalanceError": {
-    "description": "El mensaje de error para saldo insuficiente"
-  },
-  "transactionFailedError": "La transacción falló",
-  "@transactionFailedError": {
-    "description": "El mensaje de error cuando falla una transacción"
-  },
-  "networkErrorMessage": "Error de red. Por favor verifique su conexión.",
-  "@networkErrorMessage": {
-    "description": "El mensaje de error para errores de red"
-  },
-  "tryAgainButtonLabel": "Intentar de nuevo",
-  "@tryAgainButtonLabel": {
-    "description": "La etiqueta del botón para reintentar una acción fallida"
-  },
-  "addressTypeLabel": "Tipo de dirección",
-  "@addressTypeLabel": {
-    "description": "La etiqueta para el tipo de dirección"
-  },
-  "addressTypeSegwitLabel": "SegWit (recomendado)",
-  "@addressTypeSegwitLabel": {
-    "description": "La etiqueta para el tipo de dirección SegWit"
-  },
-  "addressTypeLegacyLabel": "Legacy",
-  "@addressTypeLegacyLabel": {
-    "description": "La etiqueta para el tipo de dirección Legacy"
-  },
-  "addressTypeTaprootLabel": "Taproot",
-  "@addressTypeTaprootLabel": {
-    "description": "La etiqueta para el tipo de dirección Taproot"
-  },
-  "scanningQRCodeMessage": "Escaneando código QR...",
-  "@scanningQRCodeMessage": {
-    "description": "El mensaje mostrado mientras se escanea un código QR"
-  },
-  "qrCodeScannedMessage": "Código QR escaneado",
-  "@qrCodeScannedMessage": {
-    "description": "El mensaje mostrado cuando se escanea un código QR con éxito"
-  },
-  "invalidQRCodeError": "Código QR inválido",
-  "@invalidQRCodeError": {
-    "description": "El mensaje de error para un código QR inválido"
-  },
-  "cameraPermissionDeniedError": "Permiso de cámara denegado",
-  "@cameraPermissionDeniedError": {
-    "description": "El mensaje de error cuando se deniega el permiso de cámara"
-  },
-  "enableCameraPermissionMessage": "Por favor habilite el permiso de cámara en la configuración",
-  "@enableCameraPermissionMessage": {
-    "description": "El mensaje para solicitar al usuario que habilite el permiso de cámara"
-  },
-  "lightningInvoiceLabel": "Factura de Lightning",
-  "@lightningInvoiceLabel": {
-    "description": "La etiqueta para una factura de Lightning"
-  },
-  "bitcoinAddressLabel": "Dirección de Bitcoin",
-  "@bitcoinAddressLabel": {
-    "description": "La etiqueta para una dirección de Bitcoin"
-  },
-  "liquidAddressLabel": "Dirección de Liquid",
-  "@liquidAddressLabel": {
-    "description": "La etiqueta para una dirección de Liquid"
-  },
-  "payInvoiceButtonLabel": "Pagar factura",
-  "@payInvoiceButtonLabel": {
-    "description": "La etiqueta del botón para pagar una factura de Lightning"
-  },
-  "invoiceExpiredError": "Factura expirada",
-  "@invoiceExpiredError": {
-    "description": "El mensaje de error para una factura expirada"
-  },
-  "invoiceAlreadyPaidError": "Factura ya pagada",
-  "@invoiceAlreadyPaidError": {
-    "description": "El mensaje de error para una factura que ya fue pagada"
-  },
-  "invoicePaymentFailedError": "El pago de la factura falló",
-  "@invoicePaymentFailedError": {
-    "description": "El mensaje de error cuando falla el pago de una factura"
-  },
-  "processingPaymentMessage": "Procesando pago...",
-  "@processingPaymentMessage": {
-    "description": "El mensaje mostrado mientras se procesa un pago"
-  },
-  "broadcastingTransactionMessage": "Transmitiendo transacción...",
-  "@broadcastingTransactionMessage": {
-    "description": "El mensaje mostrado mientras se transmite una transacción"
-  },
-  "waitingForConfirmationMessage": "Esperando confirmación...",
-  "@waitingForConfirmationMessage": {
-    "description": "El mensaje mostrado mientras se espera la confirmación de una transacción"
-  },
-  "confirmationsLabel": "Confirmaciones",
-  "@confirmationsLabel": {
-    "description": "La etiqueta para el número de confirmaciones"
-  },
-  "unconfirmedLabel": "Sin confirmar",
-  "@unconfirmedLabel": {
-    "description": "La etiqueta para transacciones sin confirmar"
-  },
-  "pendingLabel": "Pendiente",
-  "@pendingLabel": {
-    "description": "La etiqueta para transacciones pendientes"
-  },
-  "completedLabel": "Completado",
-  "@completedLabel": {
-    "description": "La etiqueta para transacciones completadas"
-  },
-  "failedLabel": "Fallido",
-  "@failedLabel": {
-    "description": "La etiqueta para transacciones fallidas"
-  },
-  "transactionIdLabel": "ID de transacción",
-  "@transactionIdLabel": {
-    "description": "La etiqueta para el ID de transacción"
-  },
-  "transactionHashLabel": "Hash de transacción",
-  "@transactionHashLabel": {
-    "description": "La etiqueta para el hash de transacción"
-  },
-  "blockHeightLabel": "Altura de bloque",
-  "@blockHeightLabel": {
-    "description": "La etiqueta para la altura de bloque"
-  },
-  "timestampLabel": "Marca de tiempo",
-  "@timestampLabel": {
-    "description": "La etiqueta para la marca de tiempo"
-  },
-  "viewOnExplorerButtonLabel": "Ver en explorador",
-  "@viewOnExplorerButtonLabel": {
-    "description": "La etiqueta del botón para ver la transacción en el explorador de bloques"
-  },
-  "copyTransactionIdButtonLabel": "Copiar ID de transacción",
-  "@copyTransactionIdButtonLabel": {
-    "description": "La etiqueta del botón para copiar el ID de transacción"
-  },
-  "transactionIdCopiedMessage": "ID de transacción copiado al portapapeles",
-  "@transactionIdCopiedMessage": {
-    "description": "El mensaje mostrado cuando se copia un ID de transacción"
-  },
-  "advancedOptionsLabel": "Opciones avanzadas",
-  "@advancedOptionsLabel": {
-    "description": "La etiqueta para la sección de opciones avanzadas"
-  },
-  "showAdvancedOptionsButtonLabel": "Mostrar opciones avanzadas",
-  "@showAdvancedOptionsButtonLabel": {
-    "description": "La etiqueta del botón para mostrar opciones avanzadas"
-  },
-  "hideAdvancedOptionsButtonLabel": "Ocultar opciones avanzadas",
-  "@hideAdvancedOptionsButtonLabel": {
-    "description": "La etiqueta del botón para ocultar opciones avanzadas"
-  },
-  "customFeeRateLabel": "Tasa de tarifa personalizada",
-  "@customFeeRateLabel": {
-    "description": "La etiqueta para el campo de tasa de tarifa personalizada"
-  },
-  "customFeeRateHint": "Ingrese la tasa de tarifa en sat/vB",
-  "@customFeeRateHint": {
-    "description": "El texto de sugerencia para el campo de tasa de tarifa personalizada"
-  },
-  "rbfEnabledLabel": "Habilitar Replace-By-Fee (RBF)",
-  "@rbfEnabledLabel": {
-    "description": "La etiqueta para habilitar Replace-By-Fee"
-  },
-  "subtractFeeFromAmountLabel": "Restar tarifa del monto",
-  "@subtractFeeFromAmountLabel": {
-    "description": "La etiqueta para restar la tarifa del monto"
-  },
-  "coinSelectionLabel": "Selección de monedas",
-  "@coinSelectionLabel": {
-    "description": "La etiqueta para la configuración de selección de monedas"
-  },
-  "selectCoinsButtonLabel": "Seleccionar monedas",
-  "@selectCoinsButtonLabel": {
-    "description": "La etiqueta del botón para seleccionar monedas manualmente"
-  },
-  "amountTooLowError": "El monto es demasiado bajo",
-  "@amountTooLowError": {
-    "description": "El mensaje de error cuando el monto es demasiado bajo"
-  },
-  "amountTooHighError": "El monto es demasiado alto",
-  "@amountTooHighError": {
-    "description": "El mensaje de error cuando el monto es demasiado alto"
-  },
-  "feeTooLowError": "La tarifa es demasiado baja",
-  "@feeTooLowError": {
-    "description": "El mensaje de error cuando la tarifa es demasiado baja"
-  },
-  "feeTooHighWarning": "La tarifa parece inusualmente alta",
-  "@feeTooHighWarning": {
-    "description": "El mensaje de advertencia cuando la tarifa es inusualmente alta"
-  },
-  "continueAnywayButtonLabel": "Continuar de todos modos",
-  "@continueAnywayButtonLabel": {
-    "description": "La etiqueta del botón para continuar a pesar de las advertencias"
-  },
-  "swapBitcoinToLightningLabel": "Intercambiar Bitcoin a Lightning",
-  "@swapBitcoinToLightningLabel": {
-    "description": "La etiqueta para intercambiar Bitcoin a Lightning"
-  },
-  "swapLightningToBitcoinLabel": "Intercambiar Lightning a Bitcoin",
-  "@swapLightningToBitcoinLabel": {
-    "description": "La etiqueta para intercambiar Lightning a Bitcoin"
-  },
-  "swapButtonLabel": "Intercambiar",
-  "@swapButtonLabel": {
-    "description": "La etiqueta del botón para iniciar un intercambio"
-  },
-  "estimatedReceiveAmountLabel": "Monto estimado a recibir",
-  "@estimatedReceiveAmountLabel": {
-    "description": "La etiqueta para el monto estimado a recibir en un intercambio"
-  },
-  "exchangeRateLabel": "Tipo de cambio",
-  "@exchangeRateLabel": {
-    "description": "La etiqueta para el tipo de cambio"
-  },
-  "serviceFeeLabel": "Tarifa de servicio",
-  "@serviceFeeLabel": {
-    "description": "La etiqueta para la tarifa de servicio"
-  },
-  "minimumAmountLabel": "Monto mínimo",
-  "@minimumAmountLabel": {
-    "description": "La etiqueta para el monto mínimo"
-  },
-  "maximumAmountLabel": "Monto máximo",
-  "@maximumAmountLabel": {
-    "description": "La etiqueta para el monto máximo"
-  },
-  "receivingAddressLabel": "Dirección de recepción",
-  "@receivingAddressLabel": {
-    "description": "La etiqueta para la dirección de recepción en un intercambio"
-  },
-  "refundAddressLabel": "Dirección de reembolso",
-  "@refundAddressLabel": {
-    "description": "La etiqueta para la dirección de reembolso en un intercambio"
-  },
-  "swapInProgressLabel": "Intercambio en progreso",
-  "@swapInProgressLabel": {
-    "description": "La etiqueta mostrada cuando un intercambio está en progreso"
-  },
-  "swapCompletedLabel": "Intercambio completado",
-  "@swapCompletedLabel": {
-    "description": "La etiqueta mostrada cuando se completa un intercambio"
-  },
-  "swapFailedLabel": "Intercambio fallido",
-  "@swapFailedLabel": {
-    "description": "La etiqueta mostrada cuando falla un intercambio"
-  },
-  "reviewSwapButtonLabel": "Revisar intercambio",
-  "@reviewSwapButtonLabel": {
-    "description": "La etiqueta del botón para revisar los detalles del intercambio"
-  },
-  "confirmSwapButtonLabel": "Confirmar intercambio",
-  "@confirmSwapButtonLabel": {
-    "description": "La etiqueta del botón para confirmar un intercambio"
   },
   "buyTitle": "Comprar Bitcoin",
   "@buyTitle": {
@@ -3701,13 +2829,13 @@
   },
   "swapTransferFrom": "Transferir desde",
   "@swapTransferFrom": {
-    "description": "Dropdown label for source wallet selection"
+    "description": "Label for source wallet dropdown"
   },
   "swapTransferTo": "Transferir a",
   "@swapTransferTo": {
-    "description": "Dropdown label for destination wallet selection"
+    "description": "Label for destination wallet dropdown"
   },
-  "swapTransferAmount": "Cantidad a transferir",
+  "swapTransferAmount": "Monto de transferencia",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
   },
@@ -3721,15 +2849,15 @@
   },
   "swapAvailableBalance": "Saldo disponible",
   "@swapAvailableBalance": {
-    "description": "Label showing wallet balance"
+    "description": "Available balance label"
   },
   "swapMaxButton": "MÁX",
   "@swapMaxButton": {
     "description": "Button to use maximum available balance"
   },
-  "swapTotalFees": "Comisiones Totales",
+  "swapTotalFees": "Comisiones totales ",
   "@swapTotalFees": {
-    "description": "Label for total fees display"
+    "description": "Total fees label"
   },
   "swapContinueButton": "Continuar",
   "@swapContinueButton": {
@@ -4044,11 +3172,11 @@
   },
   "arkSettleButton": "Liquidar",
   "@arkSettleButton": {
-    "description": "Confirm button label for settling transactions"
+    "description": "Settle button label"
   },
   "arkReceiveTitle": "Recibir Ark",
   "@arkReceiveTitle": {
-    "description": "AppBar title for the receive page"
+    "description": "AppBar title for Ark receive screen"
   },
   "arkUnifiedAddressCopied": "Dirección unificada copiada",
   "@arkUnifiedAddressCopied": {
@@ -4072,7 +3200,7 @@
   },
   "arkSendTitle": "Enviar",
   "@arkSendTitle": {
-    "description": "AppBar title for the send page"
+    "description": "AppBar title for Ark send screen"
   },
   "arkRecipientAddress": "Dirección del destinatario",
   "@arkRecipientAddress": {
@@ -4208,7 +3336,7 @@
   },
   "arkAboutTitle": "Acerca de",
   "@arkAboutTitle": {
-    "description": "AppBar title for about/settings page"
+    "description": "AppBar title for Ark about screen"
   },
   "arkServerUrl": "URL del servidor",
   "@arkServerUrl": {
@@ -7735,5 +6863,1079 @@
   "arkSetupEnable": "Activar Ark",
   "@arkSetupEnable": {
     "description": "Button to enable Ark"
+  },
+  "swapTitle": "Transferencia interna",
+  "@swapTitle": {
+    "description": "AppBar title for swap/internal transfer screen"
+  },
+  "swapInfoBanner": "Transfiera Bitcoin sin problemas entre sus billeteras. Solo mantenga fondos en la Billetera de pago instantáneo para gastos del día a día.",
+  "@swapInfoBanner": {
+    "description": "Info banner on swap amount screen"
+  },
+  "swapMax": "MÁX",
+  "@swapMax": {
+    "description": "MAX button label"
+  },
+  "swapContinue": "Continuar",
+  "@swapContinue": {
+    "description": "Continue button on swap amount screen"
+  },
+  "swapConfirmTitle": "Confirmar transferencia",
+  "@swapConfirmTitle": {
+    "description": "AppBar title for swap confirmation screen"
+  },
+  "swapProgressTitle": "Transferencia interna",
+  "@swapProgressTitle": {
+    "description": "AppBar title for swap progress screen"
+  },
+  "swapProgressPending": "Transferencia pendiente",
+  "@swapProgressPending": {
+    "description": "Pending transfer status"
+  },
+  "swapProgressPendingMessage": "La transferencia está en progreso. Las transacciones de Bitcoin pueden tardar en confirmarse. Puede regresar al inicio y esperar.",
+  "@swapProgressPendingMessage": {
+    "description": "Pending transfer message"
+  },
+  "swapProgressCompleted": "Transferencia completada",
+  "@swapProgressCompleted": {
+    "description": "Completed transfer status"
+  },
+  "swapProgressCompletedMessage": "¡Wow, esperó! La transferencia se completó exitosamente.",
+  "@swapProgressCompletedMessage": {
+    "description": "Completed transfer message"
+  },
+  "swapProgressRefundInProgress": "Reembolso de transferencia en progreso",
+  "@swapProgressRefundInProgress": {
+    "description": "Refund in progress status"
+  },
+  "swapProgressRefundMessage": "Hubo un error con la transferencia. Su reembolso está en progreso.",
+  "@swapProgressRefundMessage": {
+    "description": "Refund in progress message"
+  },
+  "swapProgressRefunded": "Transferencia reembolsada",
+  "@swapProgressRefunded": {
+    "description": "Refunded transfer status"
+  },
+  "swapProgressRefundedMessage": "La transferencia ha sido reembolsada exitosamente.",
+  "@swapProgressRefundedMessage": {
+    "description": "Refunded transfer message"
+  },
+  "swapProgressGoHome": "Ir al inicio",
+  "@swapProgressGoHome": {
+    "description": "Go home button on progress screen"
+  },
+  "autoswapTitle": "Configuración de transferencia automática",
+  "@autoswapTitle": {
+    "description": "Header title for auto transfer settings bottom sheet"
+  },
+  "autoswapEnable": "Activar transferencia automática",
+  "@autoswapEnable": {
+    "description": "Toggle label to enable auto transfer"
+  },
+  "autoswapMaxBalance": "Saldo máximo de billetera instantánea",
+  "@autoswapMaxBalance": {
+    "description": "Field label for max balance threshold"
+  },
+  "autoswapMaxBalanceInfo": "Cuando el saldo de la billetera exceda el doble de esta cantidad, la transferencia automática se activará para reducir el saldo a este nivel",
+  "@autoswapMaxBalanceInfo": {
+    "description": "Info tooltip for max balance field"
+  },
+  "autoswapMaxFee": "Comisión de transferencia máxima",
+  "@autoswapMaxFee": {
+    "description": "Field label for max fee threshold"
+  },
+  "autoswapMaxFeeInfo": "Si la comisión total de transferencia está por encima del porcentaje establecido, la transferencia automática será bloqueada",
+  "@autoswapMaxFeeInfo": {
+    "description": "Info tooltip for max fee field"
+  },
+  "autoswapAlwaysBlock": "Siempre bloquear comisiones altas",
+  "@autoswapAlwaysBlock": {
+    "description": "Toggle label for always block high fees"
+  },
+  "autoswapAlwaysBlockEnabledInfo": "Cuando está activado, las transferencias automáticas con comisiones superiores al límite establecido siempre serán bloqueadas",
+  "@autoswapAlwaysBlockEnabledInfo": {
+    "description": "Info text when always block is enabled"
+  },
+  "autoswapAlwaysBlockDisabledInfo": "Cuando está desactivado, se le dará la opción de permitir una transferencia automática que está bloqueada debido a comisiones altas",
+  "@autoswapAlwaysBlockDisabledInfo": {
+    "description": "Info text when always block is disabled"
+  },
+  "autoswapRecipientWallet": "Billetera Bitcoin destinataria",
+  "@autoswapRecipientWallet": {
+    "description": "Field label for recipient wallet dropdown"
+  },
+  "autoswapRecipientRequired": "*",
+  "@autoswapRecipientRequired": {
+    "description": "Required field indicator"
+  },
+  "autoswapSelectWallet": "Seleccionar una billetera Bitcoin",
+  "@autoswapSelectWallet": {
+    "description": "Placeholder for wallet dropdown"
+  },
+  "autoswapSelectWalletRequired": "Seleccionar una billetera Bitcoin *",
+  "@autoswapSelectWalletRequired": {
+    "description": "Placeholder for wallet dropdown when required"
+  },
+  "autoswapRecipientWalletInfo": "Elija qué billetera Bitcoin recibirá los fondos transferidos (obligatorio)",
+  "@autoswapRecipientWalletInfo": {
+    "description": "Info tooltip for recipient wallet field"
+  },
+  "autoswapDefaultWalletLabel": "Billetera Bitcoin",
+  "@autoswapDefaultWalletLabel": {
+    "description": "Default label for unnamed Bitcoin wallet"
+  },
+  "autoswapSave": "Guardar",
+  "@autoswapSave": {
+    "description": "Save button label"
+  },
+  "autoswapSaveError": "Error al guardar la configuración: {error}",
+  "@autoswapSaveError": {
+    "description": "Error message when save fails",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "electrumTitle": "Configuración del servidor Electrum",
+  "@electrumTitle": {
+    "description": "AppBar title for Electrum settings screen"
+  },
+  "electrumNetworkBitcoin": "Bitcoin",
+  "@electrumNetworkBitcoin": {
+    "description": "Bitcoin network tab label"
+  },
+  "electrumNetworkLiquid": "Liquid",
+  "@electrumNetworkLiquid": {
+    "description": "Liquid network tab label"
+  },
+  "electrumAdvancedOptions": "Opciones avanzadas",
+  "@electrumAdvancedOptions": {
+    "description": "Advanced options button label"
+  },
+  "electrumAddCustomServer": "Agregar servidor personalizado",
+  "@electrumAddCustomServer": {
+    "description": "Add custom server bottom sheet title"
+  },
+  "electrumCloseTooltip": "Cerrar",
+  "@electrumCloseTooltip": {
+    "description": "Close button tooltip"
+  },
+  "electrumServerUrlHint": "URL del servidor {network} {environment}",
+  "@electrumServerUrlHint": {
+    "description": "Hint text for server URL input",
+    "placeholders": {
+      "network": {},
+      "environment": {}
+    }
+  },
+  "electrumMainnet": "Mainnet",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "electrumTestnet": "Testnet",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "electrumEmptyFieldError": "Este campo no puede estar vacío",
+  "@electrumEmptyFieldError": {
+    "description": "Validation error for empty field"
+  },
+  "electrumBitcoinSslInfo": "Si no se especifica ningún protocolo, se usará SSL por defecto.",
+  "@electrumBitcoinSslInfo": {
+    "description": "Info text for Bitcoin server protocol"
+  },
+  "electrumLiquidSslInfo": "No se debe especificar ningún protocolo, SSL se usará automáticamente.",
+  "@electrumLiquidSslInfo": {
+    "description": "Info text for Liquid server protocol"
+  },
+  "electrumAddServer": "Agregar servidor",
+  "@electrumAddServer": {
+    "description": "Add server button label"
+  },
+  "arkSendRecipientLabel": "Dirección del destinatario",
+  "@arkSendRecipientLabel": {
+    "description": "Label for recipient address field"
+  },
+  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6…",
+  "@arkSendRecipientHint": {
+    "description": "Hint text for recipient address field"
+  },
+  "arkSendConfirmedBalance": "Saldo confirmado",
+  "@arkSendConfirmedBalance": {
+    "description": "Confirmed balance label"
+  },
+  "arkSendPendingBalance": "Saldo pendiente    ",
+  "@arkSendPendingBalance": {
+    "description": "Pending balance label"
+  },
+  "arkSendConfirm": "Confirmar",
+  "@arkSendConfirm": {
+    "description": "Confirm button on send screen"
+  },
+  "arkReceiveCopyAddress": "Copiar dirección",
+  "@arkReceiveCopyAddress": {
+    "description": "Copy address button label"
+  },
+  "arkReceiveUnifiedAddress": "Dirección unificada (BIP21)",
+  "@arkReceiveUnifiedAddress": {
+    "description": "Label for unified BIP21 address"
+  },
+  "arkReceiveBtcAddress": "Dirección BTC",
+  "@arkReceiveBtcAddress": {
+    "description": "Label for Bitcoin address"
+  },
+  "arkReceiveArkAddress": "Dirección Ark",
+  "@arkReceiveArkAddress": {
+    "description": "Label for Ark address"
+  },
+  "arkReceiveUnifiedCopied": "Dirección unificada copiada",
+  "@arkReceiveUnifiedCopied": {
+    "description": "Snackbar message when unified address copied"
+  },
+  "arkSettleTitle": "Liquidar transacciones",
+  "@arkSettleTitle": {
+    "description": "Settle bottom sheet title"
+  },
+  "arkSettleMessage": "Finalizar transacciones pendientes e incluir vtxos recuperables si es necesario",
+  "@arkSettleMessage": {
+    "description": "Settle bottom sheet explanation"
+  },
+  "arkSettleIncludeRecoverable": "Incluir vtxos recuperables",
+  "@arkSettleIncludeRecoverable": {
+    "description": "Toggle label for including recoverable vtxos"
+  },
+  "arkSettleCancel": "Cancelar",
+  "@arkSettleCancel": {
+    "description": "Cancel button on settle bottom sheet"
+  },
+  "arkAboutServerUrl": "URL del servidor",
+  "@arkAboutServerUrl": {
+    "description": "Field label for server URL"
+  },
+  "arkAboutServerPubkey": "Clave pública del servidor",
+  "@arkAboutServerPubkey": {
+    "description": "Field label for server pubkey"
+  },
+  "arkAboutForfeitAddress": "Dirección de decomiso",
+  "@arkAboutForfeitAddress": {
+    "description": "Field label for forfeit address"
+  },
+  "arkAboutNetwork": "Red",
+  "@arkAboutNetwork": {
+    "description": "Field label for network"
+  },
+  "arkAboutDust": "Polvo",
+  "@arkAboutDust": {
+    "description": "Field label for dust amount"
+  },
+  "arkAboutDustValue": "{dust} SATS",
+  "@arkAboutDustValue": {
+    "description": "Dust value format",
+    "placeholders": {
+      "dust": {}
+    }
+  },
+  "arkAboutSessionDuration": "Duración de sesión",
+  "@arkAboutSessionDuration": {
+    "description": "Field label for session duration"
+  },
+  "arkAboutBoardingExitDelay": "Retraso de salida de embarque",
+  "@arkAboutBoardingExitDelay": {
+    "description": "Field label for boarding exit delay"
+  },
+  "arkAboutUnilateralExitDelay": "Retraso de salida unilateral",
+  "@arkAboutUnilateralExitDelay": {
+    "description": "Field label for unilateral exit delay"
+  },
+  "arkAboutEsploraUrl": "URL Esplora",
+  "@arkAboutEsploraUrl": {
+    "description": "Field label for Esplora URL"
+  },
+  "arkAboutCopy": "Copiar",
+  "@arkAboutCopy": {
+    "description": "Copy button label"
+  },
+  "arkAboutCopiedMessage": "{label} copiado al portapapeles",
+  "@arkAboutCopiedMessage": {
+    "description": "Snackbar message when field copied",
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "arkAboutDurationSeconds": "{seconds} segundos",
+  "@arkAboutDurationSeconds": {
+    "description": "Duration format for seconds",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "arkAboutDurationMinute": "{minutes} minuto",
+  "@arkAboutDurationMinute": {
+    "description": "Duration format for singular minute",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "arkAboutDurationMinutes": "{minutes} minutos",
+  "@arkAboutDurationMinutes": {
+    "description": "Duration format for plural minutes",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "arkAboutDurationHour": "{hours} hora",
+  "@arkAboutDurationHour": {
+    "description": "Duration format for singular hour",
+    "placeholders": {
+      "hours": {}
+    }
+  },
+  "arkAboutDurationHours": "{hours} horas",
+  "@arkAboutDurationHours": {
+    "description": "Duration format for plural hours",
+    "placeholders": {
+      "hours": {}
+    }
+  },
+  "arkAboutDurationDay": "{days} día",
+  "@arkAboutDurationDay": {
+    "description": "Duration format for singular day",
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "arkAboutDurationDays": "{days} días",
+  "@arkAboutDurationDays": {
+    "description": "Duration format for plural days",
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "sendChange": "Cambio",
+  "@sendChange": {
+    "description": "Label for change output in a transaction"
+  },
+  "addressCardIndexLabel": "Índice: ",
+  "@addressCardIndexLabel": {
+    "description": "Label for the address index field in address card"
+  },
+  "exchangeReferralsMissionLink": "Aprenda más sobre nuestra misión",
+  "@exchangeReferralsMissionLink": {
+    "description": "Link to the Bull Bitcoin mission page"
+  },
+  "exchangeAccountInfoVerificationIdentityVerified": "Identidad verificada",
+  "@exchangeAccountInfoVerificationIdentityVerified": {
+    "description": "Status label for identity verified verification level"
+  },
+  "sendReceive": "Recibir",
+  "@sendReceive": {
+    "description": "Label for receive transaction type"
+  },
+  "walletDetailsDeletingMessage": "Eliminando billetera...",
+  "@walletDetailsDeletingMessage": {
+    "description": "Message displayed while a wallet is being deleted"
+  },
+  "bitcoinSettingsImportWalletTitle": "Importar billetera",
+  "@bitcoinSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "exchangeAccountInfoEmailLabel": "Correo electrónico",
+  "@exchangeAccountInfoEmailLabel": {
+    "description": "Label for email field in account information"
+  },
+  "receiveNoTimeToWait": "¿No tiene tiempo para esperar?",
+  "@receiveNoTimeToWait": {
+    "description": "Question prompting user if they want to proceed without payjoin"
+  },
+  "receivePaymentInProgress": "Pago en progreso",
+  "@receivePaymentInProgress": {
+    "description": "Status message when a payment is being processed"
+  },
+  "exchangeAccountInfoVerificationNotVerified": "No verificado",
+  "@exchangeAccountInfoVerificationNotVerified": {
+    "description": "Status label for not verified verification level"
+  },
+  "settingsGithubLabel": "GitHub",
+  "@settingsGithubLabel": {
+    "description": "Label for the Github link in settings"
+  },
+  "sendEstimatedDelivery10Minutes": "~10 minutos",
+  "@sendEstimatedDelivery10Minutes": {
+    "description": "Estimated delivery time of approximately 10 minutes"
+  },
+  "addressCardUsedLabel": "Usada",
+  "@addressCardUsedLabel": {
+    "description": "Label indicating an address has been used"
+  },
+  "walletDetailsWalletFingerprintLabel": "Huella digital de la billetera",
+  "@walletDetailsWalletFingerprintLabel": {
+    "description": "Label for the wallet fingerprint field in wallet details"
+  },
+  "walletDeletionErrorWalletNotFound": "Billetera no encontrada",
+  "@walletDeletionErrorWalletNotFound": {
+    "description": "Error message when the wallet to delete cannot be found"
+  },
+  "settingsCurrencyTitle": "Moneda",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "walletDeletionConfirmationDeleteButton": "Eliminar",
+  "@walletDeletionConfirmationDeleteButton": {
+    "description": "Delete button label in wallet deletion confirmation dialog"
+  },
+  "settingsWalletBackupTitle": "Respaldo de billetera",
+  "@settingsWalletBackupTitle": {
+    "description": "Title for the wallet backup section in the settings menu"
+  },
+  "receiveBoltzSwapFee": "Comisión de intercambio Boltz",
+  "@receiveBoltzSwapFee": {
+    "description": "Label for the Boltz swap service fee in a receive transaction"
+  },
+  "walletDetailsPubkeyLabel": "Clave pública",
+  "@walletDetailsPubkeyLabel": {
+    "description": "Label for the public key field in wallet details"
+  },
+  "exchangeBitcoinWalletsEnterAddressHint": "Ingrese la dirección",
+  "@exchangeBitcoinWalletsEnterAddressHint": {
+    "description": "Hint text for entering an address in exchange Bitcoin wallets"
+  },
+  "walletDeletionConfirmationCancelButton": "Cancelar",
+  "@walletDeletionConfirmationCancelButton": {
+    "description": "Cancel button label in wallet deletion confirmation dialog"
+  },
+  "exchangeAppSettingsSaveSuccessMessage": "Configuración guardada exitosamente",
+  "@exchangeAppSettingsSaveSuccessMessage": {
+    "description": "Success message displayed when exchange app settings are saved"
+  },
+  "onboardingEncryptedVault": "Bóveda cifrada",
+  "@onboardingEncryptedVault": {
+    "description": "Title for the encrypted vault recovery option in onboarding"
+  },
+  "settingsTelegramLabel": "Telegram",
+  "@settingsTelegramLabel": {
+    "description": "Label for the Telegram link in settings"
+  },
+  "walletOptionsNotFoundMessage": "Billetera no encontrada",
+  "@walletOptionsNotFoundMessage": {
+    "description": "Error message displayed when a wallet cannot be found"
+  },
+  "onboardingRecoverYourWallet": "Recupere su billetera",
+  "@onboardingRecoverYourWallet": {
+    "description": "Title for the recover wallet section in onboarding"
+  },
+  "walletDetailsNetworkLabel": "Red",
+  "@walletDetailsNetworkLabel": {
+    "description": "Label for the network field in wallet details"
+  },
+  "onboardingPhysicalBackup": "Respaldo físico",
+  "@onboardingPhysicalBackup": {
+    "description": "Title for the physical backup recovery option in onboarding"
+  },
+  "receiveDetails": "Detalles",
+  "@receiveDetails": {
+    "description": "Label for viewing transaction details"
+  },
+  "sendPasteAddressOrInvoice": "Pegar dirección o factura",
+  "@sendPasteAddressOrInvoice": {
+    "description": "Placeholder text for the payment address or invoice input field"
+  },
+  "receiveBitcoin": "Bitcoin",
+  "@receiveBitcoin": {
+    "description": "Label for receiving Bitcoin on the base layer"
+  },
+  "exchangeAccountTitle": "Cuenta",
+  "@exchangeAccountTitle": {
+    "description": "Title for the exchange account section"
+  },
+  "exchangeAccountInfoLastNameLabel": "Apellido",
+  "@exchangeAccountInfoLastNameLabel": {
+    "description": "Label for last name field in account information"
+  },
+  "onboardingBullBitcoin": "BULL BITCOIN",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "exchangeAccountInfoTitle": "Información de la cuenta",
+  "@exchangeAccountInfoTitle": {
+    "description": "Title for the account information section"
+  },
+  "sendEstimatedDelivery": "Entrega estimada",
+  "@sendEstimatedDelivery": {
+    "description": "Label prefix for estimated delivery time"
+  },
+  "sendScanBitcoinQRCode": "Escanear código QR de Bitcoin",
+  "@sendScanBitcoinQRCode": {
+    "description": "Instructions for scanning a QR code to make a Bitcoin payment"
+  },
+  "sendFeePriority": "Prioridad de comisión",
+  "@sendFeePriority": {
+    "description": "Label for selecting fee priority level"
+  },
+  "walletDetailsDescriptorLabel": "Descriptor",
+  "@walletDetailsDescriptorLabel": {
+    "description": "Label for the wallet descriptor field in wallet details"
+  },
+  "sendType": "Tipo",
+  "@sendType": {
+    "description": "Label prefix for transaction type field"
+  },
+  "receiveNetworkFee": "Comisión de red",
+  "@receiveNetworkFee": {
+    "description": "Label for the network fee in a receive transaction"
+  },
+  "sendSelectNetworkFee": "Seleccionar comisión de red",
+  "@sendSelectNetworkFee": {
+    "description": "Label for selecting the network fee in the send flow"
+  },
+  "appSettingsDevModeTitle": "Modo de desarrollo",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "bitcoinSettingsLegacySeedsTitle": "Semillas heredadas",
+  "@bitcoinSettingsLegacySeedsTitle": {
+    "description": "Title for the legacy seeds section in Bitcoin settings"
+  },
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Dirección Bitcoin",
+  "@exchangeBitcoinWalletsBitcoinAddressLabel": {
+    "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
+  },
+  "sendSats": "sats",
+  "@sendSats": {
+    "description": "Unit label for satoshis"
+  },
+  "exchangeAppSettingsDefaultCurrencyLabel": "Moneda predeterminada",
+  "@exchangeAppSettingsDefaultCurrencyLabel": {
+    "description": "Label for default currency setting in exchange app settings"
+  },
+  "sendCouldNotBuildTransaction": "No se pudo construir la transacción",
+  "@sendCouldNotBuildTransaction": {
+    "description": "Error message when a transaction cannot be built"
+  },
+  "walletsListTitle": "Billeteras",
+  "@walletsListTitle": {
+    "description": "Title for the wallet details list screen"
+  },
+  "sendEstimatedDelivery10to30Minutes": "10-30 minutos",
+  "@sendEstimatedDelivery10to30Minutes": {
+    "description": "Estimated delivery time of 10 to 30 minutes"
+  },
+  "sendSelectAmount": "Seleccionar monto",
+  "@sendSelectAmount": {
+    "description": "Label for selecting the amount to send"
+  },
+  "sendContinue": "Continuar",
+  "@sendContinue": {
+    "description": "Button label for continuing in the send flow"
+  },
+  "receivePayjoinInProgress": "Payjoin en progreso",
+  "@receivePayjoinInProgress": {
+    "description": "Status message when a payjoin transaction is in progress"
+  },
+  "onboardingRecoverWallet": "Recuperar billetera",
+  "@onboardingRecoverWallet": {
+    "description": "Title for the recover wallet screen in onboarding"
+  },
+  "receiveBitcoinTransactionWillTakeTime": "La transacción Bitcoin tomará tiempo en confirmarse",
+  "@receiveBitcoinTransactionWillTakeTime": {
+    "description": "Information message about Bitcoin transaction confirmation time"
+  },
+  "receiveNewAddress": "Nueva dirección",
+  "@receiveNewAddress": {
+    "description": "Button label for generating a new receive address"
+  },
+  "sendNetworkFees": "Comisiones de red",
+  "@sendNetworkFees": {
+    "description": "Label for network transaction fees"
+  },
+  "exchangeLogoutComingSoon": "Esta función estará disponible pronto.",
+  "@exchangeLogoutComingSoon": {
+    "description": "Message indicating that the log out feature is coming soon"
+  },
+  "exchangeLegacyTransactionsTitle": "Transacciones heredadas",
+  "@exchangeLegacyTransactionsTitle": {
+    "description": "Title for the legacy transactions section in exchange"
+  },
+  "receiveNote": "Nota",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "receiveTotalFee": "Comisión total",
+  "@receiveTotalFee": {
+    "description": "Label for the total fee in a receive transaction"
+  },
+  "exchangeSecurityManage2FAPasswordLabel": "Gestionar 2FA y contraseña",
+  "@exchangeSecurityManage2FAPasswordLabel": {
+    "description": "Label for managing 2FA and password in exchange security settings"
+  },
+  "exchangeSettingsLogOutTitle": "Cerrar sesión",
+  "@exchangeSettingsLogOutTitle": {
+    "description": "Title for the log out option in exchange settings"
+  },
+  "onboardingRecoverWalletButton": "Recuperar billetera",
+  "@onboardingRecoverWalletButton": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "exchangeFileUploadButton": "Subir archivo",
+  "@exchangeFileUploadButton": {
+    "description": "Button label for uploading files in exchange"
+  },
+  "sendAdvancedSettings": "Configuración avanzada",
+  "@sendAdvancedSettings": {
+    "description": "Title for advanced settings in the send flow"
+  },
+  "onboardingOwnYourMoney": "Sea dueño de su dinero",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "bitcoinSettingsElectrumServerTitle": "Configuración del servidor Electrum",
+  "@bitcoinSettingsElectrumServerTitle": {
+    "description": "Title for the Electrum server settings section in Bitcoin settings"
+  },
+  "sendSlowPaymentWarning": "Advertencia de pago lento",
+  "@sendSlowPaymentWarning": {
+    "description": "Warning title for slow payment confirmation"
+  },
+  "sendRecipientAddress": "Dirección del destinatario",
+  "@sendRecipientAddress": {
+    "description": "Label for the recipient address field"
+  },
+  "receiveCopyOrScanAddressOnly": "Copiar o escanear solo la dirección",
+  "@receiveCopyOrScanAddressOnly": {
+    "description": "Option to copy or scan only the address without amount or other details"
+  },
+  "sendHighFeeWarning": "Advertencia de comisión alta",
+  "@sendHighFeeWarning": {
+    "description": "Warning title for high transaction fees"
+  },
+  "receiveUnableToVerifyAddress": "No se puede verificar la dirección",
+  "@receiveUnableToVerifyAddress": {
+    "description": "Error message when address verification is not possible"
+  },
+  "addressCardBalanceLabel": "Saldo: ",
+  "@addressCardBalanceLabel": {
+    "description": "Label for the balance field in address card"
+  },
+  "walletsListNoWalletsMessage": "No se encontraron billeteras",
+  "@walletsListNoWalletsMessage": {
+    "description": "Message displayed when no wallets are found"
+  },
+  "receiveVerifyAddressOnLedger": "Verificar dirección en Ledger",
+  "@receiveVerifyAddressOnLedger": {
+    "description": "Button label for verifying an address on a Ledger hardware wallet"
+  },
+  "exchangeAccountInfoVerificationLightVerification": "Verificación ligera",
+  "@exchangeAccountInfoVerificationLightVerification": {
+    "description": "Status label for light verification level"
+  },
+  "sendAmountRequested": "Monto solicitado",
+  "@sendAmountRequested": {
+    "description": "Label for the requested amount in a payment request"
+  },
+  "receiveLightningInvoice": "Factura Lightning",
+  "@receiveLightningInvoice": {
+    "description": "Label for a Lightning Network invoice"
+  },
+  "exchangeAccountInfoUserNumberCopiedMessage": "Número de usuario copiado al portapapeles",
+  "@exchangeAccountInfoUserNumberCopiedMessage": {
+    "description": "Success message when user number is copied to clipboard"
+  },
+  "exchangeAppSettingsValidationWarning": "Por favor complete todos los campos requeridos",
+  "@exchangeAppSettingsValidationWarning": {
+    "description": "Warning message when language and currency preferences are not both set"
+  },
+  "receiveSave": "Guardar",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "receiveEnterHere": "Ingrese aquí",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "exchangeRecipientsTitle": "Destinatarios",
+  "@exchangeRecipientsTitle": {
+    "description": "Title for the recipients section in exchange"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "Entropías determinísticas BIP85",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "onboardingSplashDescription": "Billetera Bitcoin autocustodiada",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "logSettingsLogsTitle": "Registros",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "onboardingEncryptedVaultDescription": "Respalde su billetera en la nube de forma segura",
+  "@onboardingEncryptedVaultDescription": {
+    "description": "Description for the encrypted vault recovery option in onboarding"
+  },
+  "walletDetailsCopyButton": "Copiar",
+  "@walletDetailsCopyButton": {
+    "description": "Button label for copying wallet details to clipboard"
+  },
+  "receiveWaitForSenderToFinish": "Espere a que el remitente termine",
+  "@receiveWaitForSenderToFinish": {
+    "description": "Instructions to wait for the sender during a payjoin transaction"
+  },
+  "receiveNoteLabel": "Nota",
+  "@receiveNoteLabel": {
+    "description": "Label for the note field in receive"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "Moneda fiat predeterminada",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "sendSlowPaymentWarningDescription": "Esta transacción puede tardar mucho tiempo en confirmarse",
+  "@sendSlowPaymentWarningDescription": {
+    "description": "Description for slow payment warning"
+  },
+  "receiveSwapID": "ID de intercambio",
+  "@receiveSwapID": {
+    "description": "Label for the swap identifier in a receive transaction"
+  },
+  "exchangeTransactionsTitle": "Transacciones",
+  "@exchangeTransactionsTitle": {
+    "description": "Title for the transactions section in exchange"
+  },
+  "walletDetailsSignerDeviceNotSupported": "Dispositivo firmante no compatible",
+  "@walletDetailsSignerDeviceNotSupported": {
+    "description": "Message displayed when a signer device is not supported"
+  },
+  "sendFrom": "Desde",
+  "@sendFrom": {
+    "description": "Label for the sender/source in a transaction"
+  },
+  "exchangeAppSettingsSaveButton": "Guardar",
+  "@exchangeAppSettingsSaveButton": {
+    "description": "Button label for saving exchange app settings"
+  },
+  "walletDetailsDerivationPathLabel": "Ruta de derivación",
+  "@walletDetailsDerivationPathLabel": {
+    "description": "Label for the derivation path field in wallet details"
+  },
+  "walletDetailsSignerDeviceLabel": "Dispositivo firmante",
+  "@walletDetailsSignerDeviceLabel": {
+    "description": "Label for the signer device field in wallet details"
+  },
+  "walletOptionsWalletDetailsTitle": "Detalles de la billetera",
+  "@walletOptionsWalletDetailsTitle": {
+    "description": "Title for the wallet details screen"
+  },
+  "bitcoinSettingsTestnetModeTitle": "Modo Testnet",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "sendSelectCoinsManually": "Seleccionar monedas manualmente",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendConfirm": "Confirmar",
+  "@sendConfirm": {
+    "description": "Button label for confirming a send transaction"
+  },
+  "receiveLightning": "Lightning",
+  "@receiveLightning": {
+    "description": "Label for receiving Bitcoin via Lightning Network"
+  },
+  "sendAmount": "Monto",
+  "@sendAmount": {
+    "description": "Label for the transaction amount"
+  },
+  "exchangeSecurityAccessSettingsButton": "Acceder a la configuración",
+  "@exchangeSecurityAccessSettingsButton": {
+    "description": "Button label for accessing security settings in exchange"
+  },
+  "exchangeFileUploadInstructions": "Por favor suba una copia clara de su documento",
+  "@exchangeFileUploadInstructions": {
+    "description": "Instructions for uploading documents in exchange"
+  },
+  "walletOptionsUnnamedWalletFallback": "Billetera sin nombre",
+  "@walletOptionsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "exchangeBitcoinWalletsTitle": "Billeteras Bitcoin",
+  "@exchangeBitcoinWalletsTitle": {
+    "description": "Title for the default Bitcoin wallets section in exchange"
+  },
+  "sendConfirmCustomFee": "Confirmar comisión personalizada",
+  "@sendConfirmCustomFee": {
+    "description": "Button label for confirming a custom fee"
+  },
+  "settingsTermsOfServiceTitle": "Términos de servicio",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "settingsAppSettingsTitle": "Configuración de la aplicación",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "receiveLiquid": "Liquid",
+  "@receiveLiquid": {
+    "description": "Label for receiving Bitcoin via Liquid Network"
+  },
+  "exchangeAccountComingSoon": "Esta función estará disponible pronto.",
+  "@exchangeAccountComingSoon": {
+    "description": "Message indicating that a feature is coming soon"
+  },
+  "sendRelativeFees": "Comisiones relativas",
+  "@sendRelativeFees": {
+    "description": "Label for relative fee display mode (sats per vByte)"
+  },
+  "sendEstimatedDeliveryFewHours": "Pocas horas",
+  "@sendEstimatedDeliveryFewHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "exchangeFileUploadTitle": "Subir documentos",
+  "@exchangeFileUploadTitle": {
+    "description": "Title for the secure file upload section in exchange"
+  },
+  "sendTitle": "Enviar",
+  "@sendTitle": {
+    "description": "Title for the send screen"
+  },
+  "exchangeLegacyTransactionsComingSoon": "Esta función estará disponible pronto.",
+  "@exchangeLegacyTransactionsComingSoon": {
+    "description": "Message indicating that the legacy transactions feature is coming soon"
+  },
+  "exchangeAccountInfoVerificationLimitedVerification": "Verificación limitada",
+  "@exchangeAccountInfoVerificationLimitedVerification": {
+    "description": "Status label for limited verification level"
+  },
+  "exchangeSettingsReferralsTitle": "Referencias",
+  "@exchangeSettingsReferralsTitle": {
+    "description": "Title for the referrals section in exchange settings"
+  },
+  "sendTo": "A",
+  "@sendTo": {
+    "description": "Label for the recipient/destination in a transaction"
+  },
+  "exchangeReferralsContactSupportMessage": "Contacte al soporte para más información",
+  "@exchangeReferralsContactSupportMessage": {
+    "description": "Message prompting users to contact support about the referral program"
+  },
+  "logSettingsErrorLoadingMessage": "Error al cargar los registros",
+  "@logSettingsErrorLoadingMessage": {
+    "description": "Error message displayed when logs fail to load"
+  },
+  "sendOpenTheCamera": "Abrir la cámara",
+  "@sendOpenTheCamera": {
+    "description": "Button label for opening the camera to scan QR codes"
+  },
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Dirección Liquid",
+  "@exchangeBitcoinWalletsLiquidAddressLabel": {
+    "description": "Label for Liquid address field in exchange Bitcoin wallets"
+  },
+  "addressCardCopiedMessage": "Dirección copiada al portapapeles",
+  "@addressCardCopiedMessage": {
+    "description": "Success message when an address is copied to clipboard"
+  },
+  "receivePaymentNormally": "Recibir pago normalmente",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "walletDeletionConfirmationMessage": "¿Está seguro de que desea eliminar esta billetera? Esta acción no se puede deshacer.",
+  "@walletDeletionConfirmationMessage": {
+    "description": "Message in the wallet deletion confirmation dialog"
+  },
+  "settingsBitcoinSettingsTitle": "Configuración de Bitcoin",
+  "@settingsBitcoinSettingsTitle": {
+    "description": "Title for the Bitcoin settings section in the settings menu"
+  },
+  "exchangeAccountInfoLoadErrorMessage": "No se puede cargar la información de la cuenta",
+  "@exchangeAccountInfoLoadErrorMessage": {
+    "description": "Error message when account information fails to load"
+  },
+  "settingsSecurityPinTitle": "PIN de seguridad",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "sendBroadcastTransaction": "Transmitir transacción",
+  "@sendBroadcastTransaction": {
+    "description": "Button label for broadcasting a transaction to the network"
+  },
+  "walletDeletionErrorGeneric": "Error al eliminar la billetera",
+  "@walletDeletionErrorGeneric": {
+    "description": "Generic error message when wallet deletion fails"
+  },
+  "exchangeAccountInfoVerificationLevelLabel": "Nivel de verificación",
+  "@exchangeAccountInfoVerificationLevelLabel": {
+    "description": "Label for verification level field in account information"
+  },
+  "receiveContinue": "Continuar",
+  "@receiveContinue": {
+    "description": "Button label for continuing in the receive flow"
+  },
+  "exchangeBitcoinWalletsLightningAddressLabel": "Dirección Lightning",
+  "@exchangeBitcoinWalletsLightningAddressLabel": {
+    "description": "Label for Lightning address field in exchange Bitcoin wallets"
+  },
+  "addressCardUnusedLabel": "No usada",
+  "@addressCardUnusedLabel": {
+    "description": "Label indicating an address has not been used"
+  },
+  "exchangeAppSettingsPreferredLanguageLabel": "Idioma preferido",
+  "@exchangeAppSettingsPreferredLanguageLabel": {
+    "description": "Label for preferred language setting in exchange app settings"
+  },
+  "sendRecipientAddressOrInvoice": "Dirección o factura del destinatario",
+  "@sendRecipientAddressOrInvoice": {
+    "description": "Label for the recipient address or invoice input field"
+  },
+  "bitcoinSettingsAutoTransferTitle": "Configuración de transferencia automática",
+  "@bitcoinSettingsAutoTransferTitle": {
+    "description": "Title for the auto transfer settings section in Bitcoin settings"
+  },
+  "exchangeSettingsSecuritySettingsTitle": "Configuración de seguridad",
+  "@exchangeSettingsSecuritySettingsTitle": {
+    "description": "Title for the security settings section in exchange settings"
+  },
+  "settingsExchangeSettingsTitle": "Configuración de intercambio",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "walletDeletionErrorOngoingSwaps": "No se puede eliminar la billetera con intercambios en curso",
+  "@walletDeletionErrorOngoingSwaps": {
+    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "Transmitir transacción",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "walletDeletionFailedTitle": "Eliminación fallida",
+  "@walletDeletionFailedTitle": {
+    "description": "Title for the wallet deletion failed dialog"
+  },
+  "receiveAddLabel": "Agregar",
+  "@receiveAddLabel": {
+    "description": "Button label for adding a label to a receive address"
+  },
+  "sendAddress": "Dirección",
+  "@sendAddress": {
+    "description": "Label prefix for address field"
+  },
+  "exchangeAccountInfoUserNumberLabel": "Número de usuario",
+  "@exchangeAccountInfoUserNumberLabel": {
+    "description": "Label for user number field in account information"
+  },
+  "onboardingRecover": "Recuperar",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "sendDone": "Listo",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "onboardingPhysicalBackupDescription": "Escriba su frase de recuperación en papel",
+  "@onboardingPhysicalBackupDescription": {
+    "description": "Description for the physical backup recovery option in onboarding"
+  },
+  "exchangeAccountSettingsTitle": "Configuración de cuenta",
+  "@exchangeAccountSettingsTitle": {
+    "description": "Title for the exchange account settings screen"
+  },
+  "sendAbsoluteFees": "Comisiones absolutas",
+  "@sendAbsoluteFees": {
+    "description": "Label for absolute fee display mode (total sats)"
+  },
+  "sendCustomFee": "Comisión personalizada",
+  "@sendCustomFee": {
+    "description": "Label for setting a custom transaction fee"
+  },
+  "receivePayjoinActivated": "Payjoin activado",
+  "@receivePayjoinActivated": {
+    "description": "Message indicating that payjoin is activated for the receive transaction"
+  },
+  "walletDetailsSignerLabel": "Firmante",
+  "@walletDetailsSignerLabel": {
+    "description": "Label for the signer field in wallet details"
+  },
+  "exchangeReferralsJoinMissionTitle": "Únase a nuestra misión",
+  "@exchangeReferralsJoinMissionTitle": {
+    "description": "Title encouraging users to join the referral mission"
+  },
+  "bitcoinSettingsWalletsTitle": "Billeteras",
+  "@bitcoinSettingsWalletsTitle": {
+    "description": "Title for the wallets section in Bitcoin settings"
+  },
+  "onboardingCreateNewWallet": "Crear nueva billetera",
+  "@onboardingCreateNewWallet": {
+    "description": "Button label for creating a new wallet in onboarding"
+  },
+  "exchangeRecipientsComingSoon": "Esta función estará disponible pronto.",
+  "@exchangeRecipientsComingSoon": {
+    "description": "Message indicating that the recipients feature is coming soon"
+  },
+  "exchangeAccountInfoFirstNameLabel": "Nombre",
+  "@exchangeAccountInfoFirstNameLabel": {
+    "description": "Label for first name field in account information"
+  },
+  "sendSatsPerVB": "sats/vB",
+  "@sendSatsPerVB": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "walletOptionsAddressesTitle": "Direcciones",
+  "@walletOptionsAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "exchangeFileUploadDocumentTitle": "Documento",
+  "@exchangeFileUploadDocumentTitle": {
+    "description": "Title for uploading documents in exchange"
+  },
+  "exchangeReferralsApplyToJoinMessage": "Solicite unirse a nuestro programa de referencias",
+  "@exchangeReferralsApplyToJoinMessage": {
+    "description": "Message with link to apply for the referral program"
+  },
+  "exchangeReferralsTitle": "Referencias",
+  "@exchangeReferralsTitle": {
+    "description": "Title for the referral codes section"
+  },
+  "sendReplaceByFeeActivated": "Reemplazar por comisión activado",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendInsufficientBalance": "Saldo insuficiente",
+  "@sendInsufficientBalance": {
+    "description": "Error message when the wallet has insufficient balance to send"
+  },
+  "sendEstimatedDeliveryHoursToDays": "Horas a días",
+  "@sendEstimatedDeliveryHoursToDays": {
+    "description": "Estimated delivery time ranging from hours to days"
+  },
+  "walletDetailsAddressTypeLabel": "Tipo de dirección",
+  "@walletDetailsAddressTypeLabel": {
+    "description": "Label for the address type field in wallet details"
+  },
+  "walletDeletionConfirmationTitle": "Eliminar billetera",
+  "@walletDeletionConfirmationTitle": {
+    "description": "Title for the wallet deletion confirmation dialog"
+  },
+  "walletDeletionFailedOkButton": "OK",
+  "@walletDeletionFailedOkButton": {
+    "description": "OK button label in wallet deletion failed dialog"
+  },
+  "settingsAppVersionLabel": "Versión de la aplicación",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "exchangeSettingsAccountInformationTitle": "Información de la cuenta",
+  "@exchangeSettingsAccountInformationTitle": {
+    "description": "Title for the account information section in exchange settings"
+  },
+  "walletDeletionErrorDefaultWallet": "No se puede eliminar la billetera predeterminada",
+  "@walletDeletionErrorDefaultWallet": {
+    "description": "Error message when attempting to delete a default wallet"
+  },
+  "receiveConfirmedInFewSeconds": "Confirmado en pocos segundos",
+  "@receiveConfirmedInFewSeconds": {
+    "description": "Message indicating quick confirmation time for Lightning transactions"
+  },
+  "exchangeSettingsLogInTitle": "Iniciar sesión",
+  "@exchangeSettingsLogInTitle": {
+    "description": "Title for the log in option in exchange settings"
+  },
+  "exchangeTransactionsComingSoon": "Esta función estará disponible pronto.",
+  "@exchangeTransactionsComingSoon": {
+    "description": "Message indicating that the transactions feature is coming soon"
   }
 }

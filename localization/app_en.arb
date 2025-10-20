@@ -3561,11 +3561,11 @@
   },
   "swapTransferFrom": "Transfer from",
   "@swapTransferFrom": {
-    "description": "Dropdown label for source wallet selection"
+    "description": "Label for source wallet dropdown"
   },
   "swapTransferTo": "Transfer to",
   "@swapTransferTo": {
-    "description": "Dropdown label for destination wallet selection"
+    "description": "Label for destination wallet dropdown"
   },
   "swapTransferAmount": "Transfer amount",
   "@swapTransferAmount": {
@@ -3581,15 +3581,15 @@
   },
   "swapAvailableBalance": "Available balance",
   "@swapAvailableBalance": {
-    "description": "Label showing wallet balance"
+    "description": "Available balance label"
   },
   "swapMaxButton": "MAX",
   "@swapMaxButton": {
     "description": "Button to use maximum available balance"
   },
-  "swapTotalFees": "Total Fees",
+  "swapTotalFees": "Total Fees ",
   "@swapTotalFees": {
-    "description": "Label for total fees display"
+    "description": "Total fees label"
   },
   "swapContinueButton": "Continue",
   "@swapContinueButton": {
@@ -3904,11 +3904,11 @@
   },
   "arkSettleButton": "Settle",
   "@arkSettleButton": {
-    "description": "Confirm button label for settling transactions"
+    "description": "Settle button label"
   },
   "arkReceiveTitle": "Ark Receive",
   "@arkReceiveTitle": {
-    "description": "AppBar title for the receive page"
+    "description": "AppBar title for Ark receive screen"
   },
   "arkUnifiedAddressCopied": "Unified address copied",
   "@arkUnifiedAddressCopied": {
@@ -3932,7 +3932,7 @@
   },
   "arkSendTitle": "Send",
   "@arkSendTitle": {
-    "description": "AppBar title for the send page"
+    "description": "AppBar title for Ark send screen"
   },
   "arkRecipientAddress": "Recipient's address",
   "@arkRecipientAddress": {
@@ -4068,7 +4068,7 @@
   },
   "arkAboutTitle": "About",
   "@arkAboutTitle": {
-    "description": "AppBar title for about/settings page"
+    "description": "AppBar title for Ark about screen"
   },
   "arkServerUrl": "Server URL",
   "@arkServerUrl": {
@@ -7591,5 +7591,351 @@
   "arkSetupEnable": "Enable Ark",
   "@arkSetupEnable": {
     "description": "Button to enable Ark"
+  },
+  "swapTitle": "Internal Transfer",
+  "@swapTitle": {
+    "description": "AppBar title for swap/internal transfer screen"
+  },
+  "swapInfoBanner": "Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet is for day-to-day spending.",
+  "@swapInfoBanner": {
+    "description": "Info banner on swap amount screen"
+  },
+  "swapMax": "MAX",
+  "@swapMax": {
+    "description": "MAX button label"
+  },
+  "swapContinue": "Continue",
+  "@swapContinue": {
+    "description": "Continue button on swap amount screen"
+  },
+  "swapConfirmTitle": "Confirm Transfer",
+  "@swapConfirmTitle": {
+    "description": "AppBar title for swap confirmation screen"
+  },
+  "swapProgressTitle": "Internal Transfer",
+  "@swapProgressTitle": {
+    "description": "AppBar title for swap progress screen"
+  },
+  "swapProgressPending": "Transfer Pending",
+  "@swapProgressPending": {
+    "description": "Pending transfer status"
+  },
+  "swapProgressPendingMessage": "The transfer is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
+  "@swapProgressPendingMessage": {
+    "description": "Pending transfer message"
+  },
+  "swapProgressCompleted": "Transfer completed",
+  "@swapProgressCompleted": {
+    "description": "Completed transfer status"
+  },
+  "swapProgressCompletedMessage": "Wow, you waited! The transfer has completed sucessfully.",
+  "@swapProgressCompletedMessage": {
+    "description": "Completed transfer message"
+  },
+  "swapProgressRefundInProgress": "Transfer Refund In Progress",
+  "@swapProgressRefundInProgress": {
+    "description": "Refund in progress status"
+  },
+  "swapProgressRefundMessage": "There was an error with the transfer. Your refund is in progress.",
+  "@swapProgressRefundMessage": {
+    "description": "Refund in progress message"
+  },
+  "swapProgressRefunded": "Transfer Refunded",
+  "@swapProgressRefunded": {
+    "description": "Refunded transfer status"
+  },
+  "swapProgressRefundedMessage": "The transfer has been sucessfully refunded.",
+  "@swapProgressRefundedMessage": {
+    "description": "Refunded transfer message"
+  },
+  "swapProgressGoHome": "Go home",
+  "@swapProgressGoHome": {
+    "description": "Go home button on progress screen"
+  },
+  "autoswapTitle": "Auto Transfer Settings",
+  "@autoswapTitle": {
+    "description": "Header title for auto transfer settings bottom sheet"
+  },
+  "autoswapEnable": "Enable Auto Transfer",
+  "@autoswapEnable": {
+    "description": "Toggle label to enable auto transfer"
+  },
+  "autoswapMaxBalance": "Max Instant Wallet Balance",
+  "@autoswapMaxBalance": {
+    "description": "Field label for max balance threshold"
+  },
+  "autoswapMaxBalanceInfo": "When wallet balance exceeds double this amount, auto-transfer will trigger to reduce balance to this level",
+  "@autoswapMaxBalanceInfo": {
+    "description": "Info tooltip for max balance field"
+  },
+  "autoswapMaxFee": "Max Transfer Fee",
+  "@autoswapMaxFee": {
+    "description": "Field label for max fee threshold"
+  },
+  "autoswapMaxFeeInfo": "If total transfer fee is above the set percentage, the auto-transfer will be blocked",
+  "@autoswapMaxFeeInfo": {
+    "description": "Info tooltip for max fee field"
+  },
+  "autoswapAlwaysBlock": "Always Block High Fees",
+  "@autoswapAlwaysBlock": {
+    "description": "Toggle label for always block high fees"
+  },
+  "autoswapAlwaysBlockEnabledInfo": "When enabled, auto-transfers with fees above the set limit will always be blocked",
+  "@autoswapAlwaysBlockEnabledInfo": {
+    "description": "Info text when always block is enabled"
+  },
+  "autoswapAlwaysBlockDisabledInfo": "When disabled, you will be given the option to allow an auto-transfer that is blocked due to high fees",
+  "@autoswapAlwaysBlockDisabledInfo": {
+    "description": "Info text when always block is disabled"
+  },
+  "autoswapRecipientWallet": "Recipient Bitcoin Wallet",
+  "@autoswapRecipientWallet": {
+    "description": "Field label for recipient wallet dropdown"
+  },
+  "autoswapRecipientRequired": "*",
+  "@autoswapRecipientRequired": {
+    "description": "Required field indicator"
+  },
+  "autoswapSelectWallet": "Select a Bitcoin wallet",
+  "@autoswapSelectWallet": {
+    "description": "Placeholder for wallet dropdown"
+  },
+  "autoswapSelectWalletRequired": "Select a Bitcoin wallet *",
+  "@autoswapSelectWalletRequired": {
+    "description": "Placeholder for wallet dropdown when required"
+  },
+  "autoswapRecipientWalletInfo": "Choose which Bitcoin wallet will receive the transferred funds (required)",
+  "@autoswapRecipientWalletInfo": {
+    "description": "Info tooltip for recipient wallet field"
+  },
+  "autoswapDefaultWalletLabel": "Bitcoin Wallet",
+  "@autoswapDefaultWalletLabel": {
+    "description": "Default label for unnamed Bitcoin wallet"
+  },
+  "autoswapSave": "Save",
+  "@autoswapSave": {
+    "description": "Save button label"
+  },
+  "autoswapSaveError": "Failed to save settings: {error}",
+  "@autoswapSaveError": {
+    "description": "Error message when save fails",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "electrumTitle": "Electrum Server Settings",
+  "@electrumTitle": {
+    "description": "AppBar title for Electrum settings screen"
+  },
+  "electrumNetworkBitcoin": "Bitcoin",
+  "@electrumNetworkBitcoin": {
+    "description": "Bitcoin network tab label"
+  },
+  "electrumNetworkLiquid": "Liquid",
+  "@electrumNetworkLiquid": {
+    "description": "Liquid network tab label"
+  },
+  "electrumAdvancedOptions": "Advanced Options",
+  "@electrumAdvancedOptions": {
+    "description": "Advanced options button label"
+  },
+  "electrumAddCustomServer": "Add Custom Server",
+  "@electrumAddCustomServer": {
+    "description": "Add custom server bottom sheet title"
+  },
+  "electrumCloseTooltip": "Close",
+  "@electrumCloseTooltip": {
+    "description": "Close button tooltip"
+  },
+  "electrumServerUrlHint": "{network} {environment} Server URL",
+  "@electrumServerUrlHint": {
+    "description": "Hint text for server URL input",
+    "placeholders": {
+      "network": {},
+      "environment": {}
+    }
+  },
+  "electrumMainnet": "Mainnet",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "electrumTestnet": "Testnet",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "electrumEmptyFieldError": "This field can't be empty",
+  "@electrumEmptyFieldError": {
+    "description": "Validation error for empty field"
+  },
+  "electrumBitcoinSslInfo": "If no protocol is specified, ssl will be used by default.",
+  "@electrumBitcoinSslInfo": {
+    "description": "Info text for Bitcoin server protocol"
+  },
+  "electrumLiquidSslInfo": "No protocol should be specified, SSL will be used automatically.",
+  "@electrumLiquidSslInfo": {
+    "description": "Info text for Liquid server protocol"
+  },
+  "electrumAddServer": "Add Server",
+  "@electrumAddServer": {
+    "description": "Add server button label"
+  },
+  "arkSendRecipientLabel": "Recipient's address",
+  "@arkSendRecipientLabel": {
+    "description": "Label for recipient address field"
+  },
+  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6…",
+  "@arkSendRecipientHint": {
+    "description": "Hint text for recipient address field"
+  },
+  "arkSendConfirmedBalance": "Confirmed Balance",
+  "@arkSendConfirmedBalance": {
+    "description": "Confirmed balance label"
+  },
+  "arkSendPendingBalance": "Pending Balance    ",
+  "@arkSendPendingBalance": {
+    "description": "Pending balance label"
+  },
+  "arkSendConfirm": "Confirm",
+  "@arkSendConfirm": {
+    "description": "Confirm button on send screen"
+  },
+  "arkReceiveCopyAddress": "Copy address",
+  "@arkReceiveCopyAddress": {
+    "description": "Copy address button label"
+  },
+  "arkReceiveUnifiedAddress": "Unified address (BIP21)",
+  "@arkReceiveUnifiedAddress": {
+    "description": "Label for unified BIP21 address"
+  },
+  "arkReceiveBtcAddress": "BTC address",
+  "@arkReceiveBtcAddress": {
+    "description": "Label for Bitcoin address"
+  },
+  "arkReceiveArkAddress": "Ark address",
+  "@arkReceiveArkAddress": {
+    "description": "Label for Ark address"
+  },
+  "arkReceiveUnifiedCopied": "Unified address copied",
+  "@arkReceiveUnifiedCopied": {
+    "description": "Snackbar message when unified address copied"
+  },
+  "arkSettleTitle": "Settle Transactions",
+  "@arkSettleTitle": {
+    "description": "Settle bottom sheet title"
+  },
+  "arkSettleMessage": "Finalize pending transactions and include recoverable vtxos if needed",
+  "@arkSettleMessage": {
+    "description": "Settle bottom sheet explanation"
+  },
+  "arkSettleIncludeRecoverable": "Include recoverable vtxos",
+  "@arkSettleIncludeRecoverable": {
+    "description": "Toggle label for including recoverable vtxos"
+  },
+  "arkSettleCancel": "Cancel",
+  "@arkSettleCancel": {
+    "description": "Cancel button on settle bottom sheet"
+  },
+  "arkAboutServerUrl": "Server URL",
+  "@arkAboutServerUrl": {
+    "description": "Field label for server URL"
+  },
+  "arkAboutServerPubkey": "Server pubkey",
+  "@arkAboutServerPubkey": {
+    "description": "Field label for server pubkey"
+  },
+  "arkAboutForfeitAddress": "Forfeit address",
+  "@arkAboutForfeitAddress": {
+    "description": "Field label for forfeit address"
+  },
+  "arkAboutNetwork": "Network",
+  "@arkAboutNetwork": {
+    "description": "Field label for network"
+  },
+  "arkAboutDust": "Dust",
+  "@arkAboutDust": {
+    "description": "Field label for dust amount"
+  },
+  "arkAboutDustValue": "{dust} SATS",
+  "@arkAboutDustValue": {
+    "description": "Dust value format",
+    "placeholders": {
+      "dust": {}
+    }
+  },
+  "arkAboutSessionDuration": "Session duration",
+  "@arkAboutSessionDuration": {
+    "description": "Field label for session duration"
+  },
+  "arkAboutBoardingExitDelay": "Boarding exit delay",
+  "@arkAboutBoardingExitDelay": {
+    "description": "Field label for boarding exit delay"
+  },
+  "arkAboutUnilateralExitDelay": "Unilateral exit delay",
+  "@arkAboutUnilateralExitDelay": {
+    "description": "Field label for unilateral exit delay"
+  },
+  "arkAboutEsploraUrl": "Esplora URL",
+  "@arkAboutEsploraUrl": {
+    "description": "Field label for Esplora URL"
+  },
+  "arkAboutCopy": "Copy",
+  "@arkAboutCopy": {
+    "description": "Copy button label"
+  },
+  "arkAboutCopiedMessage": "{label} copied to clipboard",
+  "@arkAboutCopiedMessage": {
+    "description": "Snackbar message when field copied",
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "arkAboutDurationSeconds": "{seconds} seconds",
+  "@arkAboutDurationSeconds": {
+    "description": "Duration format for seconds",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "arkAboutDurationMinute": "{minutes} minute",
+  "@arkAboutDurationMinute": {
+    "description": "Duration format for singular minute",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "arkAboutDurationMinutes": "{minutes} minutes",
+  "@arkAboutDurationMinutes": {
+    "description": "Duration format for plural minutes",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "arkAboutDurationHour": "{hours} hour",
+  "@arkAboutDurationHour": {
+    "description": "Duration format for singular hour",
+    "placeholders": {
+      "hours": {}
+    }
+  },
+  "arkAboutDurationHours": "{hours} hours",
+  "@arkAboutDurationHours": {
+    "description": "Duration format for plural hours",
+    "placeholders": {
+      "hours": {}
+    }
+  },
+  "arkAboutDurationDay": "{days} day",
+  "@arkAboutDurationDay": {
+    "description": "Duration format for singular day",
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "arkAboutDurationDays": "{days} days",
+  "@arkAboutDurationDays": {
+    "description": "Duration format for plural days",
+    "placeholders": {
+      "days": {}
+    }
   }
 }
