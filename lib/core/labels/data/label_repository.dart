@@ -14,6 +14,11 @@ class LabelRepository {
     await _labelDatasource.store(model);
   }
 
+  Future<void> batch(List<Label> labels) async {
+    final models = labels.map((label) => LabelModel.fromEntity(label)).toList();
+    await _labelDatasource.batch(models);
+  }
+
   Future<List<Label>> fetchByLabel(String label) async {
     final labelModels = await _labelDatasource.fetchByLabel(label: label);
     return labelModels.map((model) => model.toEntity()).toList();
