@@ -42,53 +42,45 @@ class ImportLabelsUsecase {
   }
 
   Label _convertBip329ToLabel(bip329.Bip329Label bip329Label) {
-    switch (bip329Label) {
-      case bip329.TxLabel():
-        return Label.tx(
-          transactionId: bip329Label.ref,
-          label: bip329Label.label,
-          walletId: bip329Label.origin ?? '',
-        );
-      case bip329.AddressLabel():
-        return Label.addr(
-          address: bip329Label.ref,
-          label: bip329Label.label,
-          walletId: bip329Label.origin ?? '',
-        );
-      case bip329.PubkeyLabel():
-        return Label.pubkey(
-          pubkey: bip329Label.ref,
-          label: bip329Label.label,
-          walletId: bip329Label.origin ?? '',
-        );
-      case bip329.InputLabel():
-        final parts = bip329Label.ref.split(':');
-        return Label.input(
-          txId: parts[0],
-          vin: int.parse(parts[1]),
-          label: bip329Label.label,
-          walletId: bip329Label.origin ?? '',
-        );
-      case bip329.OutputLabel():
-        final parts = bip329Label.ref.split(':');
-        return Label.output(
-          txId: parts[0],
-          vout: int.parse(parts[1]),
-          label: bip329Label.label,
-          walletId: bip329Label.origin ?? '',
-          spendable: bip329Label.spendable,
-        );
-      case bip329.XpubLabel():
-        return Label.xpub(
-          xpub: bip329Label.ref,
-          label: bip329Label.label,
-          walletId: bip329Label.origin ?? '',
-        );
-      default:
+    return switch (bip329Label) {
+      bip329.TxLabel() => Label.tx(
+        transactionId: bip329Label.ref,
+        label: bip329Label.label,
+        walletId: bip329Label.origin,
+      ),
+      bip329.AddressLabel() => Label.addr(
+        address: bip329Label.ref,
+        label: bip329Label.label,
+        walletId: bip329Label.origin,
+      ),
+      bip329.PubkeyLabel() => Label.pubkey(
+        pubkey: bip329Label.ref,
+        label: bip329Label.label,
+        walletId: bip329Label.origin,
+      ),
+      bip329.InputLabel() => Label.input(
+        txId: bip329Label.ref.split(':')[0],
+        vin: int.parse(bip329Label.ref.split(':')[1]),
+        label: bip329Label.label,
+        walletId: bip329Label.origin,
+      ),
+      bip329.OutputLabel() => Label.output(
+        txId: bip329Label.ref.split(':')[0],
+        vout: int.parse(bip329Label.ref.split(':')[1]),
+        label: bip329Label.label,
+        walletId: bip329Label.origin,
+        spendable: bip329Label.spendable,
+      ),
+      bip329.XpubLabel() => Label.xpub(
+        xpub: bip329Label.ref,
+        label: bip329Label.label,
+        walletId: bip329Label.origin,
+      ),
+      _ =>
         throw ImportLabelsError(
           'Unsupported label type: ${bip329Label.runtimeType}',
-        );
-    }
+        ),
+    };
   }
 }
 

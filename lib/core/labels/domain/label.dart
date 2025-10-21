@@ -8,35 +8,40 @@ sealed class Label with _$Label {
   const factory Label.tx({
     required String transactionId,
     required String label,
-    required String walletId,
+    String? walletId,
   }) = TxLabel;
+
   const factory Label.addr({
     required String address,
     required String label,
-    required String walletId,
+    String? walletId,
   }) = AddressLabel;
+
   const factory Label.pubkey({
     required String pubkey,
     required String label,
-    required String walletId,
+    String? walletId,
   }) = PubkeyLabel;
+
   const factory Label.input({
     required String txId,
     required int vin,
     required String label,
-    required String walletId,
+    String? walletId,
   }) = InputLabel;
+
   const factory Label.output({
     required String txId,
     required int vout,
     required String label,
-    required String walletId,
+    String? walletId,
     bool? spendable,
   }) = OutputLabel;
+
   const factory Label.xpub({
     required String xpub,
     required String label,
-    required String walletId,
+    String? walletId,
   }) = XpubLabel;
   const Label._();
 
