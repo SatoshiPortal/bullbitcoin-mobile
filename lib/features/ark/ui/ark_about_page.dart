@@ -28,6 +28,8 @@ class ArkAboutPage extends StatelessWidget {
           children: [
             const _CopyField(label: 'Server URL', value: Ark.server),
             const SizedBox(height: 18),
+            _SecretKeyField(label: 'Secret Key', value: wallet.secretHex),
+            const SizedBox(height: 18),
             _CopyField(label: 'Server pubkey', value: serverInfo.signerPubkey),
             const SizedBox(height: 18),
             _CopyField(
@@ -142,6 +144,98 @@ class _CopyField extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('$label copied to clipboard'),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  BBText(
+                    'Copy',
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.colour.primary,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const Gap(4),
+                  Icon(Icons.copy, size: 16, color: context.colour.primary),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _SecretKeyField extends StatefulWidget {
+  final String label;
+  final String value;
+  const _SecretKeyField({required this.label, required this.value});
+
+  @override
+  State<_SecretKeyField> createState() => _SecretKeyFieldState();
+}
+
+class _SecretKeyFieldState extends State<_SecretKeyField> {
+  bool _isVisible = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BBText(
+          widget.label,
+          style: context.font.bodyLarge?.copyWith(
+            color: context.colour.surfaceContainer,
+          ),
+        ),
+        const Gap(4),
+        Wrap(
+          spacing: 4,
+          runSpacing: 4,
+          children: [
+            BBText(
+              _isVisible ? widget.value : '••••••••••••••••••••••••••••••••',
+              style: context.font.bodyMedium?.copyWith(
+                color: context.colour.outline,
+                fontFamily: _isVisible ? null : 'monospace',
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _isVisible = !_isVisible;
+                });
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  BBText(
+                    _isVisible ? 'Hide' : 'Show',
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.colour.primary,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const Gap(4),
+                  Icon(
+                    _isVisible ? Icons.visibility_off : Icons.visibility,
+                    size: 16,
+                    color: context.colour.primary,
+                  ),
+                ],
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: widget.value));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${widget.label} copied to clipboard'),
                     duration: const Duration(seconds: 2),
                   ),
                 );
