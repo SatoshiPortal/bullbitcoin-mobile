@@ -37,7 +37,7 @@ class Logger {
       final (:String error, :String trace) = record.stringifyErrorAndTrace();
       content.addAll([error, trace]);
 
-      final sanitizedContent = content.map((e) => logger.sanitize(e)).toList();
+      final sanitizedContent = content.map((e) => _sanitize(e)).toList();
       final tsvLine = sanitizedContent.join('\t');
 
       // We don't want to keep the info session in memory, they should be written to file
@@ -151,5 +151,11 @@ class Logger {
   Future<void> deleteLogs() async {
     await logsFile.writeAsString('');
     log.shout('Logs deleted');
+  }
+
+  String _sanitize(String input) {
+    final colors = RegExp(r'\x1B\[[0-9;]*[a-zA-Z]'); // ascii colors
+    final tabNewLine = RegExp(r'[\t\n\r]');
+    return input.replaceAll(tabNewLine, ' ').replaceAll(colors, '');
   }
 }
