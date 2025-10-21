@@ -1,4 +1,5 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
+import 'package:bb_mobile/core/ark/entities/ark_balance.dart';
 import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
 import 'package:bb_mobile/core/ark/errors.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -16,8 +17,7 @@ sealed class ArkState with _$ArkState {
     @Default(false) bool isLoading,
 
     // Transaction History and Balances
-    @Default(0) int pendingBalance,
-    @Default(0) int confirmedBalance,
+    ArkBalance? arkBalance,
     @Default([]) List<ark_wallet.Transaction> transactions,
 
     // Receive
@@ -48,5 +48,9 @@ extension ArkStateX on ArkState {
   Future<bool> get hasValidAddress async =>
       hasArkAddress || await hasBtcAddress;
 
-  int get totalBalance => confirmedBalance + pendingBalance;
+  int get totalBalance => arkBalance?.completeTotal ?? 0;
+
+  // Backward compatibility getters
+  int get confirmedBalance => arkBalance?.boarding.confirmed ?? 0;
+  int get pendingBalance => arkBalance?.boarding.unconfirmed ?? 0;
 }

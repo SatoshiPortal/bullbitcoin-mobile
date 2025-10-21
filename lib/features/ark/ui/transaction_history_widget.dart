@@ -7,19 +7,24 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 class TransactionHistoryWidget extends StatelessWidget {
-  const TransactionHistoryWidget({super.key, required this.transactions});
+  const TransactionHistoryWidget({
+    super.key,
+    required this.transactions,
+    this.isLoading = false,
+  });
 
   final List<ark_wallet.Transaction> transactions;
+  final bool isLoading;
 
   DateTime? _getTransactionDate(ark_wallet.Transaction tx) {
     return switch (tx) {
       ark_wallet.Transaction_Boarding(confirmedAt: final confirmedAt?) =>
         DateTime.fromMillisecondsSinceEpoch(confirmedAt * 1000),
+      ark_wallet.Transaction_Boarding() => DateTime.now(),
       ark_wallet.Transaction_Commitment(createdAt: final createdAt) =>
         DateTime.fromMillisecondsSinceEpoch(createdAt * 1000),
       ark_wallet.Transaction_Redeem(createdAt: final createdAt) =>
         DateTime.fromMillisecondsSinceEpoch(createdAt * 1000),
-      _ => null,
     };
   }
 
@@ -49,7 +54,7 @@ class TransactionHistoryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    if (transactions.isEmpty) {
+    if (!isLoading && transactions.isEmpty) {
       return Center(
         child: Column(
           children: [
@@ -69,40 +74,38 @@ class TransactionHistoryWidget extends StatelessWidget {
 
     final transactionsByDay = _groupTransactionsByDay();
 
-    return Padding(
+    return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children:
-            transactionsByDay.entries.map((entry) {
-              final date = DateTime.fromMillisecondsSinceEpoch(entry.key);
-              final txs = entry.value;
-              final now = DateTime.now();
-              final today = DateTime(now.year, now.month, now.day);
-              final yesterday = DateTime(now.year, now.month, now.day - 1);
+      itemCount: transactionsByDay.entries.length,
+      itemBuilder: (context, index) {
+        final entry = transactionsByDay.entries.elementAt(index);
+        final date = DateTime.fromMillisecondsSinceEpoch(entry.key);
+        final txs = entry.value;
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final yesterday = DateTime(now.year, now.month, now.day - 1);
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    date.isAtSameMomentAs(today)
-                        ? 'Today'
-                        : date.isAtSameMomentAs(yesterday)
-                        ? 'Yesterday'
-                        : date.year == DateTime.now().year
-                        ? DateFormat.MMMMd().format(date)
-                        : DateFormat.yMMMMd().format(date),
-                    style: context.font.titleSmall?.copyWith(
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                  const Gap(16),
-                  ...txs.map((tx) => ArkTxWidget(tx: tx)),
-                  const Gap(16),
-                ],
-              );
-            }).toList(),
-      ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              date.isAtSameMomentAs(today)
+                  ? 'Today'
+                  : date.isAtSameMomentAs(yesterday)
+                  ? 'Yesterday'
+                  : date.year == DateTime.now().year
+                  ? DateFormat.MMMMd().format(date)
+                  : DateFormat.yMMMMd().format(date),
+              style: context.font.titleSmall?.copyWith(
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const Gap(16),
+            ...txs.map((tx) => ArkTxWidget(tx: tx)),
+            const Gap(16),
+          ],
+        );
+      },
     );
   }
 }
