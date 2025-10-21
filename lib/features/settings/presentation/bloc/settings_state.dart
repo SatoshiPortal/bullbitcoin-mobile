@@ -16,4 +16,5 @@ sealed class SettingsState with _$SettingsState {
   bool? get hideAmounts => storedSettings?.hideAmounts;
   bool? get isSuperuser => storedSettings?.isSuperuser;
   bool? get isDevModeEnabled => storedSettings?.isDevModeEnabled;
+  bool? get hideExchangeFeatures => storedSettings?.hideExchangeFeatures;
 }

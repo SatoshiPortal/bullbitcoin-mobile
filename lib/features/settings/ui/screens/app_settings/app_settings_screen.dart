@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/hide_exchange_features_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -29,6 +30,11 @@ class AppSettingsScreen extends StatelessWidget {
                   onTap: () {
                     context.pushNamed(SettingsRoute.logs.name);
                   },
+                ),
+                const SettingsEntryItem(
+                  icon: Icons.visibility_off,
+                  title: 'Hide Exchange Features',
+                  trailing: HideExchangeFeaturesSwitch(),
                 ),
                 if (isSuperuser)
                   const SettingsEntryItem(

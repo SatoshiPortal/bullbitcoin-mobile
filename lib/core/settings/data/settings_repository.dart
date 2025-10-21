@@ -27,6 +27,7 @@ class SettingsRepository {
     required bool hideAmounts,
     required bool isSuperuser,
     required bool isDevModeEnabled,
+    required bool hideExchangeFeatures,
   }) async {
     await _settingsDatasource.store(
       SettingsModel(
@@ -38,6 +39,7 @@ class SettingsRepository {
         hideAmounts: hideAmounts,
         isSuperuser: isSuperuser,
         isDevModeEnabled: isDevModeEnabled,
+        hideExchangeFeatures: hideExchangeFeatures,
       ),
     );
   }
@@ -53,6 +55,7 @@ class SettingsRepository {
       hideAmounts: s.hideAmounts,
       isSuperuser: s.isSuperuser,
       isDevModeEnabled: s.isDevModeEnabled,
+      hideExchangeFeatures: s.hideExchangeFeatures,
     );
   }
 
@@ -83,5 +86,9 @@ class SettingsRepository {
 
   Future<void> setIsDevMode(bool isEnabled) async {
     await _settingsDatasource.setIsDevMode(isEnabled);
+  }
+
+  Future<void> setHideExchangeFeatures(bool hide) async {
+    await _settingsDatasource.setHideExchangeFeatures(hide);
   }
 }
