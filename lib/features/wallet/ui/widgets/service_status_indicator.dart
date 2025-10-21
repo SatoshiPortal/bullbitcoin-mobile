@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart' show BBText;
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
@@ -160,11 +161,7 @@ class ServiceStatusBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           if (serviceStatus == null)
-            BBText(
-              'Status not available',
-              style: context.font.bodyMedium,
-              color: context.colour.onSurfaceVariant,
-            )
+            FadingLinearProgress(trigger: serviceStatus == null)
           else
             Column(
               children: [
@@ -181,6 +178,8 @@ class ServiceStatusBottomSheet extends StatelessWidget {
                 _ServiceStatusItem(service: serviceStatus!.pricer),
                 const SizedBox(height: 12),
                 _ServiceStatusItem(service: serviceStatus!.mempool),
+                const SizedBox(height: 12),
+                _ServiceStatusItem(service: serviceStatus!.recoverbull),
                 const SizedBox(height: 16),
                 BBText(
                   'Last checked: ${_formatDateTime(serviceStatus!.lastChecked)}',

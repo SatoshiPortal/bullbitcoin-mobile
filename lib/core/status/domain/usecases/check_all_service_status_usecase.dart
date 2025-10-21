@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class CheckAllServiceStatusUsecase {
@@ -17,6 +19,8 @@ class CheckAllServiceStatusUsecase {
   final ExchangeRateRepository _exchangeRateRepository;
   final PayjoinRepository _payjoinRepository;
   final FeesRepository _feesRepository;
+  final RecoverBullRepository _recoverBullRepository;
+  final WalletRepository _walletRepository;
 
   CheckAllServiceStatusUsecase({
     required ElectrumConnectivityPort electrumConnectivityPort,
@@ -25,12 +29,16 @@ class CheckAllServiceStatusUsecase {
     required ExchangeRateRepository exchangeRateRepository,
     required PayjoinRepository payjoinRepository,
     required FeesRepository feesRepository,
+    required RecoverBullRepository recoverBullRepository,
+    required WalletRepository walletRepository,
   }) : _electrumConnectivityPort = electrumConnectivityPort,
        _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
        _testnetBoltzSwapRepository = testnetBoltzSwapRepository,
        _exchangeRateRepository = exchangeRateRepository,
        _payjoinRepository = payjoinRepository,
-       _feesRepository = feesRepository;
+       _feesRepository = feesRepository,
+       _recoverBullRepository = recoverBullRepository,
+       _walletRepository = walletRepository;
 
   Future<AllServicesStatus> execute({required Network network}) async {
     final now = DateTime.now();
@@ -46,6 +54,8 @@ class CheckAllServiceStatusUsecase {
         _checkMempoolService(network),
       ]);
 
+      final recoverbullStatus = await _checkRecoverbullConnection();
+
       return AllServicesStatus(
         internetConnection: results[0],
         bitcoinElectrum: results[1],
@@ -54,6 +64,7 @@ class CheckAllServiceStatusUsecase {
         payjoin: results[4],
         pricer: results[5],
         mempool: results[6],
+        recoverbull: recoverbullStatus,
         lastChecked: now,
       );
     } catch (e) {
@@ -206,6 +217,26 @@ class CheckAllServiceStatusUsecase {
         lastChecked: DateTime.now(),
       );
     }
+  }
+
+  Future<ServiceStatusInfo> _checkRecoverbullConnection() async {
+    var status = ServiceStatusInfo(
+      status: ServiceStatus.unknown,
+      name: 'Recoverbull',
+      lastChecked: DateTime.now(),
+    );
+
+    final isTorRequired = await _walletRepository.isTorRequired();
+    if (isTorRequired) {
+      try {
+        await _recoverBullRepository.checkKeyServerConnectionWithTor();
+        status = status.copyWith(status: ServiceStatus.online);
+      } catch (e) {
+        status = status.copyWith(status: ServiceStatus.offline);
+      }
+    }
+
+    return status;
   }
 
   AllServicesStatus _createUnknownStatus(DateTime now) {

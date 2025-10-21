@@ -29,6 +29,14 @@ sealed class AllServicesStatus with _$AllServicesStatus {
     required ServiceStatusInfo payjoin,
     required ServiceStatusInfo pricer,
     required ServiceStatusInfo mempool,
+    @Default(
+      ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Recoverbull',
+        lastChecked: null,
+      ),
+    )
+    ServiceStatusInfo recoverbull,
     required DateTime lastChecked,
   }) = _AllServicesStatus;
 
