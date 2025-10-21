@@ -49,7 +49,7 @@ class ArkCubit extends Cubit<ArkState> {
       log.info(
         '[ArkCubit] ARK balance loaded - boarding unconfirmed: ${balance.boarding.unconfirmed}, boarding confirmed: ${balance.boarding.confirmed}, total: ${balance.total}',
       );
-      walletBloc.add(RefreshArkWalletBalance(amount: balance.total));
+      walletBloc.add(RefreshArkWalletBalance(amount: balance.completeTotal));
 
       emit(state.copyWith(arkBalance: balance));
     } catch (e) {

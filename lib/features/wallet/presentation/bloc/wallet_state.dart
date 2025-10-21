@@ -43,7 +43,7 @@ sealed class WalletState with _$WalletState {
   bool get noWalletsFound => noWalletsFoundException != null;
 
   int totalBalance() => wallets.fold<int>(
-    0,
+    arkBalanceSat,
     (previousValue, element) => previousValue + element.balanceSat.toInt(),
   );
 
