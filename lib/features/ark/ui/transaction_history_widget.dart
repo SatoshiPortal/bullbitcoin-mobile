@@ -75,6 +75,8 @@ class TransactionHistoryWidget extends StatelessWidget {
     final transactionsByDay = _groupTransactionsByDay();
 
     return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       itemCount: transactionsByDay.entries.length,
       itemBuilder: (context, index) {

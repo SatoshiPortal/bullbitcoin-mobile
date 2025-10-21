@@ -34,33 +34,39 @@ class ArkWalletDetailPage extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async => await cubit.load(),
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              Column(
-                children: [
-                  ArkBalanceDetailWidget(arkBalance: state.arkBalance),
-                  if (state.isLoading)
-                    LinearProgressIndicator(
-                      backgroundColor: context.colour.surface,
-                      color: context.colour.primary,
-                    ),
-                  const Gap(16.0),
-                  Expanded(
-                    child: TransactionHistoryWidget(
-                      transactions: state.transactions,
-                      isLoading: state.isLoading,
-                    ),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: RefreshIndicator(
+                onRefresh: () async => await cubit.load(),
+                child: SingleChildScrollView(
+                  // Needed to allow pull-to-refresh even if content is too short
+                  //  to be scrollable
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(bottom: 160.0),
+                  child: Column(
+                    children: [
+                      ArkBalanceDetailWidget(arkBalance: state.arkBalance),
+                      if (state.isLoading)
+                        LinearProgressIndicator(
+                          backgroundColor: context.colour.surface,
+                          color: context.colour.primary,
+                        ),
+                      const Gap(16.0),
+                      TransactionHistoryWidget(
+                        transactions: state.transactions,
+                        isLoading: state.isLoading,
+                      ),
+                    ],
                   ),
-                  // to make space for bottom buttons
-                  // TODO: Get and use real height of bottom buttons
-                  const Gap(160.0),
-                ],
+                ),
               ),
-
-              Column(
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Builder(
@@ -97,8 +103,8 @@ class ArkWalletDetailPage extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
