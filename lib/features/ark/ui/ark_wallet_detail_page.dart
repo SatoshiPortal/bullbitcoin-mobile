@@ -38,6 +38,7 @@ class ArkWalletDetailPage extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             children: [
               SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 160.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
