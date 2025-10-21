@@ -8,40 +8,40 @@ sealed class Label with _$Label {
   const factory Label.tx({
     required String transactionId,
     required String label,
-    String? walletId,
+    String? origin,
   }) = TxLabel;
 
   const factory Label.addr({
     required String address,
     required String label,
-    String? walletId,
+    String? origin,
   }) = AddressLabel;
 
   const factory Label.pubkey({
     required String pubkey,
     required String label,
-    String? walletId,
+    String? origin,
   }) = PubkeyLabel;
 
   const factory Label.input({
     required String txId,
     required int vin,
     required String label,
-    String? walletId,
+    String? origin,
   }) = InputLabel;
 
   const factory Label.output({
     required String txId,
     required int vout,
     required String label,
-    String? walletId,
+    String? origin,
     bool? spendable,
   }) = OutputLabel;
 
   const factory Label.xpub({
     required String xpub,
     required String label,
-    String? walletId,
+    String? origin,
   }) = XpubLabel;
   const Label._();
 
@@ -58,13 +58,13 @@ sealed class Label with _$Label {
 
   String get ref {
     return switch (this) {
-      TxLabel(transactionId: final txId, walletId: _) => txId,
-      AddressLabel(address: final addr, walletId: _) => addr,
-      PubkeyLabel(pubkey: final pubkey, walletId: _) => pubkey,
-      InputLabel(txId: final txId, vin: final vin, walletId: _) => '$txId:$vin',
-      OutputLabel(txId: final txId, vout: final vout, walletId: _) =>
+      TxLabel(transactionId: final txId, origin: _) => txId,
+      AddressLabel(address: final addr, origin: _) => addr,
+      PubkeyLabel(pubkey: final pubkey, origin: _) => pubkey,
+      InputLabel(txId: final txId, vin: final vin, origin: _) => '$txId:$vin',
+      OutputLabel(txId: final txId, vout: final vout, origin: _) =>
         '$txId:$vout',
-      XpubLabel(xpub: final xpub, walletId: _) => xpub,
+      XpubLabel(xpub: final xpub, origin: _) => xpub,
     };
   }
 }

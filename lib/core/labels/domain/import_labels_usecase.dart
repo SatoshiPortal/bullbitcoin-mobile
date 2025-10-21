@@ -46,35 +46,35 @@ class ImportLabelsUsecase {
       bip329.TxLabel() => Label.tx(
         transactionId: bip329Label.ref,
         label: bip329Label.label,
-        walletId: bip329Label.origin,
+        origin: bip329Label.origin,
       ),
       bip329.AddressLabel() => Label.addr(
         address: bip329Label.ref,
         label: bip329Label.label,
-        walletId: bip329Label.origin,
+        origin: bip329Label.origin,
       ),
       bip329.PubkeyLabel() => Label.pubkey(
         pubkey: bip329Label.ref,
         label: bip329Label.label,
-        walletId: bip329Label.origin,
+        origin: bip329Label.origin,
       ),
       bip329.InputLabel() => Label.input(
         txId: bip329Label.ref.split(':')[0],
         vin: int.parse(bip329Label.ref.split(':')[1]),
         label: bip329Label.label,
-        walletId: bip329Label.origin,
+        origin: bip329Label.origin,
       ),
       bip329.OutputLabel() => Label.output(
         txId: bip329Label.ref.split(':')[0],
         vout: int.parse(bip329Label.ref.split(':')[1]),
         label: bip329Label.label,
-        walletId: bip329Label.origin,
+        origin: bip329Label.origin,
         spendable: bip329Label.spendable,
       ),
       bip329.XpubLabel() => Label.xpub(
         xpub: bip329Label.ref,
         label: bip329Label.label,
-        walletId: bip329Label.origin,
+        origin: bip329Label.origin,
       ),
       _ =>
         throw ImportLabelsError(

@@ -86,7 +86,7 @@ class CreateReceiveSwapUsecase {
         final addressLabel = Label.addr(
           address: claimAddress.address,
           label: description,
-          walletId: wallet.id,
+          origin: wallet.id,
         );
         await _labelRepository.store(addressLabel);
       }
