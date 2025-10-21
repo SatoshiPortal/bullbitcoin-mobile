@@ -1,5 +1,6 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
 import 'package:bb_mobile/core/ark/ark.dart';
+import 'package:bb_mobile/core/ark/entities/ark_balance.dart';
 import 'package:bb_mobile/core/ark/errors.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
@@ -44,13 +45,32 @@ class ArkWalletEntity {
     }
   }
 
-  Future<({int confirmed, int pending, int total})> get balance async {
-    final balance = await wallet.balance();
-    return (
-      confirmed: balance.confirmed,
-      pending: balance.pending,
-      total: balance.total,
-    );
+  Future<ArkBalance> get balance async {
+    try {
+      log.info('[ArkWalletEntity] Fetching ARK wallet balance');
+      final balance = await wallet.balance();
+
+      final arkBalance = ArkBalance(
+        preconfirmed: balance.preconfirmed,
+        settled: balance.settled,
+        available: balance.available,
+        recoverable: balance.recoverable,
+        total: balance.total,
+        boarding: ArkBoarding(
+          unconfirmed: balance.boarding.unconfirmed,
+          confirmed: balance.boarding.confirmed,
+          total: balance.boarding.total,
+        ),
+      );
+
+      log.info(
+        '[ArkWalletEntity] ARK balance fetched - boarding unconfirmed: ${arkBalance.boarding.unconfirmed}, boarding confirmed: ${arkBalance.boarding.confirmed}, total: ${arkBalance.total}',
+      );
+      return arkBalance;
+    } catch (e) {
+      log.severe('[ArkWalletEntity] Failed to fetch ARK balance: $e');
+      rethrow;
+    }
   }
 
   Future<List<ark_wallet.Transaction>> get transactions =>

@@ -42,19 +42,18 @@ class ArkCubit extends Cubit<ArkState> {
 
   Future<void> loadBalance() async {
     try {
+      log.info('[ArkCubit] Loading ARK balance');
       emit(state.copyWith(isLoading: true));
       final balance = await wallet.balance;
 
+      log.info(
+        '[ArkCubit] ARK balance loaded - boarding unconfirmed: ${balance.boarding.unconfirmed}, boarding confirmed: ${balance.boarding.confirmed}, total: ${balance.total}',
+      );
       walletBloc.add(RefreshArkWalletBalance(amount: balance.total));
 
-      emit(
-        state.copyWith(
-          confirmedBalance: balance.confirmed,
-          pendingBalance: balance.pending,
-        ),
-      );
+      emit(state.copyWith(arkBalance: balance));
     } catch (e) {
-      log.warning(e.toString());
+      log.warning('[ArkCubit] Failed to load ARK balance: $e');
       emit(state.copyWith(error: ArkError(e.toString())));
     } finally {
       emit(state.copyWith(isLoading: false));
