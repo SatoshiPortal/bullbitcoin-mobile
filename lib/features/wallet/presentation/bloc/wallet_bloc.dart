@@ -589,7 +589,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(
         state.copyWith(
           arkWallet: arkWallet,
-          arkBalanceSat: arkBalance?.total ?? 0,
+          arkBalanceSat: arkBalance?.completeTotal ?? 0,
         ),
       );
     }

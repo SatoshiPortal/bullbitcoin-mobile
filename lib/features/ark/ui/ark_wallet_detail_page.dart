@@ -1,4 +1,3 @@
-import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -41,10 +40,7 @@ class ArkWalletDetailPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ArkBalanceDetailWidget(
-              confirmedBalance: state.confirmedBalance,
-              pendingBalance: state.pendingBalance,
-            ),
+            ArkBalanceDetailWidget(arkBalance: state.arkBalance),
 
             if (state.isLoading)
               LinearProgressIndicator(
@@ -54,25 +50,23 @@ class ArkWalletDetailPage extends StatelessWidget {
 
             const Gap(16.0),
             Expanded(
-              child: TransactionHistoryWidget(
-                transactions: state.transactions,
-              ),
+              child: TransactionHistoryWidget(transactions: state.transactions),
             ),
             Builder(
               builder: (context) {
-                final unsettledCount = state.transactions
-                    .whereType<ark_wallet.Transaction_Redeem>()
-                    .where((tx) => !tx.isSettled)
-                    .length;
+                // final unsettledCount = state.transactions
+                //     .whereType<ark_wallet.Transaction_Redeem>()
+                //     .where((tx) => !tx.isSettled || tx.)
+                //     .length;
 
-                if (unsettledCount == 0) {
-                  return const SizedBox.shrink();
-                }
+                // if (unsettledCount == 0) {
+                //   return const SizedBox.shrink();
+                // }
 
                 return Padding(
                   padding: const EdgeInsets.all(13.0),
                   child: BBButton.big(
-                    label: 'Settle $unsettledCount ${unsettledCount == 1 ? 'transaction' : 'transactions'}',
+                    label: 'Settle transactions',
                     onPressed: () => SettleBottomSheet.show(context, cubit),
                     bgColor: context.colour.primary,
                     textColor: context.colour.onPrimary,

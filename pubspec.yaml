@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.2.0+104
+version: 6.2.1+105
 
 
 environment:
@@ -112,8 +112,8 @@ dependencies:
   bitcoin_base: ^6.9.0
   ark_wallet:
     git:
-      url: https://github.com/ethicnology/dart-ark-wallet
-      ref: 6bafc9078a48720adefeff51a214d80929577279
+      url: https://github.com/SatoshiPortal/dart-ark-wallet
+      ref: c65383ef05a2d622ccb915286e8a1da9ae9ff00f
 
 dev_dependencies:
   build_runner: ^2.4.15

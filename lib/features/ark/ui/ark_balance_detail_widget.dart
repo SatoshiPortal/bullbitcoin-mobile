@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/ark/entities/ark_balance.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
@@ -8,15 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class ArkBalanceDetailWidget extends StatelessWidget {
-  const ArkBalanceDetailWidget({
-    super.key,
-    required this.confirmedBalance,
-    required this.pendingBalance,
-  });
+  const ArkBalanceDetailWidget({super.key, required this.arkBalance});
 
-  final int confirmedBalance;
-  final int pendingBalance;
-  int get totalBalance => confirmedBalance + pendingBalance;
+  final ArkBalance? arkBalance;
+
+  int get totalBalance => arkBalance?.completeTotal ?? 0;
 
   void _showBalanceBreakdown(BuildContext context) {
     BlurredBottomSheet.show(
@@ -34,61 +31,140 @@ class ArkBalanceDetailWidget extends StatelessWidget {
               children: [
                 Text('Balance Breakdown', style: context.font.headlineMedium),
                 const Gap(24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.check_circle,
-                          color: context.colour.inverseSurface,
-                        ),
-                        const Gap(8),
-                        Text('Confirmed', style: context.font.bodyLarge),
-                      ],
-                    ),
-                    CurrencyText(
-                      confirmedBalance,
-                      style: context.font.bodyLarge,
-                      showFiat: false,
-                    ),
-                  ],
-                ),
-                const Gap(16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.pending_actions,
-                          color: context.colour.inversePrimary,
-                        ),
-                        const Gap(8),
-                        Text('Pending', style: context.font.bodyLarge),
-                      ],
-                    ),
-                    CurrencyText(
-                      pendingBalance,
-                      style: context.font.bodyLarge,
-                      showFiat: false,
-                    ),
-                  ],
-                ),
-                const Gap(16),
-                Divider(color: context.colour.outline),
-                const Gap(16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Total', style: context.font.titleLarge),
-                    CurrencyText(
-                      totalBalance,
-                      style: context.font.titleLarge,
-                      showFiat: false,
-                    ),
-                  ],
-                ),
+                if (arkBalance != null) ...[
+                  // Boarding Unconfirmed
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.schedule, color: context.colour.primary),
+                          const Gap(8),
+                          Text(
+                            'Boarding Unconfirmed',
+                            style: context.font.bodyLarge,
+                          ),
+                        ],
+                      ),
+                      CurrencyText(
+                        arkBalance!.boarding.unconfirmed,
+                        style: context.font.bodyLarge,
+                        showFiat: false,
+                      ),
+                    ],
+                  ),
+                  const Gap(16),
+                  // Boarding Confirmed
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: context.colour.inverseSurface,
+                          ),
+                          const Gap(8),
+                          Text(
+                            'Boarding Confirmed',
+                            style: context.font.bodyLarge,
+                          ),
+                        ],
+                      ),
+                      CurrencyText(
+                        arkBalance!.boarding.confirmed,
+                        style: context.font.bodyLarge,
+                        showFiat: false,
+                      ),
+                    ],
+                  ),
+                  const Gap(16),
+                  // Preconfirmed
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.hourglass_empty,
+                            color: context.colour.secondary,
+                          ),
+                          const Gap(8),
+                          Text('Preconfirmed', style: context.font.bodyLarge),
+                        ],
+                      ),
+                      CurrencyText(
+                        arkBalance!.preconfirmed,
+                        style: context.font.bodyLarge,
+                        showFiat: false,
+                      ),
+                    ],
+                  ),
+                  const Gap(16),
+                  // Settled
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.done_all,
+                            color: context.colour.inverseSurface,
+                          ),
+                          const Gap(8),
+                          Text('Settled', style: context.font.bodyLarge),
+                        ],
+                      ),
+                      CurrencyText(
+                        arkBalance!.settled,
+                        style: context.font.bodyLarge,
+                        showFiat: false,
+                      ),
+                    ],
+                  ),
+                  const Gap(16),
+                  // Available
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.account_balance_wallet,
+                            color: context.colour.primary,
+                          ),
+                          const Gap(8),
+                          Text('Available', style: context.font.bodyLarge),
+                        ],
+                      ),
+                      CurrencyText(
+                        arkBalance!.available,
+                        style: context.font.bodyLarge,
+                        showFiat: false,
+                      ),
+                    ],
+                  ),
+                  const Gap(16),
+                  Divider(color: context.colour.outline),
+                  const Gap(16),
+                  // Total
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Total', style: context.font.titleLarge),
+                      CurrencyText(
+                        arkBalance!.completeTotal,
+                        style: context.font.titleLarge,
+                        showFiat: false,
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  Text(
+                    'No balance data available',
+                    style: context.font.bodyLarge,
+                  ),
+                ],
               ],
             ),
           ),

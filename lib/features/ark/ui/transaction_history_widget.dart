@@ -15,11 +15,11 @@ class TransactionHistoryWidget extends StatelessWidget {
     return switch (tx) {
       ark_wallet.Transaction_Boarding(confirmedAt: final confirmedAt?) =>
         DateTime.fromMillisecondsSinceEpoch(confirmedAt * 1000),
+      ark_wallet.Transaction_Boarding() => DateTime.now(),
       ark_wallet.Transaction_Commitment(createdAt: final createdAt) =>
         DateTime.fromMillisecondsSinceEpoch(createdAt * 1000),
       ark_wallet.Transaction_Redeem(createdAt: final createdAt) =>
         DateTime.fromMillisecondsSinceEpoch(createdAt * 1000),
-      _ => null,
     };
   }
 
