@@ -29,7 +29,7 @@ abstract class LabelModel with _$LabelModel {
       label: label.label,
       ref: label.ref,
       type: label.type,
-      origin: label.walletId,
+      origin: label.origin,
       spendable: label is OutputLabel ? label.spendable : null,
     );
   }
@@ -45,15 +45,11 @@ abstract class LabelModel with _$LabelModel {
   Label toEntity() {
     switch (type) {
       case LabelType.tx:
-        return Label.tx(
-          transactionId: ref,
-          label: label,
-          walletId: origin ?? '',
-        );
+        return Label.tx(transactionId: ref, label: label, origin: origin ?? '');
       case LabelType.address:
-        return Label.addr(address: ref, label: label, walletId: origin ?? '');
+        return Label.addr(address: ref, label: label, origin: origin ?? '');
       case LabelType.pubkey:
-        return Label.pubkey(pubkey: ref, label: label, walletId: origin ?? '');
+        return Label.pubkey(pubkey: ref, label: label, origin: origin ?? '');
       case LabelType.input:
         final parts = ref.split(':');
         if (parts.length != 2) {
@@ -63,7 +59,7 @@ abstract class LabelModel with _$LabelModel {
           txId: parts[0],
           vin: int.parse(parts[1]),
           label: label,
-          walletId: origin ?? '',
+          origin: origin ?? '',
         );
       case LabelType.output:
         final parts = ref.split(':');
@@ -74,11 +70,11 @@ abstract class LabelModel with _$LabelModel {
           txId: parts[0],
           vout: int.parse(parts[1]),
           label: label,
-          walletId: origin ?? '',
+          origin: origin ?? '',
           spendable: spendable,
         );
       case LabelType.xpub:
-        return Label.xpub(xpub: ref, label: label, walletId: origin ?? '');
+        return Label.xpub(xpub: ref, label: label, origin: origin ?? '');
     }
   }
 }
