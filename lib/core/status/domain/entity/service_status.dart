@@ -37,6 +37,15 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       ),
     )
     ServiceStatusInfo recoverbull,
+    @Default(
+      ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Ark',
+        lastChecked: null,
+      ),
+    )
+    ServiceStatusInfo ark,
+
     required DateTime lastChecked,
   }) = _AllServicesStatus;
 
@@ -49,7 +58,9 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       boltz.isOnline &&
       payjoin.isOnline &&
       pricer.isOnline &&
-      mempool.isOnline;
+      mempool.isOnline &&
+      (recoverbull.isOnline || recoverbull.isUnknown) &&
+      (ark.isOnline || ark.isUnknown);
 
   bool get hasAnyServiceOffline => !allServicesOnline;
 }
