@@ -69,38 +69,40 @@ class TransactionHistoryWidget extends StatelessWidget {
 
     final transactionsByDay = _groupTransactionsByDay();
 
-    return ListView.builder(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      itemCount: transactionsByDay.entries.length,
-      itemBuilder: (context, index) {
-        final entry = transactionsByDay.entries.elementAt(index);
-        final date = DateTime.fromMillisecondsSinceEpoch(entry.key);
-        final txs = entry.value;
-        final now = DateTime.now();
-        final today = DateTime(now.year, now.month, now.day);
-        final yesterday = DateTime(now.year, now.month, now.day - 1);
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children:
+            transactionsByDay.entries.map((entry) {
+              final date = DateTime.fromMillisecondsSinceEpoch(entry.key);
+              final txs = entry.value;
+              final now = DateTime.now();
+              final today = DateTime(now.year, now.month, now.day);
+              final yesterday = DateTime(now.year, now.month, now.day - 1);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              date.isAtSameMomentAs(today)
-                  ? 'Today'
-                  : date.isAtSameMomentAs(yesterday)
-                  ? 'Yesterday'
-                  : date.year == DateTime.now().year
-                  ? DateFormat.MMMMd().format(date)
-                  : DateFormat.yMMMMd().format(date),
-              style: context.font.titleSmall?.copyWith(
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-            const Gap(16),
-            ...txs.map((tx) => ArkTxWidget(tx: tx)),
-            const Gap(16),
-          ],
-        );
-      },
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    date.isAtSameMomentAs(today)
+                        ? 'Today'
+                        : date.isAtSameMomentAs(yesterday)
+                        ? 'Yesterday'
+                        : date.year == DateTime.now().year
+                        ? DateFormat.MMMMd().format(date)
+                        : DateFormat.yMMMMd().format(date),
+                    style: context.font.titleSmall?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const Gap(16),
+                  ...txs.map((tx) => ArkTxWidget(tx: tx)),
+                  const Gap(16),
+                ],
+              );
+            }).toList(),
+      ),
     );
   }
 }
