@@ -19,6 +19,26 @@ class LabelRepository {
     return labelModels.map((model) => model.toEntity()).toList();
   }
 
+  Future<List<AddressLabel>> fetchAddressLabels(String address) async {
+    final labelModels = await _labelDatasource.fetchByRef(address);
+    return labelModels
+        .map((model) => model.toEntity() as AddressLabel)
+        .toList();
+  }
+
+  Future<List<TxLabel>> fetchTransactionLabels(String txId) async {
+    final labelModels = await _labelDatasource.fetchByRef(txId);
+    return labelModels.map((model) => model.toEntity() as TxLabel).toList();
+  }
+
+  Future<List<OutputLabel>> fetchOutputLabels({
+    required String txId,
+    required int index,
+  }) async {
+    final labelModels = await _labelDatasource.fetchByRef('$txId:$index');
+    return labelModels.map((model) => model.toEntity() as OutputLabel).toList();
+  }
+
   Future<void> trashByLabel(String label) async {
     await _labelDatasource.trashByLabel(label: label);
   }
