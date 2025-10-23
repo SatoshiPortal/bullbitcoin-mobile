@@ -42,7 +42,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
         txid = tx.txid;
         sats = tx.sats;
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
-        type = 'Commitment';
+        type = 'Settlement';
         statusLabel = 'Confirmed';
         isIncoming = false;
         isSwap = true;
@@ -50,7 +50,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
         txid = tx.txid;
         sats = tx.sats;
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
-        type = 'Redeem';
+        type = 'Payment';
         statusLabel = tx.isSettled ? 'Settled' : 'Pending';
         isIncoming = false;
     }
