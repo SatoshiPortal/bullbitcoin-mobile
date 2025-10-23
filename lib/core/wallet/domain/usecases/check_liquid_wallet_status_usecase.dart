@@ -15,9 +15,9 @@ class TheDirtyLiquidUsecase {
   final SettingsRepository _settingsRepository;
   final ElectrumServerPort _electrumServerPort;
 
-  Future<({BigInt satoshis, int transactions})> call(
-    bip39.Mnemonic mnemonic,
-  ) async {
+  Future<({BigInt satoshis, int transactions})> call({
+    required bip39.Mnemonic mnemonic,
+  }) async {
     final random = Random();
     final dbName = 'tmp_${random.nextInt(999999)}';
     String? dbPath;

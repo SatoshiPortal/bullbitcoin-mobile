@@ -24,7 +24,7 @@ class CreateEncryptedVaultUsecase {
        _seedRepository = seedRepository,
        _walletRepository = walletRepository;
 
-  Future<EncryptedVault> execute() async {
+  Future<({EncryptedVault vault, String vaultKey})> execute() async {
     try {
       // Get the default wallet
       final defaultBitcoinWallets = await _walletRepository.getWallets(
@@ -81,7 +81,10 @@ class CreateEncryptedVaultUsecase {
       final mapBackup = json.decode(encryptedBackup);
       mapBackup['path'] = derivationPath;
 
-      return EncryptedVault(file: json.encode(mapBackup));
+      return (
+        vault: EncryptedVault(file: json.encode(mapBackup)),
+        vaultKey: backupKey,
+      );
     } catch (e) {
       log.severe('$CreateEncryptedVaultUsecase: $e');
       throw CreateEncryptedVaultException(e.toString());

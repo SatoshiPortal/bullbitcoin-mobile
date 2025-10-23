@@ -8,8 +8,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
-import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
@@ -50,9 +50,9 @@ class WalletLocator {
         watchFinishedWalletSyncsUsecase:
             locator<WatchFinishedWalletSyncsUsecase>(),
         restartSwapWatcherUsecase: locator<RestartSwapWatcherUsecase>(),
-        initializeTorUsecase: locator<InitializeTorUsecase>(),
+        initializeTorUsecase: locator<InitTorUsecase>(),
         checkForTorInitializationOnStartupUsecase:
-            locator<CheckTorRequiredOnStartupUsecase>(),
+            locator<IsTorRequiredUsecase>(),
         checkForOnlineElectrumServersUsecase:
             locator<CheckForOnlineElectrumServersUsecase>(),
         getUnconfirmedIncomingBalanceUsecase:

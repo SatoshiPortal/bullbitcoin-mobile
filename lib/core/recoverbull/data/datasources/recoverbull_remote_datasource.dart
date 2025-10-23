@@ -10,9 +10,9 @@ class RecoverBullRemoteDatasource {
   Future<void> info(SOCKSSocket socket) async {
     try {
       final info = await _keyServer.infos(socks: socket);
-      log.info('KeyServer connection success: ${info.canary}');
-    } on Exception catch (e) {
-      log.severe('serverinfo error: $e');
+      log.info('KeyServer canary: ${info.canary}');
+    } catch (e) {
+      log.severe('infos error: $e');
       rethrow;
     }
   }

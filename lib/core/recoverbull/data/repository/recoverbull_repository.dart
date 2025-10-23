@@ -89,12 +89,13 @@ class RecoverBullRepository {
 
   Future<void> checkKeyServerConnectionWithTor() async {
     if (!torRepository.isStarted) {
-      log.info('Starting Tor');
+      log.config('Starting Tor');
       await torRepository.start();
     }
+
     final isTorReady = await torRepository.isTorReady;
-    log.info('isTorReady: $isTorReady');
     if (!isTorReady) throw Exception('Tor is not ready');
+    log.config('Tor is ready');
 
     final socket = await torRepository.createSocket();
     await remoteDatasource.info(socket);

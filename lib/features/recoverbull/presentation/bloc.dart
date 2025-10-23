@@ -1,0 +1,366 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_key_server_connection_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/errors.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'bloc.freezed.dart';
+part 'event.dart';
+part 'state.dart';
+
+class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
+  final _pickVaultUsecase = PickVaultUsecase();
+  final _saveFileToSystemUsecase = SaveFileToSystemUsecase();
+  final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
+  final SaveToGoogleDriveUsecase _saveToGoogleDriveUsecase;
+  final CreateEncryptedVaultUsecase _createEncryptedVaultUsecase;
+  final StoreVaultKeyIntoServerUsecase _storeVaultKeyIntoServerUsecase;
+  final CheckKeyServerConnectionUsecase _checkKeyServerConnectionUsecase;
+  final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
+  final DecryptVaultUsecase _decryptVaultUsecase;
+  final RestoreVaultUsecase _restoreVaultUsecase;
+  final InitTorUsecase _initializeTorUsecase;
+  final IsTorRequiredUsecase _checkForTorInitializationOnStartupUsecase;
+  final TheDirtyUsecase _checkWalletStatusUsecase;
+  final TheDirtyLiquidUsecase _checkLiquidWalletStatusUsecase;
+  final WalletBloc _walletBloc;
+
+  RecoverBullBloc({
+    required RecoverBullFlow flow,
+    required CreateEncryptedVaultUsecase createEncryptedVaultUsecase,
+    required StoreVaultKeyIntoServerUsecase storeVaultKeyIntoServerUsecase,
+    required CheckKeyServerConnectionUsecase checkKeyServerConnectionUsecase,
+    required FetchVaultKeyFromServerUsecase fetchVaultKeyFromServerUsecase,
+    required DecryptVaultUsecase decryptVaultUsecase,
+    required RestoreVaultUsecase restoreVaultUsecase,
+    required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
+    required SaveToGoogleDriveUsecase saveToGoogleDriveUsecase,
+    required InitTorUsecase initializeTorUsecase,
+    required IsTorRequiredUsecase checkForTorInitializationOnStartupUsecase,
+    required TheDirtyUsecase checkWalletStatusUsecase,
+    required TheDirtyLiquidUsecase checkLiquidWalletStatusUsecase,
+    required WalletBloc walletBloc,
+  }) : _createEncryptedVaultUsecase = createEncryptedVaultUsecase,
+       _storeVaultKeyIntoServerUsecase = storeVaultKeyIntoServerUsecase,
+       _checkKeyServerConnectionUsecase = checkKeyServerConnectionUsecase,
+       _fetchVaultKeyFromServerUsecase = fetchVaultKeyFromServerUsecase,
+       _decryptVaultUsecase = decryptVaultUsecase,
+       _restoreVaultUsecase = restoreVaultUsecase,
+       _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
+       _saveToGoogleDriveUsecase = saveToGoogleDriveUsecase,
+       _initializeTorUsecase = initializeTorUsecase,
+       _checkForTorInitializationOnStartupUsecase =
+           checkForTorInitializationOnStartupUsecase,
+       _checkWalletStatusUsecase = checkWalletStatusUsecase,
+       _checkLiquidWalletStatusUsecase = checkLiquidWalletStatusUsecase,
+       _walletBloc = walletBloc,
+       super(RecoverBullState(flow: flow)) {
+    on<OnRecoverBullStarted>(_onRecoverBullStarted);
+    on<OnVaultProviderSelection>(_onVaultProviderSelection);
+    on<OnVaultSelection>(_onVaultSelection);
+    on<OnVaultPasswordSet>(_onVaultPasswordSet);
+    on<OnVaultCreation>(_onVaultCreation);
+    on<OnVaultKeySet>(_onVaultKeySet);
+    on<OnCheckKeyServer>(_onCheckKeyServer);
+    on<OnCheckWalletStatus>(_onCheckWalletStatus);
+    on<OnVaultRecovery>(_onVaultRecovery);
+
+    add(const OnRecoverBullStarted());
+  }
+
+  Future<void> _onRecoverBullStarted(
+    OnRecoverBullStarted event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    add(const OnCheckKeyServer());
+  }
+
+  Future<void> _onCheckKeyServer(
+    OnCheckKeyServer event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    try {
+      final isTorIniatizationEnabled =
+          await _checkForTorInitializationOnStartupUsecase.execute();
+
+      if (isTorIniatizationEnabled) {
+        emit(state.copyWith(keyServerStatus: KeyServerStatus.connecting));
+        await _initializeTorUsecase.execute();
+      }
+
+      var isConnected = false;
+      for (var i = 0; i < 3; i++) {
+        try {
+          await Future.delayed(Duration(seconds: i + 1));
+          isConnected = await _checkKeyServerConnectionUsecase.execute();
+          if (isConnected) break;
+        } catch (e) {
+          log.info('Key Server is not ready: $e');
+        }
+      }
+
+      if (!isConnected) {
+        log.severe('Key Server is not ready after retries');
+        emit(
+          state.copyWith(
+            error: KeyServerConnectionError(),
+            keyServerStatus: KeyServerStatus.offline,
+          ),
+        );
+      } else {
+        log.fine('Key Server is ready');
+        emit(state.copyWith(keyServerStatus: KeyServerStatus.online));
+      }
+    } catch (e) {
+      log.severe('$OnCheckKeyServer: $e');
+      emit(
+        state.copyWith(
+          error: BullError(e.toString()),
+          keyServerStatus: KeyServerStatus.offline,
+        ),
+      );
+    }
+  }
+
+  Future<void> _onVaultPasswordSet(
+    OnVaultPasswordSet event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    switch (state.flow) {
+      case RecoverBullFlow.secureVault:
+        emit(state.copyWith(vaultPassword: event.password));
+      default:
+        if (state.vault == null) throw VaultIsNotSetError();
+        emit(state.copyWith(vaultPassword: event.password));
+
+        await _onFetchVaultKey(
+          OnFetchVaultKey(vault: state.vault!, password: event.password),
+          emit,
+        );
+    }
+  }
+
+  Future<void> _onVaultProviderSelection(
+    OnVaultProviderSelection event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    switch (state.flow) {
+      case RecoverBullFlow.secureVault:
+        if (state.vaultPassword == null) throw PasswordIsNotSetError();
+
+        await _onVaultCreation(
+          OnVaultCreation(
+            provider: event.provider,
+            password: state.vaultPassword!,
+          ),
+          emit,
+        );
+        emit(state.copyWith(vaultProvider: event.provider));
+      case RecoverBullFlow.recoverVault:
+        emit(state.copyWith(vaultProvider: event.provider));
+        add(OnVaultSelection(provider: event.provider));
+      case RecoverBullFlow.testVault:
+        emit(state.copyWith(vaultProvider: event.provider));
+        add(OnVaultSelection(provider: event.provider));
+      case RecoverBullFlow.viewVaultKey:
+        emit(state.copyWith(vaultProvider: event.provider));
+        add(OnVaultSelection(provider: event.provider));
+    }
+  }
+
+  Future<void> _onVaultSelection(
+    OnVaultSelection event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    try {
+      switch (event.provider) {
+        case VaultProvider.googleDrive:
+          // TODO(azad): Implement the logic to list the vaults from drive
+          // the user should be able to select the vault, check the amount before recover it.
+          // Maybe allow this only for recovery.
+
+          return;
+        case VaultProvider.customLocation:
+          final vault = await _pickVaultUsecase.execute();
+          emit(state.copyWith(vault: vault));
+        case VaultProvider.iCloud:
+          log.warning('iCloud, not supported yet');
+      }
+    } catch (e) {
+      log.severe('$OnVaultSelection: $e');
+      emit(state.copyWith(error: SelectVaultError()));
+    }
+  }
+
+  Future<void> _onVaultCreation(
+    OnVaultCreation event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    try {
+      final (vault: vault, vaultKey: vaultKey) =
+          await _createEncryptedVaultUsecase.execute();
+
+      switch (event.provider) {
+        case VaultProvider.customLocation:
+          await _saveFileToSystemUsecase.execute(
+            content: vault.toFile(),
+            filename: EncryptedVault(file: vault.toFile()).filename,
+          );
+        case VaultProvider.googleDrive:
+          await _connectToGoogleDriveUsecase.execute();
+          await _saveToGoogleDriveUsecase.execute(vault.toFile());
+        case VaultProvider.iCloud:
+          log.warning('iCloud, not supported yet');
+      }
+
+      emit(state.copyWith(isLoading: true));
+
+      await _storeVaultKeyIntoServerUsecase.execute(
+        password: event.password,
+        vault: vault,
+        vaultKey: vaultKey,
+      );
+
+      emit(state.copyWith(vault: vault));
+      log.fine('Vault created and key stored in server');
+    } catch (e) {
+      log.severe('$OnVaultCreation: $e');
+      emit(state.copyWith(error: BullError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  Future<void> _onFetchVaultKey(
+    OnFetchVaultKey event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    try {
+      if (state.flow == RecoverBullFlow.secureVault) return;
+
+      emit(state.copyWith(isLoading: true));
+      final vaultKey = await _fetchVaultKeyFromServerUsecase.execute(
+        vault: event.vault,
+        password: event.password,
+      );
+
+      emit(state.copyWith(vaultKey: vaultKey));
+      log.fine('Vault key fetched from server');
+
+      await _onVaultKeySet(OnVaultKeySet(vaultKey: vaultKey), emit);
+    } catch (e) {
+      log.severe('$OnFetchVaultKey: $e');
+      emit(state.copyWith(error: BullError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  Future<void> _onVaultKeySet(
+    OnVaultKeySet event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    if (state.vault == null) throw VaultIsNotSetError();
+
+    final vaultKey = event.vaultKey;
+    final vault = state.vault!;
+
+    try {
+      emit(state.copyWith(isLoading: true));
+
+      final decryptedVault = _decryptVaultUsecase.execute(
+        vault: vault,
+        vaultKey: vaultKey,
+      );
+
+      switch (state.flow) {
+        case RecoverBullFlow.viewVaultKey || RecoverBullFlow.testVault:
+          emit(state.copyWith(decryptedVault: decryptedVault));
+        case RecoverBullFlow.recoverVault:
+          emit(state.copyWith(decryptedVault: decryptedVault));
+          await _onCheckWalletStatus(
+            OnCheckWalletStatus(decryptedVault: decryptedVault),
+            emit,
+          );
+        case RecoverBullFlow.secureVault:
+          return;
+      }
+
+      emit(state.copyWith(vaultKey: vaultKey));
+      log.fine('Vault decrypted');
+    } catch (e) {
+      log.severe('$OnVaultKeySet: $e');
+      emit(state.copyWith(error: BullError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  Future<void> _onCheckWalletStatus(
+    OnCheckWalletStatus event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    try {
+      final mnemonic = bip39.Mnemonic.fromWords(
+        words: event.decryptedVault.mnemonic,
+      );
+
+      final bip84Status = await _checkWalletStatusUsecase(
+        mnemonic: mnemonic,
+        scriptType: ScriptType.bip84,
+      );
+      emit(state.copyWith(bip84Status: bip84Status));
+      log.fine('Vault BIP84 status checked');
+
+      final liquidStatus = await _checkLiquidWalletStatusUsecase(
+        mnemonic: mnemonic,
+      );
+      emit(state.copyWith(liquidStatus: liquidStatus));
+      log.fine('Vault Liquid status checked');
+    } catch (e) {
+      log.severe('$OnCheckWalletStatus: $e');
+      emit(state.copyWith(error: BullError(e.toString())));
+    }
+  }
+
+  Future<void> _onVaultRecovery(
+    OnVaultRecovery event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    if (state.decryptedVault == null) throw DecryptedVaultIsNotSetError();
+    if (state.flow != RecoverBullFlow.recoverVault) throw InvalidFlowError();
+
+    try {
+      emit(state.copyWith(isLoading: true));
+      await _restoreVaultUsecase.execute(decryptedVault: state.decryptedVault!);
+      _walletBloc.add(const WalletStarted());
+      log.fine('Vault recovered');
+      emit(state.copyWith(isFlowFinished: true));
+    } catch (e) {
+      log.severe('$OnVaultRecovery: $e');
+      emit(state.copyWith(error: BullError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+}

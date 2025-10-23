@@ -60,11 +60,13 @@ class RecoverBullVaultRecoveryCubit
       );
 
       final bip84Status = await _checkWalletStatusUsecase(
-        mnemonic,
-        ScriptType.bip84,
+        mnemonic: mnemonic,
+        scriptType: ScriptType.bip84,
       );
 
-      final liquidStatus = await _checkLiquidWalletStatusUsecase(mnemonic);
+      final liquidStatus = await _checkLiquidWalletStatusUsecase(
+        mnemonic: mnemonic,
+      );
 
       emit(
         state.copyWith(bip84Status: bip84Status, liquidStatus: liquidStatus),

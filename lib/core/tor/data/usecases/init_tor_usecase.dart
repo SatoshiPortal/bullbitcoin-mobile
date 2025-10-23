@@ -1,15 +1,15 @@
 import 'package:bb_mobile/core/tor/data/repository/tor_repository.dart';
 
-class InitializeTorUsecase {
+class InitTorUsecase {
   final TorRepository _torRepository;
 
-  InitializeTorUsecase(this._torRepository);
+  InitTorUsecase(this._torRepository);
 
   Future<void> execute() async {
     try {
       await _torRepository.start();
     } catch (e) {
-      throw Exception('Failed to initialize Tor: $e');
+      throw Exception('$InitTorUsecase: $e');
     }
   }
 }

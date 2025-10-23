@@ -1,15 +1,19 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/create_wallet_button.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/recover_backup_button.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/superuser_tap_unlocker.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({super.key, this.loading = false});
@@ -107,6 +111,20 @@ class _Actions extends StatelessWidget {
           const CreateWalletButton(),
           const Gap(10),
           const RecoverWalletButton(),
+          const Gap(10),
+          BBButton.big(
+            label: 'Recover',
+            bgColor: Colors.transparent,
+            textColor: context.colour.onPrimary,
+            iconData: Icons.history_edu,
+            outlined: true,
+            onPressed: () {
+              context.pushNamed(
+                RecoverBullRoute.recoverbullFlows.name,
+                extra: RecoverBullFlow.recoverVault,
+              );
+            },
+          ),
         ],
       ],
     );

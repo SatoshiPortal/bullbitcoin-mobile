@@ -11,6 +11,8 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_key_warning.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -111,6 +113,59 @@ class _Screen extends StatelessWidget {
                       const _TestBackupButton(),
                     const Gap(5),
                     const _StartBackupButton(),
+                    const Gap(5),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: BBButton.big(
+                        label: 'Create',
+                        onPressed:
+                            () => context.pushNamed(
+                              RecoverBullRoute.recoverbullFlows.name,
+                              extra: RecoverBullFlow.secureVault,
+                            ),
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onSecondary,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: BBButton.big(
+                        label: 'Test',
+                        onPressed:
+                            () => context.pushNamed(
+                              RecoverBullRoute.recoverbullFlows.name,
+                              extra: RecoverBullFlow.testVault,
+                            ),
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onSecondary,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: BBButton.big(
+                        label: 'View',
+                        onPressed:
+                            () => context.pushNamed(
+                              RecoverBullRoute.recoverbullFlows.name,
+                              extra: RecoverBullFlow.viewVaultKey,
+                            ),
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onSecondary,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: BBButton.big(
+                        label: 'Recover',
+                        onPressed:
+                            () => context.pushNamed(
+                              RecoverBullRoute.recoverbullFlows.name,
+                              extra: RecoverBullFlow.recoverVault,
+                            ),
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onSecondary,
+                      ),
+                    ),
                     if (state.error != null) ErrorWidget(error: state.error!),
                     const Spacer(),
                     if (state.lastEncryptedBackup != null)

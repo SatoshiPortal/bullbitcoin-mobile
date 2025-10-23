@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vau
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/derive_backup_key_from_default_wallet_usecase.dart';
 
@@ -18,7 +18,7 @@ Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final initializeTorUsecase = locator<InitializeTorUsecase>();
+  final initializeTorUsecase = locator<InitTorUsecase>();
   final restoreVaultKeyFromPasswordUsecase =
       locator<RestoreVaultKeyFromPasswordUsecase>();
   final restoreEncryptedVaultFromVaultKeyUsecase =

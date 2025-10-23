@@ -3,10 +3,10 @@ import 'package:bb_mobile/core/utils/pop_until.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/features/recoverbull/ui/widgets/wallet_status_widget.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/router.dart';
 import 'package:bb_mobile/features/recoverbull_vault_recovery/presentation/cubit.dart';
 import 'package:bb_mobile/features/recoverbull_vault_recovery/presentation/state.dart';
-import 'package:bb_mobile/features/recoverbull_vault_recovery/ui/wallet_status_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -48,7 +48,10 @@ class RecoverBullVaultRecoveryPage extends StatelessWidget {
                   child: Column(
                     children: [
                       const Gap(40),
-                      WalletStatusWidget(state: state),
+                      WalletStatusWidget(
+                        bip84Status: state.bip84Status,
+                        liquidStatus: state.liquidStatus,
+                      ),
                       const Spacer(),
                       BBButton.big(
                         onPressed: cubit.importWallet,

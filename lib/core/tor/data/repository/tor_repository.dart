@@ -18,9 +18,7 @@ class TorRepository {
   }
 
   Future<SOCKSSocket> createSocket() async {
-    if (!(await isTorReady)) {
-      throw Exception('Tor is not ready yet!');
-    }
+    if (!(await isTorReady)) throw Exception('Tor is not ready yet!');
 
     return await SOCKSSocket.create(
       proxyHost: InternetAddress.loopbackIPv4.address,
@@ -30,12 +28,12 @@ class TorRepository {
 
   Future<void> start() async {
     await _torDatasource.enable();
-    log.info('Tor started at port: ${_torDatasource.port}');
+    log.fine('Tor started at port: ${_torDatasource.port}');
   }
 
-  Future<void> stop() async {
-    await _torDatasource.disable();
-    log.info('Tor stopped');
+  void stop() {
+    _torDatasource.disable();
+    log.fine('Tor stopped');
   }
 
   bool get isStarted => _torDatasource.isEnabled;

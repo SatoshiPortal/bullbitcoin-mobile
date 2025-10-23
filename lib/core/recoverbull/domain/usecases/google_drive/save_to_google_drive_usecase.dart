@@ -1,14 +1,14 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
 
-class ConnectToGoogleDriveUsecase {
+class SaveToGoogleDriveUsecase {
   final GoogleDriveRepository _driveRepository;
 
-  ConnectToGoogleDriveUsecase({required GoogleDriveRepository driveRepository})
+  SaveToGoogleDriveUsecase({required GoogleDriveRepository driveRepository})
     : _driveRepository = driveRepository;
 
-  Future<void> execute() async {
+  Future<void> execute(String content) async {
     try {
-      await _driveRepository.connect();
+      await _driveRepository.storeBackup(content);
     } catch (e) {
       throw Exception(e.toString());
     }
