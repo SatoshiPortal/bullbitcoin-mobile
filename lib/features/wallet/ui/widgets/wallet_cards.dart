@@ -50,9 +50,14 @@ class WalletCards extends StatelessWidget {
       (WalletBloc bloc) => bloc.state.syncStatus,
     );
 
-    final arkWallet = context.select((WalletBloc bloc) => bloc.state.arkWallet);
     final arkBalanceSat = context.select(
       (WalletBloc bloc) => bloc.state.arkBalanceSat,
+    );
+    final isArkWalletSetup = context.select(
+      (WalletBloc bloc) => bloc.state.isArkWalletSetup,
+    );
+    final isArkWalletLoading = context.select(
+      (WalletBloc bloc) => bloc.state.isArkWalletLoading,
     );
 
     return Padding(
@@ -72,13 +77,13 @@ class WalletCards extends StatelessWidget {
             ),
             const Gap(8),
           ],
-          if (arkWallet != null) ...[
+          if (isArkWalletSetup) ...[
             WalletCard(
               tagColor: context.colour.primary,
               title: 'Ark Instant payments',
               description: 'Experimental',
               balanceSat: arkBalanceSat,
-              isSyncing: false,
+              isSyncing: isArkWalletLoading,
               onTap: () => context.pushNamed(ArkRoute.arkWalletDetail.name),
             ),
             const Gap(8),

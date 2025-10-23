@@ -22,6 +22,8 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool isCheckingServiceStatus,
     @Default(null) ArkWalletEntity? arkWallet,
     @Default(0) int arkBalanceSat,
+    @Default(false) bool isArkWalletLoading,
+    @Default(false) bool isArkWalletSetup,
   }) = _WalletState;
   const WalletState._();
 

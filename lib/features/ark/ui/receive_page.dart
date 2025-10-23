@@ -37,7 +37,7 @@ class _ReceivePageState extends State<ReceivePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: BBSegmentFull(
-                items: const {'Ark', 'Bitcoin'},
+                items: const {'Ark', 'Boarding'},
                 initialValue: _selectedOption,
                 onSelected: (value) {
                   setState(() {
@@ -48,7 +48,7 @@ class _ReceivePageState extends State<ReceivePage> {
             ),
             const Gap(16),
             ReceiveQR(
-              qrData: _selectedOption == 'Bitcoin' ? btcAddress : arkAddress,
+              qrData: _selectedOption == 'Boarding' ? btcAddress : arkAddress,
             ),
             const Gap(16),
             ArkCopyAddressSection(
@@ -108,12 +108,12 @@ class _ArkCopyAddressSectionState extends State<ArkCopyAddressSection> {
   @override
   Widget build(BuildContext context) {
     final currentAddress =
-        widget.selectedOption == 'Bitcoin'
+        widget.selectedOption == 'Boarding'
             ? widget.btcAddress
             : widget.arkAddress;
     final addressLabel =
-        widget.selectedOption == 'Bitcoin'
-            ? 'BTC Borading Address'
+        widget.selectedOption == 'Boarding'
+            ? 'BTC Boarding Address'
             : 'Ark Address';
 
     return Padding(
