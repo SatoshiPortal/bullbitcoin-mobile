@@ -137,7 +137,7 @@ class ArkWalletBottomButtons extends StatelessWidget {
             label: 'Send',
             iconFirst: true,
             onPressed: () {
-              context.pushNamed(ArkRoute.arkSend.name);
+              context.pushNamed(ArkRoute.arkSendRecipient.name);
             },
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,

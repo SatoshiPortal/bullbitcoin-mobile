@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
 import 'package:bb_mobile/core/ark/errors.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/ark/presentation/state.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -13,32 +15,41 @@ class ArkCubit extends Cubit<ArkState> {
   final ArkWalletEntity wallet;
   final ConvertSatsToCurrencyAmountUsecase convertSatsToCurrencyAmountUsecase;
   final GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase;
+  final GetSettingsUsecase getSettingsUsecase;
+
   final WalletBloc walletBloc;
 
   ArkCubit({
     required this.wallet,
     required this.convertSatsToCurrencyAmountUsecase,
     required this.getAvailableCurrenciesUsecase,
+    required this.getSettingsUsecase,
     required this.walletBloc,
   }) : super(const ArkState());
 
   Future<void> load() async {
     try {
       emit(state.copyWith(isLoading: true));
-      final (arkTransactions, balance, exchangeRate, fiatCurrencyCodes) =
+      final (arkTransactions, balance, fiatCurrencyCodes, settings) =
           await (
             wallet.transactions,
             wallet.balance,
-            convertSatsToCurrencyAmountUsecase.execute(
-              currencyCode: state.currencyCode,
-            ),
             getAvailableCurrenciesUsecase.execute(),
+            getSettingsUsecase.execute(),
           ).wait;
       emit(
         state.copyWith(
           transactions: arkTransactions,
           arkBalance: balance,
-          exchangeRate: exchangeRate,
+          inputVsEquivalentExchangeRate:
+              await convertSatsToCurrencyAmountUsecase.execute(
+                currencyCode: settings.currencyCode,
+              ) *
+              (settings.bitcoinUnit.code == BitcoinUnit.btc.code ? 1 : 1e-8),
+          preferredBitcoinUnit: settings.bitcoinUnit,
+          // Default to bitcoin input
+          currencyCode: settings.bitcoinUnit.code,
+          preferrredFiatCurrencyCode: settings.currencyCode,
           fiatCurrencyCodes: fiatCurrencyCodes,
         ),
       );
@@ -74,11 +85,28 @@ class ArkCubit extends Cubit<ArkState> {
 
   Future<void> onSendCurrencyCodeChanged(String code) async {
     try {
-      emit(state.copyWith(isLoading: true));
-      final exchangeRate = await convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: code,
+      emit(state.copyWith(isLoading: true, error: null, amountSat: null));
+      double inputVsEquivalentExchangeRate = 0;
+      if (BitcoinUnit.values.map((e) => e.code).contains(code)) {
+        inputVsEquivalentExchangeRate =
+            await convertSatsToCurrencyAmountUsecase.execute(
+              currencyCode: state.preferrredFiatCurrencyCode,
+            ) *
+            (code == BitcoinUnit.btc.code ? 1 : 1e-8);
+      } else {
+        inputVsEquivalentExchangeRate =
+            (code == BitcoinUnit.btc.code ? 1 : 1e-8) /
+            await convertSatsToCurrencyAmountUsecase.execute(
+              currencyCode: code,
+            );
+      }
+
+      emit(
+        state.copyWith(
+          currencyCode: code,
+          inputVsEquivalentExchangeRate: inputVsEquivalentExchangeRate,
+        ),
       );
-      emit(state.copyWith(currencyCode: code, exchangeRate: exchangeRate));
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
       log.warning(e.toString());
@@ -87,8 +115,34 @@ class ArkCubit extends Cubit<ArkState> {
     }
   }
 
+  Future<void> updateAmount({
+    required String amount,
+    required String currencyCode,
+  }) async {
+    emit(state.copyWith(amountSat: null, isLoading: true, error: null));
+    try {
+      int amountSat = 0;
+      if (currencyCode == BitcoinUnit.sats.code) {
+        amountSat = int.parse(amount);
+      } else if (currencyCode == BitcoinUnit.btc.code) {
+        amountSat = (double.parse(amount) * 1e8).toInt();
+      } else {
+        final satsAmountDouble = await convertSatsToCurrencyAmountUsecase
+            .execute(currencyCode: currencyCode);
+        amountSat = (double.parse(amount) / satsAmountDouble).toInt();
+      }
+
+      emit(state.copyWith(amountSat: amountSat));
+    } catch (e) {
+      emit(state.copyWith(error: ArkError('Invalid amount')));
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
   Future<void> updateSendAddress(String value) async {
     final trimmedValue = value.trim();
+    emit(state.copyWith(sendAddress: null, error: null, isLoading: true));
     try {
       AddressType? type;
       if (await ArkWalletEntity.isBtcAddress(trimmedValue)) {
@@ -102,19 +156,21 @@ class ArkCubit extends Cubit<ArkState> {
       emit(state.copyWith(sendAddress: (address: trimmedValue, type: type)));
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
     }
   }
 
-  Future<void> onSendConfirmed(int amount) async {
+  Future<void> onSendConfirmed() async {
+    final amount = state.amountSat!;
     if (!await state.hasValidAddress) throw ArkError('Invalid address');
     if (amount > state.confirmedBalance) throw ArkError('Insufficient balance');
 
-    String txid = '';
     try {
-      emit(state.copyWith(isLoading: true));
-      final address = state.sendAddress.address;
-
-      switch (state.sendAddress.type) {
+      emit(state.copyWith(isLoading: true, txid: ''));
+      final address = state.sendAddress!.address;
+      String txid = '';
+      switch (state.sendAddress!.type) {
         case AddressType.ark:
           txid = await wallet.sendOffchain(amount: amount, address: address);
         case AddressType.btc:
@@ -123,13 +179,12 @@ class ArkCubit extends Cubit<ArkState> {
             address: address,
             selectRecoverableVtxos: state.withRecoverableVtxos,
           );
-        default:
-          throw ArkError('Invalid address type');
       }
+      emit(state.copyWith(txid: txid));
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
     } finally {
-      emit(state.copyWith(isLoading: false, txid: txid));
+      emit(state.copyWith(isLoading: false));
       unawaited(load());
     }
   }
