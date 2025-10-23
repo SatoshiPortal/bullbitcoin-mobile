@@ -7,9 +7,14 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 class TransactionHistoryWidget extends StatelessWidget {
-  const TransactionHistoryWidget({super.key, required this.transactions});
+  const TransactionHistoryWidget({
+    super.key,
+    required this.transactions,
+    this.isLoading = false,
+  });
 
   final List<ark_wallet.Transaction> transactions;
+  final bool isLoading;
 
   DateTime? _getTransactionDate(ark_wallet.Transaction tx) {
     return switch (tx) {
@@ -49,7 +54,7 @@ class TransactionHistoryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    if (transactions.isEmpty) {
+    if (!isLoading && transactions.isEmpty) {
       return Center(
         child: Column(
           children: [
@@ -70,6 +75,8 @@ class TransactionHistoryWidget extends StatelessWidget {
     final transactionsByDay = _groupTransactionsByDay();
 
     return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       itemCount: transactionsByDay.entries.length,
       itemBuilder: (context, index) {

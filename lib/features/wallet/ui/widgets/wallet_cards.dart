@@ -50,9 +50,7 @@ class WalletCards extends StatelessWidget {
       (WalletBloc bloc) => bloc.state.syncStatus,
     );
 
-    final arkWallet = context.select(
-      (WalletBloc bloc) => bloc.state.arkWallet,
-    );
+    final arkWallet = context.select((WalletBloc bloc) => bloc.state.arkWallet);
     final arkBalanceSat = context.select(
       (WalletBloc bloc) => bloc.state.arkBalanceSat,
     );

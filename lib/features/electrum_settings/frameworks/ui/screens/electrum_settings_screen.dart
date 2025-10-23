@@ -46,6 +46,9 @@ class ElectrumSettingsScreen extends StatelessWidget {
                   );
                 },
                 child: SingleChildScrollView(
+                  // Needed to allow pull-to-refresh even if content is too short
+                  //  to be scrollable
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(

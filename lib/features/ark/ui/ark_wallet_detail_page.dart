@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark/ui/ark_balance_detail_widget.dart';
@@ -23,10 +22,10 @@ class ArkWalletDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        flexibleSpace: TopBar(
-          title: 'Ark Instant Payments',
-          onBack: () => context.goNamed(WalletRoute.walletHome.name),
+        leading: BackButton(
+          onPressed: () => context.goNamed(WalletRoute.walletHome.name),
         ),
+        title: Text('Ark Instant Payments', style: context.font.headlineMedium),
         actions: [
           IconButton(
             icon: const Icon(CupertinoIcons.settings),
@@ -34,49 +33,76 @@ class ArkWalletDetailPage extends StatelessWidget {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        edgeOffset: 30,
-        onRefresh: () async => await cubit.refresh(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SafeArea(
+        child: Stack(
           children: [
-            ArkBalanceDetailWidget(arkBalance: state.arkBalance),
-
-            if (state.isLoading)
-              LinearProgressIndicator(
-                backgroundColor: context.colour.surface,
-                color: context.colour.primary,
-              ),
-
-            const Gap(16.0),
-            Expanded(
-              child: TransactionHistoryWidget(transactions: state.transactions),
-            ),
-            Builder(
-              builder: (context) {
-                // final unsettledCount = state.transactions
-                //     .whereType<ark_wallet.Transaction_Redeem>()
-                //     .where((tx) => !tx.isSettled || tx.)
-                //     .length;
-
-                // if (unsettledCount == 0) {
-                //   return const SizedBox.shrink();
-                // }
-
-                return Padding(
-                  padding: const EdgeInsets.all(13.0),
-                  child: BBButton.big(
-                    label: 'Settle transactions',
-                    onPressed: () => SettleBottomSheet.show(context, cubit),
-                    bgColor: context.colour.primary,
-                    textColor: context.colour.onPrimary,
+            Positioned.fill(
+              child: RefreshIndicator(
+                onRefresh: () async => await cubit.load(),
+                child: SingleChildScrollView(
+                  // Needed to allow pull-to-refresh even if content is too short
+                  //  to be scrollable
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(bottom: 160.0),
+                  child: Column(
+                    children: [
+                      ArkBalanceDetailWidget(arkBalance: state.arkBalance),
+                      if (state.isLoading)
+                        LinearProgressIndicator(
+                          backgroundColor: context.colour.surface,
+                          color: context.colour.primary,
+                        ),
+                      const Gap(16.0),
+                      TransactionHistoryWidget(
+                        transactions: state.transactions,
+                        isLoading: state.isLoading,
+                      ),
+                    ],
                   ),
-                );
-              },
+                ),
+              ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 13.0, right: 13.0, bottom: 40.0),
-              child: ArkWalletBottomButtons(),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Builder(
+                    builder: (context) {
+                      /*final unsettledCount =
+                          state.transactions
+                              .whereType<ark_wallet.Transaction_Redeem>()
+                              .where((tx) => !tx.isSettled)
+                              .length;
+
+                      if (unsettledCount == 0) {
+                        return const SizedBox.shrink();
+                      }*/
+
+                      return Padding(
+                        padding: const EdgeInsets.all(13.0),
+                        child: BBButton.big(
+                          label: 'Settle transactions',
+                          onPressed:
+                              () => SettleBottomSheet.show(context, cubit),
+                          bgColor: context.colour.primary,
+                          textColor: context.colour.onPrimary,
+                        ),
+                      );
+                    },
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(
+                      left: 13.0,
+                      right: 13.0,
+                      bottom: 40.0,
+                    ),
+                    child: ArkWalletBottomButtons(),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

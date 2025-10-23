@@ -22,38 +22,31 @@ class ArkCubit extends Cubit<ArkState> {
     required this.walletBloc,
   }) : super(const ArkState());
 
-  Future<void> refresh() async {
-    await loadBalance();
-    await loadTransactions();
-  }
-
-  Future<void> loadTransactions() async {
+  Future<void> load() async {
     try {
       emit(state.copyWith(isLoading: true));
-      final arkTransactions = await wallet.transactions;
-      emit(state.copyWith(transactions: arkTransactions));
+      final (arkTransactions, balance, exchangeRate, fiatCurrencyCodes) =
+          await (
+            wallet.transactions,
+            wallet.balance,
+            convertSatsToCurrencyAmountUsecase.execute(
+              currencyCode: state.currencyCode,
+            ),
+            getAvailableCurrenciesUsecase.execute(),
+          ).wait;
+      emit(
+        state.copyWith(
+          transactions: arkTransactions,
+          arkBalance: balance,
+          exchangeRate: exchangeRate,
+          fiatCurrencyCodes: fiatCurrencyCodes,
+        ),
+      );
+      // TODO: We should not do this, a BLoC/Cubit shouldn't call another
+      //  BLoC/Cubit, but for now since it was already done like this, we keep it.
+      walletBloc.add(RefreshArkWalletBalance(amount: balance.completeTotal));
     } catch (e) {
       log.warning(e.toString());
-      emit(state.copyWith(error: ArkError(e.toString())));
-    } finally {
-      emit(state.copyWith(isLoading: false));
-    }
-  }
-
-  Future<void> loadBalance() async {
-    try {
-      log.info('[ArkCubit] Loading ARK balance');
-      emit(state.copyWith(isLoading: true));
-      final balance = await wallet.balance;
-
-      log.info(
-        '[ArkCubit] ARK balance loaded - boarding unconfirmed: ${balance.boarding.unconfirmed}, boarding confirmed: ${balance.boarding.confirmed}, total: ${balance.total}',
-      );
-      walletBloc.add(RefreshArkWalletBalance(amount: balance.completeTotal));
-
-      emit(state.copyWith(arkBalance: balance));
-    } catch (e) {
-      log.warning('[ArkCubit] Failed to load ARK balance: $e');
       emit(state.copyWith(error: ArkError(e.toString())));
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -70,7 +63,7 @@ class ArkCubit extends Cubit<ArkState> {
     try {
       emit(state.copyWith(isLoading: true));
       await wallet.settle(selectRecoverableVtxos);
-      unawaited(refresh());
+      unawaited(load());
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
       log.warning(e.toString());
@@ -79,35 +72,19 @@ class ArkCubit extends Cubit<ArkState> {
     }
   }
 
-  Future<void> loadExchangeRate() async {
+  Future<void> onSendCurrencyCodeChanged(String code) async {
     try {
       emit(state.copyWith(isLoading: true));
       final exchangeRate = await convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: state.currencyCode,
+        currencyCode: code,
       );
-      emit(state.copyWith(exchangeRate: exchangeRate));
+      emit(state.copyWith(currencyCode: code, exchangeRate: exchangeRate));
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
+      log.warning(e.toString());
     } finally {
       emit(state.copyWith(isLoading: false));
     }
-  }
-
-  Future<void> loadCurrencies() async {
-    try {
-      emit(state.copyWith(isLoading: true));
-      final fiatCurrencyCodes = await getAvailableCurrenciesUsecase.execute();
-      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencyCodes));
-    } catch (e) {
-      emit(state.copyWith(error: ArkError(e.toString())));
-    } finally {
-      emit(state.copyWith(isLoading: false));
-    }
-  }
-
-  void onSendCurrencyCodeChanged(String code) {
-    emit(state.copyWith(currencyCode: code));
-    unawaited(loadExchangeRate());
   }
 
   Future<void> updateSendAddress(String value) async {
@@ -153,7 +130,7 @@ class ArkCubit extends Cubit<ArkState> {
       emit(state.copyWith(error: ArkError(e.toString())));
     } finally {
       emit(state.copyWith(isLoading: false, txid: txid));
-      unawaited(refresh());
+      unawaited(load());
     }
   }
 
