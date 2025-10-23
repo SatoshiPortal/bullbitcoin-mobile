@@ -100,7 +100,7 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                               label: 'Redeem',
                               onPressed: () async {
                                 Navigator.of(context).pop();
-                                await cubit.onSendConfirmed(amount);
+                                await cubit.onSendConfirmed();
                               },
                               bgColor: context.colour.primary,
                               textColor: context.colour.onPrimary,
