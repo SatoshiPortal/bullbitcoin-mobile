@@ -59,6 +59,7 @@ class WalletCards extends StatelessWidget {
     final isArkWalletLoading = context.select(
       (WalletBloc bloc) => bloc.state.isArkWalletLoading,
     );
+    final arkWallet = context.select((WalletBloc bloc) => bloc.state.arkWallet);
 
     return Padding(
       padding: padding ?? const EdgeInsets.all(13.0),
@@ -84,7 +85,10 @@ class WalletCards extends StatelessWidget {
               description: 'Experimental',
               balanceSat: arkBalanceSat,
               isSyncing: isArkWalletLoading,
-              onTap: () => context.pushNamed(ArkRoute.arkWalletDetail.name),
+              onTap: () {
+                if (arkWallet == null) return;
+                context.pushNamed(ArkRoute.arkWalletDetail.name);
+              },
             ),
             const Gap(8),
           ],
