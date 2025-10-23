@@ -29,3 +29,7 @@ class BackupVaultMissingDerivationPathError extends RecoverWalletError {
   BackupVaultMissingDerivationPathError()
     : super('Backup file missing derivation path.');
 }
+
+class InvalidVaultFileError extends BullException {
+  InvalidVaultFileError() : super('Invalid vault file.');
+}

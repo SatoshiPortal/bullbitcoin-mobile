@@ -103,7 +103,8 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
 
   Future<void> _startBackup(Emitter<BackupWalletState> emit) async {
     try {
-      final encryptedVault = await createEncryptedVaultUsecase.execute();
+      final (vault: encryptedVault, vaultKey: _) =
+          await createEncryptedVaultUsecase.execute();
 
       switch (state.vaultProvider) {
         case VaultProvider.customLocation:

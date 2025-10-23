@@ -16,8 +16,7 @@ class BackupWalletLocator {
       () => SaveToGoogleDriveUsecase(locator<GoogleDriveRepository>()),
     );
     locator.registerFactory<FetchLatestGoogleDriveVaultUsecase>(
-      () =>
-          FetchLatestGoogleDriveVaultUsecase(locator<GoogleDriveRepository>()),
+      () => FetchLatestGoogleDriveVaultUsecase(),
     );
     // Blocs
     locator.registerFactory<BackupWalletBloc>(

@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
 
 class DisconnectFromGoogleDriveUsecase {
-  final GoogleDriveRepository _repository;
+  final _repository = GoogleDriveRepository();
 
-  DisconnectFromGoogleDriveUsecase(this._repository);
+  DisconnectFromGoogleDriveUsecase();
 
   Future<void> execute() async {
     try {

@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
 
 class FetchLatestGoogleDriveVaultUsecase {
-  final GoogleDriveRepository _repository;
+  final _repository = GoogleDriveRepository();
 
-  FetchLatestGoogleDriveVaultUsecase(this._repository);
+  FetchLatestGoogleDriveVaultUsecase();
 
   Future<({String content, String fileName})> execute() async {
     try {

@@ -2,9 +2,9 @@ import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_reposito
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 
 class FetchVaultFromDriveUsecase {
-  final GoogleDriveRepository _repository;
+  final _repository = GoogleDriveRepository();
 
-  FetchVaultFromDriveUsecase(this._repository);
+  FetchVaultFromDriveUsecase();
 
   Future<String> execute(DriveFileMetadata driveFileMetadata) async {
     try {

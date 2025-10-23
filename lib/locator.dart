@@ -24,6 +24,7 @@ import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
+import 'package:bb_mobile/features/recoverbull/locator.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/locator.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/sell_locator.dart';
@@ -94,5 +95,6 @@ class AppLocator {
     RecoverBullSelectDriveVaultLocator.setup();
     LedgerLocator.setup();
     ArkCoreLocator.setup();
+    RecoverBullLocator.setup();
   }
 }
