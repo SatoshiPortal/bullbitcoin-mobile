@@ -4,7 +4,7 @@ class SettingsConstants {
   static const telegramSupportLink = 'https://t.me/+gUHV3ZcQ-_RmZDdh';
   static const githubSupportLink =
       'https://github.com/SatoshiPortal/bullbitcoin-mobile';
-  static const termsAndConditionsLink = 'https://bullbitcoin.com/privacy';
+  static const termsAndConditionsLink = 'https://wallet.bullbitcoin.com/terms';
   // The following are constants that in the future potentially can become
   //  a configurable setting, in which case they should be added to the Settings
   //  table in sqlite and not be defined here as constants anymore.

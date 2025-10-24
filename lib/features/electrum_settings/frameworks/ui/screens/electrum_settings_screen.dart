@@ -22,6 +22,7 @@ class ElectrumSettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Electrum Server Settings'),
+        // Create a reusable app bar with a loading indicator at the bottom
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child:
@@ -46,6 +47,9 @@ class ElectrumSettingsScreen extends StatelessWidget {
                   );
                 },
                 child: SingleChildScrollView(
+                  // Needed to allow pull-to-refresh even if content is too short
+                  //  to be scrollable
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(

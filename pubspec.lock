@@ -53,8 +53,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: c65383ef05a2d622ccb915286e8a1da9ae9ff00f
-      resolved-ref: c65383ef05a2d622ccb915286e8a1da9ae9ff00f
+      ref: c4ad1591b06e0ee5192b22312e44972036d4a072
+      resolved-ref: c4ad1591b06e0ee5192b22312e44972036d4a072
       url: "https://github.com/SatoshiPortal/dart-ark-wallet"
     source: git
     version: "0.0.1"
@@ -296,10 +296,10 @@ packages:
     dependency: transitive
     description:
       name: camera
-      sha256: d6ec2cbdbe2fa8f5e0d07d8c06368fe4effa985a4a5ddade9cc58a8cd849557d
+      sha256: "87a27e0553e3432119c1c2f6e4b9a1bbf7d2c660552b910bfa59185a9facd632"
       url: "https://pub.dev"
     source: hosted
-    version: "0.11.2"
+    version: "0.11.2+1"
   camera_android_camerax:
     dependency: transitive
     description:
@@ -1111,10 +1111,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_platform_interface
-      sha256: "9f143b0dba3e459553209e20cc425c9801af48e6dfa4f01a0fcf927be3f41665"
+      sha256: "567e056716333a1647c64bb6bd873cff7622233a5c3f694be28a583d4715690c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.11.0"
+    version: "2.11.1"
   image_picker_windows:
     dependency: transitive
     description:

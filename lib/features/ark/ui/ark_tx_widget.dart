@@ -13,6 +13,19 @@ import 'package:url_launcher/url_launcher.dart';
 
 enum ArkTransactionType { boarding, commitment, redeem }
 
+extension ArkTransactionTypeExtension on ArkTransactionType {
+  String get name {
+    switch (this) {
+      case ArkTransactionType.boarding:
+        return 'Boarding';
+      case ArkTransactionType.commitment:
+        return 'Settlement';
+      case ArkTransactionType.redeem:
+        return 'Payment';
+    }
+  }
+}
+
 class ArkTxWidget extends StatelessWidget {
   const ArkTxWidget({super.key, required this.tx});
 
