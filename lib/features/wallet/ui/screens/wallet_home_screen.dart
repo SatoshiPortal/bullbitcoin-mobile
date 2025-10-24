@@ -1,6 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/auto_swap_fee_warning.dart';
@@ -15,12 +12,6 @@ import 'package:go_router/go_router.dart';
 
 class WalletHomeScreen extends StatelessWidget {
   const WalletHomeScreen({super.key});
-
-  Wallet? _getDefaultWallet(BuildContext context) {
-    final wallets = context.read<WalletBloc>().state.wallets;
-    return wallets.isNotEmpty ? wallets.first : null;
-  }
-
   @override
   Widget build(BuildContext context) {
     // Trigger service status check when the screen loads
@@ -28,23 +19,10 @@ class WalletHomeScreen extends StatelessWidget {
       context.read<WalletBloc>().add(const CheckServiceStatus());
     });
 
-    return GestureDetector(
-      onPanEnd: (details) {
-        // Only handle horizontal swipes with sufficient velocity
-        const minSwipeVelocity = 500.0;
-        final velocity = details.velocity.pixelsPerSecond.dx;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {},
 
-        if (velocity.abs() > minSwipeVelocity) {
-          final defaultWallet = _getDefaultWallet(context);
-
-          if (velocity > 0) {
-            context.pushNamed(SendRoute.send.name, extra: defaultWallet);
-          } else {
-            // Swipe left = Receive
-            context.pushNamed(ReceiveRoute.receiveLightning.name);
-          }
-        }
-      },
       child: Column(
         children: [
           const WalletHomeTopSection(),

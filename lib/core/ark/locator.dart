@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/create_ark_secret_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/fetch_ark_secret_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
@@ -25,6 +26,13 @@ class ArkCoreLocator {
 
     locator.registerFactory<GetArkWalletUsecase>(
       () => GetArkWalletUsecase(
+        fetchArkSecretUsecase: locator<FetchArkSecretUsecase>(),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<CheckArkWalletSetupUsecase>(
+      () => CheckArkWalletSetupUsecase(
         fetchArkSecretUsecase: locator<FetchArkSecretUsecase>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
