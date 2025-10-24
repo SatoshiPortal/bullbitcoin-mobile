@@ -18,7 +18,7 @@ class ImportWalletUsecase {
        _settingsRepository = settingsRepository,
        _wallet = walletRepository;
 
-  Future<Wallet> execute({
+  Future<List<Wallet>> execute({
     required List<String> mnemonicWords,
     ScriptType scriptType = ScriptType.bip84,
     String passphrase = '',
@@ -32,13 +32,16 @@ class ImportWalletUsecase {
           environment.isMainnet
               ? Network.bitcoinMainnet
               : Network.bitcoinTestnet;
+      final liquidNetwork =
+          environment.isMainnet ? Network.liquidMainnet : Network.liquidTestnet;
 
       final seed = await _seedRepository.createFromMnemonic(
         mnemonicWords: mnemonicWords,
         passphrase: passphrase,
       );
 
-      final wallet = _wallet.createWallet(
+      // Create both Bitcoin and Liquid wallets from the same seed
+      final bitcoinWallet = await _wallet.createWallet(
         seed: seed,
         network: bitcoinNetwork,
         scriptType: scriptType,
@@ -47,9 +50,19 @@ class ImportWalletUsecase {
         label: label,
       );
 
-      log.fine('Wallet imported');
+      final liquidWallet = await _wallet.createWallet(
+        seed: seed,
+        network: liquidNetwork,
+        scriptType: scriptType,
+        isDefault: false,
+        sync: false,
+        label: label,
+      );
 
-      return wallet;
+      final wallets = [bitcoinWallet, liquidWallet];
+      log.fine('Wallets imported (Bitcoin + Liquid)');
+
+      return wallets;
     } catch (e) {
       throw ImportWalletException(e.toString());
     }

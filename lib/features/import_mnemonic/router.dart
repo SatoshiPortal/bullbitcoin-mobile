@@ -47,7 +47,7 @@ class ImportMnemonicRouter {
           return BlocListener<ImportMnemonicCubit, ImportMnemonicState>(
             listenWhen:
                 (previous, current) =>
-                    previous.wallet == null && current.wallet != null,
+                    previous.wallets == null && current.wallets != null,
             listener: (context, state) {
               context.goNamed(WalletRoute.walletHome.name);
             },
