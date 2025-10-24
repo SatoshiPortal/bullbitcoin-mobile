@@ -2,8 +2,8 @@ import 'package:bb_mobile/features/ark/router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class SendSuccessScreen extends StatelessWidget {
-  const SendSuccessScreen({super.key});
+class SendSuccessPage extends StatelessWidget {
+  const SendSuccessPage({super.key});
 
   @override
   Widget build(BuildContext context) {

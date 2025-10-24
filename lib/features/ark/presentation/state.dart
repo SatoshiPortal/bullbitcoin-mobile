@@ -19,7 +19,7 @@ sealed class ArkState with _$ArkState {
     @Default(BitcoinUnit.sats) BitcoinUnit preferredBitcoinUnit,
     @Default('CAD') String preferrredFiatCurrencyCode,
     @Default([]) List<String> fiatCurrencyCodes,
-    @Default(0) double inputVsEquivalentExchangeRate,
+    @Default(0) double exchangeRate,
 
     // Transaction History and Balances
     ArkBalance? arkBalance,

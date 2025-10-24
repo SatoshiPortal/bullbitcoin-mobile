@@ -1,11 +1,15 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
+import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 
 class SendAmountPage extends StatefulWidget {
   const SendAmountPage({
@@ -29,7 +33,9 @@ class _SendAmountPageState extends State<SendAmountPage> {
   late final List<String> _availableCurrencies;
   late String _equivalentAmount;
   late bool _isLoading;
-  //String? _error;
+  late BitcoinUnit _preferredBitcoinUnit;
+  String? _error;
+  int? _maxSpendableSat;
 
   @override
   void initState() {
@@ -42,7 +48,8 @@ class _SendAmountPageState extends State<SendAmountPage> {
     _availableCurrencies = context.read<ArkCubit>().state.inputCurrencyCodes;
     _equivalentAmount =
         '0 ${context.read<ArkCubit>().state.equivalentCurrencyCode}';
-
+    _maxSpendableSat = context.read<ArkCubit>().state.arkBalance?.total;
+    _preferredBitcoinUnit = context.read<ArkCubit>().state.preferredBitcoinUnit;
     if (widget.prefilledCurrencyCode != null) {
       context.read<ArkCubit>().onSendCurrencyCodeChanged(
         widget.prefilledCurrencyCode!,
@@ -63,41 +70,25 @@ class _SendAmountPageState extends State<SendAmountPage> {
         _controller.text = '';
         setState(() {
           _currencyCode = state.currencyCode!;
-        });
-      }
-
-      // Calculate equivalent amount when exchange rate changes
-      if (_controller.text.isNotEmpty) {
-        final inputAmount = double.tryParse(_controller.text);
-        final equivalentValue =
-            (inputAmount ?? 0) * state.inputVsEquivalentExchangeRate;
-        setState(() {
-          _equivalentAmount =
-              '$equivalentValue ${state.equivalentCurrencyCode}';
+          _equivalentAmount = _calculateEquivalentAmount();
         });
       }
 
       if (state.error != null) {
         setState(() {
-          //_error = state.error!.message;
+          _error = state.error!.message;
         });
       } else {
         setState(() {
-          // _error = null;
+          _error = null;
         });
       }
     });
 
     _controller.addListener(() {
       // Calculate equivalent amount when input changes
-      final inputAmount = double.tryParse(_controller.text);
-      final exchangeRate =
-          context.read<ArkCubit>().state.inputVsEquivalentExchangeRate;
-
-      final equivalentValue = (inputAmount ?? 0) * exchangeRate;
       setState(() {
-        _equivalentAmount =
-            '$equivalentValue ${context.read<ArkCubit>().state.equivalentCurrencyCode}';
+        _equivalentAmount = _calculateEquivalentAmount();
       });
     });
   }
@@ -116,6 +107,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
   }
 
   void _submit() {
+    // TODO: use a text form field in price input and validate
     //if (_formKey.currentState!.validate()) {
     // Unfocus to close keyboard before popping (optional, just looks nicer)
     FocusScope.of(context).unfocus();
@@ -124,6 +116,40 @@ class _SendAmountPageState extends State<SendAmountPage> {
       currencyCode: _currencyCode,
     );
     //}
+  }
+
+  String _calculateEquivalentAmount() {
+    final inputAmount = _controller.text;
+    final exchangeRate = context.read<ArkCubit>().state.exchangeRate;
+    final bitcoinUnit = context.read<ArkCubit>().state.preferredBitcoinUnit;
+    final equivalentCurrencyCode =
+        context.read<ArkCubit>().state.equivalentCurrencyCode;
+    String equivalentValue = '0';
+    if (_currencyCode == BitcoinUnit.sats.code) {
+      final amountSat = int.tryParse(inputAmount) ?? 0;
+      equivalentValue = (amountSat / 1e8 * exchangeRate).toStringAsFixed(2);
+    } else if (_currencyCode == BitcoinUnit.btc.code) {
+      final amountBtc = double.tryParse(inputAmount) ?? 0;
+      equivalentValue = (amountBtc * exchangeRate).toStringAsFixed(2);
+    } else {
+      final amountFiat = double.tryParse(inputAmount) ?? 0;
+      equivalentValue =
+          bitcoinUnit == BitcoinUnit.sats
+              ? (amountFiat * 1e8 / exchangeRate).toStringAsFixed(0)
+              : (amountFiat / exchangeRate).toStringAsFixed(8);
+    }
+    return '$equivalentValue $equivalentCurrencyCode';
+  }
+
+  String _calculateMaxAmountValue() {
+    if (_maxSpendableSat != null) {
+      if (_preferredBitcoinUnit == BitcoinUnit.btc) {
+        return (_maxSpendableSat! / 1e8).toStringAsFixed(8);
+      } else {
+        return '$_maxSpendableSat';
+      }
+    }
+    return '0';
   }
 
   @override
@@ -151,6 +177,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
         body: SafeArea(
           child: Form(
             child: ScrollableColumn(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 PriceInput(
                   currency: _currencyCode,
@@ -160,8 +187,44 @@ class _SendAmountPageState extends State<SendAmountPage> {
                   onNoteChanged: null,
                   amountController: _controller,
                   focusNode: _focusNode,
+                  error: _error,
                 ),
-                const Spacer(),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Divider(height: 1, color: context.colour.secondaryFixedDim),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: BalanceRow(
+                        balance:
+                            _preferredBitcoinUnit == BitcoinUnit.btc
+                                ? (_maxSpendableSat != null
+                                    ? (_maxSpendableSat! / 1e8).toStringAsFixed(
+                                      8,
+                                    )
+                                    : '0.00000000')
+                                : (_maxSpendableSat?.toString() ?? '0'),
+                        currencyCode: _preferredBitcoinUnit.code,
+                        onMaxPressed: () async {
+                          await context
+                              .read<ArkCubit>()
+                              .onSendCurrencyCodeChanged(
+                                _preferredBitcoinUnit.code,
+                              );
+                          setState(() {
+                            _controller.text = _calculateMaxAmountValue();
+                          });
+                        },
+                        walletLabel: 'Ark Instant Payments',
+                      ),
+                    ),
+                    const Gap(24),
+                    AmountDialPad(
+                      controller: _controller,
+                      inputCurrencyCode: _currencyCode,
+                    ),
+                  ],
+                ),
                 BBButton.big(
                   label: 'Continue',
                   onPressed: _submit,
