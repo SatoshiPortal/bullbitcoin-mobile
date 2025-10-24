@@ -41,11 +41,9 @@ class ArkCubit extends Cubit<ArkState> {
         state.copyWith(
           transactions: arkTransactions,
           arkBalance: balance,
-          inputVsEquivalentExchangeRate:
-              await convertSatsToCurrencyAmountUsecase.execute(
-                currencyCode: settings.currencyCode,
-              ) *
-              (settings.bitcoinUnit.code == BitcoinUnit.btc.code ? 1 : 1e-8),
+          exchangeRate: await convertSatsToCurrencyAmountUsecase.execute(
+            currencyCode: settings.currencyCode,
+          ),
           preferredBitcoinUnit: settings.bitcoinUnit,
           // Default to bitcoin input
           currencyCode: settings.bitcoinUnit.code,
@@ -85,28 +83,26 @@ class ArkCubit extends Cubit<ArkState> {
 
   Future<void> onSendCurrencyCodeChanged(String code) async {
     try {
-      emit(state.copyWith(isLoading: true, error: null, amountSat: null));
-      double inputVsEquivalentExchangeRate = 0;
-      if (BitcoinUnit.values.map((e) => e.code).contains(code)) {
-        inputVsEquivalentExchangeRate =
-            await convertSatsToCurrencyAmountUsecase.execute(
-              currencyCode: state.preferrredFiatCurrencyCode,
-            ) *
-            (code == BitcoinUnit.btc.code ? 1 : 1e-8);
-      } else {
-        inputVsEquivalentExchangeRate =
-            (code == BitcoinUnit.btc.code ? 1 : 1e-8) /
-            await convertSatsToCurrencyAmountUsecase.execute(
-              currencyCode: code,
-            );
-      }
-
       emit(
         state.copyWith(
-          currencyCode: code,
-          inputVsEquivalentExchangeRate: inputVsEquivalentExchangeRate,
+          isLoading: true,
+          error: null,
+          amountSat: null,
+          exchangeRate: 0,
         ),
       );
+      double exchangeRate = 0;
+      if (BitcoinUnit.values.map((e) => e.code).contains(code)) {
+        exchangeRate = await convertSatsToCurrencyAmountUsecase.execute(
+          currencyCode: state.preferrredFiatCurrencyCode,
+        );
+      } else {
+        exchangeRate = await convertSatsToCurrencyAmountUsecase.execute(
+          currencyCode: code,
+        );
+      }
+
+      emit(state.copyWith(currencyCode: code, exchangeRate: exchangeRate));
     } catch (e) {
       emit(state.copyWith(error: ArkError(e.toString())));
       log.warning(e.toString());
@@ -129,7 +125,7 @@ class ArkCubit extends Cubit<ArkState> {
       } else {
         final satsAmountDouble = await convertSatsToCurrencyAmountUsecase
             .execute(currencyCode: currencyCode);
-        amountSat = (double.parse(amount) / satsAmountDouble).toInt();
+        amountSat = (double.parse(amount) / satsAmountDouble * 1e8).toInt();
       }
 
       emit(state.copyWith(amountSat: amountSat));

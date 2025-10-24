@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class SendRecipientPage extends StatefulWidget {
   const SendRecipientPage({super.key, this.prefilledRecipient});
@@ -86,6 +87,7 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
               child: OpenTheCameraWidget(
                 onScannedPaymentRequest: (paymentRequest) {
                   _controller.text = paymentRequest.$1;
+                  if (mounted) context.pop();
                 },
               ),
             ),

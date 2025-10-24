@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/ark/ui/receive_page.dart';
 import 'package:bb_mobile/features/ark/ui/send_amount_page.dart';
 import 'package:bb_mobile/features/ark/ui/send_confirm_page.dart';
 import 'package:bb_mobile/features/ark/ui/send_recipient_page.dart';
-import 'package:bb_mobile/features/ark/ui/send_success_screen.dart';
+import 'package:bb_mobile/features/ark/ui/send_success_page.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -149,7 +149,7 @@ class ArkRouter {
       GoRoute(
         name: ArkRoute.arkSendSuccess.name,
         path: ArkRoute.arkSendSuccess.path,
-        builder: (context, state) => const SendSuccessScreen(),
+        builder: (context, state) => const SendSuccessPage(),
       ),
     ],
   );
