@@ -188,7 +188,7 @@ class AutoSwapExecutionUsecase {
     // sometimes sync fails and label is not set
     final txLabel = Label.tx(
       transactionId: txid,
-      walletId: defaultLiquidWallet.id,
+      origin: defaultLiquidWallet.id,
       label: 'Auto-Swap',
     );
     await _labelRepository.store(txLabel);

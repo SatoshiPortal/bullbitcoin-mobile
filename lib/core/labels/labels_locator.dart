@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/export_labels_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/import_labels_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/label_wallet_address_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/label_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -34,6 +36,14 @@ class LabelsLocator {
 
     locator.registerFactory<DeleteLabelUsecase>(
       () => DeleteLabelUsecase(labelRepository: locator<LabelRepository>()),
+    );
+
+    locator.registerFactory<ExportLabelsUsecase>(
+      () => ExportLabelsUsecase(labelRepository: locator<LabelRepository>()),
+    );
+
+    locator.registerFactory<ImportLabelsUsecase>(
+      () => ImportLabelsUsecase(labelRepository: locator<LabelRepository>()),
     );
   }
 }

@@ -6,3 +6,7 @@ extension FirstWhereOrNullExtension<T> on Iterable<T> {
     return null;
   }
 }
+
+extension DateTimeExtension on DateTime {
+  String toIso8601WithoutMilliseconds() => toIso8601String().substring(0, 19);
+}

@@ -19,6 +19,17 @@ class LabelDatasource {
     );
   }
 
+  Future<void> batch(List<LabelModel> labels) async {
+    final rows = labels.map((label) => label.toSqlite()).toList();
+    await _sqlite.batch(
+      (batch) => batch.insertAll(
+        _sqlite.labels,
+        rows,
+        mode: InsertMode.insertOrReplace,
+      ),
+    );
+  }
+
   Future<List<LabelModel>> fetchByLabel({required String label}) async {
     final labelModels =
         await _sqlite.managers.labels.filter((l) => l.label(label)).get();

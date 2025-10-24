@@ -17,7 +17,7 @@ class LabelWalletAddressUsecase {
       final addressLabel = Label.addr(
         address: address.address,
         label: label,
-        walletId: address.walletId,
+        origin: address.walletId,
       );
       await _labelRepository.store(addressLabel);
     } on LabelError {
