@@ -175,7 +175,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                     wallet?.signsLocally == true &&
                     tx?.txId != null)
                   BBButton.big(
-                    label: 'Bump fees',
+                    label: 'Accelerate',
                     onPressed: () {
                       context.pushNamed(
                         ReplaceByFeeRoute.replaceByFeeFlow.name,

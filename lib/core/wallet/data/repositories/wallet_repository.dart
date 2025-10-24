@@ -533,4 +533,16 @@ class WalletRepository {
       rethrow;
     }
   }
+
+  Future<bool> isTorRequired() async {
+    final defaultWallets = await getWallets(
+      onlyDefaults: true,
+      onlyBitcoin: true,
+      environment: Environment.mainnet,
+    );
+
+    if (defaultWallets.isEmpty) return false;
+
+    return defaultWallets.first.latestEncryptedBackup != null;
+  }
 }

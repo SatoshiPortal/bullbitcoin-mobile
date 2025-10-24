@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/mnemonic_page.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/select_purpose_page.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,6 +50,8 @@ class ImportMnemonicRouter {
                 (previous, current) =>
                     previous.wallets == null && current.wallets != null,
             listener: (context, state) {
+              // Trigger wallet refresh before navigating to home
+              context.read<WalletBloc>().add(const WalletStarted());
               context.goNamed(WalletRoute.walletHome.name);
             },
             child: const SelectScriptTypePage(),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
+import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/check_for_online_electrum_servers_request.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
@@ -53,6 +54,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required CheckForOnlineElectrumServersUsecase
     checkForOnlineElectrumServersUsecase,
     required GetArkWalletUsecase getArkWalletUsecase,
+    required CheckArkWalletSetupUsecase checkArkWalletSetupUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -71,6 +73,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _checkForOnlineElectrumServersUsecase =
            checkForOnlineElectrumServersUsecase,
        _getArkWalletUsecase = getArkWalletUsecase,
+       _checkArkWalletSetupUsecase = checkArkWalletSetupUsecase,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -110,6 +113,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final CheckForOnlineElectrumServersUsecase
   _checkForOnlineElectrumServersUsecase;
   final GetArkWalletUsecase _getArkWalletUsecase;
+  final CheckArkWalletSetupUsecase _checkArkWalletSetupUsecase;
 
   Timer? _serviceStatusTimer;
 
@@ -584,14 +588,30 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(arkBalanceSat: event.amount!));
       return;
     } else {
-      final arkWallet = await _getArkWalletUsecase.execute();
-      final arkBalance = await arkWallet?.balance;
-      emit(
-        state.copyWith(
-          arkWallet: arkWallet,
-          arkBalanceSat: arkBalance?.total ?? 0,
-        ),
-      );
+      // First check if Ark wallet is set up
+      final isArkWalletSetup = await _checkArkWalletSetupUsecase.execute();
+      emit(state.copyWith(isArkWalletSetup: isArkWalletSetup));
+
+      if (!isArkWalletSetup) {
+        return;
+      }
+
+      // If set up, show loading state and load the wallet
+      emit(state.copyWith(isArkWalletLoading: true));
+
+      try {
+        final arkWallet = await _getArkWalletUsecase.execute();
+        final arkBalance = await arkWallet?.balance;
+        emit(
+          state.copyWith(
+            arkWallet: arkWallet,
+            arkBalanceSat: arkBalance?.completeTotal ?? 0,
+            isArkWalletLoading: false,
+          ),
+        );
+      } catch (e) {
+        emit(state.copyWith(isArkWalletLoading: false));
+      }
     }
   }
 }

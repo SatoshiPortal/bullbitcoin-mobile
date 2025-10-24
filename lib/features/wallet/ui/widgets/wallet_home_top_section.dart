@@ -64,13 +64,7 @@ class _UIState extends State<_UI> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Transform.rotate(angle: 3.141, child: image),
-        const _Amounts(),
-      ],
-    );
+    return Stack(fit: StackFit.expand, children: [image, const _Amounts()]);
   }
 }
 

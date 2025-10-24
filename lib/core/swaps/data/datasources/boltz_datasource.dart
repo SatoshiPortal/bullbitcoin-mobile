@@ -274,8 +274,8 @@ class BoltzDatasource {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
 
       return broadcastViaBoltz
-          ? btcLnSwap.broadcastLocal(signedHex: signedTxHex)
-          : btcLnSwap.broadcastBoltz(signedHex: signedTxHex);
+          ? btcLnSwap.broadcastBoltz(signedHex: signedTxHex)
+          : btcLnSwap.broadcastLocal(signedHex: signedTxHex);
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -294,8 +294,8 @@ class BoltzDatasource {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
 
       return broadcastViaBoltz
-          ? lbtcLnSwap.broadcastLocal(signedHex: signedTxHex)
-          : lbtcLnSwap.broadcastBoltz(signedHex: signedTxHex);
+          ? lbtcLnSwap.broadcastBoltz(signedHex: signedTxHex)
+          : lbtcLnSwap.broadcastLocal(signedHex: signedTxHex);
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -618,11 +618,11 @@ class BoltzDatasource {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return broadcastViaBoltz
-          ? chainSwap.broadcastLocal(
+          ? chainSwap.broadcastBoltz(
             signedHex: signedTxHex,
             kind: SwapTxKind.refund,
           )
-          : chainSwap.broadcastBoltz(
+          : chainSwap.broadcastLocal(
             signedHex: signedTxHex,
             kind: SwapTxKind.refund,
           );
@@ -687,11 +687,11 @@ class BoltzDatasource {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return broadcastViaBoltz
-          ? chainSwap.broadcastLocal(
+          ? chainSwap.broadcastBoltz(
             signedHex: signedTxHex,
             kind: SwapTxKind.claim,
           )
-          : chainSwap.broadcastBoltz(
+          : chainSwap.broadcastLocal(
             signedHex: signedTxHex,
             kind: SwapTxKind.claim,
           );

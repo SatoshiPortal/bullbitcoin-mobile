@@ -123,34 +123,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     );
   }
 
-  Future<void> autoFetchKey() async {
-    checkVaultIsNotNull();
-
-    try {
-      emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
-      final vault = state.vault!;
-      final vaultKey = await createVaultKeyFromDefaultSeedUsecase.execute(
-        vault.derivationPath,
-      );
-
-      if (vaultKey.isNotEmpty) {
-        updateKeyServerState(
-          vaultKey: vaultKey,
-          status: const KeyServerOperationStatus.success(),
-        );
-      }
-    } catch (e) {
-      log.severe('Generate key error: $e');
-      emit(
-        state.copyWith(
-          status: const KeyServerOperationStatus.failure(
-            message: 'Failed to generate key. Please try again.',
-          ),
-        ),
-      );
-    }
-  }
-
   Future<void> recoverKeyFromVaultKey() async {
     if (!state.canProceed) return;
 

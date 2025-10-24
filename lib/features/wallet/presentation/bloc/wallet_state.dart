@@ -22,6 +22,8 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool isCheckingServiceStatus,
     @Default(null) ArkWalletEntity? arkWallet,
     @Default(0) int arkBalanceSat,
+    @Default(false) bool isArkWalletLoading,
+    @Default(false) bool isArkWalletSetup,
   }) = _WalletState;
   const WalletState._();
 
@@ -43,7 +45,7 @@ sealed class WalletState with _$WalletState {
   bool get noWalletsFound => noWalletsFoundException != null;
 
   int totalBalance() => wallets.fold<int>(
-    0,
+    arkBalanceSat,
     (previousValue, element) => previousValue + element.balanceSat.toInt(),
   );
 

@@ -69,18 +69,9 @@ class RecoverWithBackupKeyScreen extends StatelessWidget {
                       onChanged: cubit.updateVaultKey,
                     ),
                     const Spacer(),
-                    if (fromOnboarding)
-                      const SizedBox.shrink()
-                    else
-                      GestureDetector(
-                        onTap: cubit.autoFetchKey,
-                        child: BBText(
-                          'Automatically Fetch key >>',
-                          style: context.font.bodySmall?.copyWith(
-                            color: context.colour.inversePrimary,
-                          ),
-                        ),
-                      ),
+
+                    const SizedBox.shrink(),
+
                     const Gap(20),
                     BBButton.big(
                       label: 'Decrypt vault',
