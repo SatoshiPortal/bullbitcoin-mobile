@@ -42,7 +42,8 @@ enum BitcoinUnit {
 enum Language {
   unitedStatesEnglish('en', 'US'),
   canadianFrench('fr', 'CA'),
-  franceFrench('fr', 'FR');
+  franceFrench('fr', 'FR'),
+  spanish('es', 'ES');
 
   final String languageCode;
   final String? countryCode;
