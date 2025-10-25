@@ -114,6 +114,10 @@ dependencies:
     git:
       url: https://github.com/SatoshiPortal/dart-ark-wallet
       ref: c65383ef05a2d622ccb915286e8a1da9ae9ff00f
+  breez_sdk_spark_flutter:
+    git:
+      url: https://github.com/basantagoswami/breez-sdk-spark-flutter
+      ref: 3d8cd76474de7602f7cbd9729134a157bde29771
 
 dev_dependencies:
   build_runner: ^2.4.15

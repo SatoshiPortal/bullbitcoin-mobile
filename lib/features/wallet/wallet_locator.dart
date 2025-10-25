@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/spark/usecases/get_spark_wallet_usecase.dart';
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
@@ -41,6 +42,7 @@ class WalletLocator {
     locator.registerFactory<WalletBloc>(
       () => WalletBloc(
         getArkWalletUsecase: locator<GetArkWalletUsecase>(),
+        getSparkWalletUsecase: locator<GetSparkWalletUsecase>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
         watchStartedWalletSyncsUsecase:

@@ -64,3 +64,8 @@ class RefreshArkWalletBalance extends WalletEvent {
   final int? amount;
   const RefreshArkWalletBalance({this.amount});
 }
+
+class RefreshSparkWalletBalance extends WalletEvent {
+  final int? amount;
+  const RefreshSparkWalletBalance({this.amount});
+}

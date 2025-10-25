@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_card.dart';
 import 'package:bb_mobile/features/ark/router.dart';
+import 'package:bb_mobile/features/spark/router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,6 +56,11 @@ class WalletCards extends StatelessWidget {
       (WalletBloc bloc) => bloc.state.arkBalanceSat,
     );
 
+    final sparkWallet = context.select((WalletBloc bloc) => bloc.state.sparkWallet);
+    final sparkBalanceSat = context.select(
+      (WalletBloc bloc) => bloc.state.sparkBalanceSat,
+    );
+
     return Padding(
       padding: padding ?? const EdgeInsets.all(13.0),
       child: Column(
@@ -80,6 +86,17 @@ class WalletCards extends StatelessWidget {
               balanceSat: arkBalanceSat,
               isSyncing: false,
               onTap: () => context.pushNamed(ArkRoute.arkWalletDetail.name),
+            ),
+            const Gap(8),
+          ],
+          if (sparkWallet != null) ...[
+            WalletCard(
+              tagColor: context.colour.primary,
+              title: 'Spark Instant payments',
+              description: 'Experimental',
+              balanceSat: sparkBalanceSat,
+              isSyncing: false,
+              onTap: () => context.pushNamed(SparkRoute.sparkWalletDetail.name),
             ),
             const Gap(8),
           ],

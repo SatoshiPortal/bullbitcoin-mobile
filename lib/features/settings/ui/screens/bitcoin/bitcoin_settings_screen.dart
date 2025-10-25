@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
-// import 'package:bb_mobile/features/ark_setup/router.dart';
 import 'package:bb_mobile/features/autoswap/ui/autoswap_settings_router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
@@ -9,6 +8,7 @@ import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
+import 'package:bb_mobile/features/spark_setup/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -107,6 +107,13 @@ class BitcoinSettingsScreen extends StatelessWidget {
                     title: 'Ark',
                     isSuperUser: isSuperuser && isDevModeEnabled,
                     onTap: () => context.pushNamed(ArkSetupRoute.arkSetup.name),
+                  ),
+                if (isSuperuser && isDevModeEnabled)
+                  SettingsEntryItem(
+                    icon: Icons.science,
+                    title: 'Spark',
+                    isSuperUser: isSuperuser && isDevModeEnabled,
+                    onTap: () => context.pushNamed(SparkSetupRoute.sparkSetup.name),
                   ),
               ],
             ),

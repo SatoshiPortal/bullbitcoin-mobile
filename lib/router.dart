@@ -30,6 +30,8 @@ import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/spark/router.dart';
+import 'package:bb_mobile/features/spark_setup/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -146,6 +148,8 @@ class AppRouter {
       ElectrumSettingsRouter.route,
       ArkSetupRouter.route,
       ArkRouter.route,
+      SparkSetupRouter.route,
+      SparkRouter.route,
       ...ImportQrDeviceRouter.routes,
       ConnectHardwareWalletRouter.route,
     ],

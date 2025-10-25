@@ -5,6 +5,8 @@ import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/check_for_online_electrum_servers_request.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
+import 'package:bb_mobile/core/spark/entities/spark_wallet.dart';
+import 'package:bb_mobile/core/spark/usecases/get_spark_wallet_usecase.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
@@ -53,6 +55,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required CheckForOnlineElectrumServersUsecase
     checkForOnlineElectrumServersUsecase,
     required GetArkWalletUsecase getArkWalletUsecase,
+    required GetSparkWalletUsecase getSparkWalletUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -71,6 +74,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _checkForOnlineElectrumServersUsecase =
            checkForOnlineElectrumServersUsecase,
        _getArkWalletUsecase = getArkWalletUsecase,
+       _getSparkWalletUsecase = getSparkWalletUsecase,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -85,6 +89,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<CheckServiceStatus>(_onCheckServiceStatus);
     on<ServiceStatusChecked>(_onServiceStatusChecked);
     on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
+    on<RefreshSparkWalletBalance>(_onRefreshSparkWalletBalance);
 
     // Start periodic service status checks every 21 seconds
     _serviceStatusTimer = Timer.periodic(const Duration(seconds: 21), (timer) {
@@ -110,6 +115,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final CheckForOnlineElectrumServersUsecase
   _checkForOnlineElectrumServersUsecase;
   final GetArkWalletUsecase _getArkWalletUsecase;
+  final GetSparkWalletUsecase _getSparkWalletUsecase;
 
   Timer? _serviceStatusTimer;
 
@@ -152,6 +158,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
 
       add(const RefreshArkWalletBalance());
+      add(const RefreshSparkWalletBalance());
 
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const WalletRefreshed());
@@ -191,6 +198,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       final syncStatus = {for (final wallet in wallets) wallet.id: false};
 
       add(const RefreshArkWalletBalance());
+      add(const RefreshSparkWalletBalance());
 
       emit(
         state.copyWith(
@@ -590,6 +598,25 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         state.copyWith(
           arkWallet: arkWallet,
           arkBalanceSat: arkBalance?.completeTotal ?? 0,
+        ),
+      );
+    }
+  }
+
+  Future<void> _onRefreshSparkWalletBalance(
+    RefreshSparkWalletBalance event,
+    Emitter<WalletState> emit,
+  ) async {
+    if (event.amount != null) {
+      emit(state.copyWith(sparkBalanceSat: event.amount!));
+      return;
+    } else {
+      final sparkWallet = await _getSparkWalletUsecase.execute();
+      final sparkBalance = await sparkWallet?.balance;
+      emit(
+        state.copyWith(
+          sparkWallet: sparkWallet,
+          sparkBalanceSat: sparkBalance?.balanceSats ?? 0,
         ),
       );
     }

@@ -16,6 +16,7 @@ import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:boltz/boltz.dart';
+import 'package:breez_sdk_spark_flutter/breez_sdk_spark.dart';
 import 'package:dart_bbqr/bbqr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,6 +34,7 @@ class Bull {
       dotenv.load(isOptional: true),
       LibBbqr.init(),
       LibArk.init(),
+      BreezSdkSparkLib.init(),
     ]);
 
     final logDirectory = await getApplicationDocumentsDirectory();
