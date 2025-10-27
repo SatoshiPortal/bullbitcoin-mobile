@@ -742,10 +742,16 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         payjoin != null &&
         payjoin.originalTxBytes != null) {
       try {
-        await _broadcastOriginalTransactionUsecase.execute(payjoin);
+        emit(state.copyWith(isBroadcastingOriginalTransaction: true));
+        final updatedPayjoin =
+            await _broadcastOriginalTransactionUsecase.execute(payjoin)
+                as PayjoinReceiver;
+
+        emit(state.copyWith(payjoin: updatedPayjoin));
       } catch (e) {
-        // TODO: In the ui, show the error if it is a BroadcastOriginalTransactionException
         emit(state.copyWith(error: e));
+      } finally {
+        emit(state.copyWith(isBroadcastingOriginalTransaction: false));
       }
     }
   }
