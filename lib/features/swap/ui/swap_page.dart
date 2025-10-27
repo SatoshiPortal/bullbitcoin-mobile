@@ -112,7 +112,9 @@ class SwapAmountPage extends StatelessWidget {
                       // Transfer From
                       const SwapFromToDropdown(type: _SwapDropdownType.from),
 
-                      const Gap(12),
+                      const Gap(24),
+                      const Center(child: SwapChangeButton()),
+                      const Gap(8),
                       // Transfer To
                       const SwapFromToDropdown(type: _SwapDropdownType.to),
                       const Gap(12),
@@ -299,15 +301,8 @@ class _SwapTransferAmountFieldState extends State<SwapTransferAmountField> {
     final fromAmount = context.select(
       (SwapCubit cubit) => cubit.state.fromAmount,
     );
-    final toAmount = context.select(
-      (SwapCubit cubit) => cubit.state.toAmount.split(' ')[0],
-    );
-
     final currency = context.select(
       (SwapCubit cubit) => cubit.state.displayFromCurrencyCode,
-    );
-    final toCurrency = context.select(
-      (SwapCubit cubit) => cubit.state.displayToCurrencyCode,
     );
     final loadingWallets = context.select(
       (SwapCubit cubit) => cubit.state.loadingWallets,
@@ -378,32 +373,6 @@ class _SwapTransferAmountFieldState extends State<SwapTransferAmountField> {
                       ),
                     ],
                   ),
-                const Gap(16),
-                if (loadingWallets)
-                  const LoadingLineContent(
-                    padding: EdgeInsets.symmetric(vertical: 12.0),
-                  )
-                else
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          context.read<SwapCubit>().switchFromAndToWallets();
-                        },
-                        child: Icon(
-                          Icons.swap_vert,
-                          color: context.colour.outline,
-                        ),
-                      ),
-                      const Gap(8.0),
-                      Text(
-                        '$toAmount $toCurrency',
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.outline,
-                        ),
-                      ),
-                    ],
-                  ),
               ],
             ),
           ),
@@ -430,7 +399,7 @@ class SwapChangeButton extends StatelessWidget {
         height: 32,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: context.colour.surface,
+          color: context.colour.onPrimary,
         ),
         child: IconButton(
           icon: const Icon(Icons.swap_vert),
