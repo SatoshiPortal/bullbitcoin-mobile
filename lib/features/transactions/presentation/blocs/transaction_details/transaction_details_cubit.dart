@@ -350,26 +350,19 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     try {
       final payjoin = state.payjoin;
       if (payjoin == null) return;
-      emit(state.copyWith(isBroadcastingPayjoinOriginalTx: true));
+      emit(state.copyWith(isBroadcastingPayjoinOriginalTx: true, err: null));
       final updatedPayjoin = await _broadcastOriginalTransactionUsecase.execute(
         payjoin,
       );
       emit(
         state.copyWith(
           transaction: state.transaction?.copyWith(payjoin: updatedPayjoin),
-          err: null,
-          note: null,
-          isBroadcastingPayjoinOriginalTx: false,
         ),
       );
     } catch (e) {
-      emit(
-        state.copyWith(
-          err: e,
-          note: null,
-          isBroadcastingPayjoinOriginalTx: false,
-        ),
-      );
+      emit(state.copyWith(err: e));
+    } finally {
+      emit(state.copyWith(isBroadcastingPayjoinOriginalTx: false, note: null));
     }
   }
 
