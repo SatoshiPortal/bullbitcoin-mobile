@@ -113,7 +113,7 @@ dependencies:
   ark_wallet:
     git:
       url: https://github.com/SatoshiPortal/dart-ark-wallet
-      ref: c4ad1591b06e0ee5192b22312e44972036d4a072
+      ref: 97e098af9d4fe4543e1ea7a782f6db09331f66d2
 
 dev_dependencies:
   build_runner: ^2.4.15
