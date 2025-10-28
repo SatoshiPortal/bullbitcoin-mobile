@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/delete_drive_file_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/export_drive_file_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
@@ -31,6 +33,8 @@ class RecoverBullGoogleDriveRouter {
               fetchAllDriveFileMetadataUsecase:
                   locator<FetchAllDriveFileMetadataUsecase>(),
               fetchDriveBackupUsecase: locator<FetchVaultFromDriveUsecase>(),
+              deleteDriveFileUsecase: locator<DeleteDriveFileUsecase>(),
+              exportDriveFileUsecase: locator<ExportDriveFileUsecase>(),
             ),
         child: BlocListener<
           RecoverBullGoogleDriveBloc,

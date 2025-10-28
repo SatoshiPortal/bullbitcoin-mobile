@@ -8,7 +8,7 @@ class SaveToGoogleDriveUsecase {
 
   Future<void> execute(String content) async {
     try {
-      await _driveRepository.storeBackup(content);
+      await _driveRepository.store(content);
     } catch (e) {
       throw Exception(e.toString());
     }

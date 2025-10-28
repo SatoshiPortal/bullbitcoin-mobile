@@ -8,7 +8,7 @@ class SaveToGoogleDriveUsecase {
 
   Future<void> execute(String content) async {
     try {
-      await _repository.storeBackup(content);
+      await _repository.store(content);
     } catch (e) {
       log.severe('Failed to google drive: $e');
       throw Exception("Failed to save google drive");

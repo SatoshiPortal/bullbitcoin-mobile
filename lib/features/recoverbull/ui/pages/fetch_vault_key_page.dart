@@ -78,6 +78,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
         listener: (context, state) {
           if (state.error != null) {
             SnackBarUtils.showSnackBar(context, state.error!.message);
+            Navigator.of(context).pop();
           }
           if (state.decryptedVault != null && state.vaultKey != null) {
             _hasNavigatedAway = true;

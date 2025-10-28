@@ -22,11 +22,11 @@ class GoogleDriveRepository {
     return utf8.decode(bytes);
   }
 
-  Future<void> storeBackup(String content) async {
+  Future<void> store(String content) async {
     await _dataSource.store(content);
   }
 
-  Future<void> trashBackup(String path) async {
-    await _dataSource.trash(path);
+  Future<void> trash(String fileId) async {
+    await _dataSource.trash(fileId);
   }
 }

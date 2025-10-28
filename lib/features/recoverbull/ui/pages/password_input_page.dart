@@ -108,7 +108,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                     ),
                     maxLines: 3,
                   ),
-                  const Gap(30),
+                  const Gap(16),
                   BBText(
                     needPasswordConfirmation && validatedPassword.isNotEmpty
                         ? 'Confirm ${inputType.name}'

@@ -10,7 +10,9 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/create_vault_key_from
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/delete_drive_file_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/export_drive_file_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
@@ -164,6 +166,17 @@ class RecoverbullLocator {
     locator.registerFactory<SaveToGoogleDriveUsecase>(
       () => SaveToGoogleDriveUsecase(
         driveRepository: locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<DeleteDriveFileUsecase>(
+      () => DeleteDriveFileUsecase(
+        driveRepository: locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<ExportDriveFileUsecase>(
+      () => ExportDriveFileUsecase(
+        driveRepository: locator<GoogleDriveRepository>(),
+        fileSystemRepository: locator<FileSystemRepository>(),
       ),
     );
   }
