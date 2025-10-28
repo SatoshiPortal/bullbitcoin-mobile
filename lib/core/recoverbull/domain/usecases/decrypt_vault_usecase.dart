@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 
 class DecryptVaultUsecase {
   final RecoverBullRepository _recoverBull;
@@ -15,15 +14,10 @@ class DecryptVaultUsecase {
     required EncryptedVault vault,
     required String vaultKey,
   }) {
-    try {
-      final plaintext = _recoverBull.restoreJsonVault(vault.toFile(), vaultKey);
+    final plaintext = _recoverBull.restoreJsonVault(vault.toFile(), vaultKey);
 
-      final decodedPlaintext = json.decode(plaintext) as Map<String, dynamic>;
-      final decryptedVault = DecryptedVault.fromJson(decodedPlaintext);
-      return decryptedVault;
-    } catch (e) {
-      log.severe('$DecryptVaultUsecase: $e');
-      rethrow;
-    }
+    final decodedPlaintext = json.decode(plaintext) as Map<String, dynamic>;
+    final decryptedVault = DecryptedVault.fromJson(decodedPlaintext);
+    return decryptedVault;
   }
 }

@@ -60,14 +60,15 @@ class VaultSelectedPage extends StatelessWidget {
             const Spacer(),
             if (provider == VaultProvider.googleDrive) ...[
               BBButton.big(
-                label: 'See other vaults',
+                label: 'See more vaults',
                 onPressed:
                     () => context.pushNamed(
                       RecoverBullGoogleDriveRoute.listDriveVaults.name,
                       extra: flow,
                     ),
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: Colors.transparent,
+                textColor: context.colour.secondary,
+                outlined: true,
               ),
               const Gap(16),
             ],

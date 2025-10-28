@@ -67,8 +67,6 @@ class RestoreVaultUsecase {
           walletId: wallet.id,
         );
       }
-
-      log.info('Default wallets updated');
     } catch (e) {
       log.severe('$RestoreVaultUsecase: $e');
       rethrow;

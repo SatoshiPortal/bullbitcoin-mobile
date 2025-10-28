@@ -30,3 +30,13 @@ class KeyServerConnectionError extends RecoverBullError {
 class InvalidFlowError extends RecoverBullError {
   InvalidFlowError() : super('Invalid flow');
 }
+
+class VaultKeyNotStoredError extends RecoverBullError {
+  VaultKeyNotStoredError()
+    : super('Failed: Vault file created but key not stored in server');
+}
+
+class VaultCreationError extends RecoverBullError {
+  VaultCreationError()
+    : super('Vault creation failed, it can be the file or the key');
+}

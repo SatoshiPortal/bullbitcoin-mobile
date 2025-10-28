@@ -243,6 +243,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       final (vault: vault, vaultKey: vaultKey) =
           await _createEncryptedVaultUsecase.execute();
 
+      final isConnected = await _checkKeyServerConnectionUsecase.execute();
+      if (!isConnected) throw KeyServerConnectionError();
+
       switch (event.provider) {
         case VaultProvider.customLocation:
           await _saveFileToSystemUsecase.execute(
@@ -266,7 +269,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.fine('Vault created and key stored in server');
     } catch (e) {
       log.severe('$OnVaultCreation: $e');
-      emit(state.copyWith(error: BullError(e.toString())));
+      emit(state.copyWith(error: VaultCreationError()));
     } finally {
       emit(state.copyWith(isLoading: false));
     }

@@ -28,10 +28,8 @@ class StoreVaultKeyIntoServerUsecase {
       log.severe('$StoreVaultKeyIntoServerUsecase: $e');
       throw ServerError.fromException(e);
     } catch (e) {
-      if (e is! ServerError) {
-        log.severe('$StoreVaultKeyIntoServerUsecase: $e');
-      }
-      rethrow;
+      if (e is! ServerError) log.severe('$StoreVaultKeyIntoServerUsecase: $e');
+      throw ServerError(e.toString());
     }
   }
 }
