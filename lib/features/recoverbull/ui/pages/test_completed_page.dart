@@ -50,7 +50,9 @@ class TestCompletedPage extends StatelessWidget {
             ),
             const Spacer(flex: 2),
             Padding(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).size.height * 0.05,
+              ),
               child: BBButton.big(
                 label: 'Got it',
                 bgColor: context.colour.secondary,

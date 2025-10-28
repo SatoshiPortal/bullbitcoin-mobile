@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart' show BBText;
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/fetch_vault_key_page.dart';
-import 'package:bb_mobile/features/recoverbull/ui/pages/select_vault_provider_page.dart';
+import 'package:bb_mobile/features/recoverbull/ui/pages/vault_provider_selection_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
 import 'package:bb_mobile/features/recoverbull/utils/password_validator.dart';
 import 'package:flutter/material.dart';
@@ -52,31 +52,48 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
       borderSide: BorderSide(color: context.colour.secondaryFixedDim),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          onBack: () => context.pop(),
-          title: 'Secure your backup',
-        ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 20),
-            child: KeyServerStatusWidget(),
+    return BlocBuilder<RecoverBullBloc, RecoverBullState>(
+      builder: (context, state) {
+        final needPasswordConfirmation =
+            state.flow == RecoverBullFlow.secureVault;
+
+        final hasVaultKeyInput = [
+          RecoverBullFlow.testVault,
+          RecoverBullFlow.recoverVault,
+        ].contains(state.flow);
+
+        final title = switch (state.flow) {
+          RecoverBullFlow.secureVault => 'Secure your backup',
+          RecoverBullFlow.recoverVault => 'Enter your ${inputType.name}',
+          RecoverBullFlow.testVault => 'Enter your ${inputType.name}',
+          RecoverBullFlow.viewVaultKey => 'Enter your ${inputType.name}',
+        };
+
+        final description = switch (state.flow) {
+          RecoverBullFlow.secureVault =>
+            needPasswordConfirmation && validatedPassword.isNotEmpty
+                ? 'Please re-enter your ${inputType.name} to confirm.'
+                : 'You must memorize this ${inputType.name} to recover access to your wallet. It must be at least 6 digits. If you lose this ${inputType.name} you cannot recover your backup.',
+          RecoverBullFlow.recoverVault =>
+            'Please enter your ${inputType.name} to decrypt your vault.',
+          RecoverBullFlow.testVault =>
+            'Please enter your ${inputType.name} to test your vault.',
+          RecoverBullFlow.viewVaultKey =>
+            'Please enter your ${inputType.name} to view your vault key.',
+        };
+
+        return Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            flexibleSpace: TopBar(onBack: () => context.pop(), title: title),
+            actions: const [
+              Padding(
+                padding: EdgeInsets.only(right: 20),
+                child: KeyServerStatusWidget(),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: BlocBuilder<RecoverBullBloc, RecoverBullState>(
-        builder: (context, state) {
-          final needPasswordConfirmation =
-              state.flow == RecoverBullFlow.secureVault;
-
-          final hasVaultKeyInput = [
-            RecoverBullFlow.testVault,
-            RecoverBullFlow.recoverVault,
-          ].contains(state.flow);
-
-          return Padding(
+          body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Form(
               key: _formKey,
@@ -84,9 +101,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   BBText(
-                    needPasswordConfirmation && validatedPassword.isNotEmpty
-                        ? 'Please re-enter your ${inputType.name} to confirm.'
-                        : 'You must memorize this ${inputType.name} to recover access to your wallet. It must be at least 6 digits. If you lose this ${inputType.name} you cannot recover your backup.',
+                    description,
                     textAlign: TextAlign.center,
                     style: context.font.labelMedium?.copyWith(
                       color: context.colour.outline,
@@ -243,7 +258,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                                   MaterialPageRoute(
                                     builder:
                                         (context) =>
-                                            const SelectVaultProviderPage(),
+                                            const VaultProviderSelectionPage(),
                                   ),
                                 );
                               }
@@ -265,9 +280,9 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

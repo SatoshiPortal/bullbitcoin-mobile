@@ -54,18 +54,22 @@ class VaultRecoveryPage extends StatelessWidget {
                         liquidStatus: liquidStatus,
                       ),
                       const Spacer(),
-                      BBButton.big(
-                        onPressed: () {
-                          context.read<RecoverBullBloc>().add(
-                            const OnVaultRecovery(),
-                          );
-                        },
-                        label: 'Continue',
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onPrimary,
-                        disabled: state.decryptedVault == null,
+                      Padding(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).size.height * 0.05,
+                        ),
+                        child: BBButton.big(
+                          onPressed: () {
+                            context.read<RecoverBullBloc>().add(
+                              const OnVaultRecovery(),
+                            );
+                          },
+                          label: 'Continue',
+                          bgColor: context.colour.secondary,
+                          textColor: context.colour.onPrimary,
+                          disabled: state.decryptedVault == null,
+                        ),
                       ),
-                      const Gap(40),
                     ],
                   ),
                 ),

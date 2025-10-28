@@ -88,13 +88,13 @@ class TestWalletBackupBloc
       await _connectToGoogleDriveUsecase.execute();
       emit(state.copyWith(vaultProvider: VaultProvider.googleDrive));
 
-      final (content: fileContent, fileName: _) =
+      final encryptedVault =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
 
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
-          encryptedVault: EncryptedVault(file: fileContent),
+          encryptedVault: encryptedVault,
         ),
       );
     } catch (e) {

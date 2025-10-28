@@ -18,7 +18,10 @@ class VaultCreatedPage extends StatelessWidget {
       onTap:
           () => context.goNamed(
             RecoverBullRoute.recoverbullFlows.name,
-            extra: RecoverBullFlow.testVault,
+            extra: RecoverBullFlowsExtra(
+              flow: RecoverBullFlow.testVault,
+              vault: null,
+            ),
           ),
     );
   }

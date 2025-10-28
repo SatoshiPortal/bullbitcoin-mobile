@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vaul
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
@@ -44,9 +45,11 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final TheDirtyUsecase _checkWalletStatusUsecase;
   final TheDirtyLiquidUsecase _checkLiquidWalletStatusUsecase;
   final WalletBloc _walletBloc;
+  final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveVaultUsecase;
 
   RecoverBullBloc({
     required RecoverBullFlow flow,
+    EncryptedVault? preSelectedVault,
     required CreateEncryptedVaultUsecase createEncryptedVaultUsecase,
     required StoreVaultKeyIntoServerUsecase storeVaultKeyIntoServerUsecase,
     required CheckKeyServerConnectionUsecase checkKeyServerConnectionUsecase,
@@ -60,6 +63,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required TheDirtyUsecase checkWalletStatusUsecase,
     required TheDirtyLiquidUsecase checkLiquidWalletStatusUsecase,
     required WalletBloc walletBloc,
+    required FetchLatestGoogleDriveVaultUsecase
+    fetchLatestGoogleDriveVaultUsecase,
   }) : _createEncryptedVaultUsecase = createEncryptedVaultUsecase,
        _storeVaultKeyIntoServerUsecase = storeVaultKeyIntoServerUsecase,
        _checkKeyServerConnectionUsecase = checkKeyServerConnectionUsecase,
@@ -74,7 +79,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
        _checkWalletStatusUsecase = checkWalletStatusUsecase,
        _checkLiquidWalletStatusUsecase = checkLiquidWalletStatusUsecase,
        _walletBloc = walletBloc,
-       super(RecoverBullState(flow: flow)) {
+       _fetchLatestGoogleDriveVaultUsecase = fetchLatestGoogleDriveVaultUsecase,
+       super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
     on<OnRecoverBullStarted>(_onRecoverBullStarted);
     on<OnVaultProviderSelection>(_onVaultProviderSelection);
     on<OnVaultSelection>(_onVaultSelection);
@@ -164,27 +170,37 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnVaultProviderSelection event,
     Emitter<RecoverBullState> emit,
   ) async {
-    switch (state.flow) {
-      case RecoverBullFlow.secureVault:
-        if (state.vaultPassword == null) throw PasswordIsNotSetError();
+    try {
+      emit(state.copyWith(isLoading: true));
 
-        await _onVaultCreation(
-          OnVaultCreation(
-            provider: event.provider,
-            password: state.vaultPassword!,
-          ),
-          emit,
-        );
-        emit(state.copyWith(vaultProvider: event.provider));
-      case RecoverBullFlow.recoverVault:
-        emit(state.copyWith(vaultProvider: event.provider));
-        add(OnVaultSelection(provider: event.provider));
-      case RecoverBullFlow.testVault:
-        emit(state.copyWith(vaultProvider: event.provider));
-        add(OnVaultSelection(provider: event.provider));
-      case RecoverBullFlow.viewVaultKey:
-        emit(state.copyWith(vaultProvider: event.provider));
-        add(OnVaultSelection(provider: event.provider));
+      switch (state.flow) {
+        case RecoverBullFlow.secureVault:
+          if (state.vaultPassword == null) throw PasswordIsNotSetError();
+
+          await _onVaultCreation(
+            OnVaultCreation(
+              provider: event.provider,
+              password: state.vaultPassword!,
+            ),
+            emit,
+          );
+          emit(state.copyWith(vaultProvider: event.provider));
+        case RecoverBullFlow.recoverVault:
+          emit(state.copyWith(vaultProvider: event.provider));
+          add(OnVaultSelection(provider: event.provider));
+        case RecoverBullFlow.testVault:
+          emit(state.copyWith(vaultProvider: event.provider));
+          add(OnVaultSelection(provider: event.provider));
+        case RecoverBullFlow.viewVaultKey:
+          emit(state.copyWith(vaultProvider: event.provider));
+          add(OnVaultSelection(provider: event.provider));
+      }
+      log.fine('Vault provider ${event.provider.name} selected');
+    } catch (e) {
+      log.severe('$OnVaultProviderSelection: $e');
+      emit(state.copyWith(error: BullError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
     }
   }
 
@@ -193,12 +209,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     Emitter<RecoverBullState> emit,
   ) async {
     try {
+      emit(state.copyWith(isLoading: true));
+
       switch (event.provider) {
         case VaultProvider.googleDrive:
-          // TODO(azad): Implement the logic to list the vaults from drive
-          // the user should be able to select the vault, check the amount before recover it.
-          // Maybe allow this only for recovery.
-
+          await _connectToGoogleDriveUsecase.execute();
+          final encryptedVault =
+              await _fetchLatestGoogleDriveVaultUsecase.execute();
+          emit(state.copyWith(vault: encryptedVault));
           return;
         case VaultProvider.customLocation:
           final vault = await _pickVaultUsecase.execute();
@@ -206,9 +224,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         case VaultProvider.iCloud:
           log.warning('iCloud, not supported yet');
       }
+      log.fine('Vault selected');
     } catch (e) {
       log.severe('$OnVaultSelection: $e');
       emit(state.copyWith(error: SelectVaultError()));
+    } finally {
+      emit(state.copyWith(isLoading: false));
     }
   }
 
@@ -217,6 +238,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     Emitter<RecoverBullState> emit,
   ) async {
     try {
+      emit(state.copyWith(isLoading: true));
+
       final (vault: vault, vaultKey: vaultKey) =
           await _createEncryptedVaultUsecase.execute();
 
@@ -233,15 +256,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           log.warning('iCloud, not supported yet');
       }
 
-      emit(state.copyWith(isLoading: true));
-
       await _storeVaultKeyIntoServerUsecase.execute(
         password: event.password,
         vault: vault,
         vaultKey: vaultKey,
       );
 
-      emit(state.copyWith(vault: vault));
+      emit(state.copyWith(vault: vault, vaultProvider: event.provider));
       log.fine('Vault created and key stored in server');
     } catch (e) {
       log.severe('$OnVaultCreation: $e');
@@ -259,6 +280,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       if (state.flow == RecoverBullFlow.secureVault) return;
 
       emit(state.copyWith(isLoading: true));
+
       final vaultKey = await _fetchVaultKeyFromServerUsecase.execute(
         vault: event.vault,
         password: event.password,
@@ -321,6 +343,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     Emitter<RecoverBullState> emit,
   ) async {
     try {
+      emit(state.copyWith(isLoading: true));
+
       final mnemonic = bip39.Mnemonic.fromWords(
         words: event.decryptedVault.mnemonic,
       );
@@ -340,6 +364,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     } catch (e) {
       log.severe('$OnCheckWalletStatus: $e');
       emit(state.copyWith(error: BullError(e.toString())));
+    } finally {
+      emit(state.copyWith(isLoading: false));
     }
   }
 
@@ -352,6 +378,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
     try {
       emit(state.copyWith(isLoading: true));
+
       await _restoreVaultUsecase.execute(decryptedVault: state.decryptedVault!);
       _walletBloc.add(const WalletStarted());
       log.fine('Vault recovered');

@@ -99,18 +99,18 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     try {
       emit(state.copyWith(status: BackupSettingsStatus.exporting, error: null));
       await _connectToGoogleDriveUsecase.execute();
-      final (content: content, fileName: _) =
+      final encryptedVault =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
 
       await _saveFileToSystemUsecase.execute(
-        content: content,
-        filename: EncryptedVault(file: content).filename,
+        content: encryptedVault.toFile(),
+        filename: encryptedVault.filename,
       );
 
       emit(
         state.copyWith(
           status: BackupSettingsStatus.success,
-          downloadedBackupFile: content,
+          downloadedBackupFile: encryptedVault.toFile(),
         ),
       );
     } catch (e) {
@@ -177,13 +177,13 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       await _connectToGoogleDriveUsecase.execute();
 
       // Fetch the latest backup file from Google Drive
-      final (content: content, fileName: fileName) =
+      final encryptedVault =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
 
       emit(
         state.copyWith(
           status: BackupSettingsStatus.success,
-          selectedBackupFile: content,
+          selectedBackupFile: encryptedVault.toFile(),
         ),
       );
     } catch (e) {

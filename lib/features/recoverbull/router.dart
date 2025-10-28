@@ -1,8 +1,10 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_key_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
@@ -24,17 +26,25 @@ enum RecoverBullRoute {
   const RecoverBullRoute(this.path);
 }
 
+class RecoverBullFlowsExtra {
+  final RecoverBullFlow flow;
+  final EncryptedVault? vault;
+
+  RecoverBullFlowsExtra({required this.flow, required this.vault});
+}
+
 class RecoverBullRouter {
   static final route = GoRoute(
     name: RecoverBullRoute.recoverbullFlows.name,
     path: RecoverBullRoute.recoverbullFlows.path,
     builder: (context, state) {
-      final RecoverBullFlow flow = state.extra! as RecoverBullFlow;
+      final RecoverBullFlowsExtra extra = state.extra! as RecoverBullFlowsExtra;
 
       return BlocProvider(
         create:
             (context) => RecoverBullBloc(
-              flow: flow,
+              flow: extra.flow,
+              preSelectedVault: extra.vault,
               createEncryptedVaultUsecase:
                   locator<CreateEncryptedVaultUsecase>(),
               storeVaultKeyIntoServerUsecase:
@@ -54,6 +64,8 @@ class RecoverBullRouter {
               checkWalletStatusUsecase: locator<TheDirtyUsecase>(),
               checkLiquidWalletStatusUsecase: locator<TheDirtyLiquidUsecase>(),
               walletBloc: context.read(),
+              fetchLatestGoogleDriveVaultUsecase:
+                  locator<FetchLatestGoogleDriveVaultUsecase>(),
             ),
         child: const RecoverBullFlowNavigator(),
       );

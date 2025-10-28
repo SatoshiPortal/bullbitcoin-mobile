@@ -121,7 +121,10 @@ class _Actions extends StatelessWidget {
             onPressed: () {
               context.pushNamed(
                 RecoverBullRoute.recoverbullFlows.name,
-                extra: RecoverBullFlow.recoverVault,
+                extra: RecoverBullFlowsExtra(
+                  flow: RecoverBullFlow.recoverVault,
+                  vault: null,
+                ),
               );
             },
           ),

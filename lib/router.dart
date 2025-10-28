@@ -24,6 +24,7 @@ import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:bb_mobile/features/recoverbull_select_vault/router.dart';
 import 'package:bb_mobile/features/recoverbull_vault_recovery/router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
@@ -150,6 +151,7 @@ class AppRouter {
       ...ImportQrDeviceRouter.routes,
       ConnectHardwareWalletRouter.route,
       RecoverBullRouter.route,
+      RecoverBullGoogleDriveRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );

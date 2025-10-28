@@ -121,7 +121,10 @@ class _Screen extends StatelessWidget {
                         onPressed:
                             () => context.pushNamed(
                               RecoverBullRoute.recoverbullFlows.name,
-                              extra: RecoverBullFlow.secureVault,
+                              extra: RecoverBullFlowsExtra(
+                                flow: RecoverBullFlow.secureVault,
+                                vault: null,
+                              ),
                             ),
                         bgColor: context.colour.secondary,
                         textColor: context.colour.onSecondary,
@@ -134,7 +137,10 @@ class _Screen extends StatelessWidget {
                         onPressed:
                             () => context.pushNamed(
                               RecoverBullRoute.recoverbullFlows.name,
-                              extra: RecoverBullFlow.testVault,
+                              extra: RecoverBullFlowsExtra(
+                                flow: RecoverBullFlow.testVault,
+                                vault: null,
+                              ),
                             ),
                         bgColor: context.colour.secondary,
                         textColor: context.colour.onSecondary,
@@ -147,7 +153,10 @@ class _Screen extends StatelessWidget {
                         onPressed:
                             () => context.pushNamed(
                               RecoverBullRoute.recoverbullFlows.name,
-                              extra: RecoverBullFlow.viewVaultKey,
+                              extra: RecoverBullFlowsExtra(
+                                flow: RecoverBullFlow.viewVaultKey,
+                                vault: null,
+                              ),
                             ),
                         bgColor: context.colour.secondary,
                         textColor: context.colour.onSecondary,
@@ -160,7 +169,10 @@ class _Screen extends StatelessWidget {
                         onPressed:
                             () => context.pushNamed(
                               RecoverBullRoute.recoverbullFlows.name,
-                              extra: RecoverBullFlow.recoverVault,
+                              extra: RecoverBullFlowsExtra(
+                                flow: RecoverBullFlow.recoverVault,
+                                vault: null,
+                              ),
                             ),
                         bgColor: context.colour.secondary,
                         textColor: context.colour.onSecondary,
