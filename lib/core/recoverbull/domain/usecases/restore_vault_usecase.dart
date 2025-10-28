@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
+import 'package:bb_mobile/core/recoverbull/errors.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';

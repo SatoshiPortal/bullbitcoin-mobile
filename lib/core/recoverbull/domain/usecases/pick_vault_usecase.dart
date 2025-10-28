@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
+import 'package:bb_mobile/core/recoverbull/errors.dart';
 
 class PickVaultUsecase {
   final _fileRepository = FileSystemRepository();

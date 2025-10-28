@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/check_key_server_connection_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
@@ -33,10 +33,10 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final _pickVaultUsecase = PickVaultUsecase();
   final _saveFileToSystemUsecase = SaveFileToSystemUsecase();
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
-  final SaveToGoogleDriveUsecase _saveToGoogleDriveUsecase;
+  final SaveVaultToGoogleDriveUsecase _saveToGoogleDriveUsecase;
   final CreateEncryptedVaultUsecase _createEncryptedVaultUsecase;
   final StoreVaultKeyIntoServerUsecase _storeVaultKeyIntoServerUsecase;
-  final CheckKeyServerConnectionUsecase _checkKeyServerConnectionUsecase;
+  final CheckServerConnectionUsecase _checkKeyServerConnectionUsecase;
   final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
@@ -52,12 +52,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     EncryptedVault? preSelectedVault,
     required CreateEncryptedVaultUsecase createEncryptedVaultUsecase,
     required StoreVaultKeyIntoServerUsecase storeVaultKeyIntoServerUsecase,
-    required CheckKeyServerConnectionUsecase checkKeyServerConnectionUsecase,
+    required CheckServerConnectionUsecase checkKeyServerConnectionUsecase,
     required FetchVaultKeyFromServerUsecase fetchVaultKeyFromServerUsecase,
     required DecryptVaultUsecase decryptVaultUsecase,
     required RestoreVaultUsecase restoreVaultUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
-    required SaveToGoogleDriveUsecase saveToGoogleDriveUsecase,
+    required SaveVaultToGoogleDriveUsecase saveToGoogleDriveUsecase,
     required InitTorUsecase initializeTorUsecase,
     required IsTorRequiredUsecase checkForTorInitializationOnStartupUsecase,
     required TheDirtyUsecase checkWalletStatusUsecase,
@@ -251,7 +251,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           );
         case VaultProvider.googleDrive:
           await _connectToGoogleDriveUsecase.execute();
-          await _saveToGoogleDriveUsecase.execute(vault.toFile());
+          await _saveToGoogleDriveUsecase.execute(vault);
         case VaultProvider.iCloud:
           log.warning('iCloud, not supported yet');
       }

@@ -26,14 +26,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<OnboardingGoBack>((event, emit) {
       emit(state.copyWith(step: OnboardingStep.splash));
     });
-
-    on<StartTransitioning>((event, emit) {
-      emit(state.copyWith(transitioning: true));
-    });
-
-    on<EndTransitioning>((event, emit) {
-      emit(state.copyWith(transitioning: false));
-    });
   }
 
   final CreateDefaultWalletsUsecase _createDefaultWalletsUsecase;
@@ -61,10 +53,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           step: OnboardingStep.create,
         ),
       );
-      await Future.delayed(const Duration(seconds: 2));
-
       await _createDefaultWalletsUsecase.execute();
-      await Future.delayed(const Duration(seconds: 2));
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
     } catch (e) {
       await _handleError(e.toString(), emit);

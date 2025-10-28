@@ -1,20 +1,16 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/errors/errors.dart';
-import 'package:bb_mobile/core/recoverbull/domain/vault_key_service.dart';
+import 'package:bb_mobile/core/recoverbull/errors.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
 /// Stores a backup key on the server with password protection
 class StoreVaultKeyIntoServerUsecase {
   final RecoverBullRepository _recoverBullRepository;
-  final VaultKeyService _backupKeyService;
 
   StoreVaultKeyIntoServerUsecase({
     required RecoverBullRepository recoverBullRepository,
-    required VaultKeyService backupService,
-  }) : _recoverBullRepository = recoverBullRepository,
-       _backupKeyService = backupService;
+  }) : _recoverBullRepository = recoverBullRepository;
 
   Future<void> execute({
     required String password,
@@ -22,12 +18,6 @@ class StoreVaultKeyIntoServerUsecase {
     required String vaultKey,
   }) async {
     try {
-      final derivedKey = await _backupKeyService.deriveVaultKeyFromDefaultSeed(
-        path: vault.derivationPath,
-      );
-
-      if (vaultKey != derivedKey) throw KeysMismatchError();
-
       await _recoverBullRepository.storeVaultKey(
         vault.id,
         password,
@@ -36,9 +26,9 @@ class StoreVaultKeyIntoServerUsecase {
       );
     } on recoverbull.KeyServerException catch (e) {
       log.severe('$StoreVaultKeyIntoServerUsecase: $e');
-      throw KeyServerError.fromException(e);
+      throw ServerError.fromException(e);
     } catch (e) {
-      if (e is! KeyServerError) {
+      if (e is! ServerError) {
         log.severe('$StoreVaultKeyIntoServerUsecase: $e');
       }
       rethrow;

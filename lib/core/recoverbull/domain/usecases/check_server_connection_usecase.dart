@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 
-class CheckKeyServerConnectionUsecase {
+class CheckServerConnectionUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
-  CheckKeyServerConnectionUsecase({
+  CheckServerConnectionUsecase({
     required RecoverBullRepository recoverBullRepository,
   }) : _recoverBullRepository = recoverBullRepository;
 

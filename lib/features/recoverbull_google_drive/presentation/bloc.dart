@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/delete_drive_file_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/export_drive_file_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
@@ -61,10 +60,7 @@ class RecoverBullGoogleDriveBloc
     try {
       emit(state.copyWith(error: null, selectedVault: null, isLoading: true));
 
-      final vaultFile = await _fetchDriveVaultUsecase.execute(
-        event.fileMetadata,
-      );
-      final vault = EncryptedVault(file: vaultFile);
+      final vault = await _fetchDriveVaultUsecase.execute(event.fileMetadata);
       emit(state.copyWith(selectedVault: vault));
     } catch (e) {
       log.severe('$OnSelectDriveFileMetadata: $e');

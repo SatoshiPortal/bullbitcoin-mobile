@@ -1,16 +1,18 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 
-class SaveToGoogleDriveUsecase {
+class SaveVaultToGoogleDriveUsecase {
   final GoogleDriveRepository _driveRepository;
 
-  SaveToGoogleDriveUsecase({required GoogleDriveRepository driveRepository})
-    : _driveRepository = driveRepository;
+  SaveVaultToGoogleDriveUsecase({
+    required GoogleDriveRepository driveRepository,
+  }) : _driveRepository = driveRepository;
 
-  Future<void> execute(String content) async {
+  Future<void> execute(EncryptedVault vault) async {
     try {
-      await _driveRepository.store(content);
+      await _driveRepository.store(vault.toFile());
     } catch (e) {
-      throw Exception(e.toString());
+      rethrow;
     }
   }
 }

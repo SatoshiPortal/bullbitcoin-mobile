@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/check_key_server_connection_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
@@ -50,14 +50,15 @@ class RecoverBullRouter {
               storeVaultKeyIntoServerUsecase:
                   locator<StoreVaultKeyIntoServerUsecase>(),
               checkKeyServerConnectionUsecase:
-                  locator<CheckKeyServerConnectionUsecase>(),
+                  locator<CheckServerConnectionUsecase>(),
               fetchVaultKeyFromServerUsecase:
                   locator<FetchVaultKeyFromServerUsecase>(),
               decryptVaultUsecase: locator<DecryptVaultUsecase>(),
               restoreVaultUsecase: locator<RestoreVaultUsecase>(),
               connectToGoogleDriveUsecase:
                   locator<ConnectToGoogleDriveUsecase>(),
-              saveToGoogleDriveUsecase: locator<SaveToGoogleDriveUsecase>(),
+              saveToGoogleDriveUsecase:
+                  locator<SaveVaultToGoogleDriveUsecase>(),
               initializeTorUsecase: locator<InitTorUsecase>(),
               checkForTorInitializationOnStartupUsecase:
                   locator<IsTorRequiredUsecase>(),

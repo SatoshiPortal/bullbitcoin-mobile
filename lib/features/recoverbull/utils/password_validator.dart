@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/key_server/data/constants/most_common_passwords.dart';
+import 'package:bb_mobile/features/recoverbull/utils/most_common_passwords.dart';
 
 class PasswordValidator {
   static const int minPasswordLength = 6;
