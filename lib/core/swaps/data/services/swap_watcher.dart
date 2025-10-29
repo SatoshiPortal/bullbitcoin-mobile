@@ -698,7 +698,6 @@ class SwapWatcherService {
         case SwapType.liquidToLightning:
         case SwapType.liquidToBitcoin:
         case SwapType.bitcoinToLiquid:
-          return;
       }
     } catch (e, st) {
       log.severe(

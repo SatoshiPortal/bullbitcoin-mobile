@@ -162,6 +162,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                       focusedBorder: borderDecoration,
                       disabledBorder: borderDecoration,
                       contentPadding: const EdgeInsets.all(16),
+                      errorMaxLines: 4,
                     ),
                   ),
                   const Gap(30),
