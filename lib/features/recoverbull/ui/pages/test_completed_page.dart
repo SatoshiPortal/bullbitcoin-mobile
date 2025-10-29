@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -10,9 +9,7 @@ import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
 class TestCompletedPage extends StatelessWidget {
-  final DecryptedVault decryptedVault;
-
-  const TestCompletedPage(this.decryptedVault);
+  const TestCompletedPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/selectors/recoverbull_vault_provider_selector.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
@@ -10,7 +9,6 @@ import 'package:bb_mobile/features/recoverbull/ui/pages/vault_selected_page.dart
 import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class VaultProviderSelectionPage extends StatelessWidget {
   const VaultProviderSelectionPage({super.key});
@@ -19,11 +17,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          onBack: () => context.pop(),
-          title: 'Select Vault Provider',
-        ),
+        title: const Text('Select Vault Provider'),
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 20),

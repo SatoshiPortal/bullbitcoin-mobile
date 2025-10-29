@@ -14,7 +14,7 @@ class KeyServerStatusWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.read<RecoverBullBloc>().add(const OnCheckKeyServer());
+        context.read<RecoverBullBloc>().add(const OnServerCheck());
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/vault_provider_selection_page.dart';
@@ -33,6 +34,8 @@ class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
         onGenerateRoute: (settings) {
           return MaterialPageRoute(
             builder: (context) {
+              log.config('$flow with vault $hasPreSelectedVault');
+
               return switch (flow) {
                 RecoverBullFlow.secureVault => const PasswordInputPage(),
                 _ =>

@@ -36,7 +36,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
         );
       case InputType.vaultKey:
         context.read<RecoverBullBloc>().add(
-          OnVaultKeySet(vaultKey: widget.input),
+          OnVaultDecryption(vaultKey: widget.input),
         );
     }
   }
@@ -59,7 +59,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fetch Vault Secret'),
+        title: const Text('Fetch Vault Key'),
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 20),
@@ -94,8 +94,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
               case RecoverBullFlow.testVault:
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder:
-                        (context) => TestCompletedPage(state.decryptedVault!),
+                    builder: (context) => const TestCompletedPage(),
                   ),
                 );
               case RecoverBullFlow.recoverVault:

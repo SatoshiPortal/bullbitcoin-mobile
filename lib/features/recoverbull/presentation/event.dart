@@ -4,10 +4,6 @@ sealed class RecoverBullEvent {
   const RecoverBullEvent();
 }
 
-class OnRecoverBullStarted extends RecoverBullEvent {
-  const OnRecoverBullStarted();
-}
-
 class OnVaultProviderSelection extends RecoverBullEvent {
   const OnVaultProviderSelection({required this.provider});
   final VaultProvider provider;
@@ -29,23 +25,23 @@ class OnVaultCreation extends RecoverBullEvent {
   final String password;
 }
 
-class OnFetchVaultKey extends RecoverBullEvent {
-  const OnFetchVaultKey({required this.vault, required this.password});
+class OnVaultFetchKey extends RecoverBullEvent {
+  const OnVaultFetchKey({required this.vault, required this.password});
   final EncryptedVault vault;
   final String password;
 }
 
-class OnVaultKeySet extends RecoverBullEvent {
-  const OnVaultKeySet({required this.vaultKey});
+class OnVaultDecryption extends RecoverBullEvent {
+  const OnVaultDecryption({required this.vaultKey});
   final String vaultKey;
 }
 
-class OnCheckKeyServer extends RecoverBullEvent {
-  const OnCheckKeyServer();
+class OnServerCheck extends RecoverBullEvent {
+  const OnServerCheck();
 }
 
-class OnCheckWalletStatus extends RecoverBullEvent {
-  const OnCheckWalletStatus({required this.decryptedVault});
+class OnVaultCheckStatus extends RecoverBullEvent {
+  const OnVaultCheckStatus({required this.decryptedVault});
   final DecryptedVault decryptedVault;
 }
 

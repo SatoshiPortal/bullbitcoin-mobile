@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -26,7 +27,15 @@ class VaultSelectedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Vault Selected')),
+      appBar: AppBar(
+        title: const Text('Vault Selected'),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 20),
+            child: KeyServerStatusWidget(),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(

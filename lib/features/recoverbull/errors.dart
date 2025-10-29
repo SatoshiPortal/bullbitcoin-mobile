@@ -40,3 +40,26 @@ class VaultCreationError extends RecoverBullError {
   VaultCreationError()
     : super('Vault creation failed, it can be the file or the key');
 }
+
+class TorResponseFormatExceptionError extends RecoverBullError {
+  TorResponseFormatExceptionError()
+    : super(
+        'Missing bytes from the Tor response. Retry but if the issue persists, it is a known issue for some devices with Tor.',
+      );
+}
+
+class VaultKeyFetchError extends RecoverBullError {
+  VaultKeyFetchError() : super('Failed to fetch vault key from server');
+}
+
+class VaultDecryptionError extends RecoverBullError {
+  VaultDecryptionError() : super('Failed to decrypt the vault');
+}
+
+class VaultCheckStatusError extends RecoverBullError {
+  VaultCheckStatusError() : super('Failed to check the vault status');
+}
+
+class VaultRecoveryError extends RecoverBullError {
+  VaultRecoveryError() : super('Failed to recover the vault');
+}

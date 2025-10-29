@@ -81,52 +81,45 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
        _walletBloc = walletBloc,
        _fetchLatestGoogleDriveVaultUsecase = fetchLatestGoogleDriveVaultUsecase,
        super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
-    on<OnRecoverBullStarted>(_onRecoverBullStarted);
     on<OnVaultProviderSelection>(_onVaultProviderSelection);
     on<OnVaultSelection>(_onVaultSelection);
     on<OnVaultPasswordSet>(_onVaultPasswordSet);
     on<OnVaultCreation>(_onVaultCreation);
-    on<OnVaultKeySet>(_onVaultKeySet);
-    on<OnCheckKeyServer>(_onCheckKeyServer);
-    on<OnCheckWalletStatus>(_onCheckWalletStatus);
+    on<OnVaultDecryption>(_onVaultDecryption);
+    on<OnVaultCheckStatus>(_onVaultCheckStatus);
     on<OnVaultRecovery>(_onVaultRecovery);
+    on<OnServerCheck>(_onServerCheck);
 
-    add(const OnRecoverBullStarted());
+    add(const OnServerCheck());
   }
 
-  Future<void> _onRecoverBullStarted(
-    OnRecoverBullStarted event,
-    Emitter<RecoverBullState> emit,
-  ) async {
-    add(const OnCheckKeyServer());
-  }
-
-  Future<void> _onCheckKeyServer(
-    OnCheckKeyServer event,
+  Future<void> _onServerCheck(
+    OnServerCheck event,
     Emitter<RecoverBullState> emit,
   ) async {
     try {
       final isTorIniatizationEnabled =
           await _checkForTorInitializationOnStartupUsecase.execute();
 
-      if (isTorIniatizationEnabled) {
-        emit(state.copyWith(keyServerStatus: KeyServerStatus.connecting));
-        await _initializeTorUsecase.execute();
-      }
+      if (isTorIniatizationEnabled) await _initializeTorUsecase.execute();
+      emit(state.copyWith(keyServerStatus: KeyServerStatus.connecting));
 
       var isConnected = false;
-      for (var i = 0; i < 3; i++) {
+      const retries = 3;
+      int attempt = 1;
+      for (; attempt <= retries; attempt++) {
         try {
-          await Future.delayed(Duration(seconds: i + 1));
+          final delay = Duration(seconds: attempt);
+          await Future.delayed(delay);
           isConnected = await _checkKeyServerConnectionUsecase.execute();
           if (isConnected) break;
         } catch (e) {
-          log.info('Key Server is not ready: $e');
+          log.config('Recoverbull server is not ready $attempt attempt: $e');
         }
       }
 
       if (!isConnected) {
-        log.severe('Key Server is not ready after retries');
+        log.severe('Recoverbull server is not ready after $retries retries');
         emit(
           state.copyWith(
             error: KeyServerConnectionError(),
@@ -134,11 +127,11 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           ),
         );
       } else {
-        log.fine('Key Server is ready');
+        log.fine('Recoverbull server ready after $attempt attempts');
         emit(state.copyWith(keyServerStatus: KeyServerStatus.online));
       }
     } catch (e) {
-      log.severe('$OnCheckKeyServer: $e');
+      log.severe('$OnServerCheck: $e');
       emit(
         state.copyWith(
           error: BullError(e.toString()),
@@ -160,7 +153,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         emit(state.copyWith(vaultPassword: event.password));
 
         await _onFetchVaultKey(
-          OnFetchVaultKey(vault: state.vault!, password: event.password),
+          OnVaultFetchKey(vault: state.vault!, password: event.password),
           emit,
         );
     }
@@ -269,20 +262,24 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.fine('Vault created and key stored in server');
     } catch (e) {
       log.severe('$OnVaultCreation: $e');
-      emit(state.copyWith(error: VaultCreationError()));
+      if (e is FormatException) {
+        emit(state.copyWith(error: TorResponseFormatExceptionError()));
+      } else {
+        emit(state.copyWith(error: VaultCreationError()));
+      }
     } finally {
       emit(state.copyWith(isLoading: false));
     }
   }
 
   Future<void> _onFetchVaultKey(
-    OnFetchVaultKey event,
+    OnVaultFetchKey event,
     Emitter<RecoverBullState> emit,
   ) async {
     try {
       if (state.flow == RecoverBullFlow.secureVault) return;
 
-      emit(state.copyWith(isLoading: true));
+      emit(state.copyWith(isLoading: true, vaultKey: null));
 
       final vaultKey = await _fetchVaultKeyFromServerUsecase.execute(
         vault: event.vault,
@@ -292,17 +289,21 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(vaultKey: vaultKey));
       log.fine('Vault key fetched from server');
 
-      await _onVaultKeySet(OnVaultKeySet(vaultKey: vaultKey), emit);
+      await _onVaultDecryption(OnVaultDecryption(vaultKey: vaultKey), emit);
     } catch (e) {
-      log.severe('$OnFetchVaultKey: $e');
-      emit(state.copyWith(error: BullError(e.toString())));
+      log.severe('$OnVaultFetchKey: $e');
+      if (e is FormatException) {
+        emit(state.copyWith(error: TorResponseFormatExceptionError()));
+      } else {
+        emit(state.copyWith(error: VaultKeyFetchError()));
+      }
     } finally {
       emit(state.copyWith(isLoading: false));
     }
   }
 
-  Future<void> _onVaultKeySet(
-    OnVaultKeySet event,
+  Future<void> _onVaultDecryption(
+    OnVaultDecryption event,
     Emitter<RecoverBullState> emit,
   ) async {
     if (state.vault == null) throw VaultIsNotSetError();
@@ -323,8 +324,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           emit(state.copyWith(decryptedVault: decryptedVault));
         case RecoverBullFlow.recoverVault:
           emit(state.copyWith(decryptedVault: decryptedVault));
-          await _onCheckWalletStatus(
-            OnCheckWalletStatus(decryptedVault: decryptedVault),
+          await _onVaultCheckStatus(
+            OnVaultCheckStatus(decryptedVault: decryptedVault),
             emit,
           );
         case RecoverBullFlow.secureVault:
@@ -334,15 +335,15 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(vaultKey: vaultKey));
       log.fine('Vault decrypted');
     } catch (e) {
-      log.severe('$OnVaultKeySet: $e');
-      emit(state.copyWith(error: BullError(e.toString())));
+      log.severe('$OnVaultDecryption: $e');
+      emit(state.copyWith(error: VaultDecryptionError()));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
   }
 
-  Future<void> _onCheckWalletStatus(
-    OnCheckWalletStatus event,
+  Future<void> _onVaultCheckStatus(
+    OnVaultCheckStatus event,
     Emitter<RecoverBullState> emit,
   ) async {
     try {
@@ -365,8 +366,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(liquidStatus: liquidStatus));
       log.fine('Vault Liquid status checked');
     } catch (e) {
-      log.severe('$OnCheckWalletStatus: $e');
-      emit(state.copyWith(error: BullError(e.toString())));
+      log.severe('$OnVaultCheckStatus: $e');
+      emit(state.copyWith(error: VaultCheckStatusError()));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -388,7 +389,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(isFlowFinished: true));
     } catch (e) {
       log.severe('$OnVaultRecovery: $e');
-      emit(state.copyWith(error: BullError(e.toString())));
+      emit(state.copyWith(error: VaultRecoveryError()));
     } finally {
       emit(state.copyWith(isLoading: false));
     }

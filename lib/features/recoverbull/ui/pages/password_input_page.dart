@@ -132,11 +132,15 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                     validator: (value) {
                       if (needPasswordConfirmation &&
                           validatedPassword.isNotEmpty) {
+                        if (value == null || value.isEmpty) {
+                          return 'Re-enter your ${inputType.name}';
+                        }
+
                         final error = PasswordValidator.validate(value);
                         if (error != null) return error;
 
                         return PasswordValidator.validateMatching(
-                          value!,
+                          value,
                           validatedPassword,
                         );
                       } else {

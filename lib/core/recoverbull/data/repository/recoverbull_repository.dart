@@ -95,7 +95,7 @@ class RecoverBullRepository {
 
     final isTorReady = await torRepository.isTorReady;
     if (!isTorReady) throw Exception('Tor is not ready');
-    log.config('Tor is ready');
+    log.info('Tor is ready'); // Tor is supposed to be ready but it's not
 
     final socket = await torRepository.createSocket();
     await remoteDatasource.info(socket);
