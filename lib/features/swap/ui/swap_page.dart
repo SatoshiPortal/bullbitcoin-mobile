@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/swap/presentation/swap_bloc.dart';
+import 'package:bb_mobile/features/swap/presentation/swap_cubit.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_state.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';

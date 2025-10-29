@@ -12,7 +12,6 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -21,7 +20,8 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_use
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
-import 'package:bb_mobile/features/swap/presentation/swap_bloc.dart';
+import 'package:bb_mobile/features/swap/presentation/swap_cubit.dart';
+import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 
 class SwapLocator {
@@ -66,6 +66,20 @@ class SwapLocator {
   }
 
   static void registerBlocs() {
+    locator.registerFactory<TransferBloc>(
+      () => TransferBloc(
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getWalletsUsecase: locator<GetWalletsUsecase>(),
+        getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
+        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
+        prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
+        calculateBitcoinAbsoluteFeesUsecase:
+            locator<CalculateBitcoinAbsoluteFeesUsecase>(),
+        calculateLiquidAbsoluteFeesUsecase:
+            locator<CalculateLiquidAbsoluteFeesUsecase>(),
+      ),
+    );
     locator.registerFactory<SwapCubit>(
       () => SwapCubit(
         getSettingsUsecase: locator<GetSettingsUsecase>(),
@@ -73,7 +87,6 @@ class SwapLocator {
             locator<ConvertSatsToCurrencyAmountUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         getAvailableCurrenciesUsecase: locator<GetAvailableCurrenciesUsecase>(),
-        getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
         prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
         signBitcoinTxUsecase: locator<SignBitcoinTxUsecase>(),

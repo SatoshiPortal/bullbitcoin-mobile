@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/swap/presentation/swap_bloc.dart';
+import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_confirm_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_page.dart';
@@ -22,7 +22,7 @@ class SwapRouter {
     path: SwapRoute.swap.path,
     builder:
         (context, state) => BlocProvider(
-          create: (_) => locator<SwapCubit>()..init(),
+          create: (_) => locator<TransferBloc>()..add(const TransferStarted()),
           child: const SwapPage(),
         ),
     routes: [
@@ -30,7 +30,7 @@ class SwapRouter {
         name: SwapRoute.confirmSwap.name,
         path: SwapRoute.confirmSwap.path,
         builder: (context, state) {
-          final bloc = state.extra! as SwapCubit;
+          final bloc = state.extra! as TransferBloc;
 
           return BlocProvider.value(
             value: bloc,
@@ -42,7 +42,7 @@ class SwapRouter {
         name: SwapRoute.inProgressSwap.name,
         path: SwapRoute.inProgressSwap.path,
         builder: (context, state) {
-          final bloc = state.extra! as SwapCubit;
+          final bloc = state.extra! as TransferBloc;
 
           return BlocProvider.value(
             value: bloc,

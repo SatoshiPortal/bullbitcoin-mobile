@@ -20,7 +20,6 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -38,7 +37,6 @@ class SwapCubit extends Cubit<SwapState> {
     required ConvertSatsToCurrencyAmountUsecase
     convertSatsToCurrencyAmountUsecase,
     required GetNetworkFeesUsecase getNetworkFeesUsecase,
-    required GetWalletUtxosUsecase getWalletUtxosUsecase,
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
     required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
     required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
@@ -61,7 +59,6 @@ class SwapCubit extends Cubit<SwapState> {
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
        _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
        _getNetworkFeesUsecase = getNetworkFeesUsecase,
-       _getWalletUtxosUsecase = getWalletUtxosUsecase,
        _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
        _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
        _signLiquidTxUsecase = signLiquidTxUsecase,
@@ -84,7 +81,6 @@ class SwapCubit extends Cubit<SwapState> {
   final GetSettingsUsecase _getSettingsUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
-  final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetWalletUsecase _getWalletUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
