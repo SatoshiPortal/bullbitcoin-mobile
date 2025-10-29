@@ -174,6 +174,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     Wallet newFromWallet = event.fromWallet;
     Wallet newToWallet = event.toWallet;
 
+    if (newFromWallet.isWatchOnly) {
+      // Currently, it is not possible to make an internal swap from a watch-only
+      //  wallet yet.
+      return;
+    }
+
     if (newFromWallet.isLiquid == newToWallet.isLiquid) {
       // Ensure from and to wallets are of different types
       // If one wallet is changed, adjust the other accordingly

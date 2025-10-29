@@ -53,9 +53,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: f2094abd6fe9d8632a4a717c3683cc4a376068d0
-      resolved-ref: f2094abd6fe9d8632a4a717c3683cc4a376068d0
-      url: "https://github.com/ethicnology/dart-ark-wallet"
+      ref: c4ad1591b06e0ee5192b22312e44972036d4a072
+      resolved-ref: c4ad1591b06e0ee5192b22312e44972036d4a072
+      url: "https://github.com/SatoshiPortal/dart-ark-wallet"
     source: git
     version: "0.0.1"
   async:
@@ -1623,8 +1623,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "07b20a075350c0adfa5a92abb6b858c12a022661"
-      resolved-ref: "07b20a075350c0adfa5a92abb6b858c12a022661"
+      ref: ad386bc15717532aa5dc8e349ba12d22a89f8550
+      resolved-ref: ad386bc15717532aa5dc8e349ba12d22a89f8550
       url: "https://github.com/ethicnology/dart-satoshifier.git"
     source: git
     version: "0.0.1"

@@ -1,13 +1,16 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
 import 'package:bb_mobile/core/ark/ark.dart';
+import 'package:bb_mobile/core/ark/entities/ark_balance.dart';
 import 'package:bb_mobile/core/ark/errors.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:convert/convert.dart' as convert;
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
 class ArkWalletEntity {
   final ark_wallet.ArkWallet wallet;
+  final List<int> _secretKey;
 
-  ArkWalletEntity({required this.wallet});
+  ArkWalletEntity({required this.wallet, required List<int> secretKey})
+    : _secretKey = secretKey;
 
   static Future<ArkWalletEntity> init({required List<int> secretKey}) async {
     try {
@@ -16,16 +19,17 @@ class ArkWalletEntity {
         network: Ark.network,
         esplora: Ark.esplora,
         server: Ark.server,
+        boltz: Ark.boltz,
       );
-      return ArkWalletEntity(wallet: wallet);
+      return ArkWalletEntity(wallet: wallet, secretKey: secretKey);
     } catch (e) {
-      log.severe('[ArkWalletEntity] Failed to initialize ark wallet: $e');
       throw ArkError(e.toString());
     }
   }
 
   String get offchainAddress => wallet.offchainAddress();
   String get boardingAddress => wallet.boardingAddress();
+  String get secretHex => convert.hex.encode(_secretKey);
   static bool isArkAddress(String address) {
     try {
       return ark_wallet.Utils.isArk(address: address);
@@ -43,13 +47,27 @@ class ArkWalletEntity {
     }
   }
 
-  Future<({int confirmed, int pending, int total})> get balance async {
-    final balance = await wallet.balance();
-    return (
-      confirmed: balance.confirmed,
-      pending: balance.pending,
-      total: balance.total,
-    );
+  Future<ArkBalance> get balance async {
+    try {
+      final balance = await wallet.balance();
+
+      final arkBalance = ArkBalance(
+        preconfirmed: balance.preconfirmed,
+        settled: balance.settled,
+        available: balance.available,
+        recoverable: balance.recoverable,
+        total: balance.total,
+        boarding: ArkBoarding(
+          unconfirmed: balance.boarding.unconfirmed,
+          confirmed: balance.boarding.confirmed,
+          total: balance.boarding.total,
+        ),
+      );
+
+      return arkBalance;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<List<ark_wallet.Transaction>> get transactions =>

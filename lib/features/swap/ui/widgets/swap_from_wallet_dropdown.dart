@@ -41,6 +41,9 @@ class SwapFromWalletDropdown extends StatelessWidget {
                   ),
                   items:
                       wallets
+                          .where(
+                            (wallet) => wallet.isLiquid || wallet.signsLocally,
+                          )
                           .map(
                             (wallet) => DropdownMenuItem(
                               value: wallet,

@@ -1,4 +1,4 @@
-name: Test
+name: Analyze and Test
 
 on:
   pull_request:
@@ -7,8 +7,8 @@ on:
       - develop
 
 jobs:
-  unit-test:
-    runs-on: ubuntu-latest
+  analyze_and_test:
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
@@ -28,8 +28,11 @@ jobs:
         run: |
           echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
           echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
-      
-      - name: Run Unit Tests
+
+      - name: Linter shouldn't raise errors, warnings or infos
+        run: fvm flutter analyze --fatal-warnings --fatal-infos
+
+      - name: Unit tests must pass
         run: make unit-test
 
   # android-integration-test:

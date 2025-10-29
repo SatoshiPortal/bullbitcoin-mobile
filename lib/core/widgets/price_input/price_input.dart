@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -34,10 +33,11 @@ class PriceInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        BBText(
+        Text(
           error ?? '',
-          style: context.font.bodyLarge,
-          color: error != null ? context.colour.error : Colors.transparent,
+          style: context.font.bodyLarge?.copyWith(
+            color: error != null ? context.colour.error : Colors.transparent,
+          ),
           maxLines: 2,
         ),
         const Gap(8),
@@ -95,10 +95,11 @@ class PriceInput extends StatelessWidget {
                               ),
                     ),
                     const Gap(8),
-                    BBText(
+                    Text(
                       currency,
-                      style: context.font.displaySmall,
-                      color: context.colour.outlineVariant,
+                      style: context.font.displaySmall?.copyWith(
+                        color: context.colour.outlineVariant,
+                      ),
                       maxLines: 1,
                     ),
                   ],
@@ -123,10 +124,11 @@ class PriceInput extends StatelessWidget {
           ],
         ),
         const Gap(14),
-        BBText(
+        Text(
           '~$amountEquivalent',
-          style: context.font.bodyLarge,
-          color: context.colour.surfaceContainer,
+          style: context.font.bodyLarge?.copyWith(
+            color: context.colour.surfaceContainer,
+          ),
         ),
         const Gap(14),
         if (onNoteChanged != null)
@@ -196,7 +198,7 @@ class CurrencyBottomSheet extends StatelessWidget {
           children: [
             const Gap(16 * 3),
             const Spacer(),
-            BBText('Currency', style: context.font.headlineMedium),
+            Text('Currency', style: context.font.headlineMedium),
             const Spacer(),
             IconButton(
               iconSize: 20,
@@ -217,19 +219,20 @@ class CurrencyBottomSheet extends StatelessWidget {
                 children: [
                   SizedBox(
                     width: 24,
-                    child: BBText(
+                    child: Text(
                       curr.currencyIcon,
                       style: context.font.headlineSmall,
                     ),
                   ),
                   const Gap(16),
-                  BBText(
+                  Text(
                     curr,
-                    style: context.font.headlineSmall,
-                    color:
-                        selectedValue == curr
-                            ? context.colour.primary
-                            : context.colour.secondary,
+                    style: context.font.headlineSmall?.copyWith(
+                      color:
+                          selectedValue == curr
+                              ? context.colour.primary
+                              : context.colour.secondary,
+                    ),
                     textAlign: TextAlign.start,
                   ),
                 ],

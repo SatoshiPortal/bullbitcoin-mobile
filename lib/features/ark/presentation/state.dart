@@ -1,6 +1,8 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
+import 'package:bb_mobile/core/ark/entities/ark_balance.dart';
 import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
 import 'package:bb_mobile/core/ark/errors.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
@@ -14,39 +16,55 @@ sealed class ArkState with _$ArkState {
   const factory ArkState({
     ArkError? error,
     @Default(false) bool isLoading,
+    @Default(BitcoinUnit.sats) BitcoinUnit preferredBitcoinUnit,
+    @Default('CAD') String preferrredFiatCurrencyCode,
+    @Default([]) List<String> fiatCurrencyCodes,
+    @Default(0) double exchangeRate,
 
     // Transaction History and Balances
-    @Default(0) int pendingBalance,
-    @Default(0) int confirmedBalance,
+    ArkBalance? arkBalance,
     @Default([]) List<ark_wallet.Transaction> transactions,
 
     // Receive
     @Default(ArkReceiveMethod.offchain) ArkReceiveMethod receiveMethod,
 
     // Send
-    @Default(0) double exchangeRate,
-    @Default('CAD') String currencyCode,
-    @Default([]) List<String> fiatCurrencyCodes,
-    @Default((address: '', type: null))
-    ({String address, AddressType? type}) sendAddress,
+    ({String address, AddressType type})? sendAddress,
+    int? amountSat,
+    String? currencyCode,
     @Default('') String txid,
 
     // Settle & Redeem
     @Default(true) bool withRecoverableVtxos,
   }) = _ArkState;
-}
+  const ArkState._();
 
-extension ArkStateX on ArkState {
+  List<String> get inputCurrencyCodes =>
+      fiatCurrencyCodes + BitcoinUnit.values.map((e) => e.code).toList();
+
+  bool get isFiatCurrencyInput => fiatCurrencyCodes.contains(currencyCode);
+
+  String get equivalentCurrencyCode =>
+      isFiatCurrencyInput
+          ? preferredBitcoinUnit.code
+          : preferrredFiatCurrencyCode;
+
   bool get hasBoardingTransaction =>
       transactions.any((tx) => tx is ark_wallet.Transaction_Boarding);
 
-  bool get hasArkAddress => ArkWalletEntity.isArkAddress(sendAddress.address);
+  bool get hasArkAddress =>
+      sendAddress != null && ArkWalletEntity.isArkAddress(sendAddress!.address);
 
-  Future<bool> get hasBtcAddress =>
-      ArkWalletEntity.isBtcAddress(sendAddress.address);
+  Future<bool> get hasBtcAddress async =>
+      sendAddress != null &&
+      await ArkWalletEntity.isBtcAddress(sendAddress!.address);
 
   Future<bool> get hasValidAddress async =>
       hasArkAddress || await hasBtcAddress;
 
-  int get totalBalance => confirmedBalance + pendingBalance;
+  int get totalBalance => arkBalance?.completeTotal ?? 0;
+
+  // Backward compatibility getters
+  int get confirmedBalance => arkBalance?.total ?? 0;
+  //int get pendingBalance => arkBalance?.preconfirmed ?? 0;
 }
