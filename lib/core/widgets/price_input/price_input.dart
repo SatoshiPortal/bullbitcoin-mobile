@@ -14,8 +14,10 @@ class PriceInput extends StatelessWidget {
     required this.amountController,
     this.error,
     required this.focusNode,
+    this.noteFocusNode,
     this.readOnly = false,
     this.isMax = false,
+    this.onAmountChanged,
   });
 
   final String currency;
@@ -23,9 +25,11 @@ class PriceInput extends StatelessWidget {
   final List<String> availableCurrencies;
   final Function(String)? onCurrencyChanged;
   final Function(String)? onNoteChanged;
+  final Function(String)? onAmountChanged;
   final TextEditingController amountController;
   final String? error;
   final FocusNode? focusNode;
+  final FocusNode? noteFocusNode;
   final bool readOnly;
   final bool isMax;
 
@@ -65,11 +69,14 @@ class PriceInput extends StatelessWidget {
                                 controller: amountController,
                                 focusNode: focusNode,
                                 keyboardType: TextInputType.none,
-                                inputFormatters: [
-                                  AmountInputFormatter(currency),
-                                ],
-                                showCursor: !readOnly,
+                                inputFormatters:
+                                    readOnly
+                                        ? []
+                                        : [AmountInputFormatter(currency)],
+                                onChanged: onAmountChanged,
+                                showCursor: true,
                                 readOnly: readOnly,
+                                enableInteractiveSelection: true,
                                 cursorColor: context.colour.outline,
                                 cursorOpacityAnimates: true,
                                 cursorHeight: 30,
@@ -138,7 +145,9 @@ class PriceInput extends StatelessWidget {
               width: 200,
               alignment: Alignment.center,
               child: TextField(
+                focusNode: noteFocusNode,
                 onChanged: onNoteChanged,
+                keyboardType: TextInputType.text,
                 textAlignVertical: TextAlignVertical.center,
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(

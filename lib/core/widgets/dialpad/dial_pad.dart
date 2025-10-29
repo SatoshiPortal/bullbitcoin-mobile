@@ -11,10 +11,12 @@ class DialPad extends StatelessWidget {
     required this.onBackspacePressed,
     this.disableFeedback = false,
     this.onlyDigits = false,
+    this.onPastePressed,
   });
 
   final Function(String) onNumberPressed;
   final Function() onBackspacePressed;
+  final Function()? onPastePressed;
   final bool disableFeedback;
   final bool onlyDigits;
 
@@ -57,6 +59,29 @@ class DialPad extends StatelessWidget {
     );
   }
 
+  Widget emptyButton() {
+    return const Expanded(child: SizedBox(height: 64));
+  }
+
+  Widget pasteButton(BuildContext context) {
+    return Expanded(
+      child: InkWell(
+        onTap: onPastePressed,
+        splashFactory: disableFeedback ? NoSplash.splashFactory : null,
+        highlightColor: disableFeedback ? Colors.transparent : null,
+        child: SizedBox(
+          height: 64,
+          child: Center(
+            child: Icon(
+              Icons.content_paste,
+              color: context.colour.surfaceContainerLow,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -86,8 +111,10 @@ class DialPad extends StatelessWidget {
           ),
           Row(
             children: [
-              if (onlyDigits)
-                const Expanded(child: SizedBox(height: 64))
+              if (onPastePressed != null)
+                pasteButton(context)
+              else if (onlyDigits)
+                emptyButton()
               else
                 numPadButton(context, '.'),
               numPadButton(context, '0'),
@@ -101,6 +128,7 @@ class DialPad extends StatelessWidget {
 }
 
 /// DialPad widget for amount entry with built-in formatting
+/// Works with readonly TextFields - always adds/removes from the end
 class AmountDialPad extends StatelessWidget {
   const AmountDialPad({
     super.key,
@@ -108,50 +136,27 @@ class AmountDialPad extends StatelessWidget {
     required this.inputCurrencyCode,
     this.disableFeedback = false,
     this.onAmountChanged,
+    this.onPaste,
   });
 
   final TextEditingController controller;
   final String inputCurrencyCode;
   final bool disableFeedback;
   final VoidCallback? onAmountChanged;
+  final VoidCallback? onPaste;
 
   void _handleNumberPressed(String number) {
     final formatter = AmountInputFormatter(inputCurrencyCode);
-    final currentValue = controller.value;
-    final selectionStart = currentValue.selection.baseOffset;
-    final selectionEnd = currentValue.selection.extentOffset;
-    final currentText = currentValue.text;
+    final currentText = controller.text;
 
-    // Build new text by inserting/replacing at selection
-    final String newText;
-    final int newCursorPos;
+    // Always append to the end (field is readonly, no cursor position to track)
+    final newText = currentText + number;
 
-    if (selectionStart == -1) {
-      // Field is not focused, add to end
-      newText = currentText + number;
-      newCursorPos = newText.length;
-    } else if (selectionStart == selectionEnd) {
-      // No selection, insert at cursor
-      newText =
-          currentText.substring(0, selectionStart) +
-          number +
-          currentText.substring(selectionStart);
-      newCursorPos = selectionStart + number.length;
-    } else {
-      // Replace selection
-      newText =
-          currentText.substring(0, selectionStart) +
-          number +
-          currentText.substring(selectionEnd);
-      newCursorPos = selectionStart + number.length;
-    }
-
-    // Apply formatter (it handles cursor positioning)
     final formattedValue = formatter.formatEditUpdate(
-      currentValue,
+      TextEditingValue(text: currentText),
       TextEditingValue(
         text: newText,
-        selection: TextSelection.collapsed(offset: newCursorPos),
+        selection: TextSelection.collapsed(offset: newText.length),
       ),
     );
 
@@ -163,63 +168,33 @@ class AmountDialPad extends StatelessWidget {
 
   void _handleBackspacePressed() {
     final formatter = AmountInputFormatter(inputCurrencyCode);
-    final currentValue = controller.value;
-    final selectionStart = currentValue.selection.baseOffset;
-    final selectionEnd = currentValue.selection.extentOffset;
-    final currentText = currentValue.text;
+    final currentText = controller.text;
 
-    // Build new text by removing at selection
-    final String newText;
-    final int newCursorPos;
+    if (currentText.isEmpty) return;
 
-    if (selectionStart == -1) {
-      // Field is not focused, remove from end
-      newText =
-          currentText.isNotEmpty
-              ? currentText.substring(0, currentText.length - 1)
-              : currentText;
-      newCursorPos = newText.length;
-    } else if (selectionStart == selectionEnd) {
-      // No selection, remove before cursor
-      if (selectionStart > 0) {
-        newText =
-            currentText.substring(0, selectionStart - 1) +
-            currentText.substring(selectionStart);
-        newCursorPos = selectionStart - 1;
-      } else {
-        newText = currentText;
-        newCursorPos = 0;
-      }
-    } else {
-      // Remove selection
-      newText =
-          currentText.substring(0, selectionStart) +
-          currentText.substring(selectionEnd);
-      newCursorPos = selectionStart;
-    }
+    // Always remove from the end (field is readonly, no cursor position to track)
+    final newText = currentText.substring(0, currentText.length - 1);
 
-    // Apply formatter (it handles cursor positioning)
+    // Apply formatter
     final formattedValue = formatter.formatEditUpdate(
-      currentValue,
+      TextEditingValue(text: currentText),
       TextEditingValue(
         text: newText,
-        selection: TextSelection.collapsed(offset: newCursorPos),
+        selection: TextSelection.collapsed(offset: newText.length),
       ),
     );
 
-    if (formattedValue.text != currentText) {
-      controller.value = formattedValue;
-      onAmountChanged?.call();
-    }
+    controller.value = formattedValue;
+    onAmountChanged?.call();
   }
 
   @override
   Widget build(BuildContext context) {
     // Check if decimals are allowed
     final decimalPlaces =
-        inputCurrencyCode == 'sats'
+        (inputCurrencyCode == 'sats' || inputCurrencyCode == 'L-sats')
             ? 0
-            : inputCurrencyCode == 'BTC'
+            : (inputCurrencyCode == 'BTC' || inputCurrencyCode == 'L-BTC')
             ? 8
             : 2;
     final onlyDigits = decimalPlaces == 0;
@@ -227,6 +202,7 @@ class AmountDialPad extends StatelessWidget {
     return DialPad(
       onNumberPressed: _handleNumberPressed,
       onBackspacePressed: _handleBackspacePressed,
+      onPastePressed: onPaste,
       disableFeedback: disableFeedback,
       onlyDigits: onlyDigits,
     );
