@@ -31,7 +31,6 @@ class SwapAmountInput extends StatelessWidget {
     final fromWallet = context.select(
       (TransferBloc bloc) => bloc.state.fromWallet,
     );
-    final toWallet = context.select((TransferBloc bloc) => bloc.state.toWallet);
     final fromCurrency = context.select(
       (TransferBloc bloc) => bloc.state.displayFromCurrencyCode,
     );
@@ -164,24 +163,6 @@ class SwapAmountInput extends StatelessWidget {
                 else
                   Row(
                     children: [
-                      InkWell(
-                        onTap:
-                            toWallet != null && fromWallet != null
-                                ? () {
-                                  context.read<TransferBloc>().add(
-                                    TransferWalletsChanged(
-                                      fromWallet: toWallet,
-                                      toWallet: fromWallet,
-                                    ),
-                                  );
-                                }
-                                : null,
-                        child: Icon(
-                          Icons.swap_vert,
-                          color: context.colour.outline,
-                        ),
-                      ),
-                      const Gap(8.0),
                       Text(
                         '$toAmount $toCurrency',
                         style: context.font.bodyMedium?.copyWith(
