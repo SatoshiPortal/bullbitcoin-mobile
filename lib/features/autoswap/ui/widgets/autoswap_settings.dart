@@ -110,10 +110,6 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
 class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final showInfo = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.showInfo,
-    );
-
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
       child: Column(
@@ -121,21 +117,6 @@ class _Header extends StatelessWidget {
           const Gap(20),
           Row(
             children: [
-              GestureDetector(
-                onTap:
-                    () =>
-                        context
-                            .read<AutoSwapSettingsCubit>()
-                            .onInfoToggleChanged(),
-                child: Icon(
-                  Icons.info_outline,
-                  size: 20,
-                  color:
-                      showInfo
-                          ? context.colour.secondary
-                          : context.colour.surfaceContainer,
-                ),
-              ),
               Expanded(
                 child: Center(
                   child: BBText(
@@ -209,10 +190,6 @@ class _AmountThresholdField extends StatelessWidget {
     final amountThresholdError = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdError,
     );
-    final showInfo = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.showInfo,
-    );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -262,15 +239,13 @@ class _AmountThresholdField extends StatelessWidget {
             ),
           ),
         ],
-        if (showInfo) ...[
-          const Gap(4),
-          BBText(
-            'When wallet balance exceeds double this amount, auto-transfer will trigger to reduce balance to this level',
-            style: context.font.labelSmall?.copyWith(
-              color: context.colour.surfaceContainer,
-            ),
+        const Gap(4),
+        BBText(
+          'When wallet balance exceeds double this amount, auto-transfer will trigger to reduce balance to this level',
+          style: context.font.labelSmall?.copyWith(
+            color: context.colour.surfaceContainer,
           ),
-        ],
+        ),
       ],
     );
   }
@@ -284,9 +259,6 @@ class _FeeThresholdField extends StatelessWidget {
     );
     final feeThresholdError = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdError,
-    );
-    final showInfo = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.showInfo,
     );
 
     return Column(
@@ -335,15 +307,13 @@ class _FeeThresholdField extends StatelessWidget {
             ),
           ),
         ],
-        if (showInfo) ...[
-          const Gap(4),
-          BBText(
-            'If total transfer fee is above the set percentage, the auto-transfer will be blocked',
-            style: context.font.labelSmall?.copyWith(
-              color: context.colour.surfaceContainer,
-            ),
+        const Gap(4),
+        BBText(
+          'If total transfer fee is above the set percentage, the auto-transfer will be blocked',
+          style: context.font.labelSmall?.copyWith(
+            color: context.colour.surfaceContainer,
           ),
-        ],
+        ),
       ],
     );
   }
@@ -354,9 +324,6 @@ class _AlwaysBlockToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     final alwaysBlock = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.alwaysBlock,
-    );
-    final showInfo = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.showInfo,
     );
 
     return Column(
@@ -388,17 +355,15 @@ class _AlwaysBlockToggle extends StatelessWidget {
             ),
           ],
         ),
-        if (showInfo) ...[
-          const Gap(4),
-          BBText(
-            alwaysBlock
-                ? 'When enabled, auto-transfers with fees above the set limit will always be blocked'
-                : 'When disabled, you will be given the option to allow an auto-transfer that is blocked due to high fees',
-            style: context.font.labelSmall?.copyWith(
-              color: context.colour.surfaceContainer,
-            ),
+        const Gap(4),
+        BBText(
+          alwaysBlock
+              ? 'When enabled, auto-transfers with fees above the set limit will always be blocked'
+              : 'When disabled, you will be given the option to allow an auto-transfer that is blocked due to high fees',
+          style: context.font.labelSmall?.copyWith(
+            color: context.colour.surfaceContainer,
           ),
-        ],
+        ),
       ],
     );
   }
@@ -415,9 +380,6 @@ class _WalletSelectionDropdown extends StatelessWidget {
     );
     final enabled = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
-    );
-    final showInfo = context.select(
-      (AutoSwapSettingsCubit cubit) => cubit.state.showInfo,
     );
 
     return Column(
@@ -503,18 +465,16 @@ class _WalletSelectionDropdown extends StatelessWidget {
             context.read<AutoSwapSettingsCubit>().onWalletSelected(walletId);
           },
         ),
-        if (showInfo) ...[
-          const Gap(4),
-          BBText(
-            'Choose which Bitcoin wallet will receive the transferred funds (required)',
-            style: context.font.labelSmall?.copyWith(
-              color:
-                  enabled && selectedWalletId == null
-                      ? context.colour.error
-                      : context.colour.surfaceContainer,
-            ),
+        const Gap(4),
+        BBText(
+          'Choose which Bitcoin wallet will receive the transferred funds (required)',
+          style: context.font.labelSmall?.copyWith(
+            color:
+                enabled && selectedWalletId == null
+                    ? context.colour.error
+                    : context.colour.surfaceContainer,
           ),
-        ],
+        ),
       ],
     );
   }
