@@ -36,7 +36,7 @@ class CreateEncryptedVaultUsecase {
     // The default wallet is used to derive the backup key
     final defaultWallet = defaultBitcoinWallets.first;
     await _walletRepository.updateEncryptedBackupTime(
-      DateTime.now(),
+      time: DateTime.now(),
       walletId: defaultWallet.id,
     );
     final defaultFingerprint = defaultWallet.masterFingerprint;

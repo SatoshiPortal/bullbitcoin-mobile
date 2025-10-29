@@ -48,15 +48,3 @@ class KeyServerErrorServiceUnavailable extends ServerError {
 class InvalidVaultFileError extends BullException {
   InvalidVaultFileError() : super('Invalid vault file.');
 }
-
-class TestFlowDefaultWalletAlreadyExistsError extends RecoverBullError {
-  TestFlowDefaultWalletAlreadyExistsError()
-    : super('This wallet already exists.');
-}
-
-class TestFlowWalletMismatchError extends RecoverBullError {
-  TestFlowWalletMismatchError()
-    : super(
-        'A different default wallet already exists. You can only have one default wallet.',
-      );
-}

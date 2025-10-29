@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_vault_usecase.da
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -46,6 +47,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final TheDirtyLiquidUsecase _checkLiquidWalletStatusUsecase;
   final WalletBloc _walletBloc;
   final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveVaultUsecase;
+  final UpdateLatestEncryptedVaultTestUsecase
+  _updateLatestEncryptedVaultTestUsecase;
 
   RecoverBullBloc({
     required RecoverBullFlow flow,
@@ -65,6 +68,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required WalletBloc walletBloc,
     required FetchLatestGoogleDriveVaultUsecase
     fetchLatestGoogleDriveVaultUsecase,
+    required UpdateLatestEncryptedVaultTestUsecase
+    updateLatestEncryptedVaultTestUsecase,
   }) : _createEncryptedVaultUsecase = createEncryptedVaultUsecase,
        _storeVaultKeyIntoServerUsecase = storeVaultKeyIntoServerUsecase,
        _checkKeyServerConnectionUsecase = checkKeyServerConnectionUsecase,
@@ -80,6 +85,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
        _checkLiquidWalletStatusUsecase = checkLiquidWalletStatusUsecase,
        _walletBloc = walletBloc,
        _fetchLatestGoogleDriveVaultUsecase = fetchLatestGoogleDriveVaultUsecase,
+       _updateLatestEncryptedVaultTestUsecase =
+           updateLatestEncryptedVaultTestUsecase,
        super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
     on<OnVaultProviderSelection>(_onVaultProviderSelection);
     on<OnVaultSelection>(_onVaultSelection);
@@ -321,9 +328,15 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
       switch (state.flow) {
         case RecoverBullFlow.viewVaultKey || RecoverBullFlow.testVault:
+          await _updateLatestEncryptedVaultTestUsecase.execute(
+            decryptedVault: decryptedVault,
+          );
           emit(state.copyWith(decryptedVault: decryptedVault));
         case RecoverBullFlow.recoverVault:
           emit(state.copyWith(decryptedVault: decryptedVault));
+          await _updateLatestEncryptedVaultTestUsecase.execute(
+            decryptedVault: decryptedVault,
+          );
           await _onVaultCheckStatus(
             OnVaultCheckStatus(decryptedVault: decryptedVault),
             emit,

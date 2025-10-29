@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_la
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
@@ -67,6 +68,8 @@ class RecoverBullRouter {
               walletBloc: context.read(),
               fetchLatestGoogleDriveVaultUsecase:
                   locator<FetchLatestGoogleDriveVaultUsecase>(),
+              updateLatestEncryptedVaultTestUsecase:
+                  locator<UpdateLatestEncryptedVaultTestUsecase>(),
             ),
         child: const RecoverBullFlowNavigator(),
       );
