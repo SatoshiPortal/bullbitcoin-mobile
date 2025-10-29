@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -97,6 +98,20 @@ class _SwapPageState extends State<SwapPage> {
               SwapBalanceRow(amountController: _amountController),
               const Gap(12),
               SwapFeesRow(amountSat: _amountSat),
+              const Gap(12),
+              BlocSelector<TransferBloc, TransferState, SwapCreationException?>(
+                selector: (state) => state.swapCreationException,
+                builder: (context, swapCreationError) {
+                  return Text(
+                    swapCreationError?.message ?? '',
+                    style: context.font.labelLarge?.copyWith(
+                      color: context.colour.error,
+                    ),
+                    maxLines: 4,
+                  );
+                },
+              ),
+              const Gap(24),
               const Spacer(),
               BlocSelector<TransferBloc, TransferState, bool>(
                 selector: (state) => state.isStarting || state.isCreatingSwap,

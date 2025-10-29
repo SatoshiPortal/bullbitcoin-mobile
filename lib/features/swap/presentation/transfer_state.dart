@@ -15,7 +15,14 @@ sealed class TransferState with _$TransferState {
     Wallet? toWallet,
     int? maxAmountSat,
     @Default(false) bool isCreatingSwap,
+    SwapCreationException? swapCreationException,
     ChainSwap? swap,
+    @Default('') String signedPsbt,
+    int? bitcoinAbsoluteFeesSat,
+    int? liquidAbsoluteFeesSat,
+    @Default(false) bool isConfirming,
+    ConfirmTransactionException? confirmTransactionException,
+    @Default('') String txId,
   }) = _TransferState;
   const TransferState._();
 
@@ -45,5 +52,22 @@ sealed class TransferState with _$TransferState {
       return fees?.totalFees(fromAmountSat) ?? 0;
     }
     return 0;
+  }
+
+  int? get absoluteFees {
+    if (fromWallet?.isLiquid == true) {
+      return liquidAbsoluteFeesSat;
+    } else {
+      return bitcoinAbsoluteFeesSat;
+    }
+  }
+
+  String get absoluteFeesFormatted {
+    if (absoluteFees == null) return '0';
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(absoluteFees!);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFees!));
+    }
   }
 }

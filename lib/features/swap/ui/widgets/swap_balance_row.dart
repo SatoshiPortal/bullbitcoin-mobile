@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +24,9 @@ class SwapBalanceRow extends StatelessWidget {
     final balanceSat = fromWallet?.balanceSat.toInt() ?? 0;
     final balance =
         bitcoinUnit == BitcoinUnit.sats
-            ? balanceSat
-            : ConvertAmount.satsToBtc(balanceSat);
-    final displayFromCurrencyCode = context.select(
-      (TransferBloc bloc) => bloc.state.displayFromCurrencyCode,
-    );
+            ? FormatAmount.sats(balanceSat)
+            : FormatAmount.btc(ConvertAmount.satsToBtc(balanceSat));
+
     final maxAmountSat = context.select(
       (TransferBloc bloc) => bloc.state.maxAmountSat,
     );
@@ -45,10 +44,7 @@ class SwapBalanceRow extends StatelessWidget {
           ),
         ),
         const Gap(4),
-        Text(
-          '$balance $displayFromCurrencyCode',
-          style: context.font.labelLarge,
-        ),
+        Text(balance, style: context.font.labelLarge),
         const Spacer(),
         BBButton.small(
           label: 'MAX',

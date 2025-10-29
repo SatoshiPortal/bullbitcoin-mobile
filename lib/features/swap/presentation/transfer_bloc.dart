@@ -1,16 +1,29 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -31,6 +44,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     calculateBitcoinAbsoluteFeesUsecase,
     required CalculateLiquidAbsoluteFeesUsecase
     calculateLiquidAbsoluteFeesUsecase,
+    required CreateChainSwapUsecase createChainSwapUsecase,
+    required WatchSwapUsecase watchSwapUsecase,
+    required GetWalletUsecase getWalletUsecase,
+    required SignBitcoinTxUsecase signBitcoinTxUsecase,
+    required SignLiquidTxUsecase signLiquidTxUsecase,
+    required BroadcastBitcoinTransactionUsecase broadcastBitcoinTxUsecase,
+    required BroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase,
+    required UpdatePaidChainSwapUsecase updatePaidChainSwapUsecase,
   }) : _getSettingsUsecase = getSettingsUsecase,
        _getWalletsUsecase = getWalletsUsecase,
        _getSwapLimitsUsecase = getSwapLimitsUsecase,
@@ -40,10 +61,19 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
        _calculateBitcoinAbsoluteFeesUsecase =
            calculateBitcoinAbsoluteFeesUsecase,
        _calculateLiquidAbsoluteFeesUsecase = calculateLiquidAbsoluteFeesUsecase,
+       _createChainSwapUsecase = createChainSwapUsecase,
+       _watchSwapUsecase = watchSwapUsecase,
+       _getWalletUsecase = getWalletUsecase,
+       _signBitcoinTxUsecase = signBitcoinTxUsecase,
+       _signLiquidTxUsecase = signLiquidTxUsecase,
+       _broadcastBitcoinTxUsecase = broadcastBitcoinTxUsecase,
+       _broadcastLiquidTxUsecase = broadcastLiquidTxUsecase,
+       _updatePaidChainSwapUsecase = updatePaidChainSwapUsecase,
        super(const TransferState()) {
     on<TransferStarted>(_onStarted);
     on<TransferWalletsChanged>(_onWalletsChanged);
     on<TransferSwapCreated>(_onSwapCreated);
+    on<TransferConfirmed>(_onConfirmed);
   }
 
   final GetSettingsUsecase _getSettingsUsecase;
@@ -55,6 +85,21 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   final CalculateBitcoinAbsoluteFeesUsecase
   _calculateBitcoinAbsoluteFeesUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
+  final CreateChainSwapUsecase _createChainSwapUsecase;
+  final WatchSwapUsecase _watchSwapUsecase;
+  StreamSubscription<Swap>? _swapSubscription;
+  final GetWalletUsecase _getWalletUsecase;
+  final SignBitcoinTxUsecase _signBitcoinTxUsecase;
+  final SignLiquidTxUsecase _signLiquidTxUsecase;
+  final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
+  final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
+  final UpdatePaidChainSwapUsecase _updatePaidChainSwapUsecase;
+
+  @override
+  Future<void> close() async {
+    await Future.wait([_swapSubscription?.cancel() ?? Future.value()]);
+    return super.close();
+  }
 
   Future<void> _onStarted(
     TransferStarted event,
@@ -160,7 +205,177 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     emit(state.copyWith(maxAmountSat: maxAmountSat));
   }
 
-  void _onSwapCreated(TransferSwapCreated event, Emitter<TransferState> emit) {}
+  Future<void> _onSwapCreated(
+    TransferSwapCreated event,
+    Emitter<TransferState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        swap: null,
+        signedPsbt: '',
+        bitcoinAbsoluteFeesSat: null,
+        liquidAbsoluteFeesSat: null,
+        isCreatingSwap: true,
+        swapCreationException: null,
+      ),
+    );
+    try {
+      final amountSat =
+          state.bitcoinUnit == BitcoinUnit.sats
+              ? int.parse(event.amount)
+              : ConvertAmount.btcToSats(double.parse(event.amount));
+
+      ChainSwap swap;
+      String signedPsbt;
+      int? bitcoinAbsoluteFeesSat;
+      int? liquidAbsoluteFeesSat;
+      if (state.fromWallet?.isLiquid == false &&
+          state.toWallet?.isLiquid == true) {
+        final bitcoinWalletId = state.fromWallet!.id;
+        swap = await _createChainSwapUsecase.execute(
+          bitcoinWalletId: bitcoinWalletId,
+          liquidWalletId: state.toWallet!.id,
+          type: SwapType.bitcoinToLiquid,
+          amountSat: amountSat,
+        );
+        final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
+          walletId: bitcoinWalletId,
+          address: swap.paymentAddress,
+          amountSat: swap.paymentAmount,
+          networkFee: state.bitcoinNetworkFees!.fastest,
+        );
+
+        final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+          walletId: bitcoinWalletId,
+          psbt: unsignedPsbtAndTxSize.unsignedPsbt,
+        );
+
+        signedPsbt = signedPsbtAndTxSize.signedPsbt;
+        bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
+            .execute(
+              psbt: signedPsbtAndTxSize.signedPsbt,
+              feeRate: state.bitcoinNetworkFees!.fastest.value as double,
+            );
+      } else if (state.fromWallet?.isLiquid == true &&
+          state.toWallet?.isLiquid == false) {
+        final liquidWalletId = state.fromWallet!.id;
+        swap = await _createChainSwapUsecase.execute(
+          bitcoinWalletId: state.toWallet!.id,
+          liquidWalletId: liquidWalletId,
+          type: SwapType.liquidToBitcoin,
+          amountSat: amountSat,
+        );
+        final isMaxSend = state.maxAmountSat == swap.paymentAmount;
+
+        final psbt = await _prepareLiquidSendUsecase.execute(
+          walletId: liquidWalletId,
+          address: swap.paymentAddress,
+          amountSat: isMaxSend ? null : swap.paymentAmount,
+          networkFee: state.liquidNetworkFees!.fastest,
+          drain: isMaxSend,
+        );
+        signedPsbt = await _signLiquidTxUsecase.execute(
+          walletId: liquidWalletId,
+          pset: psbt,
+        );
+        liquidAbsoluteFeesSat = await _calculateLiquidAbsoluteFeesUsecase
+            .execute(pset: signedPsbt);
+      } else {
+        throw SwapCreationException(
+          'From and To wallets must be of different types',
+        );
+      }
+      _watchChainSwap(swap.id);
+      emit(
+        state.copyWith(
+          swap: swap,
+          signedPsbt: signedPsbt,
+          bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
+          liquidAbsoluteFeesSat: liquidAbsoluteFeesSat,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          swapCreationException: SwapCreationException(e.toString()),
+        ),
+      );
+    } finally {
+      emit(state.copyWith(isCreatingSwap: false));
+    }
+  }
+
+  Future<void> _onConfirmed(
+    TransferConfirmed event,
+    Emitter<TransferState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        txId: '',
+        isConfirming: true,
+        confirmTransactionException: null,
+      ),
+    );
+    try {
+      final swap = state.swap;
+      if (swap == null) return;
+      final signedPsbt = state.signedPsbt;
+      if (signedPsbt.isEmpty) return;
+
+      final settings = await _getSettingsUsecase.execute();
+      final isTestnet = settings.environment == Environment.testnet;
+      String txId;
+      if (state.fromWallet?.isLiquid == false) {
+        txId = await _broadcastBitcoinTxUsecase.execute(
+          signedPsbt,
+          isPsbt: true,
+        );
+        await _updatePaidChainSwapUsecase.execute(
+          txid: txId,
+          swapId: swap.id,
+          network: Network.fromEnvironment(
+            isTestnet: isTestnet,
+            isLiquid: false,
+          ),
+          absoluteFees:
+              0, // TODO (ishi): removed until server fees are implemented
+        );
+      } else {
+        txId = await _broadcastLiquidTxUsecase.execute(signedPsbt);
+        await _updatePaidChainSwapUsecase.execute(
+          txid: txId,
+          swapId: swap.id,
+          network: Network.fromEnvironment(
+            isTestnet: isTestnet,
+            isLiquid: true,
+          ),
+          absoluteFees:
+              0, // TODO (ishi): removed until server fees are implemented
+        );
+      }
+      emit(state.copyWith(txId: txId));
+    } catch (e) {
+      if (e is PrepareBitcoinSendException) {
+        emit(
+          state.copyWith(
+            confirmTransactionException: ConfirmTransactionException(
+              'Could not build transaction. Likely due to insufficient funds to cover fees and amount.',
+            ),
+          ),
+        );
+        return;
+      }
+      emit(
+        state.copyWith(
+          confirmTransactionException: ConfirmTransactionException(
+            e.toString(),
+          ),
+        ),
+      );
+    } finally {
+      emit(state.copyWith(isConfirming: false));
+    }
+  }
 
   Future<int?> getMaxAmountSat(Wallet fromWallet) async {
     try {
@@ -220,5 +435,28 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       log.severe('Error getting max amount sat in transfer bloc: $e');
       return null;
     }
+  }
+
+  void _watchChainSwap(String swapId) {
+    // Cancel the previous subscription if it exists
+    _swapSubscription?.cancel();
+    _swapSubscription = _watchSwapUsecase.execute(swapId).listen((updatedSwap) {
+      log.info(
+        '[SwapCubit] Watched swap ${updatedSwap.id} updated: ${updatedSwap.status}',
+      );
+      if (updatedSwap is ChainSwap) {
+        // ignore: invalid_use_of_visible_for_testing_member
+        emit(state.copyWith(swap: updatedSwap));
+        if (updatedSwap.status == SwapStatus.completed) {
+          // Start syncing the wallet now that the swap is completed
+          _getWalletUsecase.execute(state.fromWallet!.id, sync: true);
+          _getWalletUsecase.execute(state.toWallet!.id, sync: true);
+
+          // Cancel the subscription as we don't need to watch anymore
+          _swapSubscription?.cancel();
+          _swapSubscription = null;
+        }
+      }
+    });
   }
 }

@@ -23,7 +23,21 @@ class SwapRouter {
     builder:
         (context, state) => BlocProvider(
           create: (_) => locator<TransferBloc>()..add(const TransferStarted()),
-          child: const SwapPage(),
+          child: BlocListener<TransferBloc, TransferState>(
+            listenWhen:
+                (previous, current) =>
+                    previous.swap == null &&
+                    previous.signedPsbt.isEmpty &&
+                    current.swap != null &&
+                    current.signedPsbt.isNotEmpty,
+            listener: (context, state) {
+              context.pushNamed(
+                SwapRoute.confirmSwap.name,
+                extra: context.read<TransferBloc>(),
+              );
+            },
+            child: const SwapPage(),
+          ),
         ),
     routes: [
       GoRoute(
@@ -34,7 +48,18 @@ class SwapRouter {
 
           return BlocProvider.value(
             value: bloc,
-            child: const SwapConfirmPage(),
+            child: BlocListener<TransferBloc, TransferState>(
+              listenWhen:
+                  (previous, current) =>
+                      previous.txId.isEmpty && current.txId.isNotEmpty,
+              listener: (context, state) {
+                context.goNamed(
+                  SwapRoute.inProgressSwap.name,
+                  extra: context.read<TransferBloc>(),
+                );
+              },
+              child: const SwapConfirmPage(),
+            ),
           );
         },
       ),

@@ -108,8 +108,7 @@ class SwapAmountInput extends StatelessWidget {
                             }
                             final balanceSat =
                                 fromWallet?.balanceSat.toInt() ?? 0;
-                            if ((inputAmountSat + estimatedFeesSat) >
-                                balanceSat) {
+                            if (inputAmountSat > balanceSat) {
                               return 'Insufficient balance';
                             }
                             if ((swapLimits?.min ?? 0) > inputAmountSat) {

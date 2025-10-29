@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,11 +22,8 @@ class SwapFeesRow extends StatelessWidget {
     );
     final estimatedFees =
         bitcoinUnit == BitcoinUnit.sats
-            ? estimatedFeesSat
-            : ConvertAmount.satsToBtc(estimatedFeesSat);
-    final displayFromCurrencyCode = context.select(
-      (TransferBloc bloc) => bloc.state.displayFromCurrencyCode,
-    );
+            ? FormatAmount.sats(estimatedFeesSat)
+            : FormatAmount.btc(ConvertAmount.satsToBtc(estimatedFeesSat));
 
     return Row(
       children: [
@@ -36,10 +34,7 @@ class SwapFeesRow extends StatelessWidget {
           ),
         ),
         const Gap(4),
-        Text(
-          '$estimatedFees $displayFromCurrencyCode',
-          style: context.font.labelLarge,
-        ),
+        Text(estimatedFees, style: context.font.labelLarge),
       ],
     );
   }
