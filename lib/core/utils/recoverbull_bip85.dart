@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:bip85_entropy/bip85_entropy.dart';
 import 'package:hex/hex.dart';
@@ -48,14 +47,7 @@ class RecoverbullBip85Utils {
   }
 
   static int _getRandomIndex() {
-    final random = Uint8List(4);
-    final secureRandom = Random.secure();
-    for (int i = 0; i < 4; i++) {
-      random[i] = secureRandom.nextInt(256);
-    }
-    final randomIndex =
-        ByteData.view(random.buffer).getUint32(0, Endian.little) & 0x7FFFFFFF;
-
-    return randomIndex;
+    final random = Random.secure();
+    return random.nextInt((1 << 31) - 1);
   }
 }
