@@ -9,7 +9,7 @@ class CheckServerConnectionUsecase {
 
   Future<bool> execute() async {
     try {
-      await _recoverBullRepository.checkKeyServerConnectionWithTor();
+      await _recoverBullRepository.checkConnection();
       return true;
     } catch (e) {
       return false;
