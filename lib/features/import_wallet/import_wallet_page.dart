@@ -1,6 +1,6 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/connect_hardware_wallet/router.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
@@ -36,6 +36,24 @@ class ImportWalletPage extends StatelessWidget {
                       ),
                 ),
               ] else ...[
+                BBText('Generic wallets', style: context.font.titleMedium),
+                const Gap(12),
+                TabMenuVerticalButton(
+                  title: 'Import Mnemonic',
+                  onTap:
+                      () => context.pushNamed(
+                        ImportMnemonicRoute.importMnemonicHome.name,
+                      ),
+                ),
+                const Gap(16),
+                TabMenuVerticalButton(
+                  title: 'Import watch-only',
+                  onTap:
+                      () => context.pushNamed(
+                        ImportWatchOnlyWalletRoutes.import.name,
+                      ),
+                ),
+                const Gap(24),
                 BBText('Hardware wallets', style: context.font.titleMedium),
                 const Gap(12),
                 TabMenuVerticalButton(
@@ -61,26 +79,7 @@ class ImportWalletPage extends StatelessWidget {
                         ImportQrDeviceRoute.importKrux.name,
                       ),
                 ),
-
-                const Gap(24),
-                BBText('Generic wallets', style: context.font.titleMedium),
               ],
-              const Gap(16),
-              TabMenuVerticalButton(
-                title: 'Import Mnemonic',
-                onTap:
-                    () => context.pushNamed(
-                      ImportMnemonicRoute.importMnemonicHome.name,
-                    ),
-              ),
-              const Gap(16),
-              TabMenuVerticalButton(
-                title: 'Import watch-only',
-                onTap:
-                    () => context.pushNamed(
-                      ImportWatchOnlyWalletRoutes.import.name,
-                    ),
-              ),
             ],
           ),
         ),
