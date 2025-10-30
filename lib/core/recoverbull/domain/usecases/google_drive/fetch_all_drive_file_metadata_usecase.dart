@@ -4,7 +4,9 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dar
 class FetchAllDriveFileMetadataUsecase {
   final GoogleDriveRepository _driveRepository;
 
-  FetchAllDriveFileMetadataUsecase(this._driveRepository);
+  FetchAllDriveFileMetadataUsecase({
+    required GoogleDriveRepository driveRepository,
+  }) : _driveRepository = driveRepository;
 
   Future<List<DriveFileMetadata>> execute() async {
     try {

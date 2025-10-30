@@ -4,18 +4,21 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_d
 import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/create_vault_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/delete_drive_file_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/export_drive_file_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_file_content_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/tor/data/repository/tor_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -45,7 +48,7 @@ class RecoverbullLocator {
 
   static Future<void> registerRepositories() async {
     locator.registerLazySingleton<GoogleDriveRepository>(
-      () => GoogleDriveRepository(locator<GoogleDriveAppDatasource>()),
+      () => GoogleDriveRepository(),
     );
 
     locator.registerLazySingleton<FileSystemRepository>(
@@ -70,45 +73,31 @@ class RecoverbullLocator {
       ),
     );
     locator.registerFactory<ConnectToGoogleDriveUsecase>(
-      () => ConnectToGoogleDriveUsecase(locator<GoogleDriveRepository>()),
-    );
-
-    locator.registerFactory<DisconnectFromGoogleDriveUsecase>(
-      () => DisconnectFromGoogleDriveUsecase(locator<GoogleDriveRepository>()),
+      () => ConnectToGoogleDriveUsecase(
+        driveRepository: locator<GoogleDriveRepository>(),
+      ),
     );
 
     locator.registerFactory<FetchLatestGoogleDriveVaultUsecase>(
-      () =>
-          FetchLatestGoogleDriveVaultUsecase(locator<GoogleDriveRepository>()),
-    );
-
-    locator.registerFactory<CreateVaultKeyFromDefaultSeedUsecase>(
-      () => CreateVaultKeyFromDefaultSeedUsecase(
-        seedRepository: locator<SeedRepository>(),
-        walletRepository: locator<WalletRepository>(),
+      () => FetchLatestGoogleDriveVaultUsecase(
+        driveRepository: locator<GoogleDriveRepository>(),
       ),
     );
 
-    locator.registerFactory<RestoreEncryptedVaultFromVaultKeyUsecase>(
-      () => RestoreEncryptedVaultFromVaultKeyUsecase(
-        recoverBullRepository: locator<RecoverBullRepository>(),
-        walletRepository: locator<WalletRepository>(),
-        createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
-      ),
-    );
-
-    locator.registerFactory<PickFileContentUsecase>(
-      () => PickFileContentUsecase(),
-    );
     locator.registerFactory<SaveFileToSystemUsecase>(
       () => SaveFileToSystemUsecase(),
     );
+
     locator.registerFactory<FetchAllDriveFileMetadataUsecase>(
-      () => FetchAllDriveFileMetadataUsecase(locator<GoogleDriveRepository>()),
+      () => FetchAllDriveFileMetadataUsecase(
+        driveRepository: locator<GoogleDriveRepository>(),
+      ),
     );
 
     locator.registerFactory<FetchVaultFromDriveUsecase>(
-      () => FetchVaultFromDriveUsecase(locator<GoogleDriveRepository>()),
+      () => FetchVaultFromDriveUsecase(
+        driveRepository: locator<GoogleDriveRepository>(),
+      ),
     );
 
     locator.registerFactory<DecryptVaultUsecase>(
@@ -120,6 +109,44 @@ class RecoverbullLocator {
       () => RestoreVaultUsecase(
         walletRepository: locator<WalletRepository>(),
         createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
+      ),
+    );
+
+    locator.registerFactory<StoreVaultKeyIntoServerUsecase>(
+      () => StoreVaultKeyIntoServerUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+      ),
+    );
+
+    locator.registerFactory<CheckServerConnectionUsecase>(
+      () => CheckServerConnectionUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+      ),
+    );
+
+    locator.registerFactory<FetchVaultKeyFromServerUsecase>(
+      () => FetchVaultKeyFromServerUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+      ),
+    );
+    locator.registerFactory<SaveVaultToGoogleDriveUsecase>(
+      () => SaveVaultToGoogleDriveUsecase(
+        driveRepository: locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<DeleteDriveFileUsecase>(
+      () => DeleteDriveFileUsecase(
+        driveRepository: locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<ExportDriveFileUsecase>(
+      () => ExportDriveFileUsecase(
+        driveRepository: locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<UpdateLatestEncryptedVaultTestUsecase>(
+      () => UpdateLatestEncryptedVaultTestUsecase(
+        walletRepository: locator<WalletRepository>(),
       ),
     );
   }

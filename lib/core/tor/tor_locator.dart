@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/core/tor/data/repository/tor_repository.dart';
-import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
-import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -30,14 +30,12 @@ class TorLocator {
   }
 
   static void registerUsecases() {
-    locator.registerFactory<InitializeTorUsecase>(
-      () => InitializeTorUsecase(locator<TorRepository>()),
+    locator.registerFactory<InitTorUsecase>(
+      () => InitTorUsecase(locator<TorRepository>()),
     );
 
-    locator.registerFactory<CheckTorRequiredOnStartupUsecase>(
-      () => CheckTorRequiredOnStartupUsecase(
-        walletRepository: locator<WalletRepository>(),
-      ),
+    locator.registerFactory<IsTorRequiredUsecase>(
+      () => IsTorRequiredUsecase(walletRepository: locator<WalletRepository>()),
     );
   }
 }

@@ -13,7 +13,6 @@ enum OnboardingRoute {
   onboarding('/onboarding'),
   splash('splash'),
   recoverOptions('recover-options'),
-  chooseRecoverProvider('choose-recover-provider'),
   retrievedBackupInfo('retrieved-backup-info'),
   recoverFromEncrypted('recover-from-encrypted'),
   recoverFromPhysical('recover-from-physical');

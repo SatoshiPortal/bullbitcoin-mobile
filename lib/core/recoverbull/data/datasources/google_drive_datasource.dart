@@ -69,18 +69,9 @@ class GoogleDriveAppDatasource {
     return bytes;
   }
 
-  Future<void> trash(String path) async {
+  Future<void> trash(String fileId) async {
     _checkConnection();
-    final files = await _driveApi!.files.list(
-      spaces: 'appDataFolder',
-      q: "name = '$path' and trashed = false",
-      $fields: 'files(id)',
-    );
-
-    final fileId = files.files?.firstOrNull?.id;
-    if (fileId == null) throw "Backup file not found";
-
-    await _driveApi!.files.update(drive.File()..trashed = true, fileId);
+    await _driveApi!.files.delete(fileId);
   }
 
   Future<void> store(String content) async {

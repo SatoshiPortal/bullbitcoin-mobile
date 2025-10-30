@@ -8,10 +8,8 @@ class TorDatasource {
   static Future<TorDatasource> init() async {
     // enable: false
     // ensures that the Tor service is not started automatically
-    // used in the locator
     await Tor.init(enabled: false);
-    final instance = Tor.instance;
-    return TorDatasource._(instance);
+    return TorDatasource._(Tor.instance);
   }
 
   int get port => _tor.port;
@@ -24,12 +22,10 @@ class TorDatasource {
     }
   }
 
-  Future<void> disable() async {
-    _tor.disable();
-  }
+  void disable() => _tor.disable();
 
   Future<void> kill() async {
-    await disable();
+    disable();
     await _tor.stop();
   }
 

@@ -38,13 +38,22 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
         language: state.mnemonic!.language,
       );
 
-      final bip84Status = await _checkWalletUsecase(mnemonic, ScriptType.bip84);
+      final bip84Status = await _checkWalletUsecase(
+        mnemonic: mnemonic,
+        scriptType: ScriptType.bip84,
+      );
       if (!isClosed) emit(state.copyWith(bip84Status: bip84Status));
 
-      final bip49Status = await _checkWalletUsecase(mnemonic, ScriptType.bip49);
+      final bip49Status = await _checkWalletUsecase(
+        mnemonic: mnemonic,
+        scriptType: ScriptType.bip49,
+      );
       if (!isClosed) emit(state.copyWith(bip49Status: bip49Status));
 
-      final bip44Status = await _checkWalletUsecase(mnemonic, ScriptType.bip44);
+      final bip44Status = await _checkWalletUsecase(
+        mnemonic: mnemonic,
+        scriptType: ScriptType.bip44,
+      );
       if (!isClosed) emit(state.copyWith(bip44Status: bip44Status));
     } catch (e) {
       emit(state.copyWith(error: e as Exception));
