@@ -34,7 +34,8 @@ enum SignerDevice {
   ledgerFlex,
   ledgerStax,
   passport,
-  seedsigner;
+  seedsigner,
+  specter;
 
   static SignerDevice fromEntity(SignerDeviceEntity entity) => switch (entity) {
     SignerDeviceEntity.coldcardQ => SignerDevice.coldcardQ,
@@ -47,6 +48,7 @@ enum SignerDevice {
     SignerDeviceEntity.ledgerStax => SignerDevice.ledgerStax,
     SignerDeviceEntity.passport => SignerDevice.passport,
     SignerDeviceEntity.seedsigner => SignerDevice.seedsigner,
+    SignerDeviceEntity.specter => SignerDevice.specter,
   };
 
   SignerDeviceEntity toEntity() => switch (this) {
@@ -60,6 +62,7 @@ enum SignerDevice {
     SignerDevice.ledgerStax => SignerDeviceEntity.ledgerStax,
     SignerDevice.passport => SignerDeviceEntity.passport,
     SignerDevice.seedsigner => SignerDeviceEntity.seedsigner,
+    SignerDevice.specter => SignerDeviceEntity.specter,
   };
 }
 

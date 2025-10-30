@@ -90,5 +90,23 @@ class DeviceConfig {
         'Setup complete',
       ],
     ),
+    SignerDeviceEntity.specter: DeviceConfig(
+      device: SignerDeviceEntity.specter,
+      name: 'Specter',
+      instructionsTitle: 'Specter Instructions',
+      instructions: [
+        'Power on your Specter device',
+        'Enter your PIN',
+        'Enter your seed/key (chose which ever option suits you)',
+        'Follow the prompts according to your chosen method',
+        'Select "Master public keys"',
+        'Choose "Single key"',
+        'Disable "Use SLIP-132"',
+        'On your mobile device, tap Open Camera',
+        'Scan the QR code displayed on your Specter',
+        'Enter a label for your Specter wallet and tap Import',
+        'Setup is complete',
+      ],
+    ),
   };
 }

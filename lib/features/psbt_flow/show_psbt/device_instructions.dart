@@ -96,6 +96,29 @@ class QrDeviceInstructions {
     );
   }
 
+  static Future<void> showSpecterInstructions(BuildContext context) {
+    return InstructionsBottomSheet.show(
+      context,
+      title: 'Specter Instructions',
+      instructions: const [
+        'Turn on your Specter device',
+        'Click Scan',
+        'Scan the QR code shown in the Bull wallet',
+        'If you have trouble scanning:',
+        '   - Increase screen brightness on your device',
+        '   - Move the red laser up and down over QR code',
+        '   - Try moving your device back a little bit',
+        'Once the transaction is imported in your Specter, you should select the seed you wish to sign with.',
+        'Review the destination address and the amount, and confirm the signing on your Specter.',
+        'The Specter will then show you its own QR code.',
+        'Click "I\'m done" in the Bull Bitcoin wallet.',
+        'The Bull Bitcoin wallet will ask you to scan the QR code on the Specter. Scan it.',
+        'The transaction will be imported in the Bull Bitcoin wallet.',
+        "It's now ready to broadcast! As soon as you click broadcast, the transaction will be published on the Bitcoin network and the funds will be sent.",
+      ],
+    );
+  }
+
   static Future<void> showColdcardInstructions(BuildContext context) {
     return InstructionsBottomSheet.show(
       context,

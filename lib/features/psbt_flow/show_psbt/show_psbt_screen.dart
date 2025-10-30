@@ -59,6 +59,8 @@ class ShowPsbtScreen extends StatelessWidget {
                           QrDeviceInstructions.showSeedSignerInstructions(
                             context,
                           );
+                        case SignerDeviceEntity.specter:
+                          QrDeviceInstructions.showSpecterInstructions(context);
                         default:
                           break;
                       }

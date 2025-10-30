@@ -25,7 +25,6 @@ class ImportWalletPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Gap(24),
               const Gap(16),
               if (context.read<SettingsCubit>().state.isSuperuser ?? false) ...[
                 TabMenuVerticalButton(
@@ -69,6 +68,14 @@ class ImportWalletPage extends StatelessWidget {
                   onTap:
                       () => context.pushNamed(
                         ImportQrDeviceRoute.importSeedSigner.name,
+                      ),
+                ),
+                const Gap(16),
+                TabMenuVerticalButton(
+                  title: 'Specter',
+                  onTap:
+                      () => context.pushNamed(
+                        ImportQrDeviceRoute.importSpecter.name,
                       ),
                 ),
                 const Gap(16),
