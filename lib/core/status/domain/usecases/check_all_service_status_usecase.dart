@@ -11,6 +11,8 @@ import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
+import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -26,6 +28,7 @@ class CheckAllServiceStatusUsecase {
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
   final FetchArkSecretUsecase _fetchArkSecretUsecase;
+  final TorStatusUsecase _torStatusUsecase;
 
   CheckAllServiceStatusUsecase({
     required ElectrumConnectivityPort electrumConnectivityPort,
@@ -38,6 +41,7 @@ class CheckAllServiceStatusUsecase {
     required WalletRepository walletRepository,
     required SettingsRepository settingsRepository,
     required FetchArkSecretUsecase fetchArkSecretUsecase,
+    required TorStatusUsecase torStatusUsecase,
   }) : _electrumConnectivityPort = electrumConnectivityPort,
        _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
        _testnetBoltzSwapRepository = testnetBoltzSwapRepository,
@@ -47,7 +51,8 @@ class CheckAllServiceStatusUsecase {
        _recoverBullRepository = recoverBullRepository,
        _walletRepository = walletRepository,
        _settingsRepository = settingsRepository,
-       _fetchArkSecretUsecase = fetchArkSecretUsecase;
+       _fetchArkSecretUsecase = fetchArkSecretUsecase,
+       _torStatusUsecase = torStatusUsecase;
 
   Future<AllServicesStatus> execute({required Network network}) async {
     final now = DateTime.now();
@@ -61,6 +66,7 @@ class CheckAllServiceStatusUsecase {
         _checkPayjoinService(),
         _checkPricerService(network),
         _checkMempoolService(network),
+        _checkTorConnection(),
         _checkRecoverbullConnection(),
         _checkArkConnection(),
       ]);
@@ -73,8 +79,9 @@ class CheckAllServiceStatusUsecase {
         payjoin: results[4],
         pricer: results[5],
         mempool: results[6],
-        recoverbull: results[7],
-        ark: results[8],
+        tor: results[7],
+        recoverbull: results[8],
+        ark: results[9],
         lastChecked: now,
       );
     } catch (e) {
@@ -229,6 +236,25 @@ class CheckAllServiceStatusUsecase {
     }
   }
 
+  Future<ServiceStatusInfo> _checkTorConnection() async {
+    var status = ServiceStatusInfo(
+      status: ServiceStatus.unknown,
+      name: 'Tor',
+      lastChecked: DateTime.now(),
+    );
+
+    final torStatus = await _torStatusUsecase.execute();
+    switch (torStatus) {
+      case TorStatus.online:
+        status = status.copyWith(status: ServiceStatus.online);
+      case TorStatus.offline:
+        status = status.copyWith(status: ServiceStatus.offline);
+      default:
+        status = status.copyWith(status: ServiceStatus.unknown);
+    }
+    return status;
+  }
+
   Future<ServiceStatusInfo> _checkRecoverbullConnection() async {
     var status = ServiceStatusInfo(
       status: ServiceStatus.unknown,
@@ -237,9 +263,10 @@ class CheckAllServiceStatusUsecase {
     );
 
     final isTorRequired = await _walletRepository.isTorRequired();
-    if (isTorRequired) {
+    final torStatus = await _torStatusUsecase.execute();
+    if (isTorRequired && torStatus == TorStatus.online) {
       try {
-        await _recoverBullRepository.checkKeyServerConnectionWithTor();
+        await _recoverBullRepository.checkConnection();
         status = status.copyWith(status: ServiceStatus.online);
       } catch (e) {
         status = status.copyWith(status: ServiceStatus.offline);
