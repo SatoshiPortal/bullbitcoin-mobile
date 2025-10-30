@@ -154,7 +154,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         );
       } else {
         log.fine('Recoverbull server ready after $attempt attempts');
-        emit(state.copyWith(keyServerStatus: KeyServerStatus.online));
+        emit(
+          state.copyWith(
+            keyServerStatus: KeyServerStatus.online,
+            torStatus: TorStatus.online,
+          ),
+        );
       }
     } catch (e) {
       log.severe('$OnServerCheck: $e');
