@@ -109,17 +109,24 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
           }
         },
         builder: (context, state) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (state.isLoading)
-                const ProgressScreen(
-                  isLoading: true,
-                  title: 'Fetching Vault Key',
-                  description:
-                      'Connecting to Key Server over Tor.\nThis can take upto a minute.',
+          return SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    if (state.isLoading)
+                      const ProgressScreen(
+                        isLoading: true,
+                        title: 'Fetching Vault Key',
+                        description:
+                            'Connecting to Key Server over Tor.\nThis can take upto a minute.',
+                      ),
+                  ],
                 ),
-            ],
+              ),
+            ),
           );
         },
       ),

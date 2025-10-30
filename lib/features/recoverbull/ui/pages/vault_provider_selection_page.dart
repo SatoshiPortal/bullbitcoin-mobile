@@ -82,12 +82,18 @@ class VaultProviderSelectionPage extends StatelessWidget {
                 ),
 
               if (!state.isLoading)
-                RecoverbullVaultProviderSelector(
-                  onProviderSelected: (provider) {
-                    context.read<RecoverBullBloc>().add(
-                      OnVaultProviderSelection(provider: provider),
-                    );
-                  },
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  child: RecoverbullVaultProviderSelector(
+                    onProviderSelected: (provider) {
+                      context.read<RecoverBullBloc>().add(
+                        OnVaultProviderSelection(provider: provider),
+                      );
+                    },
+                  ),
                 ),
             ],
           );

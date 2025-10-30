@@ -48,26 +48,33 @@ class StatusScreen extends StatelessWidget {
                   bgColor: context.colour.secondary,
                 )
                 : const SizedBox.shrink(),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (hasError)
-                  Icon(Icons.error_outline_rounded, size: 80, color: textColor)
-                else
-                  const SizedBox.shrink(),
-                ProgressScreen(
-                  title: !hasError ? title : "Oops! Something went wrong",
-                  description: !hasError ? description : errorMessage,
-                  isLoading: isLoading && !hasError,
-                ),
-                if (extras.isNotEmpty && !hasError) ...[
-                  const Gap(16),
-                  ...extras,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (hasError)
+                    Icon(
+                      Icons.error_outline_rounded,
+                      size: 80,
+                      color: textColor,
+                    )
+                  else
+                    const SizedBox.shrink(),
+                  ProgressScreen(
+                    title: !hasError ? title : "Oops! Something went wrong",
+                    description: !hasError ? description : errorMessage,
+                    isLoading: isLoading && !hasError,
+                  ),
+                  if (extras.isNotEmpty && !hasError) ...[
+                    const Gap(16),
+                    ...extras,
+                  ],
+                  const Gap(30),
                 ],
-              ],
+              ),
             ),
           ),
         ),
