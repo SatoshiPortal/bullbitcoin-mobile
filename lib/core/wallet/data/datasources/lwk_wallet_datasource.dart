@@ -130,9 +130,8 @@ class LwkWalletDatasource {
     }
   }
 
-  Future<({String standard, String confidential, int index})> getNewAddress({
-    required WalletModel wallet,
-  }) async {
+  Future<({String standard, String confidential, int index})>
+  getLastUnusedAddress({required WalletModel wallet}) async {
     try {
       final lwkWallet = await _createPublicWallet(wallet);
       // For LWK, address reuse is taken care of by the repository and the address history database,
