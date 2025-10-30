@@ -140,7 +140,7 @@ class SwapWatcherService {
         );
         claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: swap.fees!.claimFee! + 256,
           bitcoinAddress: swap.receiveAddress!,
           cooperate: false,
         );
@@ -257,7 +257,7 @@ class SwapWatcherService {
         );
         claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: swap.fees!.claimFee! + 42,
           liquidAddress: receiveAddress,
           cooperate: false,
         );
@@ -436,7 +436,7 @@ class SwapWatcherService {
         );
         claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: swap.fees!.claimFee! + 256,
           bitcoinClaimAddress: finalClaimAddress,
           cooperate: false,
         );
@@ -583,7 +583,7 @@ class SwapWatcherService {
         );
         claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: swap.fees!.claimFee! + 42,
           liquidClaimAddress: finalClaimAddress,
           cooperate: false,
         );
