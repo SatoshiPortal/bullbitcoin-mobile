@@ -20,6 +20,7 @@ abstract class ReceiveState with _$ReceiveState {
     WalletAddress? liquidAddress,
     @Default('') String note,
     PayjoinReceiver? payjoin,
+    @Default(false) bool isBroadcastingOriginalTransaction,
     ReceivePayjoinException? receivePayjoinException,
     @Default(false) bool isAddressOnly,
     WalletTransaction? tx,

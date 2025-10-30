@@ -1,7 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -37,6 +40,14 @@ class TransactionDetailsScreen extends StatelessWidget {
     final wallet = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.wallet,
     );
+    final isPayjoinCompleted = context.select(
+      (TransactionDetailsCubit bloc) =>
+          bloc.state.payjoin?.status == PayjoinStatus.completed,
+    );
+    final isBroadcastingPayjoinOriginalTx = context.select(
+      (TransactionDetailsCubit bloc) =>
+          bloc.state.isBroadcastingPayjoinOriginalTx,
+    );
 
     final isOutgoing = tx?.isOutgoing;
     final isIncoming = tx?.isIncoming;
@@ -66,6 +77,14 @@ class TransactionDetailsScreen extends StatelessWidget {
               context.goNamed(WalletRoute.walletHome.name);
             }
           },
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3.0),
+          child: FadingLinearProgress(
+            trigger: isBroadcastingPayjoinOriginalTx,
+            backgroundColor: context.colour.onPrimary,
+            foregroundColor: context.colour.primary,
+          ),
         ),
       ),
       body: SafeArea(
@@ -140,7 +159,8 @@ class TransactionDetailsScreen extends StatelessWidget {
                 else
                   const TransactionDetailsTable(),
                 const Gap(32),
-                if (tx?.isOngoingPayjoinSender == true) ...[
+                if (tx?.isOngoingPayjoinSender == true &&
+                    !isPayjoinCompleted) ...[
                   const SenderBroadcastPayjoinOriginalTxButton(),
                   const Gap(24),
                 ],
