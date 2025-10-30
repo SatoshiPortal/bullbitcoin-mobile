@@ -48,3 +48,7 @@ class OnVaultCheckStatus extends RecoverBullEvent {
 class OnVaultRecovery extends RecoverBullEvent {
   const OnVaultRecovery();
 }
+
+class OnTorInitialization extends RecoverBullEvent {
+  const OnTorInitialization();
+}
