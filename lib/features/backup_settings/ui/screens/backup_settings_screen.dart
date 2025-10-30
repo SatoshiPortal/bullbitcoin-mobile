@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -167,14 +168,19 @@ class _ViewVaultKeyButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BBButton.big(
       label: 'View Vault Key',
-      onPressed:
-          () => context.pushNamed(
+      onPressed: () async {
+        final confirmed = await ViewVaultKeyWarningBottomSheet.show(context);
+        if (confirmed == true) {
+          if (!context.mounted) return;
+          await context.pushNamed(
             RecoverBullRoute.recoverbullFlows.name,
             extra: RecoverBullFlowsExtra(
               flow: RecoverBullFlow.viewVaultKey,
               vault: null,
             ),
-          ),
+          );
+        }
+      },
       borderColor: context.colour.secondary,
       outlined: true,
       bgColor: Colors.transparent,
