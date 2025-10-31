@@ -47,10 +47,23 @@ class DescriptorDerivation {
     required ScriptType scriptType,
     required bool isTestnet,
   }) async {
-    final lwk.Descriptor confidentialDescriptor = await lwk
-        .Descriptor.newConfidential(
-      network: isTestnet ? lwk.Network.testnet : lwk.Network.mainnet,
+    final network = isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
+
+    // Map ScriptType to lwk.ScriptVariant
+    final lwk.ScriptVariant scriptVariant = switch (scriptType) {
+      ScriptType.bip84 => lwk.ScriptVariant.wpkh,
+      ScriptType.bip49 => lwk.ScriptVariant.shWpkh,
+      ScriptType.bip44 => throw UnsupportedError(
+          'BIP44 is not supported for Liquid wallets. Use BIP84 or BIP49.',
+        ),
+    };
+
+    // Use lwk-dart's BIP49 support with proper script variant
+    final lwk.Descriptor confidentialDescriptor =
+        await lwk.Descriptor.newConfidentialWithScript(
+      network: network,
       mnemonic: mnemonic,
+      scriptVariant: scriptVariant,
     );
 
     return confidentialDescriptor.ctDescriptor;
@@ -104,4 +117,5 @@ class DescriptorDerivation {
 
     return descriptor.asString();
   }
+
 }

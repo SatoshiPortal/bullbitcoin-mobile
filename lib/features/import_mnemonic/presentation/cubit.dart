@@ -70,13 +70,13 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
       emit(state.copyWith(isLoading: true, error: null));
 
       final mnemonic = state.mnemonic!;
-      final wallet = await _importWalletUsecase.execute(
+      final wallets = await _importWalletUsecase.execute(
         mnemonicWords: mnemonic.words,
         label: mnemonic.label,
         passphrase: mnemonic.passphrase,
         scriptType: state.scriptType,
       );
-      emit(state.copyWith(wallet: wallet, isLoading: false));
+      emit(state.copyWith(wallets: wallets, isLoading: false));
     } catch (e) {
       emit(
         state.copyWith(
