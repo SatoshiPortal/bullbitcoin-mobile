@@ -583,7 +583,7 @@ class SwapWatcherService {
         );
         claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: swap.fees!.claimFee! + 21, // t
           liquidClaimAddress: finalClaimAddress,
           cooperate: false,
         );
