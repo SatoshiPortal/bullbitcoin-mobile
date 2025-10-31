@@ -403,6 +403,20 @@ class BdkWalletDatasource {
     return (index: index, address: address);
   }
 
+  Future<({String address, int index})> getLastUnusedAddress({
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await _createWallet(wallet);
+    final addressInfo = bdkWallet.getAddress(
+      addressIndex: const bdk.AddressIndex.lastUnused(),
+    );
+
+    final index = addressInfo.index;
+    final address = addressInfo.address.asString();
+
+    return (index: index, address: address);
+  }
+
   Future<int> getLastUnusedAddressIndex({
     required WalletModel wallet,
     bool isChange = false,

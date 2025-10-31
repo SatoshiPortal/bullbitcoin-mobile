@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/storage/migrations/schema_3_to_4.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_4_to_5.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_5_to_6.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_6_to_7.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_7_to_8.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
@@ -17,7 +18,6 @@ import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
 import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_addresses_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
@@ -36,7 +36,6 @@ part 'sqlite_database.g.dart';
     ElectrumSettings,
     Swaps,
     AutoSwap,
-    WalletAddresses,
     Bip85Derivations,
   ],
 )
@@ -45,7 +44,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -77,6 +76,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from4To5: Schema4To5.migrate,
         from5To6: Schema5To6.migrate,
         from6To7: Schema6To7.migrate,
+        from7To8: Schema7To8.migrate,
       ),
     );
   }

@@ -1,11 +1,13 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
@@ -106,6 +108,12 @@ class _SelectableCustomFeeListItemState
             ? ''
             : '${_customFee!.value} ${_isAbsolute ? 'sats' : 'sats/vB'} = $customAbsValue sats (~ $fiatEq $fiatCurrencyCode)';
 
+    Future<void> submitCustomFee() async {
+      await context.read<SendCubit>().customFeesChanged(_customFee!);
+      // ignore: use_build_context_synchronously
+      Navigator.pop(context, 'Custom Fee');
+    }
+
     return InkWell(
       radius: 2,
       onTap: () {
@@ -164,28 +172,60 @@ class _SelectableCustomFeeListItemState
                 ],
               ),
               const Gap(8),
-              BBInputText(
+              TextFormField(
                 controller: _controller,
-                value: _controller.text,
-                onChanged: _onValueChanged,
-                onlyNumbers: true,
-                focusNode: _focusNode,
-                rightIcon: Text(
-                  _isAbsolute ? 'sats' : 'sats/vB',
-                  style: context.font.bodySmall,
+                keyboardType: TextInputType.numberWithOptions(
+                  decimal: !_isAbsolute,
                 ),
+                textInputAction: TextInputAction.done,
+                inputFormatters: [
+                  if (_isAbsolute)
+                    FilteringTextInputFormatter.digitsOnly
+                  else
+                    AmountInputFormatter(BitcoinUnit.btc.code),
+                ],
+                style: context.font.bodyLarge,
+                decoration: InputDecoration(
+                  fillColor: context.colour.onPrimary,
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: BorderSide(
+                      color: context.colour.secondaryFixedDim,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: BorderSide(
+                      color: context.colour.secondaryFixedDim,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: BorderSide(
+                      color: context.colour.secondaryFixedDim.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  hintText:
+                      _isAbsolute
+                          ? 'Enter absolute fee in sats'
+                          : 'Enter relative fee in sats/vB',
+                  hintStyle: context.font.bodyMedium?.copyWith(
+                    color: context.colour.outline,
+                  ),
+                  suffixText: _isAbsolute ? 'sats' : 'sats/vB',
+                ),
+                onFieldSubmitted: (_) => submitCustomFee(),
+                onChanged: _onValueChanged,
               ),
               const Gap(12),
               BBButton.big(
                 disabled: _customFee == null,
                 label: 'Confirm custom fee',
-                onPressed: () async {
-                  await context.read<SendCubit>().customFeesChanged(
-                    _customFee!,
-                  );
-                  // ignore: use_build_context_synchronously
-                  Navigator.pop(context, 'Custom Fee');
-                },
+                onPressed: submitCustomFee,
                 bgColor: context.colour.secondary,
                 textColor: context.colour.onPrimary,
               ),
