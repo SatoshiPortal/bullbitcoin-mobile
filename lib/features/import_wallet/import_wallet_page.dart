@@ -1,8 +1,11 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
-import 'package:bb_mobile/features/connect_hardware_wallet/router.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
+import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
+import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,26 +25,9 @@ class ImportWalletPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Gap(24),
               const Gap(16),
-              if (context.read<SettingsCubit>().state.isSuperuser ?? false) ...[
-                TabMenuVerticalButton(
-                  title: 'Connect Hardware Wallet',
-                  onTap:
-                      () => context.pushNamed(
-                        ConnectHardwareWalletRoute.connectHardwareWallet.name,
-                      ),
-                ),
-              ] else ...[
-                TabMenuVerticalButton(
-                  title: 'Coldcard Q',
-                  onTap:
-                      () => context.pushNamed(
-                        ImportColdcardQRoute.importColdcardQ.name,
-                      ),
-                ),
-              ],
-              const Gap(16),
+              BBText('Generic wallets', style: context.font.titleMedium),
+              const Gap(12),
               TabMenuVerticalButton(
                 title: 'Import Mnemonic',
                 onTap:
@@ -56,6 +42,70 @@ class ImportWalletPage extends StatelessWidget {
                     () => context.pushNamed(
                       ImportWatchOnlyWalletRoutes.import.name,
                     ),
+              ),
+              const Gap(24),
+              BBText('Hardware wallets', style: context.font.titleMedium),
+              const Gap(12),
+              TabMenuVerticalButton(
+                title: 'Coldcard Q',
+                onTap:
+                    () => context.pushNamed(
+                      ImportColdcardQRoute.importColdcardQ.name,
+                    ),
+              ),
+              const Gap(16),
+              if (context.read<SettingsCubit>().state.isSuperuser ?? false) ...[
+                TabMenuVerticalButton(
+                  title: 'Ledger',
+                  onTap: () => context.pushNamed(LedgerRoute.importLedger.name),
+                ),
+                const Gap(16),
+                TabMenuVerticalButton(
+                  title: 'Blockstream Jade',
+                  onTap:
+                      () => context.pushNamed(
+                        ImportQrDeviceRoute.importJade.name,
+                      ),
+                ),
+                const Gap(16),
+                TabMenuVerticalButton(
+                  title: 'Keystone',
+                  onTap:
+                      () => context.pushNamed(
+                        ImportQrDeviceRoute.importKeystone.name,
+                      ),
+                ),
+                const Gap(16),
+                TabMenuVerticalButton(
+                  title: 'Foundation Passport',
+                  onTap:
+                      () => context.pushNamed(
+                        ImportQrDeviceRoute.importPassport.name,
+                      ),
+                ),
+                const Gap(16),
+              ],
+              TabMenuVerticalButton(
+                title: 'SeedSigner',
+                onTap:
+                    () => context.pushNamed(
+                      ImportQrDeviceRoute.importSeedSigner.name,
+                    ),
+              ),
+              const Gap(16),
+              TabMenuVerticalButton(
+                title: 'Specter',
+                onTap:
+                    () => context.pushNamed(
+                      ImportQrDeviceRoute.importSpecter.name,
+                    ),
+              ),
+              const Gap(16),
+              TabMenuVerticalButton(
+                title: 'Krux',
+                onTap:
+                    () =>
+                        context.pushNamed(ImportQrDeviceRoute.importKrux.name),
               ),
             ],
           ),

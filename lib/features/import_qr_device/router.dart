@@ -8,7 +8,8 @@ enum ImportQrDeviceRoute {
   importKrux('/import-krux'),
   importKeystone('/import-keystone'),
   importPassport('/import-passport'),
-  importSeedSigner('/import-seedsigner');
+  importSeedSigner('/import-seedsigner'),
+  importSpecter('/import-specter');
 
   final String path;
 
@@ -74,6 +75,19 @@ class ImportQrDeviceRouter {
       path: ImportQrDeviceRoute.importSeedSigner.path,
       builder: (context, state) {
         final config = DeviceConfig.configs[SignerDeviceEntity.seedsigner]!;
+        return ImportQrDevicePage(
+          device: config.device,
+          deviceName: config.name,
+          instructionsTitle: config.instructionsTitle,
+          instructions: config.instructions,
+        );
+      },
+    ),
+    GoRoute(
+      name: ImportQrDeviceRoute.importSpecter.name,
+      path: ImportQrDeviceRoute.importSpecter.path,
+      builder: (context, state) {
+        final config = DeviceConfig.configs[SignerDeviceEntity.specter]!;
         return ImportQrDevicePage(
           device: config.device,
           deviceName: config.name,

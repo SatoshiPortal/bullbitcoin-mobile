@@ -12,7 +12,8 @@ enum SignerDeviceEntity {
   ledgerFlex,
   ledgerStax,
   passport,
-  seedsigner;
+  seedsigner,
+  specter;
 
   String get displayName =>
       StringFormatting.camelCaseToTitleCase(name, separator: ' ');
@@ -31,6 +32,7 @@ enum SignerDeviceEntity {
       case SignerDeviceEntity.keystone:
       case SignerDeviceEntity.passport:
       case SignerDeviceEntity.seedsigner:
+      case SignerDeviceEntity.specter:
         return QrType.urqr;
       default:
         return QrType.none;
