@@ -6,7 +6,7 @@ enum FundingMethod {
   instantSepa(queryParam: 'instant-sepa'),
   regularSepa(queryParam: 'regular-sepa'),
   speiTransfer(queryParam: 'spei-transfer'),
-  sinpeTransfer(queryParam: 'sinpe-transfer'),
+  sinpe(queryParam: 'sinpe'),
   crIbanCrc(queryParam: 'cr-iban-crc'),
   crIbanUsd(queryParam: 'cr-iban-usd'),
   arsBankTransfer(queryParam: 'ars-bank-transfer');

@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_email_
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_instant_sepa_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_online_bill_payment_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_regular_sepa_screen.dart';
-import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_sinpe_transfer_screen.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_sinpe_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_spei_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_warning_screen.dart';
 import 'package:bb_mobile/locator.dart';
@@ -29,7 +29,7 @@ enum FundExchangeRoute {
   fundExchangeInstantSepa('instant-sepa'),
   fundExchangeRegularSepa('regular-sepa'),
   fundExchangeSpeiTransfer('spei-transfer'),
-  fundExchangeSinpeTransfer('sinpe-transfer'),
+  fundExchangeSinpe('sinpe'),
   fundExchangeCostaRicaIbanCrc('cr-iban-crc'),
   fundExchangeCostaRicaIbanUsd('cr-iban-usd'),
   fundExchangeArsBankTransfer('ars-bank-transfer');
@@ -179,15 +179,15 @@ class FundExchangeRouter {
             },
           ),
           GoRoute(
-            name: FundExchangeRoute.fundExchangeSinpeTransfer.name,
-            path: FundExchangeRoute.fundExchangeSinpeTransfer.path,
+            name: FundExchangeRoute.fundExchangeSinpe.name,
+            path: FundExchangeRoute.fundExchangeSinpe.path,
             builder: (context, state) {
               context.read<FundExchangeBloc>().add(
                 const FundExchangeEvent.fundingDetailsRequested(
-                  fundingMethod: FundingMethod.sinpeTransfer,
+                  fundingMethod: FundingMethod.sinpe,
                 ),
               );
-              return const FundExchangeSinpeTransferScreen();
+              return const FundExchangeSinpeScreen();
             },
           ),
           GoRoute(
