@@ -20,7 +20,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_u
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/tor/data/repository/tor_repository.dart';
+import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
@@ -28,22 +28,23 @@ import 'package:bb_mobile/locator.dart';
 
 class RecoverbullLocator {
   static Future<void> registerDatasources() async {
-    // - Google Drive Datasource
     locator.registerLazySingleton<GoogleDriveAppDatasource>(
       () => GoogleDriveAppDatasource(),
     );
 
-    // - RecoverBullRemoteDatasource
-    locator.registerLazySingleton<RecoverBullRemoteDatasource>(
+    locator.registerSingletonWithDependencies<RecoverBullRemoteDatasource>(
       () => RecoverBullRemoteDatasource(
-        address: Uri.parse(ApiServiceConstants.bullBitcoinKeyServerApiUrlPath),
+        Uri.parse(ApiServiceConstants.bullBitcoinKeyServerApiUrlPath),
+        locator<TorDatasource>(),
       ),
+      dependsOn: [TorDatasource],
     );
 
-    // - FileStorageDataSource
     locator.registerLazySingleton<FileStorageDatasource>(
       () => FileStorageDatasource(),
     );
+
+    await locator.isReady<RecoverBullRemoteDatasource>();
   }
 
   static Future<void> registerRepositories() async {
@@ -58,10 +59,10 @@ class RecoverbullLocator {
     locator.registerSingletonWithDependencies<RecoverBullRepository>(
       () => RecoverBullRepository(
         remoteDatasource: locator<RecoverBullRemoteDatasource>(),
-        torRepository: locator<TorRepository>(),
       ),
-      dependsOn: [TorRepository],
+      dependsOn: [RecoverBullRemoteDatasource],
     );
+    await locator.isReady<RecoverBullRepository>();
   }
 
   static void registerUsecases() {

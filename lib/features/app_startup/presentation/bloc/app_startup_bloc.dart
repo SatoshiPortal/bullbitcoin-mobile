@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
@@ -24,6 +28,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
     required RequiresMigrationUsecase requiresMigrationUsecase,
     required CheckBackupUsecase checkBackupUsecase,
+    required IsTorRequiredUsecase isTorRequiredUsecase,
+    required InitTorUsecase initTorUsecase,
   }) : _resetAppDataUsecase = resetAppDataUsecase,
        _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
        _checkForExistingDefaultWalletsUsecase =
@@ -32,6 +38,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
        _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
        _requiresMigrationUsecase = requiresMigrationUsecase,
        _checkBackupUsecase = checkBackupUsecase,
+       _isTorRequiredUsecase = isTorRequiredUsecase,
+       _initTorUsecase = initTorUsecase,
        super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
@@ -44,6 +52,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
   final RequiresMigrationUsecase _requiresMigrationUsecase;
   final CheckBackupUsecase _checkBackupUsecase;
+  final IsTorRequiredUsecase _isTorRequiredUsecase;
+  final InitTorUsecase _initTorUsecase;
 
   Future<void> _onAppStartupStarted(
     AppStartupStarted event,
@@ -51,7 +61,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   ) async {
     emit(const AppStartupState.loadingInProgress());
     try {
-      // Run Tor initialization in background
       // SQL Migrations
       // emit(const AppStartupState.failure(null));
       // return;
@@ -110,6 +119,10 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
         //  (e.g. secure storage data on iOS like the pin code)
         await _resetAppDataUsecase.execute();
       }
+
+      // Run Tor initialization in background
+      final isTorRequired = await _isTorRequiredUsecase.execute();
+      if (isTorRequired) unawaited(_initTorUsecase.execute());
 
       emit(
         AppStartupState.success(

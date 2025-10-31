@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
@@ -61,8 +61,6 @@ class RecoverBullRouter {
               saveToGoogleDriveUsecase:
                   locator<SaveVaultToGoogleDriveUsecase>(),
               initializeTorUsecase: locator<InitTorUsecase>(),
-              checkForTorInitializationOnStartupUsecase:
-                  locator<IsTorRequiredUsecase>(),
               checkWalletStatusUsecase: locator<TheDirtyUsecase>(),
               checkLiquidWalletStatusUsecase: locator<TheDirtyLiquidUsecase>(),
               walletBloc: context.read(),
@@ -70,6 +68,7 @@ class RecoverBullRouter {
                   locator<FetchLatestGoogleDriveVaultUsecase>(),
               updateLatestEncryptedVaultTestUsecase:
                   locator<UpdateLatestEncryptedVaultTestUsecase>(),
+              torStatusUsecase: locator<TorStatusUsecase>(),
             ),
         child: const RecoverBullFlowNavigator(),
       );

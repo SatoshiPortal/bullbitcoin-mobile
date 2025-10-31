@@ -1,40 +1,16 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:recoverbull/recoverbull.dart';
+import 'package:bb_mobile/core/tor/tor_status.dart';
 
 class TorRepository {
   final TorDatasource _torDatasource;
 
   TorRepository(this._torDatasource);
 
-  Future<bool> get isTorReady async {
-    try {
-      return await _torDatasource.isReady;
-    } catch (e) {
-      return false;
-    }
-  }
+  bool get isStarted => _torDatasource.isStarted;
 
-  Future<SOCKSSocket> createSocket() async {
-    if (!(await isTorReady)) throw Exception('Tor is not ready yet!');
+  Future<void> start() async => await _torDatasource.start();
 
-    return await SOCKSSocket.create(
-      proxyHost: InternetAddress.loopbackIPv4.address,
-      proxyPort: _torDatasource.port,
-    );
-  }
+  void stop() => _torDatasource.disable();
 
-  Future<void> start() async {
-    await _torDatasource.enable();
-    log.fine('Tor started at port: ${_torDatasource.port}');
-  }
-
-  void stop() {
-    _torDatasource.disable();
-    log.fine('Tor stopped');
-  }
-
-  bool get isStarted => _torDatasource.isEnabled;
+  TorStatus get status => _torDatasource.status;
 }

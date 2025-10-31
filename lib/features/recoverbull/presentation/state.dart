@@ -19,6 +19,7 @@ sealed class RecoverBullState with _$RecoverBullState {
     @Default(null) ({BigInt satoshis, int transactions})? bip84Status,
     @Default(null) ({BigInt satoshis, int transactions})? liquidStatus,
     @Default(false) bool isFlowFinished,
+    @Default(TorStatus.unknown) TorStatus torStatus,
   }) = _RecoverBullState;
 
   const RecoverBullState._();

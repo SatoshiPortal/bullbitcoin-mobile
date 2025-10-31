@@ -15,7 +15,8 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_u
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
-import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
+import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
@@ -42,13 +43,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
   final InitTorUsecase _initializeTorUsecase;
-  final IsTorRequiredUsecase _checkForTorInitializationOnStartupUsecase;
   final TheDirtyUsecase _checkWalletStatusUsecase;
   final TheDirtyLiquidUsecase _checkLiquidWalletStatusUsecase;
   final WalletBloc _walletBloc;
   final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveVaultUsecase;
   final UpdateLatestEncryptedVaultTestUsecase
   _updateLatestEncryptedVaultTestUsecase;
+  final TorStatusUsecase _torStatusUsecase;
 
   RecoverBullBloc({
     required RecoverBullFlow flow,
@@ -62,7 +63,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
     required SaveVaultToGoogleDriveUsecase saveToGoogleDriveUsecase,
     required InitTorUsecase initializeTorUsecase,
-    required IsTorRequiredUsecase checkForTorInitializationOnStartupUsecase,
     required TheDirtyUsecase checkWalletStatusUsecase,
     required TheDirtyLiquidUsecase checkLiquidWalletStatusUsecase,
     required WalletBloc walletBloc,
@@ -70,6 +70,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     fetchLatestGoogleDriveVaultUsecase,
     required UpdateLatestEncryptedVaultTestUsecase
     updateLatestEncryptedVaultTestUsecase,
+    required TorStatusUsecase torStatusUsecase,
   }) : _createEncryptedVaultUsecase = createEncryptedVaultUsecase,
        _storeVaultKeyIntoServerUsecase = storeVaultKeyIntoServerUsecase,
        _checkKeyServerConnectionUsecase = checkKeyServerConnectionUsecase,
@@ -79,14 +80,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
        _saveToGoogleDriveUsecase = saveToGoogleDriveUsecase,
        _initializeTorUsecase = initializeTorUsecase,
-       _checkForTorInitializationOnStartupUsecase =
-           checkForTorInitializationOnStartupUsecase,
        _checkWalletStatusUsecase = checkWalletStatusUsecase,
        _checkLiquidWalletStatusUsecase = checkLiquidWalletStatusUsecase,
        _walletBloc = walletBloc,
        _fetchLatestGoogleDriveVaultUsecase = fetchLatestGoogleDriveVaultUsecase,
        _updateLatestEncryptedVaultTestUsecase =
            updateLatestEncryptedVaultTestUsecase,
+       _torStatusUsecase = torStatusUsecase,
        super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
     on<OnVaultProviderSelection>(_onVaultProviderSelection);
     on<OnVaultSelection>(_onVaultSelection);
@@ -96,8 +96,28 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     on<OnVaultCheckStatus>(_onVaultCheckStatus);
     on<OnVaultRecovery>(_onVaultRecovery);
     on<OnServerCheck>(_onServerCheck);
+    on<OnTorInitialization>(_onTorInitialization);
 
+    add(const OnTorInitialization());
     add(const OnServerCheck());
+  }
+
+  Future<void> _onTorInitialization(
+    OnTorInitialization event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    try {
+      await _initializeTorUsecase.execute();
+      add(const OnServerCheck());
+    } catch (e) {
+      log.severe('$OnTorInitialization failed: $e');
+      emit(
+        state.copyWith(
+          error: BullError(e.toString()),
+          keyServerStatus: KeyServerStatus.offline,
+        ),
+      );
+    }
   }
 
   Future<void> _onServerCheck(
@@ -105,10 +125,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     Emitter<RecoverBullState> emit,
   ) async {
     try {
-      final isTorIniatizationEnabled =
-          await _checkForTorInitializationOnStartupUsecase.execute();
+      final torStatus = await _torStatusUsecase.execute();
+      emit(state.copyWith(torStatus: torStatus));
 
-      if (isTorIniatizationEnabled) await _initializeTorUsecase.execute();
       emit(state.copyWith(keyServerStatus: KeyServerStatus.connecting));
 
       var isConnected = false;
@@ -135,7 +154,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         );
       } else {
         log.fine('Recoverbull server ready after $attempt attempts');
-        emit(state.copyWith(keyServerStatus: KeyServerStatus.online));
+        emit(
+          state.copyWith(
+            keyServerStatus: KeyServerStatus.online,
+            torStatus: TorStatus.online,
+          ),
+        );
       }
     } catch (e) {
       log.severe('$OnServerCheck: $e');

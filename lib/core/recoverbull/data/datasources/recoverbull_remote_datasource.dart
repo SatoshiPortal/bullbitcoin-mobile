@@ -1,15 +1,18 @@
+import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
+import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 class RecoverBullRemoteDatasource {
-  final KeyServer _keyServer;
+  final Uri _address;
+  final TorDatasource _torDatasource;
 
-  RecoverBullRemoteDatasource({required Uri address})
-    : _keyServer = KeyServer(address: address);
+  RecoverBullRemoteDatasource(this._address, this._torDatasource);
 
-  Future<void> info(SOCKSSocket socket) async {
+  Future<void> info() async {
+    final client = _torDatasource.httpClient;
     try {
-      final info = await _keyServer.infos(socks: socket);
+      final info = await KeyServer(address: _address, client: client).infos();
       log.info('KeyServer canary: ${info.canary}');
     } catch (e) {
       log.severe('infos error: $e');
@@ -22,15 +25,14 @@ class RecoverBullRemoteDatasource {
     List<int> password,
     List<int> salt,
     List<int> backupKey,
-    SOCKSSocket socket,
   ) async {
     try {
-      await _keyServer.storeBackupKey(
+      final client = _torDatasource.httpClient;
+      await KeyServer(address: _address, client: client).storeBackupKey(
         backupId: backupId,
         password: password,
         backupKey: backupKey,
         salt: salt,
-        socks: socket,
       );
     } catch (e) {
       log.severe('storeBackupKey error: $e');
@@ -42,15 +44,13 @@ class RecoverBullRemoteDatasource {
     List<int> backupId,
     List<int> password,
     List<int> salt,
-    SOCKSSocket socket,
   ) async {
     try {
-      return await _keyServer.fetchBackupKey(
-        backupId: backupId,
-        password: password,
-        salt: salt,
-        socks: socket,
-      );
+      final client = _torDatasource.httpClient;
+      return await KeyServer(
+        address: _address,
+        client: client,
+      ).fetchBackupKey(backupId: backupId, password: password, salt: salt);
     } catch (e) {
       log.severe('fetchBackupKey error: $e');
       rethrow;
@@ -61,17 +61,30 @@ class RecoverBullRemoteDatasource {
     List<int> backupId,
     List<int> password,
     List<int> salt,
-    SOCKSSocket socket,
   ) async {
     try {
-      await _keyServer.trashBackupKey(
-        backupId: backupId,
-        password: password,
-        salt: salt,
-        socks: socket,
-      );
+      final client = _torDatasource.httpClient;
+      await KeyServer(
+        address: _address,
+        client: client,
+      ).trashBackupKey(backupId: backupId, password: password, salt: salt);
     } catch (e) {
       log.severe('trashBackupKey error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> checkConnection() async {
+    try {
+      while (_torDatasource.status == TorStatus.connecting) {
+        log.config('Waiting for Tor to be ready...');
+        await Future.delayed(const Duration(seconds: 3));
+      }
+
+      final client = _torDatasource.httpClient;
+      await KeyServer(address: _address, client: client).infos();
+    } catch (e) {
+      log.severe('checkConnection: $e');
       rethrow;
     }
   }
