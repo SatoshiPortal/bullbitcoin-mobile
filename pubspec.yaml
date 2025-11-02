@@ -50,7 +50,10 @@ dependencies:
   decimal: ^2.3.3
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  boltz: 0.2.1
+  boltz:
+    git:
+      url: https://github.com/SatoshiPortal/boltz-dart
+      ref: 2870662c3a7f5d1bef31252bf52724e27c392e17
   lwk: 0.2.1
   json_annotation: ^4.9.0
   flutter_localizations:
@@ -95,8 +98,8 @@ dependencies:
   timelines_plus: ^1.0.7
   satoshifier:
     git:
-      url: https://github.com/ethicnology/dart-satoshifier.git
-      ref: ad386bc15717532aa5dc8e349ba12d22a89f8550
+      url: https://github.com/SatoshiPortal/dart-satoshifier.git
+      ref: a9fa3f806fcc05d57dfc020e30eaa195ca75330e
   flutter_nfc_kit: ^3.6.0
   ledger_bitcoin:
     git:
