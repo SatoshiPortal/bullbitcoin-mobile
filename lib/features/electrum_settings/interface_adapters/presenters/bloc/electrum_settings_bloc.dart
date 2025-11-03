@@ -146,6 +146,7 @@ class ElectrumSettingsBloc
           network: network,
           isCustom: true,
           priority: priority,
+          enableSsl: event.enableSsl,
         ),
       );
       final status = await _addCustomServerUsecase.execute(request);
@@ -153,7 +154,7 @@ class ElectrumSettingsBloc
       // Add the new server to the list in the state
       //  with the returned status so the UI can reflect it immediately
       final newServer = ElectrumServerViewModel(
-        url: event.url,
+        url: event.enableSsl ? 'ssl://${event.url}' : 'tcp://${event.url}',
         status: status,
         priority: priority,
       );

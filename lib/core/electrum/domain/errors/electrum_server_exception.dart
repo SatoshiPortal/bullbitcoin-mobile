@@ -14,12 +14,9 @@ class InvalidPriorityException extends ElectrumServerException {
     : super('priority must be non-negative, got: $value');
 }
 
-class InvalidElectrumServerUrlException extends ElectrumServerException {
-  final String url;
-  final bool isLiquid;
+class InvalidPortException extends ElectrumServerException {
+  final int port;
 
-  InvalidElectrumServerUrlException(this.url, {required this.isLiquid})
-    : super(
-        'Invalid Electrum server URL: $url. Expected format: ${isLiquid ? 'host:port' : 'host:port or protocol://host:port'} with port between 1-65535',
-      );
+  InvalidPortException(this.port)
+    : super('Invalid port: $port. Port must be between 1 and 65535.');
 }
