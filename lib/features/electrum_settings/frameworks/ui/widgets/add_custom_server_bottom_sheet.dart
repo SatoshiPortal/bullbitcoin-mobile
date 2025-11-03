@@ -149,11 +149,25 @@ class _AddCustomServerBottomSheetState
                       ),
                     ),
                     onFieldSubmitted: (_) => _submit(),
-                    validator:
-                        (v) =>
-                            (v == null || v.trim().isEmpty)
-                                ? "This field can't be empty"
-                                : null,
+                    validator: (v) {
+                      final input = v?.trim() ?? '';
+                      if (input.isEmpty) {
+                        return "This field can't be empty";
+                      }
+
+                      // Check if protocol is included
+                      final protocolPattern = RegExp('^([a-zA-Z]+)://');
+                      if (protocolPattern.hasMatch(input)) {
+                        return 'Do not include protocol (ssl:// or tcp://).';
+                      }
+
+                      // Validate host:port format
+                      final hostPortPattern = RegExp(r'^[a-zA-Z0-9.-]+:\d+$');
+                      if (!hostPortPattern.hasMatch(input)) {
+                        return 'Use host:port format (e.g., example.com:50001)';
+                      }
+                      return null;
+                    },
                   ),
                   const Gap(8),
                   if (!isLiquid) ...[

@@ -6,7 +6,8 @@ class AddCustomServerRequest {
 
   AddCustomServerRequest({required this.server});
 
-  String get url => server.url;
+  String get host => server.url.split(':').first;
+  int get port => int.parse(server.url.split(':').last);
   ElectrumServerNetwork get network => server.network;
   bool get isCustom => server.isCustom;
   int get priority => server.priority;
