@@ -7,7 +7,7 @@ part 'cad_biller_model.g.dart';
 /// MODEL: Gateway model for CAD biller API serialization/deserialization
 /// Models are flat data containers that map directly to API responses
 @freezed
-class CadBillerModel with _$CadBillerModel {
+sealed class CadBillerModel with _$CadBillerModel {
   const factory CadBillerModel({
     required String payeeCode,
     required String payeeName,
@@ -18,11 +18,16 @@ class CadBillerModel with _$CadBillerModel {
 
   const CadBillerModel._();
 
-  /// Convert from model to domain value object
-  CadBiller toValueObject() {
-    return CadBiller(
-      payeeCode: payeeCode,
-      payeeName: payeeName,
+  /// Convert from domain value object to model
+  factory CadBillerModel.fromDomain(CadBiller biller) {
+    return CadBillerModel(
+      payeeCode: biller.payeeCode,
+      payeeName: biller.payeeName,
     );
+  }
+
+  /// Convert from model to domain value object
+  CadBiller get toDomain {
+    return CadBiller.create(payeeCode: payeeCode, payeeName: payeeName);
   }
 }

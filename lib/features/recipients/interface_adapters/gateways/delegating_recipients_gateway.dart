@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/cad_biller.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/cad_biller.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 
 class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   final RecipientsGatewayPort _bullbitcoinApiClient;
@@ -13,19 +14,19 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
        _bullBitcoinTestnetApiClient = bullBitcoinTestnetApiClient;
 
   @override
-  Future<void> saveRecipient(
-    Recipient recipient, {
+  Future<Recipient> saveRecipient(
+    RecipientDetails recipientDetails, {
     bool isFiatRecipient = true,
     required bool isTestnet,
   }) {
     return isTestnet
         ? _bullBitcoinTestnetApiClient.saveRecipient(
-          recipient,
+          recipientDetails,
           isFiatRecipient: isFiatRecipient,
           isTestnet: isTestnet,
         )
         : _bullbitcoinApiClient.saveRecipient(
-          recipient,
+          recipientDetails,
           isFiatRecipient: isFiatRecipient,
           isTestnet: isTestnet,
         );

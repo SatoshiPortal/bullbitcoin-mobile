@@ -1,7 +1,10 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/cad_biller.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/cad_biller_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_details_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_model.dart';
 import 'package:dio/dio.dart';
 
@@ -16,17 +19,19 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
   // and the Dio client is already authenticated via interceptor.
   @override
   Future<Recipient> saveRecipient(
-    Recipient recipient, {
-    bool isFiatRecipient = true, // Currently unused, but may be needed later
+    RecipientDetails recipientDetails, {
+    bool isFiatRecipient = true,
     required bool isTestnet,
   }) async {
+    final detailsModel = RecipientDetailsModel.fromDomain(recipientDetails);
+
     final resp = await _authenticatedApiClient.post(
       _recipientsPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'createRecipientFiat',
-        'params': RecipientModel.fromDomain(recipient).toJson(),
+        'params': detailsModel.toJson(),
       },
     );
     if (resp.statusCode != 200) {
@@ -71,11 +76,25 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
       throw Exception('Failed to list fiat recipients');
     }
 
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to list fiat recipients: $error');
+    }
+
     final elements = resp.data['result']['elements'] as List<dynamic>?;
     if (elements == null) return [];
 
-    // TODO: Parse elements into Recipient entities
-    return [];
+    try {
+      return elements
+          .map((e) => RecipientModel.fromJson(e as Map<String, dynamic>).toDomain)
+          .toList();
+    } catch (e, stackTrace) {
+      log.severe(
+        'Error parsing recipients list: $e',
+        trace: stackTrace,
+      );
+      rethrow;
+    }
   }
 
   @override
@@ -129,10 +148,25 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
     if (resp.statusCode != 200) {
       throw Exception('Failed to list CAD billers');
     }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to list CAD billers: $error');
+    }
+
     final elements = resp.data['result']['elements'] as List<dynamic>?;
     if (elements == null) return [];
-    return elements
-        .map((e) => CadBillerModel.fromJson(e as Map<String, dynamic>).toDomain)
-        .toList();
+
+    try {
+      return elements
+          .map((e) => CadBillerModel.fromJson(e as Map<String, dynamic>).toDomain)
+          .toList();
+    } catch (e, stackTrace) {
+      log.severe(
+        'Error parsing CAD billers list: $e',
+        trace: stackTrace,
+      );
+      rethrow;
+    }
   }
 }
