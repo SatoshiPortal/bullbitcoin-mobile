@@ -5,8 +5,8 @@ class FileSystemRepository {
 
   FileSystemRepository();
 
-  Future<String> pickFile() async {
-    final file = await _fileStorageDataSource.pickFile();
+  Future<String> pickFile({List<String>? extensions}) async {
+    final file = await _fileStorageDataSource.pickFile(extensions: extensions);
     final fileContent = await file.readAsString();
     return fileContent;
   }

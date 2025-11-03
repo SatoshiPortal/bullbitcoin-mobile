@@ -374,7 +374,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       final transactionLabel = Label.tx(
         transactionId: walletTransaction.txId,
         label: note,
-        walletId: walletTransaction.walletId,
+        origin: walletTransaction.walletId,
       );
       await _deleteLabelUsecase.execute(transactionLabel);
 
@@ -403,7 +403,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       final oldLabel = Label.tx(
         transactionId: walletTransaction.txId,
         label: oldNote,
-        walletId: walletTransaction.walletId,
+        origin: walletTransaction.walletId,
       );
       await _deleteLabelUsecase.execute(oldLabel);
 
