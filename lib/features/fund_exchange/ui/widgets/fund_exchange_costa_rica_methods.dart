@@ -12,7 +12,7 @@ class FundExchangeCostaRicaMethods extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         FundExchangeMethodListTile(
-          method: FundingMethod.sinpeTransfer,
+          method: FundingMethod.sinpe,
           title: 'SINPE Transfer',
           subtitle: 'Transfer Colones using SINPE',
         ),
