@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_detail.dart';
@@ -31,27 +30,16 @@ class FundExchangeSinpeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BBText('SINPE Movil', style: theme.textTheme.displaySmall),
+              BBText('SINPE Móvil', style: theme.textTheme.displaySmall),
               const Gap(16.0),
               RichText(
                 text: TextSpan(
-                  text: 'Send the funds to our SINPE Movil phone number. You ',
+                  text:
+                      'Envía los fondos a nuestro número de teléfono SINPE Móvil. Debes enviar los fondos desde el mismo número de teléfono asociado a tu cuenta Bull Bitcoin. Si envías el pago desde un número diferente, o si le pides a alguien más que haga el pago por ti, ',
                   style: theme.textTheme.headlineSmall,
                   children: [
                     TextSpan(
-                      text: 'must',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextSpan(
-                      text:
-                          ' send the funds from the same phone number associated to your Bull Bitcoin account. '
-                          'If you send the payment from a different number, or if you ask someone else to make the payment for you, ',
-                      style: theme.textTheme.headlineSmall,
-                    ),
-                    TextSpan(
-                      text: 'it will be rejected.',
+                      text: 'será rechazado.',
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -61,16 +49,69 @@ class FundExchangeSinpeScreen extends StatelessWidget {
               ),
               const Gap(24.0),
               Text(
-                'Once the payment is sent, it will be added to your account balance.',
+                'Una vez que se envíe el pago, se agregará a tu saldo de cuenta.',
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(24.0),
-              InfoCard(
-                description:
-                    'Do not put the word "Bitcoin" or "Crypto" in the payment description. This will block your payment. ',
-                tagColor: theme.colorScheme.inverseSurface,
-                bgColor: theme.colorScheme.inverseSurface.withValues(
-                  alpha: 0.1,
+              Container(
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.inverseSurface.withValues(
+                    alpha: 0.1,
+                  ),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 4,
+                        color: theme.colorScheme.inverseSurface,
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.info_outline_rounded,
+                                size: 24,
+                                color: theme.colorScheme.inverseSurface,
+                              ),
+                              const Gap(12),
+                              Expanded(
+                                child: RichText(
+                                  text: TextSpan(
+                                    text: 'No pongas',
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.secondary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            ' la palabra "Bitcoin" o "Crypto" en la descripción del pago. Esto bloqueará tu pago.',
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color:
+                                                  theme.colorScheme.secondary,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const Gap(24.0),
@@ -80,12 +121,12 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                 const Gap(24.0),
               ] else ...[
                 FundExchangeDetail(
-                  label: 'Send to this phone number',
+                  label: 'Envía a este número de teléfono',
                   value: details?.number,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Recipient name',
+                  label: 'Nombre del destinatario',
                   value: details?.beneficiaryName,
                 ),
                 const Gap(24.0),
