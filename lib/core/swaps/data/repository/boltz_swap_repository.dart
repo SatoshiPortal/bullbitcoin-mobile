@@ -475,7 +475,7 @@ class BoltzSwapRepository {
     final hasDuplicates = swapIds.length != uniqueSwapIds.length;
 
     log.info(
-      '{"function": "reinitializeStreamWithSwaps", "inputCount": ${swapIds.length}, "hasDuplicates": $hasDuplicates, "uniqueCount": ${uniqueSwapIds.length}, "swapIds": ${uniqueSwapIds.isEmpty ? "[]" : "[${uniqueSwapIds.map((id) => "\"$id\"").join(",")}]"}, "timestamp": "${DateTime.now().toIso8601String()}"}',
+      '{"function": "reinitializeStreamWithSwaps", "inputCount": ${swapIds.length}, "hasDuplicates": $hasDuplicates, "uniqueCount": ${uniqueSwapIds.length}, "swapIds": ${uniqueSwapIds.isEmpty ? "[]" : "[${uniqueSwapIds.map((id) => '"$id"').join(",")}]"}, "timestamp": "${DateTime.now().toIso8601String()}"}',
     );
 
     _boltz.resetStream();
