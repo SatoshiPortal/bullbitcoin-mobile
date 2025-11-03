@@ -55,7 +55,7 @@ class _Screen extends StatelessWidget {
                 children: [
                   const Gap(20),
                   const _BackupTestStatusWidget(),
-                  const Gap(20),
+                  const Spacer(),
                   if (state.lastEncryptedBackup != null) ...[
                     const _ViewVaultKeyButton(),
                     const Gap(5),
