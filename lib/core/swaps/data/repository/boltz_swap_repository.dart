@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class BoltzSwapRepository {
   final BoltzDatasource _boltz;
@@ -470,8 +471,15 @@ class BoltzSwapRepository {
   Future<void> reinitializeStreamWithSwaps({
     required List<String> swapIds,
   }) async {
+    final uniqueSwapIds = swapIds.toSet().toList();
+    final hasDuplicates = swapIds.length != uniqueSwapIds.length;
+
+    log.info(
+      '{"function": "reinitializeStreamWithSwaps", "inputCount": ${swapIds.length}, "hasDuplicates": $hasDuplicates, "uniqueCount": ${uniqueSwapIds.length}, "swapIds": ${uniqueSwapIds.isEmpty ? "[]" : "[${uniqueSwapIds.map((id) => '"$id"').join(",")}]"}, "timestamp": "${DateTime.now().toIso8601String()}"}',
+    );
+
     _boltz.resetStream();
-    _boltz.subscribeToSwaps(swapIds);
+    _boltz.subscribeToSwaps(uniqueSwapIds);
     // final allSwapsToWatch = swapIds.map((swapId) async {
     //   final swap = await _boltz.storage.fetch(swapId);
     //   return swap?.toEntity();
