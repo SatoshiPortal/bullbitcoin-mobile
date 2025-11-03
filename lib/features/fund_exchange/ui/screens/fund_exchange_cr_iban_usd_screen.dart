@@ -23,7 +23,10 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
+      appBar: AppBar(
+        title: const Text('Financiación'),
+        scrolledUnderElevation: 0.0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -32,7 +35,7 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BBText(
-                'Bank Transfer (USD)',
+                'Transferencia Bancaria (USD)',
                 style: theme.textTheme.displaySmall,
               ),
               const Gap(16.0),
@@ -41,18 +44,17 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
                   children: [
                     TextSpan(
                       text:
-                          "Send a bank transfer from your bank account using the details below ",
+                          "Envía una transferencia bancaria desde tu cuenta bancaria usando los detalles a continuación ",
                       style: theme.textTheme.headlineSmall,
                     ),
                     TextSpan(
-                      text: "exactly",
+                      text: "exactamente",
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
-                      text:
-                          ". The funds will be added to your account balance.",
+                      text: ". Los fondos se agregarán a tu saldo de cuenta.",
                       style: theme.textTheme.headlineSmall,
                     ),
                   ],
@@ -65,19 +67,20 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
                 const Gap(24.0),
               ] else ...[
                 FundExchangeDetail(
-                  label: 'IBAN account number (for US dollars only)',
+                  label:
+                      'Número de cuenta IBAN (solo para dólares estadounidenses)',
                   value: details?.iban,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Payment description',
+                  label: 'Descripción del pago',
                   value: details?.code,
-                  helpText: 'Your transfer code.',
+                  helpText: 'Tu código de transferencia.',
                 ),
                 const Gap(16.0),
                 InfoCard(
                   description:
-                      'You must add the transfer code as the "message" or "reason" or "description" when making the payment. If you forget to put this code your payment may be rejected.',
+                      'Debes agregar el código de transferencia como "mensaje" o "razón" o "descripción" al realizar el pago. Si olvidas poner este código, tu pago puede ser rechazado.',
                   bgColor: theme.colorScheme.inverseSurface.withValues(
                     alpha: 0.1,
                   ),
@@ -85,10 +88,10 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Recipient name',
+                  label: 'Nombre del destinatario',
                   value: details?.beneficiaryName,
                   helpText:
-                      'Use our official corporate name. Do not use "Bull Bitcoin".',
+                      'Usa nuestro nombre corporativo oficial. No uses "Bull Bitcoin".',
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(

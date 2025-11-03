@@ -13,20 +13,20 @@ class FundExchangeCostaRicaMethods extends StatelessWidget {
       children: [
         FundExchangeMethodListTile(
           method: FundingMethod.sinpe,
-          title: 'SINPE Transfer',
-          subtitle: 'Transfer Colones using SINPE',
+          title: 'SINPE Móvil',
+          subtitle: 'Transfiere Colones usando SINPE',
         ),
         Gap(16.0),
         FundExchangeMethodListTile(
           method: FundingMethod.crIbanCrc,
-          title: 'Costa Rica IBAN (CRC)',
-          subtitle: 'Transfer funds in Costa Rican Colón (CRC)',
+          title: 'IBAN Costa Rica (CRC)',
+          subtitle: 'Transfiere fondos en Colón Costarricense (CRC)',
         ),
         Gap(16.0),
         FundExchangeMethodListTile(
           method: FundingMethod.crIbanUsd,
-          title: 'Costa Rica IBAN (USD)',
-          subtitle: 'Transfer funds in US Dollars (USD)',
+          title: 'IBAN Costa Rica (USD)',
+          subtitle: 'Transfiere fondos en Dólares Estadounidenses (USD)',
         ),
       ],
     );
