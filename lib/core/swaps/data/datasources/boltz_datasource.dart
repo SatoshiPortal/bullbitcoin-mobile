@@ -13,6 +13,7 @@ class BoltzDatasource {
 
   late BoltzWebSocket _boltzWebSocket;
   final BoltzStorageDatasource _boltzStore;
+  final Set<String> _subscribedSwapIds = {};
 
   final StreamController<SwapModel> _swapUpdatesController =
       StreamController<SwapModel>.broadcast();
@@ -1180,21 +1181,53 @@ class BoltzDatasource {
     } catch (e) {
       log.info('Error disposing WebSocket: $e');
     }
-    // _swapUpdatesController.close();
+    _subscribedSwapIds.clear();
     _initializeBoltzWebSocket();
   }
 
   void subscribeToSwaps(List<String> swapIds) {
     try {
-      _boltzWebSocket.subscribe(swapIds);
+      final uniqueSwapIds = swapIds.toSet().toList();
+      final hasInputDuplicates = swapIds.length != uniqueSwapIds.length;
+      final alreadySubscribedCount = _subscribedSwapIds.length;
+      final newSwapIds =
+          uniqueSwapIds
+              .where((id) => !_subscribedSwapIds.contains(id))
+              .toList();
+
+      log.info(
+        '{"function": "subscribeToSwaps", "inputCount": ${swapIds.length}, "hasInputDuplicates": $hasInputDuplicates, "uniqueCount": ${uniqueSwapIds.length}, "trackedSubscriptionsBefore": $alreadySubscribedCount, "alreadySubscribed": ${uniqueSwapIds.length - newSwapIds.length}, "newSubscriptions": ${newSwapIds.length}, "swapIds": ${newSwapIds.isEmpty ? "[]" : "[${newSwapIds.map((id) => '"$id"').join(",")}]"}, "timestamp": "${DateTime.now().toIso8601String()}"}',
+      );
+
+      if (newSwapIds.isEmpty) {
+        if (uniqueSwapIds.isNotEmpty) {
+          log.warning(
+            '{"function": "subscribeToSwaps", "warning": "all_swaps_already_subscribed", "swapIds": "[${uniqueSwapIds.map((id) => '"$id"').join(",")}]", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          );
+        }
+        return;
+      }
+      _boltzWebSocket.subscribe(newSwapIds);
+      _subscribedSwapIds.addAll(newSwapIds);
+
+      log.info(
+        '{"function": "subscribeToSwaps", "action": "subscribed_to_boltz", "count": ${newSwapIds.length}, "totalTracked": ${_subscribedSwapIds.length}, "timestamp": "${DateTime.now().toIso8601String()}"}',
+      );
     } catch (e) {
-      log.info('Error subscribing to swaps: $e');
+      log.severe('Error subscribing to swaps: $e');
     }
   }
 
   void unsubscribeToSwaps(List<String> swapIds) {
     try {
-      _boltzWebSocket.unsubscribe(swapIds);
+      final uniqueSwapIds = swapIds.toSet().toList();
+      final swapIdsToUnsubscribe =
+          uniqueSwapIds.where((id) => _subscribedSwapIds.contains(id)).toList();
+      if (swapIdsToUnsubscribe.isEmpty) {
+        return;
+      }
+      _boltzWebSocket.unsubscribe(swapIdsToUnsubscribe);
+      _subscribedSwapIds.removeAll(swapIdsToUnsubscribe);
     } catch (e) {
       log.info('Error unsubscribing from swaps: $e');
     }
