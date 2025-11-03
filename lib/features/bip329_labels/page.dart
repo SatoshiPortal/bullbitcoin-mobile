@@ -87,7 +87,7 @@ class Bip329LabelsPage extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
 
-                  const Gap(16),
+                  const Spacer(),
 
                   BBButton.big(
                     label: 'Import Labels',
@@ -110,8 +110,6 @@ class Bip329LabelsPage extends StatelessWidget {
                     iconFirst: true,
                     disabled: isLoading,
                   ),
-
-                  const Spacer(),
                 ],
               ),
             );
