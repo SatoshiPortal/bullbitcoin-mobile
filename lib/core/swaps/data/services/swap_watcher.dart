@@ -137,10 +137,11 @@ class SwapWatcherService {
         throw Exception('Receive address is null');
       }
       String claimTxId;
+      int actualFeesUsed = swap.fees!.claimFee!;
       try {
         claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: actualFeesUsed,
           bitcoinAddress: swap.receiveAddress!,
         );
       } catch (e, st) {
@@ -149,9 +150,10 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
+        actualFeesUsed += 141;
         claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: actualFeesUsed,
           bitcoinAddress: swap.receiveAddress!,
           cooperate: false,
         );
@@ -161,6 +163,7 @@ class SwapWatcherService {
         receiveAddress: swap.receiveAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
@@ -263,13 +266,14 @@ class SwapWatcherService {
         throw Exception('Receive address is null');
       }
       String claimTxId;
+      int actualFeesUsed = swap.fees!.claimFee!;
       log.info(
         '{"swapId": "${swap.id}", "function": "_processReceiveLnToLiquidClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
       try {
         claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: actualFeesUsed,
           liquidAddress: receiveAddress,
         );
         log.info(
@@ -281,9 +285,10 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
+        actualFeesUsed += 21;
         claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: actualFeesUsed,
           liquidAddress: receiveAddress,
           cooperate: false,
         );
@@ -296,6 +301,7 @@ class SwapWatcherService {
         receiveAddress: receiveAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
@@ -475,13 +481,14 @@ class SwapWatcherService {
         }
       }
       String claimTxid;
+      int actualFeesUsed = swap.fees!.claimFee!;
       log.info(
         '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
       try {
         claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: actualFeesUsed,
           bitcoinClaimAddress: finalClaimAddress,
         );
         log.info(
@@ -493,9 +500,10 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
+        actualFeesUsed += 141;
         claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: actualFeesUsed,
           bitcoinClaimAddress: finalClaimAddress,
           cooperate: false,
         );
@@ -508,6 +516,7 @@ class SwapWatcherService {
         receiveAddress: finalClaimAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
@@ -640,13 +649,14 @@ class SwapWatcherService {
       }
 
       String claimTxid;
+      int actualFeesUsed = swap.fees!.claimFee!;
       log.info(
         '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
       try {
         claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee!,
+          absoluteFees: actualFeesUsed,
           liquidClaimAddress: finalClaimAddress,
         );
         log.info(
@@ -658,9 +668,10 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
+        actualFeesUsed += 21;
         claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: swap.fees!.claimFee! + 21, // t
+          absoluteFees: actualFeesUsed,
           liquidClaimAddress: finalClaimAddress,
           cooperate: false,
         );
@@ -673,6 +684,7 @@ class SwapWatcherService {
         receiveAddress: finalClaimAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
+        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
