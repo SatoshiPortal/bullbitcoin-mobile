@@ -57,7 +57,14 @@ class SwapWatcherService {
   Future<void> restartWatcherWithOngoingSwaps() async {
     await _swapStreamSubscription?.cancel();
     final swaps = await _boltzRepo.getOngoingSwaps();
-    final swapIdsToWatch = swaps.map((swap) => swap.id).toList();
+    final swapIdsRaw = swaps.map((swap) => swap.id).toList();
+    final swapIdsToWatch = swapIdsRaw.toSet().toList();
+    final hasDuplicates = swapIdsRaw.length != swapIdsToWatch.length;
+
+    log.info(
+      '{"function": "restartWatcherWithOngoingSwaps", "ongoingSwapsCount": ${swaps.length}, "rawSwapIdsCount": ${swapIdsRaw.length}, "hasDuplicates": $hasDuplicates, "uniqueSwapIdsCount": ${swapIdsToWatch.length}, "swapIds": ${swapIdsToWatch.isEmpty ? "[]" : "[${swapIdsToWatch.map((id) => '"$id"').join(",")}]"}, "timestamp": "${DateTime.now().toIso8601String()}"}',
+    );
+
     await _boltzRepo.reinitializeStreamWithSwaps(swapIds: swapIdsToWatch);
     await startWatching();
   }
