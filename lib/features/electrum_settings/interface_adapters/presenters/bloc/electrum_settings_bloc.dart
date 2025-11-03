@@ -146,6 +146,7 @@ class ElectrumSettingsBloc
           network: network,
           isCustom: true,
           priority: priority,
+          enableSsl: event.enableSsl,
         ),
       );
       final status = await _addCustomServerUsecase.execute(request);

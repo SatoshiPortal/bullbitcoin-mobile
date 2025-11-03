@@ -19,15 +19,20 @@ class ElectrumServer {
        _priority = priority;
 
   // Create a new custom server
-  //  (validates URL and adds protocol if missing for Bitcoin network)
+  //  (validates URL and adds protocol based on enableSsl for Bitcoin network)
   factory ElectrumServer.createCustom({
     required String url,
     required ElectrumServerNetwork network,
     required int priority,
+    bool enableSsl = true,
   }) {
     _validateUrl(url, isLiquid: network.isLiquid);
     return ElectrumServer._(
-      url: _getUrlWithDefaultProtocol(url, isLiquid: network.isLiquid),
+      url: _getUrlWithProtocol(
+        url,
+        isLiquid: network.isLiquid,
+        enableSsl: enableSsl,
+      ),
       network: network,
       isCustom: true,
       priority: priority,
@@ -54,16 +59,26 @@ class ElectrumServer {
   bool get isCustom => _isCustom;
   int get priority => _priority;
 
-  static String _getUrlWithDefaultProtocol(
+  static String _getUrlWithProtocol(
     String url, {
     required bool isLiquid,
+    required bool enableSsl,
   }) {
-    // For Liquid it shouldn't have a protocol, for Bitcoin we default to ssl://
-    //  if no protocol is specified
-    if (!isLiquid && !url.contains('://')) {
-      return 'ssl://$url';
+    // Strip any existing protocol from the input
+    final urlWithoutProtocol = url.replaceFirst(
+      RegExp('^(tcp|ssl|ws|wss|rpc)://'),
+      '',
+    );
+
+    // For Liquid, always use ssl://
+    if (isLiquid) {
+      return 'ssl://$urlWithoutProtocol';
     }
-    return url;
+
+    // For Bitcoin, use enableSsl toggle to decide between ssl:// and tcp://
+    return enableSsl
+        ? 'ssl://$urlWithoutProtocol'
+        : 'tcp://$urlWithoutProtocol';
   }
 
   static void _validateUrl(String url, {required bool isLiquid}) {
@@ -71,15 +86,10 @@ class ElectrumServer {
       throw InvalidElectrumServerUrlException(url, isLiquid: isLiquid);
     }
 
-    // For Liquid servers, protocol should not be specified
-    if (isLiquid && url.contains('://')) {
-      throw InvalidElectrumServerUrlException(url, isLiquid: isLiquid);
-    }
-
-    // Electrum server URLs can be:
-    // 1. host:port (e.g., "example.com:50001")
-    // 2. protocol://host:port (e.g., "ssl://example.com:50002", "tcp://example.com:50001")
-    // Valid protocols are: tcp, ssl, ws, wss, rpc
+    // Strip any protocol prefix that might be present in the input
+    //  (user shouldn't include it, but we handle it for backwards compatibility)
+    // Electrum server URLs should be: host:port (e.g., "example.com:50001")
+    // We will add the appropriate protocol (ssl:// or tcp://) based on the network
     final protocolPattern = RegExp('^(tcp|ssl|ws|wss|rpc)://');
     final urlWithoutProtocol = url.replaceFirst(protocolPattern, '');
 

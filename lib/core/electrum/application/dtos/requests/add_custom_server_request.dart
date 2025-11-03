@@ -10,4 +10,5 @@ class AddCustomServerRequest {
   ElectrumServerNetwork get network => server.network;
   bool get isCustom => server.isCustom;
   int get priority => server.priority;
+  bool get enableSsl => server.enableSsl;
 }

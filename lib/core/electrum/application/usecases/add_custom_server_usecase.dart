@@ -20,6 +20,7 @@ class AddCustomServerUsecase {
       url: request.url,
       network: request.network,
       priority: request.priority,
+      enableSsl: request.enableSsl,
     );
 
     final existingServer = await _electrumServerRepository.fetchByUrl(
