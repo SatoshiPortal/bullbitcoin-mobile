@@ -1176,6 +1176,14 @@ class BoltzDatasource {
 
   void resetStream() {
     try {
+      if (_subscribedSwapIds.isNotEmpty) {
+        final swapIdsToUnsubscribe = _subscribedSwapIds.toList();
+        try {
+          _boltzWebSocket.unsubscribe(swapIdsToUnsubscribe);
+        } catch (e) {
+          log.info('Error unsubscribing from swaps before reset: $e');
+        }
+      }
       _boltzWebSocket.dispose();
       log.info('Boltz WebSocket connection closed');
     } catch (e) {
