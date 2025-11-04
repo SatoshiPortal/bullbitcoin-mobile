@@ -1455,8 +1455,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: d27ed75d7edf8747b7951267817fdb9b90460e01
-      resolved-ref: d27ed75d7edf8747b7951267817fdb9b90460e01
+      ref: outdated-branch-with-android-patch
+      resolved-ref: eacd307132523211732b24f7dad8ac1f3f259811
       url: "https://github.com/SatoshiPortal/payjoin-flutter"
     source: git
     version: "0.23.0"

@@ -27,7 +27,7 @@ dependencies:
   payjoin_flutter:
     git:
       url: https://github.com/SatoshiPortal/payjoin-flutter
-      ref: d27ed75d7edf8747b7951267817fdb9b90460e01
+      ref: outdated-branch-with-android-patch
   qr_flutter: ^4.1.0
   dio: ^5.2.1+1
   timeago: ^3.3.0

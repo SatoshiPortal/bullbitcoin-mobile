@@ -102,7 +102,7 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - payjoin_flutter (0.23.0)
+  - payjoin_flutter (0.20.0)
   - permission_handler_apple (9.3.0):
     - Flutter
   - PromisesObjC (2.4.0)
@@ -279,7 +279,7 @@ SPEC CHECKSUMS:
   no_screenshot: 6d183496405a3ab709a67a54e5cd0f639e94729e
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
-  payjoin_flutter: d9d4c8aa16bd5dfedb9b21d0edc8199e0187d96e
+  payjoin_flutter: 6397d7b698cdad6453be4949ab6aca1863f6c5e5
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
