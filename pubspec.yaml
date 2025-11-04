@@ -126,6 +126,7 @@ dependencies:
     git:
       url: https://github.com/Foundation-Devices/tor
       ref: 440a2d2  
+  workmanager: ^0.7.0
 
 dev_dependencies:
   build_runner: ^2.4.15
