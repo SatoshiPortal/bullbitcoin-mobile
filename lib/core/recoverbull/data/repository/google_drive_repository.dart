@@ -4,9 +4,9 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/google_drive_datasou
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 
 class GoogleDriveRepository {
-  final GoogleDriveAppDatasource _dataSource;
+  final _dataSource = GoogleDriveAppDatasource();
 
-  GoogleDriveRepository(this._dataSource);
+  GoogleDriveRepository();
 
   Future<void> connect() async => await _dataSource.connect();
 
@@ -22,11 +22,11 @@ class GoogleDriveRepository {
     return utf8.decode(bytes);
   }
 
-  Future<void> storeBackup(String content) async {
+  Future<void> store(String content) async {
     await _dataSource.store(content);
   }
 
-  Future<void> trashBackup(String path) async {
-    await _dataSource.trash(path);
+  Future<void> trash(String fileId) async {
+    await _dataSource.trash(fileId);
   }
 }

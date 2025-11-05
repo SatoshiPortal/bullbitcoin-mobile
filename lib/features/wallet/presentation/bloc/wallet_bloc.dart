@@ -13,8 +13,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
-import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -41,9 +41,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
     required RestartSwapWatcherUsecase restartSwapWatcherUsecase,
-    required InitializeTorUsecase initializeTorUsecase,
-    required CheckTorRequiredOnStartupUsecase
-    checkForTorInitializationOnStartupUsecase,
+    required InitTorUsecase initializeTorUsecase,
+    required IsTorRequiredUsecase checkForTorInitializationOnStartupUsecase,
     required GetUnconfirmedIncomingBalanceUsecase
     getUnconfirmedIncomingBalanceUsecase,
     required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
@@ -100,9 +99,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WatchStartedWalletSyncsUsecase _watchStartedWalletSyncsUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
   final RestartSwapWatcherUsecase _restartSwapWatcherUsecase;
-  final InitializeTorUsecase _initializeTorUsecase;
-  final CheckTorRequiredOnStartupUsecase
-  _checkForTorInitializationOnStartupUsecase;
+  final InitTorUsecase _initializeTorUsecase;
+  final IsTorRequiredUsecase _checkForTorInitializationOnStartupUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;

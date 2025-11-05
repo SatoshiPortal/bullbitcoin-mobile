@@ -221,26 +221,54 @@ class TxListItem extends StatelessWidget {
                       ),
                     ],
                   )
-                else if (date != null || !tx.isOngoingSwap)
+                else if (tx.walletTransaction?.isConfirmed ?? false)
                   Row(
                     children: [
                       BBText(
                         date ?? '',
                         style: context.font.labelSmall?.copyWith(
-                          color:
-                              tx.isOngoingSwap
-                                  ? context.colour.secondary
-                                  : context.colour.outline,
+                          color: context.colour.outline,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
-                        tx.isOngoingSwap ? Icons.sync : Icons.check_circle,
+                        Icons.check_circle,
                         size: 12.0,
-                        color:
-                            tx.isOngoingSwap
-                                ? context.colour.secondary
-                                : context.colour.inverseSurface,
+                        color: context.colour.inverseSurface,
+                      ),
+                    ],
+                  )
+                else if (date != null && (tx.isSwap || isOrderType))
+                  Row(
+                    children: [
+                      BBText(
+                        date,
+                        style: context.font.labelSmall?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
+                      const Gap(4.0),
+                      Icon(
+                        Icons.check_circle,
+                        size: 12.0,
+                        color: context.colour.inverseSurface,
+                      ),
+                    ],
+                  )
+                else if (date != null && tx.isOngoingSwap)
+                  Row(
+                    children: [
+                      BBText(
+                        date,
+                        style: context.font.labelSmall?.copyWith(
+                          color: context.colour.secondary,
+                        ),
+                      ),
+                      const Gap(4.0),
+                      Icon(
+                        Icons.sync,
+                        size: 12.0,
+                        color: context.colour.secondary,
                       ),
                     ],
                   )

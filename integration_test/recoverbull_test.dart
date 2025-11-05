@@ -1,31 +1,32 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
+import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/key_server/domain/usecases/derive_backup_key_from_default_wallet_usecase.dart';
-
-import 'package:bb_mobile/features/key_server/domain/usecases/restore_backup_key_from_password_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final initializeTorUsecase = locator<InitializeTorUsecase>();
-  final restoreVaultKeyFromPasswordUsecase =
-      locator<RestoreVaultKeyFromPasswordUsecase>();
-  final restoreEncryptedVaultFromVaultKeyUsecase =
-      locator<RestoreEncryptedVaultFromVaultKeyUsecase>();
-  final deriveBackupKeyFromDefaultWalletUsecase =
-      locator<DeriveBackupKeyFromDefaultWalletUsecase>();
+  final initializeTorUsecase = locator<InitTorUsecase>();
+  final restoreVaultUsecase = locator<RestoreVaultUsecase>();
   final decryptVaultUsecase = locator<DecryptVaultUsecase>();
+  final fetchVaultKeyFromServerUsecase =
+      locator<FetchVaultKeyFromServerUsecase>();
 
   final walletRepository = locator<WalletRepository>();
   final seedRepository = locator<SeedRepository>();
@@ -53,21 +54,31 @@ Future<void> main({bool isInitialized = false}) async {
     'zoo',
     'wrong',
   ];
+  final mnemonic = bip39.Mnemonic.fromWords(
+    words: expectedMnemonicWords,
+    language: bip39.Language.english,
+    passphrase: '',
+  );
+  final xprv = Bip32Derivation.getXprvFromSeed(
+    Uint8List.fromList(mnemonic.seed),
+    Network.bitcoinMainnet,
+  );
 
   setUpAll(() async => await initializeTorUsecase.execute());
 
   group('Recoverbull', () {
-    test('Restore encrypted vault from backup key', () async {
-      final vaultKey = await restoreVaultKeyFromPasswordUsecase.execute(
+    test('Restore encrypted vault', () async {
+      final vaultKey = await fetchVaultKeyFromServerUsecase.execute(
         vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
         password: password,
       );
       expect(vaultKey, oldPathVaultKey);
 
-      await restoreEncryptedVaultFromVaultKeyUsecase.execute(
+      final decryptedVault = decryptVaultUsecase.execute(
         vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
         vaultKey: vaultKey,
       );
+      await restoreVaultUsecase.execute(decryptedVault: decryptedVault);
 
       final wallets = await walletRepository.getWallets(
         onlyDefaults: true,
@@ -85,24 +96,22 @@ Future<void> main({bool isInitialized = false}) async {
       expect(mnemonicSeedModel.mnemonicWords, equals(expectedMnemonicWords));
     });
 
-    test('Restore key from password (Key Server)', () async {
-      final vaultKey = await restoreVaultKeyFromPasswordUsecase.execute(
-        vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
-        password: password,
-      );
-      expect(vaultKey, oldPathVaultKey);
-    });
-
-    test('OLD path: Derive key from default wallet', () async {
-      final derivedKey = await deriveBackupKeyFromDefaultWalletUsecase.execute(
-        vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
+    test('OLD path: Derive key from default wallet', () {
+      final derivedKey = RecoverbullBip85Utils.deriveBackupKey(
+        xprv,
+        EncryptedVault(
+          file: oldPathZooMnemonicWithSevenZerosPassword,
+        ).derivationPath,
       );
       expect(derivedKey, oldPathVaultKey);
     });
 
-    test('NEW path: Derive key from default wallet', () async {
-      final derivedKey = await deriveBackupKeyFromDefaultWalletUsecase.execute(
-        vault: EncryptedVault(file: newPathZooMnemonicWithSevenZerosPassword),
+    test('NEW path: Derive key from default wallet', () {
+      final derivedKey = RecoverbullBip85Utils.deriveBackupKey(
+        xprv,
+        EncryptedVault(
+          file: newPathZooMnemonicWithSevenZerosPassword,
+        ).derivationPath,
       );
       expect(derivedKey, newPathVaultKey);
     });

@@ -15,10 +15,10 @@ class TheDirtyUsecase {
   final SettingsRepository _settingsRepository;
   final ElectrumServerPort _electrumServerPort;
 
-  Future<({BigInt satoshis, int transactions})> call(
-    bip39.Mnemonic mnemonic,
-    ScriptType scriptType,
-  ) async {
+  Future<({BigInt satoshis, int transactions})> call({
+    required bip39.Mnemonic mnemonic,
+    required ScriptType scriptType,
+  }) async {
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;

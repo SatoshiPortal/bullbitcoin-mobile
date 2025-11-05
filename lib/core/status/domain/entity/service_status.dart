@@ -32,6 +32,14 @@ sealed class AllServicesStatus with _$AllServicesStatus {
     @Default(
       ServiceStatusInfo(
         status: ServiceStatus.unknown,
+        name: 'Tor',
+        lastChecked: null,
+      ),
+    )
+    ServiceStatusInfo tor,
+    @Default(
+      ServiceStatusInfo(
+        status: ServiceStatus.unknown,
         name: 'Recoverbull',
         lastChecked: null,
       ),

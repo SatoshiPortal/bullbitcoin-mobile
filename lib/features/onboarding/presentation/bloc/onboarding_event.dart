@@ -33,11 +33,3 @@ class OnboardingRecoverWalletClicked extends OnboardingEvent {
   })
   mnemonic;
 }
-
-class StartTransitioning extends OnboardingEvent {
-  const StartTransitioning();
-}
-
-class EndTransitioning extends OnboardingEvent {
-  const EndTransitioning();
-}

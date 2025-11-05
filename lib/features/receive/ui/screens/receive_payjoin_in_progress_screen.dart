@@ -1,9 +1,12 @@
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart'
+    show PayjoinStatus;
+import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -17,6 +20,9 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBroadcasting = context.select(
+      (ReceiveBloc bloc) => bloc.state.isBroadcastingOriginalTransaction,
+    );
     // TODO: PopScope can be removed since we can do pop here now
     return PopScope(
       canPop: false,
@@ -33,6 +39,14 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
             title: 'Receive',
             actionIcon: Icons.close,
             onAction: () => context.go(WalletRoute.walletHome.path),
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3.0),
+            child: FadingLinearProgress(
+              trigger: isBroadcasting,
+              backgroundColor: context.colour.onPrimary,
+              foregroundColor: context.colour.primary,
+            ),
           ),
         ),
         body: const PayjoinInProgressPage(),
@@ -55,16 +69,28 @@ class PayjoinInProgressPage extends StatelessWidget {
     final fiatCurrencyCode = context.select(
       (ReceiveBloc bloc) => bloc.state.fiatCurrencyCode,
     );
+    final isBroadcasted = context.select(
+      (ReceiveBloc bloc) =>
+          bloc.state.payjoin?.status == PayjoinStatus.completed,
+    );
 
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          BBText('Payjoin in progress', style: context.font.headlineLarge),
-          BBText(
-            'Wait for the sender to finish the payjoin transaction',
-            style: context.font.bodyMedium,
-          ),
+          if (isBroadcasted) ...[
+            Text('Payment in progress', style: context.font.headlineLarge),
+            Text(
+              'Bitcoin transaction will take a while to confirm.',
+              style: context.font.headlineMedium,
+            ),
+          ] else ...[
+            Text('Payjoin in progress', style: context.font.headlineLarge),
+            Text(
+              'Wait for the sender to finish the payjoin transaction',
+              style: context.font.bodyMedium,
+            ),
+          ],
           if (amountSat != null) ...[
             const Gap(16),
             CurrencyText(
@@ -73,14 +99,17 @@ class PayjoinInProgressPage extends StatelessWidget {
               style: context.font.headlineLarge,
             ),
             const Gap(4),
-            BBText(
+            Text(
               '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
-              style: context.font.bodyLarge,
-              color: context.colour.surface,
+              style: context.font.bodyLarge?.copyWith(
+                color: context.colour.surface,
+              ),
             ),
           ],
-          const Gap(84),
-          const ReceiveBroadcastPayjoinButton(),
+          if (!isBroadcasted) ...[
+            const Gap(84),
+            const ReceiveBroadcastPayjoinButton(),
+          ],
         ],
       ),
     );
@@ -92,11 +121,20 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBroadcasting = context.select(
+      (ReceiveBloc bloc) => bloc.state.isBroadcastingOriginalTransaction,
+    );
+    final broadcastOriginalTransactionException = context.select(
+      (ReceiveBloc bloc) =>
+          bloc.state.error is BroadcastOriginalTransactionException
+              ? bloc.state.error! as BroadcastOriginalTransactionException
+              : null,
+    );
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          BBText(
+          Text(
             "No time to wait or did the payjoin fail on the sender's side?",
             style: context.font.titleSmall,
             textAlign: TextAlign.center,
@@ -105,6 +143,7 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
           const Gap(16),
           BBButton.big(
             label: 'Receive payment normally',
+            disabled: isBroadcasting,
             onPressed: () {
               log.info('Receive payment normally');
               context.read<ReceiveBloc>().add(
@@ -114,6 +153,17 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
             bgColor: context.colour.secondary,
             textColor: context.colour.onSecondary,
           ),
+          const Gap(16),
+          if (broadcastOriginalTransactionException != null) ...[
+            Text(
+              'Error: ${broadcastOriginalTransactionException.message}',
+              style: context.font.bodyMedium?.copyWith(
+                color: context.colour.error,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const Gap(16),
+          ],
         ],
       ),
     );

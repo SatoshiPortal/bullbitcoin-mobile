@@ -50,7 +50,7 @@ class ExchangeFundingRepositoryImpl implements ExchangeFundingRepository {
           FundingMethod.instantSepa => 'instantSepa',
           FundingMethod.regularSepa => 'regularSepa',
           FundingMethod.speiTransfer => 'spei',
-          FundingMethod.sinpeTransfer => 'sinpeTransfer',
+          FundingMethod.sinpe => 'sinpe',
           FundingMethod.crIbanCrc => 'CRIbanCRC',
           FundingMethod.crIbanUsd => 'CRIbanUSD',
           FundingMethod.arsBankTransfer => 'eTransferAR',

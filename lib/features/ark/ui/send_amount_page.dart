@@ -67,7 +67,6 @@ class _SendAmountPageState extends State<SendAmountPage> {
       //  having a mismatch between the currency and exchange rate if something
       //  goes wrong in the Cubit or just because of race conditions.
       if (state.currencyCode != _currencyCode) {
-        _controller.text = '';
         setState(() {
           _currencyCode = state.currencyCode!;
           _equivalentAmount = _calculateEquivalentAmount();
@@ -103,6 +102,8 @@ class _SendAmountPageState extends State<SendAmountPage> {
   void _onCurrencyCodeChanged(String? newCode) {
     if (newCode != null && newCode != _currencyCode) {
       context.read<ArkCubit>().onSendCurrencyCodeChanged(newCode);
+      // Clear the amount input when changing currency
+      _controller.text = '';
     }
   }
 
@@ -211,9 +212,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
                               .onSendCurrencyCodeChanged(
                                 _preferredBitcoinUnit.code,
                               );
-                          setState(() {
-                            _controller.text = _calculateMaxAmountValue();
-                          });
+                          _controller.text = _calculateMaxAmountValue();
                         },
                         walletLabel: 'Ark Instant Payments',
                       ),

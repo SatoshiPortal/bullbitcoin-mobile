@@ -6,11 +6,14 @@ import 'package:file_picker/file_picker.dart';
 class FileStorageDatasource {
   FileStorageDatasource();
 
-  Future<File> pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
+  Future<File> pickFile({List<String>? extensions}) async {
+    final result = await FilePicker.platform.pickFiles(
+      allowedExtensions: extensions,
+      type: extensions != null ? FileType.custom : FileType.any,
+    );
     if (result != null) return File(result.files.single.path!);
 
-    throw FileStorageException('No file selected');
+    throw FileStorageException('File not selected');
   }
 
   Future<void> saveFile(String content, String filename) async {
@@ -20,7 +23,7 @@ class FileStorageDatasource {
       fileName: filename,
     );
 
-    if (result == null) throw FileStorageException('file not saved');
+    if (result == null) throw FileStorageException('File not saved');
   }
 }
 

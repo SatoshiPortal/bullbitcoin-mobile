@@ -33,51 +33,57 @@ class ConnectHardwareWalletPage extends StatelessWidget {
                   children: [
                     TabMenuVerticalButton(
                       title: 'Coldcard Q',
-                      onTap: () => context.pushNamed(
-                        ImportColdcardQRoute.importColdcardQ.name,
-                      ),
+                      onTap:
+                          () => context.pushNamed(
+                            ImportColdcardQRoute.importColdcardQ.name,
+                          ),
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
                       title: 'Ledger',
-                      onTap: () => context.pushNamed(
-                        LedgerRoute.importLedger.name,
-                      ),
+                      onTap:
+                          () =>
+                              context.pushNamed(LedgerRoute.importLedger.name),
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
                       title: 'Blockstream Jade',
-                      onTap: () => context.pushNamed(
-                        ImportQrDeviceRoute.importJade.name,
-                      ),
+                      onTap:
+                          () => context.pushNamed(
+                            ImportQrDeviceRoute.importJade.name,
+                          ),
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
                       title: 'Keystone',
-                      onTap: () => context.pushNamed(
-                        ImportQrDeviceRoute.importKeystone.name,
-                      ),
+                      onTap:
+                          () => context.pushNamed(
+                            ImportQrDeviceRoute.importKeystone.name,
+                          ),
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
                       title: 'Krux',
-                      onTap: () => context.pushNamed(
-                        ImportQrDeviceRoute.importKrux.name,
-                      ),
+                      onTap:
+                          () => context.pushNamed(
+                            ImportQrDeviceRoute.importKrux.name,
+                          ),
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
                       title: 'Foundation Passport',
-                      onTap: () => context.pushNamed(
-                        ImportQrDeviceRoute.importPassport.name,
-                      ),
+                      onTap:
+                          () => context.pushNamed(
+                            ImportQrDeviceRoute.importPassport.name,
+                          ),
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
                       title: 'SeedSigner',
-                      onTap: () => context.pushNamed(
-                        ImportQrDeviceRoute.importSeedSigner.name,
-                      ),
+                      onTap:
+                          () => context.pushNamed(
+                            ImportQrDeviceRoute.importSeedSigner.name,
+                          ),
                     ),
                     const Gap(32),
                   ],

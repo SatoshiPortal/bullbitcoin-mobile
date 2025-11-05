@@ -1,23 +1,17 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
-import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_key_warning.dart';
-import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
-import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
+import 'package:bb_mobile/features/bip329_labels/router.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
 class BackupSettingsScreen extends StatefulWidget {
@@ -42,138 +36,45 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<BackupSettingsCubit, BackupSettingsState>(
-          listenWhen:
-              (previous, current) =>
-                  previous.downloadedBackupFile !=
-                      current.downloadedBackupFile &&
-                  current.downloadedBackupFile != null,
-          listener: (context, state) {
-            Clipboard.setData(ClipboardData(text: state.downloadedBackupFile!));
-            log.info('Vault exported and copied to clipboard');
-            context.read<BackupSettingsCubit>().clearDownloadedData();
-          },
-        ),
-        BlocListener<BackupSettingsCubit, BackupSettingsState>(
-          listenWhen:
-              (previous, current) =>
-                  previous.error != current.error && current.error != null,
-          listener: (context, state) {
-            if (state.derivedBackupKey == null &&
-                state.error is BackupKeyDerivationFailedError) {
-              EncryptedVault? vault;
-              if (state.downloadedBackupFile != null) {
-                vault = EncryptedVault(file: state.downloadedBackupFile!);
-              }
-
-              context.pushNamed(
-                KeyServerRoute.keyServerFlow.name,
-                extra: (vault, CurrentKeyServerFlow.recovery.name, false),
-              );
-
-              context.read<BackupSettingsCubit>().clearDownloadedData();
-            } else {
-              log.severe('Backup settings error: ${state.error}');
-            }
-          },
-        ),
-      ],
-      child: BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
-        builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              forceMaterialTransparency: true,
-              automaticallyImplyLeading: false,
-              flexibleSpace: TopBar(
-                title: context.loc.backupSettingsScreenTitle,
-                onBack: () => context.pop(),
-              ),
+    return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            forceMaterialTransparency: true,
+            automaticallyImplyLeading: false,
+            flexibleSpace: TopBar(
+              title: context.loc.backupSettingsScreenTitle,
+              onBack: () => context.pop(),
             ),
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Gap(20),
-                    const _BackupTestStatusWidget(),
-                    const Gap(30),
-                    if (state.lastEncryptedBackup != null) ...[
-                      const _ExportVaultButton(),
-                      const Gap(10),
-                      _ViewVaultKeyButton(),
-                      const Gap(10),
-                    ],
-                    if (state.lastEncryptedBackup != null ||
-                        state.lastPhysicalBackup != null)
-                      const _TestBackupButton(),
-                    const Gap(5),
-                    const _StartBackupButton(),
-                    if (state.error != null) ErrorWidget(error: state.error!),
-                    const Spacer(),
-                    if (state.lastEncryptedBackup != null)
-                      const _KeyServerStatusWidget(),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _KeyServerStatusWidget extends StatelessWidget {
-  const _KeyServerStatusWidget();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => locator<KeyServerCubit>()..checkConnection(),
-      child: BlocBuilder<KeyServerCubit, KeyServerState>(
-        builder: (context, state) {
-          return Center(
+          ),
+          body: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child:
-                  state.torStatus == TorStatus.connecting
-                      ? Gif(
-                        image: AssetImage(Assets.animations.cubesLoading.path),
-                        autostart: Autostart.loop,
-                        height: 56,
-                        width: 56,
-                      )
-                      : RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Key Server ',
-                              style: context.font.labelLarge?.copyWith(
-                                fontSize: 12,
-                                color: context.colour.secondary,
-                              ),
-                            ),
-
-                            WidgetSpan(
-                              child: Icon(
-                                Icons.circle,
-                                size: 12,
-                                color:
-                                    state.torStatus == TorStatus.online
-                                        ? context.colour.inverseSurface
-                                        : context.colour.error,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Gap(20),
+                  const _BackupTestStatusWidget(),
+                  const Spacer(),
+                  if (state.lastEncryptedBackup != null) ...[
+                    const _ViewVaultKeyButton(),
+                    const Gap(5),
+                  ],
+                  if (state.lastEncryptedBackup != null ||
+                      state.lastPhysicalBackup != null) ...[
+                    const _TestBackupButton(),
+                    const Gap(5),
+                  ],
+                  const _StartBackupButton(),
+                  const Gap(5),
+                  const _Bip329LabelsButton(),
+                  if (state.error != null) ErrorWidget(error: state.error!),
+                ],
+              ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -253,78 +154,40 @@ class _StartBackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: BBButton.big(
-        label: 'Start Backup',
-        onPressed:
-            () => context.pushNamed(BackupSettingsSubroute.backupOptions.name),
-        bgColor: context.colour.secondary,
-        textColor: context.colour.onSecondary,
-      ),
-    );
-  }
-}
-
-class _ExportVaultButton extends StatelessWidget {
-  const _ExportVaultButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
-      builder: (context, state) {
-        return BBButton.big(
-          label:
-              state.status == BackupSettingsStatus.exporting
-                  ? 'Exporting...'
-                  : 'Export Vault',
-          onPressed:
-              state.status == BackupSettingsStatus.exporting
-                  ? () {}
-                  : () => context.read<BackupSettingsCubit>().exportVault(),
-          bgColor: Colors.transparent,
-          disabled: state.status == BackupSettingsStatus.exporting,
-          textColor: context.colour.secondary,
-          borderColor: context.colour.secondary,
-          outlined: true,
-        );
-      },
+    return BBButton.big(
+      label: 'Start Backup',
+      onPressed:
+          () => context.pushNamed(BackupSettingsSubroute.backupOptions.name),
+      bgColor: context.colour.secondary,
+      textColor: context.colour.onSecondary,
     );
   }
 }
 
 class _ViewVaultKeyButton extends StatelessWidget {
+  const _ViewVaultKeyButton();
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
-      builder: (context, state) {
-        return BBButton.big(
-          label:
-              state.status == BackupSettingsStatus.viewingKey
-                  ? 'Revealing...'
-                  : 'View Vault Key',
-          onPressed:
-              state.status == BackupSettingsStatus.viewingKey
-                  ? () {}
-                  : () async {
-                    final confirmed = await BackupKeyWarningBottomSheet.show(
-                      context,
-                    );
-                    if (confirmed == true) {
-                      if (!context.mounted) return;
-                      // Navigate to provider selection screen
-                      await context.pushNamed(
-                        BackupSettingsSubroute.chooseVaultProvider.name,
-                      );
-                    }
-                  },
-          bgColor: Colors.transparent,
-          disabled: state.status == BackupSettingsStatus.viewingKey,
-          textColor: context.colour.secondary,
-          borderColor: context.colour.secondary,
-          outlined: true,
-        );
+    return BBButton.big(
+      label: 'View Vault Key',
+      onPressed: () async {
+        final confirmed = await ViewVaultKeyWarningBottomSheet.show(context);
+        if (confirmed == true) {
+          if (!context.mounted) return;
+          await context.pushNamed(
+            RecoverBullRoute.recoverbullFlows.name,
+            extra: RecoverBullFlowsExtra(
+              flow: RecoverBullFlow.viewVaultKey,
+              vault: null,
+            ),
+          );
+        }
       },
+      borderColor: context.colour.secondary,
+      outlined: true,
+      bgColor: Colors.transparent,
+      textColor: context.colour.secondary,
     );
   }
 }
@@ -368,6 +231,20 @@ class ErrorWidget extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _Bip329LabelsButton extends StatelessWidget {
+  const _Bip329LabelsButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.big(
+      label: 'Labels',
+      onPressed: () => context.push(Bip329LabelsRouter.route.path),
+      bgColor: context.colour.secondary,
+      textColor: context.colour.onSecondary,
     );
   }
 }

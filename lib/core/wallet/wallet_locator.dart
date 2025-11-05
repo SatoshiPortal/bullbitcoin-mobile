@@ -10,7 +10,6 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_address_history_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
@@ -26,6 +25,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -55,10 +55,6 @@ class WalletLocator {
 
     locator.registerLazySingleton<FrozenWalletUtxoDatasource>(
       () => FrozenWalletUtxoDatasource(),
-    );
-
-    locator.registerLazySingleton<WalletAddressHistoryDatasource>(
-      () => WalletAddressHistoryDatasource(db: locator<SqliteDatabase>()),
     );
   }
 
@@ -112,8 +108,6 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
-        walletAddressHistoryDatasource:
-            locator<WalletAddressHistoryDatasource>(),
       ),
     );
 
@@ -175,6 +169,11 @@ class WalletLocator {
               LocatorInstanceNameConstants
                   .boltzTestnetSwapRepositoryInstanceName,
         ),
+      ),
+    );
+    locator.registerFactory<GetAddressAtIndexUsecase>(
+      () => GetAddressAtIndexUsecase(
+        walletAddressRepository: locator<WalletAddressRepository>(),
       ),
     );
     locator.registerLazySingleton<GetWalletUtxosUsecase>(

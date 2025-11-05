@@ -130,10 +130,13 @@ class DraggableServerList extends StatelessWidget {
         ],
         TextButton.icon(
           onPressed: () async {
-            final newServerUrl = await AddCustomServerBottomSheet.show(context);
-            if (newServerUrl != null && context.mounted) {
+            final result = await AddCustomServerBottomSheet.show(context);
+            if (result != null && context.mounted) {
               context.read<ElectrumSettingsBloc>().add(
-                ElectrumCustomServerAdded(url: newServerUrl),
+                ElectrumCustomServerAdded(
+                  url: result.url,
+                  enableSsl: result.enableSsl,
+                ),
               );
             }
           },

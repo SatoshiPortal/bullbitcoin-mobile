@@ -17,9 +17,11 @@ class AddCustomServerUsecase {
 
   Future<ElectrumServerStatus> execute(AddCustomServerRequest request) async {
     final server = ElectrumServer.createCustom(
-      url: request.url,
+      host: request.host,
+      port: request.port,
       network: request.network,
       priority: request.priority,
+      enableSsl: request.enableSsl,
     );
 
     final existingServer = await _electrumServerRepository.fetchByUrl(

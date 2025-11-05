@@ -38,7 +38,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                 widget.signerDevice?.supportedQrType == QrType.urqr
                     ? Duration.zero
                     : const Duration(milliseconds: 100),
-            resolution: ResolutionPreset.max,
+            resolution: ResolutionPreset.high,
             onScanned: (data) async {
               if (_handled) return;
               _handled = true;
