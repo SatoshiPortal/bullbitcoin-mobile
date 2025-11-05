@@ -494,6 +494,10 @@ class BoltzSwapRepository {
     // });
   }
 
+  void unsubscribeFromSwaps(List<String> swapIds) {
+    _boltz.unsubscribeToSwaps(swapIds);
+  }
+
   Future<List<Swap>> getOngoingSwaps({String? walletId}) async {
     final allSwapModels = await _boltz.storage.fetchAll(isTestnet: _isTestnet);
 

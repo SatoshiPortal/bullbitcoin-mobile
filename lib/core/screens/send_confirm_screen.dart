@@ -407,7 +407,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                 const Gap(4),
                 _feeRow(
                   context,
-                  'Network Fee',
+                  'Total Network Fee (Bitcoin & Liquid)',
                   fees.lockupFee! + fees.claimFee!,
                 ),
                 _feeRow(context, 'Transfer Fee', fees.boltzFee ?? 0),
@@ -530,16 +530,6 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
-              ],
-            ),
-          ),
-          _divider(context),
-          CommonInfoRow(
-            title: 'Send Network Fees',
-            details: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                BBText(absoluteFeesFormatted, style: context.font.bodyLarge),
               ],
             ),
           ),
