@@ -173,6 +173,7 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processReceiveLnToBitcoinClaim"}',
@@ -254,6 +255,7 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processSendBitcoinToLnRefund"}',
@@ -311,6 +313,7 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processReceiveLnToLiquidClaim"}',
@@ -391,6 +394,7 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnRefund"}',
@@ -526,6 +530,7 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinClaim"',
@@ -610,6 +615,7 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidRefund"}',
@@ -694,6 +700,7 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidClaim"}',
@@ -777,6 +784,7 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinRefund"}',
