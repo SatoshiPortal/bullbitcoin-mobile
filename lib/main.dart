@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:ark_wallet/ark_wallet.dart';
 import 'package:bb_mobile/bloc_observer.dart';
+import 'package:bb_mobile/core/background_tasks/handler.dart';
+import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -18,12 +20,14 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:boltz/boltz.dart';
 import 'package:dart_bbqr/bbqr.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:lwk/lwk.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
+import 'package:workmanager/workmanager.dart';
 
 class Bull {
   static Future<void> init() async {
@@ -51,7 +55,41 @@ Future main() async {
   await runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+
+      // Initialize the background tasks before anything else
+      await Workmanager().initialize(
+        backgroundTasksHandler,
+        isInDebugMode: kDebugMode,
+      );
+
       await Bull.init();
+
+      await Workmanager().registerPeriodicTask(
+        "bitcoin-sync-task-id",
+        BackgroundTask.bitcoinSync.name,
+        frequency: const Duration(minutes: 15),
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+          requiresBatteryNotLow: true,
+          requiresStorageNotLow: false,
+          requiresDeviceIdle: false,
+          requiresCharging: false,
+        ),
+      );
+
+      await Workmanager().registerPeriodicTask(
+        "liquid-sync-task-id",
+        BackgroundTask.liquidSync.name,
+        frequency: const Duration(minutes: 15),
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+          requiresBatteryNotLow: true,
+          requiresStorageNotLow: false,
+          requiresDeviceIdle: false,
+          requiresCharging: false,
+        ),
+      );
+
       runApp(const BullBitcoinWalletApp());
     },
     (error, stack) {

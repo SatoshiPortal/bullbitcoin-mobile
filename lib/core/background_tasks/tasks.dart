@@ -1,0 +1,14 @@
+enum BackgroundTask {
+  bitcoinSync('bitcoin-sync'),
+  liquidSync('liquid-sync');
+
+  final String name;
+  const BackgroundTask(this.name);
+
+  static BackgroundTask fromName(String name) {
+    return BackgroundTask.values.firstWhere(
+      (e) => e.name == name,
+      orElse: () => throw Exception('Unknown Task name: $name'),
+    );
+  }
+}
