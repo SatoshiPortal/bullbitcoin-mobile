@@ -32,15 +32,16 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/core/wallet/interface_adapters/electrum_server_adapter.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class WalletLocator {
-  static Future<void> registerDatasourceres() async {
+  static Future<void> registerDatasources(GetIt locator) async {
     locator.registerLazySingleton<BdkWalletDatasource>(
       () => BdkWalletDatasource(),
     );
@@ -57,7 +58,7 @@ class WalletLocator {
     );
   }
 
-  static void registerPorts() {
+  static void registerPorts(GetIt locator) {
     locator.registerLazySingleton<ElectrumServerPort>(
       () => ElectrumServerAdapter(
         getElectrumServersToUseUsecase:
@@ -66,7 +67,7 @@ class WalletLocator {
     );
   }
 
-  static void registerRepositories() {
+  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BitcoinWalletRepository>(
       () => BitcoinWalletRepository(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
@@ -121,7 +122,7 @@ class WalletLocator {
     );
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<CreateDefaultWalletsUsecase>(
       () => CreateDefaultWalletsUsecase(
         seedRepository: locator<SeedRepository>(),
@@ -221,6 +222,9 @@ class WalletLocator {
         locator<SettingsRepository>(),
         locator<ElectrumServerPort>(),
       ),
+    );
+    locator.registerFactory<SyncWalletUsecase>(
+      () => SyncWalletUsecase(walletRepository: locator<WalletRepository>()),
     );
   }
 }

@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/background_tasks/sync.dart';
+import 'package:bb_mobile/core/background_tasks/locator.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
-import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/utils/logger.dart' show Logger;
-import 'package:path_provider/path_provider.dart';
+import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/main.dart';
+import 'package:lwk/lwk.dart';
 import 'package:workmanager/workmanager.dart';
 
 @pragma('vm:entry-point')
@@ -14,48 +14,40 @@ void backgroundTasksHandler() {
   });
 }
 
-Future<bool> tasksHandler(
-  String task, {
-  SqliteDatabase? alreadyInitializedSqliteDatabase,
-}) async {
-  final logDirectory = await getApplicationDocumentsDirectory();
-  final log = Logger.init(directory: logDirectory);
-  await log.ensureLogsExist();
+Future<bool> tasksHandler(String task) async {
   final startTime = DateTime.now();
 
-  log.config('Starting background task: $task');
+  await Bull.initLogs();
+  await LibLwk.init();
+
+  await BackgroundTasksLocator.setup();
 
   try {
+    final syncWalletUsecase = backgroundLocator<SyncWalletUsecase>();
+    final getWalletsUsecase = backgroundLocator<GetWalletsUsecase>();
+
     final backgroundTask = BackgroundTask.fromName(task);
-    final sqlite = alreadyInitializedSqliteDatabase ?? SqliteDatabase();
-
-    final electrumServerDatasource = ElectrumServerStorageDatasource(
-      sqlite: sqlite,
-    );
-
-    final servers = await electrumServerDatasource.fetchAllServers();
-    // If custom servers exist, we should use them only
-    final customServers = servers.where((s) => s.isCustom).toList();
-    final serversToUse = customServers.isNotEmpty ? customServers : servers;
-    // Sort servers by priority (lower number means higher priority)
-    serversToUse.sort((a, b) => a.priority.compareTo(b.priority));
-
-    final settingsDatasource = SettingsDatasource(sqlite: sqlite);
-    final settings = await settingsDatasource.fetch();
-    final environment = settings.environment;
 
     switch (backgroundTask) {
       case BackgroundTask.bitcoinSync:
-        await Sync.bitcoin(sqlite, log, serversToUse, environment);
+        final wallets = await getWalletsUsecase.execute(onlyBitcoin: true);
+        for (final wallet in wallets) {
+          await syncWalletUsecase.execute(wallet);
+          log.fine('Bitcoin Wallet ${wallet.id} synced');
+        }
       case BackgroundTask.liquidSync:
-        await Sync.liquid(sqlite, log, serversToUse, environment);
+        final wallets = await getWalletsUsecase.execute(onlyLiquid: true);
+        for (final wallet in wallets) {
+          await syncWalletUsecase.execute(wallet);
+          log.fine('Liquid Wallet ${wallet.id} synced');
+        }
     }
 
     final elapsedTime = DateTime.now().difference(startTime).inSeconds;
-    log.fine('Background task $task completed in $elapsedTime seconds');
+    log.finest('Background task $task completed in $elapsedTime seconds');
     return Future.value(true);
   } catch (e) {
-    log.shout('Background task $task failed: $e'); // TODO: replace by severe
+    log.shout('Background task $task failed: $e');
     return Future.value(false);
   }
 }

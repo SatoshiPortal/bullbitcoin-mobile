@@ -23,8 +23,8 @@ class CoreLocator {
 
   static Future<void> registerDatasources() async {
     await TorLocator.registerDatasources();
-    BlockchainLocator.registerDatasources();
-    await ElectrumLocator.registerDatasources();
+    BlockchainLocator.registerDatasources(locator);
+    await ElectrumLocator.registerDatasources(locator);
     ExchangeLocator.registerDatasources();
     FeesLocator.registerDatasources();
     await PayjoinLocator.registerDatasources();
@@ -32,24 +32,24 @@ class CoreLocator {
     SeedLocator.registerDatasources();
     await StorageLocator.registerDatasources();
     await SwapsLocator.registerDatasources();
-    await WalletLocator.registerDatasourceres();
+    await WalletLocator.registerDatasources(locator);
     LabelsLocator.registerDatasources();
-    await SettingsLocator.registerDatasources();
+    await SettingsLocator.registerDatasources(locator);
     await Bip85DerivationsLocator.registerDatasources();
     LedgerLocator.registerDatasources();
   }
 
   static void registerPorts() {
-    ElectrumLocator.registerPorts();
-    BlockchainLocator.registerPorts();
+    ElectrumLocator.registerPorts(locator);
+    BlockchainLocator.registerPorts(locator);
     SwapsLocator.registerPorts();
-    WalletLocator.registerPorts();
+    WalletLocator.registerPorts(locator);
   }
 
   static Future<void> registerRepositories() async {
     await TorLocator.registerRepositories();
-    BlockchainLocator.registerRepositories();
-    ElectrumLocator.registerRepositories();
+    BlockchainLocator.registerRepositories(locator);
+    ElectrumLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories();
     FeesLocator.registerRepositories();
     LabelsLocator.registerRepositories();
@@ -57,9 +57,9 @@ class CoreLocator {
     await RecoverbullLocator.registerRepositories();
     SeedLocator.registerRepositories();
     StorageLocator.registerRepositories();
-    await SettingsLocator.registerRepositories();
+    await SettingsLocator.registerRepositories(locator);
     SwapsLocator.registerRepositories();
-    WalletLocator.registerRepositories();
+    WalletLocator.registerRepositories(locator);
     await Bip85DerivationsLocator.registerRepositories();
     LedgerLocator.registerRepositories();
   }
@@ -70,8 +70,8 @@ class CoreLocator {
   }
 
   static void registerUsecases() {
-    ElectrumLocator.registerUsecases();
-    BlockchainLocator.registerUsecases();
+    ElectrumLocator.registerUsecases(locator);
+    BlockchainLocator.registerUsecases(locator);
     ExchangeLocator.registerUseCases();
     FeesLocator.registerUseCases();
     LabelsLocator.registerUseCases();
@@ -79,10 +79,10 @@ class CoreLocator {
     RecoverbullLocator.registerUsecases();
     SeedLocator.registerUsecases();
     StorageLocator.registerUsecases();
-    SettingsLocator.registerUsecases();
+    SettingsLocator.registerUsecases(locator);
     SwapsLocator.registerUsecases();
     TorLocator.registerUsecases();
-    WalletLocator.registerUsecases();
+    WalletLocator.registerUsecases(locator);
     Bip85DerivationsLocator.registerUsecases();
     LedgerLocator.registerUsecases();
   }
