@@ -5,6 +5,44 @@ class AmountInputFormatter extends TextInputFormatter {
 
   final String inputCurrencyCode;
 
+  /// Strip leading zeros from amount text
+  /// 0000 -> 0, 00.5 -> 0.5, 0001 -> 1
+  static String stripLeadingZeros(String text, int decimalPlaces) {
+    if (text.isEmpty || text == '0') {
+      return text;
+    }
+
+    if (text.startsWith('0') && text.length > 1) {
+      // Check if it's "0." followed by decimals (valid for decimal currencies)
+      if (decimalPlaces > 0 && text.startsWith('0.')) {
+        return text; // Valid: 0.5, 0.123, etc
+      }
+
+      // Find first non-zero digit or decimal point
+      int firstNonZeroIndex = 0;
+      for (int i = 0; i < text.length; i++) {
+        if (text[i] != '0') {
+          firstNonZeroIndex = i;
+          break;
+        }
+      }
+
+      // If all zeros, keep single 0
+      if (firstNonZeroIndex == 0 && text.replaceAll('0', '').isEmpty) {
+        return '0';
+      } else if (firstNonZeroIndex < text.length &&
+          text[firstNonZeroIndex] == '.') {
+        // 00.5 -> 0.5
+        return '0${text.substring(firstNonZeroIndex)}';
+      } else if (firstNonZeroIndex > 0 && firstNonZeroIndex < text.length) {
+        // 0001 -> 1, 00123 -> 123
+        return text.substring(firstNonZeroIndex);
+      }
+    }
+
+    return text;
+  }
+
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
@@ -36,34 +74,22 @@ class AmountInputFormatter extends TextInputFormatter {
       }
     }
 
-    // Apply regex validation - only truncate if necessary, don't manipulate cursor aggressively
+    // Strip leading zeros
+    newText = stripLeadingZeros(newText, decimalPlaces);
+
+    // Apply regex validation
     final regex =
         decimalPlaces == 0
-            ? RegExp(r'^\d+')
-            : RegExp(r'^\d+\.?\d{0,' + '$decimalPlaces' + '}');
-    final match = regex.firstMatch(newText);
+            ? RegExp(r'^\d*$')
+            : RegExp(r'^\d*\.?\d{0,' + '$decimalPlaces' + r'}$');
 
-    if (match != null) {
-      final validText = match.group(0) ?? '';
-
-      // Only truncate if the text is longer than what's allowed
-      if (validText.length < newText.length) {
-        // Text was truncated, move cursor to end of valid text
-        return TextEditingValue(
-          text: validText,
-          selection: TextSelection.collapsed(offset: validText.length),
-        );
-      } else {
-        // Text is valid, preserve the original cursor position
-        return TextEditingValue(text: validText, selection: newValue.selection);
-      }
-    } else if (newText.isEmpty) {
-      return const TextEditingValue(
-        text: '',
-        selection: TextSelection.collapsed(offset: 0),
-      );
-    } else {
+    if (!regex.hasMatch(newText)) {
       return oldValue;
     }
+
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
   }
 }

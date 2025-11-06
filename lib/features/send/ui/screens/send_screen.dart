@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -7,6 +8,7 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
+import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -266,7 +268,10 @@ class SendAmountScreen extends StatefulWidget {
 class _SendAmountScreenState extends State<SendAmountScreen> {
   late TextEditingController _amountController;
   late FocusNode _amountFocusNode;
+  late FocusNode _noteFocusNode;
   bool _isMax = false;
+  bool _hasClipboardContent = false;
+  Timer? _clipboardCheckTimer;
 
   @override
   void initState() {
@@ -279,6 +284,44 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
       ),
     );
     _amountFocusNode = FocusNode();
+    _noteFocusNode = FocusNode();
+
+    _noteFocusNode.addListener(() {
+      if (_noteFocusNode.hasFocus) {
+        _amountFocusNode.unfocus();
+      }
+      setState(() {});
+    });
+
+    _checkClipboard();
+
+    // Periodically check clipboard while on this screen
+    _clipboardCheckTimer = Timer.periodic(
+      const Duration(seconds: 10),
+      (_) => _checkClipboard(),
+    );
+  }
+
+  Future<void> _checkClipboard() async {
+    try {
+      final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
+      if (mounted) {
+        final text = clipboardData?.text ?? '';
+        // only show paste button if clipboard contains valid numbers
+        final hasValidNumericContent =
+            text.isNotEmpty && RegExp(r'^\d*\.?\d*$').hasMatch(text.trim());
+        setState(() {
+          _hasClipboardContent = hasValidNumericContent;
+        });
+      }
+    } catch (e) {
+      // Ignore clipboard errors
+      if (mounted) {
+        setState(() {
+          _hasClipboardContent = false;
+        });
+      }
+    }
   }
 
   void _setIsMax(bool isMax) {
@@ -289,8 +332,10 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
 
   @override
   void dispose() {
+    _clipboardCheckTimer?.cancel();
     _amountController.dispose();
     _amountFocusNode.dispose();
+    _noteFocusNode.dispose();
     super.dispose();
   }
 
@@ -404,7 +449,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       ? swapLimitsError.toString()
                                       : swapCreationError?.toString(),
                               focusNode: _amountFocusNode,
-                              readOnly: _isMax,
+                              noteFocusNode: _noteFocusNode,
+                              readOnly:
+                                  true, // Always readonly with custom dialpad
                               isMax: _isMax,
                             ),
                             const Gap(48),
@@ -431,22 +478,141 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                             ),
                             Builder(
                               builder: (context) {
-                                final inputCurrency =
-                                    context.select<SendCubit, String>(
-                                  (cubit) => cubit.state.inputAmountCurrencyCode,
-                                );
-
-                                return AmountDialPad(
-                                  controller: _amountController,
-                                  inputCurrencyCode: inputCurrency,
-                                  onAmountChanged: () {
-                                    // Unset max since user manually changed the amount
-                                    _setIsMax(false);
-                                    // Inform the cubit of the change
-                                    context.read<SendCubit>().amountChanged(
-                                      amount: _amountController.text,
+                                final inputCurrency = context
+                                    .select<SendCubit, String>(
+                                      (cubit) =>
+                                          cubit.state.inputAmountCurrencyCode,
                                     );
-                                  },
+
+                                return AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 200),
+                                  child:
+                                      _noteFocusNode.hasFocus
+                                          ? const SizedBox.shrink()
+                                          : Column(
+                                            children: [
+                                              if (_hasClipboardContent)
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        bottom: 16,
+                                                      ),
+                                                  child: InkWell(
+                                                    onTap: () async {
+                                                      final clipboardData =
+                                                          await Clipboard.getData(
+                                                            Clipboard
+                                                                .kTextPlain,
+                                                          );
+                                                      if (clipboardData?.text !=
+                                                              null &&
+                                                          context.mounted) {
+                                                        final pastedText =
+                                                            clipboardData!
+                                                                .text!;
+
+                                                        final formatter =
+                                                            AmountInputFormatter(
+                                                              inputCurrency,
+                                                            );
+                                                        final formattedValue =
+                                                            formatter.formatEditUpdate(
+                                                              TextEditingValue(
+                                                                text:
+                                                                    _amountController
+                                                                        .text,
+                                                              ),
+                                                              TextEditingValue(
+                                                                text:
+                                                                    pastedText,
+                                                                selection: TextSelection.collapsed(
+                                                                  offset:
+                                                                      pastedText
+                                                                          .length,
+                                                                ),
+                                                              ),
+                                                            );
+
+                                                        _amountController
+                                                                .value =
+                                                            formattedValue;
+
+                                                        _setIsMax(false);
+                                                        if (context.mounted) {
+                                                          await context
+                                                              .read<SendCubit>()
+                                                              .amountChanged(
+                                                                amount:
+                                                                    formattedValue
+                                                                        .text,
+                                                              );
+                                                        }
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 16,
+                                                            vertical: 8,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color: context
+                                                            .colour
+                                                            .surfaceContainerHighest,
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              8,
+                                                            ),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Icon(
+                                                            Icons.content_paste,
+                                                            size: 18,
+                                                            color:
+                                                                context
+                                                                    .colour
+                                                                    .onSurfaceVariant,
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 8,
+                                                          ),
+                                                          Text(
+                                                            'Paste from clipboard',
+                                                            style: context
+                                                                .font
+                                                                .bodySmall
+                                                                ?.copyWith(
+                                                                  color:
+                                                                      context
+                                                                          .colour
+                                                                          .onSurfaceVariant,
+                                                                ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              AmountDialPad(
+                                                controller: _amountController,
+                                                inputCurrencyCode:
+                                                    inputCurrency,
+                                                onAmountChanged: () {
+                                                  _setIsMax(false);
+                                                  context
+                                                      .read<SendCubit>()
+                                                      .amountChanged(
+                                                        amount:
+                                                            _amountController
+                                                                .text,
+                                                      );
+                                                },
+                                              ),
+                                            ],
+                                          ),
                                 );
                               },
                             ),
@@ -887,15 +1053,20 @@ class _OnchainSendInfoSection extends StatelessWidget {
             InfoRow(
               title: 'Fee Priority',
               details: InkWell(
-                onTap: hasFinalizedTx ? null : () async {
-                  final selected = await _showFeeOptions(context);
+                onTap:
+                    hasFinalizedTx
+                        ? null
+                        : () async {
+                          final selected = await _showFeeOptions(context);
 
-                  if (selected != null) {
-                    final fee = FeeSelectionName.fromString(selected);
-                    // ignore: use_build_context_synchronously
-                    await context.read<SendCubit>().feeOptionSelected(fee);
-                  }
-                },
+                          if (selected != null) {
+                            final fee = FeeSelectionName.fromString(selected);
+                            // ignore: use_build_context_synchronously
+                            await context.read<SendCubit>().feeOptionSelected(
+                              fee,
+                            );
+                          }
+                        },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -1646,8 +1817,7 @@ class SignLedgerButton extends StatelessWidget {
     );
 
     final derivationPath = context.select(
-      (SendCubit cubit) =>
-          cubit.state.selectedWallet?.derivationPath,
+      (SendCubit cubit) => cubit.state.selectedWallet?.derivationPath,
     );
 
     final deviceType = context.select(
