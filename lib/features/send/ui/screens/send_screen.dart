@@ -306,8 +306,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
     try {
       final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
       if (mounted) {
+        final text = clipboardData?.text ?? '';
+        // only show paste button if clipboard contains valid numbers
+        final hasValidNumericContent =
+            text.isNotEmpty && RegExp(r'^\d*\.?\d*$').hasMatch(text.trim());
         setState(() {
-          _hasClipboardContent = clipboardData?.text?.isNotEmpty ?? false;
+          _hasClipboardContent = hasValidNumericContent;
         });
       }
     } catch (e) {
@@ -549,15 +553,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                       padding:
                                                           const EdgeInsets.symmetric(
                                                             horizontal: 16,
-                                                            vertical: 12,
+                                                            vertical: 8,
                                                           ),
                                                       decoration: BoxDecoration(
                                                         color: context
                                                             .colour
-                                                            .primary
-                                                            .withValues(
-                                                              alpha: 0.1,
-                                                            ),
+                                                            .surfaceContainerHighest,
                                                         borderRadius:
                                                             BorderRadius.circular(
                                                               8,
@@ -569,25 +570,25 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                         children: [
                                                           Icon(
                                                             Icons.content_paste,
-                                                            size: 20,
+                                                            size: 18,
                                                             color:
                                                                 context
                                                                     .colour
-                                                                    .primary,
+                                                                    .onSurfaceVariant,
                                                           ),
                                                           const SizedBox(
                                                             width: 8,
                                                           ),
                                                           Text(
-                                                            'Paste',
+                                                            'Paste from clipboard',
                                                             style: context
                                                                 .font
-                                                                .bodyMedium
+                                                                .bodySmall
                                                                 ?.copyWith(
                                                                   color:
                                                                       context
                                                                           .colour
-                                                                          .primary,
+                                                                          .onSurfaceVariant,
                                                                 ),
                                                           ),
                                                         ],
