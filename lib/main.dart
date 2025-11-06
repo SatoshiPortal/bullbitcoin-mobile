@@ -31,6 +31,15 @@ import 'package:workmanager/workmanager.dart';
 
 class Bull {
   static Future<void> init() async {
+    await initFlutterRustBridgeDependencies();
+    await initLogs();
+
+    // The Locator setup might depend on the initialization of the libraries above
+    //  so it's important to call it after the initialization
+    await initLocator();
+  }
+
+  static Future<void> initFlutterRustBridgeDependencies() async {
     await Future.wait([
       LibLwk.init(),
       BoltzCore.init(),
@@ -39,13 +48,15 @@ class Bull {
       LibBbqr.init(),
       LibArk.init(),
     ]);
+  }
 
+  static Future<void> initLogs() async {
     final logDirectory = await getApplicationDocumentsDirectory();
     log = Logger.init(directory: logDirectory);
     await log.ensureLogsExist();
+  }
 
-    // The Locator setup might depend on the initialization of the libraries above
-    //  so it's important to call it after the initialization
+  static Future<void> initLocator() async {
     await AppLocator.setup();
     Bloc.observer = AppBlocObserver();
   }
@@ -64,31 +75,20 @@ Future main() async {
 
       await Bull.init();
 
-      await Workmanager().registerPeriodicTask(
-        "bitcoin-sync-task-id",
-        BackgroundTask.bitcoinSync.name,
-        frequency: const Duration(minutes: 15),
-        constraints: Constraints(
-          networkType: NetworkType.connected,
-          requiresBatteryNotLow: true,
-          requiresStorageNotLow: false,
-          requiresDeviceIdle: false,
-          requiresCharging: false,
-        ),
-      );
-
-      await Workmanager().registerPeriodicTask(
-        "liquid-sync-task-id",
-        BackgroundTask.liquidSync.name,
-        frequency: const Duration(minutes: 15),
-        constraints: Constraints(
-          networkType: NetworkType.connected,
-          requiresBatteryNotLow: true,
-          requiresStorageNotLow: false,
-          requiresDeviceIdle: false,
-          requiresCharging: false,
-        ),
-      );
+      for (final task in BackgroundTask.values) {
+        await Workmanager().registerPeriodicTask(
+          "${task.name}-task-id",
+          task.name,
+          frequency: const Duration(minutes: 15),
+          constraints: Constraints(
+            networkType: NetworkType.connected,
+            requiresBatteryNotLow: true,
+            requiresStorageNotLow: false,
+            requiresDeviceIdle: false,
+            requiresCharging: false,
+          ),
+        );
+      }
 
       runApp(const BullBitcoinWalletApp());
     },
