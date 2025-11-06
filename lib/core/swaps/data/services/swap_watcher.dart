@@ -763,6 +763,7 @@ class SwapWatcherService {
           swapId: swap.id,
           swapType: swap.type,
           isCooperative: false,
+          refundAddressForChainSwaps: refundAddress,
         );
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
         actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
