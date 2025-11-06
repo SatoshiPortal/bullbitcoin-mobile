@@ -1,6 +1,7 @@
 enum BackgroundTask {
   bitcoinSync('bitcoin-sync'),
-  liquidSync('liquid-sync');
+  liquidSync('liquid-sync'),
+  swapsSync('swaps-sync');
 
   final String name;
   const BackgroundTask(this.name);

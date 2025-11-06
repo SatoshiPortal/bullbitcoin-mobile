@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/background_tasks/locator.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
@@ -25,6 +26,8 @@ Future<bool> tasksHandler(String task) async {
   try {
     final syncWalletUsecase = backgroundLocator<SyncWalletUsecase>();
     final getWalletsUsecase = backgroundLocator<GetWalletsUsecase>();
+    final restartSwapWatcherUsecase =
+        backgroundLocator<RestartSwapWatcherUsecase>();
 
     final backgroundTask = BackgroundTask.fromName(task);
 
@@ -41,6 +44,8 @@ Future<bool> tasksHandler(String task) async {
           await syncWalletUsecase.execute(wallet);
           log.fine('Liquid Wallet ${wallet.id} synced');
         }
+      case BackgroundTask.swapsSync:
+        await restartSwapWatcherUsecase.execute();
     }
 
     final elapsedTime = DateTime.now().difference(startTime).inSeconds;
