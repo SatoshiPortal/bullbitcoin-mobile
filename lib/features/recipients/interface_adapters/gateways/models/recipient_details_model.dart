@@ -193,6 +193,8 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
           ownerName: d.ownerName,
         );
       }(),
+      // TODO: Handle this case.
+      RecipientType.cbuCvuArgentina => throw UnimplementedError(),
     };
   }
 

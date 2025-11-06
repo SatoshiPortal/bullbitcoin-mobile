@@ -3,6 +3,8 @@ import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/cad_biller.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 
+// This class delegates recipient-related operations to the appropriate
+// gateway based on whether the operation is for testnet or mainnet.
 class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   final RecipientsGatewayPort _bullbitcoinApiClient;
   final RecipientsGatewayPort _bullBitcoinTestnetApiClient;

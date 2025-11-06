@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/recipients/frameworks/http/authenticated_bull
 import 'package:bb_mobile/features/recipients/frameworks/http/bullbitcoin_api_key_provider.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -10,12 +11,18 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class RecipientsLocator {
   static void setup() {
     // Register recipients feature dependencies here
+    registerFrameworks();
+    registerDrivenInterfaceAdapters();
+    registerApplicationServicesAndUseCases();
+    registerDrivingInterfaceAdapters();
   }
 
   static void registerFrameworks() {
     // TODO: These instances should be moved to the core/shared locator so they can
     //  be used by other features that need to call the Bull Bitcoin API, without
-    //  needing to have one big datasource with all API calls in it.
+    //  needing to have one big datasource with all API calls in it. Every feature
+    //  could then just reuse the clients and implement only the api calls they need
+    //  in their own gateways.
     locator.registerLazySingleton<BullbitcoinApiKeyProvider>(
       () => BullbitcoinApiKeyProvider(
         secureStorage: locator<FlutterSecureStorage>(),
@@ -57,5 +64,14 @@ class RecipientsLocator {
         ),
       ),
     );
+  }
+
+  static void registerApplicationServicesAndUseCases() {
+    // Register application services and use cases here
+  }
+
+  static void registerDrivingInterfaceAdapters() {
+    // Register presenters, controllers, etc. here
+    locator.registerFactory<RecipientsBloc>(() => RecipientsBloc());
   }
 }

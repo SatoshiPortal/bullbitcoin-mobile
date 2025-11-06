@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/routing/recipients_router.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
@@ -146,6 +147,7 @@ class AppRouter {
       ConnectHardwareWalletRouter.route,
       RecoverBullRouter.route,
       RecoverBullGoogleDriveRouter.route,
+      RecipientsRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );

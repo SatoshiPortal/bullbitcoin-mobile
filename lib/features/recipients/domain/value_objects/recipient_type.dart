@@ -15,7 +15,9 @@ enum RecipientType {
   // COSTA RICA
   sinpeIbanUsd('SINPE_IBAN_USD'),
   sinpeIbanCrc('SINPE_IBAN_CRC'),
-  sinpeMovilCrc('SINPE_MOVIL_CRC');
+  sinpeMovilCrc('SINPE_MOVIL_CRC'),
+  // ARGENTINA
+  cbuCvuArgentina('CBU_CVU_ARGENTINA');
 
   final String value;
   const RecipientType(this.value);
@@ -27,7 +29,7 @@ enum RecipientType {
     );
   }
 
-  String get countryCode {
+  String get jurisdictionCode {
     switch (this) {
       case RecipientType.interacEmailCad:
       case RecipientType.billPaymentCad:
@@ -43,6 +45,8 @@ enum RecipientType {
       case RecipientType.sinpeIbanCrc:
       case RecipientType.sinpeMovilCrc:
         return 'CR';
+      case RecipientType.cbuCvuArgentina:
+        return 'AR';
     }
   }
 
@@ -63,6 +67,8 @@ enum RecipientType {
       case RecipientType.sinpeIbanCrc:
       case RecipientType.sinpeMovilCrc:
         return 'CRC';
+      case RecipientType.cbuCvuArgentina:
+        return 'ARS';
     }
   }
 }

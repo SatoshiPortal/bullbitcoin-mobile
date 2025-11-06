@@ -214,6 +214,8 @@ class RecipientDetailsDto {
           ownerName: d.ownerName,
         );
       }(),
+      // TODO: Handle this case.
+      RecipientType.cbuCvuArgentina => throw UnimplementedError(),
     };
   }
 
@@ -404,6 +406,9 @@ class RecipientDetailsDto {
           phoneNumber: phoneNumber!,
           ownerName: ownerName!,
         );
+      case RecipientType.cbuCvuArgentina:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 }
