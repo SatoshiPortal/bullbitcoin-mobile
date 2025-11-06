@@ -46,6 +46,8 @@ Future<bool> tasksHandler(String task) async {
         }
       case BackgroundTask.swapsSync:
         await restartSwapWatcherUsecase.execute();
+      case BackgroundTask.logsPrune:
+        await log.prune();
     }
 
     final elapsedTime = DateTime.now().difference(startTime).inSeconds;
