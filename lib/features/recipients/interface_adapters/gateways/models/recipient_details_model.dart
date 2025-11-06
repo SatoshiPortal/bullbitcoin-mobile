@@ -6,17 +6,21 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'recipient_details_model.freezed.dart';
 part 'recipient_details_model.g.dart';
 
-/// MODEL: Flat structure for JSON serialization/deserialization of all recipient types
+/// Flat structure for JSON serialization/deserialization of all recipient types
+/// that doesn't include null values when serialized so the API only receives relevant fields.
 /// Maps directly to the API's JSON structure
 @freezed
 sealed class RecipientDetailsModel with _$RecipientDetailsModel {
+  // ignore: invalid_annotation_target
+  @JsonSerializable(includeIfNull: false)
   const factory RecipientDetailsModel({
     // discriminator
-    required String recipientType, // e.g. 'INTERAC_EMAIL_CAD'
+    required String recipientTypeFiat, // e.g. 'INTERAC_EMAIL_CAD'
     // shared fields
     String? label,
-    required bool isOwner,
+    bool? isOwner,
     bool? isDefault,
+    @Default(false) bool isArchived,
 
     // Interac Email (CAD)
     String? email,
@@ -51,6 +55,9 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
     // SINPE (CRC/USD)
     String? ownerName,
     String? phoneNumber,
+
+    // CBU/CVU (Argentina)
+    //String? cbuCvu,
   }) = _RecipientDetailsModel;
 
   factory RecipientDetailsModel.fromJson(Map<String, dynamic> json) =>
@@ -66,7 +73,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       RecipientType.interacEmailCad => () {
         final d = details as InteracEmailCadDetails;
         return RecipientDetailsModel(
-          recipientType: type.value,
+          recipientTypeFiat: type.value,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -80,7 +87,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       RecipientType.billPaymentCad => () {
         final d = details as BillPaymentCadDetails;
         return RecipientDetailsModel(
-          recipientType: type.value,
+          recipientTypeFiat: type.value,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -93,7 +100,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       RecipientType.bankTransferCad => () {
         final d = details as BankTransferCadDetails;
         return RecipientDetailsModel(
-          recipientType: type.value,
+          recipientTypeFiat: type.value,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -108,7 +115,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       RecipientType.sepaEur => () {
         final d = details as SepaEurDetails;
         return RecipientDetailsModel(
-          recipientType: type.value,
+          recipientTypeFiat: type.value,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -123,7 +130,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       RecipientType.speiClabeMxn => () {
         final d = details as SpeiClabeMxnDetails;
         return RecipientDetailsModel(
-          recipientType: type.value,
+          recipientTypeFiat: type.value,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -135,7 +142,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       RecipientType.speiSmsMxn => () {
         final d = details as SpeiSmsMxnDetails;
         return RecipientDetailsModel(
-          recipientType: type.value,
+          recipientTypeFiat: type.value,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -148,7 +155,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       RecipientType.speiCardMxn => () {
         final d = details as SpeiCardMxnDetails;
         return RecipientDetailsModel(
-          recipientType: type.value,
+          recipientTypeFiat: type.value,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -161,7 +168,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       RecipientType.sinpeIbanUsd => () {
         final d = details as SinpeIbanUsdDetails;
         return RecipientDetailsModel(
-          recipientType: type.value,
+          recipientTypeFiat: type.value,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -173,7 +180,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       RecipientType.sinpeIbanCrc => () {
         final d = details as SinpeIbanCrcDetails;
         return RecipientDetailsModel(
-          recipientType: type.value,
+          recipientTypeFiat: type.value,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -185,7 +192,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       RecipientType.sinpeMovilCrc => () {
         final d = details as SinpeMovilCrcDetails;
         return RecipientDetailsModel(
-          recipientType: type.value,
+          recipientTypeFiat: type.value,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -193,8 +200,20 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
           ownerName: d.ownerName,
         );
       }(),
+
+      RecipientType.cbuCvuArgentina => () {
+        final d = details as CbuCvuArgentinaDetails;
+        return RecipientDetailsModel(
+          recipientTypeFiat: type.value,
+          isOwner: d.isOwner,
+          label: d.label,
+          isDefault: d.isDefault,
+          // cbuCvu: d.cbuCvu,
+          name: d.name,
+        );
+      }(),
       // TODO: Handle this case.
-      RecipientType.cbuCvuArgentina => throw UnimplementedError(),
+      RecipientType.pseColombia => throw UnimplementedError(),
     };
   }
 
@@ -202,7 +221,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
   RecipientDetails toDomain() {
     // Use DTO as intermediate for validation
     final dto = RecipientDetailsDto(
-      recipientType: recipientType,
+      recipientType: RecipientType.fromValue(recipientTypeFiat),
       isOwner: isOwner,
       label: label,
       isDefault: isDefault,
@@ -228,6 +247,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       debitcard: debitcard,
       ownerName: ownerName,
       phoneNumber: phoneNumber,
+      //cbuCvu: cbuCvu,
     );
 
     return dto.toDomain();

@@ -27,7 +27,7 @@ class GetRecipientsUsecase {
   }) : _recipientsGateway = recipientsGateway,
        _settingsRepository = settingsRepository;
 
-  Future<GetRecipientsResult> call(GetRecipientsParams params) async {
+  Future<GetRecipientsResult> execute(GetRecipientsParams params) async {
     final settings = await _settingsRepository.fetch();
     final isTestnet = settings.environment.isTestnet;
 

@@ -23,51 +23,56 @@ class BBSegmentedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(2),
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        child: CustomSlidingSegmentedControl<String>(
-          controller: CustomSegmentedController(value: selected),
-          initialValue: selected,
-          onValueChanged: (v) {
-            if (disabledItems.contains(v)) {
-              return; // Don't allow selection of disabled items
-            }
+    return SizedBox(
+      height: 48,
+      child: Center(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(2),
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          child: CustomSlidingSegmentedControl<String>(
+            controller: CustomSegmentedController(value: selected),
+            initialValue: selected,
+            onValueChanged: (v) {
+              if (disabledItems.contains(v)) {
+                return; // Don't allow selection of disabled items
+              }
 
-            onChanged(v);
-          },
-          innerPadding: const EdgeInsets.all(4),
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInToLinear,
-          // fromMax: true,
-          isStretch: true,
-          decoration: BoxDecoration(
-            color: context.colour.outline.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(2),
+              onChanged(v);
+            },
+            innerPadding: const EdgeInsets.all(4),
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInToLinear,
+            // fromMax: true,
+            isStretch: true,
+            decoration: BoxDecoration(
+              color: context.colour.outline.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(2),
+            ),
+            thumbDecoration: BoxDecoration(
+              color: context.colour.onPrimary,
+              borderRadius: BorderRadius.circular(2),
+            ),
+            children: {
+              for (final item in items)
+                item: Text(
+                  labels?[item] ?? item,
+                  style:
+                      item == selected
+                          ? context.font.labelLarge?.copyWith(
+                            color: context.colour.primary,
+                          )
+                          : disabledItems.contains(item)
+                          ? context.font.labelMedium?.copyWith(
+                            color: context.colour.outline.withValues(
+                              alpha: 0.5,
+                            ),
+                          )
+                          : context.font.labelMedium?.copyWith(
+                            color: context.colour.outline,
+                          ),
+                ),
+            },
           ),
-          thumbDecoration: BoxDecoration(
-            color: context.colour.onPrimary,
-            borderRadius: BorderRadius.circular(2),
-          ),
-          children: {
-            for (final item in items)
-              item: Text(
-                labels?[item] ?? item,
-                style:
-                    item == selected
-                        ? context.font.labelLarge?.copyWith(
-                          color: context.colour.primary,
-                        )
-                        : disabledItems.contains(item)
-                        ? context.font.labelMedium?.copyWith(
-                          color: context.colour.outline.withValues(alpha: 0.5),
-                        )
-                        : context.font.labelMedium?.copyWith(
-                          color: context.colour.outline,
-                        ),
-              ),
-          },
         ),
       ),
     );

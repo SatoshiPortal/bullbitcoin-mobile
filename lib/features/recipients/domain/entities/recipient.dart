@@ -60,5 +60,5 @@ class Recipient {
 
   String? get label => details.label;
   bool get isDefault => details.isDefault;
-  bool get isOwner => details.isOwner;
+  bool? get isOwner => details.isOwner;
 }

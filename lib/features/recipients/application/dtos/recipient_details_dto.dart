@@ -5,11 +5,11 @@ import 'package:meta/meta.dart';
 @immutable
 class RecipientDetailsDto {
   // discriminator
-  final String recipientType; // e.g. 'SEPA_EUR'
+  final RecipientType recipientType; // e.g. 'SEPA_EUR'
 
   // shared (RecipientDetails base)
   final String? label;
-  final bool isOwner; // VO requires this (non-null)
+  final bool? isOwner; // optional - only meaningful for certain recipient types
   final bool? isDefault; // nullable so we can omit over the wire when false
 
   // ── Interac Email (CAD)
@@ -46,9 +46,12 @@ class RecipientDetailsDto {
   final String? ownerName; // IBAN USD/CRC, Movil
   final String? phoneNumber; // Movil
 
+  // ── CBU/CVU (Argentina)
+  final String? cbuCvu;
+
   const RecipientDetailsDto({
     required this.recipientType,
-    required this.isOwner,
+    this.isOwner,
     this.label,
     this.isDefault,
     // Interac
@@ -79,6 +82,8 @@ class RecipientDetailsDto {
     // SINPE
     this.ownerName,
     this.phoneNumber,
+    // CBU/CVU Argentina
+    this.cbuCvu,
   });
 
   // VO → DTO
@@ -90,7 +95,7 @@ class RecipientDetailsDto {
       RecipientType.interacEmailCad => () {
         final d = details as InteracEmailCadDetails;
         return RecipientDetailsDto(
-          recipientType: type.value,
+          recipientType: type,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -103,7 +108,7 @@ class RecipientDetailsDto {
       RecipientType.billPaymentCad => () {
         final d = details as BillPaymentCadDetails;
         return RecipientDetailsDto(
-          recipientType: type.value,
+          recipientType: type,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -115,7 +120,7 @@ class RecipientDetailsDto {
       RecipientType.bankTransferCad => () {
         final d = details as BankTransferCadDetails;
         return RecipientDetailsDto(
-          recipientType: type.value,
+          recipientType: type,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -131,7 +136,7 @@ class RecipientDetailsDto {
       RecipientType.sepaEur => () {
         final d = details as SepaEurDetails;
         return RecipientDetailsDto(
-          recipientType: type.value,
+          recipientType: type,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -147,7 +152,7 @@ class RecipientDetailsDto {
       RecipientType.speiClabeMxn => () {
         final d = details as SpeiClabeMxnDetails;
         return RecipientDetailsDto(
-          recipientType: type.value,
+          recipientType: type,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -158,7 +163,7 @@ class RecipientDetailsDto {
       RecipientType.speiSmsMxn => () {
         final d = details as SpeiSmsMxnDetails;
         return RecipientDetailsDto(
-          recipientType: type.value,
+          recipientType: type,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -170,7 +175,7 @@ class RecipientDetailsDto {
       RecipientType.speiCardMxn => () {
         final d = details as SpeiCardMxnDetails;
         return RecipientDetailsDto(
-          recipientType: type.value,
+          recipientType: type,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -184,7 +189,7 @@ class RecipientDetailsDto {
       RecipientType.sinpeIbanUsd => () {
         final d = details as SinpeIbanUsdDetails;
         return RecipientDetailsDto(
-          recipientType: type.value,
+          recipientType: type,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -195,7 +200,7 @@ class RecipientDetailsDto {
       RecipientType.sinpeIbanCrc => () {
         final d = details as SinpeIbanCrcDetails;
         return RecipientDetailsDto(
-          recipientType: type.value,
+          recipientType: type,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -206,7 +211,7 @@ class RecipientDetailsDto {
       RecipientType.sinpeMovilCrc => () {
         final d = details as SinpeMovilCrcDetails;
         return RecipientDetailsDto(
-          recipientType: type.value,
+          recipientType: type,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
@@ -214,17 +219,31 @@ class RecipientDetailsDto {
           ownerName: d.ownerName,
         );
       }(),
+
+      // ARGENTINA
+      RecipientType.cbuCvuArgentina => () {
+        final d = details as CbuCvuArgentinaDetails;
+        return RecipientDetailsDto(
+          recipientType: type,
+          isOwner: d.isOwner,
+          label: d.label,
+          isDefault: d.isDefault,
+          cbuCvu: d.cbuCvu,
+          name: d.name,
+        );
+      }(),
       // TODO: Handle this case.
-      RecipientType.cbuCvuArgentina => throw UnimplementedError(),
+      RecipientType.pseColombia => () {
+        return RecipientDetailsDto(recipientType: type);
+      }(),
     };
   }
 
   // DTO → VO
   RecipientDetails toDomain() {
-    final type = RecipientType.fromValue(recipientType);
     final def = isDefault ?? false;
 
-    switch (type) {
+    switch (recipientType) {
       // CANADA
       case RecipientType.interacEmailCad:
         if (email == null) {
@@ -406,7 +425,23 @@ class RecipientDetailsDto {
           phoneNumber: phoneNumber!,
           ownerName: ownerName!,
         );
+
+      // ARGENTINA
       case RecipientType.cbuCvuArgentina:
+        if (cbuCvu == null) {
+          throw StateError('cbuCvu is required for CBU_CVU_ARGENTINA.');
+        }
+        if (name == null) {
+          throw StateError('name is required for CBU_CVU_ARGENTINA.');
+        }
+        return CbuCvuArgentinaDetails.create(
+          label: label,
+          isDefault: def,
+          isOwner: isOwner,
+          cbuCvu: cbuCvu!,
+          name: name!,
+        );
+      case RecipientType.pseColombia:
         // TODO: Handle this case.
         throw UnimplementedError();
     }

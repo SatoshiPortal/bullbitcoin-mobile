@@ -17,7 +17,9 @@ enum RecipientType {
   sinpeIbanCrc('SINPE_IBAN_CRC'),
   sinpeMovilCrc('SINPE_MOVIL_CRC'),
   // ARGENTINA
-  cbuCvuArgentina('CBU_CVU_ARGENTINA');
+  cbuCvuArgentina('CBU_CVU_ARGENTINA'),
+  // Colombia
+  pseColombia('PSE_COLOMBIA_COP');
 
   final String value;
   const RecipientType(this.value);
@@ -47,6 +49,8 @@ enum RecipientType {
         return 'CR';
       case RecipientType.cbuCvuArgentina:
         return 'AR';
+      case RecipientType.pseColombia:
+        return 'CO';
     }
   }
 
@@ -69,6 +73,8 @@ enum RecipientType {
         return 'CRC';
       case RecipientType.cbuCvuArgentina:
         return 'ARS';
+      case RecipientType.pseColombia:
+        return 'COP';
     }
   }
 }

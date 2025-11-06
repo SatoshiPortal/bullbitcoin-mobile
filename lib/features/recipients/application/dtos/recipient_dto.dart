@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -27,8 +28,8 @@ class RecipientDto {
   });
 
   // Convenience getters (derived, not stored twice)
-  String get recipientType => details.recipientType; // e.g. 'SEPA_EUR'
-  bool get isOwner => details.isOwner;
+  RecipientType get recipientType => details.recipientType; // e.g. 'SEPA_EUR'
+  bool? get isOwner => details.isOwner;
   bool? get isDefault => details.isDefault;
   String? get label => details.label;
 

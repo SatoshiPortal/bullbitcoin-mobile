@@ -31,7 +31,7 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'createRecipientFiat',
-        'params': detailsModel.toJson(),
+        'params': {'element': detailsModel.toJson()},
       },
     );
     if (resp.statusCode != 200) {
@@ -86,13 +86,12 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
 
     try {
       return elements
-          .map((e) => RecipientModel.fromJson(e as Map<String, dynamic>).toDomain)
+          .map(
+            (e) => RecipientModel.fromJson(e as Map<String, dynamic>).toDomain,
+          )
           .toList();
     } catch (e, stackTrace) {
-      log.severe(
-        'Error parsing recipients list: $e',
-        trace: stackTrace,
-      );
+      log.severe('Error parsing recipients list: $e', trace: stackTrace);
       rethrow;
     }
   }
@@ -159,13 +158,12 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
 
     try {
       return elements
-          .map((e) => CadBillerModel.fromJson(e as Map<String, dynamic>).toDomain)
+          .map(
+            (e) => CadBillerModel.fromJson(e as Map<String, dynamic>).toDomain,
+          )
           .toList();
     } catch (e, stackTrace) {
-      log.severe(
-        'Error parsing CAD billers list: $e',
-        trace: stackTrace,
-      );
+      log.severe('Error parsing CAD billers list: $e', trace: stackTrace);
       rethrow;
     }
   }

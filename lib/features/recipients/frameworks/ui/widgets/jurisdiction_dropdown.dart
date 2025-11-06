@@ -54,6 +54,7 @@ class JurisdictionsDropdown extends StatelessWidget {
                   'MX' => '🇲🇽 Mexico',
                   'CR' => '🇨🇷 Costa Rica',
                   'AR' => '🇦🇷 Argentina',
+                  'CO' => '🇨🇴 Colombia',
                   _ => jurisdiction,
                 }),
               );

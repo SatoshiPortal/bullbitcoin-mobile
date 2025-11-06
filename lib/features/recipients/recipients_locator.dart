@@ -1,4 +1,9 @@
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
+import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
+import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
+import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
+import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/features/recipients/frameworks/http/authenticated_bullbitcoin_dio_factory.dart';
 import 'package:bb_mobile/features/recipients/frameworks/http/bullbitcoin_api_key_provider.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
@@ -23,6 +28,13 @@ class RecipientsLocator {
     //  needing to have one big datasource with all API calls in it. Every feature
     //  could then just reuse the clients and implement only the api calls they need
     //  in their own gateways.
+    // The secure_storage and secure_storage_datasource were so much overkill,
+    // we should just share one instance with the settings like this.
+    locator.registerLazySingleton<FlutterSecureStorage>(
+      () => const FlutterSecureStorage(
+        aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      ),
+    );
     locator.registerLazySingleton<BullbitcoinApiKeyProvider>(
       () => BullbitcoinApiKeyProvider(
         secureStorage: locator<FlutterSecureStorage>(),
@@ -68,10 +80,41 @@ class RecipientsLocator {
 
   static void registerApplicationServicesAndUseCases() {
     // Register application services and use cases here
+    locator.registerFactory<AddRecipientUsecase>(
+      () => AddRecipientUsecase(
+        recipientsGateway: locator<RecipientsGatewayPort>(),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<GetRecipientsUsecase>(
+      () => GetRecipientsUsecase(
+        recipientsGateway: locator<RecipientsGatewayPort>(),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<CheckSinpeUsecase>(
+      () => CheckSinpeUsecase(
+        recipientsGateway: locator<RecipientsGatewayPort>(),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<ListCadBillersUsecase>(
+      () => ListCadBillersUsecase(
+        recipientsGateway: locator<RecipientsGatewayPort>(),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
   }
 
   static void registerDrivingInterfaceAdapters() {
     // Register presenters, controllers, etc. here
-    locator.registerFactory<RecipientsBloc>(() => RecipientsBloc());
+    locator.registerFactory<RecipientsBloc>(
+      () => RecipientsBloc(
+        addRecipientUsecase: locator<AddRecipientUsecase>(),
+        getRecipientsUsecase: locator<GetRecipientsUsecase>(),
+        checkSinpeUsecase: locator<CheckSinpeUsecase>(),
+        listCadBillersUsecase: locator<ListCadBillersUsecase>(),
+      ),
+    );
   }
 }

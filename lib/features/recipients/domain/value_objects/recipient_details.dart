@@ -5,12 +5,12 @@ import 'package:meta/meta.dart';
 abstract class RecipientDetails {
   final String? label;
   final bool isDefault;
-  final bool isOwner;
+  final bool? isOwner;
 
   const RecipientDetails({
     this.label,
     this.isDefault = false,
-    required this.isOwner,
+    this.isOwner,
   });
 
   RecipientType get type;
@@ -27,7 +27,7 @@ class InteracEmailCadDetails extends RecipientDetails {
   const InteracEmailCadDetails._({
     super.label,
     super.isDefault = false,
-    required super.isOwner,
+    super.isOwner,
     required this.email,
     required this.name,
     required this.securityQuestion,
@@ -37,7 +37,7 @@ class InteracEmailCadDetails extends RecipientDetails {
   factory InteracEmailCadDetails.create({
     String? label,
     bool isDefault = false,
-    required bool isOwner,
+    bool? isOwner,
     required String email,
     required String name,
     String securityQuestion = 'What is your favorite color?',
@@ -81,7 +81,7 @@ class BillPaymentCadDetails extends RecipientDetails {
   const BillPaymentCadDetails._({
     super.label,
     super.isDefault = false,
-    required super.isOwner,
+    super.isOwner,
     required this.payeeName,
     required this.payeeCode,
     required this.payeeAccountNumber,
@@ -90,7 +90,7 @@ class BillPaymentCadDetails extends RecipientDetails {
   factory BillPaymentCadDetails.create({
     String? label,
     bool isDefault = false,
-    required bool isOwner,
+    bool? isOwner,
     required String payeeName,
     required String payeeCode,
     required String payeeAccountNumber,
@@ -131,7 +131,7 @@ class BankTransferCadDetails extends RecipientDetails {
   const BankTransferCadDetails._({
     super.label,
     super.isDefault = false,
-    required super.isOwner,
+    super.isOwner,
     required this.institutionNumber,
     required this.transitNumber,
     required this.accountNumber,
@@ -142,7 +142,7 @@ class BankTransferCadDetails extends RecipientDetails {
   factory BankTransferCadDetails.create({
     String? label,
     bool isDefault = false,
-    required bool isOwner,
+    bool? isOwner,
     required String institutionNumber,
     required String transitNumber,
     required String accountNumber,
@@ -190,7 +190,7 @@ class SepaEurDetails extends RecipientDetails {
   const SepaEurDetails._({
     super.label,
     super.isDefault = false,
-    required super.isOwner,
+    super.isOwner,
     required this.iban,
     required this.isCorporate,
     this.firstname,
@@ -201,7 +201,7 @@ class SepaEurDetails extends RecipientDetails {
   factory SepaEurDetails.create({
     String? label,
     bool isDefault = false,
-    required bool isOwner,
+    bool? isOwner,
     required String iban,
     required bool isCorporate,
     String? firstname,
@@ -247,7 +247,7 @@ class SpeiClabeMxnDetails extends RecipientDetails {
   const SpeiClabeMxnDetails._({
     super.label,
     super.isDefault = false,
-    required super.isOwner,
+    super.isOwner,
     required this.clabe,
     required this.name,
   });
@@ -255,7 +255,7 @@ class SpeiClabeMxnDetails extends RecipientDetails {
   factory SpeiClabeMxnDetails.create({
     String? label,
     bool isDefault = false,
-    required bool isOwner,
+    bool? isOwner,
     required String clabe,
     required String name,
   }) {
@@ -288,7 +288,7 @@ class SpeiSmsMxnDetails extends RecipientDetails {
   const SpeiSmsMxnDetails._({
     super.label,
     super.isDefault = false,
-    required super.isOwner,
+    super.isOwner,
     required this.institutionCode,
     required this.phone,
     required this.name,
@@ -297,7 +297,7 @@ class SpeiSmsMxnDetails extends RecipientDetails {
   factory SpeiSmsMxnDetails.create({
     String? label,
     bool isDefault = false,
-    required bool isOwner,
+    bool? isOwner,
     required String institutionCode,
     required String phone,
     required String name,
@@ -335,7 +335,7 @@ class SpeiCardMxnDetails extends RecipientDetails {
   const SpeiCardMxnDetails._({
     super.label,
     super.isDefault = false,
-    required super.isOwner,
+    super.isOwner,
     required this.institutionCode,
     required this.debitcard,
     required this.name,
@@ -344,7 +344,7 @@ class SpeiCardMxnDetails extends RecipientDetails {
   factory SpeiCardMxnDetails.create({
     String? label,
     bool isDefault = false,
-    required bool isOwner,
+    bool? isOwner,
     required String institutionCode,
     required String debitcard,
     required String name,
@@ -382,7 +382,7 @@ class SinpeIbanUsdDetails extends RecipientDetails {
   const SinpeIbanUsdDetails._({
     super.label,
     super.isDefault = false,
-    required super.isOwner,
+    super.isOwner,
     required this.iban,
     required this.ownerName,
   });
@@ -390,7 +390,7 @@ class SinpeIbanUsdDetails extends RecipientDetails {
   factory SinpeIbanUsdDetails.create({
     String? label,
     bool isDefault = false,
-    required bool isOwner,
+    bool? isOwner,
     required String iban,
     required String ownerName,
   }) {
@@ -422,7 +422,7 @@ class SinpeIbanCrcDetails extends RecipientDetails {
   const SinpeIbanCrcDetails._({
     super.label,
     super.isDefault = false,
-    required super.isOwner,
+    super.isOwner,
     required this.iban,
     required this.ownerName,
   });
@@ -430,7 +430,7 @@ class SinpeIbanCrcDetails extends RecipientDetails {
   factory SinpeIbanCrcDetails.create({
     String? label,
     bool isDefault = false,
-    required bool isOwner,
+    bool? isOwner,
     required String iban,
     required String ownerName,
   }) {
@@ -462,7 +462,7 @@ class SinpeMovilCrcDetails extends RecipientDetails {
   const SinpeMovilCrcDetails._({
     super.label,
     super.isDefault = false,
-    required super.isOwner,
+    super.isOwner,
     required this.phoneNumber,
     required this.ownerName,
   });
@@ -470,7 +470,7 @@ class SinpeMovilCrcDetails extends RecipientDetails {
   factory SinpeMovilCrcDetails.create({
     String? label,
     bool isDefault = false,
-    required bool isOwner,
+    bool? isOwner,
     required String phoneNumber,
     required String ownerName,
   }) {
@@ -492,4 +492,45 @@ class SinpeMovilCrcDetails extends RecipientDetails {
 
   @override
   RecipientType get type => RecipientType.sinpeMovilCrc;
+}
+
+// ── CBU/CVU (Argentina)
+@immutable
+class CbuCvuArgentinaDetails extends RecipientDetails {
+  final String cbuCvu;
+  final String name;
+
+  const CbuCvuArgentinaDetails._({
+    super.label,
+    super.isDefault = false,
+    super.isOwner,
+    required this.cbuCvu,
+    required this.name,
+  });
+
+  factory CbuCvuArgentinaDetails.create({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required String cbuCvu,
+    required String name,
+  }) {
+    if (cbuCvu.trim().isEmpty) {
+      throw ArgumentError('CBU/CVU cannot be empty');
+    }
+    if (name.trim().isEmpty) {
+      throw ArgumentError('Name cannot be empty');
+    }
+
+    return CbuCvuArgentinaDetails._(
+      label: label,
+      isDefault: isDefault,
+      isOwner: isOwner,
+      cbuCvu: cbuCvu.trim(),
+      name: name.trim(),
+    );
+  }
+
+  @override
+  RecipientType get type => RecipientType.cbuCvuArgentina;
 }

@@ -14,21 +14,23 @@ class RecipientTypeText extends StatelessWidget {
     return Text(switch (recipientType) {
       // TODO: Use localization labels instead of hardcoded strings.
       // CANADA types
-      RecipientType.interacEmailCad => 'Interac Email Form',
-      RecipientType.billPaymentCad => 'Bill Payment Form',
-      RecipientType.bankTransferCad => 'Bank Transfer Form',
+      RecipientType.interacEmailCad => 'Interac e-Transfer',
+      RecipientType.billPaymentCad => 'Bill Payment',
+      RecipientType.bankTransferCad => 'Bank Transfer',
       // EUROPE types
-      RecipientType.sepaEur => 'SEPA Form',
+      RecipientType.sepaEur => 'SEPA Transfer',
       // MEXICO types
-      RecipientType.speiClabeMxn => 'SPEI CLABE Form',
-      RecipientType.speiSmsMxn => 'SPEI SMS Form',
-      RecipientType.speiCardMxn => 'SPEI Card Form',
+      RecipientType.speiClabeMxn => 'SPEI CLABE',
+      RecipientType.speiSmsMxn => 'SPEI SMS',
+      RecipientType.speiCardMxn => 'SPEI Card',
       // COSTA RICA types
-      RecipientType.sinpeIbanUsd => 'SINPE IBAN USD Form',
-      RecipientType.sinpeIbanCrc => 'SINPE IBAN CRC Form',
-      RecipientType.sinpeMovilCrc => 'SINPE Móvil CRC Form',
+      RecipientType.sinpeIbanUsd => 'SINPE IBAN (USD)',
+      RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
+      RecipientType.sinpeMovilCrc => 'SINPE Móvil',
       // ARGENTINA types
-      RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina Form',
+      RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina',
+      // TODO: Handle this case.
+      RecipientType.pseColombia => 'Bank Account COP',
     }, style: style);
   }
 }

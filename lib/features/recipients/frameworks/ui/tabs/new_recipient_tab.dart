@@ -1,6 +1,16 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/bank_transfer_cad_form.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/bill_payment_cad_form.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/cbu_cvu_argentina_form.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/interac_email_cad_form.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/sepa_eur_form.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/sinpe_iban_form.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/sinpe_movil_crc_form.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/spei_card_mxn_form.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/spei_clabe_mxn_form.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/spei_sms_mxn_form.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_type_selector.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:flutter/widgets.dart';
@@ -34,7 +44,6 @@ class _NewRecipientTabState extends State<NewRecipientTab> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         JurisdictionsDropdown(
@@ -70,22 +79,27 @@ class _NewRecipientTabState extends State<NewRecipientTab> {
         const Gap(16.0),
         switch (_selectedRecipientType) {
           // CANADA types
-          RecipientType.interacEmailCad => const Text('Interac Email Form'),
-          RecipientType.billPaymentCad => const Text('Bill Payment Form'),
-          RecipientType.bankTransferCad => const Text('Bank Transfer Form'),
+          RecipientType.interacEmailCad => const InteracEmailCadForm(),
+          RecipientType.billPaymentCad => const BillPaymentCadForm(),
+          RecipientType.bankTransferCad => const BankTransferCadForm(),
           // EUROPE types
-          RecipientType.sepaEur => const Text('SEPA Form'),
+          RecipientType.sepaEur => const SepaEurForm(),
           // MEXICO types
-          RecipientType.speiClabeMxn => const Text('SPEI CLABE Form'),
-          RecipientType.speiSmsMxn => const Text('SPEI SMS Form'),
-          RecipientType.speiCardMxn => const Text('SPEI Card Form'),
+          RecipientType.speiClabeMxn => const SpeiClabeMxnForm(),
+          RecipientType.speiSmsMxn => const SpeiSmsMxnForm(),
+          RecipientType.speiCardMxn => const SpeiCardMxnForm(),
           // COSTA RICA types
-          RecipientType.sinpeIbanUsd => const Text('SINPE IBAN USD Form'),
-          RecipientType.sinpeIbanCrc => const Text('SINPE IBAN CRC Form'),
-          RecipientType.sinpeMovilCrc => const Text('SINPE Móvil CRC Form'),
+          RecipientType.sinpeIbanUsd => const SinpeIbanForm(
+            recipientType: RecipientType.sinpeIbanUsd,
+          ),
+          RecipientType.sinpeIbanCrc => const SinpeIbanForm(
+            recipientType: RecipientType.sinpeIbanCrc,
+          ),
+          RecipientType.sinpeMovilCrc => const SinpeMovilCrcForm(),
           // ARGENTINA types
-          RecipientType.cbuCvuArgentina => const Text('CBU/CVU Argentina Form'),
-          // TODO: Handle this case.
+          RecipientType.cbuCvuArgentina => const CbuCvuArgentinaForm(),
+          // TODO: Colombia types
+          RecipientType.pseColombia => const SizedBox.shrink(),
           null => const SizedBox.shrink(),
         },
       ],

@@ -1,5 +1,3 @@
-import 'package:bb_mobile/features/electrum_settings/frameworks/ui/screens/electrum_settings_screen.dart';
-import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/screens/recipients_screen.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
@@ -31,7 +29,7 @@ class RecipientsRouter {
         create:
             (context) =>
                 locator<RecipientsBloc>()..add(
-                  RecipientsEvent.loadRecipients(
+                  RecipientsEvent.loaded(
                     selectableRecipientTypes: selectableRecipientTypes,
                   ),
                 ),

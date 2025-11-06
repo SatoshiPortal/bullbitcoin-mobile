@@ -4,13 +4,17 @@ part of 'recipients_bloc.dart';
 sealed class RecipientsState with _$RecipientsState {
   const factory RecipientsState({
     @Default(false) bool isLoadingRecipients,
+    Exception? failedToLoadRecipients,
     @Default(RecipientType.values) List<RecipientType> selectableRecipientTypes,
     @Default([]) List<RecipientViewModel> recipients,
-    @Default(false) bool isAddingRecipient,
-    @Default(false) bool isCheckingSinpe,
-    @Default('') String sinpeCheckResult,
-    @Default([]) List<CadBillerViewModel> cadBillers,
     @Default(false) bool isSearchingCadBillers,
+    Exception? failedToSearchCadBillers,
+    @Default([]) List<CadBillerViewModel> cadBillers,
+    @Default(false) bool isCheckingSinpe,
+    Exception? failedToCheckSinpe,
+    @Default('') String sinpeOwnerName,
+    @Default(false) bool isAddingRecipient,
+    Exception? failedToAddRecipient,
     @Default('') String selectedRecipientId,
   }) = _RecipientsState;
   const RecipientsState._();

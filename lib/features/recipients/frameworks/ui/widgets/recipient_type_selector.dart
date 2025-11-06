@@ -55,22 +55,38 @@ class RecipientTypeSelector extends StatelessWidget {
             }).toList(),
       );
     } else {
-      return DropdownButton<RecipientType>(
-        items:
-            options
-                .map(
-                  (type) => DropdownMenuItem<RecipientType>(
-                    value: type,
-                    child: RecipientTypeText(recipientType: type),
-                  ),
-                )
-                .toList(),
-        value: selectedType,
-        onChanged: (value) {
-          if (value != null) {
-            onTypeSelected(value);
-          }
-        },
+      return Material(
+        elevation: 4,
+        color: context.colour.onPrimary,
+        borderRadius: BorderRadius.circular(4.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: DropdownButton<RecipientType>(
+            isExpanded: true,
+            alignment: Alignment.centerLeft,
+            underline: const SizedBox.shrink(),
+            borderRadius: BorderRadius.circular(4.0),
+            icon: Icon(
+              Icons.keyboard_arrow_down,
+              color: context.colour.secondary,
+            ),
+            items:
+                options
+                    .map(
+                      (type) => DropdownMenuItem<RecipientType>(
+                        value: type,
+                        child: RecipientTypeText(recipientType: type),
+                      ),
+                    )
+                    .toList(),
+            value: selectedType,
+            onChanged: (value) {
+              if (value != null) {
+                onTypeSelected(value);
+              }
+            },
+          ),
+        ),
       );
     }
   }

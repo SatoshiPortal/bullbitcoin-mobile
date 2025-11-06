@@ -3,7 +3,6 @@ import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'recipient_model.freezed.dart';
-part 'recipient_model.g.dart';
 
 /// MODEL: Gateway model for Recipient API serialization/deserialization
 /// Maps directly to API responses
@@ -16,11 +15,25 @@ sealed class RecipientModel with _$RecipientModel {
     required bool isArchived,
     required String createdAt,
     required String updatedAt,
+    // ignore: invalid_annotation_target
+    @JsonKey(includeFromJson: false, includeToJson: false)
     required RecipientDetailsModel details,
   }) = _RecipientModel;
 
-  factory RecipientModel.fromJson(Map<String, dynamic> json) =>
-      _$RecipientModelFromJson(json);
+  factory RecipientModel.fromJson(Map<String, dynamic> json) {
+    // The details fields are flat in the JSON, so we parse them directly
+    final details = RecipientDetailsModel.fromJson(json);
+
+    return RecipientModel(
+      recipientId: json['recipientId'] as String,
+      userId: json['userId'] as String,
+      userNbr: json['userNbr'] as int,
+      isArchived: json['isArchived'] as bool,
+      createdAt: json['createdAt'] as String,
+      updatedAt: json['updatedAt'] as String,
+      details: details,
+    );
+  }
 
   const RecipientModel._();
 

@@ -49,49 +49,40 @@ class _RecipientsScreenState extends State<RecipientsScreen> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
+        child: ScrollableColumn(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [
-              const Gap(16.0),
-              Text(
-                'Who are you paying?',
-                style: context.font.labelMedium?.copyWith(
-                  color: context.colour.secondary,
-                ),
+          children: [
+            const Gap(16.0),
+            Text(
+              'Who are you paying?',
+              style: context.font.labelMedium?.copyWith(
+                color: context.colour.secondary,
               ),
-              const Gap(16.0),
-              // Tab selector
-              BBSegmentedButton(
-                items: RecipientsTab.values.map((e) => e.name).toSet(),
-                labels: {
-                  RecipientsTab.newRecipient.name: 'New Recipient',
-                  RecipientsTab.recipientsList.name: 'My Fiat Recipients',
-                },
-                selected: _currentTab.name,
-                onChanged: (value) {
-                  setState(() {
-                    _currentTab = RecipientsTab.values.firstWhere(
-                      (element) => element.name == value,
-                    );
-                  });
-                },
-              ),
-              const Gap(16.0),
-              Expanded(
-                child: ScrollableColumn(
-                  padding: EdgeInsets.zero,
-                  children: [
-                    // Tab content
-                    if (_currentTab == RecipientsTab.newRecipient)
-                      const NewRecipientTab()
-                    else if (_currentTab == RecipientsTab.recipientsList)
-                      const RecipientsListTab(),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+            const Gap(16.0),
+            // Tab selector
+            BBSegmentedButton(
+              items: RecipientsTab.values.map((e) => e.name).toSet(),
+              labels: {
+                RecipientsTab.newRecipient.name: 'New Recipient',
+                RecipientsTab.recipientsList.name: 'My Fiat Recipients',
+              },
+              selected: _currentTab.name,
+              onChanged: (value) {
+                setState(() {
+                  _currentTab = RecipientsTab.values.firstWhere(
+                    (element) => element.name == value,
+                  );
+                });
+              },
+            ),
+            const Gap(16.0),
+            // Tab content
+            if (_currentTab == RecipientsTab.newRecipient)
+              const NewRecipientTab()
+            else if (_currentTab == RecipientsTab.recipientsList)
+              const RecipientsListTab(),
+          ],
         ),
       ),
     );
