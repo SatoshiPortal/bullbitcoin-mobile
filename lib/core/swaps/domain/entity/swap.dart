@@ -64,6 +64,7 @@ abstract class SwapFees with _$SwapFees {
     int? boltzFee,
     int? lockupFee,
     int? claimFee,
+    int? serverNetworkFees,
   }) = _SwapFees;
 
   const SwapFees._();
@@ -79,6 +80,7 @@ abstract class SwapFees with _$SwapFees {
     }
     if (lockupFee != null) total += lockupFee!;
     if (claimFee != null) total += claimFee!;
+    if (serverNetworkFees != null) total += serverNetworkFees!;
     return total;
   }
 
