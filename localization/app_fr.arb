@@ -104,8 +104,8 @@
   "@walletOptionsWalletDetailsTitle": {
     "description": "Titre de l'écran des détails du portefeuille"
   },
-  "walletOptionsAddressesTitle": "Adresses",
-  "@walletOptionsAddressesTitle": {
+  "addressViewAddressesTitle": "Adresses",
+  "@addressViewAddressesTitle": {
     "description": "Titre de la section des adresses dans les options du portefeuille"
   },
   "walletDetailsDeletingMessage": "Suppression du portefeuille...",
@@ -4255,12 +4255,12 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "receiveAddressType": "Réception",
-  "@receiveAddressType": {
+  "addressViewReceiveType": "Réception",
+  "@addressViewReceiveType": {
     "description": "Address type label for external/receive addresses"
   },
-  "changeAddressType": "Monnaie",
-  "@changeAddressType": {
+  "addressViewChangeType": "Monnaie",
+  "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
   },
   "pasteInputDefaultHint": "Collez une adresse de paiement ou une facture",
@@ -7937,5 +7937,35 @@
     "placeholders": {
       "days": {}
     }
+  },
+  "addressViewErrorLoadingAddresses": "Erreur lors du chargement des adresses : {error}",
+  "@addressViewErrorLoadingAddresses": {
+    "description": "Message d'erreur affiché lorsque le chargement des adresses échoue",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addressViewNoAddressesFound": "Aucune adresse trouvée",
+  "@addressViewNoAddressesFound": {
+    "description": "Message d'état vide lorsqu'aucune adresse n'est disponible"
+  },
+  "addressViewErrorLoadingMoreAddresses": "Erreur lors du chargement d'adresses supplémentaires : {error}",
+  "@addressViewErrorLoadingMoreAddresses": {
+    "description": "Message d'erreur affiché lorsque la pagination des adresses échoue",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addressViewChangeAddressesComingSoon": "Adresses de change à venir",
+  "@addressViewChangeAddressesComingSoon": {
+    "description": "Message d'état vide pour la fonctionnalité d'adresses de change à venir"
+  },
+  "addressViewChangeAddressesDescription": "Afficher les adresses de change du portefeuille",
+  "@addressViewChangeAddressesDescription": {
+    "description": "Description de la boîte de dialogue à venir lors de la tentative d'affichage des adresses de change"
   }
 }

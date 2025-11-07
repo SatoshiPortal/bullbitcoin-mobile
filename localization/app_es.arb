@@ -104,8 +104,8 @@
   "@walletOptionsWalletDetailsTitle": {
     "description": "Title for the wallet details screen"
   },
-  "walletOptionsAddressesTitle": "Direcciones",
-  "@walletOptionsAddressesTitle": {
+  "addressViewAddressesTitle": "Direcciones",
+  "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
   "walletDetailsDeletingMessage": "Eliminando billetera...",
@@ -4255,12 +4255,12 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "receiveAddressType": "Recibir",
-  "@receiveAddressType": {
+  "addressViewReceiveType": "Recibir",
+  "@addressViewReceiveType": {
     "description": "Address type label for external/receive addresses"
   },
-  "changeAddressType": "Cambio",
-  "@changeAddressType": {
+  "addressViewChangeType": "Cambio",
+  "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
   },
   "pasteInputDefaultHint": "Pegue una dirección de pago o factura",
@@ -7937,5 +7937,35 @@
     "placeholders": {
       "days": {}
     }
+  },
+  "addressViewErrorLoadingAddresses": "Error al cargar las direcciones: {error}",
+  "@addressViewErrorLoadingAddresses": {
+    "description": "Mensaje de error mostrado cuando falla la carga de direcciones",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addressViewNoAddressesFound": "No se encontraron direcciones",
+  "@addressViewNoAddressesFound": {
+    "description": "Mensaje de estado vacío cuando no hay direcciones disponibles"
+  },
+  "addressViewErrorLoadingMoreAddresses": "Error al cargar más direcciones: {error}",
+  "@addressViewErrorLoadingMoreAddresses": {
+    "description": "Mensaje de error mostrado cuando falla la paginación de direcciones",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addressViewChangeAddressesComingSoon": "Direcciones de cambio próximamente",
+  "@addressViewChangeAddressesComingSoon": {
+    "description": "Mensaje de estado vacío para la función de direcciones de cambio próximamente"
+  },
+  "addressViewChangeAddressesDescription": "Mostrar direcciones de cambio de la billetera",
+  "@addressViewChangeAddressesDescription": {
+    "description": "Descripción del diálogo próximamente al intentar ver direcciones de cambio"
   }
 }
