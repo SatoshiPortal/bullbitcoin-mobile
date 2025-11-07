@@ -857,6 +857,9 @@ class BoltzDatasource {
         (event) async {
           final swapId = event.id;
           final boltzStatus = event.status;
+          log.info(
+            '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "websocket_event_received", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          );
           try {
             final swapModel = await _boltzStore.fetch(swapId);
             if (swapModel == null) {
@@ -866,22 +869,21 @@ class BoltzDatasource {
             // Check if swap is already in terminal state
             final swapCompleted =
                 swapModel.status == swap_entity.SwapStatus.completed.name;
-            final isLnSwap =
-                swapModel is LnSendSwapModel || swapModel is LnReceiveSwapModel;
-            final chainSwapCompleted =
-                swapModel is ChainSwapModel &&
-                (swapModel.receiveTxid != null) &&
-                swapCompleted;
             final swapFailed =
                 swapModel.status == swap_entity.SwapStatus.failed.name;
             final swapExpired =
                 swapModel.status == swap_entity.SwapStatus.expired.name;
+            // final isLnSwap =
+            //     swapModel is LnSendSwapModel || swapModel is LnReceiveSwapModel;
+            // final chainSwapCompleted =
+            //     swapModel is ChainSwapModel &&
+            //     (swapModel.receiveTxid != null) &&
+            //     swapCompleted;
 
-            if ((swapCompleted && isLnSwap) ||
-                swapFailed ||
-                swapExpired ||
-                chainSwapCompleted) {
-              // Unsubscribe from the swap if it's in a terminal state
+            if (swapCompleted || swapFailed || swapExpired) {
+              log.info(
+                '{"swapId": "$swapId", "status": "${swapModel.status}", "function": "_initializeBoltzWebSocket", "action": "added_to_stream_controller_terminal", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
               _swapUpdatesController.add(swapModel);
               return unsubscribeToSwaps([swapId]);
             }
@@ -897,6 +899,7 @@ class BoltzDatasource {
               case SwapStatus.invoicePaid:
                 if (swapModel is LnSendSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
+                    status: swap_entity.SwapStatus.canCoop.name,
                     completionTime: DateTime.now().millisecondsSinceEpoch,
                   );
                 }
@@ -915,6 +918,9 @@ class BoltzDatasource {
               case SwapStatus.invoiceSettled:
                 // Invoice settled for reverse swaps
                 if (swapModel is LnReceiveSwapModel) {
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "invoiceSettled", "function": "_initializeBoltzWebSocket", "action": "marking_completed", "currentStatus": "${swapModel.status}", "receiveTxid": "${swapModel.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                  );
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.completed.name,
                     completionTime: DateTime.now().millisecondsSinceEpoch,
@@ -973,6 +979,11 @@ class BoltzDatasource {
                   if (swapModel.receiveTxid == null) {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.claimable.name,
+                    );
+                  } else if (swapModel.receiveTxid != null) {
+                    updatedSwapModel = swapModel.copyWith(
+                      status: swap_entity.SwapStatus.completed.name,
+                      completionTime: DateTime.now().millisecondsSinceEpoch,
                     );
                   }
                 }
@@ -1144,6 +1155,9 @@ class BoltzDatasource {
               await _boltzStore.store(updatedSwapModel);
               log.info(
                 'Updated swap $swapId from ${swapModel.status} to ${updatedSwapModel.status}',
+              );
+              log.info(
+                '{"swapId": "$swapId", "status": "${updatedSwapModel.status}", "function": "_initializeBoltzWebSocket", "action": "added_to_stream_controller", "timestamp": "${DateTime.now().toIso8601String()}"}',
               );
               _swapUpdatesController.add(updatedSwapModel);
             }

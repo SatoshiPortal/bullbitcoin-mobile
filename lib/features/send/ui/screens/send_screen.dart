@@ -431,10 +431,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                             ),
                             Builder(
                               builder: (context) {
-                                final inputCurrency =
-                                    context.select<SendCubit, String>(
-                                  (cubit) => cubit.state.inputAmountCurrencyCode,
-                                );
+                                final inputCurrency = context
+                                    .select<SendCubit, String>(
+                                      (cubit) =>
+                                          cubit.state.inputAmountCurrencyCode,
+                                    );
 
                                 return AmountDialPad(
                                   controller: _amountController,
@@ -887,15 +888,20 @@ class _OnchainSendInfoSection extends StatelessWidget {
             InfoRow(
               title: 'Fee Priority',
               details: InkWell(
-                onTap: hasFinalizedTx ? null : () async {
-                  final selected = await _showFeeOptions(context);
+                onTap:
+                    hasFinalizedTx
+                        ? null
+                        : () async {
+                          final selected = await _showFeeOptions(context);
 
-                  if (selected != null) {
-                    final fee = FeeSelectionName.fromString(selected);
-                    // ignore: use_build_context_synchronously
-                    await context.read<SendCubit>().feeOptionSelected(fee);
-                  }
-                },
+                          if (selected != null) {
+                            final fee = FeeSelectionName.fromString(selected);
+                            // ignore: use_build_context_synchronously
+                            await context.read<SendCubit>().feeOptionSelected(
+                              fee,
+                            );
+                          }
+                        },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -1526,12 +1532,19 @@ class SendSucessScreen extends StatelessWidget {
                     ),
                   ] else if (isLnSwap &&
                       (lnSwap.status == SwapStatus.completed ||
-                          lnSwap.status == SwapStatus.canCoop))
-                    BBText('Invoice Paid', style: context.font.headlineLarge)
-                  else if (isLnSwap &&
+                          lnSwap.completionTime != null)) ...[
+                    Gif(
+                      image: AssetImage(Assets.animations.successTick.path),
+                      autostart: Autostart.once,
+                      height: 100,
+                      width: 100,
+                    ),
+                    const Gap(20),
+                    BBText('Invoice Paid', style: context.font.headlineLarge),
+                  ] else if (isLnSwap &&
                       !isBitcoin &&
-                      (lnSwap.status != SwapStatus.completed &&
-                          lnSwap.status != SwapStatus.canCoop))
+                      (lnSwap.status != SwapStatus.completed ||
+                          lnSwap.completionTime == null))
                     BBText(
                       'The payment is being processed. It may take up to a minute',
                       style: context.font.headlineLarge,
@@ -1646,8 +1659,7 @@ class SignLedgerButton extends StatelessWidget {
     );
 
     final derivationPath = context.select(
-      (SendCubit cubit) =>
-          cubit.state.selectedWallet?.derivationPath,
+      (SendCubit cubit) => cubit.state.selectedWallet?.derivationPath,
     );
 
     final deviceType = context.select(

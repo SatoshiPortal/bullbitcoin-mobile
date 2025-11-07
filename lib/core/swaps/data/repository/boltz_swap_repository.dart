@@ -393,18 +393,24 @@ class BoltzSwapRepository {
 
     // Handle each type separately
     final updatedSwap = switch (swap) {
-      LnReceiveSwap() => swap.copyWith(
-        completionTime: DateTime.now(),
-        status: SwapStatus.completed,
-      ),
+      LnReceiveSwap() =>
+        swap.receiveTxid != null
+            ? swap.copyWith(
+              completionTime: DateTime.now(),
+              status: SwapStatus.completed,
+            )
+            : swap,
       LnSendSwap() => swap.copyWith(
         completionTime: DateTime.now(),
         status: SwapStatus.completed,
       ),
-      ChainSwap() => swap.copyWith(
-        completionTime: DateTime.now(),
-        status: SwapStatus.completed,
-      ),
+      ChainSwap() =>
+        (swap.receiveTxid != null || swap.refundTxid != null)
+            ? swap.copyWith(
+              completionTime: DateTime.now(),
+              status: SwapStatus.completed,
+            )
+            : swap,
     };
 
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));

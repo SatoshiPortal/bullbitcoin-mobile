@@ -815,9 +815,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     _walletTransactionSubscription = _watchWalletTransactionByAddressUsecase
         .execute(walletId: walletId, toAddress: address)
         .listen((tx) {
-          log.info(
-            '[ReceiveBloc] Watched transaction ${tx.txId} updated: ${tx.status}',
-          );
           add(ReceiveTransactionReceived(tx));
         });
   }

@@ -24,26 +24,13 @@ class WatchWalletTransactionByAddressUsecase {
         .where((wallet) => wallet.id == walletId)
         .asyncMap((wallet) async {
           try {
-            log.info(
-              'Fetching transactions to address $toAddress'
-              ' for wallet: $walletId',
-            );
-
             final txs = await _walletTransactionRepository
                 .getWalletTransactions(
                   walletId: walletId,
                   toAddress: toAddress,
                 );
 
-            log.info(
-              'Fetched ${txs.length} transactions to address $toAddress'
-              ' for wallet: $walletId',
-            );
-
             if (txs.isEmpty) {
-              log.info(
-                'No transactions found for wallet: $walletId and address $toAddress',
-              );
               return null;
             }
 
