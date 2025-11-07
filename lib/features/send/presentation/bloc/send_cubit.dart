@@ -885,10 +885,13 @@ class SendCubit extends Cubit<SendState> {
               : SwapType.bitcoinToLightning;
 
       if (state.swapAmountBelowLimit) {
+        final isLiquidToLightning = state.selectedWallet!.isLiquid;
+        final minLimit =
+            isLiquidToLightning ? 100 : state.selectedSwapLimits!.min;
         emit(
           state.copyWith(
             swapLimitsException: SwapLimitsException(
-              'Amount below minimum swap limit: ${state.selectedSwapLimits!.min} sats',
+              'Amount below minimum swap limit: $minLimit sats',
             ),
             amountConfirmedClicked: false,
           ),
@@ -1403,7 +1406,7 @@ class SendCubit extends Cubit<SendState> {
       if (updatedSwap is LnSendSwap) {
         emit(state.copyWith(lightningSwap: updatedSwap));
         if (updatedSwap.status == SwapStatus.completed ||
-            updatedSwap.status == SwapStatus.canCoop) {
+            updatedSwap.completionTime != null) {
           // Start syncing the wallet now that the swap is completed
           _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
           emit(state.copyWith(step: SendStep.success));
@@ -1429,9 +1432,9 @@ class SendCubit extends Cubit<SendState> {
     _txSubscription = _watchWalletTransactionByTxIdUsecase
         .execute(walletId: walletId, txId: txId)
         .listen((tx) {
-          log.info(
-            '[SendBloc] Watched transaction ${tx.txId} updated: ${tx.status}',
-          );
+          // log.info(
+          //   '[SendBloc] Watched transaction ${tx.txId} updated: ${tx.status}',
+          // );
           emit(state.copyWith(walletTransaction: tx));
         });
   }

@@ -73,9 +73,10 @@ class SwapWatcherService {
   Future<void> processSwap(Swap swap) async {
     if (_processingSwapIds.contains(swap.id)) {
       log.info(
-        '{"swapId": "${swap.id}", "status": "${swap.status.name}", "function": "processSwap", "action": "skipped_already_processing", "currentlyProcessing": true, "timestamp": "${DateTime.now().toIso8601String()}"}',
+        '{"swapId": "${swap.id}", "status": "${swap.status.name}", "function": "processSwap", "action": "delaying_already_processing", "currentlyProcessing": true, "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
-      return;
+      await Future.delayed(const Duration(seconds: 1));
+      // return;
     }
 
     _processingSwapIds.add(swap.id);
@@ -136,7 +137,7 @@ class SwapWatcherService {
         '{"swapId": "${swap.id}", "function": "processSwap", "action": "error", "error": "$e", "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
     } finally {
-      Future.delayed(const Duration(seconds: 3), () {
+      Future.delayed(const Duration(seconds: 1), () {
         _processingSwapIds.remove(swap.id);
         log.info(
           '{"swapId": "${swap.id}", "status": "${swap.status.name}", "function": "processSwap", "action": "completed", "timestamp": "${DateTime.now().toIso8601String()}"}',
@@ -238,6 +239,7 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
+      _swapStreamController.add(updatedSwap);
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processReceiveLnToLiquidClaim"}',
@@ -279,7 +281,6 @@ class SwapWatcherService {
     try {
       final isBatched = swap.paymentAmount < 1000;
       if (isBatched) {
-        // do not coop close just update
         log.info(
           '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnCoopSign", "action": "batched_completed", "timestamp": "${DateTime.now().toIso8601String()}"}',
         );
@@ -294,6 +295,9 @@ class SwapWatcherService {
         completionTime: DateTime.now(),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
+      // Emit the updated swap so listeners (like SendCubit) receive the completion
+      _swapStreamController.add(updatedSwap);
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnCoopSign", "action": "coop_close_failed", "timestamp": "${DateTime.now().toIso8601String()}"}',

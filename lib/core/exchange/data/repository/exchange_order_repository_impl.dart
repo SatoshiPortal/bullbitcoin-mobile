@@ -86,7 +86,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return orderModel.toEntity(isTestnet: _isTestnet);
     } catch (e) {
-      log.severe('Error fetching order by txId: $e');
+      // log.severe('Error fetching order by txId: $e');
       return null;
     }
   }
