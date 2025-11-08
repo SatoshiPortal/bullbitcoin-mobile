@@ -24,7 +24,7 @@ class BBDropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height,
+      // height: height,
       child: Theme(
         data: Theme.of(context).copyWith(
           popupMenuTheme: PopupMenuThemeData(
@@ -55,9 +55,9 @@ class BBDropdown<T> extends StatelessWidget {
             validator: validator,
             hint: hint,
             dropdownColor: context.colour.onPrimary,
-            menuMaxHeight: 200,
-            itemHeight: 48,
-            alignment: Alignment.centerLeft,
+            menuMaxHeight: 240,
+            itemHeight: height,
+            alignment: Alignment.center,
             isExpanded: true,
             decoration: InputDecoration(
               filled: true,
@@ -66,7 +66,11 @@ class BBDropdown<T> extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4.0),
                 borderSide: BorderSide.none,
               ),
-              contentPadding: EdgeInsets.zero,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 0,
+                vertical: 16.0,
+              ),
+              isDense: false,
             ),
             icon: Icon(
               Icons.keyboard_arrow_down,
