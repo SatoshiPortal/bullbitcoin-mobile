@@ -17,7 +17,7 @@ class SwapToWalletDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Transfer To', style: context.font.bodyLarge),
+        Text('To', style: context.font.bodyLarge),
         const Gap(4),
         if (wallets.isEmpty)
           const LoadingLineContent()

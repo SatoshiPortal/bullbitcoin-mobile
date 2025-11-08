@@ -84,6 +84,10 @@ abstract class SwapFees with _$SwapFees {
     return total;
   }
 
+  int totalFeesDeducted(int? amount) {
+    return totalFees(amount) - (lockupFee ?? 0);
+  }
+
   int boltzFeeFromPercent(int amount) {
     if (boltzPercent == null) {
       return 0;
@@ -101,6 +105,38 @@ abstract class SwapFees with _$SwapFees {
   double totalFeeAsPercentOfAmount(int amount) {
     final fees = totalFees(amount);
     return calculatePercentage(amount, fees);
+  }
+
+  int calculateSwapAmountFromReceivableAmount(int receivableAmount) {
+    final claimFee = this.claimFee ?? 0;
+    final serverNetworkFees = this.serverNetworkFees ?? 0;
+
+    if (boltzPercent == null) {
+      final boltzFee = this.boltzFee ?? 0;
+      return receivableAmount + boltzFee + claimFee + serverNetworkFees;
+    }
+
+    final baseAmount = receivableAmount + claimFee + serverNetworkFees;
+    final rate = 1.0 - (boltzPercent! / 100.0);
+
+    int paymentAmount = (baseAmount / rate).ceil();
+
+    int calculatedReceivable =
+        paymentAmount -
+        boltzFeeFromPercent(paymentAmount) -
+        claimFee -
+        serverNetworkFees;
+
+    while (calculatedReceivable < receivableAmount) {
+      paymentAmount++;
+      calculatedReceivable =
+          paymentAmount -
+          boltzFeeFromPercent(paymentAmount) -
+          claimFee -
+          serverNetworkFees;
+    }
+
+    return paymentAmount;
   }
 }
 

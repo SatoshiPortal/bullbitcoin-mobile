@@ -98,7 +98,7 @@ class BoltzDatasource {
         return swap_entity.SwapFees(
           boltzPercent: fees.lbtcFees.percentage as double?,
           lockupFee: fees.lbtcFees.userLockup.toInt() as int?,
-          claimFee: (fees.lbtcFees.userClaim.toInt() as int?) ?? 0 + 3,
+          claimFee: ((fees.lbtcFees.userClaim.toInt() as int?) ?? 0) + 3,
           serverNetworkFees: fees.lbtcFees.server.toInt() as int?,
         );
       case swap_entity.SwapType.liquidToBitcoin:
@@ -545,7 +545,7 @@ class BoltzDatasource {
         boltzFees:
             (chainFees.lbtcFees.percentage * amountSat / 100).ceil() as int?,
         lockupFees: chainFees.lbtcFees.userLockup.toInt() as int?,
-        claimFees: (chainFees.lbtcFees.userClaim.toInt() as int?) ?? 0 + 3,
+        claimFees: ((chainFees.lbtcFees.userClaim.toInt() as int?) ?? 0) + 3,
         serverNetworkFees: chainFees.lbtcFees.server.toInt() as int?,
       );
       await _boltzStore.store(swapModel);

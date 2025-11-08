@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -1187,21 +1189,18 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
     final paymentRequestAddress = context.select(
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
-    final formattedBitcoinAmount = context.select(
-      (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
-    );
-    final formattedFiatEquivalent = context.select(
-      (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
-    );
     final swap = context.select((SendCubit cubit) => cubit.state.chainSwap);
+    final exchangeRate = context.select(
+      (SendCubit cubit) => cubit.state.exchangeRate,
+    );
+    final fiatCurrencyCode = context.select(
+      (SendCubit cubit) => cubit.state.fiatCurrencyCode,
+    );
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
     );
     final showFeeWarning = context.select(
       (SendCubit cubit) => cubit.state.showFeeWarning,
-    );
-    final formattedAbsoluteFees = context.select(
-      (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1270,22 +1269,18 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
-                BBText(
-                  '~$formattedFiatEquivalent',
-                  style: context.font.labelSmall,
-                  color: context.colour.surfaceContainer,
-                ),
-              ],
-            ),
-          ),
-          _divider(context),
-          InfoRow(
-            title: 'Send Network Fee',
-            details: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                BBText(formattedAbsoluteFees, style: context.font.bodyLarge),
+                if (swap.spentAmount != null) ...[
+                  CurrencyText(
+                    swap.spentAmount!,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                  ),
+                  BBText(
+                    '~${FormatAmount.fiat(ConvertAmount.satsToFiat(swap.spentAmount!, exchangeRate), fiatCurrencyCode)}',
+                    style: context.font.labelSmall,
+                    color: context.colour.surfaceContainer,
+                  ),
+                ],
               ],
             ),
           ),

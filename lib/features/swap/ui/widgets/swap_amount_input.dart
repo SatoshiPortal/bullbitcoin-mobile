@@ -39,7 +39,7 @@ class SwapAmountInput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Transfer amount', style: context.font.bodyLarge),
+        Text('Amount', style: context.font.bodyLarge),
         const Gap(8),
         Card(
           elevation: 1,
@@ -123,7 +123,9 @@ class SwapAmountInput extends StatelessWidget {
                             border: InputBorder.none,
                           ),
                           onChanged: (value) {
-                            //context.read<TransferBloc>().amountChanged(value);
+                            context.read<TransferBloc>().add(
+                              TransferEvent.amountChanged(value),
+                            );
                           },
                         ),
                       ),

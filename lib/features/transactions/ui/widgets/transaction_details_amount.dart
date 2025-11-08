@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -15,11 +16,16 @@ class TransactionDetailsAmount extends StatelessWidget {
     );
     final isSwap = tx?.isSwap ?? false;
     final isOrder = tx?.isOrder ?? false;
+    final swap = tx?.swap;
+    final isExternalChainSwap =
+        swap is ChainSwap && swap.receiveWalletId == null;
     final amountSat =
         isSwap
-            ? (tx?.isOutgoing == true
-                ? tx?.swap?.amountSat
-                : tx?.swap?.receivedAmount)
+            ? (isExternalChainSwap
+                ? swap.receivedAmount
+                : (tx?.isOutgoing == true
+                    ? swap!.amountSat
+                    : swap?.receivedAmount))
             : tx?.amountSat;
     final orderAmountAndCurrency = tx?.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =

@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
@@ -16,11 +17,13 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -46,6 +49,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     required CalculateLiquidAbsoluteFeesUsecase
     calculateLiquidAbsoluteFeesUsecase,
     required CreateChainSwapUsecase createChainSwapUsecase,
+    required CreateChainSwapToExternalUsecase createChainSwapToExternalUsecase,
     required WatchSwapUsecase watchSwapUsecase,
     required GetWalletUsecase getWalletUsecase,
     required SignBitcoinTxUsecase signBitcoinTxUsecase,
@@ -54,6 +58,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     required BroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase,
     required UpdatePaidChainSwapUsecase updatePaidChainSwapUsecase,
     required UpdateSendSwapLockupFeesUsecase updateSendSwapLockupFeesUsecase,
+    required DetectBitcoinStringUsecase detectBitcoinStringUsecase,
   }) : _getSettingsUsecase = getSettingsUsecase,
        _getWalletsUsecase = getWalletsUsecase,
        _getSwapLimitsUsecase = getSwapLimitsUsecase,
@@ -64,6 +69,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
            calculateBitcoinAbsoluteFeesUsecase,
        _calculateLiquidAbsoluteFeesUsecase = calculateLiquidAbsoluteFeesUsecase,
        _createChainSwapUsecase = createChainSwapUsecase,
+       _createChainSwapToExternalUsecase = createChainSwapToExternalUsecase,
        _watchSwapUsecase = watchSwapUsecase,
        _getWalletUsecase = getWalletUsecase,
        _signBitcoinTxUsecase = signBitcoinTxUsecase,
@@ -72,11 +78,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
        _broadcastLiquidTxUsecase = broadcastLiquidTxUsecase,
        _updatePaidChainSwapUsecase = updatePaidChainSwapUsecase,
        _updateSendSwapLockupFeesUsecase = updateSendSwapLockupFeesUsecase,
+       _detectBitcoinStringUsecase = detectBitcoinStringUsecase,
        super(const TransferState()) {
     on<TransferStarted>(_onStarted);
     on<TransferWalletsChanged>(_onWalletsChanged);
+    on<TransferAmountChanged>(_onAmountChanged);
     on<TransferSwapCreated>(_onSwapCreated);
     on<TransferConfirmed>(_onConfirmed);
+    on<TransferSendToExternalToggled>(_onSendToExternalToggled);
+    on<TransferExternalAddressChanged>(_onExternalAddressChanged);
+    on<TransferSendExactAmountToggled>(_onSendExactAmountToggled);
   }
 
   final GetSettingsUsecase _getSettingsUsecase;
@@ -89,6 +100,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   _calculateBitcoinAbsoluteFeesUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
   final CreateChainSwapUsecase _createChainSwapUsecase;
+  final CreateChainSwapToExternalUsecase _createChainSwapToExternalUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   StreamSubscription<Swap>? _swapSubscription;
   final GetWalletUsecase _getWalletUsecase;
@@ -98,6 +110,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
   final UpdatePaidChainSwapUsecase _updatePaidChainSwapUsecase;
   final UpdateSendSwapLockupFeesUsecase _updateSendSwapLockupFeesUsecase;
+  final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
 
   @override
   Future<void> close() async {
@@ -223,6 +236,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       }
     }
 
+    final wasFromWalletChanged = newFromWallet != state.fromWallet;
+    final hadExternalAddress = state.externalAddress.isNotEmpty;
+    final externalAddressToRevalidate = state.externalAddress;
+    final sendToExternal = state.sendToExternal;
+
     emit(
       state.copyWith(
         fromWallet: newFromWallet,
@@ -235,6 +253,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
     final maxAmountSat = await getMaxAmountSat(newFromWallet);
     emit(state.copyWith(maxAmountSat: maxAmountSat));
+
+    if (wasFromWalletChanged && sendToExternal && hadExternalAddress) {
+      add(TransferEvent.externalAddressChanged(externalAddressToRevalidate));
+    }
+  }
+
+  Future<void> _onAmountChanged(
+    TransferAmountChanged event,
+    Emitter<TransferState> emit,
+  ) async {
+    emit(state.copyWith(amount: event.amount));
   }
 
   Future<void> _onSwapCreated(
@@ -252,23 +281,139 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       ),
     );
     try {
-      final amountSat =
+      final inputAmountSat =
           state.bitcoinUnit == BitcoinUnit.sats
               ? int.parse(event.amount)
               : ConvertAmount.btcToSats(double.parse(event.amount));
+
+      int paymentAmountSat = inputAmountSat;
+      if (state.sendExactAmount) {
+        final swapFees = state.swapFees;
+        if (swapFees == null) {
+          emit(
+            state.copyWith(
+              swapCreationException: SwapCreationException(
+                'Swap fees not loaded',
+              ),
+            ),
+          );
+          return;
+        }
+        paymentAmountSat = swapFees.calculateSwapAmountFromReceivableAmount(
+          inputAmountSat,
+        );
+      }
 
       ChainSwap swap;
       String signedPsbt;
       int? bitcoinAbsoluteFeesSat;
       int? liquidAbsoluteFeesSat;
-      if (state.fromWallet?.isLiquid == false &&
+
+      if (state.sendToExternal) {
+        if (state.externalAddress.isEmpty) {
+          emit(
+            state.copyWith(
+              swapCreationException: SwapCreationException(
+                'Enter an external address',
+              ),
+            ),
+          );
+          return;
+        }
+
+        final swapType =
+            state.fromWallet!.isLiquid
+                ? SwapType.liquidToBitcoin
+                : SwapType.bitcoinToLiquid;
+
+        swap = await _createChainSwapToExternalUsecase.execute(
+          sendWalletId: state.fromWallet!.id,
+          receiveAddress: state.externalAddress,
+          type: swapType,
+          amountSat: paymentAmountSat,
+        );
+
+        if (state.fromWallet!.isLiquid) {
+          final liquidWalletId = state.fromWallet!.id;
+          final isMaxSend = state.maxAmountSat == paymentAmountSat;
+
+          final psbt = await _prepareLiquidSendUsecase.execute(
+            walletId: liquidWalletId,
+            address: swap.paymentAddress,
+            amountSat: isMaxSend ? null : swap.paymentAmount,
+            networkFee: state.liquidNetworkFees!.fastest,
+            drain: isMaxSend,
+          );
+          signedPsbt = await _signLiquidTxUsecase.execute(
+            walletId: liquidWalletId,
+            pset: psbt,
+          );
+          liquidAbsoluteFeesSat = await _calculateLiquidAbsoluteFeesUsecase
+              .execute(pset: signedPsbt);
+          final settings = await _getSettingsUsecase.execute();
+          final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
+            swapId: swap.id,
+            network: Network.fromEnvironment(
+              isTestnet: settings.environment == Environment.testnet,
+              isLiquid: true,
+            ),
+            lockupFees: liquidAbsoluteFeesSat,
+          );
+          swap = updatedSwap as ChainSwap;
+          emit(
+            state.copyWith(
+              swap: swap,
+              signedPsbt: signedPsbt,
+              liquidAbsoluteFeesSat: liquidAbsoluteFeesSat,
+            ),
+          );
+        } else {
+          final bitcoinWalletId = state.fromWallet!.id;
+          final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase
+              .execute(
+                walletId: bitcoinWalletId,
+                address: swap.paymentAddress,
+                amountSat: swap.paymentAmount,
+                networkFee: state.bitcoinNetworkFees!.fastest,
+              );
+
+          final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+            walletId: bitcoinWalletId,
+            psbt: unsignedPsbtAndTxSize.unsignedPsbt,
+          );
+
+          signedPsbt = signedPsbtAndTxSize.signedPsbt;
+          bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
+              .execute(
+                psbt: signedPsbtAndTxSize.signedPsbt,
+                feeRate: state.bitcoinNetworkFees!.fastest.value as double,
+              );
+          final settings = await _getSettingsUsecase.execute();
+          final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
+            swapId: swap.id,
+            network: Network.fromEnvironment(
+              isTestnet: settings.environment == Environment.testnet,
+              isLiquid: false,
+            ),
+            lockupFees: bitcoinAbsoluteFeesSat,
+          );
+          swap = updatedSwap as ChainSwap;
+          emit(
+            state.copyWith(
+              swap: swap,
+              signedPsbt: signedPsbt,
+              bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
+            ),
+          );
+        }
+      } else if (state.fromWallet?.isLiquid == false &&
           state.toWallet?.isLiquid == true) {
         final bitcoinWalletId = state.fromWallet!.id;
         swap = await _createChainSwapUsecase.execute(
           bitcoinWalletId: bitcoinWalletId,
           liquidWalletId: state.toWallet!.id,
           type: SwapType.bitcoinToLiquid,
-          amountSat: amountSat,
+          amountSat: paymentAmountSat,
         );
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: bitcoinWalletId,
@@ -312,7 +457,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           bitcoinWalletId: state.toWallet!.id,
           liquidWalletId: liquidWalletId,
           type: SwapType.liquidToBitcoin,
-          amountSat: amountSat,
+          amountSat: paymentAmountSat,
         );
         final isMaxSend = state.maxAmountSat == swap.paymentAmount;
 
@@ -358,17 +503,199 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           signedPsbt: signedPsbt,
           bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
           liquidAbsoluteFeesSat: liquidAbsoluteFeesSat,
+          amount: event.amount,
         ),
       );
     } catch (e) {
+      final errorMessage =
+          _isInsufficientFundsException(e)
+              ? 'Insufficient Balance To Cover Fees And Amount'
+              : e.toString();
       emit(
         state.copyWith(
-          swapCreationException: SwapCreationException(e.toString()),
+          swapCreationException: SwapCreationException(errorMessage),
         ),
       );
     } finally {
       emit(state.copyWith(isCreatingSwap: false));
     }
+  }
+
+  Future<void> _onSendToExternalToggled(
+    TransferSendToExternalToggled event,
+    Emitter<TransferState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        sendToExternal: event.enabled,
+        externalAddress: event.enabled ? state.externalAddress : '',
+        externalAddressError: event.enabled ? null : null,
+      ),
+    );
+  }
+
+  Future<void> _onExternalAddressChanged(
+    TransferExternalAddressChanged event,
+    Emitter<TransferState> emit,
+  ) async {
+    if (event.address.isEmpty) {
+      emit(state.copyWith(externalAddress: '', externalAddressError: null));
+      return;
+    }
+
+    try {
+      final sanitizedText = event.address.trim().replaceAll(
+        RegExp(r'^["\"]+|["\"]+$'),
+        '',
+      );
+
+      final fromWallet = state.fromWallet;
+      if (fromWallet == null) {
+        emit(
+          state.copyWith(
+            externalAddress: sanitizedText,
+            externalAddressError: 'Please select a wallet first',
+          ),
+        );
+        return;
+      }
+
+      PaymentRequest paymentRequest;
+      try {
+        paymentRequest = await _detectBitcoinStringUsecase.execute(
+          data: sanitizedText,
+        );
+      } catch (e) {
+        final errorMessage =
+            fromWallet.isLiquid == true
+                ? 'Please enter a valid Bitcoin address'
+                : 'Please enter a valid Liquid address';
+        emit(
+          state.copyWith(
+            externalAddress: sanitizedText,
+            externalAddressError: errorMessage,
+          ),
+        );
+        return;
+      }
+
+      try {
+        String address = '';
+        int? bip21AmountSat;
+
+        if (paymentRequest.isBip21) {
+          final bip21 = paymentRequest as Bip21PaymentRequest;
+          address = bip21.address;
+          bip21AmountSat = bip21.amountSat;
+
+          if (fromWallet.isLiquid) {
+            if (!bip21.network.isBitcoin) {
+              emit(
+                state.copyWith(
+                  externalAddress: sanitizedText,
+                  externalAddressError: 'Please enter a valid Bitcoin address',
+                ),
+              );
+              return;
+            }
+          } else {
+            if (!bip21.network.isLiquid) {
+              emit(
+                state.copyWith(
+                  externalAddress: sanitizedText,
+                  externalAddressError: 'Please enter a valid Liquid address',
+                ),
+              );
+              return;
+            }
+          }
+        } else {
+          if (fromWallet.isLiquid) {
+            if (!paymentRequest.isBitcoinAddress) {
+              emit(
+                state.copyWith(
+                  externalAddress: sanitizedText,
+                  externalAddressError: 'Please enter a valid Bitcoin address',
+                ),
+              );
+              return;
+            }
+            final bitcoinAddress = paymentRequest as BitcoinPaymentRequest;
+            address = bitcoinAddress.address;
+          } else {
+            if (!paymentRequest.isLiquidAddress) {
+              emit(
+                state.copyWith(
+                  externalAddress: sanitizedText,
+                  externalAddressError: 'Please enter a valid Liquid address',
+                ),
+              );
+              return;
+            }
+            final liquidAddress = paymentRequest as LiquidPaymentRequest;
+            address = liquidAddress.address;
+          }
+        }
+
+        String? bip21AmountText;
+        if (bip21AmountSat != null) {
+          try {
+            bip21AmountText =
+                state.bitcoinUnit == BitcoinUnit.sats
+                    ? bip21AmountSat.toString()
+                    : ConvertAmount.satsToBtc(bip21AmountSat).toString();
+          } catch (e) {
+            bip21AmountText = null;
+          }
+        }
+
+        emit(
+          state.copyWith(
+            externalAddress: address,
+            externalAddressError: null,
+            sendExactAmount:
+                // ignore: avoid_bool_literals_in_conditional_expressions
+                bip21AmountSat != null ? true : state.sendExactAmount,
+            amount: bip21AmountText ?? state.amount,
+          ),
+        );
+      } catch (e) {
+        final errorMessage =
+            fromWallet.isLiquid == true
+                ? 'Please enter a valid Bitcoin address'
+                : 'Please enter a valid Liquid address';
+        emit(
+          state.copyWith(
+            externalAddress: sanitizedText,
+            externalAddressError: errorMessage,
+          ),
+        );
+        return;
+      }
+    } catch (e) {
+      final sanitizedText = event.address.trim().replaceAll(
+        RegExp(r'^["\"]+|["\"]+$'),
+        '',
+      );
+      final fromWallet = state.fromWallet;
+      final errorMessage =
+          fromWallet?.isLiquid == true
+              ? 'Please enter a valid Bitcoin address'
+              : 'Please enter a valid Liquid address';
+      emit(
+        state.copyWith(
+          externalAddress: sanitizedText,
+          externalAddressError: errorMessage,
+        ),
+      );
+    }
+  }
+
+  Future<void> _onSendExactAmountToggled(
+    TransferSendExactAmountToggled event,
+    Emitter<TransferState> emit,
+  ) async {
+    emit(state.copyWith(sendExactAmount: event.enabled));
   }
 
   Future<void> _onConfirmed(
@@ -499,6 +826,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     }
   }
 
+  bool _isInsufficientFundsException(Object e) {
+    return e.toString().contains('InsufficientFundsException');
+  }
+
   void _watchChainSwap(String swapId) {
     // Cancel the previous subscription if it exists
     _swapSubscription?.cancel();
@@ -512,7 +843,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         if (updatedSwap.status == SwapStatus.completed) {
           // Start syncing the wallet now that the swap is completed
           _getWalletUsecase.execute(state.fromWallet!.id, sync: true);
-          _getWalletUsecase.execute(state.toWallet!.id, sync: true);
+          if (!state.sendToExternal && state.toWallet != null) {
+            _getWalletUsecase.execute(state.toWallet!.id, sync: true);
+          }
 
           // Cancel the subscription as we don't need to watch anymore
           _swapSubscription?.cancel();

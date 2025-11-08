@@ -527,8 +527,24 @@ class SendCubit extends Cubit<SendState> {
           return;
         }
         emit(state.copyWith(creatingSwap: true));
-        final amountSat =
+        final receivableAmount =
             state.paymentRequest!.amountSat ?? state.inputAmountSat;
+        final swapFees = state.selectedSwapFees;
+        if (swapFees == null) {
+          emit(
+            state.copyWith(
+              creatingSwap: false,
+              swapCreationException: SwapCreationException(
+                'Swap fees not loaded',
+              ),
+              loadingBestWallet: false,
+            ),
+          );
+          return;
+        }
+        final paymentAmount = swapFees.calculateSwapAmountFromReceivableAmount(
+          receivableAmount,
+        );
         final swap = await _createChainSwapToExternalUsecase.execute(
           sendWalletId: state.selectedWallet!.id,
           receiveAddress:
@@ -536,7 +552,7 @@ class SendCubit extends Cubit<SendState> {
                   ? (state.paymentRequest! as Bip21PaymentRequest).address
                   : state.paymentRequestAddress,
           type: swapType,
-          amountSat: amountSat,
+          amountSat: paymentAmount,
         );
         _watchSendSwap(swap.id);
         emit(state.copyWith(creatingSwap: false));

@@ -35,6 +35,10 @@ class SwapBalanceRow extends StatelessWidget {
             ? maxAmountSat
             : ConvertAmount.satsToBtc(maxAmountSat ?? 0);
 
+    final sendExactAmount = context.select(
+      (TransferBloc bloc) => bloc.state.sendExactAmount,
+    );
+
     return Row(
       children: [
         Text(
@@ -53,7 +57,8 @@ class SwapBalanceRow extends StatelessWidget {
           bgColor: context.colour.secondaryFixedDim,
           textColor: context.colour.secondary,
           textStyle: context.font.labelLarge,
-          disabled: maxAmountSat == null || maxAmountSat <= 0,
+          disabled:
+              sendExactAmount || maxAmountSat == null || maxAmountSat <= 0,
           onPressed: () {
             amountController.text = maxAmount.toString();
           },
