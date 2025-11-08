@@ -10,7 +10,7 @@ class BBDropdown<T> extends StatelessWidget {
     this.validator,
     this.hint,
     this.label,
-    this.height = 56,
+    this.height = 64,
   });
 
   final List<DropdownMenuItem<T>> items;
