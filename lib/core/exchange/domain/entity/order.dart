@@ -373,6 +373,9 @@ sealed class Order with _$Order {
     double? indexRateAmount,
     String? indexRateCurrency,
     required bool isTestnet,
+    String? referenceNumber,
+    String? originName,
+    String? originCedula,
   }) = FiatPaymentOrder;
 
   const factory Order.funding({

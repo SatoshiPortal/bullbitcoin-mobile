@@ -242,6 +242,7 @@ class TransactionDetailsTable extends StatelessWidget {
                   label: 'Payout method',
                   displayValue: order.payoutMethod.value,
                 ),
+
                 DetailsTableItem(
                   label: 'Payin Status',
                   displayValue: order.payinStatus.value,
@@ -345,7 +346,6 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayValue: order.orderNumber.toString(),
                   copyValue: order.orderNumber.toString(),
                 ),
-
                 DetailsTableItem(
                   label: 'Payout amount',
                   displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
@@ -365,6 +365,22 @@ class TransactionDetailsTable extends StatelessWidget {
                   label: 'Payout method',
                   displayValue: order.payoutMethod.value,
                 ),
+                if (order.referenceNumber != null)
+                  DetailsTableItem(
+                    label: 'Reference Number',
+                    displayValue: order.referenceNumber,
+                    copyValue: order.referenceNumber,
+                  ),
+                if (order.originName != null)
+                  DetailsTableItem(
+                    label: 'Origin Name',
+                    displayValue: order.originName,
+                  ),
+                if (order.originCedula != null)
+                  DetailsTableItem(
+                    label: 'Origin Cedula',
+                    displayValue: order.originCedula,
+                  ),
                 DetailsTableItem(
                   label: 'Payin Status',
                   displayValue: order.payinStatus.value,
