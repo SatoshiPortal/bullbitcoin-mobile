@@ -531,23 +531,8 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          if (swap.spendableAmount != null)
-            CommonInfoRow(
-              title: 'You will Send',
-              details: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  CurrencyText(
-                    swap.spendableAmount!,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                  ),
-                ],
-              ),
-            ),
-          if (swap.spendableAmount != null) _divider(context),
           CommonInfoRow(
-            title: 'You will Receive',
+            title: 'Receive Amount',
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [

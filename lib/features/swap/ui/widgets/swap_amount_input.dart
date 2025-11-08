@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -34,26 +32,9 @@ class SwapAmountInput extends StatelessWidget {
     final fromCurrency = context.select(
       (TransferBloc bloc) => bloc.state.displayFromCurrencyCode,
     );
-    final toCurrency = context.select(
-      (TransferBloc bloc) => bloc.state.displayToCurrencyCode,
-    );
     final swapLimits = context.select(
       (TransferBloc bloc) => bloc.state.swapLimits,
     );
-    final estimatedFeesSat = context.select(
-      (TransferBloc bloc) => bloc.state.getSwapFeesSat(amountSat),
-    );
-    final inputAmountSat =
-        bitcoinUnit == BitcoinUnit.sats
-            ? int.tryParse(amountController.text) ?? 0
-            : ConvertAmount.btcToSats(
-              double.tryParse(amountController.text) ?? 0,
-            );
-    final toAmountSat = max(inputAmountSat - estimatedFeesSat, 0);
-    final toAmount =
-        bitcoinUnit == BitcoinUnit.sats
-            ? toAmountSat
-            : ConvertAmount.satsToBtc(toAmountSat);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,22 +132,6 @@ class SwapAmountInput extends StatelessWidget {
                         fromCurrency,
                         style: context.font.displaySmall?.copyWith(
                           color: context.colour.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                const Gap(16),
-                if (isLoading)
-                  const LoadingLineContent(
-                    padding: EdgeInsets.symmetric(vertical: 12.0),
-                  )
-                else
-                  Row(
-                    children: [
-                      Text(
-                        '$toAmount $toCurrency',
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.outline,
                         ),
                       ),
                     ],

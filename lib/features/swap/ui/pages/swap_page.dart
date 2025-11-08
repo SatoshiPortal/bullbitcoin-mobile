@@ -9,7 +9,6 @@ import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_amount_input.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_balance_row.dart';
-import 'package:bb_mobile/features/swap/ui/widgets/swap_fees_row.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_from_wallet_dropdown.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_to_wallet_dropdown.dart';
 import 'package:flutter/material.dart';
@@ -96,8 +95,6 @@ class _SwapPageState extends State<SwapPage> {
               ),
               const Gap(12),
               SwapBalanceRow(amountController: _amountController),
-              const Gap(12),
-              SwapFeesRow(amountSat: _amountSat),
               const Gap(12),
               BlocSelector<TransferBloc, TransferState, SwapCreationException?>(
                 selector: (state) => state.swapCreationException,
