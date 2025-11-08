@@ -305,6 +305,64 @@ sealed class Swap with _$Swap {
     ChainSwap(:final receiveAddress) => receiveAddress,
     _ => null,
   };
+
+  /// Calculates the amount the user will receive
+  /// - Chain swap: paymentAmount - (totalSwapFees - lockupFee)
+  /// - Submarine swap: swapAmount - (totalSwapFees - lockupFee)
+  /// - Reverse swap: invoiceAmount - totalFees
+  int? get receiveableAmount => switch (this) {
+    ChainSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      final totalSwapFees = fees.totalFees(paymentAmount);
+      final lockupFee = fees.lockupFee ?? 0;
+      return paymentAmount - totalSwapFees + lockupFee;
+    }(),
+    LnSendSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      final totalSwapFees = fees.totalFees(paymentAmount);
+      final lockupFee = fees.lockupFee ?? 0;
+      return paymentAmount - totalSwapFees + lockupFee;
+    }(),
+    LnReceiveSwap(:final invoice, :final fees) => () {
+      if (fees == null) return null;
+      final invoiceAmount =
+          (Bolt11PaymentRequest(invoice).amount *
+                  Decimal.fromBigInt(
+                    ConversionConstants.satsAmountOfOneBitcoin,
+                  ))
+              .toBigInt()
+              .toInt();
+      final totalFees = fees.totalFees(invoiceAmount);
+      return invoiceAmount - totalFees;
+    }(),
+  };
+
+  /// Calculates the amount the user will send
+  /// - Chain swap: paymentAmount + lockupFee
+  /// - Submarine swap: swapAmount + lockupFee
+  /// - Reverse swap: invoiceAmount
+  int? get spendableAmount => switch (this) {
+    ChainSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      final lockupFee = fees.lockupFee ?? 0;
+      return paymentAmount + lockupFee;
+    }(),
+    LnSendSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      final lockupFee = fees.lockupFee ?? 0;
+      return paymentAmount + lockupFee;
+    }(),
+    LnReceiveSwap(:final invoice) => () {
+      final invoiceAmount =
+          (Bolt11PaymentRequest(invoice).amount *
+                  Decimal.fromBigInt(
+                    ConversionConstants.satsAmountOfOneBitcoin,
+                  ))
+              .toBigInt()
+              .toInt();
+      return invoiceAmount;
+    }(),
+  };
 }
 
 extension SwapFeePercent on Swap {

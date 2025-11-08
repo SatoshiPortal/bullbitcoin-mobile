@@ -75,7 +75,7 @@ class SwapWatcherService {
       log.info(
         '{"swapId": "${swap.id}", "status": "${swap.status.name}", "function": "processSwap", "action": "delaying_already_processing", "currentlyProcessing": true, "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 3));
       // return;
     }
 
@@ -148,16 +148,18 @@ class SwapWatcherService {
 
   Future<void> _claimReceiveLnToBitcoin({required LnReceiveSwap swap}) async {
     try {
+      if (swap.receiveTxid != null) {
+        return;
+      }
       final receiveAddress = swap.receiveAddress;
       if (receiveAddress == null) {
         throw Exception('Receive address is null');
       }
       String claimTxId;
-      int actualFeesUsed = swap.fees!.claimFee!;
       try {
         claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: actualFeesUsed,
+          absoluteFees: swap.fees!.claimFee!,
           bitcoinAddress: swap.receiveAddress!,
         );
       } catch (e, st) {
@@ -166,10 +168,9 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
-        actualFeesUsed += 141;
         claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: actualFeesUsed,
+          absoluteFees: swap.fees!.claimFee!,
           bitcoinAddress: swap.receiveAddress!,
           cooperate: false,
         );
@@ -179,7 +180,7 @@ class SwapWatcherService {
         receiveAddress: swap.receiveAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
+        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee!),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
@@ -195,19 +196,21 @@ class SwapWatcherService {
 
   Future<void> _claimReceiveLnToLiquid({required LnReceiveSwap swap}) async {
     try {
+      if (swap.receiveTxid != null) {
+        return;
+      }
       final receiveAddress = swap.receiveAddress;
       if (receiveAddress == null) {
         throw Exception('Receive address is null');
       }
       String claimTxId;
-      int actualFeesUsed = swap.fees!.claimFee!;
       log.info(
         '{"swapId": "${swap.id}", "function": "_processReceiveLnToLiquidClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
       try {
         claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: actualFeesUsed,
+          absoluteFees: swap.fees!.claimFee!,
           liquidAddress: receiveAddress,
         );
         log.info(
@@ -219,10 +222,9 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
-        actualFeesUsed += 21;
         claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: actualFeesUsed,
+          absoluteFees: swap.fees!.claimFee!,
           liquidAddress: receiveAddress,
           cooperate: false,
         );
@@ -235,7 +237,7 @@ class SwapWatcherService {
         receiveAddress: receiveAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
+        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee!),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
@@ -310,6 +312,9 @@ class SwapWatcherService {
 
   Future<void> _refundSendLiquidToLn({required LnSendSwap swap}) async {
     try {
+      if (swap.refundTxid != null) {
+        return;
+      }
       String refundAddress;
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;
@@ -391,6 +396,9 @@ class SwapWatcherService {
 
   Future<void> _refundSendBitcoinToLn({required LnSendSwap swap}) async {
     try {
+      if (swap.refundTxid != null) {
+        return;
+      }
       String refundAddress;
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;
@@ -473,6 +481,9 @@ class SwapWatcherService {
 
   Future<void> _claimChainLiquidToBitcoin({required ChainSwap swap}) async {
     try {
+      if (swap.receiveTxid != null) {
+        return;
+      }
       String finalClaimAddress;
       if (swap.receiveWalletId != null) {
         if (swap.receiveAddress != null) {
@@ -502,14 +513,13 @@ class SwapWatcherService {
         }
       }
       String claimTxid;
-      int actualFeesUsed = swap.fees!.claimFee!;
       log.info(
         '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
       try {
         claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: actualFeesUsed,
+          absoluteFees: swap.fees!.claimFee!,
           bitcoinClaimAddress: finalClaimAddress,
         );
         log.info(
@@ -521,10 +531,9 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
-        actualFeesUsed += 141;
         claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
           swapId: swap.id,
-          absoluteFees: actualFeesUsed,
+          absoluteFees: swap.fees!.claimFee!,
           bitcoinClaimAddress: finalClaimAddress,
           cooperate: false,
         );
@@ -537,7 +546,7 @@ class SwapWatcherService {
         receiveAddress: finalClaimAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
+        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
@@ -553,6 +562,9 @@ class SwapWatcherService {
 
   Future<void> _claimChainBitcoinToLiquid({required ChainSwap swap}) async {
     try {
+      if (swap.receiveTxid != null) {
+        return;
+      }
       String finalClaimAddress;
       if (swap.receiveWalletId != null) {
         if (swap.receiveAddress != null) {
@@ -585,14 +597,13 @@ class SwapWatcherService {
       }
 
       String claimTxid;
-      int actualFeesUsed = swap.fees!.claimFee!;
       log.info(
         '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
       try {
         claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: actualFeesUsed,
+          absoluteFees: swap.fees!.claimFee!,
           liquidClaimAddress: finalClaimAddress,
         );
         log.info(
@@ -604,10 +615,9 @@ class SwapWatcherService {
           error: e,
           trace: st,
         );
-        actualFeesUsed += 21;
         claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
           swapId: swap.id,
-          absoluteFees: actualFeesUsed,
+          absoluteFees: swap.fees!.claimFee!,
           liquidClaimAddress: finalClaimAddress,
           cooperate: false,
         );
@@ -620,7 +630,7 @@ class SwapWatcherService {
         receiveAddress: finalClaimAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
+        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee!),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
@@ -636,6 +646,9 @@ class SwapWatcherService {
 
   Future<void> _refundChainLiquidToBitcoin({required ChainSwap swap}) async {
     try {
+      if (swap.refundTxid != null) {
+        return;
+      }
       String refundAddress;
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;
@@ -719,6 +732,9 @@ class SwapWatcherService {
 
   Future<void> _refundChainBitcoinToLiquid({required ChainSwap swap}) async {
     try {
+      if (swap.refundTxid != null) {
+        return;
+      }
       String refundAddress;
       if (swap.refundAddress != null) {
         refundAddress = swap.refundAddress!;

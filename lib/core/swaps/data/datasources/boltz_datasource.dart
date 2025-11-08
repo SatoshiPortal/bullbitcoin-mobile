@@ -97,7 +97,7 @@ class BoltzDatasource {
         return swap_entity.SwapFees(
           boltzPercent: fees.lbtcFees.percentage as double?,
           lockupFee: fees.lbtcFees.userLockup.toInt() as int?,
-          claimFee: fees.lbtcFees.userClaim.toInt() as int?,
+          claimFee: (fees.lbtcFees.userClaim.toInt() as int?) ?? 0 + 3,
           serverNetworkFees: fees.lbtcFees.server.toInt() as int?,
         );
       case swap_entity.SwapType.liquidToBitcoin:

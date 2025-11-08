@@ -474,6 +474,42 @@ class BoltzSwapRepository {
     return _boltz.storage.store(SwapModel.fromEntity(swap));
   }
 
+  /// Update claimFee to a specific value
+  Future<void> updateClaimFee({
+    required String swapId,
+    required int claimFee,
+  }) async {
+    final swapModel = await _boltz.storage.fetch(swapId);
+    if (swapModel == null) {
+      throw "No swap model found";
+    }
+
+    final swap = swapModel.toEntity();
+    final updatedSwap = swap.copyWith(
+      fees: swap.fees?.copyWith(claimFee: claimFee),
+    );
+
+    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
+  }
+
+  /// Update lockupFee to a specific value
+  Future<void> updateLockupFee({
+    required String swapId,
+    required int lockupFee,
+  }) async {
+    final swapModel = await _boltz.storage.fetch(swapId);
+    if (swapModel == null) {
+      throw "No swap model found";
+    }
+
+    final swap = swapModel.toEntity();
+    final updatedSwap = swap.copyWith(
+      fees: swap.fees?.copyWith(lockupFee: lockupFee),
+    );
+
+    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
+  }
+
   Future<void> reinitializeStreamWithSwaps({
     required List<String> swapIds,
   }) async {

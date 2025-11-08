@@ -221,7 +221,9 @@ class TxListItem extends StatelessWidget {
                       ),
                     ],
                   )
-                else if (tx.walletTransaction?.isConfirmed ?? false)
+                else if (tx.isSwap &&
+                    (tx.swap?.completionTime != null ||
+                        tx.swap?.status == SwapStatus.completed))
                   Row(
                     children: [
                       BBText(
@@ -238,7 +240,25 @@ class TxListItem extends StatelessWidget {
                       ),
                     ],
                   )
-                else if (date != null && (tx.isSwap || isOrderType))
+                else if (!tx.isSwap &&
+                    (tx.walletTransaction?.isConfirmed ?? false))
+                  Row(
+                    children: [
+                      BBText(
+                        date ?? '',
+                        style: context.font.labelSmall?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                      ),
+                      const Gap(4.0),
+                      Icon(
+                        Icons.check_circle,
+                        size: 12.0,
+                        color: context.colour.inverseSurface,
+                      ),
+                    ],
+                  )
+                else if (date != null && isOrderType)
                   Row(
                     children: [
                       BBText(

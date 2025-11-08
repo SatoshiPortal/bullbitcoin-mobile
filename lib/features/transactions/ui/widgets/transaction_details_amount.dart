@@ -13,9 +13,9 @@ class TransactionDetailsAmount extends StatelessWidget {
     final tx = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
     );
-    final isLnSwap = tx?.isLnSwap ?? false;
+    final isSwap = tx?.isSwap ?? false;
     final isOrder = tx?.isOrder ?? false;
-    final amountSat = isLnSwap ? tx?.swap?.amountSat : tx?.amountSat;
+    final amountSat = isSwap ? tx?.swap?.receiveableAmount : tx?.amountSat;
     final orderAmountAndCurrency = tx?.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =
         isOrder &&

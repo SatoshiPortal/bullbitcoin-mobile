@@ -529,12 +529,34 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
+          if (swap.spendableAmount != null)
+            CommonInfoRow(
+              title: 'You will Send',
+              details: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  CurrencyText(
+                    swap.spendableAmount!,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+          if (swap.spendableAmount != null) _divider(context),
           CommonInfoRow(
-            title: 'Amount',
+            title: 'You will Receive',
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
+                if (swap.receiveableAmount != null)
+                  CurrencyText(
+                    swap.receiveableAmount!,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                  )
+                else
+                  BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
               ],
             ),
           ),
