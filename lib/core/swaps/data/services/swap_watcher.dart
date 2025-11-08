@@ -149,6 +149,9 @@ class SwapWatcherService {
   Future<void> _claimReceiveLnToBitcoin({required LnReceiveSwap swap}) async {
     try {
       if (swap.receiveTxid != null) {
+        log.info(
+          '{"swapId": "${swap.id}", "function": "_claimReceiveLnToBitcoin", "action": "aborting_already_has_receiveTxid", "receiveTxid": "${swap.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        );
         return;
       }
       final receiveAddress = swap.receiveAddress;
@@ -180,7 +183,7 @@ class SwapWatcherService {
         receiveAddress: swap.receiveAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee!),
+        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
@@ -197,6 +200,9 @@ class SwapWatcherService {
   Future<void> _claimReceiveLnToLiquid({required LnReceiveSwap swap}) async {
     try {
       if (swap.receiveTxid != null) {
+        log.info(
+          '{"swapId": "${swap.id}", "function": "_claimReceiveLnToLiquid", "action": "aborting_already_has_receiveTxid", "receiveTxid": "${swap.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        );
         return;
       }
       final receiveAddress = swap.receiveAddress;
@@ -237,7 +243,7 @@ class SwapWatcherService {
         receiveAddress: receiveAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee!),
+        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
@@ -313,6 +319,9 @@ class SwapWatcherService {
   Future<void> _refundSendLiquidToLn({required LnSendSwap swap}) async {
     try {
       if (swap.refundTxid != null) {
+        log.info(
+          '{"swapId": "${swap.id}", "function": "_refundSendLiquidToLn", "action": "aborting_already_has_refundTxid", "refundTxid": "${swap.refundTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        );
         return;
       }
       String refundAddress;
@@ -397,6 +406,9 @@ class SwapWatcherService {
   Future<void> _refundSendBitcoinToLn({required LnSendSwap swap}) async {
     try {
       if (swap.refundTxid != null) {
+        log.info(
+          '{"swapId": "${swap.id}", "function": "_refundSendBitcoinToLn", "action": "aborting_already_has_refundTxid", "refundTxid": "${swap.refundTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        );
         return;
       }
       String refundAddress;
@@ -482,6 +494,9 @@ class SwapWatcherService {
   Future<void> _claimChainLiquidToBitcoin({required ChainSwap swap}) async {
     try {
       if (swap.receiveTxid != null) {
+        log.info(
+          '{"swapId": "${swap.id}", "function": "_claimChainLiquidToBitcoin", "action": "aborting_already_has_receiveTxid", "receiveTxid": "${swap.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        );
         return;
       }
       String finalClaimAddress;
@@ -563,6 +578,9 @@ class SwapWatcherService {
   Future<void> _claimChainBitcoinToLiquid({required ChainSwap swap}) async {
     try {
       if (swap.receiveTxid != null) {
+        log.info(
+          '{"swapId": "${swap.id}", "function": "_claimChainBitcoinToLiquid", "action": "aborting_already_has_receiveTxid", "receiveTxid": "${swap.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        );
         return;
       }
       String finalClaimAddress;
@@ -630,7 +648,7 @@ class SwapWatcherService {
         receiveAddress: finalClaimAddress,
         status: SwapStatus.completed,
         completionTime: DateTime.now(),
-        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee!),
+        fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
@@ -647,6 +665,9 @@ class SwapWatcherService {
   Future<void> _refundChainLiquidToBitcoin({required ChainSwap swap}) async {
     try {
       if (swap.refundTxid != null) {
+        log.info(
+          '{"swapId": "${swap.id}", "function": "_refundChainLiquidToBitcoin", "action": "aborting_already_has_refundTxid", "refundTxid": "${swap.refundTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        );
         return;
       }
       String refundAddress;
@@ -733,6 +754,9 @@ class SwapWatcherService {
   Future<void> _refundChainBitcoinToLiquid({required ChainSwap swap}) async {
     try {
       if (swap.refundTxid != null) {
+        log.info(
+          '{"swapId": "${swap.id}", "function": "_refundChainBitcoinToLiquid", "action": "aborting_already_has_refundTxid", "refundTxid": "${swap.refundTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        );
         return;
       }
       String refundAddress;

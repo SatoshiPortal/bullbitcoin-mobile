@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -52,6 +53,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     required BroadcastBitcoinTransactionUsecase broadcastBitcoinTxUsecase,
     required BroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase,
     required UpdatePaidChainSwapUsecase updatePaidChainSwapUsecase,
+    required UpdateSendSwapLockupFeesUsecase updateSendSwapLockupFeesUsecase,
   }) : _getSettingsUsecase = getSettingsUsecase,
        _getWalletsUsecase = getWalletsUsecase,
        _getSwapLimitsUsecase = getSwapLimitsUsecase,
@@ -69,6 +71,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
        _broadcastBitcoinTxUsecase = broadcastBitcoinTxUsecase,
        _broadcastLiquidTxUsecase = broadcastLiquidTxUsecase,
        _updatePaidChainSwapUsecase = updatePaidChainSwapUsecase,
+       _updateSendSwapLockupFeesUsecase = updateSendSwapLockupFeesUsecase,
        super(const TransferState()) {
     on<TransferStarted>(_onStarted);
     on<TransferWalletsChanged>(_onWalletsChanged);
@@ -94,6 +97,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
   final UpdatePaidChainSwapUsecase _updatePaidChainSwapUsecase;
+  final UpdateSendSwapLockupFeesUsecase _updateSendSwapLockupFeesUsecase;
 
   @override
   Future<void> close() async {
@@ -262,6 +266,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
               psbt: signedPsbtAndTxSize.signedPsbt,
               feeRate: state.bitcoinNetworkFees!.fastest.value as double,
             );
+        final settings = await _getSettingsUsecase.execute();
+        final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
+          swapId: swap.id,
+          network: Network.fromEnvironment(
+            isTestnet: settings.environment == Environment.testnet,
+            isLiquid: false,
+          ),
+          lockupFees: bitcoinAbsoluteFeesSat,
+        );
+        swap = updatedSwap as ChainSwap;
+        emit(
+          state.copyWith(
+            swap: swap,
+            signedPsbt: signedPsbt,
+            bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
+          ),
+        );
       } else if (state.fromWallet?.isLiquid == true &&
           state.toWallet?.isLiquid == false) {
         final liquidWalletId = state.fromWallet!.id;
@@ -286,6 +307,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         );
         liquidAbsoluteFeesSat = await _calculateLiquidAbsoluteFeesUsecase
             .execute(pset: signedPsbt);
+        final settings = await _getSettingsUsecase.execute();
+        final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
+          swapId: swap.id,
+          network: Network.fromEnvironment(
+            isTestnet: settings.environment == Environment.testnet,
+            isLiquid: true,
+          ),
+          lockupFees: liquidAbsoluteFeesSat,
+        );
+        swap = updatedSwap as ChainSwap;
+        emit(
+          state.copyWith(
+            swap: swap,
+            signedPsbt: signedPsbt,
+            liquidAbsoluteFeesSat: liquidAbsoluteFeesSat,
+          ),
+        );
       } else {
         throw SwapCreationException(
           'From and To wallets must be of different types',

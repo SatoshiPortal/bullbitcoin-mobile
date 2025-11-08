@@ -861,8 +861,14 @@ class BoltzDatasource {
         (event) async {
           final swapId = event.id;
           final boltzStatus = event.status;
+          // wait for 5 seconds to avoid race conditions
           log.info(
             '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "websocket_event_received", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          );
+          await Future.delayed(const Duration(seconds: 5));
+
+          log.info(
+            '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "websocket_event_delayed", "timestamp": "${DateTime.now().toIso8601String()}"}',
           );
           try {
             final swapModel = await _boltzStore.fetch(swapId);
@@ -906,6 +912,9 @@ class BoltzDatasource {
                     status: swap_entity.SwapStatus.canCoop.name,
                     completionTime: DateTime.now().millisecondsSinceEpoch,
                   );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "invoicePaid", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                  );
                 }
                 // we want the completion time to be set when the invoice is paid
                 // the swap is still not completed as we need to coop close
@@ -916,6 +925,9 @@ class BoltzDatasource {
                 if (swapModel is LnSendSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.canCoop.name,
+                  );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "txnClaimPending", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
                   );
                 }
 
@@ -929,6 +941,9 @@ class BoltzDatasource {
                     status: swap_entity.SwapStatus.completed.name,
                     completionTime: DateTime.now().millisecondsSinceEpoch,
                   );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "invoiceSettled", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                  );
                 }
 
               case SwapStatus.invoiceFailedToPay:
@@ -941,6 +956,9 @@ class BoltzDatasource {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.refundable.name,
                   );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "invoiceFailedToPay", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                  );
                 }
 
               case SwapStatus.txnMempool:
@@ -951,10 +969,16 @@ class BoltzDatasource {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.claimable.name,
                     );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                    );
                   }
                   if (type == swap_entity.SwapType.lightningToBitcoin.name) {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.paid.name,
+                    );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
                     );
                   }
                 }
@@ -962,10 +986,16 @@ class BoltzDatasource {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.paid.name,
                   );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "ChainSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                  );
                 }
                 if (swapModel is LnSendSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.paid.name,
+                  );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnSendSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
                   );
                 }
 
@@ -974,6 +1004,9 @@ class BoltzDatasource {
                 if (swapModel is LnReceiveSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.claimable.name,
+                  );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "txnConfirmed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
                   );
                 }
 
@@ -984,10 +1017,16 @@ class BoltzDatasource {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.claimable.name,
                     );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "txnClaimed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "ChainSwap", "receiveTxid": null, "timestamp": "${DateTime.now().toIso8601String()}"}',
+                    );
                   } else if (swapModel.receiveTxid != null) {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.completed.name,
                       completionTime: DateTime.now().millisecondsSinceEpoch,
+                    );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "txnClaimed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "ChainSwap", "receiveTxid": "${swapModel.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
                     );
                   }
                 }
@@ -995,6 +1034,9 @@ class BoltzDatasource {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.completed.name,
                     completionTime: DateTime.now().millisecondsSinceEpoch,
+                  );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "txnClaimed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnSendSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
                   );
                 }
 
@@ -1011,17 +1053,26 @@ class BoltzDatasource {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.refundable.name,
                     );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "txnRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                    );
                   } else {
                     // Already refunded, mark as completed
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.completed.name,
                       completionTime: DateTime.now().millisecondsSinceEpoch,
                     );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "txnRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                    );
                   }
                 } else if (swapModel is LnReceiveSwapModel) {
                   // For reverse swaps, this means failure
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.failed.name,
+                  );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "txnRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnReceiveSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
                   );
                 }
 
@@ -1044,9 +1095,15 @@ class BoltzDatasource {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.refundable.name,
                     );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                    );
                   } else {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.failed.name,
+                    );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
                     );
                   }
                 }
@@ -1070,14 +1127,23 @@ class BoltzDatasource {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.refundable.name,
                     );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                    );
                   } else {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.expired.name,
+                    );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
                     );
                   }
                 } else if (swapModel is LnReceiveSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.expired.name,
+                  );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnReceiveSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
                   );
                 }
 
@@ -1093,10 +1159,16 @@ class BoltzDatasource {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.refundable.name,
                     );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "swapRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                    );
                   } else {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.completed.name,
                       completionTime: DateTime.now().millisecondsSinceEpoch,
+                    );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "swapRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
                     );
                   }
                 }
@@ -1119,14 +1191,23 @@ class BoltzDatasource {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.refundable.name,
                     );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "swapError", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+                    );
                   } else {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.failed.name,
+                    );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "swapError", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
                     );
                   }
                 } else {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.failed.name,
+                  );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "swapError", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
                   );
                 }
 
@@ -1137,6 +1218,9 @@ class BoltzDatasource {
                   final type = swapModel.type;
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.paid.name,
+                  );
+                  log.info(
+                    '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
                   );
                   // For liquid swaps, mempool is enough, BTC needs confirmation
                   final isLiquid =
@@ -1149,6 +1233,9 @@ class BoltzDatasource {
                   if (isMempoolEnough || isConfirmed) {
                     updatedSwapModel = swapModel.copyWith(
                       status: swap_entity.SwapStatus.claimable.name,
+                    );
+                    log.info(
+                      '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
                     );
                   }
                 }

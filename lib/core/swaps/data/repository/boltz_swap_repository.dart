@@ -368,14 +368,36 @@ class BoltzSwapRepository {
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
         // add server lockupfees for chain swaps
-        fees: swap.fees?.copyWith(
-          lockupFee: (swap.fees?.lockupFee ?? 0) + absoluteFees,
-        ),
+        fees: swap.fees?.copyWith(lockupFee: absoluteFees),
       ),
       _ => throw "Only lnSend or chain swaps can be marked as paid",
     };
 
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
+  }
+
+  Future<Swap> updateSendSwapLockupFees({
+    required String swapId,
+    required int lockupFees,
+  }) async {
+    final swapModel = await _boltz.storage.fetch(swapId);
+    if (swapModel == null) {
+      throw "No swap model found";
+    }
+
+    final swap = swapModel.toEntity();
+    final updatedSwap = switch (swap) {
+      LnSendSwap() => swap.copyWith(
+        fees: swap.fees?.copyWith(lockupFee: lockupFees),
+      ),
+      ChainSwap() => swap.copyWith(
+        fees: swap.fees?.copyWith(lockupFee: lockupFees),
+      ),
+      _ => throw "Only lnSend or chain swaps can have lockup fees updated",
+    };
+
+    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
+    return updatedSwap;
   }
 
   /// PRIVATE

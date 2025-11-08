@@ -360,6 +360,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
   @override
   Widget build(BuildContext context) {
     final fees = widget.fees;
+    final lockupFee = fees?.lockupFee;
     final total = fees?.totalFees(null) ?? 0;
     return Padding(
       padding: const EdgeInsets.only(top: 4),
@@ -405,8 +406,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
             Column(
               children: [
                 const Gap(4),
-                if (fees.lockupFee != null)
-                  _feeRow(context, 'Lockup', fees.lockupFee!),
+                if (lockupFee != null) _feeRow(context, 'Lockup', lockupFee),
                 if (fees.claimFee != null)
                   _feeRow(context, 'Claim', fees.claimFee!),
                 if (fees.serverNetworkFees != null)
@@ -434,6 +434,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
     required this.formattedBitcoinAmount,
     required this.swap,
     required this.absoluteFeesFormatted,
+    this.absoluteFees,
   });
   final String sendWalletLabel;
   final String? receiveWalletLabel;
@@ -441,6 +442,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
   final String formattedBitcoinAmount;
   final Swap swap;
   final String absoluteFeesFormatted;
+  final int? absoluteFees;
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.colour.secondaryFixedDim);
   }

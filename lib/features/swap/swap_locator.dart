@@ -3,10 +3,13 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_trans
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -59,6 +62,19 @@ class SwapLocator {
         liquidWalletRepository: locator<LiquidWalletRepository>(),
       ),
     );
+    locator.registerFactory<UpdateSendSwapLockupFeesUsecase>(
+      () => UpdateSendSwapLockupFeesUsecase(
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        swapRepositoryTestnet: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
+        ),
+      ),
+    );
   }
 
   static void registerBlocs() {
@@ -83,6 +99,8 @@ class SwapLocator {
             locator<BroadcastBitcoinTransactionUsecase>(),
         broadcastLiquidTxUsecase: locator<BroadcastLiquidTransactionUsecase>(),
         updatePaidChainSwapUsecase: locator<UpdatePaidChainSwapUsecase>(),
+        updateSendSwapLockupFeesUsecase:
+            locator<UpdateSendSwapLockupFeesUsecase>(),
       ),
     );
   }

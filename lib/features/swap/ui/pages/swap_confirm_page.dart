@@ -33,6 +33,9 @@ class SwapConfirmPage extends StatelessWidget {
     final absoluteFeesFormatted = context.select(
       (TransferBloc bloc) => bloc.state.absoluteFeesFormatted,
     );
+    final absoluteFees = context.select(
+      (TransferBloc bloc) => bloc.state.absoluteFees,
+    );
     final isConfirming = context.select(
       (TransferBloc bloc) => bloc.state.isConfirming,
     );
@@ -68,6 +71,7 @@ class SwapConfirmPage extends StatelessWidget {
                 formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
                 swap: swap,
                 absoluteFeesFormatted: absoluteFeesFormatted,
+                absoluteFees: absoluteFees,
               ),
               const Spacer(),
               // const _Warning(),
