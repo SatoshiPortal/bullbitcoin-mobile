@@ -14,6 +14,7 @@ class BoltzDatasource {
   late BoltzWebSocket _boltzWebSocket;
   final BoltzStorageDatasource _boltzStore;
   final Set<String> _subscribedSwapIds = {};
+  final Map<String, Timer> _pendingSwapEventTimers = {};
 
   final StreamController<SwapModel> _swapUpdatesController =
       StreamController<SwapModel>.broadcast();
@@ -136,6 +137,7 @@ class BoltzDatasource {
         boltzUrl: _httpsUrl,
         outAddress: magicRouteHintAddress,
         description: description,
+        referralId: ApiServiceConstants.boltzReferralId,
       );
       await _boltzStore.storeBtcLnSwap(btcLnSwap);
       final swapModel = SwapModel.lnReceive(
@@ -212,6 +214,7 @@ class BoltzDatasource {
         boltzUrl: _httpsUrl,
         outAddress: magicRouteHintAddress,
         description: description,
+        referralId: ApiServiceConstants.boltzReferralId,
       );
 
       await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
@@ -328,6 +331,7 @@ class BoltzDatasource {
         network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
         electrumUrl: electrumUrl,
         boltzUrl: _httpsUrl,
+        referralId: ApiServiceConstants.boltzReferralId,
       );
 
       await _boltzStore.storeBtcLnSwap(btcLnSwap);
@@ -385,6 +389,7 @@ class BoltzDatasource {
         network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
         electrumUrl: electrumUrl,
         boltzUrl: _httpsUrl,
+        referralId: ApiServiceConstants.boltzReferralId,
       );
 
       await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
@@ -521,6 +526,7 @@ class BoltzDatasource {
         isTestnet: isTestnet,
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
+        referralId: ApiServiceConstants.boltzReferralId,
       );
 
       await _boltzStore.storeChainSwap(chainSwap);
@@ -539,7 +545,7 @@ class BoltzDatasource {
         boltzFees:
             (chainFees.lbtcFees.percentage * amountSat / 100).ceil() as int?,
         lockupFees: chainFees.lbtcFees.userLockup.toInt() as int?,
-        claimFees: chainFees.lbtcFees.userClaim.toInt() as int?,
+        claimFees: (chainFees.lbtcFees.userClaim.toInt() as int?) ?? 0 + 3,
         serverNetworkFees: chainFees.lbtcFees.server.toInt() as int?,
       );
       await _boltzStore.store(swapModel);
@@ -580,6 +586,7 @@ class BoltzDatasource {
         isTestnet: isTestnet,
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
+        referralId: ApiServiceConstants.boltzReferralId,
       );
 
       await _boltzStore.storeChainSwap(chainSwap);
@@ -853,420 +860,481 @@ class BoltzDatasource {
   //   return size.toInt();
   // }
 
+  bool _swapNeedsProcessing(SwapModel swapModel) {
+    final status = swap_entity.SwapStatus.values.firstWhere(
+      (s) => s.name == swapModel.status,
+      orElse: () => swap_entity.SwapStatus.pending,
+    );
+
+    switch (status) {
+      case swap_entity.SwapStatus.claimable:
+        if (swapModel is LnReceiveSwapModel) {
+          return swapModel.receiveTxid == null;
+        } else if (swapModel is ChainSwapModel) {
+          return swapModel.receiveTxid == null;
+        }
+        return false;
+
+      case swap_entity.SwapStatus.refundable:
+        if (swapModel is LnSendSwapModel) {
+          return swapModel.refundTxid == null;
+        } else if (swapModel is ChainSwapModel) {
+          return swapModel.refundTxid == null;
+        }
+        return false;
+
+      case swap_entity.SwapStatus.canCoop:
+        return true;
+
+      default:
+        return false;
+    }
+  }
+
   void _initializeBoltzWebSocket() {
     try {
       _boltzWebSocket = BoltzWebSocket.create(_baseUrl);
 
       _boltzWebSocket.stream.listen(
-        (event) async {
+        (event) {
           final swapId = event.id;
           final boltzStatus = event.status;
-          // wait for 5 seconds to avoid race conditions
-          log.info(
+
+          log.fine(
             '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "websocket_event_received", "timestamp": "${DateTime.now().toIso8601String()}"}',
           );
-          await Future.delayed(const Duration(seconds: 5));
 
-          log.info(
-            '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "websocket_event_delayed", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          _pendingSwapEventTimers[swapId]?.cancel();
+
+          _pendingSwapEventTimers[swapId] = Timer(
+            const Duration(seconds: 2),
+            () => _processWebSocketEvent(swapId, boltzStatus),
           );
-          try {
-            final swapModel = await _boltzStore.fetch(swapId);
-            if (swapModel == null) {
-              log.info('No swap found for id: $swapId');
-              return;
-            }
-            // Check if swap is already in terminal state
-            final swapCompleted =
-                swapModel.status == swap_entity.SwapStatus.completed.name;
-            final swapFailed =
-                swapModel.status == swap_entity.SwapStatus.failed.name;
-            final swapExpired =
-                swapModel.status == swap_entity.SwapStatus.expired.name;
-            // final isLnSwap =
-            //     swapModel is LnSendSwapModel || swapModel is LnReceiveSwapModel;
-            // final chainSwapCompleted =
-            //     swapModel is ChainSwapModel &&
-            //     (swapModel.receiveTxid != null) &&
-            //     swapCompleted;
-
-            if (swapCompleted || swapFailed || swapExpired) {
-              log.info(
-                '{"swapId": "$swapId", "status": "${swapModel.status}", "function": "_initializeBoltzWebSocket", "action": "added_to_stream_controller_terminal", "timestamp": "${DateTime.now().toIso8601String()}"}',
-              );
-              _swapUpdatesController.add(swapModel);
-              return unsubscribeToSwaps([swapId]);
-            }
-            // Process the event
-            SwapModel? updatedSwapModel;
-            switch (boltzStatus) {
-              case SwapStatus.swapCreated:
-              case SwapStatus.invoiceSet:
-              case SwapStatus.invoicePending:
-              case SwapStatus.minerfeePaid:
-                // No action needed for these status updates
-                return;
-              case SwapStatus.invoicePaid:
-                if (swapModel is LnSendSwapModel) {
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.canCoop.name,
-                    completionTime: DateTime.now().millisecondsSinceEpoch,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "invoicePaid", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                }
-                // we want the completion time to be set when the invoice is paid
-                // the swap is still not completed as we need to coop close
-                return;
-
-              case SwapStatus.txnClaimPending:
-                // Handle cooperative closing for submarine swaps
-                if (swapModel is LnSendSwapModel) {
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.canCoop.name,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "txnClaimPending", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                }
-
-              case SwapStatus.invoiceSettled:
-                // Invoice settled for reverse swaps
-                if (swapModel is LnReceiveSwapModel) {
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "invoiceSettled", "function": "_initializeBoltzWebSocket", "action": "marking_completed", "currentStatus": "${swapModel.status}", "receiveTxid": "${swapModel.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.completed.name,
-                    completionTime: DateTime.now().millisecondsSinceEpoch,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "invoiceSettled", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                }
-
-              case SwapStatus.invoiceFailedToPay:
-                // Failed submarine swap
-                final submarineLockupPaid =
-                    swapModel is LnSendSwapModel && swapModel.sendTxid != null;
-                final hasRefunded =
-                    (swapModel as LnSendSwapModel).refundTxid != null;
-                if (submarineLockupPaid && !hasRefunded) {
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.refundable.name,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "invoiceFailedToPay", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                }
-
-              case SwapStatus.txnMempool:
-                // For reverse swaps on Liquid, no confirmation needed
-                if (swapModel is LnReceiveSwapModel) {
-                  final type = swapModel.type;
-                  if (type == swap_entity.SwapType.lightningToLiquid.name) {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.claimable.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  }
-                  if (type == swap_entity.SwapType.lightningToBitcoin.name) {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.paid.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  }
-                }
-                if (swapModel is ChainSwapModel) {
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.paid.name,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "ChainSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                }
-                if (swapModel is LnSendSwapModel) {
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.paid.name,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnSendSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                }
-
-              case SwapStatus.txnConfirmed:
-                // For reverse swaps on Bitcoin or chain swaps
-                if (swapModel is LnReceiveSwapModel) {
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.claimable.name,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "txnConfirmed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                }
-
-              case SwapStatus.txnClaimed:
-                // Swap has been claimed successfully
-                if (swapModel is ChainSwapModel) {
-                  if (swapModel.receiveTxid == null) {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.claimable.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "txnClaimed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "ChainSwap", "receiveTxid": null, "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  } else if (swapModel.receiveTxid != null) {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.completed.name,
-                      completionTime: DateTime.now().millisecondsSinceEpoch,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "txnClaimed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "ChainSwap", "receiveTxid": "${swapModel.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  }
-                }
-                if (swapModel is LnSendSwapModel) {
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.completed.name,
-                    completionTime: DateTime.now().millisecondsSinceEpoch,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "txnClaimed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnSendSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                }
-
-              case SwapStatus.txnRefunded:
-                // Check if this swap needs to be refunded (no refundTxid)
-                if (swapModel is ChainSwapModel ||
-                    swapModel is LnSendSwapModel) {
-                  final refunded =
-                      swapModel is ChainSwapModel
-                          ? swapModel.refundTxid != null
-                          : (swapModel as LnSendSwapModel).refundTxid != null;
-
-                  if (!refunded) {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.refundable.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "txnRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  } else {
-                    // Already refunded, mark as completed
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.completed.name,
-                      completionTime: DateTime.now().millisecondsSinceEpoch,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "txnRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  }
-                } else if (swapModel is LnReceiveSwapModel) {
-                  // For reverse swaps, this means failure
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.failed.name,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "txnRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnReceiveSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                }
-
-              case SwapStatus.txnLockupFailed:
-              case SwapStatus.txnFailed:
-                // Transaction failed - check if refundable
-                if (swapModel is ChainSwapModel ||
-                    swapModel is LnSendSwapModel) {
-                  final hasSentFunds =
-                      swapModel is ChainSwapModel
-                          ? swapModel.sendTxid != null
-                          : (swapModel as LnSendSwapModel).sendTxid != null;
-
-                  final hasRefunded =
-                      swapModel is ChainSwapModel
-                          ? swapModel.refundTxid != null
-                          : (swapModel as LnSendSwapModel).refundTxid != null;
-
-                  if (hasSentFunds && !hasRefunded) {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.refundable.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  } else {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.failed.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  }
-                }
-
-              case SwapStatus.swapExpired:
-              case SwapStatus.invoiceExpired:
-                // Check if funds were sent but not refunded
-                if (swapModel is ChainSwapModel ||
-                    swapModel is LnSendSwapModel) {
-                  final hasSentFunds =
-                      swapModel is ChainSwapModel
-                          ? swapModel.sendTxid != null
-                          : (swapModel as LnSendSwapModel).sendTxid != null;
-
-                  final hasRefunded =
-                      swapModel is ChainSwapModel
-                          ? swapModel.refundTxid != null
-                          : (swapModel as LnSendSwapModel).refundTxid != null;
-
-                  if (hasSentFunds && !hasRefunded) {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.refundable.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  } else {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.expired.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  }
-                } else if (swapModel is LnReceiveSwapModel) {
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.expired.name,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnReceiveSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                }
-
-              case SwapStatus.swapRefunded:
-                if (swapModel is ChainSwapModel ||
-                    swapModel is LnSendSwapModel) {
-                  final hasRefunded =
-                      swapModel is ChainSwapModel
-                          ? swapModel.refundTxid != null
-                          : (swapModel as LnSendSwapModel).refundTxid != null;
-
-                  if (!hasRefunded) {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.refundable.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "swapRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  } else {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.completed.name,
-                      completionTime: DateTime.now().millisecondsSinceEpoch,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "swapRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  }
-                }
-
-              case SwapStatus.swapError:
-                // Handle error states
-                if (swapModel is ChainSwapModel ||
-                    swapModel is LnSendSwapModel) {
-                  final hasSentFunds =
-                      swapModel is ChainSwapModel
-                          ? swapModel.sendTxid != null
-                          : (swapModel as LnSendSwapModel).sendTxid != null;
-
-                  final hasRefunded =
-                      swapModel is ChainSwapModel
-                          ? swapModel.refundTxid != null
-                          : (swapModel as LnSendSwapModel).refundTxid != null;
-
-                  if (hasSentFunds && !hasRefunded) {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.refundable.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "swapError", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  } else {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.failed.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "swapError", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  }
-                } else {
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.failed.name,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "swapError", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                }
-
-              case SwapStatus.txnServerMempool:
-              case SwapStatus.txnServerConfirmed:
-                // Handle server-side transaction states
-                if (swapModel is ChainSwapModel) {
-                  final type = swapModel.type;
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.paid.name,
-                  );
-                  log.info(
-                    '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                  );
-                  // For liquid swaps, mempool is enough, BTC needs confirmation
-                  final isLiquid =
-                      type == swap_entity.SwapType.bitcoinToLiquid.name;
-                  final isMempoolEnough =
-                      isLiquid && boltzStatus == SwapStatus.txnServerMempool;
-                  final isConfirmed =
-                      boltzStatus == SwapStatus.txnServerConfirmed;
-
-                  if (isMempoolEnough || isConfirmed) {
-                    updatedSwapModel = swapModel.copyWith(
-                      status: swap_entity.SwapStatus.claimable.name,
-                    );
-                    log.info(
-                      '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
-                    );
-                  }
-                }
-            }
-
-            // Update storage and emit event if status changed
-            if (updatedSwapModel != null) {
-              await _boltzStore.store(updatedSwapModel);
-              log.info(
-                'Updated swap $swapId from ${swapModel.status} to ${updatedSwapModel.status}',
-              );
-              log.info(
-                '{"swapId": "$swapId", "status": "${updatedSwapModel.status}", "function": "_initializeBoltzWebSocket", "action": "added_to_stream_controller", "timestamp": "${DateTime.now().toIso8601String()}"}',
-              );
-              _swapUpdatesController.add(updatedSwapModel);
-            }
-          } catch (e) {
-            log.info('Error processing swap status update: $e');
-          }
         },
         onError: (error) {
-          log.info('Boltz WebSocket error: $error');
+          log.fine('Boltz WebSocket error: $error');
           _swapUpdatesController.addError(error.toString());
         },
         onDone: () {},
       );
 
-      log.info('Started Boltz WebSocket');
+      log.fine('Started Boltz WebSocket');
     } catch (e) {
-      log.info('Error initializing BoltzWebSocket: $e');
-      // Don't rethrow here to allow for graceful recovery
+      log.fine('Error initializing BoltzWebSocket: $e');
+    }
+  }
+
+  Future<void> _processWebSocketEvent(
+    String swapId,
+    SwapStatus boltzStatus,
+  ) async {
+    _pendingSwapEventTimers.remove(swapId);
+
+    log.fine(
+      '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_processWebSocketEvent", "action": "processing_after_debounce", "timestamp": "${DateTime.now().toIso8601String()}"}',
+    );
+
+    try {
+      final swapModel = await _boltzStore.fetch(swapId);
+      if (swapModel == null) {
+        log.fine('No swap found for id: $swapId');
+        return;
+      }
+
+      final isPending = swapModel.status == swap_entity.SwapStatus.pending.name;
+      if (isPending) {
+        final creationTime = DateTime.fromMillisecondsSinceEpoch(
+          swapModel.creationTime,
+        );
+        final age = DateTime.now().difference(creationTime);
+        if (age.inMinutes > 10) {
+          log.fine(
+            '{"swapId": "$swapId", "status": "${swapModel.status}", "function": "_processWebSocketEvent", "action": "deleting_stale_swap", "ageMinutes": ${age.inMinutes}, "timestamp": "${DateTime.now().toIso8601String()}"}',
+          );
+          unsubscribeToSwaps([swapId]);
+          await _boltzStore.trash(swapId);
+          await _boltzStore.deleteFromSecureStorage(swapId);
+          return;
+        }
+      }
+
+      // Check if swap is already in terminal state
+      final swapCompleted =
+          swapModel.status == swap_entity.SwapStatus.completed.name;
+      final swapFailed = swapModel.status == swap_entity.SwapStatus.failed.name;
+      final swapExpired =
+          swapModel.status == swap_entity.SwapStatus.expired.name;
+      // final isLnSwap =
+      //     swapModel is LnSendSwapModel || swapModel is LnReceiveSwapModel;
+      // final chainSwapCompleted =
+      //     swapModel is ChainSwapModel &&
+      //     (swapModel.receiveTxid != null) &&
+      //     swapCompleted;
+
+      if (swapCompleted || swapFailed || swapExpired) {
+        log.fine(
+          '{"swapId": "$swapId", "status": "${swapModel.status}", "function": "_processWebSocketEvent", "action": "added_to_stream_controller_terminal", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        );
+        _swapUpdatesController.add(swapModel);
+        unsubscribeToSwaps([swapId]);
+        return;
+      }
+      SwapModel? updatedSwapModel;
+      switch (boltzStatus) {
+        case SwapStatus.swapCreated:
+        case SwapStatus.invoiceSet:
+        case SwapStatus.invoicePending:
+        case SwapStatus.minerfeePaid:
+          return;
+        case SwapStatus.invoicePaid:
+          if (swapModel is LnSendSwapModel) {
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.canCoop.name,
+              completionTime: DateTime.now().millisecondsSinceEpoch,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "invoicePaid", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
+          // we want the completion time to be set when the invoice is paid
+          // the swap is still not completed as we need to coop close
+          return;
+
+        case SwapStatus.txnClaimPending:
+          // Handle cooperative closing for submarine swaps
+          if (swapModel is LnSendSwapModel) {
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.canCoop.name,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "txnClaimPending", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
+
+        case SwapStatus.invoiceSettled:
+          // Invoice settled for reverse swaps
+          if (swapModel is LnReceiveSwapModel) {
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "invoiceSettled", "function": "_initializeBoltzWebSocket", "action": "marking_completed", "currentStatus": "${swapModel.status}", "receiveTxid": "${swapModel.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.completed.name,
+              completionTime: DateTime.now().millisecondsSinceEpoch,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "invoiceSettled", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
+
+        case SwapStatus.invoiceFailedToPay:
+          // Failed submarine swap
+          final submarineLockupPaid =
+              swapModel is LnSendSwapModel && swapModel.sendTxid != null;
+          final hasRefunded = (swapModel as LnSendSwapModel).refundTxid != null;
+          if (submarineLockupPaid && !hasRefunded) {
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.refundable.name,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "invoiceFailedToPay", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
+
+        case SwapStatus.txnMempool:
+          // For reverse swaps on Liquid, no confirmation needed
+          if (swapModel is LnReceiveSwapModel) {
+            final type = swapModel.type;
+            if (type == swap_entity.SwapType.lightningToLiquid.name) {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.claimable.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            }
+            if (type == swap_entity.SwapType.lightningToBitcoin.name) {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.paid.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            }
+          }
+          if (swapModel is ChainSwapModel) {
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.paid.name,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "ChainSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
+          if (swapModel is LnSendSwapModel) {
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.paid.name,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "txnMempool", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnSendSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
+
+        case SwapStatus.txnConfirmed:
+          // For reverse swaps on Bitcoin or chain swaps
+          if (swapModel is LnReceiveSwapModel) {
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.claimable.name,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "txnConfirmed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
+
+        case SwapStatus.txnClaimed:
+          // Swap has been claimed successfully
+          if (swapModel is ChainSwapModel) {
+            if (swapModel.receiveTxid == null) {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.claimable.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "txnClaimed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "ChainSwap", "receiveTxid": null, "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            } else if (swapModel.receiveTxid != null) {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.completed.name,
+                completionTime: DateTime.now().millisecondsSinceEpoch,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "txnClaimed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "ChainSwap", "receiveTxid": "${swapModel.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            }
+          }
+          if (swapModel is LnSendSwapModel) {
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.completed.name,
+              completionTime: DateTime.now().millisecondsSinceEpoch,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "txnClaimed", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnSendSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
+
+        case SwapStatus.txnRefunded:
+          // Check if this swap needs to be refunded (no refundTxid)
+          if (swapModel is ChainSwapModel || swapModel is LnSendSwapModel) {
+            final refunded =
+                swapModel is ChainSwapModel
+                    ? swapModel.refundTxid != null
+                    : (swapModel as LnSendSwapModel).refundTxid != null;
+
+            if (!refunded) {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.refundable.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "txnRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            } else {
+              // Already refunded, mark as completed
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.completed.name,
+                completionTime: DateTime.now().millisecondsSinceEpoch,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "txnRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            }
+          } else if (swapModel is LnReceiveSwapModel) {
+            // For reverse swaps, this means failure
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.failed.name,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "txnRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnReceiveSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
+
+        case SwapStatus.txnLockupFailed:
+        case SwapStatus.txnFailed:
+          // Transaction failed - check if refundable
+          if (swapModel is ChainSwapModel || swapModel is LnSendSwapModel) {
+            final hasSentFunds =
+                swapModel is ChainSwapModel
+                    ? swapModel.sendTxid != null
+                    : (swapModel as LnSendSwapModel).sendTxid != null;
+
+            final hasRefunded =
+                swapModel is ChainSwapModel
+                    ? swapModel.refundTxid != null
+                    : (swapModel as LnSendSwapModel).refundTxid != null;
+
+            if (hasSentFunds && !hasRefunded) {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.refundable.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            } else {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.failed.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            }
+          }
+
+        case SwapStatus.swapExpired:
+        case SwapStatus.invoiceExpired:
+          // Check if funds were sent but not refunded
+          if (swapModel is ChainSwapModel || swapModel is LnSendSwapModel) {
+            final hasSentFunds =
+                swapModel is ChainSwapModel
+                    ? swapModel.sendTxid != null
+                    : (swapModel as LnSendSwapModel).sendTxid != null;
+
+            final hasRefunded =
+                swapModel is ChainSwapModel
+                    ? swapModel.refundTxid != null
+                    : (swapModel as LnSendSwapModel).refundTxid != null;
+
+            if (hasSentFunds && !hasRefunded) {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.refundable.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            } else {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.expired.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            }
+          } else if (swapModel is LnReceiveSwapModel) {
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.expired.name,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "LnReceiveSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
+
+        case SwapStatus.swapRefunded:
+          if (swapModel is ChainSwapModel || swapModel is LnSendSwapModel) {
+            final hasRefunded =
+                swapModel is ChainSwapModel
+                    ? swapModel.refundTxid != null
+                    : (swapModel as LnSendSwapModel).refundTxid != null;
+
+            if (!hasRefunded) {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.refundable.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "swapRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            } else {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.completed.name,
+                completionTime: DateTime.now().millisecondsSinceEpoch,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "swapRefunded", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            }
+          }
+
+        case SwapStatus.swapError:
+          // Handle error states
+          if (swapModel is ChainSwapModel || swapModel is LnSendSwapModel) {
+            final hasSentFunds =
+                swapModel is ChainSwapModel
+                    ? swapModel.sendTxid != null
+                    : (swapModel as LnSendSwapModel).sendTxid != null;
+
+            final hasRefunded =
+                swapModel is ChainSwapModel
+                    ? swapModel.refundTxid != null
+                    : (swapModel as LnSendSwapModel).refundTxid != null;
+
+            if (hasSentFunds && !hasRefunded) {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.refundable.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "swapError", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            } else {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.failed.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "swapError", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            }
+          } else {
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.failed.name,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "swapError", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
+
+        case SwapStatus.txnServerMempool:
+        case SwapStatus.txnServerConfirmed:
+          // Handle server-side transaction states
+          if (swapModel is ChainSwapModel) {
+            final type = swapModel.type;
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.paid.name,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+            // For liquid swaps, mempool is enough, BTC needs confirmation
+            final isLiquid = type == swap_entity.SwapType.bitcoinToLiquid.name;
+            final isMempoolEnough =
+                isLiquid && boltzStatus == SwapStatus.txnServerMempool;
+            final isConfirmed = boltzStatus == SwapStatus.txnServerConfirmed;
+
+            if (isMempoolEnough || isConfirmed) {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.claimable.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "${boltzStatus.name}", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "swapType": "$type", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            }
+          }
+      }
+
+      if (updatedSwapModel != null) {
+        final statusChanged = updatedSwapModel.status != swapModel.status;
+        final needsProcessing = _swapNeedsProcessing(updatedSwapModel);
+
+        await _boltzStore.store(updatedSwapModel);
+
+        if (statusChanged || needsProcessing) {
+          log.fine(
+            'Updated swap $swapId from ${swapModel.status} to ${updatedSwapModel.status}',
+          );
+          log.fine(
+            '{"swapId": "$swapId", "status": "${updatedSwapModel.status}", "function": "_processWebSocketEvent", "action": "added_to_stream_controller", "statusChanged": $statusChanged, "needsProcessing": $needsProcessing, "timestamp": "${DateTime.now().toIso8601String()}"}',
+          );
+          _swapUpdatesController.add(updatedSwapModel);
+        } else {
+          log.fine(
+            '{"swapId": "$swapId", "status": "${updatedSwapModel.status}", "function": "_processWebSocketEvent", "action": "skipped_emission", "reason": "no_status_change_and_already_processed", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          );
+        }
+      }
+    } catch (e) {
+      log.fine('Error processing swap status update: $e');
     }
   }
 

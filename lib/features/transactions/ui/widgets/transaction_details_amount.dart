@@ -19,7 +19,7 @@ class TransactionDetailsAmount extends StatelessWidget {
         isSwap
             ? (tx?.isOutgoing == true
                 ? tx?.swap?.amountSat
-                : tx?.swap?.receiveableAmount)
+                : tx?.swap?.receivedAmount)
             : tx?.amountSat;
     final orderAmountAndCurrency = tx?.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =

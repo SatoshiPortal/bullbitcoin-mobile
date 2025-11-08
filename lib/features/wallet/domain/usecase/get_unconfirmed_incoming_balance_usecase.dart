@@ -37,7 +37,7 @@ class GetUnconfirmedIncomingBalanceUsecase {
     //   uniqueSwaps[swap.id] = swap;
     // }
     final total = filtered.fold<int>(0, (sum, s) {
-      final receiveable = s.receiveableAmount ?? 0;
+      final receiveable = s.receivedAmount ?? 0;
       return sum + receiveable;
     });
 

@@ -536,9 +536,9 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                if (swap.receiveableAmount != null)
+                if (swap.receivedAmount != null)
                   CurrencyText(
-                    swap.receiveableAmount!,
+                    swap.receivedAmount!,
                     showFiat: false,
                     style: context.font.bodyLarge,
                   )

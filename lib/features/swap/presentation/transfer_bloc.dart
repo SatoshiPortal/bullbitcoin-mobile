@@ -118,11 +118,33 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
             _getNetworkFeesUsecase.execute(isLiquid: true),
             _getNetworkFeesUsecase.execute(isLiquid: false),
           ).wait;
-      final defaultWallets =
-          wallets.where((wallet) => wallet.isDefault).toList();
+      final liquidWallets =
+          wallets
+              .where(
+                (wallet) =>
+                    wallet.isLiquid &&
+                    (wallet.isDefault || wallet.signsLocally),
+              )
+              .toList();
+      final bitcoinWallets =
+          wallets
+              .where((wallet) => !wallet.isLiquid && wallet.signsLocally)
+              .toList();
+
       final fromWallet =
-          defaultWallets.isNotEmpty ? defaultWallets.first : null;
-      final toWallet = defaultWallets.length > 1 ? defaultWallets[1] : null;
+          liquidWallets.isNotEmpty
+              ? (liquidWallets
+                      .where((wallet) => wallet.isDefault)
+                      .firstOrNull ??
+                  liquidWallets.first)
+              : null;
+      final toWallet =
+          bitcoinWallets.isNotEmpty
+              ? (bitcoinWallets
+                      .where((wallet) => wallet.isDefault)
+                      .firstOrNull ??
+                  bitcoinWallets.first)
+              : null;
       // Set the bitcoin network fees and liquid network fees already here,
       //  since they are needed for the rest of the initialization steps, like
       //  calculating the max amount.

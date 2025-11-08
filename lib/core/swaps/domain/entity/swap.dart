@@ -306,11 +306,7 @@ sealed class Swap with _$Swap {
     _ => null,
   };
 
-  /// Calculates the amount the user will receive
-  /// - Chain swap: paymentAmount - (totalSwapFees - lockupFee)
-  /// - Submarine swap: swapAmount - (totalSwapFees - lockupFee)
-  /// - Reverse swap: invoiceAmount - totalFees
-  int? get receiveableAmount => switch (this) {
+  int? get receivedAmount => switch (this) {
     ChainSwap(:final paymentAmount, :final fees) => () {
       if (fees == null) return null;
       final totalSwapFees = fees.totalFees(paymentAmount);
@@ -337,20 +333,14 @@ sealed class Swap with _$Swap {
     }(),
   };
 
-  /// Calculates the amount the user will send
-  /// - Chain swap: paymentAmount + lockupFee
-  /// - Submarine swap: swapAmount + lockupFee
-  /// - Reverse swap: invoiceAmount
-  int? get spendableAmount => switch (this) {
+  int? get spentAmount => switch (this) {
     ChainSwap(:final paymentAmount, :final fees) => () {
       if (fees == null) return null;
-      final lockupFee = fees.lockupFee ?? 0;
-      return paymentAmount + lockupFee;
+      return paymentAmount;
     }(),
     LnSendSwap(:final paymentAmount, :final fees) => () {
       if (fees == null) return null;
-      final lockupFee = fees.lockupFee ?? 0;
-      return paymentAmount + lockupFee;
+      return paymentAmount;
     }(),
     LnReceiveSwap(:final invoice) => () {
       final invoiceAmount =
