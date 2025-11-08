@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:flutter/material.dart';
@@ -16,57 +17,38 @@ class SwapToWalletDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Transfer To'),
+        Text('Transfer To', style: context.font.bodyLarge),
         const Gap(4),
         if (wallets.isEmpty)
           const LoadingLineContent()
         else
-          SizedBox(
-            height: 56,
-            child: Material(
-              elevation: 4,
-              color: context.colour.onPrimary,
-              borderRadius: BorderRadius.circular(4.0),
-              child: Center(
-                child: DropdownButtonFormField<Wallet>(
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+          BBDropdown<Wallet>(
+            items:
+                wallets
+                    .map(
+                      (wallet) => DropdownMenuItem(
+                        value: wallet,
+                        child: Text(wallet.displayLabel),
+                      ),
+                    )
+                    .toList(),
+            value: selected,
+            validator: (value) {
+              if (value == null) {
+                return 'Please select a wallet to transfer to';
+              }
+              return null;
+            },
+            onChanged: (value) {
+              if (value != null) {
+                context.read<TransferBloc>().add(
+                  TransferWalletsChanged(
+                    fromWallet: context.read<TransferBloc>().state.fromWallet!,
+                    toWallet: value,
                   ),
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: context.colour.secondary,
-                  ),
-                  items:
-                      wallets
-                          .map(
-                            (wallet) => DropdownMenuItem(
-                              value: wallet,
-                              child: Text(wallet.displayLabel),
-                            ),
-                          )
-                          .toList(),
-                  value: selected,
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a wallet to transfer to';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    if (value != null) {
-                      context.read<TransferBloc>().add(
-                        TransferWalletsChanged(
-                          fromWallet:
-                              context.read<TransferBloc>().state.fromWallet!,
-                          toWallet: value,
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
+                );
+              }
+            },
           ),
       ],
     );

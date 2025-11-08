@@ -15,7 +15,6 @@ class UpdatePaidChainSwapUsecase {
     required String txid,
     required String swapId,
     required Network network,
-    required int absoluteFees,
   }) async {
     try {
       final swapRepository =
@@ -24,7 +23,6 @@ class UpdatePaidChainSwapUsecase {
       return await swapRepository.updatePaidSendSwap(
         swapId: swapId,
         txid: txid,
-        absoluteFees: absoluteFees,
       );
     } catch (e) {
       rethrow;

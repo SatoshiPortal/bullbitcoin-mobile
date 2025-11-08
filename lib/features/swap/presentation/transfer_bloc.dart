@@ -381,8 +381,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
             isTestnet: isTestnet,
             isLiquid: false,
           ),
-          absoluteFees:
-              0, // TODO (ishi): removed until server fees are implemented
         );
       } else {
         txId = await _broadcastLiquidTxUsecase.execute(signedPsbt);
@@ -393,8 +391,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
             isTestnet: isTestnet,
             isLiquid: true,
           ),
-          absoluteFees:
-              0, // TODO (ishi): removed until server fees are implemented
         );
       }
       emit(state.copyWith(txId: txId));

@@ -700,36 +700,6 @@ class TransactionDetailsTable extends StatelessWidget {
             copyValue: swap.id,
           ),
           DetailsTableItem(
-            label: 'Swap Amount',
-            displayValue:
-                bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(swap.amountSat).toUpperCase()
-                    : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(swap.amountSat),
-                    ).toUpperCase(),
-          ),
-
-          if (swap.spendableAmount != null)
-            DetailsTableItem(
-              label: 'Swap Amount Sent',
-              displayValue:
-                  bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.spendableAmount!).toUpperCase()
-                      : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(swap.spendableAmount!),
-                      ).toUpperCase(),
-            ),
-          if (swap.receiveableAmount != null)
-            DetailsTableItem(
-              label: 'Swap Amount Receivable',
-              displayValue:
-                  bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.receiveableAmount!).toUpperCase()
-                      : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(swap.receiveableAmount!),
-                      ).toUpperCase(),
-            ),
-          DetailsTableItem(
             label: swap.isChainSwap ? 'Transfer status' : 'Swap status',
             displayValue:
                 (swap.isChainSwap && (swap as ChainSwap).refundTxid != null ||
