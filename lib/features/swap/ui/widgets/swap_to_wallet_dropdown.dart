@@ -28,7 +28,19 @@ class SwapToWalletDropdown extends StatelessWidget {
                     .map(
                       (wallet) => DropdownMenuItem(
                         value: wallet,
-                        child: Text(wallet.displayLabel),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              wallet.isLiquid
+                                  ? 'assets/logos/liquid.png'
+                                  : 'assets/logos/bitcoin.png',
+                              width: 20,
+                              height: 20,
+                            ),
+                            const Gap(8),
+                            Text(wallet.displayLabel),
+                          ],
+                        ),
                       ),
                     )
                     .toList(),
