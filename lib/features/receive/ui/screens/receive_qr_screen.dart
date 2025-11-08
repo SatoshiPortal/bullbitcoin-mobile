@@ -503,9 +503,9 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
         if (expanded && swap.fees != null) ...[
           Container(color: context.colour.surface, height: 1),
           if (swap.fees!.lockupFee != null)
-            _feeRow(context, 'Lockup', swap.fees!.lockupFee!),
+            _feeRow(context, 'Send Network Fee', swap.fees!.lockupFee!),
           if (swap.fees!.claimFee != null)
-            _feeRow(context, 'Claim', swap.fees!.claimFee!),
+            _feeRow(context, 'Receive Network Fee', swap.fees!.claimFee!),
           if (swap.fees!.serverNetworkFees != null)
             _feeRow(
               context,

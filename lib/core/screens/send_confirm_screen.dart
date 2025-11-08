@@ -406,9 +406,10 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
             Column(
               children: [
                 const Gap(4),
-                if (lockupFee != null) _feeRow(context, 'Lockup', lockupFee),
+                if (lockupFee != null)
+                  _feeRow(context, 'Send Network Fee', lockupFee),
                 if (fees.claimFee != null)
-                  _feeRow(context, 'Claim', fees.claimFee!),
+                  _feeRow(context, 'Receive Network Fee', fees.claimFee!),
                 if (fees.serverNetworkFees != null)
                   _feeRow(
                     context,

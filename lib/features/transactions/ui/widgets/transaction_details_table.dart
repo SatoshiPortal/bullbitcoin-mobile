@@ -744,9 +744,13 @@ class TransactionDetailsTable extends StatelessWidget {
                 children: [
                   const Gap(4),
                   if (swap.fees!.lockupFee != null)
-                    _feeRow(context, 'Lockup', swap.fees!.lockupFee!),
+                    _feeRow(context, 'Send Network Fee', swap.fees!.lockupFee!),
                   if (swap.fees!.claimFee != null)
-                    _feeRow(context, 'Claim', swap.fees!.claimFee!),
+                    _feeRow(
+                      context,
+                      'Receive Network Fee',
+                      swap.fees!.claimFee!,
+                    ),
                   if (swap.fees!.serverNetworkFees != null)
                     _feeRow(
                       context,
