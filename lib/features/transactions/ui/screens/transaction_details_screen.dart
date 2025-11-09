@@ -118,23 +118,6 @@ class TransactionDetailsScreen extends StatelessWidget {
                 else
                   const TransactionDetailsAmount(),
                 const Gap(16),
-                if (swap != null && swap.requiresAction) ...[
-                  BBButton.big(
-                    disabled: retryingSwap,
-                    label:
-                        isChainSwap
-                            ? 'Retry Transfer $swapAction'
-                            : 'Retry Swap $swapAction',
-                    onPressed: () async {
-                      await context.read<TransactionDetailsCubit>().processSwap(
-                        swap,
-                      );
-                    },
-                    bgColor: theme.colorScheme.primary,
-                    textColor: theme.colorScheme.onPrimary,
-                  ),
-                  const Gap(16),
-                ],
                 if (isOngoingSwap == true && swap != null) ...[
                   SwapStatusDescription(swap: swap),
                   const Gap(16),
@@ -158,6 +141,23 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const LoadingBoxContent(height: 400)
                 else
                   const TransactionDetailsTable(),
+                if (swap != null && swap.requiresAction) ...[
+                  const Gap(16),
+                  BBButton.big(
+                    disabled: retryingSwap,
+                    label:
+                        isChainSwap
+                            ? 'Retry Transfer $swapAction'
+                            : 'Retry Swap $swapAction',
+                    onPressed: () async {
+                      await context.read<TransactionDetailsCubit>().processSwap(
+                        swap,
+                      );
+                    },
+                    bgColor: theme.colorScheme.primary,
+                    textColor: theme.colorScheme.onPrimary,
+                  ),
+                ],
                 const Gap(32),
                 if (tx?.isOngoingPayjoinSender == true &&
                     !isPayjoinCompleted) ...[

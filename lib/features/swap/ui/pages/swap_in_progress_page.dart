@@ -108,14 +108,13 @@ class SwapInProgressPage extends StatelessWidget {
                   ),
                 ),
                 const Spacer(flex: 2),
-                if (swap?.status == SwapStatus.pending ||
-                    swap?.status == SwapStatus.paid ||
-                    swap?.status == SwapStatus.refundable) ...[
+                if (swap?.status != SwapStatus.completed) ...[
                   InfoCard(
                     description:
                         'Do not uninstall the app until the transfer completes!',
                     tagColor: context.colour.tertiary,
                     bgColor: context.colour.secondaryFixed,
+                    boldDescription: true,
                   ),
                   const Gap(16),
                 ],

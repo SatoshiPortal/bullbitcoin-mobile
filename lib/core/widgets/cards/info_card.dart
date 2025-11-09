@@ -10,6 +10,7 @@ class InfoCard extends StatelessWidget {
     required this.tagColor,
     required this.bgColor,
     this.onTap,
+    this.boldDescription = false,
   });
 
   final String? title;
@@ -17,6 +18,7 @@ class InfoCard extends StatelessWidget {
   final Color tagColor;
   final Color bgColor;
   final Function? onTap;
+  final bool boldDescription;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +67,10 @@ class InfoCard extends StatelessWidget {
                               description,
                               style: context.font.bodyMedium?.copyWith(
                                 color: context.colour.secondary,
+                                fontWeight:
+                                    boldDescription
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                               ),
                             ),
                           ],
