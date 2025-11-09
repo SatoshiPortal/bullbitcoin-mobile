@@ -22,10 +22,10 @@ class TransactionDetailsAmount extends StatelessWidget {
     final amountSat =
         isSwap
             ? (isExternalChainSwap
-                ? swap.receivedAmount
+                ? swap.receieveAmount
                 : (tx?.isOutgoing == true
                     ? swap!.amountSat
-                    : swap?.receivedAmount))
+                    : swap?.receieveAmount))
             : tx?.amountSat;
     final orderAmountAndCurrency = tx?.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =

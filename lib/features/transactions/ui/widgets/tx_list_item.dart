@@ -26,7 +26,7 @@ class TxListItem extends StatelessWidget {
             : isChainSwap
             ? Icons.swap_vert_rounded
             : isLnSwap
-            ? Icons.flash_on
+            ? (tx.isOutgoing ? Icons.arrow_upward : Icons.arrow_downward)
             : tx.isOutgoing
             ? Icons.arrow_upward
             : Icons.arrow_downward;

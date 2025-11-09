@@ -193,7 +193,8 @@ class TransactionDetailsScreen extends StatelessWidget {
                     walletTransaction?.isRbf == true &&
                     walletTransaction?.isBitcoin == true &&
                     wallet?.signsLocally == true &&
-                    tx?.txId != null)
+                    tx?.txId != null &&
+                    swap == null)
                   BBButton.big(
                     label: 'Accelerate',
                     onPressed: () {

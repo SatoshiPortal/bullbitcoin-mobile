@@ -342,7 +342,7 @@ sealed class Swap with _$Swap {
     _ => null,
   };
 
-  int? get receivedAmount => switch (this) {
+  int? get receieveAmount => switch (this) {
     ChainSwap(:final paymentAmount, :final fees) => () {
       if (fees == null) return null;
       final totalSwapFees = fees.totalFees(paymentAmount);
@@ -369,7 +369,7 @@ sealed class Swap with _$Swap {
     }(),
   };
 
-  int? get spentAmount => switch (this) {
+  int? get sendAmount => switch (this) {
     ChainSwap(:final paymentAmount, :final fees) => () {
       if (fees == null) return null;
       return paymentAmount;

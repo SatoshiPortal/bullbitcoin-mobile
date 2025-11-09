@@ -225,7 +225,10 @@ class _SwapPageState extends State<SwapPage> {
                   const Gap(24),
                   BlocSelector<TransferBloc, TransferState, bool>(
                     selector:
-                        (state) => state.isStarting || state.isCreatingSwap,
+                        (state) =>
+                            state.isStarting ||
+                            state.isCreatingSwap ||
+                            state.continueClicked,
                     builder: (context, isLoading) {
                       return BBButton.big(
                         label: 'Continue',

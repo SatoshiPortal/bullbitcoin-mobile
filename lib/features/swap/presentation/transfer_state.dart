@@ -15,6 +15,7 @@ sealed class TransferState with _$TransferState {
     Wallet? toWallet,
     int? maxAmountSat,
     @Default(false) bool isCreatingSwap,
+    @Default(false) bool continueClicked,
     SwapCreationException? swapCreationException,
     ChainSwap? swap,
     @Default('') String signedPsbt,

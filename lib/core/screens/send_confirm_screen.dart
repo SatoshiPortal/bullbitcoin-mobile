@@ -386,7 +386,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
               child: Row(
                 children: [
                   BBText(
-                    'Total Transfer Fee',
+                    'Transfer Fee',
                     style: context.font.bodySmall,
                     color: context.colour.surfaceContainer,
                   ),
@@ -549,9 +549,15 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                if (swap.spentAmount != null)
+                if (swap.isChainSwap)
                   CurrencyText(
-                    swap.spentAmount!,
+                    (swap as ChainSwap).paymentAmount,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                  )
+                else if (swap.isLnSendSwap)
+                  CurrencyText(
+                    (swap as LnSendSwap).paymentAmount,
                     showFiat: false,
                     style: context.font.bodyLarge,
                   )
@@ -561,21 +567,21 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          if (swap.receivedAmount != null)
+          if (swap.receieveAmount != null)
             CommonInfoRow(
               title: 'Receive Amount',
               details: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   CurrencyText(
-                    swap.receivedAmount!,
+                    swap.receieveAmount!,
                     showFiat: false,
                     style: context.font.bodyLarge,
                   ),
                 ],
               ),
             ),
-          if (swap.receivedAmount != null) _divider(context),
+          if (swap.receieveAmount != null) _divider(context),
           if (swap.fees?.lockupFee != null)
             CommonInfoRow(
               title: 'Send Network Fee',

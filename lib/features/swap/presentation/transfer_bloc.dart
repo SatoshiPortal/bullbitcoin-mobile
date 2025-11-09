@@ -277,6 +277,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         bitcoinAbsoluteFeesSat: null,
         liquidAbsoluteFeesSat: null,
         isCreatingSwap: true,
+        continueClicked: true,
         swapCreationException: null,
       ),
     );
@@ -517,7 +518,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         ),
       );
     } finally {
-      emit(state.copyWith(isCreatingSwap: false));
+      emit(state.copyWith(isCreatingSwap: false, continueClicked: false));
     }
   }
 

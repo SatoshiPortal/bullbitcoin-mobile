@@ -36,7 +36,7 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     }
 
     if (swap != null) {
-      return swap.spentAmount ?? 0;
+      return swap.sendAmount ?? 0;
     }
     return amount ?? 0 + txFee;
   }
