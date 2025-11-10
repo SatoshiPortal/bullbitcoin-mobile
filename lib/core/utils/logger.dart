@@ -1,17 +1,16 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
 export 'package:logging_colorful/logging_colorful.dart';
 
-// DONE: add a String encryptionKey to the Logger
-// Update the log method to take optional write to file param; if it is true it will write to a file. if an encryptionKey exists, it will encrypt the file.
-
 Logger log = Logger.init();
 
 class Logger {
   final Directory dir;
   final dep.LoggerColorful logger;
+  Future<void>? _currentWrite;
 
   static const _logFilename = 'bull_logs.tsv';
 
@@ -41,7 +40,7 @@ class Logger {
       final tsvLine = sanitizedContent.join('\t');
 
       // We don't want to keep the info session in memory, they should be written to file
-      if (record.level != dep.Level.INFO) appendToLogFile(tsvLine);
+      if (record.level != dep.Level.INFO) _queueWrite(tsvLine);
 
       if (kDebugMode) {
         // remove timestamp and errors
@@ -75,6 +74,15 @@ class Logger {
     } catch (e) {
       severe('Logs existence: $e');
     }
+  }
+
+  void _queueWrite(String log) {
+    final write = () async {
+      await _currentWrite;
+      await logsFile.writeAsString('$log\n', mode: FileMode.append);
+    }();
+
+    _currentWrite = write;
   }
 
   /// Logs information messages that are part of the normal operation of the app.
@@ -141,11 +149,7 @@ class Logger {
 
     final sanitizedContent = content.map((e) => logger.sanitize(e)).toList();
     final tsvLine = sanitizedContent.join('\t');
-    await appendToLogFile(tsvLine);
-  }
-
-  Future<void> appendToLogFile(String log) async {
-    await logsFile.writeAsString('$log\n', mode: FileMode.append);
+    _queueWrite(tsvLine);
   }
 
   Future<void> deleteLogs() async {
