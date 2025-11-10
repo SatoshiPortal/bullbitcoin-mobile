@@ -25,7 +25,7 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '
 android {
     compileSdk = 35
 
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "29.0.13113456"
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_21
         targetCompatibility JavaVersion.VERSION_21
@@ -46,6 +46,12 @@ android {
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+            }
+        }
     }
 
     signingConfigs {
