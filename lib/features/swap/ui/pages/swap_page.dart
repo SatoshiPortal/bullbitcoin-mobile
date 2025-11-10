@@ -5,11 +5,10 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_amount_input.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_balance_row.dart';
-import 'package:bb_mobile/features/swap/ui/widgets/swap_fees_row.dart';
+import 'package:bb_mobile/features/swap/ui/widgets/swap_external_address_input.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_from_wallet_dropdown.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_to_wallet_dropdown.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +29,12 @@ class _SwapPageState extends State<SwapPage> {
   @override
   void initState() {
     super.initState();
-    final bitcoinUnit = context.read<TransferBloc>().state.bitcoinUnit;
+    final bloc = context.read<TransferBloc>();
+    final bitcoinUnit = bloc.state.bitcoinUnit;
+    final initialAmount = bloc.state.amount;
+    if (initialAmount.isNotEmpty) {
+      _amountController.text = initialAmount;
+    }
     _amountController.addListener(() {
       // Keep the amount in satoshis updated so we can use it elsewhere to
       // calculate fees etc. in Stateless child Widgets like SwapAmountInput
@@ -54,85 +58,198 @@ class _SwapPageState extends State<SwapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Internal Transfer'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3),
-          child: BlocSelector<TransferBloc, TransferState, bool>(
-            selector: (state) => state.isStarting || state.isCreatingSwap,
-            builder:
-                (context, isLoading) => FadingLinearProgress(
-                  height: 3,
-                  trigger: isLoading,
-                  backgroundColor: context.colour.onPrimary,
-                  foregroundColor: context.colour.primary,
-                ),
+    return BlocListener<TransferBloc, TransferState>(
+      listenWhen: (previous, current) => previous.amount != current.amount,
+      listener: (context, state) {
+        if (state.amount != _amountController.text) {
+          _amountController.text = state.amount;
+          final bitcoinUnit = state.bitcoinUnit;
+          setState(() {
+            _amountSat =
+                bitcoinUnit == BitcoinUnit.sats
+                    ? int.tryParse(state.amount) ?? 0
+                    : ConvertAmount.btcToSats(
+                      double.tryParse(state.amount) ?? 0,
+                    );
+          });
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Transfer'),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3),
+            child: BlocSelector<TransferBloc, TransferState, bool>(
+              selector: (state) => state.isStarting || state.isCreatingSwap,
+              builder:
+                  (context, isLoading) => FadingLinearProgress(
+                    height: 3,
+                    trigger: isLoading,
+                    backgroundColor: context.colour.onPrimary,
+                    foregroundColor: context.colour.primary,
+                  ),
+            ),
           ),
         ),
-      ),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ScrollableColumn(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            children: [
-              const Gap(12),
-              InfoCard(
-                description:
-                    'Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.',
-                tagColor: context.colour.inverseSurface,
-                bgColor: context.colour.inverseSurface.withValues(alpha: 0.1),
-              ),
-              const Gap(12),
-              const SwapFromWalletDropdown(),
-              const Gap(12),
-              const SwapToWalletDropdown(),
-              const Gap(12),
-              SwapAmountInput(
-                amountController: _amountController,
-                amountSat: _amountSat,
-              ),
-              const Gap(12),
-              SwapBalanceRow(amountController: _amountController),
-              const Gap(12),
-              SwapFeesRow(amountSat: _amountSat),
-              const Gap(12),
-              BlocSelector<TransferBloc, TransferState, SwapCreationException?>(
-                selector: (state) => state.swapCreationException,
-                builder: (context, swapCreationError) {
-                  return Text(
-                    swapCreationError?.message ?? '',
-                    style: context.font.labelLarge?.copyWith(
-                      color: context.colour.error,
+        body: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Gap(12),
+                  InfoCard(
+                    description:
+                        'Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.',
+                    tagColor: context.colour.inverseSurface,
+                    bgColor: context.colour.inverseSurface.withValues(
+                      alpha: 0.1,
                     ),
-                    maxLines: 4,
-                  );
-                },
-              ),
-              const Gap(24),
-              const Spacer(),
-              BlocSelector<TransferBloc, TransferState, bool>(
-                selector: (state) => state.isStarting || state.isCreatingSwap,
-                builder: (context, isLoading) {
-                  return BBButton.big(
-                    label: 'Continue',
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
-                    disabled: isLoading,
-                    onPressed: () {
-                      if (!_formKey.currentState!.validate()) {
-                        return;
+                  ),
+                  const Gap(12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BlocSelector<TransferBloc, TransferState, bool>(
+                        selector: (state) => state.sendToExternal,
+                        builder: (context, sendToExternal) {
+                          return Text(
+                            sendToExternal
+                                ? 'External Transfer'
+                                : 'Internal Transfer',
+                            style: context.font.bodyLarge,
+                          );
+                        },
+                      ),
+                      BlocSelector<TransferBloc, TransferState, bool>(
+                        selector: (state) => state.sendToExternal,
+                        builder: (context, sendToExternal) {
+                          return Switch(
+                            value: sendToExternal,
+                            activeColor: context.colour.onSecondary,
+                            activeTrackColor: context.colour.secondary,
+                            inactiveThumbColor: context.colour.onSecondary,
+                            inactiveTrackColor: context.colour.surface,
+                            trackOutlineColor: WidgetStateProperty.resolveWith<
+                              Color?
+                            >((Set<WidgetState> states) => Colors.transparent),
+                            onChanged: (value) {
+                              context.read<TransferBloc>().add(
+                                TransferEvent.sendToExternalToggled(value),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const Gap(12),
+                  const SwapFromWalletDropdown(),
+                  const Gap(12),
+                  BlocSelector<TransferBloc, TransferState, bool>(
+                    selector: (state) => state.sendToExternal,
+                    builder: (context, sendToExternal) {
+                      if (sendToExternal) {
+                        return const SwapExternalAddressInput();
+                      } else {
+                        return const SwapToWalletDropdown();
                       }
-                      context.read<TransferBloc>().add(
-                        TransferEvent.swapCreated(_amountController.text),
+                    },
+                  ),
+                  const Gap(12),
+                  SwapAmountInput(
+                    amountController: _amountController,
+                    amountSat: _amountSat,
+                  ),
+                  const Gap(12),
+                  SwapBalanceRow(amountController: _amountController),
+                  const Gap(12),
+                  BlocSelector<
+                    TransferBloc,
+                    TransferState,
+                    SwapCreationException?
+                  >(
+                    selector: (state) => state.swapCreationException,
+                    builder: (context, swapCreationError) {
+                      if (swapCreationError == null) {
+                        return const SizedBox.shrink();
+                      }
+                      return Text(
+                        swapCreationError.message,
+                        style: context.font.labelLarge?.copyWith(
+                          color: context.colour.error,
+                        ),
+                        maxLines: 4,
                       );
                     },
-                  );
-                },
+                  ),
+                  const Gap(24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BlocSelector<TransferBloc, TransferState, bool>(
+                        selector: (state) => state.sendExactAmount,
+                        builder: (context, sendExactAmount) {
+                          return Text(
+                            sendExactAmount
+                                ? 'Send exact amount'
+                                : 'Subtract fees from amount',
+                            style: context.font.bodyLarge,
+                          );
+                        },
+                      ),
+                      BlocSelector<TransferBloc, TransferState, bool>(
+                        selector: (state) => state.sendExactAmount,
+                        builder: (context, sendExactAmount) {
+                          return Switch(
+                            value: sendExactAmount,
+                            activeColor: context.colour.onSecondary,
+                            activeTrackColor: context.colour.secondary,
+                            inactiveThumbColor: context.colour.onSecondary,
+                            inactiveTrackColor: context.colour.surface,
+                            trackOutlineColor: WidgetStateProperty.resolveWith<
+                              Color?
+                            >((Set<WidgetState> states) => Colors.transparent),
+                            onChanged: (value) {
+                              context.read<TransferBloc>().add(
+                                TransferEvent.sendExactAmountToggled(value),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const Gap(24),
+                  BlocSelector<TransferBloc, TransferState, bool>(
+                    selector:
+                        (state) =>
+                            state.isStarting ||
+                            state.isCreatingSwap ||
+                            state.continueClicked,
+                    builder: (context, isLoading) {
+                      return BBButton.big(
+                        label: 'Continue',
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onSecondary,
+                        disabled: isLoading,
+                        onPressed: () {
+                          if (!_formKey.currentState!.validate()) {
+                            return;
+                          }
+                          context.read<TransferBloc>().add(
+                            TransferEvent.swapCreated(_amountController.text),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  const Gap(24),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

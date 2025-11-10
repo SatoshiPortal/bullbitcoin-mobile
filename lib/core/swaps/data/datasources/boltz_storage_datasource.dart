@@ -150,6 +150,15 @@ class BoltzStorageDatasource {
     await _localSwapStorage.managers.swaps.filter((f) => f.id(swapId)).delete();
   }
 
+  Future<void> deleteFromSecureStorage(String swapId) async {
+    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
+    try {
+      await _secureSwapStorage.deleteValue(key);
+    } catch (e) {
+      log.fine('Error deleting swap from secure storage: $e');
+    }
+  }
+
   // SECURE STORAGE
   Future<void> storeBtcLnSwap(BtcLnSwap swap) async {
     final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';

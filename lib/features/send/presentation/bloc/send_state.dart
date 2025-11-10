@@ -327,8 +327,12 @@ abstract class SendState with _$SendState {
 
   bool get swapAmountBelowLimit {
     if (isLightning && inputAmountSat != 0) {
-      return selectedSwapLimits != null &&
-          inputAmountSat < selectedSwapLimits!.min;
+      if (selectedSwapLimits == null) return false;
+      // Allow 100 sats minimum for Liquid to Lightning swaps
+      final isLiquidToLightning =
+          selectedWallet != null && selectedWallet!.isLiquid;
+      final minLimit = isLiquidToLightning ? 100 : selectedSwapLimits!.min;
+      return inputAmountSat < minLimit;
     }
     if (requireChainSwap && inputAmountSat != 0) {
       return selectedSwapLimits != null &&

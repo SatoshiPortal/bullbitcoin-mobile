@@ -22,9 +22,9 @@ class WalletBottomButtons extends StatelessWidget {
             label: 'Receive',
             iconFirst: true,
             onPressed: () {
-              // Lightning is the default receive method if no specific wallet is selected
+              // Bitcoin is the default receive method if no specific wallet is selected
               if (wallet == null) {
-                context.pushNamed(ReceiveRoute.receiveLightning.name);
+                context.pushNamed(ReceiveRoute.receiveBitcoin.name);
               } else {
                 context.pushNamed(
                   wallet!.isLiquid
