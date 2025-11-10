@@ -22,26 +22,33 @@ class WalletHomeScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {},
-
       child: Column(
         children: [
           const WalletHomeTopSection(),
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const HomeWarnings(),
-                  const AutoSwapFeeWarning(),
-                  WalletCards(
-                    onTap: (w) {
-                      context.pushNamed(
-                        WalletRoute.walletDetail.name,
-                        pathParameters: {'walletId': w.id},
-                      );
-                    },
-                  ),
-                ],
+            child: RefreshIndicator(
+              onRefresh: () async {
+                final bloc = context.read<WalletBloc>();
+                bloc.add(const WalletRefreshed());
+                await bloc.stream.firstWhere((state) => !state.isSyncing);
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const HomeWarnings(),
+                    const AutoSwapFeeWarning(),
+                    WalletCards(
+                      onTap: (w) {
+                        context.pushNamed(
+                          WalletRoute.walletDetail.name,
+                          pathParameters: {'walletId': w.id},
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
