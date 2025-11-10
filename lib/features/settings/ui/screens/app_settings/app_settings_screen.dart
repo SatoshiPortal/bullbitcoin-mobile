@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -13,6 +14,9 @@ class AppSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isSuperuser = context.select(
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
+    final currentLanguage = context.select(
+      (SettingsCubit cubit) => cubit.state.language ?? Language.unitedStatesEnglish,
     );
 
     return Scaffold(
@@ -30,6 +34,30 @@ class AppSettingsScreen extends StatelessWidget {
                     context.pushNamed(SettingsRoute.logs.name);
                   },
                 ),
+                if (isSuperuser)
+                  SettingsEntryItem(
+                    icon: Icons.language,
+                    title: 'Language',
+                    trailing: DropdownButton<Language>(
+                      value: currentLanguage,
+                      underline: const SizedBox.shrink(),
+                      items: Language.values
+                          .map(
+                            (language) => DropdownMenuItem<Language>(
+                              value: language,
+                              child: Text(
+                                '${language.languageCode}${language.countryCode != null ? ' (${language.countryCode})' : ''}',
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (Language? newLanguage) {
+                        if (newLanguage != null) {
+                          context.read<SettingsCubit>().changeLanguage(newLanguage);
+                        }
+                      },
+                    ),
+                  ),
                 if (isSuperuser)
                   const SettingsEntryItem(
                     icon: Icons.developer_mode,
