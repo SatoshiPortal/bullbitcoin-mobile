@@ -295,6 +295,7 @@ class SwapWatcherService {
     try {
       final isBatched = swap.paymentAmount < 1000;
       if (isBatched) {
+        // need to think about how to handle preimage for this
         log.fine(
           '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnCoopSign", "action": "batched_completed", "timestamp": "${DateTime.now().toIso8601String()}"}',
         );
