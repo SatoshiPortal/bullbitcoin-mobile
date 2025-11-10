@@ -986,6 +986,18 @@ class BoltzDatasource {
         case SwapStatus.invoicePending:
         case SwapStatus.minerfeePaid:
           return;
+        case SwapStatus.txnDirect:
+          if (swapModel is LnReceiveSwapModel) {
+            // Needs review to ensure the direct tx is linked to the swap
+            // Currently just going a basic handle so we do not error
+            updatedSwapModel = swapModel.copyWith(
+              status: swap_entity.SwapStatus.completed.name,
+              completionTime: DateTime.now().millisecondsSinceEpoch,
+            );
+            log.info(
+              '{"swapId": "$swapId", "boltzStatus": "txnDirect", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            );
+          }
         case SwapStatus.invoicePaid:
           if (swapModel is LnSendSwapModel) {
             updatedSwapModel = swapModel.copyWith(
