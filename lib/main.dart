@@ -72,14 +72,16 @@ Future main() async {
         backgroundTasksHandler,
         isInDebugMode: kDebugMode,
       );
+      await Workmanager().cancelAll();
 
       await Bull.init();
 
+      int delay = 0;
       for (final task in BackgroundTask.values) {
         await Workmanager().registerPeriodicTask(
           "${task.name}-task-id",
           task.name,
-          frequency: const Duration(minutes: 15),
+          frequency: Duration(minutes: 15 + delay),
           constraints: Constraints(
             networkType: NetworkType.connected,
             requiresBatteryNotLow: true,
@@ -88,6 +90,7 @@ Future main() async {
             requiresCharging: false,
           ),
         );
+        delay++;
       }
 
       runApp(const BullBitcoinWalletApp());
