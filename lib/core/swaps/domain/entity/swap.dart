@@ -84,7 +84,7 @@ abstract class SwapFees with _$SwapFees {
     return total;
   }
 
-  int totalFeesDeducted(int? amount) {
+  int totalFeesMinusLockup(int? amount) {
     return totalFees(amount) - (lockupFee ?? 0);
   }
 
@@ -345,15 +345,13 @@ sealed class Swap with _$Swap {
   int? get receieveAmount => switch (this) {
     ChainSwap(:final paymentAmount, :final fees) => () {
       if (fees == null) return null;
-      final totalSwapFees = fees.totalFees(paymentAmount);
-      final lockupFee = fees.lockupFee ?? 0;
-      return paymentAmount - totalSwapFees + lockupFee;
+      final totalSwapFees = fees.totalFeesMinusLockup(paymentAmount);
+      return paymentAmount - totalSwapFees;
     }(),
     LnSendSwap(:final paymentAmount, :final fees) => () {
       if (fees == null) return null;
-      final totalSwapFees = fees.totalFees(paymentAmount);
-      final lockupFee = fees.lockupFee ?? 0;
-      return paymentAmount - totalSwapFees + lockupFee;
+      final totalSwapFees = fees.totalFeesMinusLockup(paymentAmount);
+      return paymentAmount - totalSwapFees;
     }(),
     LnReceiveSwap(:final invoice, :final fees) => () {
       if (fees == null) return null;

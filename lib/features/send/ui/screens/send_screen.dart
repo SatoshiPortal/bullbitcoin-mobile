@@ -3,8 +3,6 @@ import 'dart:math' as math;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -571,7 +569,7 @@ class SendConfirmScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Gap(24),
+                    // const Gap(24),
                     const SendConfirmTopArea(),
                     const Gap(40),
                     if (isLnSwap)
@@ -1037,26 +1035,21 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
-            title: 'Send Amount',
-            details: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (swap.isLnSendSwap)
+
+          if (swap.sendAmount != null)
+            InfoRow(
+              title: 'Send Amount',
+              details: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
                   CurrencyText(
                     swap.paymentAmount,
                     showFiat: false,
                     style: context.font.bodyLarge,
-                  )
-                else if (swap.isLnReceiveSwap && swap.sendAmount != null)
-                  CurrencyText(
-                    swap.sendAmount!,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
                   ),
-              ],
+                ],
+              ),
             ),
-          ),
           _divider(context),
           if (swap.receieveAmount != null)
             InfoRow(
@@ -1139,7 +1132,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
   @override
   Widget build(BuildContext context) {
     final fees = widget.fees;
-    final total = fees?.totalFeesDeducted(null) ?? 0;
+    final total = fees?.totalFeesMinusLockup(null) ?? 0;
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Column(
@@ -1226,17 +1219,14 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final swap = context.select((SendCubit cubit) => cubit.state.chainSwap);
-    final exchangeRate = context.select(
-      (SendCubit cubit) => cubit.state.exchangeRate,
-    );
-    final fiatCurrencyCode = context.select(
-      (SendCubit cubit) => cubit.state.fiatCurrencyCode,
-    );
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
     );
     final showFeeWarning = context.select(
       (SendCubit cubit) => cubit.state.showFeeWarning,
+    );
+    final absoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.absoluteFees,
     );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1301,26 +1291,49 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           InfoRow(
-            title: 'Amount',
+            title: 'Send Amount',
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                if (swap.sendAmount != null) ...[
-                  CurrencyText(
-                    swap.sendAmount!,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                  ),
-                  BBText(
-                    '~${FormatAmount.fiat(ConvertAmount.satsToFiat(swap.sendAmount!, exchangeRate), fiatCurrencyCode)}',
-                    style: context.font.labelSmall,
-                    color: context.colour.surfaceContainer,
-                  ),
-                ],
+                CurrencyText(
+                  swap.sendAmount!,
+                  showFiat: false,
+                  style: context.font.bodyLarge,
+                ),
               ],
             ),
           ),
           _divider(context),
+          if (swap.receieveAmount != null)
+            InfoRow(
+              title: 'Receive Amount',
+              details: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  CurrencyText(
+                    swap.receieveAmount!,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+          if (swap.receieveAmount != null) _divider(context),
+          if (absoluteFees != null)
+            InfoRow(
+              title: 'Send Network Fee',
+              details: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  CurrencyText(
+                    absoluteFees,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+          if (absoluteFees != null) _divider(context),
           _SwapFeeBreakdown(fees: swap.fees),
           const Gap(16),
 

@@ -1122,6 +1122,24 @@ class SendCubit extends Cubit<SendState> {
               buildingTransaction: false,
             ),
           );
+        } else if (state.lightningSwap != null) {
+          final settings = await _getSettingsUsecase.execute();
+          final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
+            swapId: state.lightningSwap!.id,
+            network: Network.fromEnvironment(
+              isTestnet: settings.environment == Environment.testnet,
+              isLiquid: true,
+            ),
+            lockupFees: absoluteFees,
+          );
+          emit(
+            state.copyWith(
+              unsignedPsbt: pset,
+              liquidAbsoluteFees: absoluteFees,
+              lightningSwap: updatedSwap as LnSendSwap,
+              buildingTransaction: false,
+            ),
+          );
         } else {
           emit(
             state.copyWith(
@@ -1195,6 +1213,25 @@ class SendCubit extends Cubit<SendState> {
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
                 bitcoinTxSize: signedPsbtAndTxSize.txSize,
                 chainSwap: updatedSwap as ChainSwap,
+                buildingTransaction: false,
+              ),
+            );
+          } else if (state.lightningSwap != null) {
+            final settings = await _getSettingsUsecase.execute();
+            final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
+              swapId: state.lightningSwap!.id,
+              network: Network.fromEnvironment(
+                isTestnet: settings.environment == Environment.testnet,
+                isLiquid: false,
+              ),
+              lockupFees: bitcoinAbsoluteFeesSat,
+            );
+            emit(
+              state.copyWith(
+                unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
+                signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
+                bitcoinTxSize: signedPsbtAndTxSize.txSize,
+                lightningSwap: updatedSwap as LnSendSwap,
                 buildingTransaction: false,
               ),
             );

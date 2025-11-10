@@ -836,13 +836,13 @@ class TransactionDetailsTable extends StatelessWidget {
                       ? FormatAmount.sats(
                         swap.isLnReceiveSwap
                             ? swap.fees!.totalFees(swap.amountSat)
-                            : swap.fees!.totalFeesDeducted(swap.amountSat),
+                            : swap.fees!.totalFeesMinusLockup(swap.amountSat),
                       ).toUpperCase()
                       : FormatAmount.btc(
                         ConvertAmount.satsToBtc(
                           swap.isLnReceiveSwap
                               ? swap.fees!.totalFees(swap.amountSat)
-                              : swap.fees!.totalFeesDeducted(swap.amountSat),
+                              : swap.fees!.totalFeesMinusLockup(swap.amountSat),
                         ),
                       ).toUpperCase(),
               expandableChild: Column(

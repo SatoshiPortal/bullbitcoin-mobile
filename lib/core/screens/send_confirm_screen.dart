@@ -367,7 +367,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
   @override
   Widget build(BuildContext context) {
     final fees = widget.fees;
-    final total = fees?.totalFeesDeducted(null) ?? 0;
+    final total = fees?.totalFeesMinusLockup(null) ?? 0;
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Column(
