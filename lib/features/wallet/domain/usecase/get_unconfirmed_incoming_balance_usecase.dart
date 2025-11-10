@@ -37,8 +37,8 @@ class GetUnconfirmedIncomingBalanceUsecase {
     //   uniqueSwaps[swap.id] = swap;
     // }
     final total = filtered.fold<int>(0, (sum, s) {
-      final fees = s.fees?.totalFees(s.amountSat) ?? 0;
-      return sum + (s.amountSat - fees);
+      final receiveable = s.receieveAmount ?? 0;
+      return sum + receiveable;
     });
 
     // User balance updates on 0 conf bitcoin tx so no need to add untrusted pending sat

@@ -18,10 +18,13 @@ class CommonSendConfirmTopArea extends StatelessWidget {
     super.key,
     required String formattedConfirmedAmountBitcoin,
     required SendType sendType,
+    bool? sendToExternal,
   }) : _formattedConfirmedAmountBitcoin = formattedConfirmedAmountBitcoin,
-       _sendType = sendType;
+       _sendType = sendType,
+       _sendToExternal = sendToExternal;
   final String _formattedConfirmedAmountBitcoin;
   final SendType _sendType;
+  final bool? _sendToExternal;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -47,6 +50,10 @@ class CommonSendConfirmTopArea extends StatelessWidget {
         const Gap(16),
         if (_sendType == SendType.send)
           BBText('Confirm Send', style: context.font.bodyMedium)
+        else if (_sendToExternal == true)
+          BBText('External Transfer', style: context.font.bodyMedium)
+        else if (_sendToExternal == false)
+          BBText('Internal Transfer', style: context.font.bodyMedium)
         else
           BBText('Confirm Transfer', style: context.font.bodyMedium),
         const Gap(4),
@@ -360,7 +367,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
   @override
   Widget build(BuildContext context) {
     final fees = widget.fees;
-    final total = fees?.totalFees(null) ?? 0;
+    final total = fees?.totalFeesMinusLockup(null) ?? 0;
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Column(
@@ -379,7 +386,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
               child: Row(
                 children: [
                   BBText(
-                    'Total Fee',
+                    'Transfer Fee',
                     style: context.font.bodySmall,
                     color: context.colour.surfaceContainer,
                   ),
@@ -405,11 +412,22 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
             Column(
               children: [
                 const Gap(4),
-                _feeRow(
-                  context,
-                  'Total Network Fee (Bitcoin & Liquid)',
-                  fees.lockupFee! + fees.claimFee!,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: BBText(
+                    'This is the total fee deducted from the amount sent',
+                    style: context.font.labelSmall,
+                    color: context.colour.surfaceContainer,
+                  ),
                 ),
+                if (fees.claimFee != null)
+                  _feeRow(context, 'Receive Network Fee', fees.claimFee!),
+                if (fees.serverNetworkFees != null)
+                  _feeRow(
+                    context,
+                    'Server Network Fees',
+                    fees.serverNetworkFees!,
+                  ),
                 _feeRow(context, 'Transfer Fee', fees.boltzFee ?? 0),
                 const Gap(4),
               ],
@@ -429,6 +447,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
     required this.formattedBitcoinAmount,
     required this.swap,
     required this.absoluteFeesFormatted,
+    this.absoluteFees,
   });
   final String sendWalletLabel;
   final String? receiveWalletLabel;
@@ -436,6 +455,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
   final String formattedBitcoinAmount;
   final Swap swap;
   final String absoluteFeesFormatted;
+  final int? absoluteFees;
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.colour.secondaryFixedDim);
   }
@@ -525,15 +545,58 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Amount',
+            title: 'Send Amount',
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
+                if (swap.isChainSwap)
+                  CurrencyText(
+                    (swap as ChainSwap).paymentAmount,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                  )
+                else if (swap.isLnSendSwap)
+                  CurrencyText(
+                    (swap as LnSendSwap).paymentAmount,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                  )
+                else
+                  BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
               ],
             ),
           ),
           _divider(context),
+          if (swap.receieveAmount != null)
+            CommonInfoRow(
+              title: 'Receive Amount',
+              details: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  CurrencyText(
+                    swap.receieveAmount!,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+          if (swap.receieveAmount != null) _divider(context),
+          if (swap.fees?.lockupFee != null)
+            CommonInfoRow(
+              title: 'Send Network Fee',
+              details: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  CurrencyText(
+                    swap.fees!.lockupFee!,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+          if (swap.fees?.lockupFee != null) _divider(context),
           _SwapFeeBreakdown(fees: swap.fees),
 
           _divider(context),

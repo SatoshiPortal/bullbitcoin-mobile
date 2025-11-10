@@ -11,4 +11,10 @@ sealed class TransferEvent with _$TransferEvent {
       TransferAmountChanged;
   const factory TransferEvent.swapCreated(String amount) = TransferSwapCreated;
   const factory TransferEvent.confirmed() = TransferConfirmed;
+  const factory TransferEvent.sendToExternalToggled(bool enabled) =
+      TransferSendToExternalToggled;
+  const factory TransferEvent.externalAddressChanged(String address) =
+      TransferExternalAddressChanged;
+  const factory TransferEvent.sendExactAmountToggled(bool enabled) =
+      TransferSendExactAmountToggled;
 }

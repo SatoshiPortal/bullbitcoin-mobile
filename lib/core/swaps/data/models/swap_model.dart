@@ -70,6 +70,7 @@ sealed class SwapModel with _$SwapModel {
     int? boltzFees,
     int? lockupFees,
     int? claimFees,
+    int? serverNetworkFees,
   }) = ChainSwapModel;
 
   const SwapModel._();
@@ -183,6 +184,7 @@ sealed class SwapModel with _$SwapModel {
           boltzFees: fees?.boltzFee,
           lockupFees: fees?.lockupFee,
           claimFees: fees?.claimFee,
+          serverNetworkFees: fees?.serverNetworkFees,
         ),
     };
   }
@@ -283,6 +285,7 @@ sealed class SwapModel with _$SwapModel {
         :final boltzFees,
         :final lockupFees,
         :final claimFees,
+        :final serverNetworkFees,
         :final completionTime,
       ) =>
         Swap.chain(
@@ -305,6 +308,7 @@ sealed class SwapModel with _$SwapModel {
             boltzFee: boltzFees,
             lockupFee: lockupFees,
             claimFee: claimFees,
+            serverNetworkFees: serverNetworkFees,
           ),
           completionTime:
               completionTime != null
@@ -386,6 +390,7 @@ sealed class SwapModel with _$SwapModel {
           boltzFees: swap.boltzFees,
           lockupFees: swap.lockupFees,
           claimFees: swap.claimFees,
+          serverNetworkFees: swap.serverNetworkFees,
         );
     }
   }
@@ -457,6 +462,7 @@ sealed class SwapModel with _$SwapModel {
         boltzFees: swap.boltzFees,
         lockupFees: swap.lockupFees,
         claimFees: swap.claimFees,
+        serverNetworkFees: swap.serverNetworkFees,
       );
     } else {
       throw UnsupportedError('$SwapModel unsupported: $runtimeType');

@@ -700,6 +700,12 @@ extension OldX on SwapStatus? {
         );
       case null:
         return null;
+      case SwapStatus.txnDirect:
+        status = (
+          'Direct Transaction',
+          'A direct transaction has been made and the swap has been bypassed.',
+        );
+        throw UnimplementedError();
     }
     return status;
   }
@@ -789,6 +795,12 @@ extension OldX on SwapStatus? {
         );
       case null:
         return null;
+      case SwapStatus.txnDirect:
+        status = (
+          'Direct Transaction',
+          'A direct transaction has been made and the swap has been bypassed.',
+        );
+        throw UnimplementedError();
     }
     return status;
   }

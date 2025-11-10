@@ -308,6 +308,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
       (bloc) => bloc.state.formattedConfirmedAmountFiat,
     );
     final note = context.select<ReceiveBloc, String>((bloc) => bloc.state.note);
+    final swap = context.select((ReceiveBloc bloc) => bloc.state.getSwap);
 
     return AnimatedContainer(
       duration: 300.ms,
@@ -361,6 +362,28 @@ class ReceiveLnInfoDetails extends StatelessWidget {
               ],
             ),
           ),
+          if (swap?.receieveAmount != null) ...[
+            Container(color: context.colour.surface, height: 1),
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BBText(
+                    'Receive Amount',
+                    style: context.font.bodySmall,
+                    color: context.colour.surfaceContainer,
+                  ),
+                  const Spacer(),
+                  CurrencyText(
+                    swap!.receieveAmount!,
+                    showFiat: false,
+                    style: context.font.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+          ],
           if (note.isNotEmpty) ...[
             Container(color: context.colour.surface, height: 1),
             Padding(
@@ -500,14 +523,27 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
           ),
         ),
         const Gap(12),
-        if (expanded) ...[
+        if (expanded && swap.fees != null) ...[
           Container(color: context.colour.surface, height: 1),
-          _feeRow(
-            context,
-            'Network Fee',
-            swap.fees!.lockupFee! + swap.fees!.claimFee!,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: BBText(
+              'This fees will be deducted from the amount sent',
+              style: context.font.labelSmall,
+              color: context.colour.surfaceContainer,
+            ),
           ),
-          _feeRow(context, 'Boltz Swap Fee', swap.fees?.boltzFee ?? 0),
+          if (swap.fees!.lockupFee != null)
+            _feeRow(context, 'Send Network Fee', swap.fees!.lockupFee!),
+          if (swap.fees!.claimFee != null)
+            _feeRow(context, 'Receive Network Fee', swap.fees!.claimFee!),
+          if (swap.fees!.serverNetworkFees != null)
+            _feeRow(
+              context,
+              'Server Network Fees',
+              swap.fees!.serverNetworkFees!,
+            ),
+          _feeRow(context, 'Transfer Fee', swap.fees?.boltzFee ?? 0),
           const Gap(16),
         ],
       ],

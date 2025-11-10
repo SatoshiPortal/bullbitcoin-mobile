@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -13,85 +14,106 @@ class SwapStatusDescription extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isFailedOrExpired =
         swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
+    final bool shouldShowWarning = swap.status != SwapStatus.completed;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color:
-            isFailedOrExpired
-                ? context.colour.errorContainer.withValues(alpha: 0.15)
-                : context.colour.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color:
-              isFailedOrExpired
-                  ? context.colour.error.withValues(alpha: 0.5)
-                  : context.colour.outline.withValues(alpha: 0.3),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color:
+                isFailedOrExpired
+                    ? context.colour.errorContainer.withValues(alpha: 0.15)
+                    : context.colour.surfaceContainerHighest.withValues(
+                      alpha: 0.5,
+                    ),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color:
+                  isFailedOrExpired
+                      ? context.colour.error.withValues(alpha: 0.5)
+                      : context.colour.outline.withValues(alpha: 0.3),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                swap.status == SwapStatus.failed ||
-                        swap.status == SwapStatus.expired
-                    ? Icons.warning_amber_rounded
-                    : Icons.info_outline,
-                size: 20,
-                color:
+              Row(
+                children: [
+                  Icon(
                     swap.status == SwapStatus.failed ||
                             swap.status == SwapStatus.expired
-                        ? context.colour.error
-                        : context.colour.secondary,
+                        ? Icons.warning_amber_rounded
+                        : Icons.info_outline,
+                    size: 20,
+                    color:
+                        swap.status == SwapStatus.failed ||
+                                swap.status == SwapStatus.expired
+                            ? context.colour.error
+                            : context.colour.secondary,
+                  ),
+                  const Gap(8),
+                  BBText(
+                    swap.status == SwapStatus.failed
+                        ? (swap.isChainSwap ? 'Transfer Failed' : 'Swap Failed')
+                        : swap.status == SwapStatus.expired
+                        ? (swap.isChainSwap
+                            ? 'Transfer Expired'
+                            : 'Swap Expired')
+                        : (swap.isChainSwap
+                            ? 'Transfer Status'
+                            : 'Swap Status'),
+                    style: context.font.titleSmall?.copyWith(
+                      color:
+                          swap.status == SwapStatus.failed ||
+                                  swap.status == SwapStatus.expired
+                              ? context.colour.error
+                              : context.colour.secondary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
               const Gap(8),
               BBText(
-                swap.status == SwapStatus.failed
-                    ? (swap.isChainSwap ? 'Transfer Failed' : 'Swap Failed')
-                    : swap.status == SwapStatus.expired
-                    ? (swap.isChainSwap ? 'Transfer Expired' : 'Swap Expired')
-                    : (swap.isChainSwap ? 'Transfer Status' : 'Swap Status'),
-                style: context.font.titleSmall?.copyWith(
+                _getSwapStatusDescription(),
+                style: context.font.bodySmall?.copyWith(
                   color:
                       swap.status == SwapStatus.failed ||
                               swap.status == SwapStatus.expired
                           ? context.colour.error
-                          : context.colour.secondary,
-                  fontWeight: FontWeight.bold,
+                          : context.colour.onSurfaceVariant,
                 ),
               ),
+              if (_getAdditionalInfo().isNotEmpty) ...[
+                const Gap(12),
+                BBText(
+                  _getAdditionalInfo(),
+                  style: context.font.bodySmall?.copyWith(
+                    color:
+                        swap.status == SwapStatus.failed ||
+                                swap.status == SwapStatus.expired
+                            ? context.colour.error.withValues(alpha: 0.8)
+                            : context.colour.outline,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
             ],
           ),
-          const Gap(8),
-          BBText(
-            _getSwapStatusDescription(),
-            style: context.font.bodySmall?.copyWith(
-              color:
-                  swap.status == SwapStatus.failed ||
-                          swap.status == SwapStatus.expired
-                      ? context.colour.error
-                      : context.colour.onSurfaceVariant,
-            ),
+        ),
+        if (shouldShowWarning) ...[
+          const Gap(16),
+          InfoCard(
+            description: 'Do not uninstall the app until the swap completes.',
+            tagColor: context.colour.tertiary,
+            bgColor: Colors.white,
+            boldDescription: true,
           ),
-          if (_getAdditionalInfo().isNotEmpty) ...[
-            const Gap(12),
-            BBText(
-              _getAdditionalInfo(),
-              style: context.font.bodySmall?.copyWith(
-                color:
-                    swap.status == SwapStatus.failed ||
-                            swap.status == SwapStatus.expired
-                        ? context.colour.error.withValues(alpha: 0.8)
-                        : context.colour.outline,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ],
         ],
-      ),
+      ],
     );
   }
 
