@@ -185,10 +185,22 @@ class ServiceStatusBottomSheet extends StatelessWidget {
                 const SizedBox(height: 12),
                 _ServiceStatusItem(service: serviceStatus!.ark),
                 const SizedBox(height: 16),
-                BBText(
-                  'Last checked: ${_formatDateTime(serviceStatus!.lastChecked)}',
-                  style: context.font.bodySmall,
-                  color: context.colour.onSurfaceVariant,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    BBText(
+                      'Last checked: ${_formatDateTime(serviceStatus!.lastChecked)}',
+                      style: context.font.bodySmall,
+                      color: context.colour.onSurfaceVariant,
+                    ),
+                    IconButton(
+                      onPressed:
+                          () => context.read<WalletBloc>().add(
+                            const CheckServiceStatus(),
+                          ),
+                      icon: const Icon(Icons.refresh),
+                    ),
+                  ],
                 ),
               ],
             ),

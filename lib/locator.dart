@@ -72,12 +72,12 @@ class AppLocator {
     BroadcastSignedTxLocator.setup();
     SwapLocator.setup();
 
-    ExchangeLocator.setup();
+    ExchangeLocator.setup(locator);
     BuyLocator.setup();
     SellLocator.setup();
     WithdrawLocator.setup();
     PayLocator.setup();
-    StatusLocator.setup();
+    StatusLocator.setup(locator);
 
     FundExchangeLocator.setup();
     AutoSwapLocator.setup();
@@ -87,6 +87,6 @@ class AppLocator {
     ReplaceByFeeLocator.setup();
     Bip85EntropyLocator.setup();
     LedgerLocator.setup();
-    ArkCoreLocator.setup();
+    ArkCoreLocator.setup(locator);
   }
 }
