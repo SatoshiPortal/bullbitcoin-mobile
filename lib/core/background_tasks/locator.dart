@@ -21,7 +21,6 @@ import 'package:get_it/get_it.dart';
 final GetIt backgroundLocator = GetIt.asNewInstance();
 
 class BackgroundTasksLocator {
-  /// Call this in the `main` function **before** `runApp()`
   static Future<void> setup() async {
     backgroundLocator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -31,30 +30,7 @@ class BackgroundTasksLocator {
     await registerRepositories();
     registerServices();
     registerUsecases();
-
-    SeedLocator.registerDatasources(backgroundLocator);
-    SeedLocator.registerRepositories(backgroundLocator);
-    SeedLocator.registerUsecases(backgroundLocator);
-    SeedLocator.registerServices(backgroundLocator);
-    core.ExchangeLocator.registerDatasources(backgroundLocator);
-    core.ExchangeLocator.registerRepositories(backgroundLocator);
-    core.ExchangeLocator.registerUseCases(backgroundLocator);
-    features.ExchangeLocator.setup(backgroundLocator);
-    PayjoinLocator.registerDatasources(backgroundLocator);
-    PayjoinLocator.registerRepositories(backgroundLocator);
-    PayjoinLocator.registerUsecases(backgroundLocator);
-
-    await TorLocator.registerDatasources(backgroundLocator);
-    await TorLocator.registerRepositories(backgroundLocator);
-    TorLocator.registerUsecases(backgroundLocator);
-    await RecoverbullLocator.registerDatasources(backgroundLocator);
-    await RecoverbullLocator.registerRepositories(backgroundLocator);
-    RecoverbullLocator.registerUsecases(backgroundLocator);
-    Bip85DerivationsLocator.registerUsecases(backgroundLocator);
-    Bip85DerivationsLocator.registerRepositories(backgroundLocator);
-    Bip85DerivationsLocator.registerDatasources(backgroundLocator);
-    ArkCoreLocator.setup(backgroundLocator);
-    StatusLocator.setup(backgroundLocator);
+    registerFeatures();
   }
 
   static void registerDatabase() {
@@ -78,6 +54,12 @@ class BackgroundTasksLocator {
     await WalletLocator.registerDatasources(backgroundLocator);
     await SettingsLocator.registerDatasources(backgroundLocator);
     FeesLocator.registerDatasources(backgroundLocator);
+    SeedLocator.registerDatasources(backgroundLocator);
+    core.ExchangeLocator.registerDatasources(backgroundLocator);
+    PayjoinLocator.registerDatasources(backgroundLocator);
+    await TorLocator.registerDatasources(backgroundLocator);
+    await RecoverbullLocator.registerDatasources(backgroundLocator);
+    Bip85DerivationsLocator.registerDatasources(backgroundLocator);
   }
 
   static void registerPorts() {
@@ -95,6 +77,12 @@ class BackgroundTasksLocator {
     SwapsLocator.registerRepositories(backgroundLocator);
     WalletLocator.registerRepositories(backgroundLocator);
     FeesLocator.registerRepositories(backgroundLocator);
+    SeedLocator.registerRepositories(backgroundLocator);
+    core.ExchangeLocator.registerRepositories(backgroundLocator);
+    PayjoinLocator.registerRepositories(backgroundLocator);
+    await TorLocator.registerRepositories(backgroundLocator);
+    await RecoverbullLocator.registerRepositories(backgroundLocator);
+    Bip85DerivationsLocator.registerRepositories(backgroundLocator);
   }
 
   static void registerServices() {
@@ -109,5 +97,18 @@ class BackgroundTasksLocator {
     SwapsLocator.registerUsecases(backgroundLocator);
     WalletLocator.registerUsecases(backgroundLocator);
     FeesLocator.registerUseCases(backgroundLocator);
+    SeedLocator.registerUsecases(backgroundLocator);
+    SeedLocator.registerServices(backgroundLocator);
+    core.ExchangeLocator.registerUseCases(backgroundLocator);
+    PayjoinLocator.registerUsecases(backgroundLocator);
+    TorLocator.registerUsecases(backgroundLocator);
+    RecoverbullLocator.registerUsecases(backgroundLocator);
+    Bip85DerivationsLocator.registerUsecases(backgroundLocator);
+  }
+
+  static void registerFeatures() {
+    features.ExchangeLocator.setup(backgroundLocator);
+    ArkCoreLocator.setup(backgroundLocator);
+    StatusLocator.setup(backgroundLocator);
   }
 }
