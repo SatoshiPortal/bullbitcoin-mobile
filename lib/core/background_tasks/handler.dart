@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/main.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lwk/lwk.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -19,6 +20,7 @@ void backgroundTasksHandler() {
 Future<bool> tasksHandler(String task) async {
   final startTime = DateTime.now();
 
+  await dotenv.load(isOptional: true);
   await Bull.initLogs();
   await LibLwk.init();
 
