@@ -725,7 +725,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 head: 6,
                 tail: 6,
               ),
-              copyValue: swap.preimage!,
+              copyValue: swap.preimage,
             ),
           if (swapCounterpartTxId != null)
             DetailsTableItem(
