@@ -60,7 +60,6 @@ class TransactionDetailsTable extends StatelessWidget {
                     ? 'Instant Payments'
                     : 'Secure Bitcoin')
             : '';
-    final toAddress = transaction?.toAddress;
     final addressLabels =
         transaction?.walletTransaction?.toAddressLabels?.join(', ') ?? '';
     final isOrder = transaction?.isOrder ?? false;
@@ -70,6 +69,7 @@ class TransactionDetailsTable extends StatelessWidget {
     );
 
     final swap = transaction?.swap;
+    final toAddress = swap?.receiveAddress ?? transaction?.toAddress;
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
     final txFee = walletTransaction?.feeSat;
@@ -715,6 +715,18 @@ class TransactionDetailsTable extends StatelessWidget {
               maxLines: 5,
             ),
           ),
+          if (swap is LnSendSwap &&
+              swap.preimage != null &&
+              swap.preimage!.isNotEmpty)
+            DetailsTableItem(
+              label: 'Preimage',
+              displayValue: StringFormatting.truncateMiddle(
+                swap.preimage!,
+                head: 6,
+                tail: 6,
+              ),
+              copyValue: swap.preimage!,
+            ),
           if (swapCounterpartTxId != null)
             DetailsTableItem(
               label:

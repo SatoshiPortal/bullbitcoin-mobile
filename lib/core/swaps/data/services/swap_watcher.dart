@@ -263,6 +263,12 @@ class SwapWatcherService {
       '{"swapId": "${swap.id}", "function": "_processSendBitcoinToLnCoopSign", "action": "coop_close_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
     );
     try {
+      if (swap.preimage == null) {
+        final preimage = await _boltzRepo.getSendSwapPreimage(swapId: swap.id);
+        if (preimage != null) {
+          await _boltzRepo.updateSwap(swap: swap.copyWith(preimage: preimage));
+        }
+      }
       await _boltzRepo.coopSignBitcoinToLightningSwap(swapId: swap.id);
       log.fine(
         '{"swapId": "${swap.id}", "function": "_processSendBitcoinToLnCoopSign", "action": "coop_close_succeeded", "timestamp": "${DateTime.now().toIso8601String()}"}',
@@ -293,6 +299,16 @@ class SwapWatcherService {
           '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnCoopSign", "action": "batched_completed", "timestamp": "${DateTime.now().toIso8601String()}"}',
         );
       } else {
+        if (swap.preimage == null) {
+          final preimage = await _boltzRepo.getSendSwapPreimage(
+            swapId: swap.id,
+          );
+          if (preimage != null) {
+            await _boltzRepo.updateSwap(
+              swap: swap.copyWith(preimage: preimage),
+            );
+          }
+        }
         await _boltzRepo.coopSignLiquidToLightningSwap(swapId: swap.id);
         log.fine(
           '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnCoopSign", "action": "coop_close_succeeded", "timestamp": "${DateTime.now().toIso8601String()}"}',

@@ -501,6 +501,32 @@ class BoltzDatasource {
     }
   }
 
+  Future<String?> getBtcLnSwapPreimage({required String swapId}) async {
+    try {
+      final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
+      return btcLnSwap.getPreimage();
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  Future<String?> getLbtcLnSwapPreimage({required String swapId}) async {
+    try {
+      final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
+      return lbtcLnSwap.getPreimage();
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
   Future<SwapModel> createBtcToLbtcChainSwap({
     required String sendWalletId,
     required String mnemonic,

@@ -695,6 +695,21 @@ class BoltzSwapRepository {
     }
   }
 
+  Future<String?> getSendSwapPreimage({required String swapId}) async {
+    final swap = await getSwap(swapId: swapId);
+    if (swap is! LnSendSwap) {
+      throw Exception('Swap is not a send swap');
+    }
+    switch (swap.type) {
+      case SwapType.bitcoinToLightning:
+        return await _boltz.getBtcLnSwapPreimage(swapId: swapId);
+      case SwapType.liquidToLightning:
+        return await _boltz.getLbtcLnSwapPreimage(swapId: swapId);
+      default:
+        throw Exception('Swap type does not support preimage');
+    }
+  }
+
   Future<void> migrateOldSwap({
     required String primaryWalletId,
     required String swapId,
