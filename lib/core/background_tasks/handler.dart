@@ -51,10 +51,10 @@ Future<bool> tasksHandler(String task) async {
     }
 
     final elapsedTime = DateTime.now().difference(startTime).inSeconds;
-    log.finest('Background task $task completed in $elapsedTime seconds');
+    log.config('Background task $task completed in $elapsedTime seconds');
     return Future.value(true);
   } catch (e) {
-    log.shout('Background task $task failed: $e');
+    log.severe('Background task $task failed: $e');
     return Future.value(false);
   }
 }
