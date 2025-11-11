@@ -33,9 +33,11 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/price_chart_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -58,60 +60,64 @@ class AppRouter {
           final isExchangeLanding = location.contains(
             ExchangeRoute.exchangeLanding.path,
           );
-
           return PopScope(
             canPop: false,
             onPopInvokedWithResult: (didPop, _) {
               context.goNamed(WalletRoute.walletHome.name);
             },
-            child: Scaffold(
-              // The app bar of the exchange tab is done with a sliver app bar
-              // on the ExchangeHomeScreen itself.
-              appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
-              extendBodyBehindAppBar: true,
-              body: child,
-              bottomNavigationBar:
-                  isExchangeLanding
-                      ? null
-                      : BottomNavigationBar(
-                        currentIndex: tabIndex,
-                        onTap: (index) {
-                          if (index == 0) {
-                            context.goNamed(WalletRoute.walletHome.name);
-                          } else {
-                            // Exchange tab
-                            if (Platform.isIOS) {
-                              final isSuperuser =
-                                  context
-                                      .read<SettingsCubit>()
-                                      .state
-                                      .isSuperuser ??
-                                  false;
-                              if (isSuperuser) {
+            child: BlocProvider.value(
+              value: locator<PriceChartBloc>(),
+              child: Scaffold(
+                // The app bar of the exchange tab is done with a sliver app bar
+                // on the ExchangeHomeScreen itself.
+                appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
+                extendBodyBehindAppBar: true,
+                body: child,
+                bottomNavigationBar:
+                    isExchangeLanding
+                        ? null
+                        : BottomNavigationBar(
+                          currentIndex: tabIndex,
+                          onTap: (index) {
+                            if (index == 0) {
+                              context.goNamed(WalletRoute.walletHome.name);
+                            } else {
+                              // Exchange tab
+                              if (Platform.isIOS) {
+                                final isSuperuser =
+                                    context
+                                        .read<SettingsCubit>()
+                                        .state
+                                        .isSuperuser ??
+                                    false;
+                                if (isSuperuser) {
+                                  context.goNamed(
+                                    ExchangeRoute.exchangeHome.name,
+                                  );
+                                } else {
+                                  context.goNamed(
+                                    ExchangeRoute.exchangeLanding.name,
+                                  );
+                                }
+                              } else {
                                 context.goNamed(
                                   ExchangeRoute.exchangeHome.name,
                                 );
-                              } else {
-                                context.goNamed(
-                                  ExchangeRoute.exchangeLanding.name,
-                                );
                               }
-                            } else {
-                              context.goNamed(ExchangeRoute.exchangeHome.name);
                             }
-                          }
-                        },
-                        items: const [
-                          BottomNavigationBarItem(
-                            icon: Icon(Icons.currency_bitcoin),
-                            label: 'Wallet',
-                          ),
-                          BottomNavigationBarItem(
-                            icon: Icon(Icons.attach_money),
-                            label: 'Exchange',
-                          ),
-                        ],
-                      ),
+                          },
+                          items: const [
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.currency_bitcoin),
+                              label: 'Wallet',
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.attach_money),
+                              label: 'Exchange',
+                            ),
+                          ],
+                        ),
+              ),
             ),
           );
         },

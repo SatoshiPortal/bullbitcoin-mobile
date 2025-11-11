@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/local_rate_history_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_funding_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
@@ -17,9 +18,11 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_fiat_recipient_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_all_intervals_rate_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_index_rate_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_cad_billers_usecase.dart';
@@ -28,6 +31,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_us
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
@@ -66,6 +70,10 @@ class ExchangeLocator {
       ),
       instanceName: 'testnetExchangeApiDatasource',
     );
+
+    locator.registerLazySingleton<LocalRateHistoryDatasource>(
+      () => LocalRateHistoryDatasource(db: locator<SqliteDatabase>()),
+    );
   }
 
   static void registerRepositories() {
@@ -74,6 +82,7 @@ class ExchangeLocator {
         bitcoinPriceDatasource: locator<BullbitcoinApiDatasource>(
           instanceName: 'mainnetExchangeApiDatasource',
         ),
+        localRateHistoryDatasource: locator<LocalRateHistoryDatasource>(),
       ),
       instanceName: 'mainnetExchangeRateRepository',
     );
@@ -82,6 +91,7 @@ class ExchangeLocator {
         bitcoinPriceDatasource: locator<BullbitcoinApiDatasource>(
           instanceName: 'testnetExchangeApiDatasource',
         ),
+        localRateHistoryDatasource: locator<LocalRateHistoryDatasource>(),
       ),
       instanceName: 'testnetExchangeRateRepository',
     );
@@ -412,6 +422,30 @@ class ExchangeLocator {
             locator<ExchangeRecipientRepository>(
               instanceName: 'testnetExchangeRecipientRepository',
             ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<GetIndexRateHistoryUsecase>(
+      () => GetIndexRateHistoryUsecase(
+        mainnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'mainnetExchangeRateRepository',
+        ),
+        testnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'testnetExchangeRateRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<GetAllIntervalsRateHistoryUsecase>(
+      () => GetAllIntervalsRateHistoryUsecase(
+        mainnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'mainnetExchangeRateRepository',
+        ),
+        testnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'testnetExchangeRateRepository',
+        ),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
