@@ -7967,5 +7967,21 @@
   "addressViewChangeAddressesDescription": "Display wallet Change addresses",
   "@addressViewChangeAddressesDescription": {
     "description": "Description for the coming soon dialog when trying to view change addresses"
+  },
+  "appStartupErrorTitle": "Startup Error",
+  "@appStartupErrorTitle": {
+    "description": "Title shown when the app fails to start up properly"
+  },
+  "appStartupErrorMessageWithBackup": "On v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. You will have to delete this app and reinstall it with your backed up seed.",
+  "@appStartupErrorMessageWithBackup": {
+    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
+  },
+  "appStartupErrorMessageNoBackup": "On v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. Contact our support team.",
+  "@appStartupErrorMessageNoBackup": {
+    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
+  },
+  "appStartupContactSupportButton": "Contact Support",
+  "@appStartupContactSupportButton": {
+    "description": "Button label to contact support when app startup fails"
   }
 }
