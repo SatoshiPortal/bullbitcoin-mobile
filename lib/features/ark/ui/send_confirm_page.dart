@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -45,7 +46,7 @@ class SendConfirmPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Confirm Send', style: context.font.headlineMedium),
+        title: Text(context.loc.arkSendConfirmTitle, style: context.font.headlineMedium),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child:
@@ -66,17 +67,17 @@ class SendConfirmPage extends StatelessWidget {
               children: [
                 const SizedBox(height: 24),
                 Text(
-                  'Please confirm the details of your transaction before sending.',
+                  context.loc.arkSendConfirmMessage,
                   style: context.font.bodyLarge,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
                 SendConfirmationDetailRow(
-                  label: 'Recipient Address',
+                  label: context.loc.arkRecipientAddress,
                   value: recipient,
                 ),
                 SendConfirmationDetailRow(
-                  label: 'Amount',
+                  label: context.loc.arkAmount,
                   value:
                       '${bitcoinAmount.toStringAsFixed(bitcoinUnit == BitcoinUnit.btc ? 8 : 0)} ${bitcoinUnit.code}\n'
                       '(~ $fiatAmount $fiatCurrencyCode)',
@@ -95,7 +96,7 @@ class SendConfirmPage extends StatelessWidget {
               const SizedBox(height: 16),
             ],
             BBButton.big(
-              label: 'Confirm',
+              label: context.loc.arkConfirmButton,
               onPressed: () {
                 context.read<ArkCubit>().onSendConfirmed();
               },

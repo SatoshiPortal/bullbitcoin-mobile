@@ -7950,6 +7950,58 @@
       "days": {}
     }
   },
+  "arkSendRecipientTitle": "Envoyer au destinataire",
+  "@arkSendRecipientTitle": {
+    "description": "Title for the ark send recipient page"
+  },
+  "arkSendRecipientHint": "Entrez une adresse de paiement ou une facture",
+  "@arkSendRecipientHint": {
+    "description": "Hint text for recipient address input field"
+  },
+  "arkSendRecipientError": "Veuillez entrer un destinataire",
+  "@arkSendRecipientError": {
+    "description": "Error message when recipient field is empty"
+  },
+  "arkSendAmountTitle": "Entrez le montant",
+  "@arkSendAmountTitle": {
+    "description": "Title for the ark send amount page"
+  },
+  "arkSendConfirmTitle": "Confirmer l'envoi",
+  "@arkSendConfirmTitle": {
+    "description": "Title for the ark send confirmation page"
+  },
+  "arkSendConfirmMessage": "Veuillez confirmer les détails de votre transaction avant d'envoyer.",
+  "@arkSendConfirmMessage": {
+    "description": "Message displayed on send confirmation page"
+  },
+  "arkReceiveSegmentArk": "Ark",
+  "@arkReceiveSegmentArk": {
+    "description": "Segment option for Ark address type"
+  },
+  "arkReceiveSegmentBoarding": "Embarquement",
+  "@arkReceiveSegmentBoarding": {
+    "description": "Segment option for Boarding (BTC) address type"
+  },
+  "arkReceiveBoardingAddress": "Adresse d'embarquement BTC",
+  "@arkReceiveBoardingAddress": {
+    "description": "Label for BTC boarding address"
+  },
+  "arkAboutSecretKey": "Clé secrète",
+  "@arkAboutSecretKey": {
+    "description": "Label for secret key field in about page"
+  },
+  "arkAboutShow": "Afficher",
+  "@arkAboutShow": {
+    "description": "Button text to show hidden secret key"
+  },
+  "arkAboutHide": "Masquer",
+  "@arkAboutHide": {
+    "description": "Button text to hide visible secret key"
+  },
+  "arkContinueButton": "Continuer",
+  "@arkContinueButton": {
+    "description": "Continue button text used in ark send flow"
+  },
   "addressViewErrorLoadingAddresses": "Erreur lors du chargement des adresses : {error}",
   "@addressViewErrorLoadingAddresses": {
     "description": "Message d'erreur affiché lorsque le chargement des adresses échoue",

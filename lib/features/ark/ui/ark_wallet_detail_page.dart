@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark/router.dart';
@@ -25,7 +26,7 @@ class ArkWalletDetailPage extends StatelessWidget {
         leading: BackButton(
           onPressed: () => context.goNamed(WalletRoute.walletHome.name),
         ),
-        title: Text('Ark Instant Payments', style: context.font.headlineMedium),
+        title: Text(context.loc.arkInstantPayments, style: context.font.headlineMedium),
         actions: [
           IconButton(
             icon: const Icon(CupertinoIcons.settings),
@@ -84,7 +85,7 @@ class ArkWalletDetailPage extends StatelessWidget {
                       return Padding(
                         padding: const EdgeInsets.all(13.0),
                         child: BBButton.big(
-                          label: 'Settle transactions',
+                          label: context.loc.arkSettleTransactions,
                           onPressed:
                               () => SettleBottomSheet.show(context, cubit),
                           bgColor: context.colour.primary,
@@ -121,7 +122,7 @@ class ArkWalletBottomButtons extends StatelessWidget {
         Expanded(
           child: BBButton.big(
             iconData: Icons.arrow_downward,
-            label: 'Receive',
+            label: context.loc.arkReceiveButton,
             iconFirst: true,
             onPressed: () {
               context.pushNamed(ArkRoute.arkReceive.name);
@@ -134,7 +135,7 @@ class ArkWalletBottomButtons extends StatelessWidget {
         Expanded(
           child: BBButton.big(
             iconData: Icons.crop_free,
-            label: 'Send',
+            label: context.loc.arkSendButton,
             iconFirst: true,
             onPressed: () {
               context.pushNamed(ArkRoute.arkSendRecipient.name);
