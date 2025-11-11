@@ -15,7 +15,7 @@ sealed class RecipientsState with _$RecipientsState {
     @Default('') String sinpeOwnerName,
     @Default(false) bool isAddingRecipient,
     Exception? failedToAddRecipient,
-    @Default('') String selectedRecipientId,
+    RecipientViewModel? selectedRecipient,
   }) = _RecipientsState;
   const RecipientsState._();
 
@@ -25,7 +25,7 @@ sealed class RecipientsState with _$RecipientsState {
       isCheckingSinpe ||
       isSearchingCadBillers;
 
-  bool get hasSelectedRecipient => selectedRecipientId.isNotEmpty;
+  bool get hasSelectedRecipient => selectedRecipient != null;
 
   Set<String> get availableJurisdictions =>
       selectableRecipientTypes.map((type) => type.jurisdictionCode).toSet();

@@ -92,7 +92,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     emit(
       state.copyWith(
         isAddingRecipient: true,
-        selectedRecipientId: '',
+        selectedRecipient: null,
         failedToAddRecipient: null,
       ),
     );
@@ -104,7 +104,11 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       log.fine(
         'Successfully added recipient with ID: ${result.recipient.recipientId}',
       );
-      emit(state.copyWith(selectedRecipientId: result.recipient.recipientId));
+      emit(
+        state.copyWith(
+          selectedRecipient: RecipientViewModel.fromDto(result.recipient),
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
@@ -201,6 +205,6 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientsSelected event,
     Emitter<RecipientsState> emit,
   ) async {
-    emit(state.copyWith(selectedRecipientId: event.recipientId));
+    emit(state.copyWith(selectedRecipient: event.recipient));
   }
 }

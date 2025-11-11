@@ -56,6 +56,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
   }
 
   String get jurisdictionCode => type.jurisdictionCode;
+  String get currencyCode => type.currencyCode;
 
   String? get displayName {
     // Check corporate first for all types

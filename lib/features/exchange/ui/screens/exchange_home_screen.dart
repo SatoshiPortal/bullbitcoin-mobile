@@ -6,7 +6,6 @@ import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
-import 'package:bb_mobile/features/recipients/frameworks/ui/routing/recipients_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
@@ -60,26 +59,6 @@ class ExchangeHomeScreen extends StatelessWidget {
                             if (!isFullyVerified) const ExchangeHomeKycCard(),
                             const Gap(12),
                             DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
-                            const Gap(12),
-                            ElevatedButton.icon(
-                              onPressed:
-                                  () => context.pushNamed(
-                                    RecipientsRoute.recipients.name,
-                                    extra: {
-                                      'onRecipientSelected': (
-                                        String recipientId,
-                                      ) {
-                                        // Handle the selected recipient ID
-                                        print(
-                                          'Selected recipient ID: $recipientId',
-                                        );
-                                        context.pop();
-                                      },
-                                    },
-                                  ),
-                              label: const Text('Select Recipient'),
-                              icon: const Icon(Icons.person_add),
-                            ),
                             /*
                             SwitchListTile(
                               value: false,

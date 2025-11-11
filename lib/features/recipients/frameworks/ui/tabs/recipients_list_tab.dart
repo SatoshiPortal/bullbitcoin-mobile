@@ -102,7 +102,7 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
           disabled: _selectedRecipient == null,
           onPressed: () {
             context.read<RecipientsBloc>().add(
-              RecipientsEvent.selected(_selectedRecipient!.id),
+              RecipientsEvent.selected(_selectedRecipient!),
             );
           },
           bgColor: context.colour.secondary,

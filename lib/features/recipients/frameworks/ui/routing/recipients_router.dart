@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/screens/recipients_screen.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -23,7 +24,8 @@ class RecipientsRouter {
       final selectableRecipientTypes =
           extra?['selectableRecipientTypes'] as Set<RecipientType>?;
       final onRecipientSelected =
-          extra?['onRecipientSelected'] as void Function(String recipientId)?;
+          extra?['onRecipientSelected']
+              as void Function(RecipientViewModel recipient)?;
 
       return BlocProvider<RecipientsBloc>(
         create:
@@ -36,10 +38,10 @@ class RecipientsRouter {
         child: BlocListener<RecipientsBloc, RecipientsState>(
           listenWhen:
               (previous, current) =>
-                  previous.selectedRecipientId != current.selectedRecipientId &&
+                  previous.selectedRecipient != current.selectedRecipient &&
                   current.hasSelectedRecipient,
           listener: (context, state) {
-            onRecipientSelected?.call(state.selectedRecipientId);
+            onRecipientSelected?.call(state.selectedRecipient!);
           },
           child: const RecipientsScreen(),
         ),

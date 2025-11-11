@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -13,6 +12,8 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_qr_bottom_sheet.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -118,16 +119,32 @@ class PayReceivePaymentScreen extends StatelessWidget {
               color: context.colour.secondaryFixedDim,
             ),
             const Gap(16),
-            _buildDetailRow(
-              context,
-              'Recipient type',
-              recipient.recipientType.displayName,
-            ),
+            _buildDetailRow(context, 'Recipient type', switch (recipient.type) {
+              // TODO: Use localization labels instead of hardcoded strings.
+              // CANADA types
+              RecipientType.interacEmailCad => 'Interac e-Transfer',
+              RecipientType.billPaymentCad => 'Bill Payment',
+              RecipientType.bankTransferCad => 'Bank Transfer',
+              // EUROPE types
+              RecipientType.sepaEur => 'SEPA Transfer',
+              // MEXICO types
+              RecipientType.speiClabeMxn => 'SPEI CLABE',
+              RecipientType.speiSmsMxn => 'SPEI SMS',
+              RecipientType.speiCardMxn => 'SPEI Card',
+              // COSTA RICA types
+              RecipientType.sinpeIbanUsd => 'SINPE IBAN (USD)',
+              RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
+              RecipientType.sinpeMovilCrc => 'SINPE Móvil',
+              // ARGENTINA types
+              RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina',
+              // TODO: Handle this case.
+              RecipientType.pseColombia => 'Bank Account COP',
+            }),
             const Gap(8),
             _buildDetailRow(
               context,
               'Recipient name',
-              recipient.getRecipientFullName(),
+              recipient.displayName ?? '-',
             ),
             const Gap(8),
             _buildDetailRow(
@@ -283,447 +300,64 @@ class PayReceivePaymentScreen extends StatelessWidget {
     return CopyInput(text: fullText);
   }
 
-  String _getRecipientInfoLabel(Recipient recipient) {
-    return recipient.when(
-      interacEmailCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            name,
-            email,
-            securityQuestion,
-            securityAnswer,
-            isDefault,
-            defaultComment,
-            firstname,
-            lastname,
-            isCorporate,
-            corporateName,
-          ) => 'Email',
-      billPaymentCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'Payee',
-      bankTransferCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            institutionNumber,
-            transitNumber,
-            accountNumber,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'Account',
-      sepaEur:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            iban,
-            address,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'IBAN',
-      speiClabeMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            clabe,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'CLABE',
-      speiSmsMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            phone,
-            phoneNumber,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'Phone',
-      speiCardMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            debitCard,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'Card',
-      sinpeIbanUsd:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            iban,
-            ownerName,
-            currency,
-            isCorporate,
-            corporateName,
-          ) => 'IBAN',
-      sinpeIbanCrc:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            iban,
-            ownerName,
-            currency,
-            isCorporate,
-            corporateName,
-          ) => 'IBAN',
-      sinpeMovilCrc:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            phoneNumber,
-            ownerName,
-            currency,
-            defaultComment,
-            isCorporate,
-            corporateName,
-          ) => 'Phone',
-    );
+  String _getRecipientInfoLabel(RecipientViewModel recipient) {
+    switch (recipient.type) {
+      case RecipientType.interacEmailCad:
+        return 'Email';
+      case RecipientType.billPaymentCad:
+        return 'Payee';
+      case RecipientType.bankTransferCad:
+        return 'Account';
+      case RecipientType.sepaEur:
+        return 'IBAN';
+      case RecipientType.speiClabeMxn:
+        return 'CLABE';
+      case RecipientType.speiSmsMxn:
+        return 'Phone';
+      case RecipientType.speiCardMxn:
+        return 'Card';
+      case RecipientType.sinpeIbanUsd:
+        return 'IBAN';
+      case RecipientType.sinpeIbanCrc:
+        return 'IBAN';
+      case RecipientType.sinpeMovilCrc:
+        return 'Phone';
+      case RecipientType.cbuCvuArgentina:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case RecipientType.pseColombia:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+    }
   }
 
-  String? _getRecipientInfoValue(Recipient recipient) {
-    return recipient.when(
-      interacEmailCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            name,
-            email,
-            securityQuestion,
-            securityAnswer,
-            isDefault,
-            defaultComment,
-            firstname,
-            lastname,
-            isCorporate,
-            corporateName,
-          ) => email,
-      billPaymentCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => payeeName ?? payeeCode ?? payeeAccountNumber,
-      bankTransferCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            institutionNumber,
-            transitNumber,
-            accountNumber,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => '$institutionNumber-$transitNumber-$accountNumber',
-      sepaEur:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            iban,
-            address,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => iban,
-      speiClabeMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            clabe,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => clabe,
-      speiSmsMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            phone,
-            phoneNumber,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => phoneNumber,
-      speiCardMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            debitCard,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => debitCard,
-      sinpeIbanUsd:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            iban,
-            ownerName,
-            currency,
-            isCorporate,
-            corporateName,
-          ) => iban,
-      sinpeIbanCrc:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            iban,
-            ownerName,
-            currency,
-            isCorporate,
-            corporateName,
-          ) => iban,
-      sinpeMovilCrc:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            phoneNumber,
-            ownerName,
-            currency,
-            defaultComment,
-            isCorporate,
-            corporateName,
-          ) => _formatSinpePhoneNumber(phoneNumber),
-    );
+  String? _getRecipientInfoValue(RecipientViewModel recipient) {
+    switch (recipient.type) {
+      case RecipientType.cbuCvuArgentina:
+      case RecipientType.pseColombia:
+        return '-';
+      case RecipientType.interacEmailCad:
+        return recipient.email;
+      case RecipientType.billPaymentCad:
+        return recipient.payeeName ??
+            recipient.payeeCode ??
+            recipient.payeeAccountNumber;
+      case RecipientType.bankTransferCad:
+        return '${recipient.institutionNumber}-${recipient.transitNumber}-${recipient.accountNumber}';
+      case RecipientType.sepaEur:
+        return recipient.iban;
+      case RecipientType.speiClabeMxn:
+        return recipient.clabe;
+      case RecipientType.speiSmsMxn:
+        return recipient.phoneNumber;
+      case RecipientType.speiCardMxn:
+        return recipient.debitcard;
+      case RecipientType.sinpeIbanUsd:
+        return recipient.iban;
+      case RecipientType.sinpeIbanCrc:
+        return recipient.iban;
+      case RecipientType.sinpeMovilCrc:
+        return _formatSinpePhoneNumber(recipient.phoneNumber);
+    }
   }
 }
