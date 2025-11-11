@@ -10,5 +10,6 @@ sealed class PriceChartState with _$PriceChartState {
     @Default(null) int? selectedDataPointIndex,
     @Default(false) bool isLoading,
     @Default(null) Object? error,
+    @Default(false) bool hasFetchedAllIntervals,
   }) = _PriceChartState;
 }

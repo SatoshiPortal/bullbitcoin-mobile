@@ -38,7 +38,7 @@ class PriceChartBloc extends Bloc<PriceChartEvent, PriceChartState> {
     try {
       final settings = await _getSettingsUsecase.execute();
       final currency = event.currency ?? settings.currencyCode;
-      final interval = event.interval ?? RateTimelineInterval.day;
+      final interval = event.interval ?? RateTimelineInterval.hour;
 
       final fromDate = _getFromDateForInterval(interval);
       final toDate = DateTime.now().toUtc();
@@ -60,7 +60,10 @@ class PriceChartBloc extends Bloc<PriceChartEvent, PriceChartState> {
         ),
       );
 
-      add(PriceChartFetchAllIntervals(currency: currency));
+      // Only fetch all intervals once on app startup
+      if (!state.hasFetchedAllIntervals) {
+        add(PriceChartFetchAllIntervals(currency: currency));
+      }
     } catch (e) {
       log.severe('[PriceChartBloc] _onStarted error: $e');
       emit(state.copyWith(error: e, isLoading: false));
@@ -77,6 +80,23 @@ class PriceChartBloc extends Bloc<PriceChartEvent, PriceChartState> {
       final currency = state.currency;
       if (currency == null) return;
 
+      // Use cached data if available
+      final allIntervalsData = state.allIntervalsData;
+      if (allIntervalsData != null &&
+          allIntervalsData.containsKey(event.interval.value)) {
+        final cachedRateHistory = allIntervalsData[event.interval.value]!;
+        emit(
+          state.copyWith(
+            selectedInterval: event.interval,
+            rateHistory: cachedRateHistory,
+            isLoading: false,
+            selectedDataPointIndex: null,
+          ),
+        );
+        return;
+      }
+
+      // Otherwise fetch from API (incremental update)
       final fromDate = _getFromDateForInterval(event.interval);
       final toDate = DateTime.now().toUtc();
 
@@ -130,7 +150,12 @@ class PriceChartBloc extends Bloc<PriceChartEvent, PriceChartState> {
         toDate: toDate,
       );
 
-      emit(state.copyWith(allIntervalsData: allIntervals));
+      emit(
+        state.copyWith(
+          allIntervalsData: allIntervals,
+          hasFetchedAllIntervals: true,
+        ),
+      );
     } catch (e) {
       log.warning('[PriceChartBloc] _onFetchAllIntervals error: $e');
     }
