@@ -205,6 +205,9 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientsSelected event,
     Emitter<RecipientsState> emit,
   ) async {
+    // Clear any previously selected recipient before setting the new one
+    // to ensure we can listen to changes properly.
+    emit(state.copyWith(selectedRecipient: null));
     emit(state.copyWith(selectedRecipient: event.recipient));
   }
 }

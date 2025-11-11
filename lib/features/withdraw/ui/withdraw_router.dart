@@ -12,8 +12,8 @@ import 'package:go_router/go_router.dart';
 
 enum WithdrawRoute {
   withdraw('/withdraw'),
-  withdrawConfirmation('confirmation'),
-  withdrawSuccess('success');
+  withdrawConfirmation('/withdraw/confirmation'),
+  withdrawSuccess('/withdraw/success');
 
   final String path;
 
@@ -21,101 +21,106 @@ enum WithdrawRoute {
 }
 
 class WithdrawRouter {
-  static final route = ShellRoute(
-    builder: (context, state, child) {
+  static final route = GoRoute(
+    path: WithdrawRoute.withdraw.path,
+    name: WithdrawRoute.withdraw.name,
+    builder: (context, state) {
       return BlocProvider(
         create:
             (_) => locator<WithdrawBloc>()..add(const WithdrawEvent.started()),
-        child: child,
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<WithdrawBloc, WithdrawState>(
+              listenWhen:
+                  (previous, current) =>
+                      previous is WithdrawInitialState &&
+                      previous.apiKeyException == null &&
+                      current is WithdrawInitialState &&
+                      current.apiKeyException != null,
+              listener: (context, state) {
+                // Redirect to exchange home if API key exception occurs which means the user is not authenticated
+                context.goNamed(ExchangeRoute.exchangeHome.name);
+              },
+            ),
+            BlocListener<WithdrawBloc, WithdrawState>(
+              listenWhen:
+                  (previous, current) =>
+                      previous is WithdrawAmountInputState &&
+                      current is WithdrawRecipientInputState,
+              listener: (context, state) {
+                context.pushNamed(
+                  RecipientsRoute.recipients.name,
+                  extra: {
+                    'onRecipientSelected': (RecipientViewModel recipient) {
+                      context.read<WithdrawBloc>().add(
+                        WithdrawEvent.recipientSelected(recipient),
+                      );
+                    },
+                    'selectableRecipientTypes': RecipientType.typesForCurrency(
+                      context.read<WithdrawBloc>().state.currency.code,
+                    ),
+                  },
+                );
+              },
+            ),
+            BlocListener<WithdrawBloc, WithdrawState>(
+              listenWhen:
+                  (previous, current) =>
+                      previous is WithdrawRecipientInputState &&
+                      current is WithdrawConfirmationState,
+              listener: (context, state) {
+                context.pushNamed(
+                  WithdrawRoute.withdrawConfirmation.name,
+                  extra: context.read<WithdrawBloc>(),
+                );
+              },
+            ),
+          ],
+          child: const WithdrawAmountScreen(),
+        ),
       );
     },
     routes: [
-      GoRoute(
-        path: WithdrawRoute.withdraw.path,
-        name: WithdrawRoute.withdraw.name,
-        builder: (context, state) {
-          return MultiBlocListener(
-            listeners: [
-              BlocListener<WithdrawBloc, WithdrawState>(
-                listenWhen:
-                    (previous, current) =>
-                        previous is WithdrawInitialState &&
-                        previous.apiKeyException == null &&
-                        current is WithdrawInitialState &&
-                        current.apiKeyException != null,
-                listener: (context, state) {
-                  // Redirect to exchange home if API key exception occurs which means the user is not authenticated
-                  context.goNamed(ExchangeRoute.exchangeHome.name);
-                },
-              ),
-              BlocListener<WithdrawBloc, WithdrawState>(
-                listenWhen:
-                    (previous, current) =>
-                        previous is WithdrawAmountInputState &&
-                        current is WithdrawRecipientInputState,
-                listener: (context, state) {
-                  context.pushNamed(
-                    RecipientsRoute.recipients.name,
-                    extra: {
-                      'onRecipientSelected': (RecipientViewModel recipient) {
-                        context.read<WithdrawBloc>().add(
-                          WithdrawEvent.recipientSelected(recipient),
-                        );
-                      },
-                      'selectableRecipientTypes':
-                          RecipientType.typesForCurrency(
-                            context.read<WithdrawBloc>().state.currency.code,
-                          ),
-                    },
-                  );
-                },
-              ),
-              BlocListener<WithdrawBloc, WithdrawState>(
-                listenWhen:
-                    (previous, current) =>
-                        previous is WithdrawRecipientInputState &&
-                        current is WithdrawConfirmationState,
-                listener: (context, state) {
-                  context.pushNamed(WithdrawRoute.withdrawConfirmation.name);
-                },
-              ),
-            ],
-            child: const WithdrawAmountScreen(),
-          );
-        },
-        routes: [
-          /*GoRoute(
+      /*GoRoute(
         path: WithdrawRoute.withdrawDescription.path,
         name: WithdrawRoute.withdrawDescription.name,
         builder: (context, state) {
           return const WithdrawDescriptionScreen();
         },
       ),*/
-          GoRoute(
-            path: WithdrawRoute.withdrawConfirmation.path,
-            name: WithdrawRoute.withdrawConfirmation.name,
-            builder: (context, state) {
-              return BlocListener<WithdrawBloc, WithdrawState>(
-                listenWhen:
-                    (previous, current) =>
-                        previous is WithdrawConfirmationState &&
-                        current is WithdrawSuccessState,
-                listener: (context, state) {
-                  context.pushNamed(WithdrawRoute.withdrawSuccess.name);
-                },
-                child: const WithdrawConfirmationScreen(),
-              );
-            },
-          ),
-
-          GoRoute(
-            path: WithdrawRoute.withdrawSuccess.path,
-            name: WithdrawRoute.withdrawSuccess.name,
-            builder: (context, state) {
-              return const WithdrawSuccessScreen();
-            },
-          ),
-        ],
+      GoRoute(
+        path: WithdrawRoute.withdrawConfirmation.path,
+        name: WithdrawRoute.withdrawConfirmation.name,
+        builder: (context, state) {
+          final bloc = state.extra! as WithdrawBloc;
+          return BlocProvider.value(
+            value: bloc,
+            child: BlocListener<WithdrawBloc, WithdrawState>(
+              listenWhen:
+                  (previous, current) =>
+                      previous is WithdrawConfirmationState &&
+                      current is WithdrawSuccessState,
+              listener: (context, state) {
+                context.pushNamed(
+                  WithdrawRoute.withdrawSuccess.name,
+                  extra: bloc,
+                );
+              },
+              child: const WithdrawConfirmationScreen(),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: WithdrawRoute.withdrawSuccess.path,
+        name: WithdrawRoute.withdrawSuccess.name,
+        builder: (context, state) {
+          final bloc = state.extra! as WithdrawBloc;
+          return BlocProvider.value(
+            value: bloc,
+            child: const WithdrawSuccessScreen(),
+          );
+        },
       ),
     ],
   );
