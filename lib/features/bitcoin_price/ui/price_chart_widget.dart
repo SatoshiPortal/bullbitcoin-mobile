@@ -143,37 +143,73 @@ class _Chart extends StatefulWidget {
   State<_Chart> createState() => _ChartState();
 }
 
-class _ChartState extends State<_Chart> with SingleTickerProviderStateMixin {
+class _ChartState extends State<_Chart> with TickerProviderStateMixin {
   int? _touchedIndex;
-  late AnimationController _animationController;
-  late Animation<double> _animation;
+  late AnimationController _lineAnimationController;
+  late Animation<double> _lineAnimation;
+  late AnimationController _pulseAnimationController;
+  late Animation<double> _pulseAnimation;
+  late AnimationController _dotPositionController;
+  late Animation<double> _dotPositionAnimation;
+  int _previousIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
+    _lineAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     );
-    _animation = CurvedAnimation(
-      parent: _animationController,
+    _lineAnimation = CurvedAnimation(
+      parent: _lineAnimationController,
       curve: Curves.easeInOutCubic,
     );
-    _animationController.forward();
+    _lineAnimationController.forward();
+
+    _pulseAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+      CurvedAnimation(
+        parent: _pulseAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+    _pulseAnimationController.repeat(reverse: true);
+
+    _dotPositionController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _dotPositionAnimation = CurvedAnimation(
+      parent: _dotPositionController,
+      curve: Curves.easeOutCubic,
+    );
   }
 
   @override
   void didUpdateWidget(_Chart oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.rates != widget.rates) {
-      _animationController.reset();
-      _animationController.forward();
+      _lineAnimationController.reset();
+      _lineAnimationController.forward();
+    }
+
+    final currentIndex =
+        widget.selectedIndex ?? _touchedIndex ?? (widget.rates.length - 1);
+    if (currentIndex != _previousIndex) {
+      _previousIndex = currentIndex;
+      _dotPositionController.reset();
+      _dotPositionController.forward();
     }
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _lineAnimationController.dispose();
+    _pulseAnimationController.dispose();
+    _dotPositionController.dispose();
     super.dispose();
   }
 
@@ -229,10 +265,10 @@ class _ChartState extends State<_Chart> with SingleTickerProviderStateMixin {
         widget.onTap(index);
       },
       child: AnimatedBuilder(
-        animation: _animation,
+        animation: _lineAnimation,
         builder: (context, child) {
           final animatedSpots = List.generate(rates.length, (index) {
-            final progress = _animation.value;
+            final progress = _lineAnimation.value;
             final visibleCount = (rates.length * progress).ceil();
             if (index < visibleCount) {
               return FlSpot(index.toDouble(), prices[index]);
@@ -271,18 +307,27 @@ class _ChartState extends State<_Chart> with SingleTickerProviderStateMixin {
                 ),
               ),
               if (displayIndex < rates.length)
-                Positioned.fill(
-                  child: CustomPaint(
-                    painter: _RedDotPainter(
-                      index: displayIndex,
-                      totalPoints: rates.length,
-                      price: prices[displayIndex],
-                      minPrice: minPrice - padding,
-                      maxPrice: maxPrice + padding,
-                      dotColor: context.colour.primary,
-                      borderColor: context.colour.onPrimary,
-                    ),
-                  ),
+                AnimatedBuilder(
+                  animation: Listenable.merge([
+                    _pulseAnimation,
+                    _dotPositionAnimation,
+                  ]),
+                  builder: (context, child) {
+                    return Positioned.fill(
+                      child: CustomPaint(
+                        painter: _RedDotPainter(
+                          index: displayIndex,
+                          totalPoints: rates.length,
+                          price: prices[displayIndex],
+                          minPrice: minPrice - padding,
+                          maxPrice: maxPrice + padding,
+                          dotColor: context.colour.onTertiary,
+                          borderColor: context.colour.onPrimary,
+                          pulseScale: _pulseAnimation.value,
+                        ),
+                      ),
+                    );
+                  },
                 ),
             ],
           );
@@ -340,6 +385,7 @@ class _RedDotPainter extends CustomPainter {
     required this.maxPrice,
     required this.dotColor,
     required this.borderColor,
+    this.pulseScale = 1.0,
   });
 
   final int index;
@@ -349,6 +395,7 @@ class _RedDotPainter extends CustomPainter {
   final double maxPrice;
   final Color dotColor;
   final Color borderColor;
+  final double pulseScale;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -361,12 +408,23 @@ class _RedDotPainter extends CustomPainter {
         priceRange > 0 ? (price - minPrice) / priceRange : 0.5;
     final y = size.height - (normalizedPrice * size.height);
 
+    final dotRadius = 6.0 * pulseScale;
+    final glowRadius = dotRadius + 4;
+
+    final glowPaint =
+        Paint()
+          ..color = dotColor.withValues(alpha: 0.2)
+          ..style = PaintingStyle.fill
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
+
+    canvas.drawCircle(Offset(x, y), glowRadius, glowPaint);
+
     final paint =
         Paint()
           ..color = dotColor
           ..style = PaintingStyle.fill;
 
-    canvas.drawCircle(Offset(x, y), 6, paint);
+    canvas.drawCircle(Offset(x, y), dotRadius, paint);
 
     final borderPaint =
         Paint()
@@ -374,14 +432,15 @@ class _RedDotPainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2;
 
-    canvas.drawCircle(Offset(x, y), 6, borderPaint);
+    canvas.drawCircle(Offset(x, y), dotRadius, borderPaint);
   }
 
   @override
   bool shouldRepaint(_RedDotPainter oldDelegate) {
     return oldDelegate.index != index ||
         oldDelegate.price != price ||
-        oldDelegate.totalPoints != totalPoints;
+        oldDelegate.totalPoints != totalPoints ||
+        oldDelegate.pulseScale != pulseScale;
   }
 }
 
