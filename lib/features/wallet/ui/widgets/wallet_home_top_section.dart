@@ -26,13 +26,13 @@ class WalletHomeTopSection extends StatelessWidget {
       height: 264 + 78 + 46,
       child: Stack(
         children: [
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(
                 height: 264 + 78,
                 // color: Colors.red,
-                child: const _UI(),
+                child: _UI(),
               ),
               // const Gap(40),
             ],

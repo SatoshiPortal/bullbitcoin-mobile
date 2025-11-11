@@ -45,7 +45,9 @@ class PriceChartWidget extends StatelessWidget {
           children: [
             Column(
               children: [
-                const Gap(72), // Space for app bar + extra spacing
+                const Gap(
+                  72,
+                ), // Space for app bar - currency aligned with back button
                 if (selectedIndex != null && selectedIndex < rates.length)
                   _PriceDisplay(rate: rates[selectedIndex], currency: currency)
                 else if (rates.isNotEmpty)
@@ -68,7 +70,7 @@ class PriceChartWidget extends StatelessWidget {
                 const Gap(16),
                 _IntervalButtons(
                   selectedInterval:
-                      state.selectedInterval ?? RateTimelineInterval.day,
+                      state.selectedInterval ?? RateTimelineInterval.hour,
                   onIntervalChanged: (interval) {
                     context.read<PriceChartBloc>().add(
                       PriceChartEvent.intervalChanged(interval),
@@ -100,9 +102,9 @@ class _PriceDisplay extends StatelessWidget {
     return Column(
       children: [
         BBText(
-          '$currency',
+          currency,
           style: context.font.bodyMedium?.copyWith(
-            color: context.colour.onPrimary.withOpacity(0.7),
+            color: context.colour.onPrimary.withValues(alpha: 0.7),
           ),
         ),
         const Gap(4),
@@ -117,7 +119,7 @@ class _PriceDisplay extends StatelessWidget {
           BBText(
             dateFormat.format(date),
             style: context.font.bodySmall?.copyWith(
-              color: context.colour.onPrimary.withOpacity(0.6),
+              color: context.colour.onPrimary.withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -215,7 +217,7 @@ class _ChartState extends State<_Chart> {
               ],
               minY: minPrice - padding,
               maxY: maxPrice + padding,
-              lineTouchData: LineTouchData(enabled: false),
+              lineTouchData: const LineTouchData(enabled: false),
             ),
           ),
           if (displayIndex < rates.length)
@@ -227,7 +229,7 @@ class _ChartState extends State<_Chart> {
                   price: prices[displayIndex],
                   minPrice: minPrice - padding,
                   maxPrice: maxPrice + padding,
-                  dotColor: context.colour.error,
+                  dotColor: context.colour.primary,
                   borderColor: context.colour.onPrimary,
                 ),
               ),
@@ -253,21 +255,21 @@ class _IntervalButtons extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _IntervalButton(
-          label: 'Hour',
+          label: 'Day',
           interval: RateTimelineInterval.hour,
           isSelected: selectedInterval == RateTimelineInterval.hour,
           onTap: () => onIntervalChanged(RateTimelineInterval.hour),
         ),
         const Gap(8),
         _IntervalButton(
-          label: 'Day',
+          label: 'Month',
           interval: RateTimelineInterval.day,
           isSelected: selectedInterval == RateTimelineInterval.day,
           onTap: () => onIntervalChanged(RateTimelineInterval.day),
         ),
         const Gap(8),
         _IntervalButton(
-          label: 'Week',
+          label: 'Year',
           interval: RateTimelineInterval.week,
           isSelected: selectedInterval == RateTimelineInterval.week,
           onTap: () => onIntervalChanged(RateTimelineInterval.week),
