@@ -23,4 +23,8 @@ abstract class ExchangeRateRepository {
     DateTime? fromDate,
     DateTime? toDate,
   });
+  Future<void> refreshAllRateHistory({
+    required String fromCurrency,
+    required String toCurrency,
+  });
 }

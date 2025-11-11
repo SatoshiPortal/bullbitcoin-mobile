@@ -38,7 +38,7 @@ class PriceChartBloc extends Bloc<PriceChartEvent, PriceChartState> {
     try {
       final settings = await _getSettingsUsecase.execute();
       final currency = event.currency ?? settings.currencyCode;
-      final interval = event.interval ?? RateTimelineInterval.hour;
+      final interval = event.interval ?? RateTimelineInterval.week;
 
       final fromDate = _getFromDateForInterval(interval);
       final toDate = DateTime.now().toUtc();

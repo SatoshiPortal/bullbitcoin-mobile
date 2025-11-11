@@ -68,6 +68,26 @@ class LocalRateHistoryDatasource {
     return DateTime.parse(latest.createdAt).toUtc();
   }
 
+  Future<DateTime?> getLatestRateDateAcrossAllIntervals({
+    required String fromCurrency,
+    required String toCurrency,
+  }) async {
+    final latest =
+        await (_db.select(_db.rateHistory)
+              ..where(
+                (t) =>
+                    t.fromCurrency.equals(fromCurrency) &
+                    t.toCurrency.equals(toCurrency),
+              )
+              ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
+              ..limit(1))
+            .getSingleOrNull();
+
+    if (latest == null) return null;
+
+    return DateTime.parse(latest.createdAt).toUtc();
+  }
+
   Future<List<RateModel>> getRates({
     required String fromCurrency,
     required String toCurrency,

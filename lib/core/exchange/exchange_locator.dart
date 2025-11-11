@@ -27,6 +27,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart'
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_recipients_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/refresh_rate_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -440,6 +441,18 @@ class ExchangeLocator {
 
     locator.registerFactory<GetAllIntervalsRateHistoryUsecase>(
       () => GetAllIntervalsRateHistoryUsecase(
+        mainnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'mainnetExchangeRateRepository',
+        ),
+        testnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'testnetExchangeRateRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<RefreshRateHistoryUsecase>(
+      () => RefreshRateHistoryUsecase(
         mainnetExchangeRateRepository: locator<ExchangeRateRepository>(
           instanceName: 'mainnetExchangeRateRepository',
         ),

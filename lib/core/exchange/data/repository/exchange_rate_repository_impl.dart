@@ -49,67 +49,6 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
     DateTime? toDate,
   }) async {
     try {
-      final latestDate = await _localRateHistory.getLatestRateDate(
-        fromCurrency: fromCurrency,
-        toCurrency: toCurrency,
-        interval: interval,
-      );
-
-      DateTime? apiFromDate;
-      if (latestDate == null) {
-        apiFromDate =
-            fromDate ?? DateTime.now().subtract(const Duration(days: 365));
-      } else {
-        final nextDate = switch (interval) {
-          'hour' => latestDate.add(const Duration(hours: 1)),
-          'day' => latestDate.add(const Duration(days: 1)),
-          'week' => latestDate.add(const Duration(days: 7)),
-          _ => latestDate.add(const Duration(days: 1)),
-        };
-        apiFromDate = nextDate;
-      }
-
-      final apiToDate = toDate ?? DateTime.now();
-
-      if (apiFromDate.isBefore(apiToDate)) {
-        try {
-          final apiDatasource = _bitcoinPrice as BullbitcoinApiDatasource;
-          final apiResponse = await apiDatasource.getIndexRateHistory(
-            fromCurrency: fromCurrency,
-            toCurrency: toCurrency,
-            interval: interval,
-            fromDate: apiFromDate,
-            toDate: apiToDate,
-          );
-
-          if (apiResponse.rates != null && apiResponse.rates!.isNotEmpty) {
-            await _localRateHistory.storeRates(
-              rates: apiResponse.rates!,
-              fromCurrency: fromCurrency,
-              toCurrency: toCurrency,
-              interval: interval,
-            );
-          }
-        } catch (e) {
-          log.warning('Failed to fetch rate history from API: $e');
-        }
-      }
-
-      // Cleanup old rates based on interval-specific retention periods
-      final maxAge = switch (interval) {
-        'hour' => const Duration(days: 1), // 1 day for hourly
-        'day' => const Duration(days: 30), // 1 month for daily
-        'week' => const Duration(days: 365), // 1 year for weekly
-        _ => const Duration(days: 365), // Default to 1 year
-      };
-      
-      await _localRateHistory.cleanupOldRates(
-        fromCurrency: fromCurrency,
-        toCurrency: toCurrency,
-        interval: interval,
-        maxAge: maxAge,
-      );
-
       final localRates = await _localRateHistory.getRates(
         fromCurrency: fromCurrency,
         toCurrency: toCurrency,
@@ -140,6 +79,77 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
     } catch (e) {
       log.warning('getIndexRateHistory error: $e');
       rethrow;
+    }
+  }
+
+  @override
+  Future<void> refreshAllRateHistory({
+    required String fromCurrency,
+    required String toCurrency,
+  }) async {
+    try {
+      final intervals = ['hour', 'day', 'week'];
+      final now = DateTime.now().toUtc();
+
+      final latestDateAcrossAllIntervals = await _localRateHistory
+          .getLatestRateDateAcrossAllIntervals(
+            fromCurrency: fromCurrency,
+            toCurrency: toCurrency,
+          );
+
+      for (final interval in intervals) {
+        try {
+          DateTime apiFromDate;
+          if (latestDateAcrossAllIntervals == null) {
+            apiFromDate = switch (interval) {
+              'hour' => now.subtract(const Duration(days: 1)),
+              'day' => now.subtract(const Duration(days: 30)),
+              'week' => now.subtract(const Duration(days: 365)),
+              _ => now.subtract(const Duration(days: 365)),
+            };
+          } else {
+            final nextDate = switch (interval) {
+              'hour' => latestDateAcrossAllIntervals.add(
+                const Duration(hours: 1),
+              ),
+              'day' => latestDateAcrossAllIntervals.add(
+                const Duration(days: 1),
+              ),
+              'week' => latestDateAcrossAllIntervals.add(
+                const Duration(days: 7),
+              ),
+              _ => latestDateAcrossAllIntervals.add(const Duration(days: 1)),
+            };
+            apiFromDate = nextDate;
+          }
+
+          if (apiFromDate.isBefore(now)) {
+            final apiDatasource = _bitcoinPrice as BullbitcoinApiDatasource;
+            final apiResponse = await apiDatasource.getIndexRateHistory(
+              fromCurrency: fromCurrency,
+              toCurrency: toCurrency,
+              interval: interval,
+              fromDate: apiFromDate,
+              toDate: now,
+            );
+
+            if (apiResponse.rates != null && apiResponse.rates!.isNotEmpty) {
+              await _localRateHistory.storeRates(
+                rates: apiResponse.rates!,
+                fromCurrency: fromCurrency,
+                toCurrency: toCurrency,
+                interval: interval,
+              );
+            }
+          }
+        } catch (e) {
+          log.warning(
+            'Failed to refresh rate history for interval $interval: $e',
+          );
+        }
+      }
+    } catch (e) {
+      log.warning('refreshAllRateHistory error: $e');
     }
   }
 
