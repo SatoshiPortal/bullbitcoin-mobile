@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.3.3+123
+version: 6.3.4+124
 
 
 environment:
