@@ -77,4 +77,10 @@ enum RecipientType {
         return 'COP';
     }
   }
+
+  static Set<RecipientType> typesForCurrency(String currencyCode) {
+    return RecipientType.values
+        .where((type) => type.currencyCode == currencyCode)
+        .toSet();
+  }
 }

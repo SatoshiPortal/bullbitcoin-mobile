@@ -1,8 +1,10 @@
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/routing/recipients_router.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_confirmation_screen.dart';
-import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_recipients_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_success_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +12,6 @@ import 'package:go_router/go_router.dart';
 
 enum WithdrawRoute {
   withdraw('/withdraw'),
-  withdrawRecipients('recipients'),
   withdrawConfirmation('confirmation'),
   withdrawSuccess('success');
 
@@ -53,19 +54,23 @@ class WithdrawRouter {
                         previous is WithdrawAmountInputState &&
                         current is WithdrawRecipientInputState,
                 listener: (context, state) {
-                  context.pushNamed(WithdrawRoute.withdrawRecipients.name);
+                  context.pushNamed(
+                    RecipientsRoute.recipients.name,
+                    extra: {
+                      'onRecipientSelected': (RecipientViewModel recipient) {
+                        context.read<WithdrawBloc>().add(
+                          WithdrawEvent.recipientSelected(recipient),
+                        );
+                      },
+                      'selectableRecipientTypes':
+                          RecipientType.typesForCurrency(
+                            context.read<WithdrawBloc>().state.currency.code,
+                          ),
+                    },
+                  );
                 },
               ),
-            ],
-            child: const WithdrawAmountScreen(),
-          );
-        },
-        routes: [
-          GoRoute(
-            path: WithdrawRoute.withdrawRecipients.path,
-            name: WithdrawRoute.withdrawRecipients.name,
-            builder: (context, state) {
-              return BlocListener<WithdrawBloc, WithdrawState>(
+              BlocListener<WithdrawBloc, WithdrawState>(
                 listenWhen:
                     (previous, current) =>
                         previous is WithdrawRecipientInputState &&
@@ -73,10 +78,12 @@ class WithdrawRouter {
                 listener: (context, state) {
                   context.pushNamed(WithdrawRoute.withdrawConfirmation.name);
                 },
-                child: const WithdrawRecipientsScreen(),
-              );
-            },
-          ),
+              ),
+            ],
+            child: const WithdrawAmountScreen(),
+          );
+        },
+        routes: [
           /*GoRoute(
         path: WithdrawRoute.withdrawDescription.path,
         name: WithdrawRoute.withdrawDescription.name,
