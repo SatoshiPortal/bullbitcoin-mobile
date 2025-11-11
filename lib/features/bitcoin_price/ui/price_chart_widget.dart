@@ -55,7 +55,7 @@ class PriceChartWidget extends StatelessWidget {
                 const Gap(16),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.only(right: 16.0),
                     child: _Chart(
                       rates: rates,
                       selectedIndex: selectedIndex,
@@ -70,7 +70,7 @@ class PriceChartWidget extends StatelessWidget {
                 const Gap(16),
                 _IntervalButtons(
                   selectedInterval:
-                      state.selectedInterval ?? RateTimelineInterval.hour,
+                      state.selectedInterval ?? RateTimelineInterval.week,
                   onIntervalChanged: (interval) {
                     context.read<PriceChartBloc>().add(
                       PriceChartEvent.intervalChanged(interval),
@@ -117,7 +117,7 @@ class _PriceDisplay extends StatelessWidget {
         if (date != null) ...[
           const Gap(4),
           BBText(
-            dateFormat.format(date),
+            dateFormat.format(date.toLocal()),
             style: context.font.bodySmall?.copyWith(
               color: context.colour.onPrimary.withValues(alpha: 0.6),
             ),
@@ -143,8 +143,39 @@ class _Chart extends StatefulWidget {
   State<_Chart> createState() => _ChartState();
 }
 
-class _ChartState extends State<_Chart> {
+class _ChartState extends State<_Chart> with SingleTickerProviderStateMixin {
   int? _touchedIndex;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOutCubic,
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void didUpdateWidget(_Chart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.rates != widget.rates) {
+      _animationController.reset();
+      _animationController.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,6 +190,8 @@ class _ChartState extends State<_Chart> {
 
     final displayIndex =
         widget.selectedIndex ?? _touchedIndex ?? rates.length - 1;
+
+    final lineColor = context.colour.onPrimary.withValues(alpha: 0.75);
 
     return GestureDetector(
       onHorizontalDragUpdate: (details) {
@@ -195,46 +228,65 @@ class _ChartState extends State<_Chart> {
         });
         widget.onTap(index);
       },
-      child: Stack(
-        children: [
-          LineChart(
-            LineChartData(
-              gridData: const FlGridData(show: false),
-              titlesData: const FlTitlesData(show: false),
-              borderData: FlBorderData(show: false),
-              lineBarsData: [
-                LineChartBarData(
-                  spots: List.generate(
-                    rates.length,
-                    (index) => FlSpot(index.toDouble(), prices[index]),
-                  ),
-                  isCurved: true,
-                  color: context.colour.onPrimary,
-                  barWidth: 2,
-                  dotData: const FlDotData(show: false),
-                  belowBarData: BarAreaData(show: false),
-                ),
-              ],
-              minY: minPrice - padding,
-              maxY: maxPrice + padding,
-              lineTouchData: const LineTouchData(enabled: false),
-            ),
-          ),
-          if (displayIndex < rates.length)
-            Positioned.fill(
-              child: CustomPaint(
-                painter: _RedDotPainter(
-                  index: displayIndex,
-                  totalPoints: rates.length,
-                  price: prices[displayIndex],
-                  minPrice: minPrice - padding,
-                  maxPrice: maxPrice + padding,
-                  dotColor: context.colour.primary,
-                  borderColor: context.colour.onPrimary,
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          final animatedSpots = List.generate(rates.length, (index) {
+            final progress = _animation.value;
+            final visibleCount = (rates.length * progress).ceil();
+            if (index < visibleCount) {
+              return FlSpot(index.toDouble(), prices[index]);
+            } else {
+              return FlSpot(index.toDouble(), prices[0]);
+            }
+          });
+
+          return Stack(
+            children: [
+              LineChart(
+                LineChartData(
+                  gridData: const FlGridData(show: false),
+                  titlesData: const FlTitlesData(show: false),
+                  borderData: FlBorderData(show: false),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: animatedSpots,
+                      isCurved: true,
+                      curveSmoothness: 0.35,
+                      color: lineColor,
+                      barWidth: 3,
+                      dotData: const FlDotData(show: false),
+                      belowBarData: BarAreaData(show: false),
+                      shadow: Shadow(
+                        color: lineColor.withValues(alpha: 0.15),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ),
+                  ],
+                  minY: minPrice - padding,
+                  maxY: maxPrice + padding,
+                  lineTouchData: const LineTouchData(enabled: false),
+                  clipData: const FlClipData.all(),
                 ),
               ),
-            ),
-        ],
+              if (displayIndex < rates.length)
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: _RedDotPainter(
+                      index: displayIndex,
+                      totalPoints: rates.length,
+                      price: prices[displayIndex],
+                      minPrice: minPrice - padding,
+                      maxPrice: maxPrice + padding,
+                      dotColor: context.colour.primary,
+                      borderColor: context.colour.onPrimary,
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }
