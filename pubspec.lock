@@ -94,8 +94,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: c5fb2ed396a632215959efdfb2473b69d911127f
-      resolved-ref: c5fb2ed396a632215959efdfb2473b69d911127f
+      ref: e5172bf80aad16c50a5d7315838accf512bcae95
+      resolved-ref: e5172bf80aad16c50a5d7315838accf512bcae95
       url: "https://github.com/SatoshiPortal/bdk-flutter"
     source: git
     version: "0.31.3"
@@ -1278,8 +1278,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: bc2086ab9aaf642890249f2740afa5b2c7fdc901
-      resolved-ref: bc2086ab9aaf642890249f2740afa5b2c7fdc901
+      ref: bca8468df1b02fcd56539b3a414395010445602b
+      resolved-ref: bca8468df1b02fcd56539b3a414395010445602b
       url: "https://github.com/SatoshiPortal/lwk-dart"
     source: git
     version: "0.2.2"
@@ -1641,8 +1641,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "31cda2ef3df055fac8a74f2b7f42fc683ae44214"
-      resolved-ref: "31cda2ef3df055fac8a74f2b7f42fc683ae44214"
+      ref: "3810fdf6174d9519a51eed82e154d21ffb3411a6"
+      resolved-ref: "3810fdf6174d9519a51eed82e154d21ffb3411a6"
       url: "https://github.com/SatoshiPortal/dart-satoshifier"
     source: git
     version: "0.0.1"
