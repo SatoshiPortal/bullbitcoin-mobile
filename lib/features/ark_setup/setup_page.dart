@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/ark_setup/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark_setup/presentation/state.dart';
@@ -13,7 +14,7 @@ class ArkSetupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ark Setup')),
+      appBar: AppBar(title: Text(context.loc.arkSetupTitle)),
       body: BlocBuilder<ArkSetupCubit, ArkSetupState>(
         builder: (context, state) {
           final isLoading = state.isLoading;
@@ -32,15 +33,7 @@ class ArkSetupPage extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      const Text('''
-Ark is still experimental.
-
-Your Ark wallet is derived from your main wallet's seed phrase. No additional backup is needed, your existing wallet backup restores your Ark funds too.
-
-By continuing, you acknowledge the experimental nature of Ark and the risk of losing funds.
-
-Developer note : Ark secret is derived from the main wallet seed using an arbitrary BIP-85 derivation (index 11811).
-            '''),
+                      Text(context.loc.arkSetupExperimentalWarning),
                       const Spacer(),
                       if (error != null) ...[
                         Text(
@@ -57,7 +50,7 @@ Developer note : Ark secret is derived from the main wallet seed using an arbitr
                                   context
                                       .read<ArkSetupCubit>()
                                       .createArkSecretKey(),
-                          label: 'Enable Ark',
+                          label: context.loc.arkSetupEnable,
                           bgColor: context.colour.primary,
                           textColor: context.colour.onPrimary,
                           disabled: arkWallet != null || isLoading,
