@@ -95,10 +95,19 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
         }
       }
 
+      // Cleanup old rates based on interval-specific retention periods
+      final maxAge = switch (interval) {
+        'hour' => const Duration(days: 1), // 1 day for hourly
+        'day' => const Duration(days: 30), // 1 month for daily
+        'week' => const Duration(days: 365), // 1 year for weekly
+        _ => const Duration(days: 365), // Default to 1 year
+      };
+      
       await _localRateHistory.cleanupOldRates(
         fromCurrency: fromCurrency,
         toCurrency: toCurrency,
-        maxAge: const Duration(days: 1460),
+        interval: interval,
+        maxAge: maxAge,
       );
 
       final localRates = await _localRateHistory.getRates(
