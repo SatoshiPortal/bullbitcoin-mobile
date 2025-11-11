@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_option_card.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -29,7 +30,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           onBack: () => context.pop(),
-          title: 'Backup your wallet',
+          title: context.loc.backupWalletTitle,
         ),
       ),
       body: SafeArea(
@@ -40,7 +41,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
             children: [
               const Gap(20),
               BBText(
-                'Without a backup, you will eventually lose access to your money. It is critically important to do a backup.',
+                context.loc.backupWalletImportanceWarning,
                 textAlign: TextAlign.center,
                 style: context.font.bodyLarge,
                 maxLines: 5,
@@ -53,10 +54,9 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                   height: 45,
                   fit: BoxFit.cover,
                 ),
-                title: 'Encrypted vault',
-                description:
-                    'Anonymous backup with strong encryption using your cloud.\nRequires Tor.',
-                tag: 'Easy and simple (1 minute)',
+                title: context.loc.backupWalletEncryptedVaultTitle,
+                description: context.loc.backupWalletEncryptedVaultDescription,
+                tag: context.loc.backupWalletEncryptedVaultTag,
                 onTap:
                     () => {
                       context.pushNamed(
@@ -77,10 +77,9 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                   height: 45,
                   fit: BoxFit.cover,
                 ),
-                title: 'Physical backup',
-                description:
-                    'Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.',
-                tag: 'Trustless (take your time)',
+                title: context.loc.backupWalletPhysicalBackupTitle,
+                description: context.loc.backupWalletPhysicalBackupDescription,
+                tag: context.loc.backupWalletPhysicalBackupTag,
                 onTap:
                     () => context.pushNamed(
                       BackupWalletSubroute.physicalCheckList.name,
@@ -129,7 +128,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                   );
                 },
                 child: BBText(
-                  "How to decide?",
+                  context.loc.backupWalletHowToDecide,
                   style: context.font.headlineLarge?.copyWith(
                     color: context.colour.primary,
                   ),
