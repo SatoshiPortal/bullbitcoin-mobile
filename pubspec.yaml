@@ -12,7 +12,7 @@ dependencies:
   bdk_flutter:
     git:
       url: https://github.com/SatoshiPortal/bdk-flutter
-      ref: c5fb2ed396a632215959efdfb2473b69d911127f
+      ref: be3c7faf86e8cc734d749ce6cead9365eb7607ee
   cupertino_icons: ^1.0.2
   flutter_bloc: ^8.1.6
   freezed: ^3.0.0
@@ -57,7 +57,7 @@ dependencies:
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart
-      ref: bc2086ab9aaf642890249f2740afa5b2c7fdc901
+      ref: bca8468df1b02fcd56539b3a414395010445602b
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter
@@ -103,7 +103,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/dart-satoshifier
-      ref: 31cda2ef3df055fac8a74f2b7f42fc683ae44214
+      ref: e3ada75cbf0992d6a60729bf29342ddc4915a3d0
   flutter_nfc_kit: ^3.6.0
   ledger_bitcoin:
     git:
