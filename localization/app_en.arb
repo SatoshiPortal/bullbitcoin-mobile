@@ -104,8 +104,8 @@
   "@walletOptionsWalletDetailsTitle": {
     "description": "Title for the wallet details screen"
   },
-  "walletOptionsAddressesTitle": "Addresses",
-  "@walletOptionsAddressesTitle": {
+  "addressViewAddressesTitle": "Addresses",
+  "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
   "walletDetailsDeletingMessage": "Deleting wallet...",
@@ -4255,12 +4255,12 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "receiveAddressType": "Receive",
-  "@receiveAddressType": {
+  "addressViewReceiveType": "Receive",
+  "@addressViewReceiveType": {
     "description": "Address type label for external/receive addresses"
   },
-  "changeAddressType": "Change",
-  "@changeAddressType": {
+  "addressViewChangeType": "Change",
+  "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
   },
   "pasteInputDefaultHint": "Paste a payment address or invoice",
@@ -7937,5 +7937,35 @@
     "placeholders": {
       "days": {}
     }
+  },
+  "addressViewErrorLoadingAddresses": "Error loading addresses: {error}",
+  "@addressViewErrorLoadingAddresses": {
+    "description": "Error message displayed when addresses fail to load",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addressViewNoAddressesFound": "No addresses found",
+  "@addressViewNoAddressesFound": {
+    "description": "Empty state message when no addresses are available"
+  },
+  "addressViewErrorLoadingMoreAddresses": "Error loading more addresses: {error}",
+  "@addressViewErrorLoadingMoreAddresses": {
+    "description": "Error message displayed when pagination of addresses fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addressViewChangeAddressesComingSoon": "Change addresses coming soon",
+  "@addressViewChangeAddressesComingSoon": {
+    "description": "Empty state message for change addresses feature that is coming soon"
+  },
+  "addressViewChangeAddressesDescription": "Display wallet Change addresses",
+  "@addressViewChangeAddressesDescription": {
+    "description": "Description for the coming soon dialog when trying to view change addresses"
   }
 }
