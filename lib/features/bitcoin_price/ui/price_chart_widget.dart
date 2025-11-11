@@ -267,13 +267,26 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
       child: AnimatedBuilder(
         animation: _lineAnimation,
         builder: (context, child) {
+          final progress = _lineAnimation.value;
+          // Draw from right to left (starting at the dot position)
+          // Calculate how many points from the end should be visible
+          final visibleCount = (rates.length * progress).ceil();
+          final startIndex = (rates.length - visibleCount).clamp(
+            0,
+            rates.length - 1,
+          );
+
           final animatedSpots = List.generate(rates.length, (index) {
-            final progress = _lineAnimation.value;
-            final visibleCount = (rates.length * progress).ceil();
-            if (index < visibleCount) {
+            // Show points from the end backwards
+            if (index >= startIndex) {
               return FlSpot(index.toDouble(), prices[index]);
+            } else if (startIndex > 0) {
+              // For points before the visible range, use the first visible point's position
+              // This creates the effect of the line "growing" from the dot
+              return FlSpot(index.toDouble(), prices[startIndex]);
             } else {
-              return FlSpot(index.toDouble(), prices[0]);
+              // At the very start, all points use the last price
+              return FlSpot(index.toDouble(), prices.last);
             }
           });
 
