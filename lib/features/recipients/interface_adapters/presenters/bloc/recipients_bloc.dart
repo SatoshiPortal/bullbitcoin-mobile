@@ -152,7 +152,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     emit(
       state.copyWith(
         isSearchingCadBillers: true,
-        cadBillers: [],
+        cadBillers: null,
         failedToSearchCadBillers: null,
       ),
     );

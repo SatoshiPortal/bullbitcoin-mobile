@@ -9,7 +9,7 @@ sealed class RecipientsState with _$RecipientsState {
     List<RecipientViewModel>? recipients,
     @Default(false) bool isSearchingCadBillers,
     Exception? failedToSearchCadBillers,
-    @Default([]) List<CadBillerViewModel> cadBillers,
+    List<CadBillerViewModel>? cadBillers,
     @Default(false) bool isCheckingSinpe,
     Exception? failedToCheckSinpe,
     @Default('') String sinpeOwnerName,
