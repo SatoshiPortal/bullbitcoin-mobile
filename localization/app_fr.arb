@@ -3693,6 +3693,10 @@
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
   },
+  "appUnlockScreenTitle": "Authentification",
+  "@appUnlockScreenTitle": {
+    "description": "Titre de l'écran de déverrouillage de l'application"
+  },
   "pinCreateHeadline": "Créer un nouveau code PIN",
   "@pinCreateHeadline": {
     "description": "Headline text on PIN creation screen"
@@ -3722,25 +3726,33 @@
   "@pinButtonConfirm": {
     "description": "Button label to submit confirmed PIN"
   },
-  "unlockEnterPinPrompt": "Entrez votre code PIN pour déverrouiller",
-  "@unlockEnterPinPrompt": {
-    "description": "Headline text prompting user to enter PIN for unlocking"
+  "appUnlockEnterPinMessage": "Entrez votre code PIN pour déverrouiller",
+  "@appUnlockEnterPinMessage": {
+    "description": "Message invitant l'utilisateur à entrer son code PIN pour déverrouiller l'application"
   },
-  "unlockIncorrectPinError": "Code PIN incorrect. Veuillez réessayer. ({failedAttempts} {attemptWord} échouée(s))",
-  "@unlockIncorrectPinError": {
-    "description": "Error message showing incorrect PIN with attempt count",
+  "appUnlockIncorrectPinError": "Code PIN incorrect. Veuillez réessayer. ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "description": "Message d'erreur affiché lorsque l'utilisateur entre un code PIN incorrect",
     "placeholders": {
       "failedAttempts": {
-        "type": "String"
+        "type": "int"
       },
-      "attemptWord": {
+      "attemptsWord": {
         "type": "String"
       }
     }
   },
-  "unlockButtonLabel": "Déverrouiller",
-  "@unlockButtonLabel": {
-    "description": "Button label to submit PIN for unlocking"
+  "appUnlockAttemptSingular": "tentative échouée",
+  "@appUnlockAttemptSingular": {
+    "description": "Forme singulière de 'tentative' pour les tentatives de déverrouillage échouées"
+  },
+  "appUnlockAttemptPlural": "tentatives échouées",
+  "@appUnlockAttemptPlural": {
+    "description": "Forme plurielle de 'tentatives' pour les tentatives de déverrouillage échouées"
+  },
+  "appUnlockButton": "Déverrouiller",
+  "@appUnlockButton": {
+    "description": "Libellé du bouton pour déverrouiller l'application"
   },
   "pinStatusLoading": "Chargement",
   "@pinStatusLoading": {
