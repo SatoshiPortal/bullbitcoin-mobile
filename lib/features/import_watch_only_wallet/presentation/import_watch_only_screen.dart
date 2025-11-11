@@ -71,10 +71,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                         const Gap(32),
                         const ImportMethodWidget(),
                       ] else
-                        WatchOnlyDetailsWidget(
-                          watchOnlyWallet: state.watchOnlyWallet!,
-                          cubit: cubit,
-                        ),
+                        const WatchOnlyDetailsWidget(),
                     ],
                   ),
                 ),
