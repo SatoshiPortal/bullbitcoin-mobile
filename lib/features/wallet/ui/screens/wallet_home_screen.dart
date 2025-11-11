@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/price_chart_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/auto_swap_fee_warning.dart';
@@ -14,9 +16,15 @@ class WalletHomeScreen extends StatelessWidget {
   const WalletHomeScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    // Trigger service status check when the screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<WalletBloc>().add(const CheckServiceStatus());
+
+      final currency = context.read<BitcoinPriceBloc>().state.currency;
+      if (currency != null) {
+        context.read<PriceChartBloc>().add(
+          PriceChartEvent.fetchAllIntervals(currency: currency),
+        );
+      }
     });
 
     return PopScope(
