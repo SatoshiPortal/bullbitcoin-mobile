@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
@@ -54,7 +55,7 @@ class SettleBottomSheet extends StatelessWidget {
                   ),
                   const Gap(16),
                   BBText(
-                    'Settle Transactions',
+                    context.loc.arkSettleTitle,
                     style: context.font.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -62,7 +63,7 @@ class SettleBottomSheet extends StatelessWidget {
                   ),
                   const Gap(8),
                   BBText(
-                    'Finalize pending transactions and include recoverable vtxos if needed',
+                    context.loc.arkSettleMessage,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.colour.secondary.withValues(alpha: 0.7),
                     ),
@@ -83,7 +84,7 @@ class SettleBottomSheet extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         BBText(
-                          'Include recoverable vtxos',
+                          context.loc.arkSettleIncludeRecoverable,
                           style: context.font.bodyMedium,
                         ),
                         Switch(
@@ -99,7 +100,7 @@ class SettleBottomSheet extends StatelessWidget {
                     children: [
                       Expanded(
                         child: BBButton.small(
-                          label: 'Cancel',
+                          label: context.loc.arkSettleCancel,
                           onPressed: () => Navigator.of(context).pop(),
                           bgColor: context.colour.secondaryFixed,
                           textColor: context.colour.secondary,
@@ -108,7 +109,7 @@ class SettleBottomSheet extends StatelessWidget {
                       const Gap(12),
                       Expanded(
                         child: BBButton.small(
-                          label: 'Settle',
+                          label: context.loc.arkSettleButton,
                           onPressed: () async {
                             Navigator.of(context).pop();
                             await cubit.settle(state.withRecoverableVtxos);

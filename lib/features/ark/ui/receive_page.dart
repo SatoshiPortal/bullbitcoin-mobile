@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
@@ -16,10 +17,11 @@ class ReceivePage extends StatefulWidget {
 }
 
 class _ReceivePageState extends State<ReceivePage> {
-  String _selectedOption = 'Ark';
+  String? _selectedOption;
 
   @override
   Widget build(BuildContext context) {
+    _selectedOption ??= context.loc.arkReceiveSegmentArk;
     final wallet = context.read<ArkCubit>().wallet;
 
     final btcAddress = wallet.boardingAddress;
@@ -27,7 +29,7 @@ class _ReceivePageState extends State<ReceivePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ark Receive', style: context.font.headlineMedium),
+        title: Text(context.loc.arkReceiveTitle, style: context.font.headlineMedium),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -37,7 +39,7 @@ class _ReceivePageState extends State<ReceivePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: BBSegmentFull(
-                items: const {'Ark', 'Boarding'},
+                items: {context.loc.arkReceiveSegmentArk, context.loc.arkReceiveSegmentBoarding},
                 initialValue: _selectedOption,
                 onSelected: (value) {
                   setState(() {
@@ -48,13 +50,13 @@ class _ReceivePageState extends State<ReceivePage> {
             ),
             const Gap(16),
             ReceiveQR(
-              qrData: _selectedOption == 'Boarding' ? btcAddress : arkAddress,
+              qrData: _selectedOption! == context.loc.arkReceiveSegmentBoarding ? btcAddress : arkAddress,
             ),
             const Gap(16),
             ArkCopyAddressSection(
               btcAddress: btcAddress,
               arkAddress: arkAddress,
-              selectedOption: _selectedOption,
+              selectedOption: _selectedOption!,
             ),
             const Gap(40),
           ],
@@ -108,13 +110,13 @@ class _ArkCopyAddressSectionState extends State<ArkCopyAddressSection> {
   @override
   Widget build(BuildContext context) {
     final currentAddress =
-        widget.selectedOption == 'Boarding'
+        widget.selectedOption == context.loc.arkReceiveSegmentBoarding
             ? widget.btcAddress
             : widget.arkAddress;
     final addressLabel =
-        widget.selectedOption == 'Boarding'
-            ? 'BTC Boarding Address'
-            : 'Ark Address';
+        widget.selectedOption == context.loc.arkReceiveSegmentBoarding
+            ? context.loc.arkReceiveBoardingAddress
+            : context.loc.arkArkAddress;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),

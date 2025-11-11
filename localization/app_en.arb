@@ -3934,7 +3934,7 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "arkRecipientAddress": "Recipient's address",
+  "arkRecipientAddress": "Recipient address",
   "@arkRecipientAddress": {
     "description": "Label for recipient address input field"
   },
@@ -7937,6 +7937,58 @@
     "placeholders": {
       "days": {}
     }
+  },
+  "arkSendRecipientTitle": "Send to Recipient",
+  "@arkSendRecipientTitle": {
+    "description": "Title for the ark send recipient page"
+  },
+  "arkSendRecipientHint": "Enter a payment address or invoice",
+  "@arkSendRecipientHint": {
+    "description": "Hint text for recipient address input field"
+  },
+  "arkSendRecipientError": "Please enter a recipient",
+  "@arkSendRecipientError": {
+    "description": "Error message when recipient field is empty"
+  },
+  "arkSendAmountTitle": "Enter Amount",
+  "@arkSendAmountTitle": {
+    "description": "Title for the ark send amount page"
+  },
+  "arkSendConfirmTitle": "Confirm Send",
+  "@arkSendConfirmTitle": {
+    "description": "Title for the ark send confirmation page"
+  },
+  "arkSendConfirmMessage": "Please confirm the details of your transaction before sending.",
+  "@arkSendConfirmMessage": {
+    "description": "Message displayed on send confirmation page"
+  },
+  "arkReceiveSegmentArk": "Ark",
+  "@arkReceiveSegmentArk": {
+    "description": "Segment option for Ark address type"
+  },
+  "arkReceiveSegmentBoarding": "Boarding",
+  "@arkReceiveSegmentBoarding": {
+    "description": "Segment option for Boarding (BTC) address type"
+  },
+  "arkReceiveBoardingAddress": "BTC Boarding Address",
+  "@arkReceiveBoardingAddress": {
+    "description": "Label for BTC boarding address"
+  },
+  "arkAboutSecretKey": "Secret Key",
+  "@arkAboutSecretKey": {
+    "description": "Label for secret key field in about page"
+  },
+  "arkAboutShow": "Show",
+  "@arkAboutShow": {
+    "description": "Button text to show hidden secret key"
+  },
+  "arkAboutHide": "Hide",
+  "@arkAboutHide": {
+    "description": "Button text to hide visible secret key"
+  },
+  "arkContinueButton": "Continue",
+  "@arkContinueButton": {
+    "description": "Continue button text used in ark send flow"
   },
   "addressViewErrorLoadingAddresses": "Error loading addresses: {error}",
   "@addressViewErrorLoadingAddresses": {

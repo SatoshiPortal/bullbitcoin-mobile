@@ -1,6 +1,7 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/ark/ui/ark_tx_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -60,7 +61,7 @@ class TransactionHistoryWidget extends StatelessWidget {
           children: [
             const Gap(16),
             Text(
-              'No transactions yet.',
+              context.loc.arkNoTransactionsYet,
               maxLines: 2,
               textAlign: TextAlign.center,
               style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
@@ -92,9 +93,9 @@ class TransactionHistoryWidget extends StatelessWidget {
           children: [
             Text(
               date.isAtSameMomentAs(today)
-                  ? 'Today'
+                  ? context.loc.arkToday
                   : date.isAtSameMomentAs(yesterday)
-                  ? 'Yesterday'
+                  ? context.loc.arkYesterday
                   : date.year == DateTime.now().year
                   ? DateFormat.MMMMd().format(date)
                   : DateFormat.yMMMMd().format(date),
