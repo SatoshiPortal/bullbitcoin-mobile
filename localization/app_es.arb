@@ -6916,6 +6916,44 @@
       }
     }
   },
+  "bip329LabelsTitle": "Etiquetas BIP329",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "Importar/Exportar etiquetas BIP329",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "bip329LabelsDescription": "Importa o exporta etiquetas de billetera usando el formato estándar BIP329.",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "bip329LabelsImportButton": "Importar etiquetas",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "bip329LabelsExportButton": "Exportar etiquetas",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "bip329LabelsExportSuccess": "{count, plural, =1{1 etiqueta exportada} other{{count} etiquetas exportadas}}",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bip329LabelsImportSuccess": "{count, plural, =1{1 etiqueta importada} other{{count} etiquetas importadas}}",
+  "@bip329LabelsImportSuccess": {
+    "description": "Success message after importing labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "legacySeedsNoSeeds": "No se encontraron semillas heredadas.",
   "@legacySeedsNoSeeds": {
     "description": "Empty state message when no legacy seeds exist"

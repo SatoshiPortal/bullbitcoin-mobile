@@ -6916,6 +6916,44 @@
       }
     }
   },
+  "bip329LabelsTitle": "BIP329 Labels",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 Labels Import/Export",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "bip329LabelsDescription": "Import or export wallet labels using the BIP329 standard format.",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "bip329LabelsImportButton": "Import Labels",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "bip329LabelsExportButton": "Export Labels",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "bip329LabelsExportSuccess": "{count, plural, =1{1 label exported} other{{count} labels exported}}",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bip329LabelsImportSuccess": "{count, plural, =1{1 label imported} other{{count} labels imported}}",
+  "@bip329LabelsImportSuccess": {
+    "description": "Success message after importing labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "legacySeedsNoSeeds": "No legacy seeds found.",
   "@legacySeedsNoSeeds": {
     "description": "Empty state message when no legacy seeds exist"
