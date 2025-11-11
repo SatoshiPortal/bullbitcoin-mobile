@@ -11,4 +11,6 @@ sealed class RecipientsEvent with _$RecipientsEvent {
       RecipientsSinpeChecked;
   const factory RecipientsEvent.cadBillersSearched(String query) =
       RecipientsCadBillersSearched;
+  const factory RecipientsEvent.selected(String recipientId) =
+      RecipientsSelected;
 }

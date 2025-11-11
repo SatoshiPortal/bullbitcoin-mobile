@@ -6,7 +6,7 @@ sealed class RecipientsState with _$RecipientsState {
     @Default(false) bool isLoadingRecipients,
     Exception? failedToLoadRecipients,
     @Default(RecipientType.values) List<RecipientType> selectableRecipientTypes,
-    @Default([]) List<RecipientViewModel> recipients,
+    List<RecipientViewModel>? recipients,
     @Default(false) bool isSearchingCadBillers,
     Exception? failedToSearchCadBillers,
     @Default([]) List<CadBillerViewModel> cadBillers,
@@ -34,5 +34,17 @@ sealed class RecipientsState with _$RecipientsState {
     return selectableRecipientTypes
         .where((type) => type.jurisdictionCode == jurisdiction)
         .toSet();
+  }
+
+  List<RecipientViewModel>? filteredRecipientsByJurisdiction(
+    String? jurisdiction,
+  ) {
+    if (jurisdiction == null) {
+      return recipients;
+    }
+
+    return recipients
+        ?.where((recipient) => recipient.jurisdictionCode == jurisdiction)
+        .toList();
   }
 }

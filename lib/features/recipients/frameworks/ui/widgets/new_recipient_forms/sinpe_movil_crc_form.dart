@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
@@ -21,11 +23,12 @@ class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
   String _phoneNumber = '';
   final TextEditingController _ownerNameController = TextEditingController();
   String _label = '';
+  late StreamSubscription<RecipientsState> _stateSubscription;
 
   @override
   void initState() {
     super.initState();
-    context.read<RecipientsBloc>().stream.listen((state) {
+    _stateSubscription = context.read<RecipientsBloc>().stream.listen((state) {
       // Update SINPE owner name when it changes in the state, which happens
       // when a check happens, resetting the owner name and after a successful
       // SINPE validation with the correct owner name.
@@ -41,6 +44,8 @@ class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
   void dispose() {
     _phoneNumberFocusNode.dispose();
     _labelFocusNode.dispose();
+    _ownerNameController.dispose();
+    _stateSubscription.cancel();
     super.dispose();
   }
 

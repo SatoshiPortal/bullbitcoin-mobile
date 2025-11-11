@@ -29,6 +29,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     on<RecipientsAdded>(_onAdded);
     on<RecipientsSinpeChecked>(_onSinpeChecked);
     on<RecipientsCadBillersSearched>(_onCadBillersSearched);
+    on<RecipientsSelected>(_onSelected);
   }
 
   final AddRecipientUsecase _addRecipientUsecase;
@@ -43,7 +44,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     emit(
       state.copyWith(
         isLoadingRecipients: true,
-        recipients: [],
+        recipients: null,
         failedToLoadRecipients: null,
       ),
     );
@@ -55,7 +56,21 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         state.copyWith(
           recipients:
               result.recipients
-                  .map((recipient) => RecipientViewModel.fromDto(recipient))
+                  .map((recipient) {
+                    // Wrap each transformation in try/catch so a single malformed element
+                    // doesn't fail the entire list. Nulls are filtered out with the
+                    // whereType.
+                    try {
+                      return RecipientViewModel.fromDto(recipient);
+                    } catch (err, stackTrace) {
+                      log.severe(
+                        'Error transforming recipient to view model: $err',
+                        trace: stackTrace,
+                      );
+                      return null;
+                    }
+                  })
+                  .whereType<RecipientViewModel>()
                   .toList(),
         ),
       );
@@ -151,7 +166,21 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         state.copyWith(
           cadBillers:
               result.billers
-                  .map((biller) => CadBillerViewModel.fromDto(biller))
+                  .map((biller) {
+                    // Wrap each transformation in try/catch so a single malformed element
+                    // doesn't fail the entire list. Nulls are filtered out with the
+                    // whereType.
+                    try {
+                      return CadBillerViewModel.fromDto(biller);
+                    } catch (err, stackTrace) {
+                      log.severe(
+                        'Error transforming biller to view model: $err',
+                        trace: stackTrace,
+                      );
+                      return null;
+                    }
+                  })
+                  .whereType<CadBillerViewModel>()
                   .toList(),
         ),
       );
@@ -166,5 +195,12 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     } finally {
       emit(state.copyWith(isSearchingCadBillers: false));
     }
+  }
+
+  Future<void> _onSelected(
+    RecipientsSelected event,
+    Emitter<RecipientsState> emit,
+  ) async {
+    emit(state.copyWith(selectedRecipientId: event.recipientId));
   }
 }

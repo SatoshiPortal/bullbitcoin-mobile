@@ -7,18 +7,20 @@ abstract class RecipientDetails {
   final bool isDefault;
   final bool? isOwner;
 
-  const RecipientDetails({
-    this.label,
-    this.isDefault = false,
-    this.isOwner,
-  });
+  const RecipientDetails({this.label, this.isDefault = false, this.isOwner});
 
   RecipientType get type;
+  String? get firstName => null;
+  String? get lastName => null;
+  String? get email => null;
+  bool? get isCorporate => null;
+  String? get corporateName => null;
 }
 
 // ── Interac Email (CAD)
 @immutable
 class InteracEmailCadDetails extends RecipientDetails {
+  @override
   final String email;
   final String name;
   final String securityQuestion;
@@ -182,9 +184,11 @@ class BankTransferCadDetails extends RecipientDetails {
 @immutable
 class SepaEurDetails extends RecipientDetails {
   final String iban;
+  @override
   final bool isCorporate;
   final String? firstname;
   final String? lastname;
+  @override
   final String? corporateName;
 
   const SepaEurDetails._({
@@ -213,12 +217,16 @@ class SepaEurDetails extends RecipientDetails {
     }
     if (isCorporate) {
       if (corporateName == null || corporateName.trim().isEmpty) {
-        throw ArgumentError('Corporate name is required for corporate accounts');
+        throw ArgumentError(
+          'Corporate name is required for corporate accounts',
+        );
       }
     } else {
       if ((firstname == null || firstname.trim().isEmpty) ||
           (lastname == null || lastname.trim().isEmpty)) {
-        throw ArgumentError('First name and last name are required for non-corporate accounts');
+        throw ArgumentError(
+          'First name and last name are required for non-corporate accounts',
+        );
       }
     }
 

@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/new_recipient_tab.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/recipients_list_tab.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_segmented_button.dart';
@@ -49,40 +48,44 @@ class _RecipientsScreenState extends State<RecipientsScreen> {
         ),
       ),
       body: SafeArea(
-        child: ScrollableColumn(
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          children: [
-            const Gap(16.0),
-            Text(
-              'Who are you paying?',
-              style: context.font.labelMedium?.copyWith(
-                color: context.colour.secondary,
+          child: Column(
+            children: [
+              const Gap(16.0),
+              Text(
+                'Who are you paying?',
+                style: context.font.labelMedium?.copyWith(
+                  color: context.colour.secondary,
+                ),
               ),
-            ),
-            const Gap(16.0),
-            // Tab selector
-            BBSegmentedButton(
-              items: RecipientsTab.values.map((e) => e.name).toSet(),
-              labels: {
-                RecipientsTab.newRecipient.name: 'New Recipient',
-                RecipientsTab.recipientsList.name: 'My Fiat Recipients',
-              },
-              selected: _currentTab.name,
-              onChanged: (value) {
-                setState(() {
-                  _currentTab = RecipientsTab.values.firstWhere(
-                    (element) => element.name == value,
-                  );
-                });
-              },
-            ),
-            const Gap(16.0),
-            // Tab content
-            if (_currentTab == RecipientsTab.newRecipient)
-              const NewRecipientTab()
-            else if (_currentTab == RecipientsTab.recipientsList)
-              const RecipientsListTab(),
-          ],
+              const Gap(16.0),
+              // Tab selector
+              BBSegmentedButton(
+                items: RecipientsTab.values.map((e) => e.name).toSet(),
+                labels: {
+                  RecipientsTab.newRecipient.name: 'New Recipient',
+                  RecipientsTab.recipientsList.name: 'My Fiat Recipients',
+                },
+                selected: _currentTab.name,
+                onChanged: (value) {
+                  setState(() {
+                    _currentTab = RecipientsTab.values.firstWhere(
+                      (element) => element.name == value,
+                    );
+                  });
+                },
+              ),
+              const Gap(16.0),
+              // Tab content
+              Expanded(
+                child: switch (_currentTab) {
+                  RecipientsTab.newRecipient => const NewRecipientTab(),
+                  RecipientsTab.recipientsList => const RecipientsListTab(),
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

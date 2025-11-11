@@ -84,16 +84,25 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
     final elements = resp.data['result']['elements'] as List<dynamic>?;
     if (elements == null) return [];
 
-    try {
-      return elements
-          .map(
-            (e) => RecipientModel.fromJson(e as Map<String, dynamic>).toDomain,
-          )
-          .toList();
-    } catch (e, stackTrace) {
-      log.severe('Error parsing recipients list: $e', trace: stackTrace);
-      rethrow;
-    }
+    return elements
+        .map((e) {
+          // Wrap each transformation in try/catch so a single malformed element
+          // doesn't fail the entire list. Nulls are filtered out below.
+          // This also helps when the api supports recipient types that the app
+          // doesn't support yet, which without does would cause the user not
+          // to see any recipients at all.
+          try {
+            return RecipientModel.fromJson(e as Map<String, dynamic>).toDomain;
+          } catch (err, stackTrace) {
+            log.severe(
+              'Error parsing recipient element: $err',
+              trace: stackTrace,
+            );
+            return null;
+          }
+        })
+        .whereType<Recipient>()
+        .toList();
   }
 
   @override
@@ -156,15 +165,24 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
     final elements = resp.data['result']['elements'] as List<dynamic>?;
     if (elements == null) return [];
 
-    try {
-      return elements
-          .map(
-            (e) => CadBillerModel.fromJson(e as Map<String, dynamic>).toDomain,
-          )
-          .toList();
-    } catch (e, stackTrace) {
-      log.severe('Error parsing CAD billers list: $e', trace: stackTrace);
-      rethrow;
-    }
+    return elements
+        .map((e) {
+          // Wrap each transformation in try/catch so a single malformed element
+          // doesn't fail the entire list. Nulls are filtered out below.
+          // This also helps when the api supports recipient types that the app
+          // doesn't support yet, which without does would cause the user not
+          // to see any recipients at all.
+          try {
+            return CadBillerModel.fromJson(e as Map<String, dynamic>).toDomain;
+          } catch (err, stackTrace) {
+            log.severe(
+              'Error parsing CAD biller element: $err',
+              trace: stackTrace,
+            );
+            return null;
+          }
+        })
+        .whereType<CadBiller>()
+        .toList();
   }
 }

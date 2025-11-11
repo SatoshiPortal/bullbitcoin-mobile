@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/bank_transfer_cad_form.dart';
@@ -43,7 +44,9 @@ class _NewRecipientTabState extends State<NewRecipientTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ScrollableColumn(
+      // Padding is already handled by the parent widget
+      padding: EdgeInsets.zero,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         JurisdictionsDropdown(
