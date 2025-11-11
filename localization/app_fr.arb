@@ -7967,5 +7967,21 @@
   "addressViewChangeAddressesDescription": "Afficher les adresses de change du portefeuille",
   "@addressViewChangeAddressesDescription": {
     "description": "Description de la boîte de dialogue à venir lors de la tentative d'affichage des adresses de change"
+  },
+  "appStartupErrorTitle": "Erreur de démarrage",
+  "@appStartupErrorTitle": {
+    "description": "Titre affiché lorsque l'application ne démarre pas correctement"
+  },
+  "appStartupErrorMessageWithBackup": "Dans la version 5.4.0, un bogue critique a été découvert dans l'une de nos dépendances qui affecte le stockage des clés privées. Votre application a été affectée par cela. Vous devrez supprimer cette application et la réinstaller avec votre phrase de récupération sauvegardée.",
+  "@appStartupErrorMessageWithBackup": {
+    "description": "Message d'erreur affiché lorsque le démarrage de l'application échoue en raison d'un problème de stockage de phrase de récupération et que l'utilisateur a une sauvegarde"
+  },
+  "appStartupErrorMessageNoBackup": "Dans la version 5.4.0, un bogue critique a été découvert dans l'une de nos dépendances qui affecte le stockage des clés privées. Votre application a été affectée par cela. Contactez notre équipe d'assistance.",
+  "@appStartupErrorMessageNoBackup": {
+    "description": "Message d'erreur affiché lorsque le démarrage de l'application échoue en raison d'un problème de stockage de phrase de récupération et que l'utilisateur n'a pas de sauvegarde"
+  },
+  "appStartupContactSupportButton": "Contacter le support",
+  "@appStartupContactSupportButton": {
+    "description": "Libellé du bouton pour contacter le support lorsque le démarrage de l'application échoue"
   }
 }

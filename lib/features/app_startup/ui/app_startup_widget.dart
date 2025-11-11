@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/share_logs_widget.dart';
@@ -116,7 +117,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                     Icon(Icons.error_outline, color: context.colour.error),
                     const Gap(8),
                     Text(
-                      'Startup Error',
+                      context.loc.appStartupErrorTitle,
                       style: context.font.headlineLarge?.copyWith(
                         color: context.colour.error,
                       ),
@@ -128,8 +129,8 @@ class AppStartupFailureScreen extends StatelessWidget {
                   child: Text(
                     e is SeedNotFoundException
                         ? hasBackup
-                            ? 'On v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. You will have to delete this app and reinstall it with your backed up seed.'
-                            : 'On v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. Contact our support team.'
+                            ? context.loc.appStartupErrorMessageWithBackup
+                            : context.loc.appStartupErrorMessageNoBackup
                         : e.toString(),
                     style: context.font.bodyMedium?.copyWith(
                       color: context.colour.secondary.withValues(alpha: 0.7),
@@ -144,7 +145,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                   // ignore: deprecated_member_use
                   launchUrl(url, mode: LaunchMode.externalApplication);
                 },
-                label: 'Contact Support',
+                label: context.loc.appStartupContactSupportButton,
                 bgColor: context.colour.primary,
                 textColor: context.colour.onPrimary,
               ),
