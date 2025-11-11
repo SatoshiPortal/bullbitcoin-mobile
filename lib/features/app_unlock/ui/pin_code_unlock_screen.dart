@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -60,7 +61,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
           automaticallyImplyLeading: false,
           flexibleSpace: TopBar(
             onBack: canPop ? () => context.pop() : null,
-            title: "Authentication",
+            title: context.loc.appUnlockScreenTitle,
           ),
         ),
         body: SafeArea(
@@ -75,7 +76,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                       children: [
                         const Gap(30),
                         Text(
-                          'Enter your pin code to unlock',
+                          context.loc.appUnlockEnterPinMessage,
                           textAlign: TextAlign.center,
                           style: context.font.headlineMedium?.copyWith(
                             color: context.colour.outline,
@@ -107,7 +108,12 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                             final (showError, failedAttempts) = data;
                             return showError && failedAttempts > 0
                                 ? Text(
-                                  'Incorrect PIN. Please try again. ($failedAttempts failed ${failedAttempts == 1 ? "attempt" : "attempts"})',
+                                  context.loc.appUnlockIncorrectPinError(
+                                    failedAttempts,
+                                    failedAttempts == 1
+                                        ? context.loc.appUnlockAttemptSingular
+                                        : context.loc.appUnlockAttemptPlural,
+                                  ),
                                   textAlign: TextAlign.start,
                                   style: context.font.labelSmall?.copyWith(
                                     color: context.colour.error,
@@ -153,7 +159,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
               selector: (state) => state.canSubmit,
               builder: (context, canSubmit) {
                 return BBButton.big(
-                  label: 'Unlock',
+                  label: context.loc.appUnlockButton,
                   textStyle: context.font.headlineLarge,
                   disabled: !canSubmit,
                   bgColor:

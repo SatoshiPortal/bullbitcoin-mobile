@@ -3693,6 +3693,10 @@
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
   },
+  "appUnlockScreenTitle": "Autenticación",
+  "@appUnlockScreenTitle": {
+    "description": "Título de la pantalla de desbloqueo de la aplicación"
+  },
   "pinCreateHeadline": "Crear nuevo PIN",
   "@pinCreateHeadline": {
     "description": "Headline text on PIN creation screen"
@@ -3722,25 +3726,33 @@
   "@pinButtonConfirm": {
     "description": "Button label to submit confirmed PIN"
   },
-  "unlockEnterPinPrompt": "Ingrese su código PIN para desbloquear",
-  "@unlockEnterPinPrompt": {
-    "description": "Headline text prompting user to enter PIN for unlocking"
+  "appUnlockEnterPinMessage": "Ingrese su código PIN para desbloquear",
+  "@appUnlockEnterPinMessage": {
+    "description": "Mensaje que solicita al usuario que ingrese su código PIN para desbloquear la aplicación"
   },
-  "unlockIncorrectPinError": "PIN incorrecto. Por favor intente nuevamente. ({failedAttempts} {attemptWord} fallidos)",
-  "@unlockIncorrectPinError": {
-    "description": "Error message showing incorrect PIN with attempt count",
+  "appUnlockIncorrectPinError": "PIN incorrecto. Por favor, inténtelo de nuevo. ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "description": "Mensaje de error mostrado cuando el usuario ingresa un PIN incorrecto",
     "placeholders": {
       "failedAttempts": {
-        "type": "String"
+        "type": "int"
       },
-      "attemptWord": {
+      "attemptsWord": {
         "type": "String"
       }
     }
   },
-  "unlockButtonLabel": "Desbloquear",
-  "@unlockButtonLabel": {
-    "description": "Button label to submit PIN for unlocking"
+  "appUnlockAttemptSingular": "intento fallido",
+  "@appUnlockAttemptSingular": {
+    "description": "Forma singular de 'intento' para intentos de desbloqueo fallidos"
+  },
+  "appUnlockAttemptPlural": "intentos fallidos",
+  "@appUnlockAttemptPlural": {
+    "description": "Forma plural de 'intentos' para intentos de desbloqueo fallidos"
+  },
+  "appUnlockButton": "Desbloquear",
+  "@appUnlockButton": {
+    "description": "Etiqueta del botón para desbloquear la aplicación"
   },
   "pinStatusLoading": "Cargando",
   "@pinStatusLoading": {

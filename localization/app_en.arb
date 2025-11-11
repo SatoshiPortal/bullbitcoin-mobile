@@ -3693,6 +3693,10 @@
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
   },
+  "appUnlockScreenTitle": "Authentication",
+  "@appUnlockScreenTitle": {
+    "description": "Title of the app unlock screen"
+  },
   "pinCreateHeadline": "Create new pin",
   "@pinCreateHeadline": {
     "description": "Headline text on PIN creation screen"
@@ -3722,25 +3726,33 @@
   "@pinButtonConfirm": {
     "description": "Button label to submit confirmed PIN"
   },
-  "unlockEnterPinPrompt": "Enter your pin code to unlock",
-  "@unlockEnterPinPrompt": {
-    "description": "Headline text prompting user to enter PIN for unlocking"
+  "appUnlockEnterPinMessage": "Enter your pin code to unlock",
+  "@appUnlockEnterPinMessage": {
+    "description": "Message prompting user to enter their PIN code to unlock the app"
   },
-  "unlockIncorrectPinError": "Incorrect PIN. Please try again. ({failedAttempts} failed {attemptWord})",
-  "@unlockIncorrectPinError": {
-    "description": "Error message showing incorrect PIN with attempt count",
+  "appUnlockIncorrectPinError": "Incorrect PIN. Please try again. ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "description": "Error message shown when user enters incorrect PIN",
     "placeholders": {
       "failedAttempts": {
-        "type": "String"
+        "type": "int"
       },
-      "attemptWord": {
+      "attemptsWord": {
         "type": "String"
       }
     }
   },
-  "unlockButtonLabel": "Unlock",
-  "@unlockButtonLabel": {
-    "description": "Button label to submit PIN for unlocking"
+  "appUnlockAttemptSingular": "failed attempt",
+  "@appUnlockAttemptSingular": {
+    "description": "Singular form of 'attempt' for failed unlock attempts"
+  },
+  "appUnlockAttemptPlural": "failed attempts",
+  "@appUnlockAttemptPlural": {
+    "description": "Plural form of 'attempts' for failed unlock attempts"
+  },
+  "appUnlockButton": "Unlock",
+  "@appUnlockButton": {
+    "description": "Button label to unlock the app"
   },
   "pinStatusLoading": "Loading",
   "@pinStatusLoading": {
