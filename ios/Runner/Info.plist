@@ -68,5 +68,18 @@
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
+		<key>UIBackgroundModes</key>
+		<array>
+		    <string>fetch</string>
+			<string>processing</string>
+		</array>
+		<key>BGTaskSchedulerPermittedIdentifiers</key>
+		<array>
+			<string>com.bullbitcoin.app.bitcoinSync</string>
+			<string>com.bullbitcoin.app.liquidSync</string>
+			<string>com.bullbitcoin.app.swapsSync</string>
+			<string>com.bullbitcoin.app.logsPrune</string>
+			<string>com.bullbitcoin.app.servicesCheck</string>
+		</array>
 	</dict>
 </plist>

@@ -1,9 +1,9 @@
 enum BackgroundTask {
-  bitcoinSync('bitcoin-sync'),
-  liquidSync('liquid-sync'),
-  swapsSync('swaps-sync'),
-  logsPrune('logs-prune'),
-  servicesCheck('services-check');
+  bitcoinSync('com.bullbitcoin.app.bitcoinSync'),
+  liquidSync('com.bullbitcoin.app.liquidSync'),
+  swapsSync('com.bullbitcoin.app.swapsSync'),
+  logsPrune('com.bullbitcoin.app.logsPrune'),
+  servicesCheck('com.bullbitcoin.app.servicesCheck');
 
   final String name;
   const BackgroundTask(this.name);
