@@ -140,7 +140,7 @@ class PriceChartBloc extends Bloc<PriceChartEvent, PriceChartState> {
     try {
       final currency = event.currency;
       final fromDate =
-          DateTime.now().subtract(const Duration(days: 1460)).toUtc();
+          DateTime.now().subtract(const Duration(days: 365)).toUtc();
       final toDate = DateTime.now().toUtc();
 
       final allIntervals = await _getAllIntervalsRateHistoryUsecase.execute(

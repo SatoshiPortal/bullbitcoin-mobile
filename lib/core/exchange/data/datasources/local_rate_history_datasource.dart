@@ -103,6 +103,7 @@ class LocalRateHistoryDatasource {
   Future<void> cleanupOldRates({
     required String fromCurrency,
     required String toCurrency,
+    required String interval,
     required Duration maxAge,
   }) async {
     final cutoffDate = DateTime.now().subtract(maxAge).toUtc();
@@ -112,6 +113,7 @@ class LocalRateHistoryDatasource {
       (t) =>
           t.fromCurrency.equals(fromCurrency) &
           t.toCurrency.equals(toCurrency) &
+          t.interval.equals(interval) &
           t.createdAt.isSmallerThanValue(cutoffDateStr),
     )).go();
   }
