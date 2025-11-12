@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -67,7 +68,6 @@ class _SendAmountPageState extends State<SendAmountPage> {
       //  having a mismatch between the currency and exchange rate if something
       //  goes wrong in the Cubit or just because of race conditions.
       if (state.currencyCode != _currencyCode) {
-        _controller.text = '';
         setState(() {
           _currencyCode = state.currencyCode!;
           _equivalentAmount = _calculateEquivalentAmount();
@@ -103,6 +103,8 @@ class _SendAmountPageState extends State<SendAmountPage> {
   void _onCurrencyCodeChanged(String? newCode) {
     if (newCode != null && newCode != _currencyCode) {
       context.read<ArkCubit>().onSendCurrencyCodeChanged(newCode);
+      // Clear the amount input when changing currency
+      _controller.text = '';
     }
   }
 
@@ -160,7 +162,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Enter Amount', style: context.font.headlineMedium),
+          title: Text(context.loc.arkSendAmountTitle, style: context.font.headlineMedium),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3),
             child:
@@ -211,11 +213,9 @@ class _SendAmountPageState extends State<SendAmountPage> {
                               .onSendCurrencyCodeChanged(
                                 _preferredBitcoinUnit.code,
                               );
-                          setState(() {
-                            _controller.text = _calculateMaxAmountValue();
-                          });
+                          _controller.text = _calculateMaxAmountValue();
                         },
-                        walletLabel: 'Ark Instant Payments',
+                        walletLabel: context.loc.arkInstantPayments,
                       ),
                     ),
                     const Gap(24),
@@ -226,7 +226,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
                   ],
                 ),
                 BBButton.big(
-                  label: 'Continue',
+                  label: context.loc.arkContinueButton,
                   onPressed: _submit,
                   disabled: _controller.text.isEmpty || _isLoading,
                   bgColor: context.colour.secondary,

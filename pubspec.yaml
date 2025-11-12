@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.2.4+108
+version: 6.3.4+124
 
 
 environment:
@@ -11,8 +11,8 @@ dependencies:
     sdk: flutter
   bdk_flutter:
     git:
-      url: https://github.com/LtbLightning/bdk-flutter
-      ref: ac8d102240a4242e319e71492d3698828177e97b
+      url: https://github.com/SatoshiPortal/bdk-flutter
+      ref: be3c7faf86e8cc734d749ce6cead9365eb7607ee
   cupertino_icons: ^1.0.2
   flutter_bloc: ^8.1.6
   freezed: ^3.0.0
@@ -26,14 +26,14 @@ dependencies:
   path_provider: ^2.0.15
   payjoin_flutter:
     git:
-      url: https://github.com/DanGould/payjoin-flutter
-      ref: 322b61b9074be2c0170e44e589f6552917e58a2e
+      url: https://github.com/SatoshiPortal/payjoin-flutter
+      ref: outdated-branch-with-android-patch
   qr_flutter: ^4.1.0
   dio: ^5.2.1+1
   timeago: ^3.3.0
   flutter_native_splash: ^2.4.0
   url_launcher: ^6.1.10
-  file_picker: ^8.0.3
+  file_picker: ^10.3.3
   bitcoin_utils:
     git:
       url: https://github.com/LtbLightning/bitcoin-utils-flutter
@@ -50,8 +50,14 @@ dependencies:
   decimal: ^2.3.3
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  boltz: 0.2.1
-  lwk: 0.2.1
+  boltz:
+    git:
+      url: https://github.com/SatoshiPortal/boltz-dart
+      ref: 187237ae477b09964f8580e24d7155c4e70254e4
+  lwk:
+    git:
+      url: https://github.com/SatoshiPortal/lwk-dart
+      ref: bca8468df1b02fcd56539b3a414395010445602b
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter
@@ -60,6 +66,7 @@ dependencies:
   bip21_uri: ^2.1.3
   bip32_keys: ^3.0.1
   bip39_mnemonic: ^4.0.0
+  bip329_labels: ^1.0.1
   bs58check: ^1.0.2
   gif: ^2.3.0
   custom_sliding_segmented_control: ^1.8.5
@@ -88,21 +95,21 @@ dependencies:
   bolt11_decoder: ^1.0.2
   dart_bbqr:
     git:
-      url: https://github.com/SatoshiPortal/bbqr-dart.git
-      ref: 348feb8db3dd00260f17da9f7d850301cb899a87
+      url: https://github.com/SatoshiPortal/bbqr-dart
+      ref: e587b1882d4345050507357d795d26a48a160226
   sliver_tools: ^0.2.12
   logging_colorful: ^1.3.0
   timelines_plus: ^1.0.7
   satoshifier:
     git:
-      url: https://github.com/ethicnology/dart-satoshifier.git
-      ref: ad386bc15717532aa5dc8e349ba12d22a89f8550
+      url: https://github.com/SatoshiPortal/dart-satoshifier
+      ref: e3ada75cbf0992d6a60729bf29342ddc4915a3d0
   flutter_nfc_kit: ^3.6.0
   ledger_bitcoin:
     git:
       url: https://github.com/SatoshiPortal/ledger-flutter-plus-plugins
       path: packages/ledger-bitcoin
-      ref: b0503b97f255e67c2efe75ee95f6183b7c70c5dc
+      ref: c4240d1f518c5903b67191253212754a31ed5333
   permission_handler: ^12.0.1
   cbor: ^6.3.7
   ur:
@@ -113,7 +120,7 @@ dependencies:
   ark_wallet:
     git:
       url: https://github.com/SatoshiPortal/dart-ark-wallet
-      ref: 97e098af9d4fe4543e1ea7a782f6db09331f66d2
+      ref: 6d804430eaea8415de601356c580974d018072f6
   socks5_proxy: ^2.1.1
   tor:
     git:

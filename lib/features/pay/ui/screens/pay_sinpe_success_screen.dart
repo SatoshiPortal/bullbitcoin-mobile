@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -97,7 +97,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
       child: Scaffold(
         backgroundColor: context.colour.secondaryFixed,
         appBar: AppBar(
-          title: BBText(
+          title: Text(
             'Order Details',
             style: context.font.headlineMedium?.copyWith(
               color: context.colour.outline,
@@ -116,83 +116,116 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
           ],
         ),
         body: SafeArea(
-          child: Center(
-            child: Card(
-              margin: const EdgeInsets.all(24.0),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Gif(
-                      image: AssetImage(Assets.animations.successTick.path),
-                      autostart: Autostart.once,
-                      width: 150,
-                      height: 150,
-                    ),
-                    BBText(
-                      'SINPE ENVIADO!',
-                      style: context.font.headlineLarge?.copyWith(
-                        color: context.colour.secondary,
-                        fontWeight: FontWeight.bold,
+          child: ScrollableColumn(
+            children: [
+              Card(
+                margin: const EdgeInsets.all(24.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Gif(
+                        image: AssetImage(Assets.animations.successTick.path),
+                        autostart: Autostart.once,
+                        width: 150,
+                        height: 150,
                       ),
-                    ),
-                    const Gap(16),
-                    BBText(
-                      '${order.payoutAmount.toStringAsFixed(2)} ${order.payoutCurrency}',
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.secondary,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        'SINPE ENVIADO!',
+                        style: context.font.headlineLarge?.copyWith(
+                          color: context.colour.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const Gap(8),
-                    BBText(
-                      order.beneficiaryName ?? 'N/A',
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.secondary,
-                        fontWeight: FontWeight.bold,
+                      const Gap(16),
+                      Text("Monto", style: context.font.bodyMedium),
+                      const Gap(4),
+                      Text(
+                        '${order.payoutAmount.toStringAsFixed(2)} ${order.payoutCurrency}',
+                        style: context.font.headlineSmall?.copyWith(
+                          color: context.colour.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const Gap(8),
-                    BBText(
-                      _formatSinpePhoneNumber(order.beneficiaryAccountNumber),
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.secondary,
-                        fontWeight: FontWeight.bold,
+                      const Gap(8),
+                      Text('Numero de orden', style: context.font.bodyMedium),
+                      const Gap(4),
+                      Text(
+                        order.orderNumber.toString(),
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.colour.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    // const Gap(8),
-                    // BBText(
-                    //   'COMPROBANTE:',
-                    //   style: context.font.headlineSmall?.copyWith(
-                    //     color: context.colour.secondary,
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // ),
-                    // const Gap(4),
-                    // BBText(
-                    //   order.orderId,
-                    //   style: context.font.bodyMedium?.copyWith(
-                    //     color: context.colour.secondary,
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // ),
-                    const Gap(32),
-                    SizedBox(
-                      width: double.infinity,
-                      child: BBButton.big(
-                        label: 'Done',
-                        onPressed: () {
-                          context.goNamed(ExchangeRoute.exchangeHome.name);
-                        },
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onPrimary,
+                      const Gap(8),
+                      Text(
+                        'Numero de comprobante',
+                        style: context.font.bodyMedium,
                       ),
-                    ),
-                  ],
+                      const Gap(4),
+                      Text(
+                        order.referenceNumber ?? 'N/A',
+                        style: context.font.headlineSmall?.copyWith(
+                          color: context.colour.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Gap(8),
+                      Text('Beneficiario', style: context.font.bodyMedium),
+                      const Gap(4),
+                      Text(
+                        order.beneficiaryName ?? 'N/A',
+                        style: context.font.headlineSmall?.copyWith(
+                          color: context.colour.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Gap(4),
+                      Text(
+                        _formatSinpePhoneNumber(order.beneficiaryAccountNumber),
+                        style: context.font.headlineSmall?.copyWith(
+                          color: context.colour.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Gap(8),
+                      Text('Origen', style: context.font.bodyMedium),
+                      const Gap(4),
+                      Text(
+                        order.originName ?? 'N/A',
+                        style: context.font.headlineSmall?.copyWith(
+                          color: context.colour.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Gap(4),
+                      Text(
+                        order.originCedula ?? 'N/A',
+                        style: context.font.headlineSmall?.copyWith(
+                          color: context.colour.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
+              const Gap(24),
+              const Spacer(),
+              SizedBox(
+                width: double.infinity,
+                child: BBButton.big(
+                  label: 'Done',
+                  onPressed: () {
+                    context.goNamed(ExchangeRoute.exchangeHome.name);
+                  },
+                  bgColor: context.colour.secondary,
+                  textColor: context.colour.onPrimary,
+                ),
+              ),
+              const Gap(24),
+            ],
           ),
         ),
       ),

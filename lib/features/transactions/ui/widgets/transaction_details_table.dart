@@ -60,7 +60,6 @@ class TransactionDetailsTable extends StatelessWidget {
                     ? 'Instant Payments'
                     : 'Secure Bitcoin')
             : '';
-    final toAddress = transaction?.toAddress;
     final addressLabels =
         transaction?.walletTransaction?.toAddressLabels?.join(', ') ?? '';
     final isOrder = transaction?.isOrder ?? false;
@@ -70,17 +69,11 @@ class TransactionDetailsTable extends StatelessWidget {
     );
 
     final swap = transaction?.swap;
+    final toAddress = swap?.receiveAddress ?? transaction?.toAddress;
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
     final txFee = walletTransaction?.feeSat;
 
-    // Calculate total fees using the transaction details state method
-    final totalSwapFees = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.aggregateSwapFees(),
-    );
-    final swapNetworkFees = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.aggregateNetworkFees(),
-    );
     final amountSent = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.getAmountSent(),
     );
@@ -242,6 +235,7 @@ class TransactionDetailsTable extends StatelessWidget {
                   label: 'Payout method',
                   displayValue: order.payoutMethod.value,
                 ),
+
                 DetailsTableItem(
                   label: 'Payin Status',
                   displayValue: order.payinStatus.value,
@@ -345,7 +339,6 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayValue: order.orderNumber.toString(),
                   copyValue: order.orderNumber.toString(),
                 ),
-
                 DetailsTableItem(
                   label: 'Payout amount',
                   displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
@@ -365,6 +358,22 @@ class TransactionDetailsTable extends StatelessWidget {
                   label: 'Payout method',
                   displayValue: order.payoutMethod.value,
                 ),
+                if (order.referenceNumber != null)
+                  DetailsTableItem(
+                    label: 'Reference Number',
+                    displayValue: order.referenceNumber,
+                    copyValue: order.referenceNumber,
+                  ),
+                if (order.originName != null)
+                  DetailsTableItem(
+                    label: 'Origin Name',
+                    displayValue: order.originName,
+                  ),
+                if (order.originCedula != null)
+                  DetailsTableItem(
+                    label: 'Origin Cedula',
+                    displayValue: order.originCedula,
+                  ),
                 DetailsTableItem(
                   label: 'Payin Status',
                   displayValue: order.payinStatus.value,
@@ -722,6 +731,18 @@ class TransactionDetailsTable extends StatelessWidget {
               maxLines: 5,
             ),
           ),
+          if (swap is LnSendSwap &&
+              swap.preimage != null &&
+              swap.preimage!.isNotEmpty)
+            DetailsTableItem(
+              label: 'Preimage',
+              displayValue: StringFormatting.truncateMiddle(
+                swap.preimage!,
+                head: 6,
+                tail: 6,
+              ),
+              copyValue: swap.preimage,
+            ),
           if (swapCounterpartTxId != null)
             DetailsTableItem(
               label:
@@ -733,25 +754,153 @@ class TransactionDetailsTable extends StatelessWidget {
               ),
               copyValue: swapCounterpartTxId,
             ),
+          if (swap.fees != null) ...[
+            if (swap.isChainSwap) ...[
+              DetailsTableItem(
+                label: 'Send Amount',
+                displayValue:
+                    bitcoinUnit == BitcoinUnit.sats
+                        ? FormatAmount.sats(
+                          (swap as ChainSwap).paymentAmount,
+                        ).toUpperCase()
+                        : FormatAmount.btc(
+                          ConvertAmount.satsToBtc(
+                            (swap as ChainSwap).paymentAmount,
+                          ),
+                        ).toUpperCase(),
+              ),
+              if (swap.receieveAmount != null)
+                DetailsTableItem(
+                  label: 'Receive Amount',
+                  displayValue:
+                      bitcoinUnit == BitcoinUnit.sats
+                          ? FormatAmount.sats(
+                            swap.receieveAmount!,
+                          ).toUpperCase()
+                          : FormatAmount.btc(
+                            ConvertAmount.satsToBtc(swap.receieveAmount!),
+                          ).toUpperCase(),
+                ),
+              if (swap.fees!.lockupFee != null)
+                DetailsTableItem(
+                  label: 'Send Network fees',
+                  displayValue:
+                      bitcoinUnit == BitcoinUnit.sats
+                          ? FormatAmount.sats(
+                            swap.fees!.lockupFee!,
+                          ).toUpperCase()
+                          : FormatAmount.btc(
+                            ConvertAmount.satsToBtc(swap.fees!.lockupFee!),
+                          ).toUpperCase(),
+                ),
+            ] else if (swap.isLnSendSwap) ...[
+              DetailsTableItem(
+                label: 'Send Amount',
+                displayValue:
+                    bitcoinUnit == BitcoinUnit.sats
+                        ? FormatAmount.sats(
+                          (swap as LnSendSwap).paymentAmount,
+                        ).toUpperCase()
+                        : FormatAmount.btc(
+                          ConvertAmount.satsToBtc(
+                            (swap as LnSendSwap).paymentAmount,
+                          ),
+                        ).toUpperCase(),
+              ),
+              if (swap.receieveAmount != null)
+                DetailsTableItem(
+                  label: 'Receive Amount',
+                  displayValue:
+                      bitcoinUnit == BitcoinUnit.sats
+                          ? FormatAmount.sats(
+                            swap.receieveAmount!,
+                          ).toUpperCase()
+                          : FormatAmount.btc(
+                            ConvertAmount.satsToBtc(swap.receieveAmount!),
+                          ).toUpperCase(),
+                ),
+              if (swap.fees!.lockupFee != null)
+                DetailsTableItem(
+                  label: 'Send Network fees',
+                  displayValue:
+                      bitcoinUnit == BitcoinUnit.sats
+                          ? FormatAmount.sats(
+                            swap.fees!.lockupFee!,
+                          ).toUpperCase()
+                          : FormatAmount.btc(
+                            ConvertAmount.satsToBtc(swap.fees!.lockupFee!),
+                          ).toUpperCase(),
+                ),
+            ] else if (swap.isLnReceiveSwap) ...[
+              if (swap.sendAmount != null)
+                DetailsTableItem(
+                  label: 'Send Amount',
+                  displayValue:
+                      bitcoinUnit == BitcoinUnit.sats
+                          ? FormatAmount.sats(swap.sendAmount!).toUpperCase()
+                          : FormatAmount.btc(
+                            ConvertAmount.satsToBtc(swap.sendAmount!),
+                          ).toUpperCase(),
+                ),
+              if (swap.receieveAmount != null)
+                DetailsTableItem(
+                  label: 'Receive Amount',
+                  displayValue:
+                      bitcoinUnit == BitcoinUnit.sats
+                          ? FormatAmount.sats(
+                            swap.receieveAmount!,
+                          ).toUpperCase()
+                          : FormatAmount.btc(
+                            ConvertAmount.satsToBtc(swap.receieveAmount!),
+                          ).toUpperCase(),
+                ),
+            ],
+          ],
           if (swap.fees != null)
             DetailsTableItem(
-              label:
-                  swap.type.isChain ? 'Total Transfer fees' : 'Total Swap fees',
+              label: swap.type.isChain ? 'Transfer fees' : 'Swap fees',
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(totalSwapFees).toUpperCase()
+                      ? FormatAmount.sats(
+                        swap.isLnReceiveSwap
+                            ? swap.fees!.totalFees(swap.amountSat)
+                            : swap.fees!.totalFeesMinusLockup(swap.amountSat),
+                      ).toUpperCase()
                       : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(totalSwapFees),
+                        ConvertAmount.satsToBtc(
+                          swap.isLnReceiveSwap
+                              ? swap.fees!.totalFees(swap.amountSat)
+                              : swap.fees!.totalFeesMinusLockup(swap.amountSat),
+                        ),
                       ).toUpperCase(),
               expandableChild: Column(
                 children: [
                   const Gap(4),
-                  _feeRow(context, 'Network Fee', swapNetworkFees),
-                  _feeRow(
-                    context,
-                    swap.type.isChain ? 'Transfer Fee' : 'Boltz Swap Fee',
-                    swap.fees?.boltzFee ?? 0,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: BBText(
+                      swap.isLnReceiveSwap
+                          ? 'This fees will be deducted from the amount sent'
+                          : 'This is the total fee deducted from the amount sent',
+                      style: context.font.labelSmall,
+                      color: context.colour.surfaceContainer,
+                    ),
                   ),
+                  if (swap.isLnReceiveSwap && swap.fees!.lockupFee != null)
+                    _feeRow(context, 'Send Network Fee', swap.fees!.lockupFee!),
+                  if (swap.fees!.claimFee != null)
+                    _feeRow(
+                      context,
+                      'Receive Network Fee',
+                      swap.fees!.claimFee!,
+                    ),
+                  if (swap.fees!.serverNetworkFees != null)
+                    _feeRow(
+                      context,
+                      'Server Network Fees',
+                      swap.fees!.serverNetworkFees!,
+                    ),
+                  _feeRow(context, 'Transfer Fee', swap.fees?.boltzFee ?? 0),
                   const Gap(4),
                 ],
               ),

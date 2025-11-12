@@ -9,13 +9,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
+class CustomServerInput {
+  final String url;
+  final bool enableSsl;
+
+  CustomServerInput({required this.url, required this.enableSsl});
+}
+
 class AddCustomServerBottomSheet extends StatefulWidget {
   const AddCustomServerBottomSheet({super.key});
 
-  static Future<String?> show(BuildContext context) {
+  static Future<CustomServerInput?> show(BuildContext context) {
     final bloc = context.read<ElectrumSettingsBloc>();
 
-    return BlurredBottomSheet.show<String>(
+    return BlurredBottomSheet.show<CustomServerInput>(
       context: context,
       child: BlocProvider.value(
         value: bloc,
@@ -34,6 +41,7 @@ class _AddCustomServerBottomSheetState
   final _formKey = GlobalKey<FormState>();
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
+  bool _enableSsl = true;
 
   @override
   void dispose() {
@@ -46,7 +54,9 @@ class _AddCustomServerBottomSheetState
     if (_formKey.currentState!.validate()) {
       // Unfocus to close keyboard before popping (optional, just looks nicer)
       FocusScope.of(context).unfocus();
-      Navigator.of(context).pop(_controller.text.trim());
+      Navigator.of(context).pop(
+        CustomServerInput(url: _controller.text.trim(), enableSsl: _enableSsl),
+      );
     }
   }
 
@@ -139,19 +149,54 @@ class _AddCustomServerBottomSheetState
                       ),
                     ),
                     onFieldSubmitted: (_) => _submit(),
-                    validator:
-                        (v) =>
-                            (v == null || v.trim().isEmpty)
-                                ? "This field can't be empty"
-                                : null,
+                    validator: (v) {
+                      final input = v?.trim() ?? '';
+                      if (input.isEmpty) {
+                        return "This field can't be empty";
+                      }
+
+                      // Check if protocol is included
+                      final protocolPattern = RegExp('^([a-zA-Z]+)://');
+                      if (protocolPattern.hasMatch(input)) {
+                        return 'Do not include protocol (ssl:// or tcp://).';
+                      }
+
+                      // Validate host:port format
+                      final hostPortPattern = RegExp(r'^[a-zA-Z0-9.-]+:\d+$');
+                      if (!hostPortPattern.hasMatch(input)) {
+                        return 'Use host:port format (e.g., example.com:50001)';
+                      }
+                      return null;
+                    },
                   ),
                   const Gap(8),
+                  if (!isLiquid) ...[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Enable SSL',
+                            style: context.font.bodyMedium,
+                          ),
+                        ),
+                        Switch(
+                          value: _enableSsl,
+                          onChanged: (value) {
+                            setState(() {
+                              _enableSsl = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const Gap(8),
+                  ],
                   Padding(
                     padding: const EdgeInsets.only(left: 4.0),
                     child: Text(
                       isLiquid
-                          ? 'No protocol should be specified, SSL will be used automatically.'
-                          : 'If no protocol is specified, ssl will be used by default.',
+                          ? 'No protocol should be specified. SSL will be used automatically.'
+                          : 'Enter server address in format: host:port (e.g., example.com:50001)',
                       style: context.font.bodySmall?.copyWith(
                         color: context.colour.onSurface.withValues(alpha: 0.6),
                       ),

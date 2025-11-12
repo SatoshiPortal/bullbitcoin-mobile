@@ -43,6 +43,9 @@ class OrderModel {
   final String? securityAnswer;
   final String? paymentDescription;
   final double? unbatchedBuyOnchainFees;
+  final String? referenceNumber;
+  final String? originName;
+  final String? originCedula;
 
   OrderModel({
     required this.orderId,
@@ -87,6 +90,9 @@ class OrderModel {
     this.securityAnswer,
     this.paymentDescription,
     this.unbatchedBuyOnchainFees,
+    this.referenceNumber,
+    this.originName,
+    this.originCedula,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -134,6 +140,9 @@ class OrderModel {
       securityAnswer: json['securityAnswer'] as String?,
       paymentDescription: json['paymentDescription'] as String?,
       unbatchedBuyOnchainFees: json['unbatchedBuyOnchainFees'] as double?,
+      referenceNumber: json['referenceNumber'] as String?,
+      originName: json['originName'] as String?,
+      originCedula: json['originCedula'] as String?,
     );
   }
 
@@ -180,6 +189,9 @@ class OrderModel {
     'securityAnswer': securityAnswer,
     'paymentDescription': paymentDescription,
     'unbatchedBuyOnchainFees': unbatchedBuyOnchainFees,
+    'referenceNumber': referenceNumber,
+    'originName': originName,
+    'originCedula': originCedula,
   };
 
   Order toEntity({required bool isTestnet}) {
@@ -349,6 +361,9 @@ class OrderModel {
           indexRateAmount: indexRateAmount,
           indexRateCurrency: indexRateCurrency,
           isTestnet: isTestnet,
+          referenceNumber: referenceNumber,
+          originName: originName,
+          originCedula: originCedula,
         );
       case OrderType.funding:
         return Order.funding(

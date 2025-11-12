@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -107,6 +108,16 @@ class SwapInProgressPage extends StatelessWidget {
                   ),
                 ),
                 const Spacer(flex: 2),
+                if (swap?.status != SwapStatus.completed) ...[
+                  InfoCard(
+                    description:
+                        'Do not uninstall the app until the transfer completes!',
+                    tagColor: context.colour.tertiary,
+                    bgColor: context.colour.secondaryFixed,
+                    boldDescription: true,
+                  ),
+                  const Gap(16),
+                ],
                 BBButton.big(
                   label: 'Go home',
                   onPressed: () => context.goNamed(WalletRoute.walletHome.name),

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
+import 'package:bb_mobile/features/bip329_labels/router.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -54,7 +55,7 @@ class _Screen extends StatelessWidget {
                 children: [
                   const Gap(20),
                   const _BackupTestStatusWidget(),
-                  const Gap(20),
+                  const Spacer(),
                   if (state.lastEncryptedBackup != null) ...[
                     const _ViewVaultKeyButton(),
                     const Gap(5),
@@ -65,6 +66,8 @@ class _Screen extends StatelessWidget {
                     const Gap(5),
                   ],
                   const _StartBackupButton(),
+                  const Gap(5),
+                  const _Bip329LabelsButton(),
                   if (state.error != null) ErrorWidget(error: state.error!),
                 ],
               ),
@@ -228,6 +231,20 @@ class ErrorWidget extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _Bip329LabelsButton extends StatelessWidget {
+  const _Bip329LabelsButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.big(
+      label: 'Labels',
+      onPressed: () => context.push(Bip329LabelsRouter.route.path),
+      bgColor: context.colour.secondary,
+      textColor: context.colour.onSecondary,
     );
   }
 }

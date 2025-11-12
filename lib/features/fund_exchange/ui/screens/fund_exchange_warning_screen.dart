@@ -143,9 +143,9 @@ class FundExchangeWarningScreen extends StatelessWidget {
                   context.pushReplacementNamed(
                     FundExchangeRoute.fundExchangeSpeiTransfer.name,
                   );
-                case FundingMethod.sinpeTransfer:
+                case FundingMethod.sinpe:
                   context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeSinpeTransfer.name,
+                    FundExchangeRoute.fundExchangeSinpe.name,
                   );
                 case FundingMethod.crIbanCrc:
                   context.pushReplacementNamed(

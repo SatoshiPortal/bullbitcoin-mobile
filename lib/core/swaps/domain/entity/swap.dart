@@ -64,6 +64,7 @@ abstract class SwapFees with _$SwapFees {
     int? boltzFee,
     int? lockupFee,
     int? claimFee,
+    int? serverNetworkFees,
   }) = _SwapFees;
 
   const SwapFees._();
@@ -79,7 +80,12 @@ abstract class SwapFees with _$SwapFees {
     }
     if (lockupFee != null) total += lockupFee!;
     if (claimFee != null) total += claimFee!;
+    if (serverNetworkFees != null) total += serverNetworkFees!;
     return total;
+  }
+
+  int totalFeesMinusLockup(int? amount) {
+    return totalFees(amount) - (lockupFee ?? 0);
   }
 
   int boltzFeeFromPercent(int amount) {
@@ -99,6 +105,38 @@ abstract class SwapFees with _$SwapFees {
   double totalFeeAsPercentOfAmount(int amount) {
     final fees = totalFees(amount);
     return calculatePercentage(amount, fees);
+  }
+
+  int calculateSwapAmountFromReceivableAmount(int receivableAmount) {
+    final claimFee = this.claimFee ?? 0;
+    final serverNetworkFees = this.serverNetworkFees ?? 0;
+
+    if (boltzPercent == null) {
+      final boltzFee = this.boltzFee ?? 0;
+      return receivableAmount + boltzFee + claimFee + serverNetworkFees;
+    }
+
+    final baseAmount = receivableAmount + claimFee + serverNetworkFees;
+    final rate = 1.0 - (boltzPercent! / 100.0);
+
+    int paymentAmount = (baseAmount / rate).ceil();
+
+    int calculatedReceivable =
+        paymentAmount -
+        boltzFeeFromPercent(paymentAmount) -
+        claimFee -
+        serverNetworkFees;
+
+    while (calculatedReceivable < receivableAmount) {
+      paymentAmount++;
+      calculatedReceivable =
+          paymentAmount -
+          boltzFeeFromPercent(paymentAmount) -
+          claimFee -
+          serverNetworkFees;
+    }
+
+    return paymentAmount;
   }
 }
 
@@ -302,6 +340,52 @@ sealed class Swap with _$Swap {
     LnReceiveSwap(:final receiveAddress) => receiveAddress,
     ChainSwap(:final receiveAddress) => receiveAddress,
     _ => null,
+  };
+
+  int? get receieveAmount => switch (this) {
+    ChainSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      final totalSwapFees = fees.totalFeesMinusLockup(paymentAmount);
+      return paymentAmount - totalSwapFees;
+    }(),
+    LnSendSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      final totalSwapFees = fees.totalFeesMinusLockup(paymentAmount);
+      return paymentAmount - totalSwapFees;
+    }(),
+    LnReceiveSwap(:final invoice, :final fees) => () {
+      if (fees == null) return null;
+      final invoiceAmount =
+          (Bolt11PaymentRequest(invoice).amount *
+                  Decimal.fromBigInt(
+                    ConversionConstants.satsAmountOfOneBitcoin,
+                  ))
+              .toBigInt()
+              .toInt();
+      final totalFees = fees.totalFees(invoiceAmount);
+      return invoiceAmount - totalFees;
+    }(),
+  };
+
+  int? get sendAmount => switch (this) {
+    ChainSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      return paymentAmount;
+    }(),
+    LnSendSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      return paymentAmount;
+    }(),
+    LnReceiveSwap(:final invoice) => () {
+      final invoiceAmount =
+          (Bolt11PaymentRequest(invoice).amount *
+                  Decimal.fromBigInt(
+                    ConversionConstants.satsAmountOfOneBitcoin,
+                  ))
+              .toBigInt()
+              .toInt();
+      return invoiceAmount;
+    }(),
   };
 }
 

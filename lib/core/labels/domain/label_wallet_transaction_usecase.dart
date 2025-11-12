@@ -17,7 +17,7 @@ class LabelWalletTransactionUsecase {
       final transactionLabel = Label.tx(
         transactionId: tx.txId,
         label: label,
-        walletId: tx.walletId,
+        origin: tx.walletId,
       );
       await _labelRepository.store(transactionLabel);
     } on LabelError {

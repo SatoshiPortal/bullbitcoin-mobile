@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/address_card.dart';
@@ -68,7 +69,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                 ),
                 Center(
                   child: Text(
-                    'Addresses',
+                    context.loc.addressViewAddressesTitle,
                     style: context.font.headlineMedium?.copyWith(
                       color: context.colour.secondary,
                     ),
@@ -92,7 +93,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                 } else if (state.error != null && addresses.isEmpty) {
                   return Center(
                     child: Text(
-                      'Error loading addresses: ${state.error!}',
+                      context.loc.addressViewErrorLoadingAddresses(state.error!.toString()),
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.error,
                       ),
@@ -101,7 +102,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                 } else if (addresses.isEmpty) {
                   return Center(
                     child: Text(
-                      'No addresses found',
+                      context.loc.addressViewNoAddressesFound,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.onSurface,
                       ),
@@ -129,7 +130,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                         if (state.error != null && index == addresses.length) {
                           return Center(
                             child: Text(
-                              'Error loading more addresses: ${state.error!}',
+                              context.loc.addressViewErrorLoadingMoreAddresses(state.error!.toString()),
                               style: context.font.bodyMedium?.copyWith(
                                 color: context.colour.error,
                               ),
@@ -152,7 +153,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
               children: [
                 Expanded(
                   child: BBButton.big(
-                    label: 'Receive',
+                    label: context.loc.addressViewReceiveType,
                     bgColor: Colors.transparent,
                     textColor: context.colour.secondary,
                     outlined: true,
@@ -169,7 +170,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                   child: BBButton.big(
                     disabled:
                         true, // TODO: implement change address list functionality
-                    label: 'Change',
+                    label: context.loc.addressViewChangeType,
                     bgColor: context.colour.secondary,
                     textColor: context.colour.onSecondary,
                     onPressed: () {

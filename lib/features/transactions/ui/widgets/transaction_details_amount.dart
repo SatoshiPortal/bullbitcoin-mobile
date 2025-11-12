@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -13,9 +14,19 @@ class TransactionDetailsAmount extends StatelessWidget {
     final tx = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
     );
-    final isLnSwap = tx?.isLnSwap ?? false;
+    final isSwap = tx?.isSwap ?? false;
     final isOrder = tx?.isOrder ?? false;
-    final amountSat = isLnSwap ? tx?.swap?.amountSat : tx?.amountSat;
+    final swap = tx?.swap;
+    final isExternalChainSwap =
+        swap is ChainSwap && swap.receiveWalletId == null;
+    final amountSat =
+        isSwap
+            ? (isExternalChainSwap
+                ? swap.receieveAmount
+                : (tx?.isOutgoing == true
+                    ? swap!.amountSat
+                    : swap?.receieveAmount))
+            : tx?.amountSat;
     final orderAmountAndCurrency = tx?.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =
         isOrder &&

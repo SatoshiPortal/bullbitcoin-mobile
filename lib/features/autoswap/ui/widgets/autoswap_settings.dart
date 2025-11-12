@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -120,7 +121,7 @@ class _Header extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: BBText(
-                    'Auto Transfer Settings',
+                    context.loc.autoswapSettingsTitle,
                     style: context.font.headlineMedium,
                   ),
                 ),
@@ -151,7 +152,7 @@ class _EnabledToggle extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             BBText(
-              'Enable Auto Transfer',
+              context.loc.autoswapEnableToggleLabel,
               style: context.font.bodyLarge?.copyWith(
                 color: context.colour.secondary,
               ),
@@ -194,7 +195,7 @@ class _AmountThresholdField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          'Max Instant Wallet Balance',
+          context.loc.autoswapMaxBalanceLabel,
           style: context.font.bodyLarge?.copyWith(
             color: context.colour.secondary,
           ),
@@ -241,7 +242,7 @@ class _AmountThresholdField extends StatelessWidget {
         ],
         const Gap(4),
         BBText(
-          'When wallet balance exceeds double this amount, auto-transfer will trigger to reduce balance to this level',
+          context.loc.autoswapMaxBalanceInfoText,
           style: context.font.labelSmall?.copyWith(
             color: context.colour.surfaceContainer,
           ),
@@ -265,7 +266,7 @@ class _FeeThresholdField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          'Max Transfer Fee',
+          context.loc.autoswapMaxFeeLabel,
           style: context.font.bodyLarge?.copyWith(
             color: context.colour.secondary,
           ),
@@ -309,7 +310,7 @@ class _FeeThresholdField extends StatelessWidget {
         ],
         const Gap(4),
         BBText(
-          'If total transfer fee is above the set percentage, the auto-transfer will be blocked',
+          context.loc.autoswapMaxFeeInfoText,
           style: context.font.labelSmall?.copyWith(
             color: context.colour.surfaceContainer,
           ),
@@ -333,7 +334,7 @@ class _AlwaysBlockToggle extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             BBText(
-              'Always Block High Fees',
+              context.loc.autoswapAlwaysBlockLabel,
               style: context.font.bodyLarge?.copyWith(
                 color: context.colour.secondary,
               ),
@@ -358,8 +359,8 @@ class _AlwaysBlockToggle extends StatelessWidget {
         const Gap(4),
         BBText(
           alwaysBlock
-              ? 'When enabled, auto-transfers with fees above the set limit will always be blocked'
-              : 'When disabled, you will be given the option to allow an auto-transfer that is blocked due to high fees',
+              ? context.loc.autoswapAlwaysBlockInfoEnabled
+              : context.loc.autoswapAlwaysBlockInfoDisabled,
           style: context.font.labelSmall?.copyWith(
             color: context.colour.surfaceContainer,
           ),
@@ -388,7 +389,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
         Row(
           children: [
             BBText(
-              'Recipient Bitcoin Wallet',
+              context.loc.autoswapRecipientWalletLabel,
               style: context.font.bodyLarge?.copyWith(
                 color: context.colour.secondary,
               ),
@@ -396,7 +397,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
             if (enabled) ...[
               const Gap(4),
               BBText(
-                '*',
+                context.loc.autoswapRecipientWalletRequired,
                 style: context.font.bodyLarge?.copyWith(
                   color: context.colour.error,
                 ),
@@ -441,7 +442,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
             ),
           ),
           hint: BBText(
-            enabled ? 'Select a Bitcoin wallet *' : 'Select a Bitcoin wallet',
+            enabled ? context.loc.autoswapRecipientWalletPlaceholderRequired : context.loc.autoswapRecipientWalletPlaceholder,
             style: context.font.bodyMedium?.copyWith(
               color:
                   enabled && selectedWalletId == null
@@ -454,7 +455,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
                 return DropdownMenuItem<String>(
                   value: wallet.id,
                   child: BBText(
-                    wallet.label ?? 'Bitcoin Wallet',
+                    wallet.label ?? context.loc.autoswapRecipientWalletDefaultLabel,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.colour.secondary,
                     ),
@@ -467,7 +468,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
         ),
         const Gap(4),
         BBText(
-          'Choose which Bitcoin wallet will receive the transferred funds (required)',
+          context.loc.autoswapRecipientWalletInfoText,
           style: context.font.labelSmall?.copyWith(
             color:
                 enabled && selectedWalletId == null
@@ -497,7 +498,7 @@ class _SaveButton extends StatelessWidget {
         saving || !enabled || (enabled && selectedWalletId == null);
 
     return BBButton.big(
-      label: 'Save',
+      label: context.loc.autoswapSaveButton,
       disabled: isDisabled,
       onPressed:
           isDisabled
@@ -511,7 +512,7 @@ class _SaveButton extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: BBText(
-                              'Failed to save settings: $e',
+                              context.loc.autoswapSaveErrorMessage(e.toString()),
                               style: context.font.bodyMedium,
                             ),
                           ),

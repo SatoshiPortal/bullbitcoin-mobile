@@ -31,6 +31,7 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
     @JsonKey(name: 'CLABE') String? clabe,
     @JsonKey(name: 'CÉDULA JURÍDICA') String? cedulaJuridica,
     @JsonKey(name: 'CVU') String? cvu,
+    String? numTelefono,
   }) = _FundingDetailsModel;
   const FundingDetailsModel._();
 
@@ -92,9 +93,11 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
           beneficiaryName: beneficiaryName!,
           clabe: clabe!,
         );
-      case FundingMethod.sinpeTransfer:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+      case FundingMethod.sinpe:
+        return FundingDetails.sinpe(
+          number: numTelefono!,
+          beneficiaryName: beneficiaryName!,
+        );
       case FundingMethod.crIbanCrc:
         return FundingDetails.crIbanCrc(
           iban: iban!,

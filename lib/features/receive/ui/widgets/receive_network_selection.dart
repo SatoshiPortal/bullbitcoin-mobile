@@ -35,7 +35,7 @@ class ReceiveNetworkSelection extends StatelessWidget {
         },
         initialValue:
             wallet == null
-                ? 'Lightning'
+                ? 'Bitcoin'
                 : wallet!.isLiquid
                 ? 'Liquid'
                 : 'Bitcoin',

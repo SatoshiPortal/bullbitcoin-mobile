@@ -23,10 +23,10 @@ class WatchWalletTransactionByTxIdUsecase {
     return _walletRepository.walletSyncFinishedStream
         .where((wallet) => wallet.id == walletId)
         .asyncMap((wallet) async {
-          log.info(
-            'Fetching transaction with txId $txId'
-            ' for wallet: $walletId',
-          );
+          // log.info(
+          //   'Fetching transaction with txId $txId'
+          //   ' for wallet: $walletId',
+          // );
 
           try {
             final tx = await _walletTransactionRepository.getWalletTransaction(
@@ -34,9 +34,9 @@ class WatchWalletTransactionByTxIdUsecase {
               walletId: walletId,
             );
 
-            log.info(
-              'Fetched transaction with txId $txId for wallet: $walletId',
-            );
+            // log.info(
+            //   'Fetched transaction with txId $txId for wallet: $walletId',
+            // );
             return tx;
           } catch (e) {
             log.severe('WatchWalletTransactionByTxIdUsecase exception: $e');

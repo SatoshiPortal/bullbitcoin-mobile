@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 echo "Begin pre-commit hook"
 
 # Prefer FVM Flutter if present; else try `fvm flutter`; else global flutter

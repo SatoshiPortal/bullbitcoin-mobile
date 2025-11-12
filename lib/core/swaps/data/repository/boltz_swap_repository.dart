@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class BoltzSwapRepository {
   final BoltzDatasource _boltz;
@@ -344,7 +345,7 @@ class BoltzSwapRepository {
   Future<void> updatePaidSendSwap({
     required String swapId,
     required String txid,
-    required int absoluteFees,
+    int? absoluteFees,
   }) async {
     final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
@@ -360,21 +361,44 @@ class BoltzSwapRepository {
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
-        fees: swap.fees?.copyWith(lockupFee: absoluteFees),
+        fees:
+            absoluteFees != null
+                ? swap.fees?.copyWith(lockupFee: absoluteFees)
+                : swap.fees,
       ),
       ChainSwap() => swap.copyWith(
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
-        // add server lockupfees for chain swaps
-        fees: swap.fees?.copyWith(
-          lockupFee: (swap.fees?.lockupFee ?? 0) + absoluteFees,
-        ),
       ),
       _ => throw "Only lnSend or chain swaps can be marked as paid",
     };
 
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
+  }
+
+  Future<Swap> updateSendSwapLockupFees({
+    required String swapId,
+    required int lockupFees,
+  }) async {
+    final swapModel = await _boltz.storage.fetch(swapId);
+    if (swapModel == null) {
+      throw "No swap model found";
+    }
+
+    final swap = swapModel.toEntity();
+    final updatedSwap = switch (swap) {
+      LnSendSwap() => swap.copyWith(
+        fees: swap.fees?.copyWith(lockupFee: lockupFees),
+      ),
+      ChainSwap() => swap.copyWith(
+        fees: swap.fees?.copyWith(lockupFee: lockupFees),
+      ),
+      _ => throw "Only lnSend or chain swaps can have lockup fees updated",
+    };
+
+    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
+    return updatedSwap;
   }
 
   /// PRIVATE
@@ -392,18 +416,24 @@ class BoltzSwapRepository {
 
     // Handle each type separately
     final updatedSwap = switch (swap) {
-      LnReceiveSwap() => swap.copyWith(
-        completionTime: DateTime.now(),
-        status: SwapStatus.completed,
-      ),
+      LnReceiveSwap() =>
+        swap.receiveTxid != null
+            ? swap.copyWith(
+              completionTime: DateTime.now(),
+              status: SwapStatus.completed,
+            )
+            : swap,
       LnSendSwap() => swap.copyWith(
         completionTime: DateTime.now(),
         status: SwapStatus.completed,
       ),
-      ChainSwap() => swap.copyWith(
-        completionTime: DateTime.now(),
-        status: SwapStatus.completed,
-      ),
+      ChainSwap() =>
+        (swap.receiveTxid != null || swap.refundTxid != null)
+            ? swap.copyWith(
+              completionTime: DateTime.now(),
+              status: SwapStatus.completed,
+            )
+            : swap,
     };
 
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
@@ -467,11 +497,54 @@ class BoltzSwapRepository {
     return _boltz.storage.store(SwapModel.fromEntity(swap));
   }
 
+  /// Update claimFee to a specific value
+  Future<void> updateClaimFee({
+    required String swapId,
+    required int claimFee,
+  }) async {
+    final swapModel = await _boltz.storage.fetch(swapId);
+    if (swapModel == null) {
+      throw "No swap model found";
+    }
+
+    final swap = swapModel.toEntity();
+    final updatedSwap = swap.copyWith(
+      fees: swap.fees?.copyWith(claimFee: claimFee),
+    );
+
+    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
+  }
+
+  /// Update lockupFee to a specific value
+  Future<void> updateLockupFee({
+    required String swapId,
+    required int lockupFee,
+  }) async {
+    final swapModel = await _boltz.storage.fetch(swapId);
+    if (swapModel == null) {
+      throw "No swap model found";
+    }
+
+    final swap = swapModel.toEntity();
+    final updatedSwap = swap.copyWith(
+      fees: swap.fees?.copyWith(lockupFee: lockupFee),
+    );
+
+    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
+  }
+
   Future<void> reinitializeStreamWithSwaps({
     required List<String> swapIds,
   }) async {
+    final uniqueSwapIds = swapIds.toSet().toList();
+    final hasDuplicates = swapIds.length != uniqueSwapIds.length;
+
+    log.info(
+      '{"function": "reinitializeStreamWithSwaps", "inputCount": ${swapIds.length}, "hasDuplicates": $hasDuplicates, "uniqueCount": ${uniqueSwapIds.length}, "swapIds": ${uniqueSwapIds.isEmpty ? "[]" : "[${uniqueSwapIds.map((id) => '"$id"').join(",")}]"}, "timestamp": "${DateTime.now().toIso8601String()}"}',
+    );
+
     _boltz.resetStream();
-    _boltz.subscribeToSwaps(swapIds);
+    _boltz.subscribeToSwaps(uniqueSwapIds);
     // final allSwapsToWatch = swapIds.map((swapId) async {
     //   final swap = await _boltz.storage.fetch(swapId);
     //   return swap?.toEntity();
@@ -484,6 +557,10 @@ class BoltzSwapRepository {
     //     }
     //   }
     // });
+  }
+
+  void unsubscribeFromSwaps(List<String> swapIds) {
+    _boltz.unsubscribeToSwaps(swapIds);
   }
 
   Future<List<Swap>> getOngoingSwaps({String? walletId}) async {
@@ -615,6 +692,21 @@ class BoltzSwapRepository {
           isCooperative: isCooperative,
           refundAddress: refundAddressForChainSwaps!,
         );
+    }
+  }
+
+  Future<String?> getSendSwapPreimage({required String swapId}) async {
+    final swap = await getSwap(swapId: swapId);
+    if (swap is! LnSendSwap) {
+      throw Exception('Swap is not a send swap');
+    }
+    switch (swap.type) {
+      case SwapType.bitcoinToLightning:
+        return await _boltz.getBtcLnSwapPreimage(swapId: swapId);
+      case SwapType.liquidToLightning:
+        return await _boltz.getLbtcLnSwapPreimage(swapId: swapId);
+      default:
+        throw Exception('Swap type does not support preimage');
     }
   }
 

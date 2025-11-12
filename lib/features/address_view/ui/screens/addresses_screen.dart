@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
@@ -19,7 +20,19 @@ class AddressesScreen extends StatefulWidget {
 class _AddressesScreenState extends State<AddressesScreen> {
   late final ScrollController _scrollController;
   bool showChangeAddresses = false;
-  String selectedTab = 'Receive';
+  late String selectedTab;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initialize selectedTab after context is available
+    if (!_initialized) {
+      selectedTab = context.loc.addressViewReceiveType;
+      _initialized = true;
+    }
+  }
+
+  bool _initialized = false;
 
   @override
   void initState() {
@@ -52,7 +65,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Addresses'),
+        title: Text(context.loc.addressViewAddressesTitle),
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -63,22 +76,22 @@ class _AddressesScreenState extends State<AddressesScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: BBSegmentFull(
-                items: const {'Receive', 'Change'},
+                items: {context.loc.addressViewReceiveType, context.loc.addressViewChangeType},
                 initialValue: selectedTab,
                 onSelected: (value) {
-                  if (value == 'Change') {
+                  if (value == context.loc.addressViewChangeType) {
                     ComingSoonBottomSheet.show(
                       context,
-                      description: 'Display wallet Change addresses',
+                      description: context.loc.addressViewChangeAddressesDescription,
                     );
                     setState(() {
-                      selectedTab = 'Change';
+                      selectedTab = context.loc.addressViewChangeType;
                       showChangeAddresses = true;
                     });
                     return;
                   }
                   setState(() {
-                    selectedTab = 'Receive';
+                    selectedTab = context.loc.addressViewReceiveType;
                     showChangeAddresses = false;
                   });
                 },
@@ -101,7 +114,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                   } else if (state.error != null && addresses.isEmpty) {
                     return Center(
                       child: Text(
-                        'Error loading addresses: ${state.error!}',
+                        context.loc.addressViewErrorLoadingAddresses(state.error!.toString()),
                         style: context.font.bodyMedium?.copyWith(
                           color: context.colour.error,
                         ),
@@ -111,8 +124,8 @@ class _AddressesScreenState extends State<AddressesScreen> {
                     return Center(
                       child: Text(
                         showChangeAddresses
-                            ? 'Change addresses coming soon'
-                            : 'No addresses found',
+                            ? context.loc.addressViewChangeAddressesComingSoon
+                            : context.loc.addressViewNoAddressesFound,
                         style: context.font.bodyMedium?.copyWith(
                           color: context.colour.onSurface,
                         ),
@@ -141,7 +154,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                               index == addresses.length) {
                             return Center(
                               child: Text(
-                                'Error loading more addresses: ${state.error!}',
+                                context.loc.addressViewErrorLoadingMoreAddresses(state.error!.toString()),
                                 style: context.font.bodyMedium?.copyWith(
                                   color: context.colour.error,
                                 ),
