@@ -7002,6 +7002,30 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
+  "broadcastSignedTxPageTitle": "Broadcast signed transaction",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "broadcastSignedTxPasteHint": "Paste a PSBT or transaction HEX",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxCameraButton": "Camera",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxPushTxButton": "PushTx",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "broadcastSignedTxDoneButton": "Done",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxNfcTitle": "NFC",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
   "addressViewTitle": "Address Details",
   "@addressViewTitle": {
     "description": "AppBar title for address details screen"
