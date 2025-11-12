@@ -5668,6 +5668,10 @@
   "@backupSettingsKeyWarningExample": {
     "description": "Example explaining backup key storage separation"
   },
+  "backupSettingsLabelsButton": "Labels",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
   "backupWalletImportanceWarning": "Without a backup, you will eventually lose access to your money. It is critically important to do a backup.",
   "@backupWalletImportanceWarning": {
     "description": "Warning message emphasizing the importance of creating a backup"
