@@ -168,7 +168,7 @@
   "@bitcoinSettingsLegacySeedsTitle": {
     "description": "Title for the legacy seeds section in Bitcoin settings"
   },
-  "bitcoinSettingsImportWalletTitle": "Import wallet",
+  "bitcoinSettingsImportWalletTitle": "Import Wallet",
   "@bitcoinSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
@@ -7608,7 +7608,7 @@
   "@swapTitle": {
     "description": "AppBar title for swap/internal transfer screen"
   },
-  "swapInfoBanner": "Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet is for day-to-day spending.",
+  "swapInfoBanner": "Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.",
   "@swapInfoBanner": {
     "description": "Info banner on swap amount screen"
   },
