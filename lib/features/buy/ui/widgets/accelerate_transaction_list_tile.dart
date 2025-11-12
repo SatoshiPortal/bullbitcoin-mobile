@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 
 class AccelerateTransactionListTile extends StatelessWidget {
@@ -43,13 +44,13 @@ class AccelerateTransactionListTile extends StatelessWidget {
           ],
         ),
         title: Text(
-          'Accelerate Transaction',
+          context.loc.buyAccelerateTransaction,
           style: theme.textTheme.headlineLarge?.copyWith(
             color: theme.colorScheme.secondary,
           ),
         ),
         subtitle: Text(
-          'Get it confirmed faster',
+          context.loc.buyGetConfirmedFaster,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.secondary,
           ),
