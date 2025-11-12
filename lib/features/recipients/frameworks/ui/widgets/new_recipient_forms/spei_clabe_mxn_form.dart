@@ -22,6 +22,14 @@ class _SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
   String _name = '';
   String _label = '';
 
+  @override
+  void dispose() {
+    _clabeFocusNode.dispose();
+    _nameFocusNode.dispose();
+    _labelFocusNode.dispose();
+    super.dispose();
+  }
+
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
       final formData = SpeiClabeMxnFormDataModel(

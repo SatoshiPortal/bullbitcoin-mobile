@@ -27,6 +27,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
     String? clabe,
     String? phoneNumber,
     String? debitcard,
+    bool? isOwner,
   }) = _RecipientViewModel;
   const RecipientViewModel._();
 
@@ -52,6 +53,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
       clabe: dto.details.clabe,
       phoneNumber: dto.details.phoneNumber,
       debitcard: dto.details.debitcard,
+      isOwner: dto.isOwner,
     );
   }
 

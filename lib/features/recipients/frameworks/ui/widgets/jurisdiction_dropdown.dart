@@ -40,7 +40,7 @@ class JurisdictionsDropdown extends StatelessWidget {
           value: selectedJurisdiction,
           onChanged: onChanged,
           items: [
-            if (includeAllOption)
+            if (includeAllOption && jurisdictions.length > 1)
               const DropdownMenuItem<String?>(
                 value: null,
                 child: Text('All Jurisdictions'),

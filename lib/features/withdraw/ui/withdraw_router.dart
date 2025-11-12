@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/routing/recipients_router.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
@@ -50,16 +51,20 @@ class WithdrawRouter {
               listener: (context, state) {
                 context.pushNamed(
                   RecipientsRoute.recipients.name,
-                  extra: {
-                    'onRecipientSelected': (RecipientViewModel recipient) {
+                  extra: RecipientsRouteExtra(
+                    onRecipientSelected: (RecipientViewModel recipient) {
                       context.read<WithdrawBloc>().add(
                         WithdrawEvent.recipientSelected(recipient),
                       );
                     },
-                    'selectableRecipientTypes': RecipientType.typesForCurrency(
-                      context.read<WithdrawBloc>().state.currency.code,
+                    allowedRecipientsFilters: AllowedRecipientFiltersViewModel(
+                      types:
+                          RecipientType.typesForCurrency(
+                            context.read<WithdrawBloc>().state.currency.code,
+                          ).toList(),
+                      isOwner: true,
                     ),
-                  },
+                  ),
                 );
               },
             ),

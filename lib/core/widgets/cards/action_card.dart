@@ -116,16 +116,14 @@ class _ActionRow extends StatelessWidget {
                       // navigating to the Pay screen.
                       context.pushNamed(
                         RecipientsRoute.recipients.name,
-                        extra: {
-                          'onRecipientSelected': (
-                            RecipientViewModel recipient,
-                          ) {
+                        extra: RecipientsRouteExtra(
+                          onRecipientSelected: (RecipientViewModel recipient) {
                             context.pushNamed(
                               PayRoute.pay.name,
                               extra: recipient,
                             );
                           },
-                        },
+                        ),
                       );
                     } else {
                       context.goNamed(ExchangeRoute.exchangeLanding.name);
@@ -135,14 +133,14 @@ class _ActionRow extends StatelessWidget {
                     // navigating to the Pay screen.
                     context.pushNamed(
                       RecipientsRoute.recipients.name,
-                      extra: {
-                        'onRecipientSelected': (RecipientViewModel recipient) {
+                      extra: RecipientsRouteExtra(
+                        onRecipientSelected: (RecipientViewModel recipient) {
                           context.pushNamed(
                             PayRoute.pay.name,
                             extra: recipient,
                           );
                         },
-                      },
+                      ),
                     );
                   }
                 }

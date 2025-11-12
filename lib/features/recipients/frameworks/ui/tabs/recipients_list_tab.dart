@@ -26,19 +26,27 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
   @override
   void initState() {
     super.initState();
+    final bloc = context.read<RecipientsBloc>();
     // Listen for changes in the RecipientsBloc state to update the recipients list
-    _stateSubscription = context.read<RecipientsBloc>().stream.listen((state) {
+    _stateSubscription = bloc.stream.listen((state) {
       setState(() {
         _recipients = state.filteredRecipientsByJurisdiction(
           _jurisdictionFilter,
         );
+        _jurisdictionFilter =
+            state.availableJurisdictions.length == 1
+                ? state.availableJurisdictions.first
+                : _jurisdictionFilter;
       });
     });
     // Initialize the recipients list
-    _recipients = context
-        .read<RecipientsBloc>()
-        .state
-        .filteredRecipientsByJurisdiction(_jurisdictionFilter);
+    _recipients = bloc.state.filteredRecipientsByJurisdiction(
+      _jurisdictionFilter,
+    );
+    _jurisdictionFilter =
+        bloc.state.availableJurisdictions.length == 1
+            ? bloc.state.availableJurisdictions.first
+            : _jurisdictionFilter;
   }
 
   @override

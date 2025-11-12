@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/recipients/application/usecases/get_recipient
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cad_biller_view_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +17,7 @@ part 'recipients_bloc.freezed.dart';
 
 class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   RecipientsBloc({
+    AllowedRecipientFiltersViewModel? allowedRecipientFilters,
     required AddRecipientUsecase addRecipientUsecase,
     required GetRecipientsUsecase getRecipientsUsecase,
     required CheckSinpeUsecase checkSinpeUsecase,
@@ -24,7 +26,13 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
        _getRecipientsUsecase = getRecipientsUsecase,
        _checkSinpeUsecase = checkSinpeUsecase,
        _listCadBillersUsecase = listCadBillersUsecase,
-       super(const RecipientsState()) {
+       super(
+         RecipientsState(
+           allowedRecipientFilters:
+               allowedRecipientFilters ??
+               const AllowedRecipientFiltersViewModel(),
+         ),
+       ) {
     on<RecipientsLoaded>(_onLoaded);
     on<RecipientsAdded>(_onAdded);
     on<RecipientsSinpeChecked>(_onSinpeChecked);

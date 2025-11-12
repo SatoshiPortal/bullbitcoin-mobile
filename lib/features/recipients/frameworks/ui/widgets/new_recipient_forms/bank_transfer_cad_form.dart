@@ -29,6 +29,28 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
   String _defaultComment = '';
   String _label = '';
   bool _isMyAccount = false;
+  late bool _onlyOwnerPermitted;
+
+  @override
+  void initState() {
+    super.initState();
+    _onlyOwnerPermitted =
+        context.read<RecipientsBloc>().state.onlyOwnerRecipients;
+    if (_onlyOwnerPermitted) {
+      _isMyAccount = true;
+    }
+  }
+
+  @override
+  void dispose() {
+    _institutionNumberFocusNode.dispose();
+    _transitNumberFocusNode.dispose();
+    _accountNumberFocusNode.dispose();
+    _nameFocusNode.dispose();
+    _defaultCommentFocusNode.dispose();
+    _labelFocusNode.dispose();
+    super.dispose();
+  }
 
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
@@ -182,11 +204,14 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
             title: const Text("This is someone else's account"),
             value: false,
             groupValue: _isMyAccount,
-            onChanged: (value) {
-              setState(() {
-                _isMyAccount = value ?? false;
-              });
-            },
+            onChanged:
+                _onlyOwnerPermitted
+                    ? null
+                    : (value) {
+                      setState(() {
+                        _isMyAccount = value ?? false;
+                      });
+                    },
             contentPadding: EdgeInsets.zero,
             visualDensity: VisualDensity.compact,
           ),

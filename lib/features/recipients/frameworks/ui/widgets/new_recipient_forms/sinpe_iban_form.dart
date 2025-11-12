@@ -24,6 +24,14 @@ class _SinpeIbanFormState extends State<SinpeIbanForm> {
   String _ownerName = '';
   String _label = '';
 
+  @override
+  void dispose() {
+    _ibanFocusNode.dispose();
+    _ownerNameFocusNode.dispose();
+    _labelFocusNode.dispose();
+    super.dispose();
+  }
+
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
       // Determine the correct type based on context

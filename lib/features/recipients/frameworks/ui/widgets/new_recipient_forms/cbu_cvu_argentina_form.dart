@@ -22,6 +22,14 @@ class _CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
   String _name = '';
   String _label = '';
 
+  @override
+  void dispose() {
+    _cbuCvuFocusNode.dispose();
+    _nameFocusNode.dispose();
+    _labelFocusNode.dispose();
+    super.dispose();
+  }
+
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
       final formData = CbuCvuArgentinaFormDataModel(
