@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transaction_details_screen.dart';
@@ -39,11 +40,15 @@ class TransactionsRouter {
       builder: (context, state) {
         final txId = state.pathParameters['txId']!;
         final walletId = state.uri.queryParameters['walletId']!;
+        final preloadedTransaction = state.extra as Transaction?;
         return BlocProvider(
           create:
               (context) =>
-                  locator<TransactionDetailsCubit>()
-                    ..initByWalletTxId(txId, walletId: walletId),
+                  locator<TransactionDetailsCubit>()..initByWalletTxId(
+                    txId,
+                    walletId: walletId,
+                    preloadedTransaction: preloadedTransaction,
+                  ),
           child: const TransactionDetailsScreen(),
         );
       },

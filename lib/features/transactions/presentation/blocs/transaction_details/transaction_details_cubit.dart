@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -91,14 +92,75 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     return super.close();
   }
 
-  Future<void> initByWalletTxId(String txId, {required String walletId}) async {
-    // Start monitoring the wallet transaction for updates.
+  Future<void> initByWalletTxId(
+    String txId, {
+    required String walletId,
+    Transaction? preloadedTransaction,
+  }) async {
+    if (preloadedTransaction != null) {
+      await _loadDetailsFromPreloadedTransaction(
+        preloadedTransaction,
+        walletId: walletId,
+      );
+    }
+
     _walletTransactionSubscription = _watchWalletTransactionByTxIdUsecase
         .execute(txId: txId, walletId: walletId)
         .listen((_) => _loadDetailsByWalletTxId(txId, walletId: walletId));
 
-    // Load the initial details of the transaction.
-    await _loadDetailsByWalletTxId(txId, walletId: walletId);
+    if (preloadedTransaction == null) {
+      await _loadDetailsByWalletTxId(txId, walletId: walletId);
+    }
+  }
+
+  Future<void> _loadDetailsFromPreloadedTransaction(
+    Transaction transaction, {
+    required String walletId,
+  }) async {
+    emit(state.copyWith(transaction: transaction));
+
+    try {
+      final wallet = await _getWalletUsecase.execute(walletId);
+
+      Wallet? counterpartWallet;
+      final swap = transaction.swap;
+      String? swapCounterpartTxId;
+
+      if (swap is ChainSwap) {
+        swapCounterpartTxId =
+            walletId == swap.sendWalletId ? swap.receiveTxId : swap.sendTxId;
+        final counterpartWalletId =
+            walletId == swap.sendWalletId
+                ? swap.receiveWalletId
+                : swap.sendWalletId;
+        if (counterpartWalletId != null) {
+          counterpartWallet = await _getWalletUsecase.execute(
+            counterpartWalletId,
+          );
+        }
+      }
+
+      final updatedState = state.copyWith(
+        transaction: transaction,
+        wallet: wallet,
+        counterpartWallet: counterpartWallet,
+        swapCounterpartTxId: swapCounterpartTxId,
+      );
+      emit(updatedState);
+      _notifyTransactionUpdated(transaction);
+    } catch (e) {
+      emit(state.copyWith(err: e));
+    }
+  }
+
+  void _notifyTransactionUpdated(Transaction transaction) {
+    try {
+      final walletId = transaction.walletId;
+      TransactionsCubit.updateTransactionInCache(
+        transaction,
+        walletId: walletId,
+      );
+    } catch (_) {}
   }
 
   Future<void> _loadDetailsByWalletTxId(
@@ -143,14 +205,14 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         }
       }
 
-      emit(
-        state.copyWith(
-          transaction: transaction,
-          wallet: wallet,
-          counterpartWallet: counterpartWallet,
-          swapCounterpartTxId: swapCounterpartTxId,
-        ),
+      final updatedState = state.copyWith(
+        transaction: transaction,
+        wallet: wallet,
+        counterpartWallet: counterpartWallet,
+        swapCounterpartTxId: swapCounterpartTxId,
       );
+      emit(updatedState);
+      _notifyTransactionUpdated(transaction);
     } on TransactionNotFoundError catch (e) {
       emit(state.copyWith(notFoundError: e));
     } catch (e) {
@@ -336,14 +398,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
             state.note!,
           ],
         );
-    emit(
-      state.copyWith(
-        note: null,
-        transaction: state.transaction?.copyWith(
-          walletTransaction: updatedWalletransaction,
-        ),
-      ),
+    final updatedTransaction = state.transaction?.copyWith(
+      walletTransaction: updatedWalletransaction,
     );
+    emit(state.copyWith(note: null, transaction: updatedTransaction));
+    if (updatedTransaction != null) {
+      _notifyTransactionUpdated(updatedTransaction);
+    }
   }
 
   Future<void> broadcastPayjoinOriginalTx() async {
@@ -354,11 +415,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       final updatedPayjoin = await _broadcastOriginalTransactionUsecase.execute(
         payjoin,
       );
-      emit(
-        state.copyWith(
-          transaction: state.transaction?.copyWith(payjoin: updatedPayjoin),
-        ),
+      final updatedTransaction = state.transaction?.copyWith(
+        payjoin: updatedPayjoin,
       );
+      emit(state.copyWith(transaction: updatedTransaction));
+      if (updatedTransaction != null) {
+        _notifyTransactionUpdated(updatedTransaction);
+      }
     } catch (e) {
       emit(state.copyWith(err: e));
     } finally {
@@ -383,13 +446,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
       final updatedWalletTransaction = state.transaction?.walletTransaction
           ?.copyWith(labels: updatedLabels);
-      emit(
-        state.copyWith(
-          transaction: state.transaction?.copyWith(
-            walletTransaction: updatedWalletTransaction,
-          ),
-        ),
+      final updatedTransaction = state.transaction?.copyWith(
+        walletTransaction: updatedWalletTransaction,
       );
+      emit(state.copyWith(transaction: updatedTransaction));
+      if (updatedTransaction != null) {
+        _notifyTransactionUpdated(updatedTransaction);
+      }
     } catch (e) {
       emit(state.copyWith(err: e));
     }
@@ -418,13 +481,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
       final updatedWalletTransaction = state.transaction?.walletTransaction
           ?.copyWith(labels: updatedLabels);
-      emit(
-        state.copyWith(
-          transaction: state.transaction?.copyWith(
-            walletTransaction: updatedWalletTransaction,
-          ),
-        ),
+      final updatedTransaction = state.transaction?.copyWith(
+        walletTransaction: updatedWalletTransaction,
       );
+      emit(state.copyWith(transaction: updatedTransaction));
+      if (updatedTransaction != null) {
+        _notifyTransactionUpdated(updatedTransaction);
+      }
     } catch (e) {
       emit(state.copyWith(err: e));
     }

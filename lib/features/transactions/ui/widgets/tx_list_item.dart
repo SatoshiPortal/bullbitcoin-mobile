@@ -4,8 +4,10 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -76,33 +78,42 @@ class TxListItem extends StatelessWidget {
             tx.order is WithdrawOrder ||
             tx.order is FundingOrder);
     return InkWell(
-      onTap: () {
+      onTap: () async {
         if (tx.walletTransaction != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.transactionDetails.name,
             pathParameters: {'txId': tx.walletTransaction!.txId},
             queryParameters: {'walletId': tx.walletTransaction!.walletId},
+            extra: tx,
           );
-          return;
+          if (context.mounted) {
+            await context.read<TransactionsCubit>().loadTxs();
+          }
         } else if (tx.swap != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.swapTransactionDetails.name,
             pathParameters: {'swapId': tx.swap!.id},
             queryParameters: {'walletId': tx.swap!.walletId},
           );
-          return;
+          if (context.mounted) {
+            await context.read<TransactionsCubit>().loadTxs();
+          }
         } else if (tx.payjoin != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.payjoinTransactionDetails.name,
             pathParameters: {'payjoinId': tx.payjoin!.id},
           );
-          return;
+          if (context.mounted) {
+            await context.read<TransactionsCubit>().loadTxs();
+          }
         } else if (tx.order != null) {
-          context.pushNamed(
+          await context.pushNamed(
             TransactionsRoute.orderTransactionDetails.name,
             pathParameters: {'orderId': tx.order!.orderId},
           );
-          return;
+          if (context.mounted) {
+            await context.read<TransactionsCubit>().loadTxs();
+          }
         }
       },
       child: Container(

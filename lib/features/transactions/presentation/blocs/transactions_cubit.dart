@@ -15,6 +15,9 @@ part 'transactions_cubit.freezed.dart';
 part 'transactions_state.dart';
 
 class TransactionsCubit extends Cubit<TransactionsState> {
+  static final Map<String?, List<Transaction>> _transactionsCache = {};
+  static final Set<TransactionsCubit> _activeCubits = {};
+
   TransactionsCubit({
     String? walletId,
     required GetTransactionsUsecase getTransactionsUsecase,
@@ -24,12 +27,18 @@ class TransactionsCubit extends Cubit<TransactionsState> {
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
        super(TransactionsState(walletId: walletId)) {
+    _activeCubits.add(this);
     _startedSyncSubscription = _watchStartedWalletSyncsUsecase
         .execute(walletId: walletId)
         .listen((_) => emit(state.copyWith(isSyncing: true)));
     _finishedSyncSubscription = _watchFinishedWalletSyncsUsecase
         .execute(walletId: walletId)
         .listen((_) => _onSyncFinished());
+
+    final cachedTransactions = _transactionsCache[walletId];
+    if (cachedTransactions != null) {
+      emit(state.copyWith(transactions: cachedTransactions));
+    }
   }
 
   final GetTransactionsUsecase _getTransactionsUsecase;
@@ -42,6 +51,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   @override
   Future<void> close() async {
+    _activeCubits.remove(this);
     await Future.wait([
       _startedSyncSubscription?.cancel() ?? Future.value(),
       _finishedSyncSubscription?.cancel() ?? Future.value(),
@@ -51,22 +61,68 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   Future<void> loadTxs() async {
     try {
-      // if (state.isSyncing) {
-      //   return; // Already syncing, no need to fetch again
-      // }
-      // Load local txs from db to get latest state from tx details page updates
+      final cachedTransactions = _transactionsCache[state.walletId];
+      if (cachedTransactions != null) {
+        emit(
+          state.copyWith(
+            transactions: cachedTransactions,
+            isSyncing: true,
+            err: null,
+          ),
+        );
+      } else {
+        emit(state.copyWith(isSyncing: true));
+      }
 
-      emit(state.copyWith(isSyncing: true));
       final transactions = await _getTransactionsUsecase.execute(
         walletId: state.walletId,
       );
+
+      _transactionsCache[state.walletId] = transactions;
 
       emit(
         state.copyWith(transactions: transactions, isSyncing: false, err: null),
       );
     } catch (e) {
       if (!isClosed) {
-        emit(state.copyWith(err: e));
+        emit(state.copyWith(err: e, isSyncing: false));
+      }
+    }
+  }
+
+  static void updateTransactionInCache(
+    Transaction updatedTransaction, {
+    required String? walletId,
+  }) {
+    final transactions = _transactionsCache[walletId];
+    if (transactions == null) return;
+
+    final index = transactions.indexWhere((tx) {
+      if (tx.walletTransaction?.txId ==
+          updatedTransaction.walletTransaction?.txId) {
+        return true;
+      }
+      if (tx.swap?.id == updatedTransaction.swap?.id) {
+        return true;
+      }
+      if (tx.payjoin?.id == updatedTransaction.payjoin?.id) {
+        return true;
+      }
+      if (tx.order?.orderId == updatedTransaction.order?.orderId) {
+        return true;
+      }
+      return false;
+    });
+
+    if (index != -1) {
+      final updatedTransactions = List<Transaction>.from(transactions);
+      updatedTransactions[index] = updatedTransaction;
+      _transactionsCache[walletId] = updatedTransactions;
+
+      for (final cubit in _activeCubits.toList()) {
+        if (!cubit.isClosed && cubit.state.walletId == walletId) {
+          cubit.emit(cubit.state.copyWith(transactions: updatedTransactions));
+        }
       }
     }
   }
