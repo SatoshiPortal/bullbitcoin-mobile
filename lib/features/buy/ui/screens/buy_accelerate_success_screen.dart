@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -25,7 +26,7 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Buy Bitcoin'),
+          title: Text(context.loc.buyConfirmTitle),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -43,10 +44,10 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
               children: [
                 const Icon(Icons.check_circle, size: 100, color: Colors.green),
                 const SizedBox(height: 20),
-                Text('Bitcoin sent!', style: context.font.titleLarge),
+                Text(context.loc.buyBitcoinSent, style: context.font.titleLarge),
                 const SizedBox(height: 10),
                 Text(
-                  "That was fast, wasn't it?",
+                  context.loc.buyThatWasFast,
                   style: context.font.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -62,7 +63,7 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
               children: [
                 if (buyOrder != null)
                   BBButton.big(
-                    label: 'View details',
+                    label: context.loc.buyViewDetails,
                     onPressed: () {
                       context.pushNamed(
                         TransactionsRoute.orderTransactionDetails.name,

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -55,7 +56,7 @@ class BuyInputScreen extends StatelessWidget {
                   },
                 )
                 : null,
-        title: const Text('Buy Bitcoin'),
+        title: Text(context.loc.buyInputTitle),
       ),
       body: SafeArea(
         child: ScrollableColumn(
@@ -77,8 +78,8 @@ class BuyInputScreen extends StatelessWidget {
                     children: [
                       Text(
                         belowMinAmountError != null
-                            ? 'You should buy at least'
-                            : "You can't buy more than",
+                            ? context.loc.buyInputMinAmountError
+                            : context.loc.buyInputMaxAmountError,
                         style: context.font.bodyMedium?.copyWith(
                           color: context.colour.error,
                         ),
@@ -100,14 +101,14 @@ class BuyInputScreen extends StatelessWidget {
                 if (isStarted) ...[
                   if (!isFullyVerifiedKycLevel) ...[
                     InfoCard(
-                      title: 'KYC ID Verification Pending',
-                      description: 'You must complete ID Verification first',
+                      title: context.loc.buyInputKycPending,
+                      description: context.loc.buyInputKycMessage,
                       bgColor: context.colour.tertiary.withValues(alpha: 0.1),
                       tagColor: context.colour.onTertiary,
                     ),
                     const Gap(16.0),
                     BBButton.big(
-                      label: 'Complete KYC',
+                      label: context.loc.buyInputCompleteKyc,
                       onPressed: () {
                         context.pushReplacementNamed(
                           ExchangeRoute.exchangeKyc.name,
@@ -118,15 +119,14 @@ class BuyInputScreen extends StatelessWidget {
                     ),
                   ] else if (showInsufficientBalanceError) ...[
                     InfoCard(
-                      title: 'Insufficient balance',
-                      description:
-                          'You do not have enough balance to create this order.',
+                      title: context.loc.buyInputInsufficientBalance,
+                      description: context.loc.buyInputInsufficientBalanceMessage,
                       bgColor: context.colour.tertiary.withValues(alpha: 0.1),
                       tagColor: context.colour.onTertiary,
                     ),
                     const Gap(16.0),
                     BBButton.big(
-                      label: 'Fund your account',
+                      label: context.loc.buyInputFundAccount,
                       onPressed: () {
                         context.pushReplacementNamed(
                           FundExchangeRoute.fundExchangeAccount.name,
@@ -137,7 +137,7 @@ class BuyInputScreen extends StatelessWidget {
                     ),
                   ] else
                     BBButton.big(
-                      label: 'Continue',
+                      label: context.loc.buyInputContinue,
                       disabled: !canCreateOrder || isCreatingOrder,
                       onPressed: () {
                         context.read<BuyBloc>().add(
