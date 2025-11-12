@@ -14,11 +14,6 @@ class WalletHomeScreen extends StatelessWidget {
   const WalletHomeScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    // Trigger service status check when the screen loads
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WalletBloc>().add(const CheckServiceStatus());
-    });
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {},

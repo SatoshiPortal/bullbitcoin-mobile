@@ -31,6 +31,7 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/language/language_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
+import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -76,7 +77,11 @@ class SettingsRouter {
   static final route = GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
-    builder: (context, state) => const AllSettingsScreen(),
+    builder:
+        (context, state) => BlocProvider(
+          create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
+          child: const AllSettingsScreen(),
+        ),
     routes: [
       GoRoute(
         name: SettingsRoute.exchangeAccount.name,
