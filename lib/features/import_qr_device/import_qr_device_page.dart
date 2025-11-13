@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_qr_device/device_instructions_bottom_sheet.dart';
@@ -26,15 +26,15 @@ class ImportQrDevicePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Connect $deviceName')),
+      appBar: AppBar(title: Text(context.loc.importQrDeviceTitle(deviceName))),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           children: [
             const Gap(32),
             BBText(
-              'Import the wallet descriptor QR code from your $deviceName',
-              style: context.font.bodyLarge,
+              context.loc.importQrDeviceScanPrompt(deviceName),
+              style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
               maxLines: 2,
             ),
@@ -49,28 +49,28 @@ class ImportQrDevicePage extends StatelessWidget {
             Column(
               children: [
                 BBButton.small(
-                  label: 'Open the camera',
+                  label: context.loc.importQrDeviceButtonOpenCamera,
                   onPressed:
                       () => context.pushNamed(
                         ImportWatchOnlyWalletRoutes.scan.name,
                         extra: device,
                       ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  bgColor: Theme.of(context).colorScheme.onSecondary,
+                  textColor: Theme.of(context).colorScheme.secondary,
                   outlined: true,
                 ),
 
                 const Gap(16),
                 BBButton.small(
-                  label: 'Instructions',
+                  label: context.loc.importQrDeviceButtonInstructions,
                   onPressed:
                       () => DeviceInstructionsBottomSheet.show(
                         context,
                         title: instructionsTitle,
                         instructions: instructions,
                       ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  bgColor: Theme.of(context).colorScheme.onSecondary,
+                  textColor: Theme.of(context).colorScheme.secondary,
                   outlined: true,
                 ),
                 const Gap(16),
