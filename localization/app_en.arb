@@ -6629,6 +6629,42 @@
   "@seedsignerStep14": {
     "description": "SeedSigner final instruction about broadcasting"
   },
+  "connectHardwareWalletTitle": "Connect Hardware Wallet",
+  "@connectHardwareWalletTitle": {
+    "description": "Title for connect hardware wallet page"
+  },
+  "connectHardwareWalletDescription": "Choose the hardware wallet you would like to connect",
+  "@connectHardwareWalletDescription": {
+    "description": "Description text on connect hardware wallet page"
+  },
+  "connectHardwareWalletColdcardQ": "Coldcard Q",
+  "@connectHardwareWalletColdcardQ": {
+    "description": "Coldcard Q hardware wallet option"
+  },
+  "connectHardwareWalletLedger": "Ledger",
+  "@connectHardwareWalletLedger": {
+    "description": "Ledger hardware wallet option"
+  },
+  "connectHardwareWalletJade": "Blockstream Jade",
+  "@connectHardwareWalletJade": {
+    "description": "Blockstream Jade hardware wallet option"
+  },
+  "connectHardwareWalletKeystone": "Keystone",
+  "@connectHardwareWalletKeystone": {
+    "description": "Keystone hardware wallet option"
+  },
+  "connectHardwareWalletKrux": "Krux",
+  "@connectHardwareWalletKrux": {
+    "description": "Krux hardware wallet option"
+  },
+  "connectHardwareWalletPassport": "Foundation Passport",
+  "@connectHardwareWalletPassport": {
+    "description": "Foundation Passport hardware wallet option"
+  },
+  "connectHardwareWalletSeedSigner": "SeedSigner",
+  "@connectHardwareWalletSeedSigner": {
+    "description": "SeedSigner hardware wallet option"
+  },
   "coldcardInstructionsTitle": "Coldcard Q Instructions",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
