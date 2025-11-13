@@ -108,6 +108,8 @@ class SellSendPaymentScreen extends StatelessWidget {
                 OrderPaymentMethod.eurBalance => 'EUR Balance',
                 OrderPaymentMethod.usdBalance => 'USD Balance',
                 OrderPaymentMethod.mxnBalance => 'MXN Balance',
+                OrderPaymentMethod.arsBalance => 'ARS Balance',
+                OrderPaymentMethod.copBalance => 'COP Balance',
                 _ => order?.payoutMethod.name,
               },
             ),

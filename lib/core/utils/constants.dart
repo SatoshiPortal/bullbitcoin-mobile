@@ -124,11 +124,16 @@ class LabelConstants {
 }
 
 class CountryConstants {
+  // Better to make this a map to fetch by code directly instead of needing a where
+  // clause each time. But for now keeping it as is since best would be to get
+  // this from an external API or package anyway in the future.
   static const List<Map<String, String>> countries = [
+    {'code': 'US', 'name': 'United States', 'flag': '🇺🇸'},
     {'code': 'CA', 'name': 'Canada', 'flag': '🇨🇦'},
     {'code': 'EU', 'name': 'Europe', 'flag': '🇪🇺'},
     {'code': 'MX', 'name': 'Mexico', 'flag': '🇲🇽'},
     {'code': 'CR', 'name': 'Costa Rica', 'flag': '🇨🇷'},
     {'code': 'AR', 'name': 'Argentina', 'flag': '🇦🇷'},
+    {'code': 'CO', 'name': 'Colombia', 'flag': '🇨🇴'},
   ];
 }
