@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
@@ -37,7 +38,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Choose Bitcoin Wallet')),
+        appBar: AppBar(title: Text(context.loc.dcaChooseWalletTitle)),
         body: SafeArea(
           child: Form(
             key: _formKey,
@@ -48,8 +49,8 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 48),
                   child: Text(
-                    'Bitcoin purchases will be placed automatically per this schedule.',
-                    style: context.theme.textTheme.bodyMedium,
+                    context.loc.dcaWalletSelectionDescription,
+                    style: Theme.of(context).textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -57,7 +58,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                 FormField<DcaNetwork>(
                   initialValue: _selectedNetwork,
                   validator:
-                      (val) => val == null ? 'Please select a network' : null,
+                      (val) => val == null ? context.loc.dcaNetworkValidationError : null,
                   builder: (field) {
                     return DcaWalletRadioList(
                       selectedWallet: field.value,
@@ -73,8 +74,8 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                 if (_selectedNetwork == DcaNetwork.lightning) ...[
                   const Gap(16),
                   Text(
-                    'Enter Lightning Address',
-                    style: context.theme.textTheme.bodyMedium,
+                    context.loc.dcaEnterLightningAddressLabel,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const Gap(4),
                   TextFormField(
@@ -141,13 +142,13 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a Lightning address';
+                        return context.loc.dcaLightningAddressEmptyError;
                       }
                       // TODO: Add a better Lightning address regex
                       if (!value.contains('@') ||
                           value.startsWith('@') ||
                           value.endsWith('@')) {
-                        return 'Please enter a valid Lightning address';
+                        return context.loc.dcaLightningAddressInvalidError;
                       }
                       return null;
                     },
@@ -155,7 +156,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                   const Gap(8),
                   if (_defaultLightningAddress != null)
                     CheckboxListTile(
-                      title: const Text('Use my default Lightning address.'),
+                      title: Text(context.loc.dcaUseDefaultLightningAddress),
                       value: _useDefaultLightningAddress,
                       onChanged: (value) {
                         setState(() {
@@ -174,7 +175,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                 ],
                 const Spacer(),
                 BBButton.big(
-                  label: 'Continue',
+                  label: context.loc.dcaWalletSelectionContinueButton,
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       context.read<DcaBloc>().add(
