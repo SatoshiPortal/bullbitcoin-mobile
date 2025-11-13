@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -10,17 +8,14 @@ class CreateSendSwapUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
   final BoltzSwapRepository _swapRepositoryTestnet;
-  final SeedRepository _seedRepository;
 
   CreateSendSwapUsecase({
     required WalletRepository walletRepository,
     required BoltzSwapRepository swapRepository,
     required BoltzSwapRepository swapRepositoryTestnet,
-    required SeedRepository seedRepository,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
-       _swapRepositoryTestnet = swapRepositoryTestnet,
-       _seedRepository = seedRepository;
+       _swapRepositoryTestnet = swapRepositoryTestnet;
 
   Future<LnSendSwap> execute({
     required String walletId,
@@ -56,9 +51,6 @@ class CreateSendSwapUsecase {
       );
       if (existingSwap != null) return existingSwap;
 
-      final mnemonic =
-          await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
-
       if (wallet.network.isLiquid && type != SwapType.liquidToLightning) {
         throw Exception(
           'Liquid wallet must be used for a liquid to lightning swap',
@@ -85,7 +77,6 @@ class CreateSendSwapUsecase {
           return await swapRepository.createBitcoinToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
-            mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: btcElectrumUrl,
           );
 
@@ -93,7 +84,6 @@ class CreateSendSwapUsecase {
           return await swapRepository.createLiquidToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
-            mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: lbtcElectrumUrl,
           );
         default:

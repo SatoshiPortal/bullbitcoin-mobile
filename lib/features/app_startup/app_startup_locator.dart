@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/create_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -42,6 +43,7 @@ class AppStartupLocator {
         checkBackupUsecase: locator<CheckBackupUsecase>(),
         isTorRequiredUsecase: locator<IsTorRequiredUsecase>(),
         initTorUsecase: locator<InitTorUsecase>(),
+        createSwapMasterKeyUsecase: locator<CreateSwapMasterKeyUsecase>(),
       ),
     );
   }

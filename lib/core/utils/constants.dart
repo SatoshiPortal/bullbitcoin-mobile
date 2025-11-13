@@ -20,6 +20,7 @@ class ConversionConstants {
 class SecureStorageKeyPrefixConstants {
   static const seed = 'seed_';
   static const swap = 'swap_';
+  static const swapMasterKey = 'swapMasterKey_';
 }
 
 class HiveBoxNameConstants {

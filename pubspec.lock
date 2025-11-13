@@ -200,8 +200,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "187237ae477b09964f8580e24d7155c4e70254e4"
-      resolved-ref: "187237ae477b09964f8580e24d7155c4e70254e4"
+      ref: new-swap-secrets
+      resolved-ref: "8d38edaac4f9b14c7f123e44cddd9d92cb3d4097"
       url: "https://github.com/SatoshiPortal/boltz-dart"
     source: git
     version: "0.2.1"
@@ -257,10 +257,10 @@ packages:
     dependency: transitive
     description:
       name: build_daemon
-      sha256: "409002f1adeea601018715d613115cfaf0e31f512cb80ae4534c79867ae2363d"
+      sha256: bf05f6e12cfea92d3c09308d7bcdab1906cd8a179b023269eed00c071004b957
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.0"
+    version: "4.1.1"
   build_resolvers:
     dependency: transitive
     description:
@@ -618,10 +618,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: f2d9f173c2c14635cc0e9b14c143c49ef30b4934e8d1d274d6206fcb0086a06f
+      sha256: f8f4ea435f791ab1f817b4e338ed958cb3d04ba43d6736ffc39958d950754967
       url: "https://pub.dev"
     source: hosted
-    version: "10.3.3"
+    version: "10.3.6"
   file_selector_linux:
     dependency: transitive
     description:
@@ -1040,10 +1040,10 @@ packages:
     dependency: transitive
     description:
       name: http
-      sha256: bb2ce4590bc2667c96f318d68cac1b5a7987ec819351d32b1c987239a815e007
+      sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.0"
+    version: "1.6.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -1080,10 +1080,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker
-      sha256: "736eb56a911cf24d1859315ad09ddec0b66104bc41a7f8c5b96b4e2620cf5041"
+      sha256: "784210112be18ea55f69d7076e2c656a4e24949fa9e76429fe53af0c0f4fa320"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   image_picker_android:
     dependency: transitive
     description:
@@ -1641,8 +1641,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: e3ada75cbf0992d6a60729bf29342ddc4915a3d0
-      resolved-ref: e3ada75cbf0992d6a60729bf29342ddc4915a3d0
+      ref: update-boltz-dependency
+      resolved-ref: "2ce7a142ffb7b774e1a9a23264b7c71a405519e8"
       url: "https://github.com/SatoshiPortal/dart-satoshifier"
     source: git
     version: "0.0.1"

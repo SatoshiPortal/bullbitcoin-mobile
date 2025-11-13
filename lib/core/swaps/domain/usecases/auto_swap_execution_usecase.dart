@@ -2,8 +2,6 @@ import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -20,7 +18,6 @@ class AutoSwapExecutionUsecase {
   final WalletRepository _walletRepository;
   final LiquidWalletRepository _liquidWalletRepository;
   final BlockchainPort _blockchainPort;
-  final SeedRepository _seedRepository;
   final WalletTransactionRepository _walletTxRepository;
   final LabelRepository _labelRepository;
 
@@ -30,7 +27,6 @@ class AutoSwapExecutionUsecase {
     required WalletRepository walletRepository,
     required LiquidWalletRepository liquidWalletRepository,
     required BlockchainPort blockchainPort,
-    required SeedRepository seedRepository,
     required WalletTransactionRepository walletTxRepository,
     required LabelRepository labelRepository,
   }) : _mainnetRepository = mainnetRepository,
@@ -38,7 +34,6 @@ class AutoSwapExecutionUsecase {
        _walletRepository = walletRepository,
        _liquidWalletRepository = liquidWalletRepository,
        _blockchainPort = blockchainPort,
-       _seedRepository = seedRepository,
        _walletTxRepository = walletTxRepository,
        _labelRepository = labelRepository;
 
@@ -125,10 +120,6 @@ class AutoSwapExecutionUsecase {
 
     debugPrint('Balance within swap limits, preparing swap...');
 
-    final liquidWalletMnemonic =
-        await _seedRepository.get(defaultLiquidWallet.masterFingerprint)
-            as MnemonicSeed;
-
     final btcElectrumUrl =
         defaultBitcoinWallet.isTestnet
             ? ApiServiceConstants.bbElectrumTestUrl
@@ -143,7 +134,6 @@ class AutoSwapExecutionUsecase {
       'Creating swap with amount: ${autoSwapSettings.swapAmount(walletBalance)} sats',
     );
     final swap = await swapRepository.createLiquidToBitcoinSwap(
-      sendWalletMnemonic: liquidWalletMnemonic.mnemonicWords.join(' '),
       sendWalletId: defaultLiquidWallet.id,
       amountSat: autoSwapSettings.swapAmount(walletBalance),
       btcElectrumUrl: btcElectrumUrl,
