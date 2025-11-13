@@ -6923,6 +6923,50 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
+  "importWatchOnlyBuyDevice": "Buy a device",
+  "@importWatchOnlyBuyDevice": {
+    "description": "Button label to purchase a hardware wallet device"
+  },
+  "importWatchOnlyWalletGuides": "Wallet guides",
+  "@importWatchOnlyWalletGuides": {
+    "description": "Button label for wallet documentation and guides"
+  },
+  "importWatchOnlyCopiedToClipboard": "Copied to clipboard",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlySelectDerivation": "Select derivation",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "importWatchOnlyType": "Type",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlySigningDevice": "Signing Device",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyUnknown": "Unknown",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyLabel": "Label",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyRequired": "Required",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyImport": "Import",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyExtendedPublicKey": "Extended Public Key",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
   "bip85Title": "BIP85 Deterministic Entropies",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
