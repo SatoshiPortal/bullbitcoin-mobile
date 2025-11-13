@@ -21,7 +21,9 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class TestPhysicalBackupFlow extends StatefulWidget {
-  const TestPhysicalBackupFlow();
+  final bool showTheMnemonic;
+
+  const TestPhysicalBackupFlow({required this.showTheMnemonic});
 
   @override
   State<TestPhysicalBackupFlow> createState() => _TestPhysicalBackupFlowState();
@@ -55,8 +57,7 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
               }
             },
             builder: (context, state) {
-              final isVerifying =
-                  state.status == TestWalletBackupStatus.verifying;
+              final isVerifying = !widget.showTheMnemonic;
 
               final mnemonicWallets =
                   state.wallets

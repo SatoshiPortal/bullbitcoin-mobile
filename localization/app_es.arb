@@ -2853,6 +2853,10 @@
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
   },
+  "testBackupTitle": "Prueba tu respaldo",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
   "backupImportanceMessage": "Sin un respaldo, eventualmente perderás acceso a tu dinero. Es críticamente importante hacer un respaldo.",
   "@backupImportanceMessage": {
     "description": "Mensaje de advertencia crítica sobre la importancia de respaldar la billetera"

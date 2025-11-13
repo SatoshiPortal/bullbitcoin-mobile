@@ -2,7 +2,6 @@ import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.d
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
-import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -176,8 +175,7 @@ class SettingsRouter {
         name: SettingsRoute.backupSettings.name,
         builder: (context, state) => const BackupSettingsScreen(),
         routes: [
-          ...BackupSettingsSettingsRouter.routes,
-          ...BackupWalletRouter.routes,
+          BackupSettingsSettingsRouter.route,
           ...TestWalletBackupRouter.routes,
         ],
       ),

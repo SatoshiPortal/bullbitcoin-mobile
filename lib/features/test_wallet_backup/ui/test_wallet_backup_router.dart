@@ -24,7 +24,10 @@ class TestWalletBackupRouter {
     GoRoute(
       path: TestWalletBackupSubroute.testPhysicalBackup.path,
       name: TestWalletBackupSubroute.testPhysicalBackup.name,
-      builder: (context, state) => const TestPhysicalBackupFlow(),
+      builder: (context, state) {
+        final showTheMnemonic = state.extra as bool? ?? false;
+        return TestPhysicalBackupFlow(showTheMnemonic: showTheMnemonic);
+      },
     ),
   ];
 }

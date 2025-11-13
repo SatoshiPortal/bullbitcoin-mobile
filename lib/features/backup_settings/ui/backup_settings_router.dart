@@ -1,10 +1,10 @@
-import 'package:bb_mobile/features/backup_wallet/ui/screens/backup_options_screen.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/test_backup_options_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/backup_options_screen.dart';
 import 'package:go_router/go_router.dart';
 
+enum BackupSettingsFlow { backup, test }
+
 enum BackupSettingsSubroute {
-  backupOptions('backup-options'),
-  testbackupOptions('test-backup-options');
+  backupOptions('backup-options');
 
   final String path;
 
@@ -12,16 +12,13 @@ enum BackupSettingsSubroute {
 }
 
 class BackupSettingsSettingsRouter {
-  static final routes = [
-    GoRoute(
-      name: BackupSettingsSubroute.backupOptions.name,
-      path: BackupSettingsSubroute.backupOptions.path,
-      builder: (context, state) => const BackupOptionsScreen(),
-    ),
-    GoRoute(
-      name: BackupSettingsSubroute.testbackupOptions.name,
-      path: BackupSettingsSubroute.testbackupOptions.path,
-      builder: (context, state) => const TestBackupOptionsScreen(),
-    ),
-  ];
+  static final route = GoRoute(
+    name: BackupSettingsSubroute.backupOptions.name,
+    path: BackupSettingsSubroute.backupOptions.path,
+    builder: (context, state) {
+      final flow =
+          state.extra as BackupSettingsFlow? ?? BackupSettingsFlow.backup;
+      return BackupOptionsScreen(flow: flow);
+    },
+  );
 }
