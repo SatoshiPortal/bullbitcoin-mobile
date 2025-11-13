@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -30,9 +30,9 @@ class _DcaListTileState extends State<DcaListTile> {
         dca.network == null ||
         dca.address == null) {
       return Text(
-        'Unable to get DCA configuration',
+        context.loc.exchangeDcaUnableToGetConfig,
         style: TextStyle(
-          color: context.colour.onSurface.withValues(alpha: 0.6),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
         ),
       );
     }
@@ -58,20 +58,20 @@ class _DcaListTileState extends State<DcaListTile> {
               children: [
                 Text(
                   widget.hasDcaActive
-                      ? 'Deactivate Recurring Buy'
-                      : 'Activate Recurring Buy',
+                      ? context.loc.exchangeDcaDeactivateTitle
+                      : context.loc.exchangeDcaActivateTitle,
                 ),
                 if (widget.hasDcaActive) ...[
                   const Gap(4),
                   GestureDetector(
                     onTap: () => setState(() => _showSettings = !_showSettings),
                     child: Text(
-                      _showSettings ? 'Hide settings' : 'View settings',
+                      _showSettings ? context.loc.exchangeDcaHideSettings : context.loc.exchangeDcaViewSettings,
                       style: TextStyle(
                         fontSize: 14,
-                        color: context.colour.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         decoration: TextDecoration.underline,
-                        decorationColor: context.colour.primary,
+                        decorationColor: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
@@ -93,25 +93,23 @@ class _DcaListTileState extends State<DcaListTile> {
                   builder: (BuildContext dialogContext) {
                     return AlertDialog(
                       backgroundColor: Colors.white,
-                      title: const Text('Cancel Bitcoin Recurring Buy?'),
-                      content: const Text(
-                        "Your recurring Bitcoin purchase plan will stop, "
-                        "and scheduled buys will end. "
-                        "To restart, you'll need to set up a new plan.",
+                      title: Text(context.loc.exchangeDcaCancelDialogTitle),
+                      content: Text(
+                        context.loc.exchangeDcaCancelDialogMessage,
                       ),
                       actions: [
                         TextButton(
                           onPressed: () {
                             Navigator.of(dialogContext).pop();
                           },
-                          child: const Text('Cancel'),
+                          child: Text(context.loc.exchangeDcaCancelDialogCancelButton),
                         ),
                         TextButton(
                           onPressed: () {
                             Navigator.of(dialogContext).pop();
                             context.read<ExchangeCubit>().stopDca();
                           },
-                          child: const Text('Yes, deactivate'),
+                          child: Text(context.loc.exchangeDcaCancelDialogConfirmButton),
                         ),
                       ],
                     );
@@ -152,35 +150,36 @@ class DcaSettingsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final frequency = switch (this.frequency) {
-      DcaBuyFrequency.hourly => 'hour',
-      DcaBuyFrequency.daily => 'day',
-      DcaBuyFrequency.weekly => 'week',
-      DcaBuyFrequency.monthly => 'month',
+      DcaBuyFrequency.hourly => context.loc.exchangeDcaFrequencyHour,
+      DcaBuyFrequency.daily => context.loc.exchangeDcaFrequencyDay,
+      DcaBuyFrequency.weekly => context.loc.exchangeDcaFrequencyWeek,
+      DcaBuyFrequency.monthly => context.loc.exchangeDcaFrequencyMonth,
     };
     final network = switch (this.network) {
-      DcaNetwork.bitcoin => 'Bitcoin Network',
-      DcaNetwork.lightning => 'Lightning Network',
-      DcaNetwork.liquid => 'Liquid Network',
+      DcaNetwork.bitcoin => context.loc.exchangeDcaNetworkBitcoin,
+      DcaNetwork.lightning => context.loc.exchangeDcaNetworkLightning,
+      DcaNetwork.liquid => context.loc.exchangeDcaNetworkLiquid,
     };
     final addressLabel = switch (this.network) {
-      DcaNetwork.bitcoin => 'Bitcoin address',
-      DcaNetwork.lightning => 'Lightning address',
-      DcaNetwork.liquid => 'Liquid address',
+      DcaNetwork.bitcoin => context.loc.exchangeDcaAddressLabelBitcoin,
+      DcaNetwork.lightning => context.loc.exchangeDcaAddressLabelLightning,
+      DcaNetwork.liquid => context.loc.exchangeDcaAddressLabelLiquid,
     };
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'You are buying '
-          '${FormatAmount.fiat(amount, currency.code)} '
-          'every $frequency via $network '
-          'as long as there are funds in your account.',
+          context.loc.exchangeDcaSummaryMessage(
+            FormatAmount.fiat(amount, currency.code),
+            frequency,
+            network,
+          ),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const Gap(8),
         Text(
-          '$addressLabel: $address',
+          context.loc.exchangeDcaAddressDisplay(addressLabel, address),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],

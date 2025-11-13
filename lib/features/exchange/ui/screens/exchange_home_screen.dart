@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -90,7 +90,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                     centerTitle: true,
                     title: const TopBarBullLogo(),
                     actionsIconTheme: IconThemeData(
-                      color: context.colour.onPrimary,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       size: 24,
                     ),
                     actionsPadding: const EdgeInsets.only(right: 16),
@@ -102,7 +102,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                           );
                         },
                         visualDensity: VisualDensity.compact,
-                        color: context.colour.onPrimary,
+                        color: Theme.of(context).colorScheme.onPrimary,
                         iconSize: 32,
                         icon: const Icon(Icons.history),
                       ),
@@ -115,7 +115,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                           Assets.icons.settingsLine.path,
                           width: 32,
                           height: 32,
-                          color: context.colour.onPrimary,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
                     ],
@@ -134,28 +134,28 @@ class ExchangeHomeScreen extends StatelessWidget {
                     Expanded(
                       child: BBButton.big(
                         iconData: Icons.arrow_downward,
-                        label: 'Deposit',
+                        label: context.loc.exchangeHomeDepositButton,
                         iconFirst: true,
                         onPressed:
                             () => context.pushNamed(
                               FundExchangeRoute.fundExchangeAccount.name,
                             ),
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onPrimary,
+                        bgColor: Theme.of(context).colorScheme.secondary,
+                        textColor: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                     const Gap(4),
                     Expanded(
                       child: BBButton.big(
                         iconData: Icons.arrow_upward,
-                        label: 'Withdraw',
+                        label: context.loc.exchangeHomeWithdrawButton,
                         iconFirst: true,
                         disabled: false,
                         onPressed:
                             () =>
                                 context.pushNamed(WithdrawRoute.withdraw.name),
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onPrimary,
+                        bgColor: Theme.of(context).colorScheme.secondary,
+                        textColor: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                   ],

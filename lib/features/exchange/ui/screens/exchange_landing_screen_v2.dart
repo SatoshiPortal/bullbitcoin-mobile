@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -24,10 +24,10 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
         context.goNamed(WalletRoute.walletHome.name);
       },
       child: Scaffold(
-        backgroundColor: context.colour.secondary,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         appBar: AppBar(
           leading: BackButton(
-            color: context.colour.onSecondary,
+            color: Theme.of(context).colorScheme.onSecondary,
             onPressed: () => context.goNamed(WalletRoute.walletHome.name),
           ),
         ),
@@ -56,17 +56,17 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                         ),
                         const Gap(16),
                         BBText(
-                          'BULL BITCOIN',
+                          context.loc.exchangeBrandName,
                           style: AppFonts.textTitleTheme.textStyle.copyWith(
-                            color: context.colour.onSecondary,
+                            color: Theme.of(context).colorScheme.onSecondary,
                             fontSize: 64,
                           ),
                         ),
                         const Gap(12),
                         BBText(
-                          'Recommended Bitcoin Exchange',
-                          style: context.font.headlineSmall?.copyWith(
-                            color: context.colour.onSecondary,
+                          context.loc.exchangeLandingRecommendedExchange,
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
                           ),
                         ),
                       ],
@@ -78,7 +78,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: context.colour.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         width: 0,
                       ),
                       borderRadius: BorderRadius.circular(12),
@@ -87,44 +87,44 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         BBText(
-                          '• Buy Bitcoin straight to self-custody',
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                          context.loc.exchangeFeatureSelfCustody,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
-                          '• DCA, Limit orders and Auto-buy',
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                          context.loc.exchangeFeatureDcaOrders,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
-                          '• Sell Bitcoin, get paid with Bitcoin',
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                          context.loc.exchangeFeatureSellBitcoin,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
-                          '• Send bank transfers and pay bills',
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                          context.loc.exchangeFeatureBankTransfers,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
-                          '• Chat with customer support',
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                          context.loc.exchangeFeatureCustomerSupport,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
-                          '• Unified transaction history',
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                          context.loc.exchangeFeatureUnifiedHistory,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
                           ),
                         ),
                       ],
@@ -135,7 +135,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: context.colour.primary.withValues(alpha: 0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -143,7 +143,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.info_outline,
-                          color: context.colour.onSecondary,
+                          color: Theme.of(context).colorScheme.onSecondary,
                           size: 20,
                         ),
                         const Gap(8),
@@ -152,9 +152,9 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               BBText(
-                                'Cryptocurrency exchange services are not available in the Bull Bitcoin mobile application.',
-                                style: context.font.bodySmall?.copyWith(
-                                  color: context.colour.onSecondary,
+                                context.loc.exchangeLandingDisclaimerNotAvailable,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSecondary,
                                 ),
                               ),
                             ],
@@ -168,7 +168,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: BBButton.big(
-                      label: 'Go to Bull Bitcoin exchange website',
+                      label: context.loc.exchangeGoToWebsiteButton,
                       onPressed: () async {
                         final Uri url = Uri.parse(
                           'https://app.bullbitcoin.com',
@@ -180,8 +180,8 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                           );
                         }
                       },
-                      bgColor: context.colour.primary,
-                      textColor: context.colour.onSecondary,
+                      bgColor: Theme.of(context).colorScheme.primary,
+                      textColor: Theme.of(context).colorScheme.onSecondary,
                     ),
                   ),
                   const Gap(32),
