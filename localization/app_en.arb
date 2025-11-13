@@ -7857,6 +7857,240 @@
   "@electrumAddServer": {
     "description": "Add server button label"
   },
+  "electrumEnableSsl": "Enable SSL",
+  "@electrumEnableSsl": {
+    "description": "SSL toggle label in add custom server sheet"
+  },
+  "electrumProtocolError": "Do not include protocol (ssl:// or tcp://).",
+  "@electrumProtocolError": {
+    "description": "Validation error when protocol is included in server URL"
+  },
+  "electrumFormatError": "Use host:port format (e.g., example.com:50001)",
+  "@electrumFormatError": {
+    "description": "Validation error for incorrect server URL format"
+  },
+  "electrumBitcoinServerInfo": "Enter server address in format: host:port (e.g., example.com:50001)",
+  "@electrumBitcoinServerInfo": {
+    "description": "Info text for Bitcoin server URL format"
+  },
+  "electrumStopGap": "Stop Gap",
+  "@electrumStopGap": {
+    "description": "Stop Gap field label and hint in advanced options"
+  },
+  "electrumTimeout": "Timeout (seconds)",
+  "@electrumTimeout": {
+    "description": "Timeout field label and hint in advanced options"
+  },
+  "electrumRetryCount": "Retry Count",
+  "@electrumRetryCount": {
+    "description": "Retry Count field label and hint in advanced options"
+  },
+  "electrumValidateDomain": "Validate Domain",
+  "@electrumValidateDomain": {
+    "description": "Validate Domain switch label in advanced options"
+  },
+  "electrumStopGapEmptyError": "Stop Gap can't be empty",
+  "@electrumStopGapEmptyError": {
+    "description": "Validation error for empty Stop Gap field"
+  },
+  "electrumInvalidNumberError": "Enter a valid number",
+  "@electrumInvalidNumberError": {
+    "description": "Validation error for non-numeric input"
+  },
+  "electrumStopGapNegativeError": "Stop Gap can't be negative",
+  "@electrumStopGapNegativeError": {
+    "description": "Validation error for negative Stop Gap value"
+  },
+  "electrumStopGapTooHighError": "Stop Gap seems too high. (Max. {maxStopGap})",
+  "@electrumStopGapTooHighError": {
+    "description": "Validation error for Stop Gap exceeding maximum",
+    "placeholders": {
+      "maxStopGap": {}
+    }
+  },
+  "electrumTimeoutEmptyError": "Timeout can't be empty",
+  "@electrumTimeoutEmptyError": {
+    "description": "Validation error for empty Timeout field"
+  },
+  "electrumTimeoutPositiveError": "Timeout must be positive",
+  "@electrumTimeoutPositiveError": {
+    "description": "Validation error for non-positive Timeout value"
+  },
+  "electrumTimeoutTooHighError": "Timeout seems too high. (Max. {maxTimeout} seconds)",
+  "@electrumTimeoutTooHighError": {
+    "description": "Validation error for Timeout exceeding maximum",
+    "placeholders": {
+      "maxTimeout": {}
+    }
+  },
+  "electrumRetryCountEmptyError": "Retry Count can't be empty",
+  "@electrumRetryCountEmptyError": {
+    "description": "Validation error for empty Retry Count field"
+  },
+  "electrumRetryCountNegativeError": "Retry Count can't be negative",
+  "@electrumRetryCountNegativeError": {
+    "description": "Validation error for negative Retry Count value"
+  },
+  "electrumTimeoutWarning": "Your timeout ({timeoutValue} seconds) is lower than the recommended value ({recommended} seconds) for this Stop Gap.",
+  "@electrumTimeoutWarning": {
+    "description": "Warning message when timeout is too low for the configured Stop Gap",
+    "placeholders": {
+      "timeoutValue": {},
+      "recommended": {}
+    }
+  },
+  "electrumInvalidStopGapError": "Invalid Stop Gap value: {value}",
+  "@electrumInvalidStopGapError": {
+    "description": "Error message for invalid Stop Gap value from backend",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "electrumInvalidTimeoutError": "Invalid Timeout value: {value}",
+  "@electrumInvalidTimeoutError": {
+    "description": "Error message for invalid Timeout value from backend",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "electrumInvalidRetryError": "Invalid Retry Count value: {value}",
+  "@electrumInvalidRetryError": {
+    "description": "Error message for invalid Retry Count value from backend",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "electrumSaveFailedError": "Failed to save advanced options",
+  "@electrumSaveFailedError": {
+    "description": "Error message when saving advanced options fails"
+  },
+  "electrumUnknownError": "An error occurred",
+  "@electrumUnknownError": {
+    "description": "Generic error message for unknown errors"
+  },
+  "electrumReset": "Reset",
+  "@electrumReset": {
+    "description": "Reset button label in advanced options"
+  },
+  "electrumConfirm": "Confirm",
+  "@electrumConfirm": {
+    "description": "Confirm button label in advanced options"
+  },
+  "electrumDeleteServerTitle": "Delete Custom Server",
+  "@electrumDeleteServerTitle": {
+    "description": "Delete server dialog title"
+  },
+  "electrumDeletePrivacyNotice": "Privacy Notice:\nUsing your own node ensures that no third party can link your IP address with your transactions. By deleting your last custom server, you will be connecting to a BullBitcoin server.\n\n",
+  "@electrumDeletePrivacyNotice": {
+    "description": "Privacy notice shown when deleting last custom server"
+  },
+  "electrumDeleteConfirmation": "Are you sure you want to delete this server?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "description": "Confirmation message for server deletion",
+    "placeholders": {
+      "serverUrl": {}
+    }
+  },
+  "electrumCancel": "Cancel",
+  "@electrumCancel": {
+    "description": "Cancel button label in delete dialog"
+  },
+  "electrumDelete": "Delete",
+  "@electrumDelete": {
+    "description": "Delete button label in delete dialog"
+  },
+  "electrumDefaultServers": "Default Servers",
+  "@electrumDefaultServers": {
+    "description": "Section header for default servers list"
+  },
+  "electrumDefaultServersInfo": "To protect your privacy, default servers are not used when custom servers are configured.",
+  "@electrumDefaultServersInfo": {
+    "description": "Info message explaining default servers behavior"
+  },
+  "electrumCustomServers": "Custom Servers",
+  "@electrumCustomServers": {
+    "description": "Section header for custom servers list"
+  },
+  "electrumDragToReorder": "(Long press to drag and change priority)",
+  "@electrumDragToReorder": {
+    "description": "Instruction text for reordering servers"
+  },
+  "electrumAddCustomServer": "Add Custom Server",
+  "@electrumAddCustomServer": {
+    "description": "Button label to add a custom server"
+  },
+  "electrumLoadFailedError": "Failed to load servers{reason}",
+  "@electrumLoadFailedError": {
+    "description": "Error message when loading servers fails",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumSavePriorityFailedError": "Failed to save server priority{reason}",
+  "@electrumSavePriorityFailedError": {
+    "description": "Error message when saving server priority fails",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumAddFailedError": "Failed to add custom server{reason}",
+  "@electrumAddFailedError": {
+    "description": "Error message when adding custom server fails",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
+  "@electrumDeleteFailedError": {
+    "description": "Error message when deleting custom server fails",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumServerAlreadyExists": "This server already exists",
+  "@electrumServerAlreadyExists": {
+    "description": "Error message when trying to add a duplicate server"
+  },
+  "electrumPrivacyNoticeTitle": "Privacy Notice",
+  "@electrumPrivacyNoticeTitle": {
+    "description": "Title for privacy notice bottom sheet"
+  },
+  "electrumPrivacyNoticeContent1": "Privacy Notice: Using your own node ensures that no third party can link your IP address, with your transactions.",
+  "@electrumPrivacyNoticeContent1": {
+    "description": "First paragraph of privacy notice"
+  },
+  "electrumPrivacyNoticeContent2": "However, If you view transactions via mempool by clicking your Transaction ID or Recipient Details page, this information will be known to BullBitcoin.",
+  "@electrumPrivacyNoticeContent2": {
+    "description": "Second paragraph of privacy notice"
+  },
+  "electrumPrivacyNoticeCancel": "Cancel",
+  "@electrumPrivacyNoticeCancel": {
+    "description": "Cancel button in privacy notice dialog"
+  },
+  "electrumPrivacyNoticeSave": "Save",
+  "@electrumPrivacyNoticeSave": {
+    "description": "Save button in privacy notice dialog"
+  },
+  "electrumServerNotUsed": "Not Used",
+  "@electrumServerNotUsed": {
+    "description": "Status text for disabled servers"
+  },
+  "electrumServerOnline": "Online",
+  "@electrumServerOnline": {
+    "description": "Status text for online servers"
+  },
+  "electrumServerOffline": "Offline",
+  "@electrumServerOffline": {
+    "description": "Status text for offline servers"
+  },
   "arkSendRecipientLabel": "Recipient's address",
   "@arkSendRecipientLabel": {
     "description": "Label for recipient address field"

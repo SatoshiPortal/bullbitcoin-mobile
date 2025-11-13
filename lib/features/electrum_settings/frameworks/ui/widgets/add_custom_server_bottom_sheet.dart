@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
@@ -69,7 +69,9 @@ class _AddCustomServerBottomSheetState
     );
     final environment = context.select(
       (ElectrumSettingsBloc bloc) =>
-          bloc.state.environment?.isTestnet == true ? 'Testnet' : 'Mainnet',
+          bloc.state.environment?.isTestnet == true
+              ? context.loc.electrumTestnet
+              : context.loc.electrumMainnet,
     );
 
     return GestureDetector(
@@ -92,12 +94,12 @@ class _AddCustomServerBottomSheetState
                     children: [
                       Expanded(
                         child: Text(
-                          'Add Custom Server',
-                          style: context.font.headlineMedium,
+                          context.loc.electrumAddCustomServer,
+                          style: Theme.of(context).textTheme.headlineMedium,
                         ),
                       ),
                       IconButton(
-                        tooltip: 'Close',
+                        tooltip: context.loc.electrumCloseTooltip,
                         onPressed: () => Navigator.of(context).pop(),
                         icon: const Icon(Icons.close),
                       ),
@@ -115,26 +117,29 @@ class _AddCustomServerBottomSheetState
                       // Force lowercase
                       LowerCaseTextFormatter(),
                     ],
-                    style: context.font.bodyLarge,
+                    style: Theme.of(context).textTheme.bodyLarge,
                     decoration: InputDecoration(
-                      fillColor: context.colour.onPrimary,
+                      fillColor: Theme.of(context).colorScheme.onPrimary,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim,
+                          color: Theme.of(context).colorScheme.secondaryFixedDim,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim,
+                          color: Theme.of(context).colorScheme.secondaryFixedDim,
                         ),
                       ),
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim.withValues(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .secondaryFixedDim
+                              .withValues(
                             alpha: 0.5,
                           ),
                         ),
@@ -142,29 +147,33 @@ class _AddCustomServerBottomSheetState
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16.0,
                       ),
-                      hintText:
-                          '${isLiquid ? 'Liquid' : 'Bitcoin'} $environment Server URL',
-                      hintStyle: context.font.bodyMedium?.copyWith(
-                        color: context.colour.outline,
+                      hintText: context.loc.electrumServerUrlHint(
+                        isLiquid
+                            ? context.loc.electrumNetworkLiquid
+                            : context.loc.electrumNetworkBitcoin,
+                        environment,
+                      ),
+                      hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.outline,
                       ),
                     ),
                     onFieldSubmitted: (_) => _submit(),
                     validator: (v) {
                       final input = v?.trim() ?? '';
                       if (input.isEmpty) {
-                        return "This field can't be empty";
+                        return context.loc.electrumEmptyFieldError;
                       }
 
                       // Check if protocol is included
                       final protocolPattern = RegExp('^([a-zA-Z]+)://');
                       if (protocolPattern.hasMatch(input)) {
-                        return 'Do not include protocol (ssl:// or tcp://).';
+                        return context.loc.electrumProtocolError;
                       }
 
                       // Validate host:port format
                       final hostPortPattern = RegExp(r'^[a-zA-Z0-9.-]+:\d+$');
                       if (!hostPortPattern.hasMatch(input)) {
-                        return 'Use host:port format (e.g., example.com:50001)';
+                        return context.loc.electrumFormatError;
                       }
                       return null;
                     },
@@ -175,8 +184,8 @@ class _AddCustomServerBottomSheetState
                       children: [
                         Expanded(
                           child: Text(
-                            'Enable SSL',
-                            style: context.font.bodyMedium,
+                            context.loc.electrumEnableSsl,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
                         Switch(
@@ -195,20 +204,23 @@ class _AddCustomServerBottomSheetState
                     padding: const EdgeInsets.only(left: 4.0),
                     child: Text(
                       isLiquid
-                          ? 'No protocol should be specified. SSL will be used automatically.'
-                          : 'Enter server address in format: host:port (e.g., example.com:50001)',
-                      style: context.font.bodySmall?.copyWith(
-                        color: context.colour.onSurface.withValues(alpha: 0.6),
+                          ? context.loc.electrumLiquidSslInfo
+                          : context.loc.electrumBitcoinServerInfo,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                       ),
                       textAlign: TextAlign.start,
                     ),
                   ),
                   const Gap(24),
                   BBButton.big(
-                    label: 'Add Server',
+                    label: context.loc.electrumAddServer,
                     onPressed: _submit,
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
+                    bgColor: Theme.of(context).colorScheme.secondary,
+                    textColor: Theme.of(context).colorScheme.onSecondary,
                   ),
                 ],
               ),

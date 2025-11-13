@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: Theme.of(context).colorScheme.onPrimary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
@@ -37,7 +37,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Gap(24),
-                    Text('Privacy Notice', style: context.font.headlineMedium),
+                    Text(context.loc.electrumPrivacyNoticeTitle, style: Theme.of(context).textTheme.headlineMedium),
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(false),
                       child: const Icon(Icons.close),
@@ -55,37 +55,37 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Privacy Notice: Using your own node ensures that no third party can link your IP address, with your transactions.',
-                      style: context.font.bodyMedium,
+                      context.loc.electrumPrivacyNoticeContent1,
+                      style: Theme.of(context).textTheme.bodyMedium,
                       maxLines: 4,
                     ),
                     const Gap(24),
                     Text(
-                      'However, If you view transactions via mempool by clicking your Transaction ID or Recipient Details page, this information will be known to BullBitcoin.',
+                      context.loc.electrumPrivacyNoticeContent2,
                       maxLines: 4,
-                      style: context.font.bodyMedium,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const Gap(32),
                     Row(
                       children: [
                         Expanded(
                           child: BBButton.big(
-                            label: 'Cancel',
+                            label: context.loc.electrumPrivacyNoticeCancel,
                             onPressed: () => Navigator.of(context).pop(false),
                             bgColor: Colors.transparent,
                             outlined: true,
-                            textStyle: context.font.headlineLarge,
-                            textColor: context.colour.secondary,
+                            textStyle: Theme.of(context).textTheme.headlineLarge,
+                            textColor: Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                         const Gap(16),
                         Expanded(
                           child: BBButton.big(
-                            label: 'Save',
+                            label: context.loc.electrumPrivacyNoticeSave,
                             onPressed: () => Navigator.of(context).pop(true),
-                            bgColor: context.colour.secondary,
-                            textStyle: context.font.headlineLarge,
-                            textColor: context.colour.onSecondary,
+                            bgColor: Theme.of(context).colorScheme.secondary,
+                            textStyle: Theme.of(context).textTheme.headlineLarge,
+                            textColor: Theme.of(context).colorScheme.onSecondary,
                           ),
                         ),
                       ],

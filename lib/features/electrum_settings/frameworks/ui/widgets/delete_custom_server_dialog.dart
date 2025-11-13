@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 
 class DeleteCustomServerDialog {
@@ -12,30 +12,24 @@ class DeleteCustomServerDialog {
 
       builder:
           (BuildContext dialogContext) => AlertDialog(
-            backgroundColor: context.colour.onSecondary,
-            title: const Text('Delete Custom Server'),
+            backgroundColor: Theme.of(context).colorScheme.onSecondary,
+            title: Text(context.loc.electrumDeleteServerTitle),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (isLastCustomServer)
-                  const Text(
-                    'Privacy Notice:\n'
-                    'Using your own node ensures that no third party can link your IP address with your transactions. '
-                    'By deleting your last custom server, you will be connecting to a BullBitcoin server.\n\n',
-                  ),
-                Text(
-                  'Are you sure you want to delete this server?\n\n$serverUrl',
-                ),
+                  Text(context.loc.electrumDeletePrivacyNotice),
+                Text(context.loc.electrumDeleteConfirmation(serverUrl)),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(false),
-                child: const Text('Cancel'),
+                child: Text(context.loc.electrumCancel),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(dialogContext).pop(true),
-                child: const Text('Delete'),
+                child: Text(context.loc.electrumDelete),
               ),
             ],
           ),

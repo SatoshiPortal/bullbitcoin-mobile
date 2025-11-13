@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/add_custom_server_bottom_sheet.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/delete_custom_server_dialog.dart';
@@ -12,17 +12,17 @@ import 'package:gap/gap.dart';
 class DraggableServerList extends StatelessWidget {
   const DraggableServerList({super.key});
 
-  String _getErrorMessage(ElectrumServersException error) {
+  String _getErrorMessage(BuildContext context, ElectrumServersException error) {
     return switch (error) {
       LoadFailedException(reason: final r) =>
-        'Failed to load servers${r != null ? ': $r' : ''}',
+        context.loc.electrumLoadFailedError(r != null ? ': $r' : ''),
       SavePriorityFailedException(reason: final r) =>
-        'Failed to save server priority${r != null ? ': $r' : ''}',
+        context.loc.electrumSavePriorityFailedError(r != null ? ': $r' : ''),
       AddFailedException(reason: final r) =>
-        'Failed to add custom server${r != null ? ': $r' : ''}',
+        context.loc.electrumAddFailedError(r != null ? ': $r' : ''),
       DeleteFailedException(reason: final r) =>
-        'Failed to delete custom server${r != null ? ': $r' : ''}',
-      ElectrumServerAlreadyExistsException() => 'This server already exists',
+        context.loc.electrumDeleteFailedError(r != null ? ': $r' : ''),
+      ElectrumServerAlreadyExistsException() => context.loc.electrumServerAlreadyExists,
     };
   }
 
@@ -43,18 +43,17 @@ class DraggableServerList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Default Servers',
-          style: context.font.titleSmall?.copyWith(
-            color: context.colour.onSurface.withValues(alpha: 0.7),
+          context.loc.electrumDefaultServers,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(height: 8),
         if (customServers.isNotEmpty) ...[
           InfoCard(
-            description:
-                'To protect your privacy, default servers are not used when custom servers are configured.',
-            tagColor: context.colour.onTertiary,
-            bgColor: context.colour.tertiary.withValues(alpha: 0.1),
+            description: context.loc.electrumDefaultServersInfo,
+            tagColor: Theme.of(context).colorScheme.onTertiary,
+            bgColor: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.1),
           ),
           const SizedBox(height: 8),
         ],
@@ -70,16 +69,16 @@ class DraggableServerList extends StatelessWidget {
         if (customServers.isNotEmpty) ...[
           const SizedBox(height: 16),
           Text(
-            'Custom Servers',
-            style: context.font.titleSmall?.copyWith(
-              color: context.colour.onSurface.withValues(alpha: 0.7),
+            context.loc.electrumCustomServers,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            '(Long press to drag and change priority)',
-            style: context.font.bodySmall?.copyWith(
-              color: context.colour.onSurface.withValues(alpha: 0.5),
+            context.loc.electrumDragToReorder,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 8),
@@ -122,9 +121,9 @@ class DraggableServerList extends StatelessWidget {
         const Gap(16),
         if (electrumServersError != null) ...[
           InfoCard(
-            description: _getErrorMessage(electrumServersError),
-            tagColor: context.colour.error,
-            bgColor: context.colour.error.withValues(alpha: 0.1),
+            description: _getErrorMessage(context, electrumServersError),
+            tagColor: Theme.of(context).colorScheme.error,
+            bgColor: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
           ),
           const Gap(16),
         ],
@@ -140,11 +139,11 @@ class DraggableServerList extends StatelessWidget {
               );
             }
           },
-          icon: Icon(Icons.add_circle_outline, color: context.colour.primary),
+          icon: Icon(Icons.add_circle_outline, color: Theme.of(context).colorScheme.primary),
           label: Text(
-            'Add Custom Server',
-            style: context.font.bodyMedium?.copyWith(
-              color: context.colour.primary,
+            context.loc.electrumAddCustomServer,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ),

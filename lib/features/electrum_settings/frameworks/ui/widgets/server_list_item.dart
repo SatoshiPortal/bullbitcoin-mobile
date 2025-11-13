@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_server_view_model.dart';
 import 'package:flutter/material.dart';
 
@@ -24,13 +24,13 @@ class ServerListItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: context.colour.surface.withValues(alpha: 180),
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 180),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color:
                 disabled
-                    ? context.colour.outline.withValues(alpha: 128)
-                    : context.colour.outline,
+                    ? Theme.of(context).colorScheme.outline.withValues(alpha: 128)
+                    : Theme.of(context).colorScheme.outline,
             width: 1,
           ),
         ),
@@ -39,7 +39,7 @@ class ServerListItem extends StatelessWidget {
             if (isDraggable) ...[
               Icon(
                 Icons.drag_handle,
-                color: context.colour.onSurface.withValues(alpha: 128),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 128),
                 size: 20,
               ),
               const SizedBox(width: 12),
@@ -56,8 +56,8 @@ class ServerListItem extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 server.displayName,
-                                style: context.font.bodyMedium?.copyWith(
-                                  color: context.colour.onSurface,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface,
                                   decoration:
                                       disabled
                                           ? TextDecoration.lineThrough
@@ -72,15 +72,15 @@ class ServerListItem extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: context.colour.tertiary.withValues(
+                                color: Theme.of(context).colorScheme.tertiary.withValues(
                                   alpha: 0.15,
                                 ),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 server.protocol.toUpperCase(),
-                                style: context.font.bodySmall?.copyWith(
-                                  color: context.colour.onTertiary,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onTertiary,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -92,9 +92,9 @@ class ServerListItem extends StatelessWidget {
                       if (disabled) ...[
                         const SizedBox(width: 8),
                         Text(
-                          'Not Used',
-                          style: context.font.bodySmall?.copyWith(
-                            color: context.colour.onSurface.withValues(
+                          context.loc.electrumServerNotUsed,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface.withValues(
                               alpha: 153,
                             ),
                             fontStyle: FontStyle.italic,
@@ -113,7 +113,7 @@ class ServerListItem extends StatelessWidget {
               IconButton(
                 icon: Icon(
                   Icons.delete_outline,
-                  color: context.colour.error,
+                  color: Theme.of(context).colorScheme.error,
                   size: 20,
                 ),
                 padding: EdgeInsets.zero,
@@ -144,9 +144,9 @@ class ServerListItem extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Text(
-          isOnline ? 'Online' : 'Offline',
-          style: context.font.bodySmall?.copyWith(
-            color: context.colour.onSurface,
+          isOnline ? context.loc.electrumServerOnline : context.loc.electrumServerOffline,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],

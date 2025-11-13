@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -78,15 +78,22 @@ class _SetAdvancedOptionsBottomSheetState
     }
   }
 
-  String _getErrorMessage(AdvancedOptionsException error) {
+  String _getErrorMessage(BuildContext context, AdvancedOptionsException error) {
     return switch (error) {
-      InvalidStopGapException(value: final v) => 'Invalid Stop Gap value: $v',
-      InvalidTimeoutException(value: final v) => 'Invalid Timeout value: $v',
-      InvalidRetryException(value: final v) => 'Invalid Retry Count value: $v',
+      InvalidStopGapException(value: final v) =>
+        context.loc.electrumInvalidStopGapError(v),
+      InvalidTimeoutException(value: final v) =>
+        context.loc.electrumInvalidTimeoutError(v),
+      InvalidRetryException(value: final v) =>
+        context.loc.electrumInvalidRetryError(v),
       SaveFailedException(reason: final r) =>
-        'Failed to save advanced options${r != null ? ': $r' : ''}',
+        r != null
+            ? '${context.loc.electrumSaveFailedError}: $r'
+            : context.loc.electrumSaveFailedError,
       UnknownException(reason: final r) =>
-        'An error occurred${r != null ? ': $r' : ''}',
+        r != null
+            ? '${context.loc.electrumUnknownError}: $r'
+            : context.loc.electrumUnknownError,
     };
   }
 
@@ -142,12 +149,12 @@ class _SetAdvancedOptionsBottomSheetState
                       children: [
                         Expanded(
                           child: Text(
-                            'Advanced Options',
-                            style: context.font.headlineMedium,
+                            context.loc.electrumAdvancedOptions,
+                            style: Theme.of(context).textTheme.headlineMedium,
                           ),
                         ),
                         IconButton(
-                          tooltip: 'Close',
+                          tooltip: context.loc.electrumCloseTooltip,
                           onPressed: () => Navigator.of(context).pop(),
                           icon: const Icon(Icons.close),
                         ),
@@ -162,8 +169,9 @@ class _SetAdvancedOptionsBottomSheetState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Stop Gap',
-                            style: context.font.bodyMedium?.copyWith(
+                            context.loc.electrumStopGap,
+                            style:
+                                Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -173,30 +181,31 @@ class _SetAdvancedOptionsBottomSheetState
                             focusNode: _stopGapNode,
                             textInputAction: TextInputAction.next,
                             keyboardType: TextInputType.number,
-                            style: context.font.bodyLarge,
+                            style: Theme.of(context).textTheme.bodyLarge,
                             decoration: InputDecoration(
-                              hintText: 'Stop Gap',
-                              hintStyle: context.font.bodyMedium?.copyWith(
-                                color: context.colour.outline,
+                              hintText: context.loc.electrumStopGap,
+                              hintStyle:
+                                  Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.outline,
                               ),
-                              fillColor: context.colour.onPrimary,
+                              fillColor: Theme.of(context).colorScheme.onPrimary,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
                                 ),
                               ),
                               disabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim
+                                  color: Theme.of(context).colorScheme.secondaryFixedDim
                                       .withValues(alpha: 0.5),
                                 ),
                               ),
@@ -206,17 +215,19 @@ class _SetAdvancedOptionsBottomSheetState
                             ),
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) {
-                                return "Stop Gap can't be empty";
+                                return context.loc.electrumStopGapEmptyError;
                               }
                               final n = int.tryParse(v.trim());
                               if (n == null) {
-                                return 'Enter a valid number';
+                                return context.loc.electrumInvalidNumberError;
                               }
                               if (n < 0) {
-                                return "Stop Gap can't be negative";
+                                return context.loc.electrumStopGapNegativeError;
                               }
                               if (n > ElectrumSettings.maxStopGap) {
-                                return "Stop Gap seems too high. (Max. ${ElectrumSettings.maxStopGap})";
+                                return context.loc.electrumStopGapTooHighError(
+                                  ElectrumSettings.maxStopGap.toString(),
+                                );
                               }
                               return null;
                             },
@@ -225,8 +236,8 @@ class _SetAdvancedOptionsBottomSheetState
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Timeout (seconds)',
-                            style: context.font.bodyMedium?.copyWith(
+                            context.loc.electrumTimeout,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -236,30 +247,30 @@ class _SetAdvancedOptionsBottomSheetState
                             focusNode: _timeoutNode,
                             keyboardType: TextInputType.number,
                             textInputAction: TextInputAction.next,
-                            style: context.font.bodyLarge,
+                            style: Theme.of(context).textTheme.bodyLarge,
                             decoration: InputDecoration(
-                              hintText: 'Timeout (seconds)',
-                              hintStyle: context.font.bodyMedium?.copyWith(
-                                color: context.colour.outline,
+                              hintText: context.loc.electrumTimeout,
+                              hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.outline,
                               ),
-                              fillColor: context.colour.onPrimary,
+                              fillColor: Theme.of(context).colorScheme.onPrimary,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
                                 ),
                               ),
                               disabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim
+                                  color: Theme.of(context).colorScheme.secondaryFixedDim
                                       .withValues(alpha: 0.5),
                                 ),
                               ),
@@ -270,13 +281,19 @@ class _SetAdvancedOptionsBottomSheetState
                             validator: (v) {
                               final value = v?.trim() ?? '';
                               if (value.isEmpty) {
-                                return "Timeout can't be empty";
+                                return context.loc.electrumTimeoutEmptyError;
                               }
                               final n = int.tryParse(value);
-                              if (n == null) return 'Enter a valid number';
-                              if (n <= 0) return 'Timeout must be positive';
+                              if (n == null) {
+                                return context.loc.electrumInvalidNumberError;
+                              }
+                              if (n <= 0) {
+                                return context.loc.electrumTimeoutPositiveError;
+                              }
                               if (n > ElectrumSettings.maxTimeout) {
-                                return "Timeout seems too high. (Max. ${ElectrumSettings.maxTimeout} seconds)";
+                                return context.loc.electrumTimeoutTooHighError(
+                                  ElectrumSettings.maxTimeout.toString(),
+                                );
                               }
                               return null;
                             },
@@ -302,10 +319,15 @@ class _SetAdvancedOptionsBottomSheetState
                                     children: [
                                       const SizedBox(height: 8),
                                       InfoCard(
-                                        description:
-                                            'Your timeout ($timeoutValue seconds) is lower than the recommended value ($recommended seconds) for this Stop Gap.',
-                                        tagColor: context.colour.primary,
-                                        bgColor: context.colour.primary
+                                        description: context.loc.electrumTimeoutWarning(
+                                          timeoutValue.toString(),
+                                          recommended.toString(),
+                                        ),
+                                        tagColor:
+                                            Theme.of(context).colorScheme.primary,
+                                        bgColor: Theme.of(context)
+                                            .colorScheme
+                                            .primary
                                             .withValues(alpha: 0.1),
                                       ),
                                     ],
@@ -317,8 +339,8 @@ class _SetAdvancedOptionsBottomSheetState
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Retry Count',
-                            style: context.font.bodyMedium?.copyWith(
+                            context.loc.electrumRetryCount,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -328,30 +350,30 @@ class _SetAdvancedOptionsBottomSheetState
                             focusNode: _retryNode,
                             keyboardType: TextInputType.number,
                             textInputAction: TextInputAction.done,
-                            style: context.font.bodyLarge,
+                            style: Theme.of(context).textTheme.bodyLarge,
                             decoration: InputDecoration(
-                              hintText: 'Retry Count',
-                              hintStyle: context.font.bodyMedium?.copyWith(
-                                color: context.colour.outline,
+                              hintText: context.loc.electrumRetryCount,
+                              hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.outline,
                               ),
-                              fillColor: context.colour.onPrimary,
+                              fillColor: Theme.of(context).colorScheme.onPrimary,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
                                 ),
                               ),
                               disabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim
+                                  color: Theme.of(context).colorScheme.secondaryFixedDim
                                       .withValues(alpha: 0.5),
                                 ),
                               ),
@@ -362,11 +384,15 @@ class _SetAdvancedOptionsBottomSheetState
                             validator: (v) {
                               final value = v?.trim() ?? '';
                               if (value.isEmpty) {
-                                return "Retry Count can't be empty";
+                                return context.loc.electrumRetryCountEmptyError;
                               }
                               final n = int.tryParse(value);
-                              if (n == null) return "Enter a valid number";
-                              if (n < 0) return "Retry Count can't be negative";
+                              if (n == null) {
+                                return context.loc.electrumInvalidNumberError;
+                              }
+                              if (n < 0) {
+                                return context.loc.electrumRetryCountNegativeError;
+                              }
                               return null;
                             },
                             onFieldSubmitted: (_) => _confirm(),
@@ -377,7 +403,7 @@ class _SetAdvancedOptionsBottomSheetState
                               side: BorderSide.none,
                             ),
                             tileColor: Colors.transparent,
-                            title: const Text('Validate Domain'),
+                            title: Text(context.loc.electrumValidateDomain),
                             contentPadding: EdgeInsets.zero,
                             value: _validateDomain,
                             onChanged:
@@ -394,9 +420,12 @@ class _SetAdvancedOptionsBottomSheetState
                           children: [
                             if (state.advancedOptionsError != null) ...[
                               Text(
-                                _getErrorMessage(state.advancedOptionsError!),
+                                _getErrorMessage(
+                                  context,
+                                  state.advancedOptionsError!,
+                                ),
                                 style: TextStyle(
-                                  color: context.colour.error,
+                                  color: Theme.of(context).colorScheme.error,
                                   fontSize: 14,
                                 ),
                               ),
@@ -406,7 +435,7 @@ class _SetAdvancedOptionsBottomSheetState
                               children: [
                                 Expanded(
                                   child: BBButton.small(
-                                    label: 'Reset',
+                                    label: context.loc.electrumReset,
                                     disabled: state.isSavingAdvancedOptions,
                                     onPressed: () {
                                       _formKey.currentState!.reset();
@@ -431,19 +460,24 @@ class _SetAdvancedOptionsBottomSheetState
                                     },
                                     bgColor: Colors.transparent,
                                     outlined: true,
-                                    textStyle: context.font.headlineLarge,
-                                    textColor: context.colour.secondary,
+                                    textStyle:
+                                        Theme.of(context).textTheme.headlineLarge,
+                                    textColor:
+                                        Theme.of(context).colorScheme.secondary,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: BBButton.small(
-                                    label: 'Confirm',
+                                    label: context.loc.electrumConfirm,
                                     disabled: state.isSavingAdvancedOptions,
                                     onPressed: _confirm,
-                                    bgColor: context.colour.secondary,
-                                    textStyle: context.font.headlineLarge,
-                                    textColor: context.colour.onSecondary,
+                                    bgColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    textStyle:
+                                        Theme.of(context).textTheme.headlineLarge,
+                                    textColor:
+                                        Theme.of(context).colorScheme.onSecondary,
                                   ),
                                 ),
                               ],
