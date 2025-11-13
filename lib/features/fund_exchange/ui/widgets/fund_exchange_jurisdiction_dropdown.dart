@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -18,7 +18,7 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
       height: 56,
       child: Material(
         elevation: 4,
-        color: context.colour.onPrimary,
+        color: Theme.of(context).colorScheme.onPrimary,
         borderRadius: BorderRadius.circular(4.0),
         child: Center(
           child: DropdownButtonFormField<FundingJurisdiction>(
@@ -29,37 +29,37 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
             ),
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: context.colour.secondary,
+              color: Theme.of(context).colorScheme.secondary,
             ),
             value: fundingCountry,
             items: [
               DropdownMenuItem(
                 value: FundingJurisdiction.canada,
-                child: BBText('🇨🇦 Canada', style: context.font.headlineSmall),
+                child: BBText(context.loc.fundExchangeJurisdictionCanada, style: Theme.of(context).textTheme.headlineSmall),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.europe,
                 child: BBText(
-                  '🇪🇺 Europe (SEPA)',
-                  style: context.font.headlineSmall,
+                  context.loc.fundExchangeJurisdictionEurope,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.mexico,
-                child: BBText('🇲🇽 Mexico', style: context.font.headlineSmall),
+                child: BBText(context.loc.fundExchangeJurisdictionMexico, style: Theme.of(context).textTheme.headlineSmall),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.costaRica,
                 child: BBText(
-                  '🇨🇷 Costa Rica',
-                  style: context.font.headlineSmall,
+                  context.loc.fundExchangeJurisdictionCostaRica,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.argentina,
                 child: BBText(
-                  '🇦🇷 Argentina',
-                  style: context.font.headlineSmall,
+                  context.loc.fundExchangeJurisdictionArgentina,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
             ],

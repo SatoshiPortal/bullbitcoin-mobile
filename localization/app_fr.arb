@@ -2705,6 +2705,150 @@
   "@fundExchangeErrorLoadingDetails": {
     "description": "Message d'erreur lorsque les détails de financement ne peuvent pas être chargés"
   },
+  "fundExchangeSinpeTitle": "SINPE Móvil",
+  "@fundExchangeSinpeTitle": {
+    "description": "Titre de l'écran pour le mode de paiement SINPE Móvil (Costa Rica)"
+  },
+  "fundExchangeSinpeDescription": "Envoyez des fonds à notre numéro de téléphone SINPE Móvil. Vous devez envoyer les fonds depuis le même numéro de téléphone associé à votre compte Bull Bitcoin. Si vous envoyez le paiement depuis un numéro différent, ou si vous demandez à quelqu'un d'autre de faire le paiement pour vous, ",
+  "@fundExchangeSinpeDescription": {
+    "description": "Description principale pour le mode de paiement SINPE Móvil expliquant les exigences"
+  },
+  "fundExchangeSinpeDescriptionBold": "il sera rejeté.",
+  "@fundExchangeSinpeDescriptionBold": {
+    "description": "Texte en gras avertissant que le paiement depuis un mauvais numéro sera rejeté"
+  },
+  "fundExchangeSinpeAddedToBalance": "Une fois le paiement envoyé, il sera ajouté au solde de votre compte.",
+  "@fundExchangeSinpeAddedToBalance": {
+    "description": "Message expliquant que le paiement sera ajouté au solde du compte"
+  },
+  "fundExchangeSinpeWarningNoBitcoin": "Ne mettez pas",
+  "@fundExchangeSinpeWarningNoBitcoin": {
+    "description": "Texte d'avertissement en gras au début du message d'avertissement bitcoin"
+  },
+  "fundExchangeSinpeWarningNoBitcoinDescription": " le mot « Bitcoin » ou « Crypto » dans la description du paiement. Cela bloquera votre paiement.",
+  "@fundExchangeSinpeWarningNoBitcoinDescription": {
+    "description": "Avertissement que l'inclusion de Bitcoin ou Crypto dans la description bloquera le paiement"
+  },
+  "fundExchangeSinpeLabelPhone": "Envoyer à ce numéro de téléphone",
+  "@fundExchangeSinpeLabelPhone": {
+    "description": "Libellé pour le champ du numéro de téléphone SINPE Móvil"
+  },
+  "fundExchangeSinpeLabelRecipientName": "Nom du destinataire",
+  "@fundExchangeSinpeLabelRecipientName": {
+    "description": "Libellé pour le nom du destinataire dans le virement SINPE"
+  },
+  "fundExchangeCrIbanCrcTitle": "Virement bancaire (CRC)",
+  "@fundExchangeCrIbanCrcTitle": {
+    "description": "Titre de l'écran pour le virement bancaire IBAN du Costa Rica en CRC (Colón)"
+  },
+  "fundExchangeCrIbanCrcDescription": "Envoyez un virement bancaire depuis votre compte bancaire en utilisant les détails ci-dessous ",
+  "@fundExchangeCrIbanCrcDescription": {
+    "description": "Première partie de la description pour le virement CR IBAN CRC"
+  },
+  "fundExchangeCrIbanCrcDescriptionBold": "exactement",
+  "@fundExchangeCrIbanCrcDescriptionBold": {
+    "description": "Mot d'emphase en gras pour les instructions de virement CR IBAN"
+  },
+  "fundExchangeCrIbanCrcDescriptionEnd": ". Les fonds seront ajoutés au solde de votre compte.",
+  "@fundExchangeCrIbanCrcDescriptionEnd": {
+    "description": "Fin de la description pour le virement CR IBAN CRC"
+  },
+  "fundExchangeCrIbanCrcLabelIban": "Numéro de compte IBAN (Colones seulement)",
+  "@fundExchangeCrIbanCrcLabelIban": {
+    "description": "Libellé pour le champ du numéro IBAN pour CRC (Colones) uniquement"
+  },
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "Description du paiement",
+  "@fundExchangeCrIbanCrcLabelPaymentDescription": {
+    "description": "Libellé pour le champ de description du paiement dans le virement CR IBAN"
+  },
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "Votre code de virement.",
+  "@fundExchangeCrIbanCrcPaymentDescriptionHelp": {
+    "description": "Texte d'aide expliquant que la description du paiement est le code de virement"
+  },
+  "fundExchangeCrIbanCrcTransferCodeWarning": "Vous devez ajouter le code de virement comme « message » ou « raison » ou « description » lors du paiement. Si vous oubliez d'inclure ce code, votre paiement peut être rejeté.",
+  "@fundExchangeCrIbanCrcTransferCodeWarning": {
+    "description": "Avertissement concernant l'inclusion du code de virement dans le paiement"
+  },
+  "fundExchangeCrIbanCrcLabelRecipientName": "Nom du destinataire",
+  "@fundExchangeCrIbanCrcLabelRecipientName": {
+    "description": "Libellé pour le nom du destinataire dans le virement CR IBAN CRC"
+  },
+  "fundExchangeCrIbanCrcRecipientNameHelp": "Utilisez notre nom d'entreprise officiel. N'utilisez pas « Bull Bitcoin ».",
+  "@fundExchangeCrIbanCrcRecipientNameHelp": {
+    "description": "Texte d'aide pour le champ du nom du destinataire expliquant d'utiliser le nom d'entreprise"
+  },
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
+  "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
+    "description": "Libellé pour Cédula Jurídica (numéro d'identification légale au Costa Rica)"
+  },
+  "fundExchangeCrIbanUsdTitle": "Virement bancaire (USD)",
+  "@fundExchangeCrIbanUsdTitle": {
+    "description": "Titre de l'écran pour le virement bancaire IBAN du Costa Rica en USD"
+  },
+  "fundExchangeCrIbanUsdDescription": "Envoyez un virement bancaire depuis votre compte bancaire en utilisant les détails ci-dessous ",
+  "@fundExchangeCrIbanUsdDescription": {
+    "description": "Première partie de la description pour le virement CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdDescriptionBold": "exactement",
+  "@fundExchangeCrIbanUsdDescriptionBold": {
+    "description": "Mot d'emphase en gras pour les instructions de virement CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdDescriptionEnd": ". Les fonds seront ajoutés au solde de votre compte.",
+  "@fundExchangeCrIbanUsdDescriptionEnd": {
+    "description": "Fin de la description pour le virement CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdLabelIban": "Numéro de compte IBAN (dollars américains seulement)",
+  "@fundExchangeCrIbanUsdLabelIban": {
+    "description": "Libellé pour le champ du numéro IBAN pour USD uniquement"
+  },
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "Description du paiement",
+  "@fundExchangeCrIbanUsdLabelPaymentDescription": {
+    "description": "Libellé pour le champ de description du paiement dans le virement CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Votre code de virement.",
+  "@fundExchangeCrIbanUsdPaymentDescriptionHelp": {
+    "description": "Texte d'aide expliquant que la description du paiement est le code de virement"
+  },
+  "fundExchangeCrIbanUsdTransferCodeWarning": "Vous devez ajouter le code de virement comme « message » ou « raison » ou « description » lors du paiement. Si vous oubliez d'inclure ce code, votre paiement peut être rejeté.",
+  "@fundExchangeCrIbanUsdTransferCodeWarning": {
+    "description": "Avertissement concernant l'inclusion du code de virement dans le paiement pour les virements USD"
+  },
+  "fundExchangeCrIbanUsdLabelRecipientName": "Nom du destinataire",
+  "@fundExchangeCrIbanUsdLabelRecipientName": {
+    "description": "Libellé pour le nom du destinataire dans le virement CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdRecipientNameHelp": "Utilisez notre nom d'entreprise officiel. N'utilisez pas « Bull Bitcoin ».",
+  "@fundExchangeCrIbanUsdRecipientNameHelp": {
+    "description": "Texte d'aide pour le champ du nom du destinataire expliquant d'utiliser le nom d'entreprise"
+  },
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
+  "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
+    "description": "Libellé pour Cédula Jurídica (numéro d'identification légale au Costa Rica) pour USD"
+  },
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
+  "@fundExchangeCostaRicaMethodSinpeTitle": {
+    "description": "Titre de la méthode de paiement pour SINPE Móvil dans la liste des méthodes"
+  },
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "Transférer des Colones en utilisant SINPE",
+  "@fundExchangeCostaRicaMethodSinpeSubtitle": {
+    "description": "Description sous-titre pour la méthode de paiement SINPE Móvil"
+  },
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Costa Rica (CRC)",
+  "@fundExchangeCostaRicaMethodIbanCrcTitle": {
+    "description": "Titre de la méthode de paiement pour IBAN CRC dans la liste des méthodes"
+  },
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Transférer des fonds en Colón costaricain (CRC)",
+  "@fundExchangeCostaRicaMethodIbanCrcSubtitle": {
+    "description": "Description sous-titre pour la méthode de paiement IBAN CRC"
+  },
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
+  "@fundExchangeCostaRicaMethodIbanUsdTitle": {
+    "description": "Titre de la méthode de paiement pour IBAN USD dans la liste des méthodes"
+  },
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Transférer des fonds en dollars américains (USD)",
+  "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
+    "description": "Description sous-titre pour la méthode de paiement IBAN USD"
+  },
   "backupWalletTitle": "Sauvegarder votre portefeuille",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"

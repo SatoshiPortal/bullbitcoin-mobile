@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_detail.dart';
@@ -21,7 +22,10 @@ class FundExchangeOnlineBillPaymentScreen extends StatelessWidget {
       (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
+      appBar: AppBar(
+        title: Text(context.loc.fundExchangeTitle),
+        scrolledUnderElevation: 0.0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -30,12 +34,12 @@ class FundExchangeOnlineBillPaymentScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BBText(
-                'Online Bill Payment',
+                context.loc.fundExchangeOnlineBillPaymentTitle,
                 style: theme.textTheme.displaySmall,
               ),
               const Gap(16.0),
               BBText(
-                "Any amount you send via your bank's online bill payment feature using the information below will be credited to your Bull Bitcoin account balance within 3-4 business days.",
+                context.loc.fundExchangeOnlineBillPaymentDescription,
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(24.0),
@@ -45,16 +49,14 @@ class FundExchangeOnlineBillPaymentScreen extends StatelessWidget {
                 const Gap(24.0),
               ] else ...[
                 FundExchangeDetail(
-                  label: "Search your bank's list of billers for this name",
-                  helpText:
-                      "Add this company as a payee - it's Bull Bitcoin's payment processor",
+                  label: context.loc.fundExchangeOnlineBillPaymentLabelBillerName,
+                  helpText: context.loc.fundExchangeOnlineBillPaymentHelpBillerName,
                   value: details?.billerName,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Add this as the account number',
-                  helpText:
-                      'This unique account number is created just for you',
+                  label: context.loc.fundExchangeOnlineBillPaymentLabelAccountNumber,
+                  helpText: context.loc.fundExchangeOnlineBillPaymentHelpAccountNumber,
                   value: details?.code,
                 ),
                 const Gap(24.0),
