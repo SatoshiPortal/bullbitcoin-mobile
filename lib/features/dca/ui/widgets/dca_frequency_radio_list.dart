@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -25,7 +26,7 @@ class DcaFrequencyRadioList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Select Frequency', style: context.font.bodyMedium),
+        Text(context.loc.dcaSelectFrequencyLabel, style: context.font.bodyMedium),
         const Gap(4),
         ...DcaBuyFrequency.values.map((frequency) {
           return Column(
@@ -36,10 +37,10 @@ class DcaFrequencyRadioList extends StatelessWidget {
                   side: BorderSide(color: borderColor),
                 ),
                 title: Text(switch (frequency) {
-                  DcaBuyFrequency.hourly => 'Every hour',
-                  DcaBuyFrequency.daily => 'Every day',
-                  DcaBuyFrequency.weekly => 'Every week',
-                  DcaBuyFrequency.monthly => 'Every month',
+                  DcaBuyFrequency.hourly => context.loc.dcaConfirmFrequencyHourly,
+                  DcaBuyFrequency.daily => context.loc.dcaConfirmFrequencyDaily,
+                  DcaBuyFrequency.weekly => context.loc.dcaConfirmFrequencyWeekly,
+                  DcaBuyFrequency.monthly => context.loc.dcaConfirmFrequencyMonthly,
                 }, style: context.font.headlineSmall),
                 value: frequency,
                 groupValue: selectedFrequency,

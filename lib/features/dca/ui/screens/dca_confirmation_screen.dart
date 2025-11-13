@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
@@ -23,7 +24,7 @@ class DcaConfirmationScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Confirm Recurring Buy')),
+      appBar: AppBar(title: Text(context.loc.dcaConfirmTitle)),
       body: SafeArea(
         child: ScrollableColumn(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -39,24 +40,24 @@ class DcaConfirmationScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                'Buy orders will be placed automatically per these settings. You can disable them anytime.',
-                style: context.theme.textTheme.bodyMedium,
+                context.loc.dcaConfirmAutoMessage,
+                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ),
             const Gap(24),
             DcaConfirmationDetailRow(
-              label: 'Frequency',
+              label: context.loc.dcaConfirmFrequency,
               value: switch (confirmationState.frequency) {
-                DcaBuyFrequency.hourly => 'Every hour',
-                DcaBuyFrequency.daily => 'Every day',
-                DcaBuyFrequency.weekly => 'Every week',
-                DcaBuyFrequency.monthly => 'Every month',
+                DcaBuyFrequency.hourly => context.loc.dcaConfirmFrequencyHourly,
+                DcaBuyFrequency.daily => context.loc.dcaConfirmFrequencyDaily,
+                DcaBuyFrequency.weekly => context.loc.dcaConfirmFrequencyWeekly,
+                DcaBuyFrequency.monthly => context.loc.dcaConfirmFrequencyMonthly,
               },
             ),
             Divider(color: context.colour.surface),
             DcaConfirmationDetailRow(
-              label: 'Amount',
+              label: context.loc.dcaConfirmAmount,
               value: FormatAmount.fiat(
                 confirmationState.amount,
                 confirmationState.currency.code,
@@ -64,42 +65,42 @@ class DcaConfirmationScreen extends StatelessWidget {
             ),
             Divider(color: context.colour.surface),
             DcaConfirmationDetailRow(
-              label: 'Payment method',
-              value: '${confirmationState.currency.code.toUpperCase()} balance',
-            ),
-            Divider(color: context.colour.surface),
-            const DcaConfirmationDetailRow(
-              label: 'Order type',
-              value: 'Recurring buy',
+              label: context.loc.dcaConfirmPaymentMethod,
+              value: context.loc.dcaConfirmPaymentBalance(confirmationState.currency.code.toUpperCase()),
             ),
             Divider(color: context.colour.surface),
             DcaConfirmationDetailRow(
-              label: 'Network',
+              label: context.loc.dcaConfirmOrderType,
+              value: context.loc.dcaConfirmOrderTypeValue,
+            ),
+            Divider(color: context.colour.surface),
+            DcaConfirmationDetailRow(
+              label: context.loc.dcaConfirmNetwork,
               value: switch (confirmationState.network) {
-                DcaNetwork.bitcoin => 'Bitcoin',
-                DcaNetwork.lightning => 'Lightning',
-                DcaNetwork.liquid => 'Liquid',
+                DcaNetwork.bitcoin => context.loc.dcaConfirmNetworkBitcoin,
+                DcaNetwork.lightning => context.loc.dcaConfirmNetworkLightning,
+                DcaNetwork.liquid => context.loc.dcaConfirmNetworkLiquid,
               },
             ),
             if (confirmationState.network == DcaNetwork.lightning) ...[
               Divider(color: context.colour.surface),
               DcaConfirmationDetailRow(
-                label: 'Lightning address',
+                label: context.loc.dcaConfirmLightningAddress,
                 value: confirmationState.lightningAddress,
               ),
             ],
             const Spacer(),
             if (confirmationState.error != null) ...[
               Text(
-                'Something went wrong: ${confirmationState.error}',
-                style: context.theme.textTheme.bodySmall?.copyWith(
+                context.loc.dcaConfirmError(confirmationState.error!),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: context.colour.error,
                 ),
               ),
               const Gap(16),
             ],
             BBButton.big(
-              label: 'Continue',
+              label: context.loc.dcaConfirmContinue,
               disabled: confirmationState.isConfirmingDca,
               onPressed: () {
                 context.read<DcaBloc>().add(const DcaEvent.confirmed());
