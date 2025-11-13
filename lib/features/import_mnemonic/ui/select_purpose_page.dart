@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -22,8 +22,8 @@ class SelectScriptTypePage extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Import Mnemonic',
-          color: context.colour.secondaryFixed,
+          title: context.loc.importMnemonicSelectScriptType,
+          color: Theme.of(context).colorScheme.secondaryFixed,
           onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
@@ -56,9 +56,9 @@ class SelectScriptTypePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   BBText(
-                    'All three wallet types are syncing and their balance and transactions will appear soon. You can wait until sync completes or proceed to import if you are sure which wallet type you wish to import.',
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.onSurfaceVariant,
+                    context.loc.importMnemonicSyncMessage,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -66,21 +66,21 @@ class SelectScriptTypePage extends StatelessWidget {
                   Column(
                     children: [
                       _WalletTypeCard(
-                        title: 'Segwit',
+                        title: context.loc.importMnemonicSegwit,
                         status: state.bip84Status,
                         isSelected: scriptType == ScriptType.bip84,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip84),
                       ),
                       const Gap(16),
                       _WalletTypeCard(
-                        title: 'Nested Segwit',
+                        title: context.loc.importMnemonicNestedSegwit,
                         status: state.bip49Status,
                         isSelected: scriptType == ScriptType.bip49,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip49),
                       ),
                       const Gap(16),
                       _WalletTypeCard(
-                        title: 'Legacy',
+                        title: context.loc.importMnemonicLegacy,
                         status: state.bip44Status,
                         isSelected: scriptType == ScriptType.bip44,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip44),
@@ -90,10 +90,10 @@ class SelectScriptTypePage extends StatelessWidget {
                   const Gap(16),
 
                   BBButton.big(
-                    label: 'Continue',
+                    label: context.loc.importMnemonicContinue,
                     onPressed: cubit.import,
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onPrimary,
+                    bgColor: Theme.of(context).colorScheme.secondary,
+                    textColor: Theme.of(context).colorScheme.onPrimary,
                     disabled: state.isLoading,
                   ),
                 ],
@@ -126,11 +126,11 @@ class _WalletTypeCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: context.colour.secondaryFixed,
-          border: Border.all(color: context.colour.outline, width: 1),
+          color: Theme.of(context).colorScheme.secondaryFixed,
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 1),
           boxShadow: [
             BoxShadow(
-              color: context.colour.shadow,
+              color: Theme.of(context).colorScheme.shadow,
               offset: isSelected ? const Offset(0, 6) : const Offset(0, 2),
             ),
           ],
@@ -143,25 +143,25 @@ class _WalletTypeCard extends StatelessWidget {
                 children: [
                   BBText(
                     title,
-                    style: context.font.titleMedium?.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: context.colour.secondary,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
 
                   if (status != null) ...[
                     const Gap(8),
                     BBText(
-                      'Balance: ${status?.satoshis.toString() ?? '0'}',
-                      style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.onSurfaceVariant,
+                      context.loc.importMnemonicBalanceLabel(status!.satoshis.toString()),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const Gap(4),
                     BBText(
-                      'Transactions: ${status?.transactions.toString() ?? '0'}',
-                      style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.onSurfaceVariant,
+                      context.loc.importMnemonicTransactionsLabel(status!.transactions.toString()),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -183,21 +183,21 @@ class _WalletTypeCard extends StatelessWidget {
                 border: Border.all(
                   color:
                       isSelected
-                          ? context.colour.primary
-                          : context.colour.surface,
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.surface,
                   width: 2,
                 ),
                 color:
                     isSelected
-                        ? context.colour.primary
-                        : context.colour.surface,
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.surface,
               ),
               child:
                   isSelected
                       ? Icon(
                         Icons.circle,
                         size: 12,
-                        color: context.colour.onPrimary,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       )
                       : null,
             ),

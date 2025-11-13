@@ -6875,6 +6875,24 @@
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
   },
+  "importMnemonicBalanceLabel": "Solde : {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicTransactionsLabel": "Transactions : {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "importWatchOnlyTitle": "Importer en lecture seule",
   "@importWatchOnlyTitle": {
     "description": "AppBar title for watch-only import screen"
