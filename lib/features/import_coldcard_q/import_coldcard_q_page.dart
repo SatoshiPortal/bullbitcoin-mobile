@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_coldcard_q/instructions_bottom_sheet.dart';
@@ -16,15 +16,15 @@ class ImportColdcardQPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Connect Coldcard Q')),
+      appBar: AppBar(title: Text(context.loc.importColdcardTitle)),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           children: [
             const Gap(32),
             BBText(
-              'Import the wallet descriptor QR code from your Coldcard Q',
-              style: context.font.bodyLarge,
+              context.loc.importColdcardDescription,
+              style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
               maxLines: 2,
             ),
@@ -39,37 +39,37 @@ class ImportColdcardQPage extends StatelessWidget {
             Column(
               children: [
                 BBButton.small(
-                  label: 'Open the camera',
+                  label: context.loc.importColdcardButtonOpenCamera,
                   onPressed:
                       () => context.pushNamed(
                         ImportWatchOnlyWalletRoutes.scan.name,
                         extra: SignerDeviceEntity.coldcardQ,
                       ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  bgColor: Theme.of(context).colorScheme.onSecondary,
+                  textColor: Theme.of(context).colorScheme.secondary,
                   outlined: true,
                 ),
 
                 const Gap(16),
                 BBButton.small(
-                  label: 'Instructions',
+                  label: context.loc.importColdcardButtonInstructions,
                   onPressed:
                       () => ColdcardQInstructionsBottomSheet.show(context),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  bgColor: Theme.of(context).colorScheme.onSecondary,
+                  textColor: Theme.of(context).colorScheme.secondary,
                   outlined: true,
                 ),
                 const Gap(16),
                 BBButton.small(
-                  label: 'Purchase device',
+                  label: context.loc.importColdcardButtonPurchase,
                   onPressed:
                       () => launchUrl(
                         Uri.parse(
                           'https://store.coinkite.com/promo/BULLBITCOIN',
                         ),
                       ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  bgColor: Theme.of(context).colorScheme.onSecondary,
+                  textColor: Theme.of(context).colorScheme.secondary,
                   outlined: true,
                 ),
               ],
