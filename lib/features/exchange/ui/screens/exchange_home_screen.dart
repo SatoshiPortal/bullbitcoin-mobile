@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
@@ -15,7 +16,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sliver_tools/sliver_tools.dart';
-
 class ExchangeHomeScreen extends StatelessWidget {
   const ExchangeHomeScreen({super.key});
 
@@ -90,7 +90,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                     centerTitle: true,
                     title: const TopBarBullLogo(),
                     actionsIconTheme: IconThemeData(
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: context.colour.onPrimary,
                       size: 24,
                     ),
                     actionsPadding: const EdgeInsets.only(right: 16),
@@ -102,7 +102,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                           );
                         },
                         visualDensity: VisualDensity.compact,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: context.colour.onPrimary,
                         iconSize: 32,
                         icon: const Icon(Icons.history),
                       ),
@@ -115,7 +115,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                           Assets.icons.settingsLine.path,
                           width: 32,
                           height: 32,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                          color: context.colour.onPrimary,
                         ),
                       ),
                     ],
@@ -140,8 +140,8 @@ class ExchangeHomeScreen extends StatelessWidget {
                             () => context.pushNamed(
                               FundExchangeRoute.fundExchangeAccount.name,
                             ),
-                        bgColor: Theme.of(context).colorScheme.secondary,
-                        textColor: Theme.of(context).colorScheme.onPrimary,
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onPrimary,
                       ),
                     ),
                     const Gap(4),
@@ -154,8 +154,8 @@ class ExchangeHomeScreen extends StatelessWidget {
                         onPressed:
                             () =>
                                 context.pushNamed(WithdrawRoute.withdraw.name),
-                        bgColor: Theme.of(context).colorScheme.secondary,
-                        textColor: Theme.of(context).colorScheme.onPrimary,
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onPrimary,
                       ),
                     ),
                   ],

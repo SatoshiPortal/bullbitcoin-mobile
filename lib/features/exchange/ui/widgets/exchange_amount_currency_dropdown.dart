@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-
 class ExchangeAmountCurrencyDropdown extends StatelessWidget {
   const ExchangeAmountCurrencyDropdown({
     super.key,
@@ -29,13 +29,13 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(context.loc.exchangeCurrencyDropdownTitle, style: Theme.of(context).textTheme.bodyMedium),
+        Text(context.loc.exchangeCurrencyDropdownTitle, style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
           child: Material(
             elevation: 4,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: context.colour.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child:
@@ -51,7 +51,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
                         ),
                         icon: Icon(
                           Icons.keyboard_arrow_down,
-                          color: Theme.of(context).colorScheme.secondary,
+                          color: context.colour.secondary,
                         ),
                         items:
                             currencies.map((currency) {
@@ -65,7 +65,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
                                 value: currency.code,
                                 child: Text(
                                   '${currency.symbol} ${currency.code} ${balance != null ? '- ${FormatAmount.fiat(balance.amount, currency.code, simpleFormat: true)}' : ''}',
-                                  style: Theme.of(context).textTheme.headlineSmall,
+                                  style: context.font.headlineSmall,
                                 ),
                               );
                             }).toList(),

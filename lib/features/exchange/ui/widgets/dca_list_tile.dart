@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
@@ -9,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-
 class DcaListTile extends StatefulWidget {
   const DcaListTile({super.key, required this.hasDcaActive, required this.dca});
 
@@ -32,7 +32,7 @@ class _DcaListTileState extends State<DcaListTile> {
       return Text(
         context.loc.exchangeDcaUnableToGetConfig,
         style: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+          color: context.colour.onSurface.withValues(alpha: 0.6),
         ),
       );
     }
@@ -69,9 +69,9 @@ class _DcaListTileState extends State<DcaListTile> {
                       _showSettings ? context.loc.exchangeDcaHideSettings : context.loc.exchangeDcaViewSettings,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: context.colour.primary,
                         decoration: TextDecoration.underline,
-                        decorationColor: Theme.of(context).colorScheme.primary,
+                        decorationColor: context.colour.primary,
                       ),
                     ),
                   ),
@@ -175,12 +175,12 @@ class DcaSettingsContent extends StatelessWidget {
             frequency,
             network,
           ),
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: context.font.bodyMedium,
         ),
         const Gap(8),
         Text(
           context.loc.exchangeDcaAddressDisplay(addressLabel, address),
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: context.font.bodyMedium,
         ),
       ],
     );
