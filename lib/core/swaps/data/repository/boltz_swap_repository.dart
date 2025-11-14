@@ -25,6 +25,12 @@ class BoltzSwapRepository {
     return await _boltz.storage.swapMasterKeyExists(network);
   }
 
+  Future<SwapMasterKeyModel> getSwapMasterKey({
+    required BoltzNetwork network,
+  }) async {
+    return await _boltz.storage.fetchSwapMasterKey(network);
+  }
+
   Future<SwapMasterKeyModel> createSwapMasterKey({
     required String mnemonic,
   }) async {

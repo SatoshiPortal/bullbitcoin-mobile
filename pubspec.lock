@@ -201,7 +201,7 @@ packages:
     description:
       path: "."
       ref: new-swap-secrets
-      resolved-ref: "8d38edaac4f9b14c7f123e44cddd9d92cb3d4097"
+      resolved-ref: e5148229c5756c5b0c5b692f398c0b28fcec58ae
       url: "https://github.com/SatoshiPortal/boltz-dart"
     source: git
     version: "0.2.1"

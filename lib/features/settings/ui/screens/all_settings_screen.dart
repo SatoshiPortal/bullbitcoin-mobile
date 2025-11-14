@@ -95,6 +95,13 @@ class AllSettingsScreen extends StatelessWidget {
                   },
                 ),
                 SettingsEntryItem(
+                  icon: Icons.swap_horiz,
+                  title: 'Swap Settings',
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.swapSettings.name);
+                  },
+                ),
+                SettingsEntryItem(
                   icon: Icons.settings,
                   title: 'App Settings',
                   onTap: () {
