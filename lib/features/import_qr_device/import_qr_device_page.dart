@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -34,7 +35,7 @@ class ImportQrDevicePage extends StatelessWidget {
             const Gap(32),
             BBText(
               context.loc.importQrDeviceScanPrompt(deviceName),
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: context.font.bodyLarge,
               textAlign: TextAlign.center,
               maxLines: 2,
             ),
@@ -55,8 +56,8 @@ class ImportQrDevicePage extends StatelessWidget {
                         ImportWatchOnlyWalletRoutes.scan.name,
                         extra: device,
                       ),
-                  bgColor: Theme.of(context).colorScheme.onSecondary,
-                  textColor: Theme.of(context).colorScheme.secondary,
+                  bgColor: context.colour.onSecondary,
+                  textColor: context.colour.secondary,
                   outlined: true,
                 ),
 
@@ -69,8 +70,8 @@ class ImportQrDevicePage extends StatelessWidget {
                         title: instructionsTitle,
                         instructions: instructions,
                       ),
-                  bgColor: Theme.of(context).colorScheme.onSecondary,
-                  textColor: Theme.of(context).colorScheme.secondary,
+                  bgColor: context.colour.onSecondary,
+                  textColor: context.colour.secondary,
                   outlined: true,
                 ),
                 const Gap(16),
