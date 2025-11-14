@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
@@ -18,7 +19,7 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
       height: 56,
       child: Material(
         elevation: 4,
-        color: Theme.of(context).colorScheme.onPrimary,
+        color: context.colour.onPrimary,
         borderRadius: BorderRadius.circular(4.0),
         child: Center(
           child: DropdownButtonFormField<FundingJurisdiction>(
@@ -29,37 +30,37 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
             ),
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: Theme.of(context).colorScheme.secondary,
+              color: context.colour.secondary,
             ),
             value: fundingCountry,
             items: [
               DropdownMenuItem(
                 value: FundingJurisdiction.canada,
-                child: BBText(context.loc.fundExchangeJurisdictionCanada, style: Theme.of(context).textTheme.headlineSmall),
+                child: BBText(context.loc.fundExchangeJurisdictionCanada, style: context.font.headlineSmall),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.europe,
                 child: BBText(
                   context.loc.fundExchangeJurisdictionEurope,
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: context.font.headlineSmall,
                 ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.mexico,
-                child: BBText(context.loc.fundExchangeJurisdictionMexico, style: Theme.of(context).textTheme.headlineSmall),
+                child: BBText(context.loc.fundExchangeJurisdictionMexico, style: context.font.headlineSmall),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.costaRica,
                 child: BBText(
                   context.loc.fundExchangeJurisdictionCostaRica,
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: context.font.headlineSmall,
                 ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.argentina,
                 child: BBText(
                   context.loc.fundExchangeJurisdictionArgentina,
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: context.font.headlineSmall,
                 ),
               ),
             ],
