@@ -8149,5 +8149,229 @@
   "appStartupContactSupportButton": "Contactar Soporte",
   "@appStartupContactSupportButton": {
     "description": "Etiqueta del botón para contactar al soporte cuando falla el inicio de la aplicación"
+  },
+  "exchangeBrandName": "BULL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLandingConnectAccount": "Conecta tu cuenta de intercambio Bull Bitcoin",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeLandingRecommendedExchange": "Intercambio de Bitcoin recomendado",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureSelfCustody": "• Compra Bitcoin directamente en autocustodia",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, órdenes limitadas y compra automática",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureSellBitcoin": "• Vende Bitcoin, recibe pagos en Bitcoin",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeFeatureBankTransfers": "• Envía transferencias bancarias y paga facturas",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeFeatureCustomerSupport": "• Chatea con el soporte al cliente",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeFeatureUnifiedHistory": "• Historial de transacciones unificado",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  },
+  "exchangeLandingDisclaimerLegal": "El acceso a los servicios de intercambio estará restringido a países donde Bull Bitcoin pueda operar legalmente y puede requerir KYC.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "Los servicios de intercambio de criptomonedas no están disponibles en la aplicación móvil de Bull Bitcoin.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLoginButton": "Iniciar sesión o registrarse",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeGoToWebsiteButton": "Ir al sitio web del intercambio Bull Bitcoin",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  },
+  "exchangeAuthLoginFailedTitle": "Error de inicio de sesión",
+  "@exchangeAuthLoginFailedTitle": {
+    "description": "Title of the dialog shown when exchange login fails"
+  },
+  "exchangeAuthLoginFailedMessage": "Ocurrió un error, por favor intenta iniciar sesión nuevamente.",
+  "@exchangeAuthLoginFailedMessage": {
+    "description": "Message shown when exchange login fails"
+  },
+  "exchangeAuthLoginFailedOkButton": "OK",
+  "@exchangeAuthLoginFailedOkButton": {
+    "description": "OK button label in the login failed dialog"
+  },
+  "exchangeHomeDepositButton": "Depositar",
+  "@exchangeHomeDepositButton": {
+    "description": "Button label for depositing funds to the exchange"
+  },
+  "exchangeHomeWithdrawButton": "Retirar",
+  "@exchangeHomeWithdrawButton": {
+    "description": "Button label for withdrawing funds from the exchange"
+  },
+  "exchangeDcaUnableToGetConfig": "No se puede obtener la configuración de DCA",
+  "@exchangeDcaUnableToGetConfig": {
+    "description": "Error message when DCA configuration cannot be retrieved"
+  },
+  "exchangeDcaDeactivateTitle": "Desactivar compra recurrente",
+  "@exchangeDcaDeactivateTitle": {
+    "description": "Title shown when DCA is active and can be deactivated"
+  },
+  "exchangeDcaActivateTitle": "Activar compra recurrente",
+  "@exchangeDcaActivateTitle": {
+    "description": "Title shown when DCA is inactive and can be activated"
+  },
+  "exchangeDcaHideSettings": "Ocultar configuración",
+  "@exchangeDcaHideSettings": {
+    "description": "Link text to hide DCA settings details"
+  },
+  "exchangeDcaViewSettings": "Ver configuración",
+  "@exchangeDcaViewSettings": {
+    "description": "Link text to view DCA settings details"
+  },
+  "exchangeDcaCancelDialogTitle": "¿Cancelar compra recurrente de Bitcoin?",
+  "@exchangeDcaCancelDialogTitle": {
+    "description": "Title of the dialog confirming DCA cancellation"
+  },
+  "exchangeDcaCancelDialogMessage": "Tu plan de compra recurrente de Bitcoin se detendrá y las compras programadas finalizarán. Para reiniciar, deberás configurar un nuevo plan.",
+  "@exchangeDcaCancelDialogMessage": {
+    "description": "Message explaining the consequences of canceling DCA"
+  },
+  "exchangeDcaCancelDialogCancelButton": "Cancelar",
+  "@exchangeDcaCancelDialogCancelButton": {
+    "description": "Button label to cancel the DCA cancellation dialog"
+  },
+  "exchangeDcaCancelDialogConfirmButton": "Sí, desactivar",
+  "@exchangeDcaCancelDialogConfirmButton": {
+    "description": "Button label to confirm DCA deactivation"
+  },
+  "exchangeDcaFrequencyHour": "hora",
+  "@exchangeDcaFrequencyHour": {
+    "description": "DCA frequency unit: hour"
+  },
+  "exchangeDcaFrequencyDay": "día",
+  "@exchangeDcaFrequencyDay": {
+    "description": "DCA frequency unit: day"
+  },
+  "exchangeDcaFrequencyWeek": "semana",
+  "@exchangeDcaFrequencyWeek": {
+    "description": "DCA frequency unit: week"
+  },
+  "exchangeDcaFrequencyMonth": "mes",
+  "@exchangeDcaFrequencyMonth": {
+    "description": "DCA frequency unit: month"
+  },
+  "exchangeDcaNetworkBitcoin": "Red Bitcoin",
+  "@exchangeDcaNetworkBitcoin": {
+    "description": "DCA network option: Bitcoin"
+  },
+  "exchangeDcaNetworkLightning": "Red Lightning",
+  "@exchangeDcaNetworkLightning": {
+    "description": "DCA network option: Lightning"
+  },
+  "exchangeDcaNetworkLiquid": "Red Liquid",
+  "@exchangeDcaNetworkLiquid": {
+    "description": "DCA network option: Liquid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Dirección Bitcoin",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Dirección Lightning",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Dirección Liquid",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaSummaryMessage": "Estás comprando {amount} cada {frequency} a través de {network} mientras haya fondos en tu cuenta.",
+  "@exchangeDcaSummaryMessage": {
+    "description": "Summary message describing the DCA configuration",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "The amount being purchased (e.g., '$100 CAD')"
+      },
+      "frequency": {
+        "type": "String",
+        "description": "The purchase frequency (e.g., 'day', 'week')"
+      },
+      "network": {
+        "type": "String",
+        "description": "The network being used (e.g., 'Bitcoin Network')"
+      }
+    }
+  },
+  "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
+  "@exchangeDcaAddressDisplay": {
+    "description": "Format for displaying address label and address",
+    "placeholders": {
+      "addressLabel": {
+        "type": "String",
+        "description": "The address label (e.g., 'Bitcoin address')"
+      },
+      "address": {
+        "type": "String",
+        "description": "The actual address"
+      }
+    }
+  },
+  "exchangeCurrencyDropdownTitle": "Seleccionar moneda",
+  "@exchangeCurrencyDropdownTitle": {
+    "description": "Title for the currency selection dropdown"
+  },
+  "exchangeCurrencyDropdownValidation": "Por favor selecciona una moneda",
+  "@exchangeCurrencyDropdownValidation": {
+    "description": "Validation message when no currency is selected"
+  },
+  "exchangeKycLevelLight": "Ligera",
+  "@exchangeKycLevelLight": {
+    "description": "KYC verification level: Light"
+  },
+  "exchangeKycLevelLimited": "Limitada",
+  "@exchangeKycLevelLimited": {
+    "description": "KYC verification level: Limited"
+  },
+  "exchangeKycCardTitle": "Completa tu verificación KYC",
+  "@exchangeKycCardTitle": {
+    "description": "Title of the KYC completion card"
+  },
+  "exchangeKycCardSubtitle": "Para eliminar los límites de transacción",
+  "@exchangeKycCardSubtitle": {
+    "description": "Subtitle explaining why to complete KYC"
+  },
+  "exchangeAmountInputTitle": "Ingresar monto",
+  "@exchangeAmountInputTitle": {
+    "description": "Title for the amount input field"
+  },
+  "exchangeAmountInputValidationEmpty": "Por favor ingresa un monto",
+  "@exchangeAmountInputValidationEmpty": {
+    "description": "Validation message when amount field is empty"
+  },
+  "exchangeAmountInputValidationInvalid": "Monto inválido",
+  "@exchangeAmountInputValidationInvalid": {
+    "description": "Validation message when amount is invalid"
+  },
+  "exchangeAmountInputValidationZero": "El monto debe ser mayor que cero",
+  "@exchangeAmountInputValidationZero": {
+    "description": "Validation message when amount is zero or negative"
+  },
+  "exchangeAmountInputValidationInsufficient": "Saldo insuficiente",
+  "@exchangeAmountInputValidationInsufficient": {
+    "description": "Validation message when amount exceeds available balance"
   }
 }
