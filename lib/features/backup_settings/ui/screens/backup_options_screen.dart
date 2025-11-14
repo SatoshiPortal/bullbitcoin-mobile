@@ -84,13 +84,13 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                 description: context.loc.backupWalletPhysicalBackupDescription,
                 tag: context.loc.backupWalletPhysicalBackupTag,
                 onTap: () {
-                  final showTheMnemonic = switch (widget.flow) {
-                    BackupSettingsFlow.backup => true,
-                    BackupSettingsFlow.test => false,
-                  };
                   context.pushNamed(
-                    TestWalletBackupSubroute.testPhysicalBackup.name,
-                    extra: showTheMnemonic,
+                    TestWalletBackupRoute.testPhysicalBackupFlow.name,
+                    extra: switch (widget.flow) {
+                      BackupSettingsFlow.backup =>
+                        TestPhysicalBackupFlow.backup,
+                      BackupSettingsFlow.test => TestPhysicalBackupFlow.verify,
+                    },
                   );
                 },
               ),

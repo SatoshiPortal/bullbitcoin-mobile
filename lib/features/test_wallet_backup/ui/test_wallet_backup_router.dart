@@ -1,33 +1,43 @@
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/test_physical_backup_screen.dart'
-    show TestPhysicalBackupFlow;
+import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/flow.dart';
+import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-enum TestWalletBackupSubroute {
-  testPhysicalBackup('test-physical-backup'),
-  backupTestSuccess('backup-test-success');
+enum TestPhysicalBackupFlow { backup, verify }
+
+enum TestWalletBackupRoute {
+  testPhysicalBackupFlow('/test-physical-backup-flow');
 
   final String path;
 
-  const TestWalletBackupSubroute(this.path);
+  const TestWalletBackupRoute(this.path);
 }
 
 class TestWalletBackupRouter {
-  static final routes = [
-    GoRoute(
-      path: TestWalletBackupSubroute.backupTestSuccess.path,
-      name: TestWalletBackupSubroute.backupTestSuccess.name,
-      builder: (context, state) {
-        return const BackupTestSuccessScreen();
-      },
-    ),
-    GoRoute(
-      path: TestWalletBackupSubroute.testPhysicalBackup.path,
-      name: TestWalletBackupSubroute.testPhysicalBackup.name,
-      builder: (context, state) {
-        final showTheMnemonic = state.extra as bool? ?? false;
-        return TestPhysicalBackupFlow(showTheMnemonic: showTheMnemonic);
-      },
-    ),
-  ];
+  static final route = GoRoute(
+    name: TestWalletBackupRoute.testPhysicalBackupFlow.name,
+    path: TestWalletBackupRoute.testPhysicalBackupFlow.path,
+    builder: (context, state) {
+      final flow =
+          state.extra as TestPhysicalBackupFlow? ??
+          TestPhysicalBackupFlow.backup;
+
+      return BlocProvider(
+        create:
+            (context) => TestWalletBackupBloc(
+              loadWalletsForNetworkUsecase:
+                  locator<LoadWalletsForNetworkUsecase>(),
+              getMnemonicFromFingerprintUsecase:
+                  locator<GetMnemonicFromFingerprintUsecase>(),
+              completePhysicalBackupVerificationUsecase:
+                  locator<CompletePhysicalBackupVerificationUsecase>(),
+            )..add(const LoadWallets()),
+        child: TestPhysicalBackupFlowNavigator(flow: flow),
+      );
+    },
+  );
 }
