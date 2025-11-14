@@ -1,9 +1,9 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-
 class PrivacyNoticeBottomSheet extends StatelessWidget {
   const PrivacyNoticeBottomSheet({super.key});
 
@@ -21,7 +21,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onPrimary,
+        color: context.colour.onPrimary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
@@ -37,7 +37,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Gap(24),
-                    Text(context.loc.electrumPrivacyNoticeTitle, style: Theme.of(context).textTheme.headlineMedium),
+                    Text(context.loc.electrumPrivacyNoticeTitle, style: context.font.headlineMedium),
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(false),
                       child: const Icon(Icons.close),
@@ -56,14 +56,14 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                   children: [
                     Text(
                       context.loc.electrumPrivacyNoticeContent1,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: context.font.bodyMedium,
                       maxLines: 4,
                     ),
                     const Gap(24),
                     Text(
                       context.loc.electrumPrivacyNoticeContent2,
                       maxLines: 4,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: context.font.bodyMedium,
                     ),
                     const Gap(32),
                     Row(
@@ -74,8 +74,8 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                             onPressed: () => Navigator.of(context).pop(false),
                             bgColor: Colors.transparent,
                             outlined: true,
-                            textStyle: Theme.of(context).textTheme.headlineLarge,
-                            textColor: Theme.of(context).colorScheme.secondary,
+                            textStyle: context.font.headlineLarge,
+                            textColor: context.colour.secondary,
                           ),
                         ),
                         const Gap(16),
@@ -83,9 +83,9 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                           child: BBButton.big(
                             label: context.loc.electrumPrivacyNoticeSave,
                             onPressed: () => Navigator.of(context).pop(true),
-                            bgColor: Theme.of(context).colorScheme.secondary,
-                            textStyle: Theme.of(context).textTheme.headlineLarge,
-                            textColor: Theme.of(context).colorScheme.onSecondary,
+                            bgColor: context.colour.secondary,
+                            textStyle: context.font.headlineLarge,
+                            textColor: context.colour.onSecondary,
                           ),
                         ),
                       ],

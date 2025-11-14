@@ -1,6 +1,6 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
-
 class DeleteCustomServerDialog {
   static Future<bool?> show(
     BuildContext context,
@@ -12,7 +12,7 @@ class DeleteCustomServerDialog {
 
       builder:
           (BuildContext dialogContext) => AlertDialog(
-            backgroundColor: Theme.of(context).colorScheme.onSecondary,
+            backgroundColor: context.colour.onSecondary,
             title: Text(context.loc.electrumDeleteServerTitle),
             content: Column(
               mainAxisSize: MainAxisSize.min,

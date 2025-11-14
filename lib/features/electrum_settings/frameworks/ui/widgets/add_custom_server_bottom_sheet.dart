@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -8,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-
 class CustomServerInput {
   final String url;
   final bool enableSsl;
@@ -95,7 +95,7 @@ class _AddCustomServerBottomSheetState
                       Expanded(
                         child: Text(
                           context.loc.electrumAddCustomServer,
-                          style: Theme.of(context).textTheme.headlineMedium,
+                          style: context.font.headlineMedium,
                         ),
                       ),
                       IconButton(
@@ -117,20 +117,20 @@ class _AddCustomServerBottomSheetState
                       // Force lowercase
                       LowerCaseTextFormatter(),
                     ],
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: context.font.bodyLarge,
                     decoration: InputDecoration(
-                      fillColor: Theme.of(context).colorScheme.onPrimary,
+                      fillColor: context.colour.onPrimary,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.secondaryFixedDim,
+                          color: context.colour.secondaryFixedDim,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.secondaryFixedDim,
+                          color: context.colour.secondaryFixedDim,
                         ),
                       ),
                       disabledBorder: OutlineInputBorder(
@@ -153,8 +153,8 @@ class _AddCustomServerBottomSheetState
                             : context.loc.electrumNetworkBitcoin,
                         environment,
                       ),
-                      hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.outline,
+                      hintStyle: context.font.bodyMedium?.copyWith(
+                        color: context.colour.outline,
                       ),
                     ),
                     onFieldSubmitted: (_) => _submit(),
@@ -185,7 +185,7 @@ class _AddCustomServerBottomSheetState
                         Expanded(
                           child: Text(
                             context.loc.electrumEnableSsl,
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: context.font.bodyMedium,
                           ),
                         ),
                         Switch(
@@ -206,7 +206,7 @@ class _AddCustomServerBottomSheetState
                       isLiquid
                           ? context.loc.electrumLiquidSslInfo
                           : context.loc.electrumBitcoinServerInfo,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      style: context.font.bodySmall?.copyWith(
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
@@ -219,8 +219,8 @@ class _AddCustomServerBottomSheetState
                   BBButton.big(
                     label: context.loc.electrumAddServer,
                     onPressed: _submit,
-                    bgColor: Theme.of(context).colorScheme.secondary,
-                    textColor: Theme.of(context).colorScheme.onSecondary,
+                    bgColor: context.colour.secondary,
+                    textColor: context.colour.onSecondary,
                   ),
                 ],
               ),

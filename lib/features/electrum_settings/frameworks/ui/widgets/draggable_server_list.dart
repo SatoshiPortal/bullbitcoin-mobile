@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/add_custom_server_bottom_sheet.dart';
@@ -8,7 +9,6 @@ import 'package:bb_mobile/features/electrum_settings/interface_adapters/presente
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-
 class DraggableServerList extends StatelessWidget {
   const DraggableServerList({super.key});
 
@@ -44,16 +44,16 @@ class DraggableServerList extends StatelessWidget {
       children: [
         Text(
           context.loc.electrumDefaultServers,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+          style: context.font.titleSmall?.copyWith(
+            color: context.colour.onSurface.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(height: 8),
         if (customServers.isNotEmpty) ...[
           InfoCard(
             description: context.loc.electrumDefaultServersInfo,
-            tagColor: Theme.of(context).colorScheme.onTertiary,
-            bgColor: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.1),
+            tagColor: context.colour.onTertiary,
+            bgColor: context.colour.tertiary.withValues(alpha: 0.1),
           ),
           const SizedBox(height: 8),
         ],
@@ -70,15 +70,15 @@ class DraggableServerList extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             context.loc.electrumCustomServers,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            style: context.font.titleSmall?.copyWith(
+              color: context.colour.onSurface.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             context.loc.electrumDragToReorder,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+            style: context.font.bodySmall?.copyWith(
+              color: context.colour.onSurface.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 8),
@@ -122,8 +122,8 @@ class DraggableServerList extends StatelessWidget {
         if (electrumServersError != null) ...[
           InfoCard(
             description: _getErrorMessage(context, electrumServersError),
-            tagColor: Theme.of(context).colorScheme.error,
-            bgColor: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+            tagColor: context.colour.error,
+            bgColor: context.colour.error.withValues(alpha: 0.1),
           ),
           const Gap(16),
         ],
@@ -139,11 +139,11 @@ class DraggableServerList extends StatelessWidget {
               );
             }
           },
-          icon: Icon(Icons.add_circle_outline, color: Theme.of(context).colorScheme.primary),
+          icon: Icon(Icons.add_circle_outline, color: context.colour.primary),
           label: Text(
             context.loc.electrumAddCustomServer,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
+            style: context.font.bodyMedium?.copyWith(
+              color: context.colour.primary,
             ),
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -7,7 +8,6 @@ import 'package:bb_mobile/features/electrum_settings/interface_adapters/presente
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/advanced_options_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 class SetAdvancedOptionsBottomSheet extends StatefulWidget {
   const SetAdvancedOptionsBottomSheet({super.key});
 
@@ -150,7 +150,7 @@ class _SetAdvancedOptionsBottomSheetState
                         Expanded(
                           child: Text(
                             context.loc.electrumAdvancedOptions,
-                            style: Theme.of(context).textTheme.headlineMedium,
+                            style: context.font.headlineMedium,
                           ),
                         ),
                         IconButton(
@@ -171,7 +171,7 @@ class _SetAdvancedOptionsBottomSheetState
                           Text(
                             context.loc.electrumStopGap,
                             style:
-                                Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                context.font.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -181,31 +181,31 @@ class _SetAdvancedOptionsBottomSheetState
                             focusNode: _stopGapNode,
                             textInputAction: TextInputAction.next,
                             keyboardType: TextInputType.number,
-                            style: Theme.of(context).textTheme.bodyLarge,
+                            style: context.font.bodyLarge,
                             decoration: InputDecoration(
                               hintText: context.loc.electrumStopGap,
                               hintStyle:
-                                  Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.outline,
+                                  context.font.bodyMedium?.copyWith(
+                                color: context.colour.outline,
                               ),
-                              fillColor: Theme.of(context).colorScheme.onPrimary,
+                              fillColor: context.colour.onPrimary,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
+                                  color: context.colour.secondaryFixedDim,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
+                                  color: context.colour.secondaryFixedDim,
                                 ),
                               ),
                               disabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.secondaryFixedDim
+                                  color: context.colour.secondaryFixedDim
                                       .withValues(alpha: 0.5),
                                 ),
                               ),
@@ -237,7 +237,7 @@ class _SetAdvancedOptionsBottomSheetState
                           const SizedBox(height: 12),
                           Text(
                             context.loc.electrumTimeout,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: context.font.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -247,30 +247,30 @@ class _SetAdvancedOptionsBottomSheetState
                             focusNode: _timeoutNode,
                             keyboardType: TextInputType.number,
                             textInputAction: TextInputAction.next,
-                            style: Theme.of(context).textTheme.bodyLarge,
+                            style: context.font.bodyLarge,
                             decoration: InputDecoration(
                               hintText: context.loc.electrumTimeout,
-                              hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.outline,
+                              hintStyle: context.font.bodyMedium?.copyWith(
+                                color: context.colour.outline,
                               ),
-                              fillColor: Theme.of(context).colorScheme.onPrimary,
+                              fillColor: context.colour.onPrimary,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
+                                  color: context.colour.secondaryFixedDim,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
+                                  color: context.colour.secondaryFixedDim,
                                 ),
                               ),
                               disabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.secondaryFixedDim
+                                  color: context.colour.secondaryFixedDim
                                       .withValues(alpha: 0.5),
                                 ),
                               ),
@@ -324,7 +324,7 @@ class _SetAdvancedOptionsBottomSheetState
                                           recommended.toString(),
                                         ),
                                         tagColor:
-                                            Theme.of(context).colorScheme.primary,
+                                            context.colour.primary,
                                         bgColor: Theme.of(context)
                                             .colorScheme
                                             .primary
@@ -340,7 +340,7 @@ class _SetAdvancedOptionsBottomSheetState
                           const SizedBox(height: 12),
                           Text(
                             context.loc.electrumRetryCount,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: context.font.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -350,30 +350,30 @@ class _SetAdvancedOptionsBottomSheetState
                             focusNode: _retryNode,
                             keyboardType: TextInputType.number,
                             textInputAction: TextInputAction.done,
-                            style: Theme.of(context).textTheme.bodyLarge,
+                            style: context.font.bodyLarge,
                             decoration: InputDecoration(
                               hintText: context.loc.electrumRetryCount,
-                              hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.outline,
+                              hintStyle: context.font.bodyMedium?.copyWith(
+                                color: context.colour.outline,
                               ),
-                              fillColor: Theme.of(context).colorScheme.onPrimary,
+                              fillColor: context.colour.onPrimary,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
+                                  color: context.colour.secondaryFixedDim,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.secondaryFixedDim,
+                                  color: context.colour.secondaryFixedDim,
                                 ),
                               ),
                               disabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.secondaryFixedDim
+                                  color: context.colour.secondaryFixedDim
                                       .withValues(alpha: 0.5),
                                 ),
                               ),
@@ -425,7 +425,7 @@ class _SetAdvancedOptionsBottomSheetState
                                   state.advancedOptionsError!,
                                 ),
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.error,
+                                  color: context.colour.error,
                                   fontSize: 14,
                                 ),
                               ),
@@ -461,9 +461,9 @@ class _SetAdvancedOptionsBottomSheetState
                                     bgColor: Colors.transparent,
                                     outlined: true,
                                     textStyle:
-                                        Theme.of(context).textTheme.headlineLarge,
+                                        context.font.headlineLarge,
                                     textColor:
-                                        Theme.of(context).colorScheme.secondary,
+                                        context.colour.secondary,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -473,11 +473,11 @@ class _SetAdvancedOptionsBottomSheetState
                                     disabled: state.isSavingAdvancedOptions,
                                     onPressed: _confirm,
                                     bgColor:
-                                        Theme.of(context).colorScheme.secondary,
+                                        context.colour.secondary,
                                     textStyle:
-                                        Theme.of(context).textTheme.headlineLarge,
+                                        context.font.headlineLarge,
                                     textColor:
-                                        Theme.of(context).colorScheme.onSecondary,
+                                        context.colour.onSecondary,
                                   ),
                                 ),
                               ],

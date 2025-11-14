@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
@@ -7,7 +8,6 @@ import 'package:bb_mobile/features/electrum_settings/interface_adapters/presente
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-
 class ElectrumSettingsScreen extends StatelessWidget {
   const ElectrumSettingsScreen({super.key});
 
@@ -30,8 +30,8 @@ class ElectrumSettingsScreen extends StatelessWidget {
                   ? FadingLinearProgress(
                     height: 3,
                     trigger: isLoading,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    foregroundColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: context.colour.surface,
+                    foregroundColor: context.colour.primary,
                   )
                   : const SizedBox(height: 3),
         ),
@@ -85,8 +85,8 @@ class ElectrumSettingsScreen extends StatelessWidget {
                 onPressed: () => SetAdvancedOptionsBottomSheet.show(context),
                 child: Text(
                   context.loc.electrumAdvancedOptions,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.colour.primary,
                   ),
                 ),
               ),
