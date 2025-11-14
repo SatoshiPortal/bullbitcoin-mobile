@@ -92,7 +92,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: _getActionTitle(context),
+          title: widget.action.getTitle(context),
           color: context.colour.secondaryFixed,
           onBack: () => Navigator.of(context).pop(),
         ),
@@ -215,7 +215,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         if (state.isInitial)
           BBButton.big(
             onPressed: () => _startOperation(context),
-            label: _getActionButtonText(context),
+            label: widget.action.getButtonText(context),
             bgColor: context.colour.primary,
             textColor: context.colour.onPrimary,
           ),
@@ -429,11 +429,11 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       case LedgerOperationStatus.connecting:
         return context.loc.ledgerConnectingMessage(state.connectedDevice!.name);
       case LedgerOperationStatus.processing:
-        return _getProcessingText(context);
+        return widget.action.getProcessingText(context);
       case LedgerOperationStatus.success:
-        return _getSuccessText(context);
+        return widget.action.getSuccessText(context);
       case LedgerOperationStatus.error:
-        return context.loc.ledgerActionFailedMessage(_getActionTitle(context));
+        return context.loc.ledgerActionFailedMessage(widget.action.getTitle(context));
     }
   }
 
@@ -451,9 +451,9 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       case LedgerOperationStatus.connecting:
         return context.loc.ledgerConnectingSubtext;
       case LedgerOperationStatus.processing:
-        return _getProcessingSubtext(context);
+        return widget.action.getProcessingSubtext(context);
       case LedgerOperationStatus.success:
-        return _getSuccessSubtext(context);
+        return widget.action.getSuccessSubtext(context);
       case LedgerOperationStatus.error:
         return _getErrorMessage(context, state.errorMessage);
     }
@@ -579,74 +579,6 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       await openAppSettings();
     } catch (e) {
       log.warning('Could not open app settings', error: e);
-    }
-  }
-
-  // Helper methods for localized strings based on action type
-
-  String _getActionTitle(BuildContext context) {
-    switch (widget.action) {
-      case ImportWalletLedgerAction():
-        return context.loc.ledgerImportTitle;
-      case SignTransactionLedgerAction():
-        return context.loc.ledgerSignTitle;
-      case VerifyAddressLedgerAction():
-        return context.loc.ledgerVerifyTitle;
-    }
-  }
-
-  String _getActionButtonText(BuildContext context) {
-    switch (widget.action) {
-      case ImportWalletLedgerAction():
-        return context.loc.ledgerImportButton;
-      case SignTransactionLedgerAction():
-        return context.loc.ledgerSignButton;
-      case VerifyAddressLedgerAction():
-        return context.loc.ledgerVerifyButton;
-    }
-  }
-
-  String _getProcessingText(BuildContext context) {
-    switch (widget.action) {
-      case ImportWalletLedgerAction():
-        return context.loc.ledgerProcessingImport;
-      case SignTransactionLedgerAction():
-        return context.loc.ledgerProcessingSign;
-      case VerifyAddressLedgerAction():
-        return context.loc.ledgerProcessingVerify;
-    }
-  }
-
-  String _getSuccessText(BuildContext context) {
-    switch (widget.action) {
-      case ImportWalletLedgerAction():
-        return context.loc.ledgerSuccessImportTitle;
-      case SignTransactionLedgerAction():
-        return context.loc.ledgerSuccessSignTitle;
-      case VerifyAddressLedgerAction():
-        return context.loc.ledgerSuccessVerifyTitle;
-    }
-  }
-
-  String _getProcessingSubtext(BuildContext context) {
-    switch (widget.action) {
-      case ImportWalletLedgerAction():
-        return context.loc.ledgerProcessingImportSubtext;
-      case SignTransactionLedgerAction():
-        return context.loc.ledgerProcessingSignSubtext;
-      case VerifyAddressLedgerAction():
-        return context.loc.ledgerProcessingVerifySubtext;
-    }
-  }
-
-  String _getSuccessSubtext(BuildContext context) {
-    switch (widget.action) {
-      case ImportWalletLedgerAction():
-        return context.loc.ledgerSuccessImportDescription;
-      case SignTransactionLedgerAction():
-        return context.loc.ledgerSuccessSignDescription;
-      case VerifyAddressLedgerAction():
-        return context.loc.ledgerSuccessVerifyDescription;
     }
   }
 
