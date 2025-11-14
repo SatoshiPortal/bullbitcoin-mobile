@@ -9203,6 +9203,7 @@
   "ledgerDefaultWalletLabel": "Cartera Ledger",
   "@ledgerDefaultWalletLabel": {
     "description": "Etiqueta predeterminada para la cartera Ledger importada"
+  },
   "exchangeBrandName": "BULL BITCOIN",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
