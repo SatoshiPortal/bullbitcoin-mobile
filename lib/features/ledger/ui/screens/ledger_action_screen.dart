@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecas
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/verify_address_ledger_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/instructions_bottom_sheet.dart';
@@ -91,7 +92,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: widget.action.title,
+          title: _getActionTitle(context),
           color: context.colour.secondaryFixed,
           onBack: () => Navigator.of(context).pop(),
         ),
@@ -105,7 +106,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           } else if (state.isError) {
             SnackBarUtils.showSnackBar(
               context,
-              state.errorMessage ?? 'Unknown error',
+              _getErrorMessage(context, state.errorMessage),
             );
           }
         },
@@ -137,13 +138,13 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         _buildnIconsForState(context, state),
         const Gap(24),
         BBText(
-          _getMainTextForState(state),
+          _getMainTextForState(context, state),
           textAlign: TextAlign.center,
           style: context.font.bodyLarge,
         ),
         const Gap(16),
         BBText(
-          _getSubTextForState(state),
+          _getSubTextForState(context, state),
           textAlign: TextAlign.center,
           color: context.colour.onSurfaceVariant,
           style: context.font.bodyMedium,
@@ -214,14 +215,14 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         if (state.isInitial)
           BBButton.big(
             onPressed: () => _startOperation(context),
-            label: widget.action.buttonText,
+            label: _getActionButtonText(context),
             bgColor: context.colour.primary,
             textColor: context.colour.onPrimary,
           ),
         if (state.isError) ...[
           BBButton.big(
             onPressed: () => context.read<LedgerOperationCubit>().reset(),
-            label: 'Try Again',
+            label: context.loc.ledgerButtonTryAgain,
             bgColor: context.colour.primary,
             textColor: context.colour.onPrimary,
           ),
@@ -230,7 +231,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
             const Gap(16),
             BBButton.big(
               onPressed: () => _openAppSettings(),
-              label: 'Manage App Permissions',
+              label: context.loc.ledgerButtonManagePermissions,
               bgColor: context.colour.secondary,
               textColor: context.colour.onSecondary,
             ),
@@ -239,7 +240,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         const Gap(16),
         if (state.isInitial || state.isError)
           BBButton.small(
-            label: 'Need Help?',
+            label: context.loc.ledgerButtonNeedHelp,
             onPressed: () => _showInstructions(context),
             bgColor: context.colour.onSecondary,
             textColor: context.colour.secondary,
@@ -257,7 +258,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     return Column(
       children: [
         BBText(
-          'Address to verify:',
+          context.loc.ledgerVerifyAddressLabel,
           style: context.font.bodyMedium,
           color: context.colour.onSurfaceVariant,
         ),
@@ -288,7 +289,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     return Column(
       children: [
         BBText(
-          'Wallet Type:',
+          context.loc.ledgerWalletTypeLabel,
           style: context.font.bodyMedium,
           color: context.colour.onSurfaceVariant,
         ),
@@ -315,7 +316,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
                   children: [
                     Expanded(
                       child: BBText(
-                        _getScriptTypeDisplayName(_selectedScriptType),
+                        _getScriptTypeDisplayName(context, _selectedScriptType),
                         style: context.font.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
@@ -336,35 +337,35 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     );
   }
 
-  String _getScriptTypeDisplayName(ScriptType scriptType) {
+  String _getScriptTypeDisplayName(BuildContext context, ScriptType scriptType) {
     switch (scriptType) {
       case ScriptType.bip84:
-        return 'Segwit (BIP84)';
+        return context.loc.ledgerWalletTypeSegwit;
       case ScriptType.bip49:
-        return 'Nested Segwit (BIP49)';
+        return context.loc.ledgerWalletTypeNestedSegwit;
       case ScriptType.bip44:
-        return 'Legacy (BIP44)';
+        return context.loc.ledgerWalletTypeLegacy;
     }
   }
 
   Future<void> _showScriptTypeSelection(BuildContext context) async {
     final scriptTypeItems = [
-      const SelectableListItem(
+      SelectableListItem(
         value: 'bip84',
-        title: 'Segwit (BIP84)',
-        subtitle1: 'Native SegWit - Recommended',
+        title: context.loc.ledgerWalletTypeSegwit,
+        subtitle1: context.loc.ledgerWalletTypeSegwitDescription,
         subtitle2: '',
       ),
-      const SelectableListItem(
+      SelectableListItem(
         value: 'bip49',
-        title: 'Nested Segwit (BIP49)',
-        subtitle1: 'P2WPKH-nested-in-P2SH',
+        title: context.loc.ledgerWalletTypeNestedSegwit,
+        subtitle1: context.loc.ledgerWalletTypeNestedSegwitDescription,
         subtitle2: '',
       ),
-      const SelectableListItem(
+      SelectableListItem(
         value: 'bip44',
-        title: 'Legacy (BIP44)',
-        subtitle1: 'P2PKH - Older format',
+        title: context.loc.ledgerWalletTypeLegacy,
+        subtitle1: context.loc.ledgerWalletTypeLegacyDescription,
         subtitle2: '',
       ),
     ];
@@ -384,7 +385,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
               children: [
                 const Gap(16),
                 BBText(
-                  'Select Wallet Type',
+                  context.loc.ledgerWalletTypeSelectTitle,
                   style: context.font.headlineMedium,
                 ),
                 const Gap(16),
@@ -419,42 +420,42 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     }
   }
 
-  String _getMainTextForState(LedgerOperationState state) {
+  String _getMainTextForState(BuildContext context, LedgerOperationState state) {
     switch (state.status) {
       case LedgerOperationStatus.initial:
-        return 'Connect Your Ledger Device';
+        return context.loc.ledgerConnectTitle;
       case LedgerOperationStatus.scanning:
-        return 'Scanning for Devices';
+        return context.loc.ledgerScanningTitle;
       case LedgerOperationStatus.connecting:
-        return 'Connecting to ${state.connectedDevice!.name}';
+        return context.loc.ledgerConnectingMessage(state.connectedDevice!.name);
       case LedgerOperationStatus.processing:
-        return widget.action.processingText;
+        return _getProcessingText(context);
       case LedgerOperationStatus.success:
-        return widget.action.successText;
+        return _getSuccessText(context);
       case LedgerOperationStatus.error:
-        return '${widget.action.title} Failed';
+        return context.loc.ledgerActionFailedMessage(_getActionTitle(context));
     }
   }
 
-  String _getSubTextForState(LedgerOperationState state) {
+  String _getSubTextForState(BuildContext context, LedgerOperationState state) {
     switch (state.status) {
       case LedgerOperationStatus.initial:
         return Platform.isIOS
-            ? 'Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled.'
+            ? context.loc.ledgerInstructionsIos
             : (widget.parameters?.requestedDeviceType != null &&
                 !widget.parameters!.requestedDeviceType!.supportsBluetooth)
-            ? 'Make sure your Ledger is unlocked with the Bitcoin app opened and connect it via USB.'
-            : 'Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled, or connect the device via USB.';
+            ? context.loc.ledgerInstructionsAndroidUsb
+            : context.loc.ledgerInstructionsAndroidDual;
       case LedgerOperationStatus.scanning:
-        return 'Looking for Ledger devices nearby...';
+        return context.loc.ledgerScanningMessage;
       case LedgerOperationStatus.connecting:
-        return 'Establishing secure connection...';
+        return context.loc.ledgerConnectingSubtext;
       case LedgerOperationStatus.processing:
-        return widget.action.processingSubText;
+        return _getProcessingSubtext(context);
       case LedgerOperationStatus.success:
-        return widget.action.successSubText;
+        return _getSuccessSubtext(context);
       case LedgerOperationStatus.error:
-        return state.errorMessage ?? 'Unknown error occurred';
+        return _getErrorMessage(context, state.errorMessage);
     }
   }
 
@@ -464,7 +465,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       final connectedDevice = cubit.connectedDevice;
 
       if (connectedDevice == null) {
-        throw Exception('No Ledger connection available');
+        throw Exception(context.loc.ledgerErrorNoConnection);
       }
 
       return _executeAction(connectedDevice);
@@ -486,7 +487,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     LedgerDeviceEntity device,
   ) {
     return locator<GetLedgerWatchOnlyWalletUsecase>().execute(
-      label: 'Ledger Wallet',
+      label: context.loc.ledgerDefaultWalletLabel,
       device: device,
       scriptType: _selectedScriptType,
     );
@@ -498,15 +499,15 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     final scriptType = widget.parameters?.scriptType;
 
     if (psbt == null) {
-      throw Exception('PSBT is required for signing');
+      throw Exception(context.loc.ledgerErrorMissingPsbt);
     }
 
     if (derivationPath == null) {
-      throw Exception('Derivation path is required for signing');
+      throw Exception(context.loc.ledgerErrorMissingDerivationPathSign);
     }
 
     if (scriptType == null) {
-      throw Exception('Script type is required for signing');
+      throw Exception(context.loc.ledgerErrorMissingScriptTypeSign);
     }
 
     final result = locator<SignPsbtLedgerUsecase>().execute(
@@ -524,15 +525,15 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     final scriptType = widget.parameters?.scriptType;
 
     if (address == null) {
-      throw Exception('Address is required for verification');
+      throw Exception(context.loc.ledgerErrorMissingAddress);
     }
 
     if (derivationPath == null) {
-      throw Exception('Derivation path is required for verification');
+      throw Exception(context.loc.ledgerErrorMissingDerivationPathVerify);
     }
 
     if (scriptType == null) {
-      throw Exception('Script type is required for verification');
+      throw Exception(context.loc.ledgerErrorMissingScriptTypeVerify);
     }
 
     return locator<VerifyAddressLedgerUsecase>().execute(
@@ -553,7 +554,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       case SignTransactionLedgerAction():
         context.pop(result);
       case VerifyAddressLedgerAction():
-        SnackBarUtils.showSnackBar(context, 'Address verified successfully!');
+        SnackBarUtils.showSnackBar(context, context.loc.ledgerSuccessAddressVerified);
         context.pop();
     }
   }
@@ -561,15 +562,14 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
   void _showInstructions(BuildContext context) {
     InstructionsBottomSheet.show(
       context,
-      title: 'Ledger Troubleshooting',
-      subtitle:
-          "First, make sure your Ledger device is unlocked and the Bitcoin app is opened. If your device still doesn't connect with the app, try the following:",
+      title: context.loc.ledgerHelpTitle,
+      subtitle: context.loc.ledgerHelpSubtitle,
       instructions: [
-        'Restart your Ledger device.',
-        'Make sure your phone has Bluetooth turned on and permitted.',
-        'Make sure your Ledger has Bluetooth turned on.',
-        'Make sure you have installed the latest version of the Bitcoin app from Ledger Live.',
-        'Make sure your Ledger device is using the latest firmware, you can update the firmware using the Ledger Live desktop app.',
+        context.loc.ledgerHelpStep1,
+        context.loc.ledgerHelpStep2,
+        context.loc.ledgerHelpStep3,
+        context.loc.ledgerHelpStep4,
+        context.loc.ledgerHelpStep5,
       ],
     );
   }
@@ -579,6 +579,93 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       await openAppSettings();
     } catch (e) {
       log.warning('Could not open app settings', error: e);
+    }
+  }
+
+  // Helper methods for localized strings based on action type
+
+  String _getActionTitle(BuildContext context) {
+    switch (widget.action) {
+      case ImportWalletLedgerAction():
+        return context.loc.ledgerImportTitle;
+      case SignTransactionLedgerAction():
+        return context.loc.ledgerSignTitle;
+      case VerifyAddressLedgerAction():
+        return context.loc.ledgerVerifyTitle;
+    }
+  }
+
+  String _getActionButtonText(BuildContext context) {
+    switch (widget.action) {
+      case ImportWalletLedgerAction():
+        return context.loc.ledgerImportButton;
+      case SignTransactionLedgerAction():
+        return context.loc.ledgerSignButton;
+      case VerifyAddressLedgerAction():
+        return context.loc.ledgerVerifyButton;
+    }
+  }
+
+  String _getProcessingText(BuildContext context) {
+    switch (widget.action) {
+      case ImportWalletLedgerAction():
+        return context.loc.ledgerProcessingImport;
+      case SignTransactionLedgerAction():
+        return context.loc.ledgerProcessingSign;
+      case VerifyAddressLedgerAction():
+        return context.loc.ledgerProcessingVerify;
+    }
+  }
+
+  String _getSuccessText(BuildContext context) {
+    switch (widget.action) {
+      case ImportWalletLedgerAction():
+        return context.loc.ledgerSuccessImportTitle;
+      case SignTransactionLedgerAction():
+        return context.loc.ledgerSuccessSignTitle;
+      case VerifyAddressLedgerAction():
+        return context.loc.ledgerSuccessVerifyTitle;
+    }
+  }
+
+  String _getProcessingSubtext(BuildContext context) {
+    switch (widget.action) {
+      case ImportWalletLedgerAction():
+        return context.loc.ledgerProcessingImportSubtext;
+      case SignTransactionLedgerAction():
+        return context.loc.ledgerProcessingSignSubtext;
+      case VerifyAddressLedgerAction():
+        return context.loc.ledgerProcessingVerifySubtext;
+    }
+  }
+
+  String _getSuccessSubtext(BuildContext context) {
+    switch (widget.action) {
+      case ImportWalletLedgerAction():
+        return context.loc.ledgerSuccessImportDescription;
+      case SignTransactionLedgerAction():
+        return context.loc.ledgerSuccessSignDescription;
+      case VerifyAddressLedgerAction():
+        return context.loc.ledgerSuccessVerifyDescription;
+    }
+  }
+
+  String _getErrorMessage(BuildContext context, String? errorMessage) {
+    if (errorMessage == null) {
+      return context.loc.ledgerErrorUnknown;
+    }
+
+    // Check if the error message is a localization key from the cubit
+    switch (errorMessage) {
+      case 'LEDGER_ERROR_REJECTED_BY_USER':
+        return context.loc.ledgerErrorRejectedByUser;
+      case 'LEDGER_ERROR_DEVICE_LOCKED':
+        return context.loc.ledgerErrorDeviceLocked;
+      case 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN':
+        return context.loc.ledgerErrorBitcoinAppNotOpen;
+      default:
+        // Return the error message as-is if it's not a localization key
+        return errorMessage.isEmpty ? context.loc.ledgerErrorUnknown : errorMessage;
     }
   }
 }

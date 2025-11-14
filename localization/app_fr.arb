@@ -8149,5 +8149,255 @@
   "appStartupContactSupportButton": "Contacter le support",
   "@appStartupContactSupportButton": {
     "description": "Libellé du bouton pour contacter le support lorsque le démarrage de l'application échoue"
+  },
+  "ledgerImportTitle": "Importer un portefeuille Ledger",
+  "@ledgerImportTitle": {
+    "description": "Titre pour l'importation d'un portefeuille matériel Ledger"
+  },
+  "ledgerSignTitle": "Signer la transaction",
+  "@ledgerSignTitle": {
+    "description": "Titre pour la signature d'une transaction avec Ledger"
+  },
+  "ledgerVerifyTitle": "Vérifier l'adresse sur Ledger",
+  "@ledgerVerifyTitle": {
+    "description": "Titre pour la vérification d'une adresse sur l'appareil Ledger"
+  },
+  "ledgerImportButton": "Commencer l'importation",
+  "@ledgerImportButton": {
+    "description": "Libellé du bouton pour commencer l'importation du portefeuille Ledger"
+  },
+  "ledgerSignButton": "Commencer la signature",
+  "@ledgerSignButton": {
+    "description": "Libellé du bouton pour commencer la signature de transaction avec Ledger"
+  },
+  "ledgerVerifyButton": "Vérifier l'adresse",
+  "@ledgerVerifyButton": {
+    "description": "Libellé du bouton pour commencer la vérification d'adresse sur Ledger"
+  },
+  "ledgerProcessingImport": "Importation du portefeuille",
+  "@ledgerProcessingImport": {
+    "description": "Message d'état affiché pendant l'importation du portefeuille Ledger"
+  },
+  "ledgerProcessingSign": "Signature de la transaction",
+  "@ledgerProcessingSign": {
+    "description": "Message d'état affiché pendant la signature de transaction avec Ledger"
+  },
+  "ledgerProcessingVerify": "Affichage de l'adresse sur Ledger...",
+  "@ledgerProcessingVerify": {
+    "description": "Message d'état affiché pendant la vérification d'adresse sur Ledger"
+  },
+  "ledgerSuccessImportTitle": "Portefeuille importé avec succès",
+  "@ledgerSuccessImportTitle": {
+    "description": "Titre du message de succès après l'importation du portefeuille Ledger"
+  },
+  "ledgerSuccessSignTitle": "Transaction signée avec succès",
+  "@ledgerSuccessSignTitle": {
+    "description": "Titre du message de succès après la signature de transaction avec Ledger"
+  },
+  "ledgerSuccessVerifyTitle": "Vérification de l'adresse sur Ledger...",
+  "@ledgerSuccessVerifyTitle": {
+    "description": "Titre du message de succès pour la vérification d'adresse sur Ledger"
+  },
+  "ledgerSuccessImportDescription": "Votre portefeuille Ledger a été importé avec succès.",
+  "@ledgerSuccessImportDescription": {
+    "description": "Description du message de succès après l'importation du portefeuille Ledger"
+  },
+  "ledgerSuccessSignDescription": "Votre transaction a été signée avec succès.",
+  "@ledgerSuccessSignDescription": {
+    "description": "Description du message de succès après la signature de transaction avec Ledger"
+  },
+  "ledgerSuccessVerifyDescription": "L'adresse a été vérifiée sur votre appareil Ledger.",
+  "@ledgerSuccessVerifyDescription": {
+    "description": "Description du message de succès après la vérification d'adresse sur Ledger"
+  },
+  "ledgerProcessingImportSubtext": "Configuration de votre portefeuille en lecture seule...",
+  "@ledgerProcessingImportSubtext": {
+    "description": "Sous-texte de traitement affiché pendant l'importation du portefeuille Ledger"
+  },
+  "ledgerProcessingSignSubtext": "Veuillez confirmer la transaction sur votre appareil Ledger...",
+  "@ledgerProcessingSignSubtext": {
+    "description": "Sous-texte de traitement affiché pendant la signature de transaction"
+  },
+  "ledgerProcessingVerifySubtext": "Veuillez confirmer l'adresse sur votre appareil Ledger.",
+  "@ledgerProcessingVerifySubtext": {
+    "description": "Sous-texte de traitement affiché pendant la vérification d'adresse"
+  },
+  "ledgerConnectTitle": "Connectez votre appareil Ledger",
+  "@ledgerConnectTitle": {
+    "description": "Titre de l'écran de connexion initial Ledger"
+  },
+  "ledgerScanningTitle": "Recherche d'appareils",
+  "@ledgerScanningTitle": {
+    "description": "Titre affiché pendant la recherche d'appareils Ledger"
+  },
+  "ledgerConnectingMessage": "Connexion à {deviceName}",
+  "@ledgerConnectingMessage": {
+    "description": "Message affiché pendant la connexion à un appareil Ledger spécifique",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerActionFailedMessage": "{action} a échoué",
+  "@ledgerActionFailedMessage": {
+    "description": "Message d'erreur lorsqu'une action Ledger échoue",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerInstructionsIos": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et Bluetooth activé.",
+  "@ledgerInstructionsIos": {
+    "description": "Instructions de connexion pour les appareils iOS (Bluetooth uniquement)"
+  },
+  "ledgerInstructionsAndroidUsb": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et connectez-le via USB.",
+  "@ledgerInstructionsAndroidUsb": {
+    "description": "Instructions de connexion pour les appareils Android (USB uniquement)"
+  },
+  "ledgerInstructionsAndroidDual": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et Bluetooth activé, ou connectez l'appareil via USB.",
+  "@ledgerInstructionsAndroidDual": {
+    "description": "Instructions de connexion pour les appareils Android (Bluetooth ou USB)"
+  },
+  "ledgerScanningMessage": "Recherche d'appareils Ledger à proximité...",
+  "@ledgerScanningMessage": {
+    "description": "Message affiché pendant la recherche d'appareils Ledger"
+  },
+  "ledgerConnectingSubtext": "Établissement d'une connexion sécurisée...",
+  "@ledgerConnectingSubtext": {
+    "description": "Sous-texte affiché pendant la connexion au Ledger"
+  },
+  "ledgerErrorUnknown": "Erreur inconnue",
+  "@ledgerErrorUnknown": {
+    "description": "Message d'erreur générique pour les erreurs Ledger inconnues"
+  },
+  "ledgerErrorUnknownOccurred": "Une erreur inconnue s'est produite",
+  "@ledgerErrorUnknownOccurred": {
+    "description": "Message d'erreur lorsqu'une erreur inconnue se produit lors d'une opération Ledger"
+  },
+  "ledgerErrorNoConnection": "Aucune connexion Ledger disponible",
+  "@ledgerErrorNoConnection": {
+    "description": "Message d'erreur lorsqu'aucune connexion Ledger n'est disponible"
+  },
+  "ledgerErrorRejectedByUser": "La transaction a été rejetée par l'utilisateur sur l'appareil Ledger.",
+  "@ledgerErrorRejectedByUser": {
+    "description": "Message d'erreur lorsque l'utilisateur rejette la transaction sur Ledger (code d'erreur 6985)"
+  },
+  "ledgerErrorDeviceLocked": "L'appareil Ledger est verrouillé. Veuillez déverrouiller votre appareil et réessayer.",
+  "@ledgerErrorDeviceLocked": {
+    "description": "Message d'erreur lorsque l'appareil Ledger est verrouillé (code d'erreur 5515)"
+  },
+  "ledgerErrorBitcoinAppNotOpen": "Veuillez ouvrir l'application Bitcoin sur votre appareil Ledger et réessayer.",
+  "@ledgerErrorBitcoinAppNotOpen": {
+    "description": "Message d'erreur lorsque l'application Bitcoin n'est pas ouverte sur Ledger (codes d'erreur 6e01, 6a87, 6d02, 6511, 6e00)"
+  },
+  "ledgerErrorMissingPsbt": "PSBT est requis pour la signature",
+  "@ledgerErrorMissingPsbt": {
+    "description": "Message d'erreur lorsque le paramètre PSBT est manquant pour la signature"
+  },
+  "ledgerErrorMissingDerivationPathSign": "Le chemin de dérivation est requis pour la signature",
+  "@ledgerErrorMissingDerivationPathSign": {
+    "description": "Message d'erreur lorsque le chemin de dérivation est manquant pour la signature"
+  },
+  "ledgerErrorMissingScriptTypeSign": "Le type de script est requis pour la signature",
+  "@ledgerErrorMissingScriptTypeSign": {
+    "description": "Message d'erreur lorsque le type de script est manquant pour la signature"
+  },
+  "ledgerErrorMissingAddress": "L'adresse est requise pour la vérification",
+  "@ledgerErrorMissingAddress": {
+    "description": "Message d'erreur lorsque l'adresse est manquante pour la vérification"
+  },
+  "ledgerErrorMissingDerivationPathVerify": "Le chemin de dérivation est requis pour la vérification",
+  "@ledgerErrorMissingDerivationPathVerify": {
+    "description": "Message d'erreur lorsque le chemin de dérivation est manquant pour la vérification"
+  },
+  "ledgerErrorMissingScriptTypeVerify": "Le type de script est requis pour la vérification",
+  "@ledgerErrorMissingScriptTypeVerify": {
+    "description": "Message d'erreur lorsque le type de script est manquant pour la vérification"
+  },
+  "ledgerButtonTryAgain": "Réessayer",
+  "@ledgerButtonTryAgain": {
+    "description": "Libellé du bouton pour réessayer une opération Ledger échouée"
+  },
+  "ledgerButtonManagePermissions": "Gérer les permissions de l'application",
+  "@ledgerButtonManagePermissions": {
+    "description": "Libellé du bouton pour ouvrir les paramètres de permissions de l'application"
+  },
+  "ledgerButtonNeedHelp": "Besoin d'aide ?",
+  "@ledgerButtonNeedHelp": {
+    "description": "Libellé du bouton pour afficher les instructions d'aide/dépannage"
+  },
+  "ledgerVerifyAddressLabel": "Adresse à vérifier :",
+  "@ledgerVerifyAddressLabel": {
+    "description": "Libellé pour l'adresse en cours de vérification sur Ledger"
+  },
+  "ledgerWalletTypeLabel": "Type de portefeuille :",
+  "@ledgerWalletTypeLabel": {
+    "description": "Libellé pour la sélection du type de portefeuille/script"
+  },
+  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
+  "@ledgerWalletTypeSegwit": {
+    "description": "Nom d'affichage pour le type de portefeuille Segwit (BIP84)"
+  },
+  "ledgerWalletTypeSegwitDescription": "Native SegWit - Recommandé",
+  "@ledgerWalletTypeSegwitDescription": {
+    "description": "Description pour le type de portefeuille Segwit"
+  },
+  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
+  "@ledgerWalletTypeNestedSegwit": {
+    "description": "Nom d'affichage pour le type de portefeuille Nested Segwit (BIP49)"
+  },
+  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
+  "@ledgerWalletTypeNestedSegwitDescription": {
+    "description": "Description technique pour le type de portefeuille Nested Segwit"
+  },
+  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
+  "@ledgerWalletTypeLegacy": {
+    "description": "Nom d'affichage pour le type de portefeuille Legacy (BIP44)"
+  },
+  "ledgerWalletTypeLegacyDescription": "P2PKH - Format ancien",
+  "@ledgerWalletTypeLegacyDescription": {
+    "description": "Description pour le type de portefeuille Legacy"
+  },
+  "ledgerWalletTypeSelectTitle": "Sélectionnez le type de portefeuille",
+  "@ledgerWalletTypeSelectTitle": {
+    "description": "Titre pour la fenêtre de sélection du type de portefeuille"
+  },
+  "ledgerSuccessAddressVerified": "Adresse vérifiée avec succès !",
+  "@ledgerSuccessAddressVerified": {
+    "description": "Message de notification de succès après la vérification d'adresse"
+  },
+  "ledgerHelpTitle": "Dépannage Ledger",
+  "@ledgerHelpTitle": {
+    "description": "Titre pour la fenêtre d'aide au dépannage Ledger"
+  },
+  "ledgerHelpSubtitle": "Tout d'abord, assurez-vous que votre appareil Ledger est déverrouillé et que l'application Bitcoin est ouverte. Si votre appareil ne se connecte toujours pas à l'application, essayez ce qui suit :",
+  "@ledgerHelpSubtitle": {
+    "description": "Sous-titre/introduction pour l'aide au dépannage Ledger"
+  },
+  "ledgerHelpStep1": "Redémarrez votre appareil Ledger.",
+  "@ledgerHelpStep1": {
+    "description": "Première étape de dépannage pour les problèmes de connexion Ledger"
+  },
+  "ledgerHelpStep2": "Assurez-vous que Bluetooth est activé et autorisé sur votre téléphone.",
+  "@ledgerHelpStep2": {
+    "description": "Deuxième étape de dépannage pour les problèmes de connexion Ledger"
+  },
+  "ledgerHelpStep3": "Assurez-vous que Bluetooth est activé sur votre Ledger.",
+  "@ledgerHelpStep3": {
+    "description": "Troisième étape de dépannage pour les problèmes de connexion Ledger"
+  },
+  "ledgerHelpStep4": "Assurez-vous d'avoir installé la dernière version de l'application Bitcoin depuis Ledger Live.",
+  "@ledgerHelpStep4": {
+    "description": "Quatrième étape de dépannage pour les problèmes de connexion Ledger"
+  },
+  "ledgerHelpStep5": "Assurez-vous que votre appareil Ledger utilise le dernier firmware, vous pouvez mettre à jour le firmware en utilisant l'application Ledger Live pour ordinateur.",
+  "@ledgerHelpStep5": {
+    "description": "Cinquième étape de dépannage pour les problèmes de connexion Ledger"
+  },
+  "ledgerDefaultWalletLabel": "Portefeuille Ledger",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Libellé par défaut pour le portefeuille Ledger importé"
   }
 }
