@@ -136,7 +136,7 @@ class _AddCustomServerBottomSheetState
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                        color: context.colour.secondaryFixedDim.withValues(
+                          color: context.colour.secondaryFixedDim.withValues(
                             alpha: 0.5,
                           ),
                         ),

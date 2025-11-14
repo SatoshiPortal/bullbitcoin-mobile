@@ -457,10 +457,8 @@ class _SetAdvancedOptionsBottomSheetState
                                     },
                                     bgColor: Colors.transparent,
                                     outlined: true,
-                                    textStyle:
-                                        context.font.headlineLarge,
-                                    textColor:
-                                        context.colour.secondary,
+                                    textStyle: context.font.headlineLarge,
+                                    textColor: context.colour.secondary,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -469,12 +467,9 @@ class _SetAdvancedOptionsBottomSheetState
                                     label: context.loc.electrumConfirm,
                                     disabled: state.isSavingAdvancedOptions,
                                     onPressed: _confirm,
-                                    bgColor:
-                                        context.colour.secondary,
-                                    textStyle:
-                                        context.font.headlineLarge,
-                                    textColor:
-                                        context.colour.onSecondary,
+                                    bgColor: context.colour.secondary,
+                                    textStyle: context.font.headlineLarge,
+                                    textColor: context.colour.onSecondary,
                                   ),
                                 ),
                               ],
