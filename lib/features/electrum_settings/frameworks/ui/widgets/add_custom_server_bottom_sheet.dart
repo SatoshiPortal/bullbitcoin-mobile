@@ -204,10 +204,7 @@ class _AddCustomServerBottomSheetState
                           ? context.loc.electrumLiquidSslInfo
                           : context.loc.electrumBitcoinServerInfo,
                       style: context.font.bodySmall?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withValues(alpha: 0.6),
+                        color: context.colour.onSurface.withValues(alpha: 0.6),
                       ),
                       textAlign: TextAlign.start,
                     ),

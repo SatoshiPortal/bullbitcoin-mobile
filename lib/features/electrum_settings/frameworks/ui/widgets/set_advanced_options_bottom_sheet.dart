@@ -323,11 +323,8 @@ class _SetAdvancedOptionsBottomSheetState
                                           timeoutValue.toString(),
                                           recommended.toString(),
                                         ),
-                                        tagColor:
-                                            context.colour.primary,
-                                        bgColor: Theme.of(context)
-                                            .colorScheme
-                                            .primary
+                                        tagColor: context.colour.primary,
+                                        bgColor: context.colour.primary
                                             .withValues(alpha: 0.1),
                                       ),
                                     ],
