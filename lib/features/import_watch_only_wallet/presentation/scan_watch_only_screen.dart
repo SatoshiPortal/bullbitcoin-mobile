@@ -186,7 +186,7 @@ Future<String?> _choosePassportDerivation(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: Text(
                   ctx.loc.importWatchOnlySelectDerivation,
-                  style: Theme.of(ctx).textTheme.titleMedium,
+                  style: ctx.font.titleMedium,
                 ),
               ),
               for (final opt in options)

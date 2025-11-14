@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -65,7 +66,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                 width: 120,
                 child: BBText(
                   context.loc.importWatchOnlySigningDevice,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: context.font.titleMedium,
                 ),
               ),
               SizedBox(
@@ -78,7 +79,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                   ),
                   icon: Icon(
                     Icons.keyboard_arrow_down,
-                    color: Theme.of(context).colorScheme.secondary,
+                    color: context.colour.secondary,
                   ),
                   value: entity.signerDevice,
                   items:
@@ -88,7 +89,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                               value: value,
                               child: BBText(
                                 value?.displayName ?? context.loc.importWatchOnlyUnknown,
-                                style: Theme.of(context).textTheme.headlineSmall,
+                                style: context.font.headlineSmall,
                               ),
                             ),
                           )
@@ -116,8 +117,8 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         BBButton.big(
           onPressed: cubit.import,
           label: context.loc.importWatchOnlyImport,
-          bgColor: Theme.of(context).colorScheme.secondary,
-          textColor: Theme.of(context).colorScheme.onSecondary,
+          bgColor: context.colour.secondary,
+          textColor: context.colour.onSecondary,
         ),
         const Gap(24),
       ],
@@ -138,24 +139,24 @@ class _XpubDetailsWidget extends StatelessWidget {
       children: [
         BBText(
           context.loc.importWatchOnlyExtendedPublicKey,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: context.font.titleMedium,
         ),
         const Gap(8),
-        BBText(entity.pubkey, style: Theme.of(context).textTheme.bodyMedium),
+        BBText(entity.pubkey, style: context.font.bodyMedium),
         const Gap(24),
         BBText(
           context.loc.importWatchOnlyType,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: context.font.titleMedium,
         ),
         const Gap(8),
         BBText(
           entity.extendedPubkey.derivation.label,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: context.font.bodyMedium,
         ),
         const Gap(24),
         BBText(
           context.loc.importWatchOnlyLabel,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: context.font.titleMedium,
         ),
         const Gap(8),
         BBInputText(
@@ -167,8 +168,8 @@ class _XpubDetailsWidget extends StatelessWidget {
         BBButton.big(
           onPressed: cubit.import,
           label: context.loc.importWatchOnlyImport,
-          bgColor: Theme.of(context).colorScheme.primary,
-          textColor: Theme.of(context).colorScheme.onPrimary,
+          bgColor: context.colour.primary,
+          textColor: context.colour.onPrimary,
         ),
         const Gap(24),
       ],
