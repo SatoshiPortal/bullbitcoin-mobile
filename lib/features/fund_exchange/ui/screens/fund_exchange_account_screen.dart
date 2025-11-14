@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -40,7 +41,7 @@ class FundExchangeAccountScreen extends StatelessWidget {
                   },
                 )
                 : null,
-        title: const Text('Funding'),
+        title: Text(context.loc.fundExchangeTitle),
         scrolledUnderElevation: 0.0,
       ),
       body: SafeArea(
@@ -63,12 +64,12 @@ class FundExchangeAccountScreen extends StatelessWidget {
                 ),
                 const Gap(8.0),
                 BBText(
-                  'Fund your account',
+                  context.loc.fundExchangeAccountTitle,
                   style: theme.textTheme.displaySmall,
                 ),
                 const Gap(8.0),
                 BBText(
-                  'Select your country and payment method',
+                  context.loc.fundExchangeAccountSubtitle,
                   style: theme.textTheme.headlineSmall,
                 ),
                 const Gap(24.0),
@@ -86,18 +87,18 @@ class FundExchangeAccountScreen extends StatelessWidget {
                     FundingJurisdiction.europe =>
                       const FundExchangeEuropeMethods(),
                     FundingJurisdiction.mexico =>
-                      const FundExchangeMethodListTile(
+                      FundExchangeMethodListTile(
                         method: FundingMethod.speiTransfer,
-                        title: 'SPEI transfer',
-                        subtitle: 'Transfer funds using your CLABE',
+                        title: context.loc.fundExchangeSpeiTransfer,
+                        subtitle: context.loc.fundExchangeSpeiSubtitle,
                       ),
                     FundingJurisdiction.costaRica =>
                       const FundExchangeCostaRicaMethods(),
                     FundingJurisdiction.argentina =>
-                      const FundExchangeMethodListTile(
+                      FundExchangeMethodListTile(
                         method: FundingMethod.arsBankTransfer,
-                        title: 'Bank Transfer',
-                        subtitle: 'Send a bank transfer from your bank account',
+                        title: context.loc.fundExchangeBankTransfer,
+                        subtitle: context.loc.fundExchangeBankTransferSubtitle,
                       ),
                   },
               ],

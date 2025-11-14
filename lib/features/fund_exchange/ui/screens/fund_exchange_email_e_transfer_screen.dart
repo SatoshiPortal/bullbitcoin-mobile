@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
 // ignore: unused_import
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_detail.dart';
@@ -26,7 +27,10 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
       (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
+      appBar: AppBar(
+        title: Text(context.loc.fundExchangeTitle),
+        scrolledUnderElevation: 0.0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -34,10 +38,13 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BBText('E-Transfer details', style: theme.textTheme.displaySmall),
+              BBText(
+                context.loc.fundExchangeETransferTitle,
+                style: theme.textTheme.displaySmall,
+              ),
               const Gap(16.0),
               BBText(
-                'Any amount you send from your bank via Email E-Transfer using the information below will be credited to your Bull Bitcoin account balance within a few minutes.',
+                context.loc.fundExchangeETransferDescription,
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(24.0),
@@ -47,22 +54,22 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
                 const Gap(24.0),
               ] else ...[
                 FundExchangeDetail(
-                  label: 'Use this as the E-transfer beneficiary name',
+                  label: context.loc.fundExchangeETransferLabelBeneficiaryName,
                   value: details?.beneficiaryName,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Send the E-transfer to this email',
+                  label: context.loc.fundExchangeETransferLabelEmail,
                   value: details?.beneficiaryEmail,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Secret question',
+                  label: context.loc.fundExchangeETransferLabelSecretQuestion,
                   value: details?.secretQuestion,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Secret answer',
+                  label: context.loc.fundExchangeETransferLabelSecretAnswer,
                   value: userSummary?.userNumber.toString() ?? '',
                 ),
               ],

@@ -2705,6 +2705,150 @@
   "@fundExchangeErrorLoadingDetails": {
     "description": "Message d'erreur lorsque les détails de financement ne peuvent pas être chargés"
   },
+  "fundExchangeSinpeTitle": "SINPE Móvil",
+  "@fundExchangeSinpeTitle": {
+    "description": "Titre de l'écran pour le mode de paiement SINPE Móvil (Costa Rica)"
+  },
+  "fundExchangeSinpeDescription": "Envoyez des fonds à notre numéro de téléphone SINPE Móvil. Vous devez envoyer les fonds depuis le même numéro de téléphone associé à votre compte Bull Bitcoin. Si vous envoyez le paiement depuis un numéro différent, ou si vous demandez à quelqu'un d'autre de faire le paiement pour vous, ",
+  "@fundExchangeSinpeDescription": {
+    "description": "Description principale pour le mode de paiement SINPE Móvil expliquant les exigences"
+  },
+  "fundExchangeSinpeDescriptionBold": "il sera rejeté.",
+  "@fundExchangeSinpeDescriptionBold": {
+    "description": "Texte en gras avertissant que le paiement depuis un mauvais numéro sera rejeté"
+  },
+  "fundExchangeSinpeAddedToBalance": "Une fois le paiement envoyé, il sera ajouté au solde de votre compte.",
+  "@fundExchangeSinpeAddedToBalance": {
+    "description": "Message expliquant que le paiement sera ajouté au solde du compte"
+  },
+  "fundExchangeSinpeWarningNoBitcoin": "Ne mettez pas",
+  "@fundExchangeSinpeWarningNoBitcoin": {
+    "description": "Texte d'avertissement en gras au début du message d'avertissement bitcoin"
+  },
+  "fundExchangeSinpeWarningNoBitcoinDescription": " le mot « Bitcoin » ou « Crypto » dans la description du paiement. Cela bloquera votre paiement.",
+  "@fundExchangeSinpeWarningNoBitcoinDescription": {
+    "description": "Avertissement que l'inclusion de Bitcoin ou Crypto dans la description bloquera le paiement"
+  },
+  "fundExchangeSinpeLabelPhone": "Envoyer à ce numéro de téléphone",
+  "@fundExchangeSinpeLabelPhone": {
+    "description": "Libellé pour le champ du numéro de téléphone SINPE Móvil"
+  },
+  "fundExchangeSinpeLabelRecipientName": "Nom du destinataire",
+  "@fundExchangeSinpeLabelRecipientName": {
+    "description": "Libellé pour le nom du destinataire dans le virement SINPE"
+  },
+  "fundExchangeCrIbanCrcTitle": "Virement bancaire (CRC)",
+  "@fundExchangeCrIbanCrcTitle": {
+    "description": "Titre de l'écran pour le virement bancaire IBAN du Costa Rica en CRC (Colón)"
+  },
+  "fundExchangeCrIbanCrcDescription": "Envoyez un virement bancaire depuis votre compte bancaire en utilisant les détails ci-dessous ",
+  "@fundExchangeCrIbanCrcDescription": {
+    "description": "Première partie de la description pour le virement CR IBAN CRC"
+  },
+  "fundExchangeCrIbanCrcDescriptionBold": "exactement",
+  "@fundExchangeCrIbanCrcDescriptionBold": {
+    "description": "Mot d'emphase en gras pour les instructions de virement CR IBAN"
+  },
+  "fundExchangeCrIbanCrcDescriptionEnd": ". Les fonds seront ajoutés au solde de votre compte.",
+  "@fundExchangeCrIbanCrcDescriptionEnd": {
+    "description": "Fin de la description pour le virement CR IBAN CRC"
+  },
+  "fundExchangeCrIbanCrcLabelIban": "Numéro de compte IBAN (Colones seulement)",
+  "@fundExchangeCrIbanCrcLabelIban": {
+    "description": "Libellé pour le champ du numéro IBAN pour CRC (Colones) uniquement"
+  },
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "Description du paiement",
+  "@fundExchangeCrIbanCrcLabelPaymentDescription": {
+    "description": "Libellé pour le champ de description du paiement dans le virement CR IBAN"
+  },
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "Votre code de virement.",
+  "@fundExchangeCrIbanCrcPaymentDescriptionHelp": {
+    "description": "Texte d'aide expliquant que la description du paiement est le code de virement"
+  },
+  "fundExchangeCrIbanCrcTransferCodeWarning": "Vous devez ajouter le code de virement comme « message » ou « raison » ou « description » lors du paiement. Si vous oubliez d'inclure ce code, votre paiement peut être rejeté.",
+  "@fundExchangeCrIbanCrcTransferCodeWarning": {
+    "description": "Avertissement concernant l'inclusion du code de virement dans le paiement"
+  },
+  "fundExchangeCrIbanCrcLabelRecipientName": "Nom du destinataire",
+  "@fundExchangeCrIbanCrcLabelRecipientName": {
+    "description": "Libellé pour le nom du destinataire dans le virement CR IBAN CRC"
+  },
+  "fundExchangeCrIbanCrcRecipientNameHelp": "Utilisez notre nom d'entreprise officiel. N'utilisez pas « Bull Bitcoin ».",
+  "@fundExchangeCrIbanCrcRecipientNameHelp": {
+    "description": "Texte d'aide pour le champ du nom du destinataire expliquant d'utiliser le nom d'entreprise"
+  },
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
+  "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
+    "description": "Libellé pour Cédula Jurídica (numéro d'identification légale au Costa Rica)"
+  },
+  "fundExchangeCrIbanUsdTitle": "Virement bancaire (USD)",
+  "@fundExchangeCrIbanUsdTitle": {
+    "description": "Titre de l'écran pour le virement bancaire IBAN du Costa Rica en USD"
+  },
+  "fundExchangeCrIbanUsdDescription": "Envoyez un virement bancaire depuis votre compte bancaire en utilisant les détails ci-dessous ",
+  "@fundExchangeCrIbanUsdDescription": {
+    "description": "Première partie de la description pour le virement CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdDescriptionBold": "exactement",
+  "@fundExchangeCrIbanUsdDescriptionBold": {
+    "description": "Mot d'emphase en gras pour les instructions de virement CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdDescriptionEnd": ". Les fonds seront ajoutés au solde de votre compte.",
+  "@fundExchangeCrIbanUsdDescriptionEnd": {
+    "description": "Fin de la description pour le virement CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdLabelIban": "Numéro de compte IBAN (dollars américains seulement)",
+  "@fundExchangeCrIbanUsdLabelIban": {
+    "description": "Libellé pour le champ du numéro IBAN pour USD uniquement"
+  },
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "Description du paiement",
+  "@fundExchangeCrIbanUsdLabelPaymentDescription": {
+    "description": "Libellé pour le champ de description du paiement dans le virement CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Votre code de virement.",
+  "@fundExchangeCrIbanUsdPaymentDescriptionHelp": {
+    "description": "Texte d'aide expliquant que la description du paiement est le code de virement"
+  },
+  "fundExchangeCrIbanUsdTransferCodeWarning": "Vous devez ajouter le code de virement comme « message » ou « raison » ou « description » lors du paiement. Si vous oubliez d'inclure ce code, votre paiement peut être rejeté.",
+  "@fundExchangeCrIbanUsdTransferCodeWarning": {
+    "description": "Avertissement concernant l'inclusion du code de virement dans le paiement pour les virements USD"
+  },
+  "fundExchangeCrIbanUsdLabelRecipientName": "Nom du destinataire",
+  "@fundExchangeCrIbanUsdLabelRecipientName": {
+    "description": "Libellé pour le nom du destinataire dans le virement CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdRecipientNameHelp": "Utilisez notre nom d'entreprise officiel. N'utilisez pas « Bull Bitcoin ».",
+  "@fundExchangeCrIbanUsdRecipientNameHelp": {
+    "description": "Texte d'aide pour le champ du nom du destinataire expliquant d'utiliser le nom d'entreprise"
+  },
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
+  "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
+    "description": "Libellé pour Cédula Jurídica (numéro d'identification légale au Costa Rica) pour USD"
+  },
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
+  "@fundExchangeCostaRicaMethodSinpeTitle": {
+    "description": "Titre de la méthode de paiement pour SINPE Móvil dans la liste des méthodes"
+  },
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "Transférer des Colones en utilisant SINPE",
+  "@fundExchangeCostaRicaMethodSinpeSubtitle": {
+    "description": "Description sous-titre pour la méthode de paiement SINPE Móvil"
+  },
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Costa Rica (CRC)",
+  "@fundExchangeCostaRicaMethodIbanCrcTitle": {
+    "description": "Titre de la méthode de paiement pour IBAN CRC dans la liste des méthodes"
+  },
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Transférer des fonds en Colón costaricain (CRC)",
+  "@fundExchangeCostaRicaMethodIbanCrcSubtitle": {
+    "description": "Description sous-titre pour la méthode de paiement IBAN CRC"
+  },
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
+  "@fundExchangeCostaRicaMethodIbanUsdTitle": {
+    "description": "Titre de la méthode de paiement pour IBAN USD dans la liste des méthodes"
+  },
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Transférer des fonds en dollars américains (USD)",
+  "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
+    "description": "Description sous-titre pour la méthode de paiement IBAN USD"
+  },
   "backupWalletTitle": "Sauvegarder votre portefeuille",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
@@ -6809,6 +6953,46 @@
   "@importWalletImportWatchOnly": {
     "description": "Button to import watch-only wallet"
   },
+  "importWalletSectionGeneric": "Portefeuilles génériques",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "Portefeuilles matériels",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletColdcardQ": "Coldcard Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletLedger": "Ledger",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletJade": "Blockstream Jade",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "Keystone",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletPassport": "Foundation Passport",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSeedSigner": "SeedSigner",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "Specter",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletKrux": "Krux",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
   "importMnemonicContinue": "Continuer",
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
@@ -6875,6 +7059,24 @@
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
   },
+  "importMnemonicBalanceLabel": "Solde : {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicTransactionsLabel": "Transactions : {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "importWatchOnlyTitle": "Importer en lecture seule",
   "@importWatchOnlyTitle": {
     "description": "AppBar title for watch-only import screen"
@@ -6922,6 +7124,50 @@
   "importWatchOnlyCancel": "Annuler",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
+  },
+  "importWatchOnlyBuyDevice": "Acheter un appareil",
+  "@importWatchOnlyBuyDevice": {
+    "description": "Button label to purchase a hardware wallet device"
+  },
+  "importWatchOnlyWalletGuides": "Guides de portefeuille",
+  "@importWatchOnlyWalletGuides": {
+    "description": "Button label for wallet documentation and guides"
+  },
+  "importWatchOnlyCopiedToClipboard": "Copié dans le presse-papiers",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlySelectDerivation": "Sélectionner la dérivation",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "importWatchOnlyType": "Type",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlySigningDevice": "Appareil de signature",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyUnknown": "Inconnu",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyLabel": "Libellé",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyRequired": "Requis",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyImport": "Importer",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyExtendedPublicKey": "Clé publique étendue",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
   "bip85Title": "Entropies déterministes BIP85",
   "@bip85Title": {
@@ -7400,7 +7646,7 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "importColdcardTitle": "Importer Coldcard Q",
+  "importColdcardTitle": "Connecter Coldcard Q",
   "@importColdcardTitle": {
     "description": "AppBar title for Coldcard Q import"
   },
@@ -7431,6 +7677,66 @@
   "importColdcardInvalidQR": "Code QR Coldcard invalide",
   "@importColdcardInvalidQR": {
     "description": "Error for invalid QR format"
+  },
+  "importColdcardDescription": "Importez le QR code descripteur de portefeuille de votre Coldcard Q",
+  "@importColdcardDescription": {
+    "description": "ImportColdcardQ: Main instruction text on import page"
+  },
+  "importColdcardButtonOpenCamera": "Ouvrir la caméra",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardButtonInstructions": "Instructions",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonPurchase": "Acheter l'appareil",
+  "@importColdcardButtonPurchase": {
+    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
+  },
+  "importColdcardInstructionsTitle": "Instructions Coldcard Q",
+  "@importColdcardInstructionsTitle": {
+    "description": "ImportColdcardQ: Title of instructions bottom sheet"
+  },
+  "importColdcardInstructionsStep1": "Connectez-vous à votre appareil Coldcard Q",
+  "@importColdcardInstructionsStep1": {
+    "description": "ImportColdcardQ: First instruction step"
+  },
+  "importColdcardInstructionsStep2": "Entrez une phrase secrète si applicable",
+  "@importColdcardInstructionsStep2": {
+    "description": "ImportColdcardQ: Second instruction step"
+  },
+  "importColdcardInstructionsStep3": "Naviguez vers \"Avancé/Outils\"",
+  "@importColdcardInstructionsStep3": {
+    "description": "ImportColdcardQ: Third instruction step"
+  },
+  "importColdcardInstructionsStep4": "Vérifiez que votre micrologiciel est mis à jour vers la version 1.3.4Q",
+  "@importColdcardInstructionsStep4": {
+    "description": "ImportColdcardQ: Fourth instruction step"
+  },
+  "importColdcardInstructionsStep5": "Sélectionnez \"Exporter le portefeuille\"",
+  "@importColdcardInstructionsStep5": {
+    "description": "ImportColdcardQ: Fifth instruction step"
+  },
+  "importColdcardInstructionsStep6": "Choisissez \"Bull Bitcoin\" comme option d'exportation",
+  "@importColdcardInstructionsStep6": {
+    "description": "ImportColdcardQ: Sixth instruction step"
+  },
+  "importColdcardInstructionsStep7": "Sur votre appareil mobile, appuyez sur \"ouvrir la caméra\"",
+  "@importColdcardInstructionsStep7": {
+    "description": "ImportColdcardQ: Seventh instruction step"
+  },
+  "importColdcardInstructionsStep8": "Scannez le QR code affiché sur votre Coldcard Q",
+  "@importColdcardInstructionsStep8": {
+    "description": "ImportColdcardQ: Eighth instruction step"
+  },
+  "importColdcardInstructionsStep9": "Entrez une 'Étiquette' pour votre portefeuille Coldcard Q et appuyez sur \"Importer\"",
+  "@importColdcardInstructionsStep9": {
+    "description": "ImportColdcardQ: Ninth instruction step"
+  },
+  "importColdcardInstructionsStep10": "Configuration terminée",
+  "@importColdcardInstructionsStep10": {
+    "description": "ImportColdcardQ: Final instruction step"
   },
   "exchangeLandingTitle": "BULL BITCOIN",
   "@exchangeLandingTitle": {
@@ -8413,5 +8719,229 @@
   "appStartupContactSupportButton": "Contacter le support",
   "@appStartupContactSupportButton": {
     "description": "Libellé du bouton pour contacter le support lorsque le démarrage de l'application échoue"
+  },
+  "exchangeBrandName": "BULL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLandingConnectAccount": "Connectez votre compte d'échange Bull Bitcoin",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeLandingRecommendedExchange": "Plateforme d'échange Bitcoin recommandée",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureSelfCustody": "• Achetez du Bitcoin directement en auto-garde",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, ordres limités et achat automatique",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureSellBitcoin": "• Vendez du Bitcoin, soyez payé en Bitcoin",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeFeatureBankTransfers": "• Envoyez des virements bancaires et payez des factures",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeFeatureCustomerSupport": "• Discutez avec le support client",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeFeatureUnifiedHistory": "• Historique des transactions unifié",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  },
+  "exchangeLandingDisclaimerLegal": "L'accès aux services d'échange sera limité aux pays où Bull Bitcoin peut légalement opérer et peut nécessiter une vérification KYC.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "Les services d'échange de cryptomonnaies ne sont pas disponibles dans l'application mobile Bull Bitcoin.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLoginButton": "Se connecter ou s'inscrire",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeGoToWebsiteButton": "Aller sur le site web de l'échange Bull Bitcoin",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  },
+  "exchangeAuthLoginFailedTitle": "Échec de la connexion",
+  "@exchangeAuthLoginFailedTitle": {
+    "description": "Title of the dialog shown when exchange login fails"
+  },
+  "exchangeAuthLoginFailedMessage": "Une erreur s'est produite, veuillez réessayer de vous connecter.",
+  "@exchangeAuthLoginFailedMessage": {
+    "description": "Message shown when exchange login fails"
+  },
+  "exchangeAuthLoginFailedOkButton": "OK",
+  "@exchangeAuthLoginFailedOkButton": {
+    "description": "OK button label in the login failed dialog"
+  },
+  "exchangeHomeDepositButton": "Dépôt",
+  "@exchangeHomeDepositButton": {
+    "description": "Button label for depositing funds to the exchange"
+  },
+  "exchangeHomeWithdrawButton": "Retrait",
+  "@exchangeHomeWithdrawButton": {
+    "description": "Button label for withdrawing funds from the exchange"
+  },
+  "exchangeDcaUnableToGetConfig": "Impossible d'obtenir la configuration DCA",
+  "@exchangeDcaUnableToGetConfig": {
+    "description": "Error message when DCA configuration cannot be retrieved"
+  },
+  "exchangeDcaDeactivateTitle": "Désactiver l'achat récurrent",
+  "@exchangeDcaDeactivateTitle": {
+    "description": "Title shown when DCA is active and can be deactivated"
+  },
+  "exchangeDcaActivateTitle": "Activer l'achat récurrent",
+  "@exchangeDcaActivateTitle": {
+    "description": "Title shown when DCA is inactive and can be activated"
+  },
+  "exchangeDcaHideSettings": "Masquer les paramètres",
+  "@exchangeDcaHideSettings": {
+    "description": "Link text to hide DCA settings details"
+  },
+  "exchangeDcaViewSettings": "Voir les paramètres",
+  "@exchangeDcaViewSettings": {
+    "description": "Link text to view DCA settings details"
+  },
+  "exchangeDcaCancelDialogTitle": "Annuler l'achat récurrent de Bitcoin ?",
+  "@exchangeDcaCancelDialogTitle": {
+    "description": "Title of the dialog confirming DCA cancellation"
+  },
+  "exchangeDcaCancelDialogMessage": "Votre plan d'achat récurrent de Bitcoin s'arrêtera et les achats planifiés prendront fin. Pour recommencer, vous devrez configurer un nouveau plan.",
+  "@exchangeDcaCancelDialogMessage": {
+    "description": "Message explaining the consequences of canceling DCA"
+  },
+  "exchangeDcaCancelDialogCancelButton": "Annuler",
+  "@exchangeDcaCancelDialogCancelButton": {
+    "description": "Button label to cancel the DCA cancellation dialog"
+  },
+  "exchangeDcaCancelDialogConfirmButton": "Oui, désactiver",
+  "@exchangeDcaCancelDialogConfirmButton": {
+    "description": "Button label to confirm DCA deactivation"
+  },
+  "exchangeDcaFrequencyHour": "heure",
+  "@exchangeDcaFrequencyHour": {
+    "description": "DCA frequency unit: hour"
+  },
+  "exchangeDcaFrequencyDay": "jour",
+  "@exchangeDcaFrequencyDay": {
+    "description": "DCA frequency unit: day"
+  },
+  "exchangeDcaFrequencyWeek": "semaine",
+  "@exchangeDcaFrequencyWeek": {
+    "description": "DCA frequency unit: week"
+  },
+  "exchangeDcaFrequencyMonth": "mois",
+  "@exchangeDcaFrequencyMonth": {
+    "description": "DCA frequency unit: month"
+  },
+  "exchangeDcaNetworkBitcoin": "Réseau Bitcoin",
+  "@exchangeDcaNetworkBitcoin": {
+    "description": "DCA network option: Bitcoin"
+  },
+  "exchangeDcaNetworkLightning": "Réseau Lightning",
+  "@exchangeDcaNetworkLightning": {
+    "description": "DCA network option: Lightning"
+  },
+  "exchangeDcaNetworkLiquid": "Réseau Liquid",
+  "@exchangeDcaNetworkLiquid": {
+    "description": "DCA network option: Liquid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Adresse Bitcoin",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Adresse Lightning",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Adresse Liquid",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaSummaryMessage": "Vous achetez {amount} chaque {frequency} via {network} tant qu'il y a des fonds dans votre compte.",
+  "@exchangeDcaSummaryMessage": {
+    "description": "Summary message describing the DCA configuration",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "The amount being purchased (e.g., '$100 CAD')"
+      },
+      "frequency": {
+        "type": "String",
+        "description": "The purchase frequency (e.g., 'day', 'week')"
+      },
+      "network": {
+        "type": "String",
+        "description": "The network being used (e.g., 'Bitcoin Network')"
+      }
+    }
+  },
+  "exchangeDcaAddressDisplay": "{addressLabel} : {address}",
+  "@exchangeDcaAddressDisplay": {
+    "description": "Format for displaying address label and address",
+    "placeholders": {
+      "addressLabel": {
+        "type": "String",
+        "description": "The address label (e.g., 'Bitcoin address')"
+      },
+      "address": {
+        "type": "String",
+        "description": "The actual address"
+      }
+    }
+  },
+  "exchangeCurrencyDropdownTitle": "Sélectionner la devise",
+  "@exchangeCurrencyDropdownTitle": {
+    "description": "Title for the currency selection dropdown"
+  },
+  "exchangeCurrencyDropdownValidation": "Veuillez sélectionner une devise",
+  "@exchangeCurrencyDropdownValidation": {
+    "description": "Validation message when no currency is selected"
+  },
+  "exchangeKycLevelLight": "Légère",
+  "@exchangeKycLevelLight": {
+    "description": "KYC verification level: Light"
+  },
+  "exchangeKycLevelLimited": "Limitée",
+  "@exchangeKycLevelLimited": {
+    "description": "KYC verification level: Limited"
+  },
+  "exchangeKycCardTitle": "Complétez votre vérification KYC",
+  "@exchangeKycCardTitle": {
+    "description": "Title of the KYC completion card"
+  },
+  "exchangeKycCardSubtitle": "Pour supprimer les limites de transaction",
+  "@exchangeKycCardSubtitle": {
+    "description": "Subtitle explaining why to complete KYC"
+  },
+  "exchangeAmountInputTitle": "Entrer le montant",
+  "@exchangeAmountInputTitle": {
+    "description": "Title for the amount input field"
+  },
+  "exchangeAmountInputValidationEmpty": "Veuillez entrer un montant",
+  "@exchangeAmountInputValidationEmpty": {
+    "description": "Validation message when amount field is empty"
+  },
+  "exchangeAmountInputValidationInvalid": "Montant invalide",
+  "@exchangeAmountInputValidationInvalid": {
+    "description": "Validation message when amount is invalid"
+  },
+  "exchangeAmountInputValidationZero": "Le montant doit être supérieur à zéro",
+  "@exchangeAmountInputValidationZero": {
+    "description": "Validation message when amount is zero or negative"
+  },
+  "exchangeAmountInputValidationInsufficient": "Solde insuffisant",
+  "@exchangeAmountInputValidationInsufficient": {
+    "description": "Validation message when amount exceeds available balance"
   }
 }

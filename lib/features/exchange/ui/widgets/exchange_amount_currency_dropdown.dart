@@ -2,10 +2,10 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-
 class ExchangeAmountCurrencyDropdown extends StatelessWidget {
   const ExchangeAmountCurrencyDropdown({
     super.key,
@@ -29,7 +29,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Select Currency', style: context.font.bodyMedium),
+        Text(context.loc.exchangeCurrencyDropdownTitle, style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -76,7 +76,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please select a currency';
+                            return context.loc.exchangeCurrencyDropdownValidation;
                           }
                           return null;
                         },
