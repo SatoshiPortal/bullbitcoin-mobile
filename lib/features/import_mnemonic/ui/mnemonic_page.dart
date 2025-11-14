@@ -22,7 +22,7 @@ class MnemonicPage extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.importMnemonicTitle,
-          color: Theme.of(context).colorScheme.secondaryFixedDim,
+          color: context.colour.secondaryFixedDim,
           onBack: () => context.pop(),
         ),
       ),
@@ -33,8 +33,8 @@ class MnemonicPage extends StatelessWidget {
               SnackBar(
                 content: BBText(
                   state.error!.toString(),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  color: Theme.of(context).colorScheme.onError,
+                  style: context.font.bodyMedium,
+                  color: context.colour.onError,
                 ),
               ),
             );

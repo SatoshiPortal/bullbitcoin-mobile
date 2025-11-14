@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -23,7 +24,7 @@ class SelectScriptTypePage extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.importMnemonicSelectScriptType,
-          color: Theme.of(context).colorScheme.secondaryFixed,
+          color: context.colour.secondaryFixed,
           onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
@@ -34,8 +35,8 @@ class SelectScriptTypePage extends StatelessWidget {
               SnackBar(
                 content: BBText(
                   state.error!.toString(),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  color: Theme.of(context).colorScheme.onError,
+                  style: context.font.bodyMedium,
+                  color: context.colour.onError,
                 ),
               ),
             );
@@ -57,8 +58,8 @@ class SelectScriptTypePage extends StatelessWidget {
                 children: [
                   BBText(
                     context.loc.importMnemonicSyncMessage,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.colour.onSurfaceVariant,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -92,8 +93,8 @@ class SelectScriptTypePage extends StatelessWidget {
                   BBButton.big(
                     label: context.loc.importMnemonicContinue,
                     onPressed: cubit.import,
-                    bgColor: Theme.of(context).colorScheme.secondary,
-                    textColor: Theme.of(context).colorScheme.onPrimary,
+                    bgColor: context.colour.secondary,
+                    textColor: context.colour.onPrimary,
                     disabled: state.isLoading,
                   ),
                 ],
@@ -126,11 +127,11 @@ class _WalletTypeCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondaryFixed,
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 1),
+          color: context.colour.secondaryFixed,
+          border: Border.all(color: context.colour.outline, width: 1),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.shadow,
+              color: context.colour.shadow,
               offset: isSelected ? const Offset(0, 6) : const Offset(0, 2),
             ),
           ],
@@ -143,9 +144,9 @@ class _WalletTypeCard extends StatelessWidget {
                 children: [
                   BBText(
                     title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style: context.font.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.secondary,
+                      color: context.colour.secondary,
                     ),
                   ),
 
@@ -153,15 +154,15 @@ class _WalletTypeCard extends StatelessWidget {
                     const Gap(8),
                     BBText(
                       context.loc.importMnemonicBalanceLabel(status!.satoshis.toString()),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      style: context.font.bodyMedium?.copyWith(
+                        color: context.colour.onSurfaceVariant,
                       ),
                     ),
                     const Gap(4),
                     BBText(
                       context.loc.importMnemonicTransactionsLabel(status!.transactions.toString()),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      style: context.font.bodyMedium?.copyWith(
+                        color: context.colour.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -183,21 +184,21 @@ class _WalletTypeCard extends StatelessWidget {
                 border: Border.all(
                   color:
                       isSelected
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.surface,
+                          ? context.colour.primary
+                          : context.colour.surface,
                   width: 2,
                 ),
                 color:
                     isSelected
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.surface,
+                        ? context.colour.primary
+                        : context.colour.surface,
               ),
               child:
                   isSelected
                       ? Icon(
                         Icons.circle,
                         size: 12,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: context.colour.onPrimary,
                       )
                       : null,
             ),
