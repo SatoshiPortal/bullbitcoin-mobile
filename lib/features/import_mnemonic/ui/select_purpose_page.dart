@@ -35,8 +35,8 @@ class SelectScriptTypePage extends StatelessWidget {
               SnackBar(
                 content: BBText(
                   state.error!.toString(),
-                  style: context.font.bodyMedium,
-                  color: context.colour.onError,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  color: Theme.of(context).colorScheme.onError,
                 ),
               ),
             );
