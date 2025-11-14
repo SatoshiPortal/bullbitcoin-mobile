@@ -996,7 +996,7 @@ class BoltzDatasource {
           swapModel.creationTime,
         );
         final age = DateTime.now().difference(creationTime);
-        if (age.inMinutes > 10) {
+        if (age.inMinutes > 60) {
           log.fine(
             '{"swapId": "$swapId", "status": "${swapModel.status}", "function": "_processWebSocketEvent", "action": "deleting_stale_swap", "ageMinutes": ${age.inMinutes}, "timestamp": "${DateTime.now().toIso8601String()}"}',
           );
