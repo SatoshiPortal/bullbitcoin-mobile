@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class ImportMethodWidget extends StatelessWidget {
           children: [
             const Gap(12),
             BBButton.small(
-              label: 'Scan QR',
+              label: context.loc.importWatchOnlyScanQR,
               onPressed:
                   () => context.replaceNamed(
                     ImportWatchOnlyWalletRoutes.scan.name,
@@ -39,7 +40,7 @@ class ImportMethodWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               BBButton.small(
-                label: 'Buy a device',
+                label: context.loc.importWatchOnlyBuyDevice,
                 onPressed:
                     () => launchUrl(
                       Uri.parse('https://store.coinkite.com/promo/BULLBITCOIN'),
@@ -51,7 +52,7 @@ class ImportMethodWidget extends StatelessWidget {
               ),
               const Gap(12),
               BBButton.small(
-                label: 'Wallet guides',
+                label: context.loc.importWatchOnlyWalletGuides,
                 onPressed:
                     () => launchUrl(
                       Uri.parse('https://docs.bull.ethicnology.com'),
