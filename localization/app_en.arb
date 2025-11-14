@@ -8954,6 +8954,256 @@
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"
   },
+  "ledgerImportTitle": "Import Ledger Wallet",
+  "@ledgerImportTitle": {
+    "description": "Title for importing a Ledger hardware wallet"
+  },
+  "ledgerSignTitle": "Sign Transaction",
+  "@ledgerSignTitle": {
+    "description": "Title for signing a transaction with Ledger"
+  },
+  "ledgerVerifyTitle": "Verify Address on Ledger",
+  "@ledgerVerifyTitle": {
+    "description": "Title for verifying an address on Ledger device"
+  },
+  "ledgerImportButton": "Start Import",
+  "@ledgerImportButton": {
+    "description": "Button label to start importing Ledger wallet"
+  },
+  "ledgerSignButton": "Start Signing",
+  "@ledgerSignButton": {
+    "description": "Button label to start signing transaction with Ledger"
+  },
+  "ledgerVerifyButton": "Verify Address",
+  "@ledgerVerifyButton": {
+    "description": "Button label to start address verification on Ledger"
+  },
+  "ledgerProcessingImport": "Importing Wallet",
+  "@ledgerProcessingImport": {
+    "description": "Status message shown while importing Ledger wallet"
+  },
+  "ledgerProcessingSign": "Signing Transaction",
+  "@ledgerProcessingSign": {
+    "description": "Status message shown while signing transaction with Ledger"
+  },
+  "ledgerProcessingVerify": "Showing address on Ledger...",
+  "@ledgerProcessingVerify": {
+    "description": "Status message shown while verifying address on Ledger"
+  },
+  "ledgerSuccessImportTitle": "Wallet Imported Successfully",
+  "@ledgerSuccessImportTitle": {
+    "description": "Success message title after importing Ledger wallet"
+  },
+  "ledgerSuccessSignTitle": "Transaction Signed Successfully",
+  "@ledgerSuccessSignTitle": {
+    "description": "Success message title after signing transaction with Ledger"
+  },
+  "ledgerSuccessVerifyTitle": "Verifying address on Ledger...",
+  "@ledgerSuccessVerifyTitle": {
+    "description": "Success message title for address verification on Ledger"
+  },
+  "ledgerSuccessImportDescription": "Your Ledger wallet has been imported successfully.",
+  "@ledgerSuccessImportDescription": {
+    "description": "Success message description after importing Ledger wallet"
+  },
+  "ledgerSuccessSignDescription": "Your transaction has been signed successfully.",
+  "@ledgerSuccessSignDescription": {
+    "description": "Success message description after signing transaction with Ledger"
+  },
+  "ledgerSuccessVerifyDescription": "The address has been verified on your Ledger device.",
+  "@ledgerSuccessVerifyDescription": {
+    "description": "Success message description after verifying address on Ledger"
+  },
+  "ledgerProcessingImportSubtext": "Setting up your watch-only wallet...",
+  "@ledgerProcessingImportSubtext": {
+    "description": "Processing subtext shown while importing Ledger wallet"
+  },
+  "ledgerProcessingSignSubtext": "Please confirm the transaction on your Ledger device...",
+  "@ledgerProcessingSignSubtext": {
+    "description": "Processing subtext shown while signing transaction"
+  },
+  "ledgerProcessingVerifySubtext": "Please confirm the address on your Ledger device.",
+  "@ledgerProcessingVerifySubtext": {
+    "description": "Processing subtext shown while verifying address"
+  },
+  "ledgerConnectTitle": "Connect Your Ledger Device",
+  "@ledgerConnectTitle": {
+    "description": "Title for initial Ledger connection screen"
+  },
+  "ledgerScanningTitle": "Scanning for Devices",
+  "@ledgerScanningTitle": {
+    "description": "Title shown while scanning for Ledger devices"
+  },
+  "ledgerConnectingMessage": "Connecting to {deviceName}",
+  "@ledgerConnectingMessage": {
+    "description": "Message shown while connecting to a specific Ledger device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerActionFailedMessage": "{action} Failed",
+  "@ledgerActionFailedMessage": {
+    "description": "Error message when a Ledger action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerInstructionsIos": "Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled.",
+  "@ledgerInstructionsIos": {
+    "description": "Connection instructions for iOS devices (Bluetooth only)"
+  },
+  "ledgerInstructionsAndroidUsb": "Make sure your Ledger is unlocked with the Bitcoin app opened and connect it via USB.",
+  "@ledgerInstructionsAndroidUsb": {
+    "description": "Connection instructions for Android devices (USB only)"
+  },
+  "ledgerInstructionsAndroidDual": "Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled, or connect the device via USB.",
+  "@ledgerInstructionsAndroidDual": {
+    "description": "Connection instructions for Android devices (Bluetooth or USB)"
+  },
+  "ledgerScanningMessage": "Looking for Ledger devices nearby...",
+  "@ledgerScanningMessage": {
+    "description": "Message shown while scanning for Ledger devices"
+  },
+  "ledgerConnectingSubtext": "Establishing secure connection...",
+  "@ledgerConnectingSubtext": {
+    "description": "Subtext shown while connecting to Ledger"
+  },
+  "ledgerErrorUnknown": "Unknown error",
+  "@ledgerErrorUnknown": {
+    "description": "Generic error message for unknown Ledger errors"
+  },
+  "ledgerErrorUnknownOccurred": "Unknown error occurred",
+  "@ledgerErrorUnknownOccurred": {
+    "description": "Error message when an unknown error occurs during Ledger operation"
+  },
+  "ledgerErrorNoConnection": "No Ledger connection available",
+  "@ledgerErrorNoConnection": {
+    "description": "Error message when no Ledger connection is available"
+  },
+  "ledgerErrorRejectedByUser": "Transaction was rejected by the user on the Ledger device.",
+  "@ledgerErrorRejectedByUser": {
+    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
+  },
+  "ledgerErrorDeviceLocked": "Ledger device is locked. Please unlock your device and try again.",
+  "@ledgerErrorDeviceLocked": {
+    "description": "Error message when Ledger device is locked (error code 5515)"
+  },
+  "ledgerErrorBitcoinAppNotOpen": "Please open the Bitcoin app on your Ledger device and try again.",
+  "@ledgerErrorBitcoinAppNotOpen": {
+    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
+  },
+  "ledgerErrorMissingPsbt": "PSBT is required for signing",
+  "@ledgerErrorMissingPsbt": {
+    "description": "Error message when PSBT parameter is missing for signing"
+  },
+  "ledgerErrorMissingDerivationPathSign": "Derivation path is required for signing",
+  "@ledgerErrorMissingDerivationPathSign": {
+    "description": "Error message when derivation path is missing for signing"
+  },
+  "ledgerErrorMissingScriptTypeSign": "Script type is required for signing",
+  "@ledgerErrorMissingScriptTypeSign": {
+    "description": "Error message when script type is missing for signing"
+  },
+  "ledgerErrorMissingAddress": "Address is required for verification",
+  "@ledgerErrorMissingAddress": {
+    "description": "Error message when address is missing for verification"
+  },
+  "ledgerErrorMissingDerivationPathVerify": "Derivation path is required for verification",
+  "@ledgerErrorMissingDerivationPathVerify": {
+    "description": "Error message when derivation path is missing for verification"
+  },
+  "ledgerErrorMissingScriptTypeVerify": "Script type is required for verification",
+  "@ledgerErrorMissingScriptTypeVerify": {
+    "description": "Error message when script type is missing for verification"
+  },
+  "ledgerButtonTryAgain": "Try Again",
+  "@ledgerButtonTryAgain": {
+    "description": "Button label to retry a failed Ledger operation"
+  },
+  "ledgerButtonManagePermissions": "Manage App Permissions",
+  "@ledgerButtonManagePermissions": {
+    "description": "Button label to open app permissions settings"
+  },
+  "ledgerButtonNeedHelp": "Need Help?",
+  "@ledgerButtonNeedHelp": {
+    "description": "Button label to show help/troubleshooting instructions"
+  },
+  "ledgerVerifyAddressLabel": "Address to verify:",
+  "@ledgerVerifyAddressLabel": {
+    "description": "Label for the address being verified on Ledger"
+  },
+  "ledgerWalletTypeLabel": "Wallet Type:",
+  "@ledgerWalletTypeLabel": {
+    "description": "Label for wallet type/script type selection"
+  },
+  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
+  "@ledgerWalletTypeSegwit": {
+    "description": "Display name for Segwit wallet type (BIP84)"
+  },
+  "ledgerWalletTypeSegwitDescription": "Native SegWit - Recommended",
+  "@ledgerWalletTypeSegwitDescription": {
+    "description": "Description for Segwit wallet type"
+  },
+  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
+  "@ledgerWalletTypeNestedSegwit": {
+    "description": "Display name for Nested Segwit wallet type (BIP49)"
+  },
+  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
+  "@ledgerWalletTypeNestedSegwitDescription": {
+    "description": "Technical description for Nested Segwit wallet type"
+  },
+  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
+  "@ledgerWalletTypeLegacy": {
+    "description": "Display name for Legacy wallet type (BIP44)"
+  },
+  "ledgerWalletTypeLegacyDescription": "P2PKH - Older format",
+  "@ledgerWalletTypeLegacyDescription": {
+    "description": "Description for Legacy wallet type"
+  },
+  "ledgerWalletTypeSelectTitle": "Select Wallet Type",
+  "@ledgerWalletTypeSelectTitle": {
+    "description": "Title for wallet type selection modal"
+  },
+  "ledgerSuccessAddressVerified": "Address verified successfully!",
+  "@ledgerSuccessAddressVerified": {
+    "description": "Success snackbar message after address verification"
+  },
+  "ledgerHelpTitle": "Ledger Troubleshooting",
+  "@ledgerHelpTitle": {
+    "description": "Title for Ledger troubleshooting help modal"
+  },
+  "ledgerHelpSubtitle": "First, make sure your Ledger device is unlocked and the Bitcoin app is opened. If your device still doesn't connect with the app, try the following:",
+  "@ledgerHelpSubtitle": {
+    "description": "Subtitle/introduction for Ledger troubleshooting help"
+  },
+  "ledgerHelpStep1": "Restart your Ledger device.",
+  "@ledgerHelpStep1": {
+    "description": "First troubleshooting step for Ledger connection issues"
+  },
+  "ledgerHelpStep2": "Make sure your phone has Bluetooth turned on and permitted.",
+  "@ledgerHelpStep2": {
+    "description": "Second troubleshooting step for Ledger connection issues"
+  },
+  "ledgerHelpStep3": "Make sure your Ledger has Bluetooth turned on.",
+  "@ledgerHelpStep3": {
+    "description": "Third troubleshooting step for Ledger connection issues"
+  },
+  "ledgerHelpStep4": "Make sure you have installed the latest version of the Bitcoin app from Ledger Live.",
+  "@ledgerHelpStep4": {
+    "description": "Fourth troubleshooting step for Ledger connection issues"
+  },
+  "ledgerHelpStep5": "Make sure your Ledger device is using the latest firmware, you can update the firmware using the Ledger Live desktop app.",
+  "@ledgerHelpStep5": {
+    "description": "Fifth troubleshooting step for Ledger connection issues"
+  },
+  "ledgerDefaultWalletLabel": "Ledger Wallet",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
   "exchangeBrandName": "BULL BITCOIN",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
