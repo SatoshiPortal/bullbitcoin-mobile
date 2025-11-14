@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_method_list_tile.dart';
 import 'package:flutter/material.dart';
@@ -8,25 +9,25 @@ class FundExchangeCostaRicaMethods extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         FundExchangeMethodListTile(
           method: FundingMethod.sinpe,
-          title: 'SINPE Móvil',
-          subtitle: 'Transfiere Colones usando SINPE',
+          title: context.loc.fundExchangeCostaRicaMethodSinpeTitle,
+          subtitle: context.loc.fundExchangeCostaRicaMethodSinpeSubtitle,
         ),
-        Gap(16.0),
+        const Gap(16.0),
         FundExchangeMethodListTile(
           method: FundingMethod.crIbanCrc,
-          title: 'IBAN Costa Rica (CRC)',
-          subtitle: 'Transfiere fondos en Colón Costarricense (CRC)',
+          title: context.loc.fundExchangeCostaRicaMethodIbanCrcTitle,
+          subtitle: context.loc.fundExchangeCostaRicaMethodIbanCrcSubtitle,
         ),
-        Gap(16.0),
+        const Gap(16.0),
         FundExchangeMethodListTile(
           method: FundingMethod.crIbanUsd,
-          title: 'IBAN Costa Rica (USD)',
-          subtitle: 'Transfiere fondos en Dólares Estadounidenses (USD)',
+          title: context.loc.fundExchangeCostaRicaMethodIbanUsdTitle,
+          subtitle: context.loc.fundExchangeCostaRicaMethodIbanUsdSubtitle,
         ),
       ],
     );

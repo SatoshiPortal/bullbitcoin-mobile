@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/draggable_server_list.dart';
@@ -7,7 +8,6 @@ import 'package:bb_mobile/features/electrum_settings/interface_adapters/presente
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-
 class ElectrumSettingsScreen extends StatelessWidget {
   const ElectrumSettingsScreen({super.key});
 
@@ -21,7 +21,7 @@ class ElectrumSettingsScreen extends StatelessWidget {
     );
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Electrum Server Settings'),
+        title: Text(context.loc.electrumTitle),
         // Create a reusable app bar with a loading indicator at the bottom
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
@@ -56,12 +56,17 @@ class ElectrumSettingsScreen extends StatelessWidget {
                       children: [
                         const Gap(16),
                         BBSegmentFull(
-                          items: const {'Bitcoin', 'Liquid'},
-                          initialValue: isLiquid ? 'Liquid' : 'Bitcoin',
+                          items: {
+                            context.loc.electrumNetworkBitcoin,
+                            context.loc.electrumNetworkLiquid,
+                          },
+                          initialValue: isLiquid
+                              ? context.loc.electrumNetworkLiquid
+                              : context.loc.electrumNetworkBitcoin,
                           onSelected: (value) {
                             context.read<ElectrumSettingsBloc>().add(
                               ElectrumSettingsLoaded(
-                                isLiquid: value == 'Liquid',
+                                isLiquid: value == context.loc.electrumNetworkLiquid,
                               ),
                             );
                           },
@@ -79,7 +84,7 @@ class ElectrumSettingsScreen extends StatelessWidget {
               child: TextButton(
                 onPressed: () => SetAdvancedOptionsBottomSheet.show(context),
                 child: Text(
-                  'Advanced Options',
+                  context.loc.electrumAdvancedOptions,
                   style: context.font.bodyMedium?.copyWith(
                     color: context.colour.primary,
                   ),

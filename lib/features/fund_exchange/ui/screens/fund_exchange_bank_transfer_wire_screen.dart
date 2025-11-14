@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -23,7 +24,10 @@ class FundExchangeBankTransferWireScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
+      appBar: AppBar(
+        title: Text(context.loc.fundExchangeTitle),
+        scrolledUnderElevation: 0.0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -32,17 +36,17 @@ class FundExchangeBankTransferWireScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BBText(
-                'Bank transfer (wire)',
+                context.loc.fundExchangeBankTransferWireTitle,
                 style: theme.textTheme.displaySmall,
               ),
               const Gap(16.0),
               BBText(
-                "Send a wire transfer from your bank account using Bull Bitcoin's bank details below. Your bank may require only some parts of these details.",
+                context.loc.fundExchangeBankTransferWireDescription,
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(16.0),
               BBText(
-                "Any funds you send will be added to your Bull Bitcoin within 1-2 business days.",
+                context.loc.fundExchangeBankTransferWireTimeframe,
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(24.0),
@@ -52,15 +56,14 @@ class FundExchangeBankTransferWireScreen extends StatelessWidget {
                 const Gap(24.0),
               ] else ...[
                 FundExchangeDetail(
-                  label: 'Beneficiary name',
-                  helpText:
-                      'Use our official corporate name. Do not use "Bull Bitcoin".',
+                  label: context.loc.fundExchangeLabelBeneficiaryName,
+                  helpText: context.loc.fundExchangeHelpBeneficiaryName,
                   value: details?.beneficiaryName,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Transfer code (add this as a payment description)',
-                  helpText: 'Add this as the reason for the transfer',
+                  label: context.loc.fundExchangeLabelTransferCode,
+                  helpText: context.loc.fundExchangeHelpTransferCode,
                   value: details?.code,
                 ),
                 const Gap(16.0),
@@ -69,44 +72,46 @@ class FundExchangeBankTransferWireScreen extends StatelessWidget {
                     alpha: 0.1,
                   ),
                   tagColor: theme.colorScheme.secondary,
-                  description:
-                      'You must add the transfer code as the "message" or "reason" when making the payment.',
+                  description: context.loc.fundExchangeInfoTransferCode,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Bank account details',
+                  label: context.loc.fundExchangeLabelBankAccountDetails,
                   value: details?.bankAccountDetails,
                 ),
                 const Gap(24.0),
-                FundExchangeDetail(label: 'SWIFT code', value: details?.swift),
+                FundExchangeDetail(
+                  label: context.loc.fundExchangeLabelSwiftCode,
+                  value: details?.swift,
+                ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Institution number',
+                  label: context.loc.fundExchangeLabelInstitutionNumber,
                   value: details?.institutionNumber,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Transit number',
+                  label: context.loc.fundExchangeLabelTransitNumber,
                   value: details?.transitNumber,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Routing number',
+                  label: context.loc.fundExchangeLabelRoutingNumber,
                   value: details?.routingNumber,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Beneficiary address',
+                  label: context.loc.fundExchangeLabelBeneficiaryAddress,
                   value: details?.beneficiaryAddress,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Bank name',
+                  label: context.loc.fundExchangeLabelBankName,
                   value: details?.bankName,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Address of our bank',
+                  label: context.loc.fundExchangeLabelBankAddress,
                   value: details?.bankAddress,
                 ),
                 const Gap(24.0),

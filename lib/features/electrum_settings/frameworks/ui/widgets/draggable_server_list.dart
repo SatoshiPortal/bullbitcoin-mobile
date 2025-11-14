@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/add_custom_server_bottom_sheet.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/delete_custom_server_dialog.dart';
@@ -8,21 +9,20 @@ import 'package:bb_mobile/features/electrum_settings/interface_adapters/presente
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-
 class DraggableServerList extends StatelessWidget {
   const DraggableServerList({super.key});
 
-  String _getErrorMessage(ElectrumServersException error) {
+  String _getErrorMessage(BuildContext context, ElectrumServersException error) {
     return switch (error) {
       LoadFailedException(reason: final r) =>
-        'Failed to load servers${r != null ? ': $r' : ''}',
+        context.loc.electrumLoadFailedError(r != null ? ': $r' : ''),
       SavePriorityFailedException(reason: final r) =>
-        'Failed to save server priority${r != null ? ': $r' : ''}',
+        context.loc.electrumSavePriorityFailedError(r != null ? ': $r' : ''),
       AddFailedException(reason: final r) =>
-        'Failed to add custom server${r != null ? ': $r' : ''}',
+        context.loc.electrumAddFailedError(r != null ? ': $r' : ''),
       DeleteFailedException(reason: final r) =>
-        'Failed to delete custom server${r != null ? ': $r' : ''}',
-      ElectrumServerAlreadyExistsException() => 'This server already exists',
+        context.loc.electrumDeleteFailedError(r != null ? ': $r' : ''),
+      ElectrumServerAlreadyExistsException() => context.loc.electrumServerAlreadyExists,
     };
   }
 
@@ -43,7 +43,7 @@ class DraggableServerList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Default Servers',
+          context.loc.electrumDefaultServers,
           style: context.font.titleSmall?.copyWith(
             color: context.colour.onSurface.withValues(alpha: 0.7),
           ),
@@ -51,8 +51,7 @@ class DraggableServerList extends StatelessWidget {
         const SizedBox(height: 8),
         if (customServers.isNotEmpty) ...[
           InfoCard(
-            description:
-                'To protect your privacy, default servers are not used when custom servers are configured.',
+            description: context.loc.electrumDefaultServersInfo,
             tagColor: context.colour.onTertiary,
             bgColor: context.colour.tertiary.withValues(alpha: 0.1),
           ),
@@ -70,14 +69,14 @@ class DraggableServerList extends StatelessWidget {
         if (customServers.isNotEmpty) ...[
           const SizedBox(height: 16),
           Text(
-            'Custom Servers',
+            context.loc.electrumCustomServers,
             style: context.font.titleSmall?.copyWith(
               color: context.colour.onSurface.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            '(Long press to drag and change priority)',
+            context.loc.electrumDragToReorder,
             style: context.font.bodySmall?.copyWith(
               color: context.colour.onSurface.withValues(alpha: 0.5),
             ),
@@ -122,7 +121,7 @@ class DraggableServerList extends StatelessWidget {
         const Gap(16),
         if (electrumServersError != null) ...[
           InfoCard(
-            description: _getErrorMessage(electrumServersError),
+            description: _getErrorMessage(context, electrumServersError),
             tagColor: context.colour.error,
             bgColor: context.colour.error.withValues(alpha: 0.1),
           ),
@@ -142,7 +141,7 @@ class DraggableServerList extends StatelessWidget {
           },
           icon: Icon(Icons.add_circle_outline, color: context.colour.primary),
           label: Text(
-            'Add Custom Server',
+            context.loc.electrumAddCustomServer,
             style: context.font.bodyMedium?.copyWith(
               color: context.colour.primary,
             ),

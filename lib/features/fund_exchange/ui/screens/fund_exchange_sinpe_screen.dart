@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_detail.dart';
@@ -23,7 +24,7 @@ class FundExchangeSinpeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Financiación'),
+        title: Text(context.loc.fundExchangeTitle),
         scrolledUnderElevation: 0.0,
       ),
       body: SafeArea(
@@ -33,16 +34,15 @@ class FundExchangeSinpeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BBText('SINPE Móvil', style: theme.textTheme.displaySmall),
+              BBText(context.loc.fundExchangeSinpeTitle, style: theme.textTheme.displaySmall),
               const Gap(16.0),
               RichText(
                 text: TextSpan(
-                  text:
-                      'Envía los fondos a nuestro número de teléfono SINPE Móvil. Debes enviar los fondos desde el mismo número de teléfono asociado a tu cuenta Bull Bitcoin. Si envías el pago desde un número diferente, o si le pides a alguien más que haga el pago por ti, ',
+                  text: context.loc.fundExchangeSinpeDescription,
                   style: theme.textTheme.headlineSmall,
                   children: [
                     TextSpan(
-                      text: 'será rechazado.',
+                      text: context.loc.fundExchangeSinpeDescriptionBold,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -52,7 +52,7 @@ class FundExchangeSinpeScreen extends StatelessWidget {
               ),
               const Gap(24.0),
               Text(
-                'Una vez que se envíe el pago, se agregará a tu saldo de cuenta.',
+                context.loc.fundExchangeSinpeAddedToBalance,
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(24.0),
@@ -89,15 +89,14 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                               Expanded(
                                 child: RichText(
                                   text: TextSpan(
-                                    text: 'No pongas',
+                                    text: context.loc.fundExchangeSinpeWarningNoBitcoin,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color: theme.colorScheme.secondary,
                                       fontWeight: FontWeight.bold,
                                     ),
                                     children: [
                                       TextSpan(
-                                        text:
-                                            ' la palabra "Bitcoin" o "Crypto" en la descripción del pago. Esto bloqueará tu pago.',
+                                        text: context.loc.fundExchangeSinpeWarningNoBitcoinDescription,
                                         style: theme.textTheme.bodyMedium
                                             ?.copyWith(
                                               color:
@@ -124,12 +123,12 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                 const Gap(24.0),
               ] else ...[
                 FundExchangeDetail(
-                  label: 'Envía a este número de teléfono',
+                  label: context.loc.fundExchangeSinpeLabelPhone,
                   value: details?.number,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Nombre del destinatario',
+                  label: context.loc.fundExchangeSinpeLabelRecipientName,
                   value: details?.beneficiaryName,
                 ),
                 const Gap(24.0),
