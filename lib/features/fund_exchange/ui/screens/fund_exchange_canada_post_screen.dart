@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -22,7 +23,10 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
       (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
+      appBar: AppBar(
+        title: Text(context.loc.fundExchangeTitle),
+        scrolledUnderElevation: 0.0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -31,16 +35,24 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BBText(
-                'In-person cash or debit at Canada Post',
+                context.loc.fundExchangeCanadaPostTitle,
                 style: theme.textTheme.displaySmall,
               ),
               const Gap(16.0),
-              ..._steps.map(
-                (tactic) => Row(
+              ...[
+                context.loc.fundExchangeCanadaPostStep1,
+                context.loc.fundExchangeCanadaPostStep2,
+                context.loc.fundExchangeCanadaPostStep3,
+                context.loc.fundExchangeCanadaPostStep4,
+                context.loc.fundExchangeCanadaPostStep5,
+                context.loc.fundExchangeCanadaPostStep6,
+                context.loc.fundExchangeCanadaPostStep7,
+              ].map(
+                (step) => Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: Text(tactic, style: const TextStyle(fontSize: 14)),
+                      child: Text(step, style: const TextStyle(fontSize: 14)),
                     ),
                   ],
                 ),
@@ -55,7 +67,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       BBText(
-                        "Loadhub QR code",
+                        context.loc.fundExchangeCanadaPostQrCodeLabel,
                         style: theme.textTheme.bodyMedium,
                         textAlign: TextAlign.center,
                       ),
@@ -77,13 +89,4 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
     );
   }
 
-  List<String> get _steps => const [
-    '1. Go to any Canada Post location',
-    '2. Ask the cashier to scan the "Loadhub" QR code',
-    '3. Tell the cashier the amount you want to load',
-    '4. The cashier will ask to see a piece of government-issued ID and verify that the name on your ID matches your Bull Bitcoin account',
-    '5. Pay with cash or debit card',
-    '6. The cashier will hand you a receipt, keep it as your proof of payment',
-    '7. The funds will be added to your Bull Bitcoin account balance within 30 minutes',
-  ];
 }

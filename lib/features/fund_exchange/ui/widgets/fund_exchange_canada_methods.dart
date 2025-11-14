@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_method_list_tile.dart';
 import 'package:flutter/material.dart';
@@ -8,33 +9,31 @@ class FundExchangeCanadaMethods extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         FundExchangeMethodListTile(
           method: FundingMethod.emailETransfer,
-          title: 'Email E-Transfer',
-          subtitle: 'Easiest and fastest method (instant)',
+          title: context.loc.fundExchangeMethodEmailETransfer,
+          subtitle: context.loc.fundExchangeMethodEmailETransferSubtitle,
         ),
-        Gap(16.0),
+        const Gap(16.0),
         FundExchangeMethodListTile(
           method: FundingMethod.bankTransferWire,
-          title: 'Bank Transfer (Wire or EFT)',
-          subtitle:
-              'Best and most reliable option for larger amounts (same or next day)',
+          title: context.loc.fundExchangeMethodBankTransferWire,
+          subtitle: context.loc.fundExchangeMethodBankTransferWireSubtitle,
         ),
-        Gap(16.0),
+        const Gap(16.0),
         FundExchangeMethodListTile(
           method: FundingMethod.onlineBillPayment,
-          title: 'Online Bill Payment',
-          subtitle:
-              'Slowest option, but can be done via online banking (3-4 business days)',
+          title: context.loc.fundExchangeMethodOnlineBillPayment,
+          subtitle: context.loc.fundExchangeMethodOnlineBillPaymentSubtitle,
         ),
-        Gap(16.0),
+        const Gap(16.0),
         FundExchangeMethodListTile(
           method: FundingMethod.canadaPost,
-          title: 'In-person cash or debit at Canada Post',
-          subtitle: 'Best for those who prefer to pay in person',
+          title: context.loc.fundExchangeMethodCanadaPost,
+          subtitle: context.loc.fundExchangeMethodCanadaPostSubtitle,
         ),
       ],
     );
