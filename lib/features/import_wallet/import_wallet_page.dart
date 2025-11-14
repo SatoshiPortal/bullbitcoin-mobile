@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -28,7 +29,7 @@ class ImportWalletPage extends StatelessWidget {
               const Gap(16),
               BBText(
                 context.loc.importWalletSectionGeneric,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: context.font.titleMedium,
               ),
               const Gap(12),
               TabMenuVerticalButton(
@@ -49,7 +50,7 @@ class ImportWalletPage extends StatelessWidget {
               const Gap(24),
               BBText(
                 context.loc.importWalletSectionHardware,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: context.font.titleMedium,
               ),
               const Gap(12),
               TabMenuVerticalButton(
