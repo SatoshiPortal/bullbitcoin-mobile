@@ -86,4 +86,28 @@ class LiquidWalletRepository {
 
     return signedPsbt;
   }
+
+  Future<int> getAmountSentToAddress({
+    required String pset,
+    required String address,
+    required String walletId,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+    if (!metadata.isLiquid) {
+      throw Exception('Wallet $walletId is not a Liquid wallet');
+    }
+    final wallet = WalletModel.publicLwk(
+      combinedCtDescriptor: metadata.externalPublicDescriptor,
+      isTestnet: metadata.isTestnet,
+      id: metadata.id,
+    );
+    return await _lwkWallet.getAmountSentToAddress(
+      pset,
+      address,
+      wallet: wallet,
+    );
+  }
 }
