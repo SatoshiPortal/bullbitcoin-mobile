@@ -443,7 +443,7 @@ class SwapWatcherService {
       final environment = settings.environment;
       final network = Network.fromEnvironment(
         isTestnet: environment.isTestnet,
-        isLiquid: true,
+        isLiquid: false,
       );
       final networkFee = await _feesRepository.getNetworkFees(network: network);
       final txSize = await _boltzRepo.getSwapRefundTxSize(
