@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/labels/domain/export_labels_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/import_labels_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -31,7 +32,7 @@ class Bip329LabelsPage extends StatelessWidget {
           automaticallyImplyLeading: false,
           flexibleSpace: TopBar(
             onBack: () => context.pop(),
-            title: 'BIP329 Labels',
+            title: context.loc.bip329LabelsTitle,
           ),
         ),
         body: BlocConsumer<Bip329LabelsCubit, Bip329LabelsState>(
@@ -42,13 +43,13 @@ class Bip329LabelsPage extends StatelessWidget {
               exportSuccess: (labelsCount) {
                 SnackBarUtils.showSnackBar(
                   context,
-                  '$labelsCount labels exported',
+                  context.loc.bip329LabelsExportSuccess(labelsCount),
                 );
               },
               importSuccess: (labelsCount) {
                 SnackBarUtils.showSnackBar(
                   context,
-                  '$labelsCount labels imported',
+                  context.loc.bip329LabelsImportSuccess(labelsCount),
                 );
               },
               error: (message) {
@@ -74,7 +75,7 @@ class Bip329LabelsPage extends StatelessWidget {
                   const Spacer(),
 
                   BBText(
-                    'BIP329 Labels Import/Export',
+                    context.loc.bip329LabelsHeading,
                     style: context.font.headlineLarge,
                     textAlign: TextAlign.center,
                   ),
@@ -82,7 +83,7 @@ class Bip329LabelsPage extends StatelessWidget {
                   const Gap(16),
 
                   BBText(
-                    'Import or export wallet labels using the BIP329 standard format.',
+                    context.loc.bip329LabelsDescription,
                     style: context.font.bodyLarge,
                     textAlign: TextAlign.center,
                   ),
@@ -90,7 +91,7 @@ class Bip329LabelsPage extends StatelessWidget {
                   const Spacer(),
 
                   BBButton.big(
-                    label: 'Import Labels',
+                    label: context.loc.bip329LabelsImportButton,
                     onPressed: isLoading ? () {} : () => cubit.importLabels(),
                     bgColor: Theme.of(context).colorScheme.primary,
                     textColor: Theme.of(context).colorScheme.onPrimary,
@@ -102,7 +103,7 @@ class Bip329LabelsPage extends StatelessWidget {
                   const Gap(16),
 
                   BBButton.big(
-                    label: 'Export Labels',
+                    label: context.loc.bip329LabelsExportButton,
                     onPressed: isLoading ? () {} : () => cubit.exportLabels(),
                     bgColor: Theme.of(context).colorScheme.secondary,
                     textColor: Theme.of(context).colorScheme.onSecondary,

@@ -71,7 +71,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   ),
                 SettingsEntryItem(
                   icon: Icons.download,
-                  title: 'Import wallet',
+                  title: 'Import Wallet',
                   onTap:
                       () => context.pushNamed(
                         ImportWalletRoute.importWalletHome.name,

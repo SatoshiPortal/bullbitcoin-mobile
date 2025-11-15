@@ -25,9 +25,9 @@ class ImportQrDeviceRouter {
         final config = DeviceConfig.configs[SignerDeviceEntity.jade]!;
         return ImportQrDevicePage(
           device: config.device,
-          deviceName: config.name,
-          instructionsTitle: config.instructionsTitle,
-          instructions: config.instructions,
+          deviceName: config.getName(context),
+          instructionsTitle: config.getInstructionsTitle(context),
+          instructions: config.getInstructions(context),
         );
       },
     ),
@@ -38,9 +38,9 @@ class ImportQrDeviceRouter {
         final config = DeviceConfig.configs[SignerDeviceEntity.krux]!;
         return ImportQrDevicePage(
           device: config.device,
-          deviceName: config.name,
-          instructionsTitle: config.instructionsTitle,
-          instructions: config.instructions,
+          deviceName: config.getName(context),
+          instructionsTitle: config.getInstructionsTitle(context),
+          instructions: config.getInstructions(context),
         );
       },
     ),
@@ -51,9 +51,9 @@ class ImportQrDeviceRouter {
         final config = DeviceConfig.configs[SignerDeviceEntity.keystone]!;
         return ImportQrDevicePage(
           device: config.device,
-          deviceName: config.name,
-          instructionsTitle: config.instructionsTitle,
-          instructions: config.instructions,
+          deviceName: config.getName(context),
+          instructionsTitle: config.getInstructionsTitle(context),
+          instructions: config.getInstructions(context),
         );
       },
     ),
@@ -64,9 +64,9 @@ class ImportQrDeviceRouter {
         final config = DeviceConfig.configs[SignerDeviceEntity.passport]!;
         return ImportQrDevicePage(
           device: config.device,
-          deviceName: config.name,
-          instructionsTitle: config.instructionsTitle,
-          instructions: config.instructions,
+          deviceName: config.getName(context),
+          instructionsTitle: config.getInstructionsTitle(context),
+          instructions: config.getInstructions(context),
         );
       },
     ),
@@ -77,9 +77,9 @@ class ImportQrDeviceRouter {
         final config = DeviceConfig.configs[SignerDeviceEntity.seedsigner]!;
         return ImportQrDevicePage(
           device: config.device,
-          deviceName: config.name,
-          instructionsTitle: config.instructionsTitle,
-          instructions: config.instructions,
+          deviceName: config.getName(context),
+          instructionsTitle: config.getInstructionsTitle(context),
+          instructions: config.getInstructions(context),
         );
       },
     ),
@@ -90,9 +90,9 @@ class ImportQrDeviceRouter {
         final config = DeviceConfig.configs[SignerDeviceEntity.specter]!;
         return ImportQrDevicePage(
           device: config.device,
-          deviceName: config.name,
-          instructionsTitle: config.instructionsTitle,
-          instructions: config.instructions,
+          deviceName: config.getName(context),
+          instructionsTitle: config.getInstructionsTitle(context),
+          instructions: config.getInstructions(context),
         );
       },
     ),

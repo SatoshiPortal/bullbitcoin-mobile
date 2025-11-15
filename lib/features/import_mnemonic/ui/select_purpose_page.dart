@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -22,7 +23,7 @@ class SelectScriptTypePage extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Import Mnemonic',
+          title: context.loc.importMnemonicSelectScriptType,
           color: context.colour.secondaryFixed,
           onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
@@ -56,7 +57,7 @@ class SelectScriptTypePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   BBText(
-                    'All three wallet types are syncing and their balance and transactions will appear soon. You can wait until sync completes or proceed to import if you are sure which wallet type you wish to import.',
+                    context.loc.importMnemonicSyncMessage,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.colour.onSurfaceVariant,
                     ),
@@ -66,21 +67,21 @@ class SelectScriptTypePage extends StatelessWidget {
                   Column(
                     children: [
                       _WalletTypeCard(
-                        title: 'Segwit',
+                        title: context.loc.importMnemonicSegwit,
                         status: state.bip84Status,
                         isSelected: scriptType == ScriptType.bip84,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip84),
                       ),
                       const Gap(16),
                       _WalletTypeCard(
-                        title: 'Nested Segwit',
+                        title: context.loc.importMnemonicNestedSegwit,
                         status: state.bip49Status,
                         isSelected: scriptType == ScriptType.bip49,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip49),
                       ),
                       const Gap(16),
                       _WalletTypeCard(
-                        title: 'Legacy',
+                        title: context.loc.importMnemonicLegacy,
                         status: state.bip44Status,
                         isSelected: scriptType == ScriptType.bip44,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip44),
@@ -90,7 +91,7 @@ class SelectScriptTypePage extends StatelessWidget {
                   const Gap(16),
 
                   BBButton.big(
-                    label: 'Continue',
+                    label: context.loc.importMnemonicContinue,
                     onPressed: cubit.import,
                     bgColor: context.colour.secondary,
                     textColor: context.colour.onPrimary,
@@ -152,14 +153,14 @@ class _WalletTypeCard extends StatelessWidget {
                   if (status != null) ...[
                     const Gap(8),
                     BBText(
-                      'Balance: ${status?.satoshis.toString() ?? '0'}',
+                      context.loc.importMnemonicBalanceLabel(status!.satoshis.toString()),
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.onSurfaceVariant,
                       ),
                     ),
                     const Gap(4),
                     BBText(
-                      'Transactions: ${status?.transactions.toString() ?? '0'}',
+                      context.loc.importMnemonicTransactionsLabel(status!.transactions.toString()),
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.onSurfaceVariant,
                       ),

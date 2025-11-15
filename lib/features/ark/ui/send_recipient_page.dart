@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/ark/errors.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
@@ -61,7 +62,7 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Send to Recipient', style: context.font.headlineMedium),
+          title: Text(context.loc.arkSendRecipientTitle, style: context.font.headlineMedium),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3),
             child: BlocSelector<ArkCubit, ArkState, bool>(
@@ -109,7 +110,7 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                       children: [
                         const Gap(32),
                         Text(
-                          'Recipient Address',
+                          context.loc.arkRecipientAddress,
                           style: context.font.bodyMedium,
                         ),
                         const Gap(16.0),
@@ -142,7 +143,7 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16.0,
                             ),
-                            hintText: 'Enter a payment address or invoice',
+                            hintText: context.loc.arkSendRecipientHint,
                             hintStyle: context.font.bodyMedium?.copyWith(
                               color: context.colour.outline,
                             ),
@@ -166,7 +167,7 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                           onFieldSubmitted: (_) => _submit(),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter a recipient';
+                              return context.loc.arkSendRecipientError;
                             }
                             return null;
                           },
@@ -191,7 +192,7 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                           selector: (state) => state.isLoading,
                           builder: (context, isLoading) {
                             return BBButton.big(
-                              label: 'Continue',
+                              label: context.loc.arkContinueButton,
                               onPressed: _submit,
                               disabled: _controller.text.isEmpty || isLoading,
                               bgColor: context.colour.secondary,

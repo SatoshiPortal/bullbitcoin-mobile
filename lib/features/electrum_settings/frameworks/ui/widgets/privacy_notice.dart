@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-
 class PrivacyNoticeBottomSheet extends StatelessWidget {
   const PrivacyNoticeBottomSheet({super.key});
 
@@ -37,7 +37,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Gap(24),
-                    Text('Privacy Notice', style: context.font.headlineMedium),
+                    Text(context.loc.electrumPrivacyNoticeTitle, style: context.font.headlineMedium),
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(false),
                       child: const Icon(Icons.close),
@@ -55,13 +55,13 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Privacy Notice: Using your own node ensures that no third party can link your IP address, with your transactions.',
+                      context.loc.electrumPrivacyNoticeContent1,
                       style: context.font.bodyMedium,
                       maxLines: 4,
                     ),
                     const Gap(24),
                     Text(
-                      'However, If you view transactions via mempool by clicking your Transaction ID or Recipient Details page, this information will be known to BullBitcoin.',
+                      context.loc.electrumPrivacyNoticeContent2,
                       maxLines: 4,
                       style: context.font.bodyMedium,
                     ),
@@ -70,7 +70,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                       children: [
                         Expanded(
                           child: BBButton.big(
-                            label: 'Cancel',
+                            label: context.loc.electrumPrivacyNoticeCancel,
                             onPressed: () => Navigator.of(context).pop(false),
                             bgColor: Colors.transparent,
                             outlined: true,
@@ -81,7 +81,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                         const Gap(16),
                         Expanded(
                           child: BBButton.big(
-                            label: 'Save',
+                            label: context.loc.electrumPrivacyNoticeSave,
                             onPressed: () => Navigator.of(context).pop(true),
                             bgColor: context.colour.secondary,
                             textStyle: context.font.headlineLarge,

@@ -87,7 +87,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     on<TransferConfirmed>(_onConfirmed);
     on<TransferSendToExternalToggled>(_onSendToExternalToggled);
     on<TransferExternalAddressChanged>(_onExternalAddressChanged);
-    on<TransferSendExactAmountToggled>(_onSendExactAmountToggled);
+    on<TransferReceiveExactAmountToggled>(_onReceiveExactAmountToggled);
   }
 
   final GetSettingsUsecase _getSettingsUsecase;
@@ -288,7 +288,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
               : ConvertAmount.btcToSats(double.parse(event.amount));
 
       int paymentAmountSat = inputAmountSat;
-      if (state.sendExactAmount) {
+      if (state.receiveExactAmount) {
         final swapFees = state.swapFees;
         if (swapFees == null) {
           emit(
@@ -531,6 +531,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         sendToExternal: event.enabled,
         externalAddress: event.enabled ? state.externalAddress : '',
         externalAddressError: event.enabled ? null : null,
+        receiveExactAmount: event.enabled,
       ),
     );
   }
@@ -654,9 +655,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           state.copyWith(
             externalAddress: address,
             externalAddressError: null,
-            sendExactAmount:
+            receiveExactAmount:
                 // ignore: avoid_bool_literals_in_conditional_expressions
-                bip21AmountSat != null ? true : state.sendExactAmount,
+                bip21AmountSat != null ? true : state.receiveExactAmount,
             amount: bip21AmountText ?? state.amount,
           ),
         );
@@ -692,11 +693,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     }
   }
 
-  Future<void> _onSendExactAmountToggled(
-    TransferSendExactAmountToggled event,
+  Future<void> _onReceiveExactAmountToggled(
+    TransferReceiveExactAmountToggled event,
     Emitter<TransferState> emit,
   ) async {
-    emit(state.copyWith(sendExactAmount: event.enabled));
+    emit(state.copyWith(receiveExactAmount: event.enabled));
   }
 
   Future<void> _onConfirmed(

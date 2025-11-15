@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bip85_derivation_widget.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
@@ -14,7 +14,7 @@ class Bip85HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('BIP85 Deterministic Entropies')),
+      appBar: AppBar(title: Text(context.loc.bip85Title)),
       body: BlocBuilder<Bip85EntropyCubit, Bip85EntropyState>(
         builder: (context, state) {
           final cubit = context.read<Bip85EntropyCubit>();
@@ -36,7 +36,7 @@ class Bip85HomePage extends StatelessWidget {
                       const Gap(8),
                       Expanded(
                         child: Text(
-                          'Experimental \nBackup your derivation paths manually',
+                          context.loc.bip85ExperimentalWarning,
                           style: TextStyle(color: Colors.orange.shade800),
                         ),
                       ),
@@ -61,15 +61,15 @@ class Bip85HomePage extends StatelessWidget {
                   children: [
                     BBButton.small(
                       onPressed: () => cubit.deriveNextMnemonic(),
-                      label: 'Next Mnemonic',
-                      bgColor: context.theme.colorScheme.secondary,
-                      textColor: context.theme.colorScheme.onSecondary,
+                      label: context.loc.bip85NextMnemonic,
+                      bgColor: Theme.of(context).colorScheme.secondary,
+                      textColor: Theme.of(context).colorScheme.onSecondary,
                     ),
                     BBButton.small(
                       onPressed: () => cubit.deriveNextHex(),
-                      label: 'Next HEX',
-                      bgColor: context.theme.colorScheme.secondary,
-                      textColor: context.theme.colorScheme.onSecondary,
+                      label: context.loc.bip85NextHex,
+                      bgColor: Theme.of(context).colorScheme.secondary,
+                      textColor: Theme.of(context).colorScheme.onSecondary,
                     ),
                   ],
                 ),

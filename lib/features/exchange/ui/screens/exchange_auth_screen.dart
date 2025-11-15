@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -270,14 +271,14 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Login Failed'),
-            content: const Text(
-              'An error occurred, please try logging in again.',
+            title: Text(context.loc.exchangeAuthLoginFailedTitle),
+            content: Text(
+              context.loc.exchangeAuthLoginFailedMessage,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
+                child: Text(context.loc.exchangeAuthLoginFailedOkButton),
               ),
             ],
           ),

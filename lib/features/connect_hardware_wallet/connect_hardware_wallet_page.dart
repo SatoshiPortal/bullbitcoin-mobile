@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
@@ -14,14 +15,14 @@ class ConnectHardwareWalletPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Connect Hardware Wallet')),
+      appBar: AppBar(title: Text(context.loc.connectHardwareWalletTitle)),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           children: [
             const Gap(32),
             BBText(
-              'Choose the hardware wallet you would like to connect',
+              context.loc.connectHardwareWalletDescription,
               style: context.font.bodyLarge,
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -32,7 +33,7 @@ class ConnectHardwareWalletPage extends StatelessWidget {
                 child: Column(
                   children: [
                     TabMenuVerticalButton(
-                      title: 'Coldcard Q',
+                      title: context.loc.connectHardwareWalletColdcardQ,
                       onTap:
                           () => context.pushNamed(
                             ImportColdcardQRoute.importColdcardQ.name,
@@ -40,14 +41,14 @@ class ConnectHardwareWalletPage extends StatelessWidget {
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
-                      title: 'Ledger',
+                      title: context.loc.connectHardwareWalletLedger,
                       onTap:
                           () =>
                               context.pushNamed(LedgerRoute.importLedger.name),
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
-                      title: 'Blockstream Jade',
+                      title: context.loc.connectHardwareWalletJade,
                       onTap:
                           () => context.pushNamed(
                             ImportQrDeviceRoute.importJade.name,
@@ -55,7 +56,7 @@ class ConnectHardwareWalletPage extends StatelessWidget {
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
-                      title: 'Keystone',
+                      title: context.loc.connectHardwareWalletKeystone,
                       onTap:
                           () => context.pushNamed(
                             ImportQrDeviceRoute.importKeystone.name,
@@ -63,7 +64,7 @@ class ConnectHardwareWalletPage extends StatelessWidget {
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
-                      title: 'Krux',
+                      title: context.loc.connectHardwareWalletKrux,
                       onTap:
                           () => context.pushNamed(
                             ImportQrDeviceRoute.importKrux.name,
@@ -71,7 +72,7 @@ class ConnectHardwareWalletPage extends StatelessWidget {
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
-                      title: 'Foundation Passport',
+                      title: context.loc.connectHardwareWalletPassport,
                       onTap:
                           () => context.pushNamed(
                             ImportQrDeviceRoute.importPassport.name,
@@ -79,7 +80,7 @@ class ConnectHardwareWalletPage extends StatelessWidget {
                     ),
                     const Gap(16),
                     TabMenuVerticalButton(
-                      title: 'SeedSigner',
+                      title: context.loc.connectHardwareWalletSeedSigner,
                       onTap:
                           () => context.pushNamed(
                             ImportQrDeviceRoute.importSeedSigner.name,

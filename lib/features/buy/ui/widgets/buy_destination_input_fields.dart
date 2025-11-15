@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,15 +48,14 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
     final selectedWallet = context.select(
       (BuyBloc bloc) => bloc.state.selectedWallet,
     );
-    // TODO: Use labels from translations for these
-    const externalBitcoinWalletLabel = 'External Bitcoin wallet';
-    const secureBitcoinWalletLabel = 'Secure Bitcoin Wallet';
-    const instantPaymentWalletLabel = 'Instant payment wallet';
+    final externalBitcoinWalletLabel = context.loc.buyConfirmExternalWallet;
+    final secureBitcoinWalletLabel = context.loc.buyConfirmSecureWallet;
+    final instantPaymentWalletLabel = context.loc.buyConfirmInstantWallet;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Select wallet', style: context.font.bodyMedium),
+        Text(context.loc.buySelectWallet, style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,
@@ -112,7 +112,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
         // bitcoin address manually.
         if (isStarted && selectedWallet == null) ...[
           const Gap(16.0),
-          Text('Enter bitcoin address', style: context.font.bodyMedium),
+          Text(context.loc.buyEnterBitcoinAddress, style: context.font.bodyMedium),
           const Gap(4.0),
           SizedBox(
             height: 56,
@@ -126,7 +126,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                   textAlignVertical: TextAlignVertical.center,
                   style: context.font.headlineSmall,
                   decoration: InputDecoration(
-                    hintText: 'BC1QYL7J673H...6Y6ALV70M0',
+                    hintText: context.loc.buyBitcoinAddressHint,
                     hintStyle: context.font.headlineSmall?.copyWith(
                       color: context.colour.outline,
                     ),

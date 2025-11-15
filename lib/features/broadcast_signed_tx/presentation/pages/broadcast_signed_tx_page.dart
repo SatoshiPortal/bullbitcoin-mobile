@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -25,7 +26,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Broadcast signed transaction',
+          title: context.loc.broadcastSignedTxPageTitle,
           onBack: () => context.pop(),
         ),
       ),
@@ -44,7 +45,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                     ),
                     child: PasteInput(
                       text: state.transaction?.data ?? '',
-                      hint: 'Paste a PSBT or transaction HEX',
+                      hint: context.loc.broadcastSignedTxPasteHint,
                       onChanged: cubit.tryParseTransaction,
                     ),
                   ),
@@ -59,7 +60,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
 
                   const Gap(16),
                   BBButton.small(
-                    label: 'Camera',
+                    label: context.loc.broadcastSignedTxCameraButton,
                     onPressed: () {
                       cubit.resetState();
                       context.pushNamed(
@@ -73,7 +74,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                   const Gap(32),
                   BBButton.small(
-                    label: 'PushTx',
+                    label: context.loc.broadcastSignedTxPushTxButton,
                     onPressed:
                         () => context.pushNamed(
                           BroadcastSignedTxRoute.broadcastScanNfc.name,
@@ -100,7 +101,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(16),
                             child: BBButton.big(
-                              label: 'PushTx',
+                              label: context.loc.broadcastSignedTxPushTxButton,
                               bgColor: context.colour.secondary,
                               textColor: context.colour.onPrimary,
                               onPressed: cubit.pushTxUri,
@@ -113,7 +114,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(16),
                             child: BBButton.big(
-                              label: 'Broadcast',
+                              label: context.loc.broadcastSignedTxBroadcast,
                               bgColor: context.colour.secondary,
                               textColor: context.colour.onPrimary,
                               onPressed: cubit.broadcastTransaction,
@@ -133,7 +134,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 100, right: 100),
                     child: BBButton.big(
-                      label: 'Done',
+                      label: context.loc.broadcastSignedTxDoneButton,
                       bgColor: context.colour.secondary,
                       textColor: context.colour.onPrimary,
                       onPressed:

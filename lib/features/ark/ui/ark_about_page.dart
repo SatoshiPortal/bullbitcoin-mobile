@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/ark/ark.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
@@ -20,64 +21,64 @@ class ArkAboutPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        flexibleSpace: TopBar(title: 'About', onBack: () => context.pop()),
+        flexibleSpace: TopBar(title: context.loc.arkAboutTitle, onBack: () => context.pop()),
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           children: [
-            const _CopyField(label: 'Server URL', value: Ark.server),
+            _CopyField(label: context.loc.arkAboutServerUrl, value: Ark.server),
             const SizedBox(height: 18),
-            _SecretKeyField(label: 'Secret Key', value: wallet.secretHex),
+            _SecretKeyField(label: context.loc.arkAboutSecretKey, value: wallet.secretHex),
             const SizedBox(height: 18),
-            _CopyField(label: 'Server pubkey', value: serverInfo.signerPubkey),
+            _CopyField(label: context.loc.arkAboutServerPubkey, value: serverInfo.signerPubkey),
             const SizedBox(height: 18),
             _CopyField(
-              label: 'Forfeit address',
+              label: context.loc.arkAboutForfeitAddress,
               value: serverInfo.forfeitAddress,
             ),
             const SizedBox(height: 18),
-            const _InfoField(label: 'Network', value: Ark.network),
+            _InfoField(label: context.loc.arkAboutNetwork, value: Ark.network),
             const SizedBox(height: 18),
-            _InfoField(label: 'Dust', value: '${serverInfo.dust} SATS'),
+            _InfoField(label: context.loc.arkAboutDust, value: context.loc.arkAboutDustValue(serverInfo.dust)),
             const SizedBox(height: 18),
             _InfoField(
-              label: 'Session duration',
-              value: _formatDuration(serverInfo.sessionDuration),
+              label: context.loc.arkAboutSessionDuration,
+              value: _formatDuration(context, serverInfo.sessionDuration),
             ),
             const SizedBox(height: 18),
             _InfoField(
-              label: 'Boarding exit delay',
-              value: _formatDuration(serverInfo.boardingExitDelay),
+              label: context.loc.arkAboutBoardingExitDelay,
+              value: _formatDuration(context, serverInfo.boardingExitDelay),
             ),
             const SizedBox(height: 18),
             _InfoField(
-              label: 'Unilateral exit delay',
-              value: _formatDuration(serverInfo.unilateralExitDelay),
+              label: context.loc.arkAboutUnilateralExitDelay,
+              value: _formatDuration(context, serverInfo.unilateralExitDelay),
             ),
             const SizedBox(height: 18),
-            const _CopyField(label: 'Esplora URL', value: Ark.esplora),
+            _CopyField(label: context.loc.arkAboutEsploraUrl, value: Ark.esplora),
           ],
         ),
       ),
     );
   }
 
-  static String _formatDuration(dynamic seconds) {
+  static String _formatDuration(BuildContext context, dynamic seconds) {
     if (seconds == null) return 'N/A';
     final int secs = seconds is int ? seconds : (seconds as BigInt).toInt();
 
     if (secs < 60) {
-      return '$secs seconds';
+      return context.loc.arkAboutDurationSeconds(secs);
     } else if (secs < 3600) {
       final minutes = (secs / 60).round();
-      return '$minutes ${minutes == 1 ? 'minute' : 'minutes'}';
+      return minutes == 1 ? context.loc.arkAboutDurationMinute(minutes) : context.loc.arkAboutDurationMinutes(minutes);
     } else if (secs < 86400) {
       final hours = (secs / 3600).round();
-      return '$hours ${hours == 1 ? 'hour' : 'hours'}';
+      return hours == 1 ? context.loc.arkAboutDurationHour(hours) : context.loc.arkAboutDurationHours(hours);
     } else {
       final days = (secs / 86400).round();
-      return '$days ${days == 1 ? 'day' : 'days'}';
+      return days == 1 ? context.loc.arkAboutDurationDay(days) : context.loc.arkAboutDurationDays(days);
     }
   }
 }
@@ -110,10 +111,16 @@ class _InfoField extends StatelessWidget {
   }
 }
 
-class _CopyField extends StatelessWidget {
+class _CopyField extends StatefulWidget {
   final String label;
   final String value;
   const _CopyField({required this.label, required this.value});
+
+  @override
+  State<_CopyField> createState() => _CopyFieldState();
+}
+
+class _CopyFieldState extends State<_CopyField> {
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +128,7 @@ class _CopyField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          label,
+          widget.label,
           style: context.font.bodyLarge?.copyWith(
             color: context.colour.surfaceContainer,
           ),
@@ -132,7 +139,7 @@ class _CopyField extends StatelessWidget {
           runSpacing: 4,
           children: [
             BBText(
-              value,
+              widget.value,
               style: context.font.bodyMedium?.copyWith(
                 color: context.colour.outline,
               ),
@@ -140,10 +147,10 @@ class _CopyField extends StatelessWidget {
 
             InkWell(
               onTap: () {
-                Clipboard.setData(ClipboardData(text: value));
+                Clipboard.setData(ClipboardData(text: widget.value));
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('$label copied to clipboard'),
+                    content: Text(context.loc.arkAboutCopiedMessage(widget.label)),
                     duration: const Duration(seconds: 2),
                   ),
                 );
@@ -152,7 +159,7 @@ class _CopyField extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   BBText(
-                    'Copy',
+                    context.loc.arkAboutCopy,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.colour.primary,
                       fontSize: 14,
@@ -215,7 +222,7 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   BBText(
-                    _isVisible ? 'Hide' : 'Show',
+                    _isVisible ? context.loc.arkAboutHide : context.loc.arkAboutShow,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.colour.primary,
                       fontSize: 14,
@@ -235,7 +242,7 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
                 Clipboard.setData(ClipboardData(text: widget.value));
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('${widget.label} copied to clipboard'),
+                    content: Text(context.loc.arkAboutCopiedMessage(widget.label)),
                     duration: const Duration(seconds: 2),
                   ),
                 );
@@ -244,7 +251,7 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   BBText(
-                    'Copy',
+                    context.loc.arkAboutCopy,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.colour.primary,
                       fontSize: 14,

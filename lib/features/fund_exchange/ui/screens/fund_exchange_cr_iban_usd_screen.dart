@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -24,7 +25,7 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Financiación'),
+        title: Text(context.loc.fundExchangeTitle),
         scrolledUnderElevation: 0.0,
       ),
       body: SafeArea(
@@ -35,7 +36,7 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BBText(
-                'Transferencia Bancaria (USD)',
+                context.loc.fundExchangeCrIbanUsdTitle,
                 style: theme.textTheme.displaySmall,
               ),
               const Gap(16.0),
@@ -43,18 +44,17 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text:
-                          "Envía una transferencia bancaria desde tu cuenta bancaria usando los detalles a continuación ",
+                      text: context.loc.fundExchangeCrIbanUsdDescription,
                       style: theme.textTheme.headlineSmall,
                     ),
                     TextSpan(
-                      text: "exactamente",
+                      text: context.loc.fundExchangeCrIbanUsdDescriptionBold,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
-                      text: ". Los fondos se agregarán a tu saldo de cuenta.",
+                      text: context.loc.fundExchangeCrIbanUsdDescriptionEnd,
                       style: theme.textTheme.headlineSmall,
                     ),
                   ],
@@ -67,20 +67,18 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
                 const Gap(24.0),
               ] else ...[
                 FundExchangeDetail(
-                  label:
-                      'Número de cuenta IBAN (solo para dólares estadounidenses)',
+                  label: context.loc.fundExchangeCrIbanUsdLabelIban,
                   value: details?.iban,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Descripción del pago',
+                  label: context.loc.fundExchangeCrIbanUsdLabelPaymentDescription,
                   value: details?.code,
-                  helpText: 'Tu código de transferencia.',
+                  helpText: context.loc.fundExchangeCrIbanUsdPaymentDescriptionHelp,
                 ),
                 const Gap(16.0),
                 InfoCard(
-                  description:
-                      'Debes agregar el código de transferencia como "mensaje" o "razón" o "descripción" al realizar el pago. Si olvidas poner este código, tu pago puede ser rechazado.',
+                  description: context.loc.fundExchangeCrIbanUsdTransferCodeWarning,
                   bgColor: theme.colorScheme.inverseSurface.withValues(
                     alpha: 0.1,
                   ),
@@ -88,14 +86,13 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Nombre del destinatario',
+                  label: context.loc.fundExchangeCrIbanUsdLabelRecipientName,
                   value: details?.beneficiaryName,
-                  helpText:
-                      'Usa nuestro nombre corporativo oficial. No uses "Bull Bitcoin".',
+                  helpText: context.loc.fundExchangeCrIbanUsdRecipientNameHelp,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Cédula Jurídica',
+                  label: context.loc.fundExchangeCrIbanUsdLabelCedulaJuridica,
                   value: details?.cedulaJuridica,
                 ),
                 const Gap(24.0),

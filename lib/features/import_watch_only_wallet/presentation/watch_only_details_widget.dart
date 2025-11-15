@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/labeled_text_input.dart';
@@ -47,13 +48,13 @@ class _DescriptorDetailsWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         LabeledTextInput(
-          label: 'Descriptor',
+          label: context.loc.importWatchOnlyDescriptor,
           value: entity.descriptor.combined,
           onChanged: null,
         ),
         const Gap(24),
         LabeledTextInput(
-          label: 'Type',
+          label: context.loc.importWatchOnlyType,
           value: entity.descriptor.derivation.label,
           onChanged: null,
         ),
@@ -64,7 +65,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
               SizedBox(
                 width: 120,
                 child: BBText(
-                  'Signing Device',
+                  context.loc.importWatchOnlySigningDevice,
                   style: context.font.titleMedium,
                 ),
               ),
@@ -87,7 +88,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                             (value) => DropdownMenuItem<SignerDeviceEntity?>(
                               value: value,
                               child: BBText(
-                                value?.displayName ?? 'Unkown',
+                                value?.displayName ?? context.loc.importWatchOnlyUnknown,
                                 style: context.font.headlineSmall,
                               ),
                             ),
@@ -100,14 +101,14 @@ class _DescriptorDetailsWidget extends StatelessWidget {
           ),
         if (entity.signerDevice != null)
           LabeledTextInput(
-            label: 'Signing Device',
+            label: context.loc.importWatchOnlySigningDevice,
             value: entity.signerDevice!.displayName,
             onChanged: null,
           ),
         const Gap(24),
         LabeledTextInput(
-          label: 'Label',
-          hint: 'Required',
+          label: context.loc.importWatchOnlyLabel,
+          hint: context.loc.importWatchOnlyRequired,
           value: entity.label,
           onChanged: cubit.updateLabel,
           maxLines: 1,
@@ -115,7 +116,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         const Gap(24),
         BBButton.big(
           onPressed: cubit.import,
-          label: 'Import',
+          label: context.loc.importWatchOnlyImport,
           bgColor: context.colour.secondary,
           textColor: context.colour.onSecondary,
         ),
@@ -136,18 +137,27 @@ class _XpubDetailsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText('Extended Public Key', style: context.font.titleMedium),
+        BBText(
+          context.loc.importWatchOnlyExtendedPublicKey,
+          style: context.font.titleMedium,
+        ),
         const Gap(8),
         BBText(entity.pubkey, style: context.font.bodyMedium),
         const Gap(24),
-        BBText('Type', style: context.font.titleMedium),
+        BBText(
+          context.loc.importWatchOnlyType,
+          style: context.font.titleMedium,
+        ),
         const Gap(8),
         BBText(
           entity.extendedPubkey.derivation.label,
           style: context.font.bodyMedium,
         ),
         const Gap(24),
-        BBText('Label', style: context.font.titleMedium),
+        BBText(
+          context.loc.importWatchOnlyLabel,
+          style: context.font.titleMedium,
+        ),
         const Gap(8),
         BBInputText(
           onChanged: cubit.updateLabel,
@@ -157,7 +167,7 @@ class _XpubDetailsWidget extends StatelessWidget {
         const Gap(24),
         BBButton.big(
           onPressed: cubit.import,
-          label: 'Import',
+          label: context.loc.importWatchOnlyImport,
           bgColor: context.colour.primary,
           textColor: context.colour.onPrimary,
         ),

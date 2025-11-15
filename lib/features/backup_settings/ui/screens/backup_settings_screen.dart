@@ -90,12 +90,12 @@ class _BackupTestStatusWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _StatusRow(
-              label: 'Physical Backup',
+              label: context.loc.backupSettingsPhysicalBackup,
               isTested: state.isDefaultPhysicalBackupTested,
             ),
             const Gap(15),
             _StatusRow(
-              label: 'Encrypted Vault',
+              label: context.loc.backupSettingsEncryptedVault,
               isTested: state.isDefaultEncryptedBackupTested,
             ),
           ],
@@ -118,7 +118,7 @@ class _StatusRow extends StatelessWidget {
         Text(label, style: context.font.bodyMedium),
         const Spacer(),
         Text(
-          isTested ? 'Tested' : 'Not Tested',
+          isTested ? context.loc.backupSettingsTested : context.loc.backupSettingsNotTested,
           style: context.font.bodyMedium?.copyWith(
             color:
                 isTested ? context.colour.inverseSurface : context.colour.error,
@@ -135,7 +135,7 @@ class _TestBackupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.big(
-      label: 'Test Backup',
+      label: context.loc.backupSettingsTestBackup,
       onPressed:
           () => context.pushNamed(
             BackupSettingsSubroute.testbackupOptions.name,
@@ -155,7 +155,7 @@ class _StartBackupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.big(
-      label: 'Start Backup',
+      label: context.loc.backupSettingsStartBackup,
       onPressed:
           () => context.pushNamed(BackupSettingsSubroute.backupOptions.name),
       bgColor: context.colour.secondary,
@@ -170,7 +170,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.big(
-      label: 'View Vault Key',
+      label: context.loc.backupSettingsViewVaultKey,
       onPressed: () async {
         final confirmed = await ViewVaultKeyWarningBottomSheet.show(context);
         if (confirmed == true) {
@@ -214,7 +214,7 @@ class ErrorWidget extends StatelessWidget {
               Icon(Icons.error_outline, color: context.colour.error, size: 20),
               const Gap(8),
               Text(
-                'Error',
+                context.loc.backupSettingsError,
                 style: context.font.titleSmall?.copyWith(
                   color: context.colour.error,
                   fontWeight: FontWeight.bold,
@@ -241,7 +241,7 @@ class _Bip329LabelsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.big(
-      label: 'Labels',
+      label: context.loc.backupSettingsLabelsButton,
       onPressed: () => context.push(Bip329LabelsRouter.route.path),
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
