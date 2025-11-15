@@ -1053,15 +1053,24 @@ class BoltzDatasource {
           // Invoice settled for reverse swaps
           if (swapModel is LnReceiveSwapModel) {
             log.info(
-              '{"swapId": "$swapId", "boltzStatus": "invoiceSettled", "function": "_initializeBoltzWebSocket", "action": "marking_completed", "currentStatus": "${swapModel.status}", "receiveTxid": "${swapModel.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              '{"swapId": "$swapId", "boltzStatus": "invoiceSettled", "function": "_initializeBoltzWebSocket", "action": "checking_receiveTxid", "currentStatus": "${swapModel.status}", "receiveTxid": "${swapModel.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
             );
-            updatedSwapModel = swapModel.copyWith(
-              status: swap_entity.SwapStatus.completed.name,
-              completionTime: DateTime.now().millisecondsSinceEpoch,
-            );
-            log.info(
-              '{"swapId": "$swapId", "boltzStatus": "invoiceSettled", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "timestamp": "${DateTime.now().toIso8601String()}"}',
-            );
+            if (swapModel.receiveTxid != null) {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.completed.name,
+                completionTime: DateTime.now().millisecondsSinceEpoch,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "invoiceSettled", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model_completed", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "receiveTxid": "${swapModel.receiveTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            } else {
+              updatedSwapModel = swapModel.copyWith(
+                status: swap_entity.SwapStatus.claimable.name,
+              );
+              log.info(
+                '{"swapId": "$swapId", "boltzStatus": "invoiceSettled", "function": "_initializeBoltzWebSocket", "action": "updated_swap_model_claimable", "oldStatus": "${swapModel.status}", "newStatus": "${updatedSwapModel.status}", "receiveTxid": null, "timestamp": "${DateTime.now().toIso8601String()}"}',
+              );
+            }
           }
 
         case SwapStatus.invoiceFailedToPay:
