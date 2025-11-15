@@ -113,6 +113,9 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   }
 }
 
+// Interpret error codes from Ledger operations.
+// Note: The returned strings are error keys that should be localized in the UI layer.
+// These keys correspond to entries in the localization ARB files (ledgerError*).
 String? _interpretErrorCode(String error) {
   if (error.contains(
     "Make sure no other program is communicating with the Ledger",
@@ -120,14 +123,15 @@ String? _interpretErrorCode(String error) {
     return error;
   }
 
+  // Map error codes to localization keys
   final errorCodePatterns = {
-    '6985': 'Transaction was rejected by the user on the Ledger device.',
-    '5515': 'Ledger device is locked. Please unlock your device and try again.',
-    '6e01': 'Please open the Bitcoin app on your Ledger device and try again.',
-    '6a87': 'Please open the Bitcoin app on your Ledger device and try again.',
-    '6d02': 'Please open the Bitcoin app on your Ledger device and try again.',
-    '6511': 'Please open the Bitcoin app on your Ledger device and try again.',
-    '6e00': 'Please open the Bitcoin app on your Ledger device and try again.',
+    '6985': 'LEDGER_ERROR_REJECTED_BY_USER',  // User rejected transaction
+    '5515': 'LEDGER_ERROR_DEVICE_LOCKED',     // Device is locked
+    '6e01': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN', // Bitcoin app not open
+    '6a87': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',
+    '6d02': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',
+    '6511': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',
+    '6e00': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',
   };
 
   final patterns = [

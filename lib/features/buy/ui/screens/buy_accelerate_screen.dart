@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
@@ -58,7 +59,7 @@ class BuyAccelerateScreen extends StatelessWidget {
         Navigator.of(context, rootNavigator: true).pop();
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Confirm express withdrawal')),
+        appBar: AppBar(title: Text(context.loc.buyConfirmExpressWithdrawal)),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -68,7 +69,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: 16),
                   Text(
-                    'The Bitcoin network fee will be deducted from the amount you receive and collected by the Bitcoin miners',
+                    context.loc.buyNetworkFeeExplanation,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.black,
@@ -76,20 +77,20 @@ class BuyAccelerateScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
                   BuyConfirmDetailRow(
-                    label: 'Network fees',
+                    label: context.loc.buyNetworkFees,
                     value: formattedAbsoluteFee,
                   ),
                   BuyConfirmDetailRow(
-                    label: 'Estimated fee value',
+                    label: context.loc.buyEstimatedFeeValue,
                     value: formattedFeeFiatEstimate,
                   ),
                   BuyConfirmDetailRow(
-                    label: 'Network fee rate',
+                    label: context.loc.buyNetworkFeeRate,
                     value: formattedRelativeFee,
                   ),
-                  const BuyConfirmDetailRow(
-                    label: 'Confirmation time',
-                    value: '~10 minutes',
+                  BuyConfirmDetailRow(
+                    label: context.loc.buyConfirmationTime,
+                    value: context.loc.buyConfirmationTimeValue,
                   ),
                   const SizedBox(height: 32),
                 ],
@@ -107,7 +108,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                   const Center(child: CircularProgressIndicator())
                 else
                   BBButton.big(
-                    label: 'Wait for free withdrawal',
+                    label: context.loc.buyWaitForFreeWithdrawal,
                     onPressed: () {
                       Navigator.of(context, rootNavigator: true).pop();
                     },
@@ -116,7 +117,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                   ),
                 const Gap(16),
                 BBButton.big(
-                  label: 'Confirm express',
+                  label: context.loc.buyConfirmExpress,
                   disabled: isAcceleratingOrder,
                   onPressed: () {
                     context.read<BuyBloc>().add(

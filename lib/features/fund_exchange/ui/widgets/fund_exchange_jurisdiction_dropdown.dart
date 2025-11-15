@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -35,30 +36,30 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
             items: [
               DropdownMenuItem(
                 value: FundingJurisdiction.canada,
-                child: BBText('🇨🇦 Canada', style: context.font.headlineSmall),
+                child: BBText(context.loc.fundExchangeJurisdictionCanada, style: context.font.headlineSmall),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.europe,
                 child: BBText(
-                  '🇪🇺 Europe (SEPA)',
+                  context.loc.fundExchangeJurisdictionEurope,
                   style: context.font.headlineSmall,
                 ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.mexico,
-                child: BBText('🇲🇽 Mexico', style: context.font.headlineSmall),
+                child: BBText(context.loc.fundExchangeJurisdictionMexico, style: context.font.headlineSmall),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.costaRica,
                 child: BBText(
-                  '🇨🇷 Costa Rica',
+                  context.loc.fundExchangeJurisdictionCostaRica,
                   style: context.font.headlineSmall,
                 ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.argentina,
                 child: BBText(
-                  '🇦🇷 Argentina',
+                  context.loc.fundExchangeJurisdictionArgentina,
                   style: context.font.headlineSmall,
                 ),
               ),

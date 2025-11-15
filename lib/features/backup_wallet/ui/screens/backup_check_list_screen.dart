@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -22,14 +23,14 @@ class BackCheckListScreen extends StatelessWidget {
     );
     final lastPhysicalBackup = defaultWallet?.latestPhysicalBackup;
 
-    final instructions = backupInstructions();
+    final instructions = backupInstructions(context);
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           onBack: () => context.pop(),
-          title: 'Backup best practices',
+          title: context.loc.backupWalletBestPracticesTitle,
         ),
       ),
       body: SingleChildScrollView(
@@ -41,7 +42,7 @@ class BackCheckListScreen extends StatelessWidget {
               if (lastPhysicalBackup != null) ...[
                 const Gap(8),
                 BBText(
-                  'Last backup test: ${lastPhysicalBackup.toString().substring(0, 19)}',
+                  '${context.loc.backupWalletLastBackupTest}${lastPhysicalBackup.toString().substring(0, 19)}',
                   style: context.font.bodyMedium,
                 ),
               ],
@@ -75,7 +76,7 @@ class BackCheckListScreen extends StatelessWidget {
                     () => context.pushNamed(
                       TestWalletBackupSubroute.testPhysicalBackup.name,
                     ),
-                label: 'Backup',
+                label: context.loc.backupWalletBackupButton,
               ),
               const Gap(60),
             ],
@@ -85,19 +86,13 @@ class BackCheckListScreen extends StatelessWidget {
     );
   }
 
-  List<String> backupInstructions() {
+  List<String> backupInstructions(BuildContext context) {
     return [
-      'If you lose your 12 word backup, you will not be able to recover access to the Bitcoin Wallet.',
-      'Without a backup, if you lose or break your phone, or if you uninstall the Bull Bitcoin app, your bitcoins will be lost forever.',
-      'Anybody with access to your 12 word backup can steal your bitcoins. Hide it well.',
-      'Do not make digital copies of your backup. Write it down on a piece of paper, or engraved in metal.',
-      'Your backup is not protected by passphrase. Add a passphrase to your backup later by creating a new wallet.',
-      // (No passphrase)
-      // If you lose your 12 word backup, you will not be able to recover access to the Bitcoin Wallet.
-      // Without a backup, if you lose or break your phone, or if you uninstall the Bull Bitcoin app, your bitcoins will be lost forever.
-      // Anybody with access to your 12 word backup can steal your bitcoins. Hide it well.
-      // Do not make digital copies of your backup. Write it down on a piece of paper, or engraved in metal.
-      // Your backup is not protected by passphrase. Add a passphrase to your backup later by creating a new wallet.
+      context.loc.backupWalletInstructionLoseBackup,
+      context.loc.backupWalletInstructionLosePhone,
+      context.loc.backupWalletInstructionSecurityRisk,
+      context.loc.backupWalletInstructionNoDigitalCopies,
+      context.loc.backupWalletInstructionNoPassphrase,
     ];
   }
 }

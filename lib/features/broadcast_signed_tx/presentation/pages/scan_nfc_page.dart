@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/nfc_scanner_widget.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
@@ -15,7 +16,10 @@ class ScanNfcPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(title: 'NFC', onBack: () => context.pop()),
+        flexibleSpace: TopBar(
+          title: context.loc.broadcastSignedTxNfcTitle,
+          onBack: () => context.pop(),
+        ),
       ),
       body: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
         builder: (context, state) {

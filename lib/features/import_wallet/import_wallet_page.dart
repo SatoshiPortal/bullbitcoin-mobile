@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
@@ -18,7 +19,7 @@ class ImportWalletPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add a new wallet')),
+      appBar: AppBar(title: Text(context.loc.importWalletTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -26,10 +27,13 @@ class ImportWalletPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Gap(16),
-              BBText('Generic wallets', style: context.font.titleMedium),
+              BBText(
+                context.loc.importWalletSectionGeneric,
+                style: context.font.titleMedium,
+              ),
               const Gap(12),
               TabMenuVerticalButton(
-                title: 'Import Mnemonic',
+                title: context.loc.importWalletImportMnemonic,
                 onTap:
                     () => context.pushNamed(
                       ImportMnemonicRoute.importMnemonicHome.name,
@@ -37,17 +41,20 @@ class ImportWalletPage extends StatelessWidget {
               ),
               const Gap(16),
               TabMenuVerticalButton(
-                title: 'Import watch-only',
+                title: context.loc.importWalletImportWatchOnly,
                 onTap:
                     () => context.pushNamed(
                       ImportWatchOnlyWalletRoutes.import.name,
                     ),
               ),
               const Gap(24),
-              BBText('Hardware wallets', style: context.font.titleMedium),
+              BBText(
+                context.loc.importWalletSectionHardware,
+                style: context.font.titleMedium,
+              ),
               const Gap(12),
               TabMenuVerticalButton(
-                title: 'Coldcard Q',
+                title: context.loc.importWalletColdcardQ,
                 onTap:
                     () => context.pushNamed(
                       ImportColdcardQRoute.importColdcardQ.name,
@@ -56,12 +63,12 @@ class ImportWalletPage extends StatelessWidget {
               const Gap(16),
               if (context.read<SettingsCubit>().state.isSuperuser ?? false) ...[
                 TabMenuVerticalButton(
-                  title: 'Ledger',
+                  title: context.loc.importWalletLedger,
                   onTap: () => context.pushNamed(LedgerRoute.importLedger.name),
                 ),
                 const Gap(16),
                 TabMenuVerticalButton(
-                  title: 'Blockstream Jade',
+                  title: context.loc.importWalletJade,
                   onTap:
                       () => context.pushNamed(
                         ImportQrDeviceRoute.importJade.name,
@@ -69,7 +76,7 @@ class ImportWalletPage extends StatelessWidget {
                 ),
                 const Gap(16),
                 TabMenuVerticalButton(
-                  title: 'Keystone',
+                  title: context.loc.importWalletKeystone,
                   onTap:
                       () => context.pushNamed(
                         ImportQrDeviceRoute.importKeystone.name,
@@ -77,7 +84,7 @@ class ImportWalletPage extends StatelessWidget {
                 ),
                 const Gap(16),
                 TabMenuVerticalButton(
-                  title: 'Foundation Passport',
+                  title: context.loc.importWalletPassport,
                   onTap:
                       () => context.pushNamed(
                         ImportQrDeviceRoute.importPassport.name,
@@ -86,7 +93,7 @@ class ImportWalletPage extends StatelessWidget {
                 const Gap(16),
               ],
               TabMenuVerticalButton(
-                title: 'SeedSigner',
+                title: context.loc.importWalletSeedSigner,
                 onTap:
                     () => context.pushNamed(
                       ImportQrDeviceRoute.importSeedSigner.name,
@@ -94,7 +101,7 @@ class ImportWalletPage extends StatelessWidget {
               ),
               const Gap(16),
               TabMenuVerticalButton(
-                title: 'Specter',
+                title: context.loc.importWalletSpecter,
                 onTap:
                     () => context.pushNamed(
                       ImportQrDeviceRoute.importSpecter.name,
@@ -102,7 +109,7 @@ class ImportWalletPage extends StatelessWidget {
               ),
               const Gap(16),
               TabMenuVerticalButton(
-                title: 'Krux',
+                title: context.loc.importWalletKrux,
                 onTap:
                     () =>
                         context.pushNamed(ImportQrDeviceRoute.importKrux.name),

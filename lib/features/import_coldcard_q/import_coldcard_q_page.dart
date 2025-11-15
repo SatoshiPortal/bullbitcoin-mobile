@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_coldcard_q/instructions_bottom_sheet.dart';
@@ -16,14 +17,14 @@ class ImportColdcardQPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Connect Coldcard Q')),
+      appBar: AppBar(title: Text(context.loc.importColdcardTitle)),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           children: [
             const Gap(32),
             BBText(
-              'Import the wallet descriptor QR code from your Coldcard Q',
+              context.loc.importColdcardDescription,
               style: context.font.bodyLarge,
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -39,7 +40,7 @@ class ImportColdcardQPage extends StatelessWidget {
             Column(
               children: [
                 BBButton.small(
-                  label: 'Open the camera',
+                  label: context.loc.importColdcardButtonOpenCamera,
                   onPressed:
                       () => context.pushNamed(
                         ImportWatchOnlyWalletRoutes.scan.name,
@@ -52,7 +53,7 @@ class ImportColdcardQPage extends StatelessWidget {
 
                 const Gap(16),
                 BBButton.small(
-                  label: 'Instructions',
+                  label: context.loc.importColdcardButtonInstructions,
                   onPressed:
                       () => ColdcardQInstructionsBottomSheet.show(context),
                   bgColor: context.colour.onSecondary,
@@ -61,7 +62,7 @@ class ImportColdcardQPage extends StatelessWidget {
                 ),
                 const Gap(16),
                 BBButton.small(
-                  label: 'Purchase device',
+                  label: context.loc.importColdcardButtonPurchase,
                   onPressed:
                       () => launchUrl(
                         Uri.parse(
