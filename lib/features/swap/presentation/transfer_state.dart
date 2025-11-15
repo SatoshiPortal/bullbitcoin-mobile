@@ -27,7 +27,7 @@ sealed class TransferState with _$TransferState {
     @Default(false) bool sendToExternal,
     @Default('') String externalAddress,
     String? externalAddressError,
-    @Default(false) bool receiveExactAmount,
+    @Default(true) bool receiveExactAmount,
     @Default('') String amount,
   }) = _TransferState;
   const TransferState._();
