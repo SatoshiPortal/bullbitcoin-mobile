@@ -176,7 +176,7 @@ class BoltzDatasource {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
 
-      return btcLnSwap.claim(
+      return await btcLnSwap.claim(
         outAddress: claimAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
@@ -257,7 +257,7 @@ class BoltzDatasource {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
 
-      return lbtcLnSwap.claim(
+      return await lbtcLnSwap.claim(
         outAddress: claimAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
@@ -431,7 +431,7 @@ class BoltzDatasource {
   Future<void> coopSignBtcSubmarineSwap({required String swapId}) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
-      return btcLnSwap.coopCloseSubmarine();
+      return await btcLnSwap.coopCloseSubmarine();
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -463,7 +463,7 @@ class BoltzDatasource {
   }) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
-      return btcLnSwap.refund(
+      return await btcLnSwap.refund(
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
@@ -485,7 +485,7 @@ class BoltzDatasource {
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
-      return lbtcLnSwap.refund(
+      return await lbtcLnSwap.refund(
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
@@ -502,7 +502,7 @@ class BoltzDatasource {
   Future<String?> getBtcLnSwapPreimage({required String swapId}) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
-      return btcLnSwap.getPreimage();
+      return await btcLnSwap.getPreimage();
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -515,7 +515,7 @@ class BoltzDatasource {
   Future<String?> getLbtcLnSwapPreimage({required String swapId}) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
-      return lbtcLnSwap.getPreimage();
+      return await lbtcLnSwap.getPreimage();
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -651,18 +651,32 @@ class BoltzDatasource {
     required String signedTxHex,
     required bool broadcastViaBoltz,
   }) async {
+    log.fine(
+      '{"swapId": "$swapId", "function": "broadcastChainSwapRefund", "action": "broadcast_started", "broadcastViaBoltz": $broadcastViaBoltz, "signedTxHexLength": ${signedTxHex.length}, "timestamp": "${DateTime.now().toIso8601String()}"}',
+    );
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
-      return broadcastViaBoltz
-          ? chainSwap.broadcastBoltz(
-            signedHex: signedTxHex,
-            kind: SwapTxKind.refund,
-          )
-          : chainSwap.broadcastLocal(
-            signedHex: signedTxHex,
-            kind: SwapTxKind.refund,
-          );
-    } catch (e) {
+      final txId =
+          await (broadcastViaBoltz
+              ? chainSwap.broadcastBoltz(
+                signedHex: signedTxHex,
+                kind: SwapTxKind.refund,
+              )
+              : chainSwap.broadcastLocal(
+                signedHex: signedTxHex,
+                kind: SwapTxKind.refund,
+              ));
+      log.fine(
+        '{"swapId": "$swapId", "function": "broadcastChainSwapRefund", "action": "broadcast_succeeded", "txId": "$txId", "timestamp": "${DateTime.now().toIso8601String()}"}',
+      );
+      return txId;
+    } catch (e, st) {
+      final errorMessage = e is BoltzError ? e.message : "$e";
+      log.severe(
+        '{"swapId": "$swapId", "function": "broadcastChainSwapRefund", "action": "broadcast_failed", "error": "$errorMessage", "errorType": "${e.runtimeType}", "broadcastViaBoltz": $broadcastViaBoltz, "timestamp": "${DateTime.now().toIso8601String()}"}',
+        error: e,
+        trace: st,
+      );
       if (e is BoltzError) {
         throw e.message;
       } else {
@@ -722,7 +736,7 @@ class BoltzDatasource {
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
-      return broadcastViaBoltz
+      return await (broadcastViaBoltz
           ? chainSwap.broadcastBoltz(
             signedHex: signedTxHex,
             kind: SwapTxKind.claim,
@@ -730,7 +744,7 @@ class BoltzDatasource {
           : chainSwap.broadcastLocal(
             signedHex: signedTxHex,
             kind: SwapTxKind.claim,
-          );
+          ));
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -768,23 +782,22 @@ class BoltzDatasource {
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
-    log.fine(
-      '{"swapId": "$swapId", "function": "refundLbtcToBtcChainSwap", "action": "called_with_params", "params": {"swapId": "$swapId", "refundLiquidAddress": "$refundLiquidAddress", "absoluteFees": $absoluteFees, "tryCooperate": $tryCooperate}, "timestamp": "${DateTime.now().toIso8601String()}"}',
-    );
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
-      log.fine(
-        '{"swapId": "$swapId", "function": "refundLbtcToBtcChainSwap", "action": "fetched_chainSwap", "chainSwap": $chainSwap, "timestamp": "${DateTime.now().toIso8601String()}"}',
-      );
-      log.fine(
-        '{"swapId": "$swapId", "function": "refundLbtcToBtcChainSwap", "chainSwapDetails": {"id": "${chainSwap.id}", "scriptAddress": "${chainSwap.scriptAddress}", "outAmount": "${chainSwap.outAmount}", "outAmountInt": ${chainSwap.outAmount.toInt()}}, "timestamp": "${DateTime.now().toIso8601String()}"}',
-      );
-      return await chainSwap.refund(
+
+      final signedTxHex = await chainSwap.refund(
         refundAddress: refundLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
       );
-    } catch (e) {
+      return signedTxHex;
+    } catch (e, st) {
+      final errorMessage = e is BoltzError ? e.message : "$e";
+      log.severe(
+        '{"swapId": "$swapId", "function": "refundLbtcToBtcChainSwap", "action": "refund_call_failed", "error": "$errorMessage", "errorType": "${e.runtimeType}", "tryCooperate": $tryCooperate, "timestamp": "${DateTime.now().toIso8601String()}"}',
+        error: e,
+        trace: st,
+      );
       if (e is BoltzError) {
         throw e.message;
       } else {

@@ -199,9 +199,7 @@ class BoltzStorageDatasource {
   Future<ChainSwap> fetchChainSwap(String swapId) async {
     final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
     final jsonSwap = await _secureSwapStorage.getValue(key) as String;
-    log.fine(
-      '{"swapId": "$swapId", "function": "fetchChainSwap", "action": "fetched_json_from_storage", "jsonSwap": "$jsonSwap", "timestamp": "${DateTime.now().toIso8601String()}"}',
-    );
+
     return ChainSwap.fromJson(jsonStr: jsonSwap);
   }
 }

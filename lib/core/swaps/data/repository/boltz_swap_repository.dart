@@ -318,6 +318,9 @@ class BoltzSwapRepository {
     required int absoluteFees,
     bool cooperate = true,
   }) async {
+    log.fine(
+      '{"swapId": "$swapId", "function": "refundLiquidToBitcoinSwap", "action": "called_with_params", "liquidRefundAddress": "$liquidRefundAddress", "absoluteFees": $absoluteFees, "cooperate": $cooperate, "timestamp": "${DateTime.now().toIso8601String()}"}',
+    );
     final signedTxHex = await _boltz.refundLbtcToBtcChainSwap(
       swapId: swapId,
       refundLiquidAddress: liquidRefundAddress,

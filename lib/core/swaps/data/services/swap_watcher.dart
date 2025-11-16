@@ -685,9 +685,6 @@ class SwapWatcherService {
       log.fine(
         '{"swapId": "${swap.id}", "function": "_refundChainLiquidToBitcoin", "action": "entering_refund_flow", "swap": $swap, "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
-      log.fine(
-        '{"swapId": "${swap.id}", "function": "_refundChainLiquidToBitcoin", "swapDetails": {"id": "${swap.id}", "status": "${swap.status}", "type": "${swap.type}", "paymentAmount": ${swap.paymentAmount}, "receieveAmount": ${swap.receieveAmount}, "sendWalletId": "${swap.sendWalletId}", "receiveWalletId": "${swap.receiveWalletId ?? "null"}", "paymentAddress": "${swap.paymentAddress}", "receiveAddress": "${swap.receiveAddress ?? "null"}", "refundAddress": "${swap.refundAddress ?? "null"}", "refundTxid": "${swap.refundTxid ?? "null"}", "sendTxid": "${swap.sendTxId ?? "null"}", "receiveTxid": "${swap.receiveTxId ?? "null"}", "creationTime": "${swap.creationTime.toIso8601String()}", "completionTime": "${swap.completionTime?.toIso8601String() ?? "null"}", "fees": ${swap.fees != null ? '{"boltzFee": ${swap.fees!.boltzFee ?? "null"}, "lockupFee": ${swap.fees!.lockupFee ?? "null"}, "claimFee": ${swap.fees!.claimFee ?? "null"}, "serverNetworkFees": ${swap.fees!.serverNetworkFees ?? "null"}}' : "null"}}, "timestamp": "${DateTime.now().toIso8601String()}"}',
-      );
       if (swap.refundTxid != null) {
         log.fine(
           '{"swapId": "${swap.id}", "function": "_refundChainLiquidToBitcoin", "action": "aborting_already_has_refundTxid", "refundTxid": "${swap.refundTxid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
@@ -723,7 +720,7 @@ class SwapWatcherService {
         '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinRefund", "action": "coop_refund_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
       try {
-        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt();
+        actualFeesUsed = absoluteFeeOptions.fastest.value.toInt() + 3;
         refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
           swapId: swap.id,
           absoluteFees: actualFeesUsed,
@@ -745,7 +742,7 @@ class SwapWatcherService {
           refundAddressForChainSwaps: refundAddress,
         );
         final scriptPathFeeOptions = networkFee.toAbsolute(scriptPathTxSize);
-        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt();
+        actualFeesUsed = scriptPathFeeOptions.fastest.value.toInt() + 3;
         refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
           swapId: swap.id,
           absoluteFees: actualFeesUsed,

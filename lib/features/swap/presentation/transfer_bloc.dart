@@ -310,6 +310,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       }
       // For max send, paymentAmountSat = inputAmountSat = maxAmountSat
       // (balance - estimatedFees), which is what we want to pass to newSwap
+      final isMaxSend =
+          state.maxAmountSat != null && inputAmountSat == state.maxAmountSat;
 
       ChainSwap swap;
       String signedPsbt;
@@ -342,7 +344,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
         if (state.fromWallet!.isLiquid) {
           final liquidWalletId = state.fromWallet!.id;
-          final isMaxSend = state.maxAmountSat == swap.paymentAmount;
           final psbt = await _prepareLiquidSendUsecase.execute(
             walletId: liquidWalletId,
             address: swap.paymentAddress,
@@ -351,8 +352,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
             drain: isMaxSend,
           );
 
-          // Verify the amount sent to swap address matches swap.paymentAmount
-          // Verify before signing since signed PSET may not have all info needed for decoding
           await _verifyChainSwapAmountSendUsecase.execute(
             psbtOrPset: psbt,
             swap: swap,
@@ -384,7 +383,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           );
         } else {
           final bitcoinWalletId = state.fromWallet!.id;
-          final isMaxSend = state.maxAmountSat == swap.paymentAmount;
           final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase
               .execute(
                 walletId: bitcoinWalletId,
@@ -394,8 +392,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
                 drain: isMaxSend,
               );
 
-          // Verify the amount sent to swap address matches swap.paymentAmount
-          // Verify before signing
           await _verifyChainSwapAmountSendUsecase.execute(
             psbtOrPset: unsignedPsbtAndTxSize.unsignedPsbt,
             swap: swap,
@@ -440,7 +436,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           type: SwapType.bitcoinToLiquid,
           amountSat: paymentAmountSat,
         );
-        final isMaxSend = state.maxAmountSat == swap.paymentAmount;
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: bitcoinWalletId,
           address: swap.paymentAddress,
@@ -449,8 +444,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           drain: isMaxSend,
         );
 
-        // Verify the amount sent to swap address matches swap.paymentAmount
-        // Verify before signing
         await _verifyChainSwapAmountSendUsecase.execute(
           psbtOrPset: unsignedPsbtAndTxSize.unsignedPsbt,
           swap: swap,
@@ -494,7 +487,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           type: SwapType.liquidToBitcoin,
           amountSat: paymentAmountSat,
         );
-        final isMaxSend = state.maxAmountSat == swap.paymentAmount;
         final psbt = await _prepareLiquidSendUsecase.execute(
           walletId: liquidWalletId,
           address: swap.paymentAddress,
@@ -503,8 +495,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           drain: isMaxSend,
         );
 
-        // Verify the amount sent to swap address matches swap.paymentAmount
-        // Verify before signing since signed PSET may not have all info needed for decoding
         await _verifyChainSwapAmountSendUsecase.execute(
           psbtOrPset: psbt,
           swap: swap,
