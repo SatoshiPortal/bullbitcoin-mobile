@@ -682,10 +682,10 @@ class SwapWatcherService {
   Future<void> _refundChainLiquidToBitcoin({required ChainSwap swap}) async {
     try {
       // Log entire ChainSwap object for debugging
-      log.info(
+      log.fine(
         '{"swapId": "${swap.id}", "function": "_refundChainLiquidToBitcoin", "action": "entering_refund_flow", "swap": $swap, "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
-      log.info(
+      log.fine(
         '{"swapId": "${swap.id}", "function": "_refundChainLiquidToBitcoin", "swapDetails": {"id": "${swap.id}", "status": "${swap.status}", "type": "${swap.type}", "paymentAmount": ${swap.paymentAmount}, "receieveAmount": ${swap.receieveAmount}, "sendWalletId": "${swap.sendWalletId}", "receiveWalletId": "${swap.receiveWalletId ?? "null"}", "paymentAddress": "${swap.paymentAddress}", "receiveAddress": "${swap.receiveAddress ?? "null"}", "refundAddress": "${swap.refundAddress ?? "null"}", "refundTxid": "${swap.refundTxid ?? "null"}", "sendTxid": "${swap.sendTxId ?? "null"}", "receiveTxid": "${swap.receiveTxId ?? "null"}", "creationTime": "${swap.creationTime.toIso8601String()}", "completionTime": "${swap.completionTime?.toIso8601String() ?? "null"}", "fees": ${swap.fees != null ? '{"boltzFee": ${swap.fees!.boltzFee ?? "null"}, "lockupFee": ${swap.fees!.lockupFee ?? "null"}, "claimFee": ${swap.fees!.claimFee ?? "null"}, "serverNetworkFees": ${swap.fees!.serverNetworkFees ?? "null"}}' : "null"}}, "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
       if (swap.refundTxid != null) {

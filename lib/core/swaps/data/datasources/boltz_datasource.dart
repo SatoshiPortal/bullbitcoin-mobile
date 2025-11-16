@@ -768,15 +768,15 @@ class BoltzDatasource {
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
-    log.info(
+    log.fine(
       '{"swapId": "$swapId", "function": "refundLbtcToBtcChainSwap", "action": "called_with_params", "params": {"swapId": "$swapId", "refundLiquidAddress": "$refundLiquidAddress", "absoluteFees": $absoluteFees, "tryCooperate": $tryCooperate}, "timestamp": "${DateTime.now().toIso8601String()}"}',
     );
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
-      log.info(
+      log.fine(
         '{"swapId": "$swapId", "function": "refundLbtcToBtcChainSwap", "action": "fetched_chainSwap", "chainSwap": $chainSwap, "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
-      log.info(
+      log.fine(
         '{"swapId": "$swapId", "function": "refundLbtcToBtcChainSwap", "chainSwapDetails": {"id": "${chainSwap.id}", "scriptAddress": "${chainSwap.scriptAddress}", "outAmount": "${chainSwap.outAmount}", "outAmountInt": ${chainSwap.outAmount.toInt()}}, "timestamp": "${DateTime.now().toIso8601String()}"}',
       );
       return await chainSwap.refund(
