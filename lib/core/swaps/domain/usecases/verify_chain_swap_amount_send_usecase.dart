@@ -29,10 +29,6 @@ class VerifyChainSwapAmountSendUsecase {
           'Amount mismatch: expected ${swap.paymentAmount} sats, but transaction sends $actualAmount sats to swap address',
         );
       }
-
-      log.info(
-        'Verified swap amount: $actualAmount sats matches expected ${swap.paymentAmount} sats',
-      );
     } catch (e) {
       if (e is SwapCreationException) {
         rethrow;

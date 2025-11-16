@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 
 class BoltzSwapRepository {
   final BoltzDatasource _boltz;
@@ -318,9 +317,6 @@ class BoltzSwapRepository {
     required int absoluteFees,
     bool cooperate = true,
   }) async {
-    log.fine(
-      '{"swapId": "$swapId", "function": "refundLiquidToBitcoinSwap", "action": "called_with_params", "liquidRefundAddress": "$liquidRefundAddress", "absoluteFees": $absoluteFees, "cooperate": $cooperate, "timestamp": "${DateTime.now().toIso8601String()}"}',
-    );
     final signedTxHex = await _boltz.refundLbtcToBtcChainSwap(
       swapId: swapId,
       refundLiquidAddress: liquidRefundAddress,
@@ -540,11 +536,6 @@ class BoltzSwapRepository {
     required List<String> swapIds,
   }) async {
     final uniqueSwapIds = swapIds.toSet().toList();
-    final hasDuplicates = swapIds.length != uniqueSwapIds.length;
-
-    log.info(
-      '{"function": "reinitializeStreamWithSwaps", "inputCount": ${swapIds.length}, "hasDuplicates": $hasDuplicates, "uniqueCount": ${uniqueSwapIds.length}, "swapIds": ${uniqueSwapIds.isEmpty ? "[]" : "[${uniqueSwapIds.map((id) => '"$id"').join(",")}]"}, "timestamp": "${DateTime.now().toIso8601String()}"}',
-    );
 
     _boltz.resetStream();
     _boltz.subscribeToSwaps(uniqueSwapIds);
