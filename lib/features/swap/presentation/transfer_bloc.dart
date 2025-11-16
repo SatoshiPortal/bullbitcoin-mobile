@@ -342,11 +342,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
         if (state.fromWallet!.isLiquid) {
           final liquidWalletId = state.fromWallet!.id;
-          final isMaxSend = state.maxAmountSat == paymentAmountSat;
+          final isMaxSend = state.maxAmountSat == swap.paymentAmount;
           final psbt = await _prepareLiquidSendUsecase.execute(
             walletId: liquidWalletId,
             address: swap.paymentAddress,
-            amountSat: isMaxSend ? null : paymentAmountSat,
+            amountSat: isMaxSend ? null : swap.paymentAmount,
             networkFee: state.liquidNetworkFees!.fastest,
             drain: isMaxSend,
           );
@@ -384,12 +384,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           );
         } else {
           final bitcoinWalletId = state.fromWallet!.id;
+          final isMaxSend = state.maxAmountSat == swap.paymentAmount;
           final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase
               .execute(
                 walletId: bitcoinWalletId,
                 address: swap.paymentAddress,
-                amountSat: swap.paymentAmount,
+                amountSat: isMaxSend ? null : swap.paymentAmount,
                 networkFee: state.bitcoinNetworkFees!.fastest,
+                drain: isMaxSend,
               );
 
           // Verify the amount sent to swap address matches swap.paymentAmount
@@ -438,11 +440,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           type: SwapType.bitcoinToLiquid,
           amountSat: paymentAmountSat,
         );
+        final isMaxSend = state.maxAmountSat == swap.paymentAmount;
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: bitcoinWalletId,
           address: swap.paymentAddress,
-          amountSat: swap.paymentAmount,
+          amountSat: isMaxSend ? null : swap.paymentAmount,
           networkFee: state.bitcoinNetworkFees!.fastest,
+          drain: isMaxSend,
         );
 
         // Verify the amount sent to swap address matches swap.paymentAmount
