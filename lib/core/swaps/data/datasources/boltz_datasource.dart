@@ -485,8 +485,6 @@ class BoltzDatasource {
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
-      log.info(lbtcLnSwap.id);
-      log.info(lbtcLnSwap.network.toString());
       return lbtcLnSwap.refund(
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
@@ -770,8 +768,17 @@ class BoltzDatasource {
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
+    log.info(
+      '{"swapId": "$swapId", "function": "refundLbtcToBtcChainSwap", "action": "called_with_params", "params": {"swapId": "$swapId", "refundLiquidAddress": "$refundLiquidAddress", "absoluteFees": $absoluteFees, "tryCooperate": $tryCooperate}, "timestamp": "${DateTime.now().toIso8601String()}"}',
+    );
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      log.info(
+        '{"swapId": "$swapId", "function": "refundLbtcToBtcChainSwap", "action": "fetched_chainSwap", "chainSwap": $chainSwap, "timestamp": "${DateTime.now().toIso8601String()}"}',
+      );
+      log.info(
+        '{"swapId": "$swapId", "function": "refundLbtcToBtcChainSwap", "chainSwapDetails": {"id": "${chainSwap.id}", "scriptAddress": "${chainSwap.scriptAddress}", "outAmount": "${chainSwap.outAmount}", "outAmountInt": ${chainSwap.outAmount.toInt()}}, "timestamp": "${DateTime.now().toIso8601String()}"}',
+      );
       return await chainSwap.refund(
         refundAddress: refundLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),

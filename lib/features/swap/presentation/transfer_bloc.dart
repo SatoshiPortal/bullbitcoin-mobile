@@ -291,9 +291,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
               ? int.parse(event.amount)
               : ConvertAmount.btcToSats(double.parse(event.amount));
 
-      final isMaxSend =
-          state.maxAmountSat != null && inputAmountSat == state.maxAmountSat;
-
       int paymentAmountSat = inputAmountSat;
       if (state.receiveExactAmount) {
         final swapFees = state.swapFees;
@@ -345,6 +342,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
         if (state.fromWallet!.isLiquid) {
           final liquidWalletId = state.fromWallet!.id;
+          final isMaxSend = state.maxAmountSat == paymentAmountSat;
           final psbt = await _prepareLiquidSendUsecase.execute(
             walletId: liquidWalletId,
             address: swap.paymentAddress,
@@ -492,10 +490,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           type: SwapType.liquidToBitcoin,
           amountSat: paymentAmountSat,
         );
+        final isMaxSend = state.maxAmountSat == swap.paymentAmount;
         final psbt = await _prepareLiquidSendUsecase.execute(
           walletId: liquidWalletId,
           address: swap.paymentAddress,
-          amountSat: isMaxSend ? null : paymentAmountSat,
+          amountSat: isMaxSend ? null : swap.paymentAmount,
           networkFee: state.liquidNetworkFees!.fastest,
           drain: isMaxSend,
         );
