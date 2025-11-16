@@ -96,7 +96,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
                   );
                 },
                 title: BBText(
-                  'I confirm that I am not being asked asked to buy Bitcoin by someone else.',
+                  'I confirm that I am not being asked to buy Bitcoin by someone else.',
                   style: theme.textTheme.bodyLarge,
                 ),
                 controlAffinity: ListTileControlAffinity.leading,
