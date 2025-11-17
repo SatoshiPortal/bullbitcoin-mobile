@@ -3085,6 +3085,10 @@
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
   },
+  "testBackupTitle": "Tester son backup",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
   "backupImportanceMessage": "Sans sauvegarde, vous finirez par perdre l'accès à votre argent. Il est essentiel de faire une sauvegarde.",
   "@backupImportanceMessage": {
     "description": "Message d'avertissement critique sur l'importance de sauvegarder le portefeuille"

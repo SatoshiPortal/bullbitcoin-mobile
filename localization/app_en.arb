@@ -3085,6 +3085,10 @@
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
   },
+  "testBackupTitle": "Test your wallet backup",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
   "backupImportanceMessage": "Without a backup, you will eventually lose access to your money. It is critically important to do a backup.",
   "@backupImportanceMessage": {
     "description": "Critical warning message about the importance of backing up the wallet"

@@ -118,7 +118,9 @@ class _StatusRow extends StatelessWidget {
         Text(label, style: context.font.bodyMedium),
         const Spacer(),
         Text(
-          isTested ? context.loc.backupSettingsTested : context.loc.backupSettingsNotTested,
+          isTested
+              ? context.loc.backupSettingsTested
+              : context.loc.backupSettingsNotTested,
           style: context.font.bodyMedium?.copyWith(
             color:
                 isTested ? context.colour.inverseSurface : context.colour.error,
@@ -138,8 +140,8 @@ class _TestBackupButton extends StatelessWidget {
       label: context.loc.backupSettingsTestBackup,
       onPressed:
           () => context.pushNamed(
-            BackupSettingsSubroute.testbackupOptions.name,
-            extra: false,
+            BackupSettingsSubroute.backupOptions.name,
+            extra: BackupSettingsFlow.test,
           ),
       borderColor: context.colour.secondary,
       outlined: true,
@@ -157,7 +159,10 @@ class _StartBackupButton extends StatelessWidget {
     return BBButton.big(
       label: context.loc.backupSettingsStartBackup,
       onPressed:
-          () => context.pushNamed(BackupSettingsSubroute.backupOptions.name),
+          () => context.pushNamed(
+            BackupSettingsSubroute.backupOptions.name,
+            extra: BackupSettingsFlow.backup,
+          ),
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
     );

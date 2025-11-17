@@ -5,17 +5,19 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_option_card.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
-import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
+import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/how_to_decide.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class BackupOptionsScreen extends StatefulWidget {
-  const BackupOptionsScreen({super.key});
+  final BackupSettingsFlow flow;
+  const BackupOptionsScreen({super.key, required this.flow});
 
   @override
   State<BackupOptionsScreen> createState() => _BackupOptionsScreenState();
@@ -24,14 +26,15 @@ class BackupOptionsScreen extends StatefulWidget {
 class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
   @override
   Widget build(BuildContext context) {
+    final title = switch (widget.flow) {
+      BackupSettingsFlow.backup => context.loc.backupWalletTitle,
+      BackupSettingsFlow.test => context.loc.testBackupTitle,
+    };
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          onBack: () => context.pop(),
-          title: context.loc.backupWalletTitle,
-        ),
+        flexibleSpace: TopBar(onBack: () => context.pop(), title: title),
       ),
       body: SafeArea(
         child: Padding(
@@ -80,10 +83,16 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                 title: context.loc.backupWalletPhysicalBackupTitle,
                 description: context.loc.backupWalletPhysicalBackupDescription,
                 tag: context.loc.backupWalletPhysicalBackupTag,
-                onTap:
-                    () => context.pushNamed(
-                      BackupWalletSubroute.physicalCheckList.name,
-                    ),
+                onTap: () {
+                  context.pushNamed(
+                    TestWalletBackupRoute.testPhysicalBackupFlow.name,
+                    extra: switch (widget.flow) {
+                      BackupSettingsFlow.backup =>
+                        TestPhysicalBackupFlow.backup,
+                      BackupSettingsFlow.test => TestPhysicalBackupFlow.verify,
+                    },
+                  );
+                },
               ),
               const Gap(16),
               GestureDetector(
