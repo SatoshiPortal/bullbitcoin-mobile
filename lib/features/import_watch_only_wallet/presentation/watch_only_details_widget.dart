@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -172,6 +173,12 @@ class _XpubDetailsWidget extends StatelessWidget {
           ),
           const Gap(24),
         ] else ...[
+          InfoCard(
+            title: context.loc.importWatchOnlyDisclaimerTitle,
+            description: context.loc.importWatchOnlyDisclaimerDescription,
+            bgColor: context.colour.tertiary.withValues(alpha: 0.1),
+            tagColor: context.colour.onTertiary,
+          ),
           SizedBox(
             width: 260,
             child: DropdownButtonFormField<satoshifier.Derivation>(
