@@ -100,5 +100,4 @@ app.*.map.json
 today.md
 
 CLAUDE.md
-.claude/
 .zed/
