@@ -1642,6 +1642,238 @@
   "@payOrderDetails": {
     "description": "Titre de l'écran des détails de commande SINPE"
   },
+  "paySinpeMonto": "Montant",
+  "@paySinpeMonto": {
+    "description": "Libellé pour le montant dans les détails de commande SINPE"
+  },
+  "paySinpeNumeroOrden": "Numéro de commande",
+  "@paySinpeNumeroOrden": {
+    "description": "Libellé pour le numéro de commande dans les détails SINPE"
+  },
+  "paySinpeNumeroComprobante": "Numéro de référence",
+  "@paySinpeNumeroComprobante": {
+    "description": "Libellé pour le numéro de référence dans les détails SINPE"
+  },
+  "paySinpeBeneficiario": "Bénéficiaire",
+  "@paySinpeBeneficiario": {
+    "description": "Libellé pour le bénéficiaire dans les détails SINPE"
+  },
+  "paySinpeOrigen": "Origine",
+  "@paySinpeOrigen": {
+    "description": "Libellé pour l'origine dans les détails SINPE"
+  },
+  "payNotAvailable": "N/D",
+  "@payNotAvailable": {
+    "description": "Texte pour information non disponible"
+  },
+  "payContinue": "Continuer",
+  "@payContinue": {
+    "description": "Libellé du bouton pour continuer"
+  },
+  "paySelectNetwork": "Sélectionner le réseau",
+  "@paySelectNetwork": {
+    "description": "Titre de la barre d'application pour l'écran de sélection de réseau"
+  },
+  "payHowToPayInvoice": "Comment souhaitez-vous payer cette facture?",
+  "@payHowToPayInvoice": {
+    "description": "Question pour sélectionner le réseau de paiement"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Option pour le paiement Bitcoin on-chain"
+  },
+  "payLightningNetwork": "Lightning Network",
+  "@payLightningNetwork": {
+    "description": "Option pour le paiement Lightning Network"
+  },
+  "payLiquidNetwork": "Liquid Network",
+  "@payLiquidNetwork": {
+    "description": "Option pour le paiement Liquid Network"
+  },
+  "payAboveMaxAmount": "Vous essayez de payer un montant supérieur au montant maximum pouvant être payé avec ce portefeuille.",
+  "@payAboveMaxAmount": {
+    "description": "Message d'erreur lorsque le montant de paiement dépasse le maximum"
+  },
+  "payBelowMinAmount": "Vous essayez de payer un montant inférieur au montant minimum pouvant être payé avec ce portefeuille.",
+  "@payBelowMinAmount": {
+    "description": "Message d'erreur lorsque le montant de paiement est inférieur au minimum"
+  },
+  "payNotAuthenticated": "Vous n'êtes pas authentifié. Veuillez vous connecter pour continuer.",
+  "@payNotAuthenticated": {
+    "description": "Message d'erreur lorsque l'utilisateur n'est pas authentifié"
+  },
+  "payOrderNotFound": "La commande de paiement n'a pas été trouvée. Veuillez réessayer.",
+  "@payOrderNotFound": {
+    "description": "Message d'erreur lorsque la commande de paiement n'est pas trouvée"
+  },
+  "payOrderAlreadyConfirmed": "Cette commande de paiement a déjà été confirmée.",
+  "@payOrderAlreadyConfirmed": {
+    "description": "Message d'erreur lorsque la commande de paiement est déjà confirmée"
+  },
+  "payPaymentInProgress": "Paiement en cours!",
+  "@payPaymentInProgress": {
+    "description": "Titre pour l'écran de paiement en cours"
+  },
+  "payPaymentInProgressDescription": "Votre paiement a été initié et le destinataire recevra les fonds après que votre transaction reçoive 1 confirmation on-chain.",
+  "@payPaymentInProgressDescription": {
+    "description": "Description pour le paiement en cours"
+  },
+  "payInvalidState": "État invalide",
+  "@payInvalidState": {
+    "description": "Message d'erreur pour un état invalide"
+  },
+  "payPleasePayInvoice": "Veuillez payer cette facture",
+  "@payPleasePayInvoice": {
+    "description": "Instruction pour payer la facture"
+  },
+  "payPriceRefreshIn": "Le prix sera actualisé dans ",
+  "@payPriceRefreshIn": {
+    "description": "Texte avant le compte à rebours"
+  },
+  "payFor": "Pour",
+  "@payFor": {
+    "description": "Libellé pour la section d'informations du destinataire"
+  },
+  "payRecipient": "Destinataire",
+  "@payRecipient": {
+    "description": "Libellé pour le destinataire"
+  },
+  "payAmount": "Montant",
+  "@payAmount": {
+    "description": "Libellé pour le montant"
+  },
+  "payFee": "Frais",
+  "@payFee": {
+    "description": "Libellé pour les frais"
+  },
+  "payNetwork": "Réseau",
+  "@payNetwork": {
+    "description": "Libellé pour le réseau"
+  },
+  "payViewRecipient": "Voir le destinataire",
+  "@payViewRecipient": {
+    "description": "Bouton pour voir les détails du destinataire"
+  },
+  "payOpenInvoice": "Ouvrir la facture",
+  "@payOpenInvoice": {
+    "description": "Bouton pour ouvrir la facture"
+  },
+  "payCopied": "Copié!",
+  "@payCopied": {
+    "description": "Message de succès après la copie"
+  },
+  "payPayee": "Bénéficiaire",
+  "@payPayee": {
+    "description": "Libellé pour le bénéficiaire dans le paiement de facture"
+  },
+  "payAccount": "Compte",
+  "@payAccount": {
+    "description": "Libellé pour les informations de compte"
+  },
+  "payAllCountries": "Tous les pays",
+  "@payAllCountries": {
+    "description": "Option de filtre pour tous les pays"
+  },
+  "payAllTypes": "Tous les types",
+  "@payAllTypes": {
+    "description": "Option de filtre pour tous les types"
+  },
+  "paySelectRecipient": "Sélectionner le destinataire",
+  "@paySelectRecipient": {
+    "description": "Titre de la barre d'application pour l'écran de sélection du destinataire"
+  },
+  "payWhoAreYouPaying": "Qui payez-vous?",
+  "@payWhoAreYouPaying": {
+    "description": "Question pour la sélection du destinataire"
+  },
+  "payNewRecipients": "Nouveaux destinataires",
+  "@payNewRecipients": {
+    "description": "Libellé de l'onglet pour les nouveaux destinataires"
+  },
+  "payMyFiatRecipients": "Mes destinataires fiat",
+  "@payMyFiatRecipients": {
+    "description": "Libellé de l'onglet pour les destinataires fiat enregistrés"
+  },
+  "payConfirmPayment": "Confirmer le paiement",
+  "@payConfirmPayment": {
+    "description": "Titre de l'écran de confirmation de paiement"
+  },
+  "payRecipientDetails": "Détails du destinataire",
+  "@payRecipientDetails": {
+    "description": "Libellé pour la section des détails du destinataire"
+  },
+  "payPayinAmount": "Montant à payer",
+  "@payPayinAmount": {
+    "description": "Libellé pour le montant à payer"
+  },
+  "payExchangeRate": "Taux de change",
+  "@payExchangeRate": {
+    "description": "Libellé pour le taux de change"
+  },
+  "payPayFromWallet": "Payer depuis le portefeuille",
+  "@payPayFromWallet": {
+    "description": "Libellé pour la sélection du portefeuille"
+  },
+  "payInstantPayments": "Paiements instantanés",
+  "@payInstantPayments": {
+    "description": "Description pour le portefeuille Lightning"
+  },
+  "paySecureBitcoinWallet": "Portefeuille Bitcoin sécurisé",
+  "@paySecureBitcoinWallet": {
+    "description": "Description pour le portefeuille Bitcoin standard"
+  },
+  "payFeePriority": "Priorité des frais",
+  "@payFeePriority": {
+    "description": "Libellé pour le paramètre de priorité des frais"
+  },
+  "payFastest": "Le plus rapide",
+  "@payFastest": {
+    "description": "Option de priorité des frais la plus rapide"
+  },
+  "payNetworkFees": "Frais de réseau",
+  "@payNetworkFees": {
+    "description": "Libellé pour les frais de réseau"
+  },
+  "payCalculating": "Calcul en cours...",
+  "@payCalculating": {
+    "description": "Texte d'état pendant le calcul des frais"
+  },
+  "payAdvancedSettings": "Paramètres avancés",
+  "@payAdvancedSettings": {
+    "description": "Libellé du bouton pour les paramètres avancés"
+  },
+  "paySelectWallet": "Sélectionner le portefeuille",
+  "@paySelectWallet": {
+    "description": "Titre de la barre d'application pour l'écran de sélection du portefeuille"
+  },
+  "payWhichWallet": "De quel portefeuille souhaitez-vous payer?",
+  "@payWhichWallet": {
+    "description": "Question pour la sélection du portefeuille"
+  },
+  "payExternalWallet": "Portefeuille externe",
+  "@payExternalWallet": {
+    "description": "Option pour le paiement depuis un portefeuille externe"
+  },
+  "payExternalWalletDescription": "Payer depuis un autre portefeuille Bitcoin",
+  "@payExternalWalletDescription": {
+    "description": "Description pour l'option de portefeuille externe"
+  },
+  "payInsufficientBalance": "Solde insuffisant dans le portefeuille sélectionné pour compléter cette commande de paiement.",
+  "@payInsufficientBalance": {
+    "description": "Message d'erreur pour solde insuffisant"
+  },
+  "payAdvancedOptions": "Options avancées",
+  "@payAdvancedOptions": {
+    "description": "Titre pour le panneau des options avancées"
+  },
+  "payRbfActivated": "Replace-by-fee activé",
+  "@payRbfActivated": {
+    "description": "Libellé pour le bouton RBF"
+  },
+  "paySelectCoinsManually": "Sélectionner les pièces manuellement",
+  "@paySelectCoinsManually": {
+    "description": "Libellé pour la sélection manuelle des pièces"
+  },
   "transactionTitle": "Transactions",
   "@transactionTitle": {
     "description": "Titre de l'écran des transactions"

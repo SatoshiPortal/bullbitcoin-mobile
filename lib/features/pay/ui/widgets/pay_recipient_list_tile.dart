@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 
 class PayRecipientListTile extends StatelessWidget {
@@ -91,7 +92,7 @@ class PayRecipientListTile extends StatelessWidget {
             lastname,
             isCorporate,
             corporateName,
-          ) => _buildInfoRow(context, 'Email', email),
+          ) => _buildInfoRow(context, context.loc.payEmail, email),
       billPaymentCad:
           (
             recipientId,
@@ -110,7 +111,7 @@ class PayRecipientListTile extends StatelessWidget {
             corporateName,
           ) => _buildInfoRow(
             context,
-            'Payee',
+            context.loc.payPayee,
             payeeName ?? payeeCode ?? payeeAccountNumber,
           ),
       bankTransferCad:
@@ -140,7 +141,7 @@ class PayRecipientListTile extends StatelessWidget {
             corporateName,
           ) => _buildInfoRow(
             context,
-            'Account',
+            context.loc.payAccount,
             '$institutionNumber-$transitNumber-$accountNumber',
           ),
       sepaEur:
