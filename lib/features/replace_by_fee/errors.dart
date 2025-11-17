@@ -1,21 +1,22 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/material.dart';
 
 class ReplaceByFeeError extends BullException {
   ReplaceByFeeError(super.message);
 }
 
 class NoFeeRateSelectedError extends ReplaceByFeeError {
-  NoFeeRateSelectedError() : super('Please select a fee rate');
+  NoFeeRateSelectedError(BuildContext context)
+      : super(context.loc.replaceByFeeErrorNoFeeRateSelected);
 }
 
 class TransactionAlreadyConfirmedError extends ReplaceByFeeError {
-  TransactionAlreadyConfirmedError()
-    : super('The original transaction has been confirmed');
+  TransactionAlreadyConfirmedError(BuildContext context)
+      : super(context.loc.replaceByFeeErrorTransactionConfirmed);
 }
 
 class FeeRateTooLowError extends ReplaceByFeeError {
-  FeeRateTooLowError()
-    : super(
-        'You need to increase the fee rate by at least 1 sat/vbyte compared to the original transaction',
-      );
+  FeeRateTooLowError(BuildContext context)
+      : super(context.loc.replaceByFeeErrorFeeRateTooLow);
 }

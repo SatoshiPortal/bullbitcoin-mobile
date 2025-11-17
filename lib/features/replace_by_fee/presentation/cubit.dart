@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:bb_mobile/features/replace_by_fee/errors.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
@@ -44,9 +45,15 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
 
   void reset() => emit(const ReplaceByFeeState());
 
-  Future<void> broadcast() async {
+  Future<void> broadcast(BuildContext? context) async {
     try {
-      if (state.newFeeRate == null) throw NoFeeRateSelectedError();
+      if (state.newFeeRate == null) {
+        if (context != null) {
+          throw NoFeeRateSelectedError(context);
+        } else {
+          throw ReplaceByFeeError('Please select a fee rate');
+        }
+      }
 
       final psbt = await bumpFeeUsecase.execute(
         walletId: originalTransaction.walletId,

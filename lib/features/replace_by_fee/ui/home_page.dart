@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -19,7 +20,7 @@ class ReplaceByFeeHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Replace by fee'),
+        title: Text(context.loc.replaceByFeeScreenTitle),
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: const Icon(Icons.arrow_back),
@@ -59,10 +60,10 @@ class ReplaceByFeeHomePage extends StatelessWidget {
                   ],
 
                   BBButton.big(
-                    label: 'Broadcast',
-                    onPressed: cubit.broadcast,
-                    bgColor: context.theme.colorScheme.secondary,
-                    textColor: context.theme.colorScheme.onSecondary,
+                    label: context.loc.replaceByFeeBroadcastButton,
+                    onPressed: () => cubit.broadcast(context),
+                    bgColor: context.colour.secondary,
+                    textColor: context.colour.onSecondary,
                   ),
                 ],
               ),
@@ -88,10 +89,10 @@ class ReplaceByFeeHomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            BBText('Original transaction', style: context.font.headlineLarge),
+            BBText(context.loc.replaceByFeeOriginalTransactionTitle, style: context.font.headlineLarge),
             const Gap(16),
             BBText(
-              '${originalFeeRate.toStringAsFixed(1)} sat/vbyte',
+              context.loc.replaceByFeeFeeRateDisplay(originalFeeRate.toStringAsFixed(1)),
               style: context.font.labelMedium,
             ),
           ],

@@ -24,10 +24,10 @@ class BumpFeeUsecase {
     } catch (e) {
       log.severe('$BumpFeeUsecase: $e');
       if (e is TransactionConfirmedException) {
-        throw TransactionAlreadyConfirmedError();
+        throw ReplaceByFeeError('The original transaction has been confirmed');
       }
       if (e is FeeRateTooLowException) {
-        throw FeeRateTooLowError();
+        throw ReplaceByFeeError('You need to increase the fee rate by at least 1 sat/vbyte compared to the original transaction');
       }
       rethrow;
     }
