@@ -114,9 +114,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.severe('$OnTorInitialization failed: $e');
       emit(
         state.copyWith(
-          error: event.context != null
-            ? BullError(e.toString())
-            : BullError(e.toString()),
+          error: BullError(e.toString()),
           keyServerStatus: KeyServerStatus.offline,
         ),
       );
@@ -170,9 +168,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.severe('$OnServerCheck: $e');
       emit(
         state.copyWith(
-          error: event.context != null
-            ? BullError(e.toString())
-            : BullError(e.toString()),
+          error: BullError(e.toString()),
           keyServerStatus: KeyServerStatus.offline,
         ),
       );
@@ -242,9 +238,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.fine('Vault provider ${event.provider.name} selected');
     } catch (e) {
       log.severe('$OnVaultProviderSelection: $e');
-      emit(state.copyWith(error: event.context != null
-        ? BullError(e.toString())
-        : BullError(e.toString())));
+      emit(state.copyWith(error: BullError(e.toString())));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
