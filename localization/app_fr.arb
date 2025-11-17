@@ -3119,24 +3119,24 @@
   "@gotItButton": {
     "description": "Libellé du bouton pour confirmer la compréhension du test réussi"
   },
-  "legacySeedsTitle": "Graines héritées",
-  "@legacySeedsTitle": {
+  "legacySeedViewScreenTitle": "Graines héritées",
+  "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "noLegacySeedsFound": "Aucune seed héritée trouvée.",
-  "@noLegacySeedsFound": {
+  "legacySeedViewNoSeedsMessage": "Aucune seed héritée trouvée.",
+  "@legacySeedViewNoSeedsMessage": {
     "description": "Message affiché lorsqu'aucune seed héritée n'est trouvée"
   },
-  "mnemonicLabel": "Mnémonique",
-  "@mnemonicLabel": {
+  "legacySeedViewMnemonicLabel": "Mnémonique",
+  "@legacySeedViewMnemonicLabel": {
     "description": "Libellé pour les mots mnémoniques"
   },
-  "passphrasesLabel": "Phrases de passe :",
-  "@passphrasesLabel": {
+  "legacySeedViewPassphrasesLabel": "Phrases de passe :",
+  "@legacySeedViewPassphrasesLabel": {
     "description": "Libellé pour la section des phrases de passe"
   },
-  "emptyPassphrase": "(vide)",
-  "@emptyPassphrase": {
+  "legacySeedViewEmptyPassphrase": "(vide)",
+  "@legacySeedViewEmptyPassphrase": {
     "description": "Texte affiché pour une phrase de passe vide"
   },
   "enterBackupKeyManuallyTitle": "Entrer la clé de sauvegarde manuellement",
@@ -7239,18 +7239,6 @@
         "type": "int"
       }
     }
-  },
-  "legacySeedsNoSeeds": "Aucune graine héritée trouvée.",
-  "@legacySeedsNoSeeds": {
-    "description": "Empty state message when no legacy seeds exist"
-  },
-  "legacySeedsMnemonic": "Mnémonique",
-  "@legacySeedsMnemonic": {
-    "description": "Label for mnemonic display in legacy seed card"
-  },
-  "legacySeedsLoading": "Chargement des graines héritées...",
-  "@legacySeedsLoading": {
-    "description": "Loading message while fetching legacy seeds"
   },
   "broadcastSignedTxTitle": "Diffuser la transaction",
   "@broadcastSignedTxTitle": {

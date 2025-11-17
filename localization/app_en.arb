@@ -3119,24 +3119,24 @@
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
   },
-  "legacySeedsTitle": "Legacy Seeds",
-  "@legacySeedsTitle": {
+  "legacySeedViewScreenTitle": "Legacy Seeds",
+  "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "noLegacySeedsFound": "No legacy seeds found.",
-  "@noLegacySeedsFound": {
+  "legacySeedViewNoSeedsMessage": "No legacy seeds found.",
+  "@legacySeedViewNoSeedsMessage": {
     "description": "Message shown when no legacy seeds are found"
   },
-  "mnemonicLabel": "Mnemonic",
-  "@mnemonicLabel": {
-    "description": "Label for mnemonic words"
+  "legacySeedViewMnemonicLabel": "Mnemonic",
+  "@legacySeedViewMnemonicLabel": {
+    "description": "Label for mnemonic words display"
   },
-  "passphrasesLabel": "Passphrases:",
-  "@passphrasesLabel": {
+  "legacySeedViewPassphrasesLabel": "Passphrases:",
+  "@legacySeedViewPassphrasesLabel": {
     "description": "Label for passphrases section"
   },
-  "emptyPassphrase": "(empty)",
-  "@emptyPassphrase": {
+  "legacySeedViewEmptyPassphrase": "(empty)",
+  "@legacySeedViewEmptyPassphrase": {
     "description": "Text shown for empty passphrase"
   },
   "enterBackupKeyManuallyTitle": "Enter backup key manually",
@@ -7239,18 +7239,6 @@
         "type": "int"
       }
     }
-  },
-  "legacySeedsNoSeeds": "No legacy seeds found.",
-  "@legacySeedsNoSeeds": {
-    "description": "Empty state message when no legacy seeds exist"
-  },
-  "legacySeedsMnemonic": "Mnemonic",
-  "@legacySeedsMnemonic": {
-    "description": "Label for mnemonic display in legacy seed card"
-  },
-  "legacySeedsLoading": "Loading legacy seeds...",
-  "@legacySeedsLoading": {
-    "description": "Loading message while fetching legacy seeds"
   },
   "broadcastSignedTxTitle": "Broadcast Transaction",
   "@broadcastSignedTxTitle": {
