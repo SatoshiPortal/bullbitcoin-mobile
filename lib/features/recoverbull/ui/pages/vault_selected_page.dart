@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
@@ -28,7 +29,7 @@ class VaultSelectedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Vault Selected'),
+        title: Text(context.loc.recoverbullVaultSelected),
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 20),
@@ -41,7 +42,7 @@ class VaultSelectedPage extends StatelessWidget {
         child: Column(
           children: [
             BBText(
-              'Your vault was successfully imported',
+              context.loc.recoverbullVaultImportedSuccess,
               textAlign: TextAlign.left,
               style: context.font.bodySmall,
             ),
@@ -69,7 +70,7 @@ class VaultSelectedPage extends StatelessWidget {
             const Spacer(),
             if (provider == VaultProvider.googleDrive) ...[
               BBButton.big(
-                label: 'See more vaults',
+                label: context.loc.recoverbullSeeMoreVaults,
                 onPressed:
                     () => context.pushNamed(
                       RecoverBullGoogleDriveRoute.listDriveVaults.name,
@@ -86,7 +87,7 @@ class VaultSelectedPage extends StatelessWidget {
                 bottom: MediaQuery.of(context).size.height * 0.05,
               ),
               child: BBButton.big(
-                label: 'Decrypt vault',
+                label: context.loc.recoverbullDecryptVault,
                 onPressed:
                     () => context.pushNamed(
                       RecoverBullRoute.recoverbullFlows.name,

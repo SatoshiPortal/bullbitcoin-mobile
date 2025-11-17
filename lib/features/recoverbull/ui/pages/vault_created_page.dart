@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/status_screen.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
@@ -10,11 +11,10 @@ class VaultCreatedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StatusScreen(
-      title: 'Encrypted Vault created!',
-      description:
-          "Now let's test your backup to make sure everything was done properly.",
+      title: context.loc.recoverbullEncryptedVaultCreated,
+      description: context.loc.recoverbullTestBackupDescription,
       isLoading: false,
-      buttonText: 'Test Recovery',
+      buttonText: context.loc.recoverbullTestRecovery,
       onTap:
           () => context.goNamed(
             RecoverBullRoute.recoverbullFlows.name,

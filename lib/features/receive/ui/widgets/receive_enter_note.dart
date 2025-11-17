@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -51,7 +52,7 @@ class ReceiveEnterNote extends StatelessWidget {
             children: [
               const Gap(22),
               const Spacer(),
-              BBText('Add Label', style: context.font.headlineMedium),
+              BBText(context.loc.receiveAddLabel, style: context.font.headlineMedium),
               const Spacer(),
               IconButton(
                 onPressed: () {
@@ -64,7 +65,7 @@ class ReceiveEnterNote extends StatelessWidget {
           ),
           const Gap(33),
           BBInputText(
-            hint: 'Note',
+            hint: context.loc.receiveNotePlaceholder,
             hintStyle: context.font.bodyLarge?.copyWith(
               color: context.colour.surfaceContainer,
             ),
@@ -86,7 +87,7 @@ class ReceiveEnterNote extends StatelessWidget {
           const Gap(25),
           const SizedBox(height: 16),
           BBButton.big(
-            label: 'Save',
+            label: context.loc.receiveSave,
             disabled: error != null || currentNote.trim().isEmpty,
             onPressed: () {
               final validation = NoteValidator.validate(currentNote);

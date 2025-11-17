@@ -68,6 +68,79 @@
   "@settingsSecurityPinTitle": {
     "description": "Titre de la section du code PIN de sécurité dans le menu des paramètres"
   },
+  "pinCodeAuthentication": "Authentification",
+  "@pinCodeAuthentication": {
+    "description": "Titre de la barre d'application pour les écrans d'authentification par code PIN"
+  },
+  "pinCodeCreateTitle": "Créer un nouveau code PIN",
+  "@pinCodeCreateTitle": {
+    "description": "Titre pour la création d'un nouveau code PIN"
+  },
+  "pinCodeCreateDescription": "Votre code PIN protège l'accès à votre portefeuille et à vos paramètres. Gardez-le mémorisable.",
+  "@pinCodeCreateDescription": {
+    "description": "Description expliquant le but du code PIN"
+  },
+  "pinCodeMinLengthError": "Le code PIN doit contenir au moins {minLength} chiffres",
+  "@pinCodeMinLengthError": {
+    "description": "Message d'erreur lorsque le code PIN est trop court",
+    "placeholders": {
+      "minLength": {
+        "type": "String"
+      }
+    }
+  },
+  "pinCodeConfirmTitle": "Confirmer le nouveau code PIN",
+  "@pinCodeConfirmTitle": {
+    "description": "Titre pour confirmer le nouveau code PIN"
+  },
+  "pinCodeMismatchError": "Les codes PIN ne correspondent pas",
+  "@pinCodeMismatchError": {
+    "description": "Message d'erreur lorsque la confirmation du code PIN ne correspond pas"
+  },
+  "pinCodeSecurityPinTitle": "Code PIN de sécurité",
+  "@pinCodeSecurityPinTitle": {
+    "description": "Titre de la barre d'application pour l'écran des paramètres du code PIN"
+  },
+  "pinCodeManageTitle": "Gérer votre code PIN de sécurité",
+  "@pinCodeManageTitle": {
+    "description": "Titre d'en-tête pour la section de gestion du code PIN"
+  },
+  "pinCodeChangeButton": "Modifier le code PIN",
+  "@pinCodeChangeButton": {
+    "description": "Libellé du bouton pour modifier le code PIN existant"
+  },
+  "pinCodeCreateButton": "Créer un code PIN",
+  "@pinCodeCreateButton": {
+    "description": "Libellé du bouton pour créer un nouveau code PIN"
+  },
+  "pinCodeRemoveButton": "Supprimer le code PIN de sécurité",
+  "@pinCodeRemoveButton": {
+    "description": "Libellé du bouton pour supprimer le code PIN de sécurité"
+  },
+  "pinCodeContinue": "Continuer",
+  "@pinCodeContinue": {
+    "description": "Libellé du bouton pour continuer avec la saisie du code PIN"
+  },
+  "pinCodeConfirm": "Confirmer",
+  "@pinCodeConfirm": {
+    "description": "Libellé du bouton pour confirmer la saisie du code PIN"
+  },
+  "pinCodeLoading": "Chargement",
+  "@pinCodeLoading": {
+    "description": "Titre de l'écran d'état lors du chargement des paramètres du code PIN"
+  },
+  "pinCodeCheckingStatus": "Vérification du statut du code PIN",
+  "@pinCodeCheckingStatus": {
+    "description": "Description de l'écran d'état lors de la vérification du statut du code PIN"
+  },
+  "pinCodeProcessing": "Traitement",
+  "@pinCodeProcessing": {
+    "description": "Titre de l'écran d'état lors du traitement des modifications du code PIN"
+  },
+  "pinCodeSettingUp": "Configuration de votre code PIN",
+  "@pinCodeSettingUp": {
+    "description": "Description de l'écran d'état lors de la configuration du code PIN"
+  },
   "settingsCurrencyTitle": "Devise",
   "@settingsCurrencyTitle": {
     "description": "Titre de la section des paramètres de devise dans le menu des paramètres"
@@ -799,6 +872,71 @@
   "receiveContinue": "Continuer",
   "@receiveContinue": {
     "description": "Libellé du bouton pour continuer dans le flux de réception"
+  },
+  "receiveCopyAddressOnly": "Copier ou scanner l'adresse uniquement",
+  "@receiveCopyAddressOnly": {
+    "description": "Option pour copier ou scanner uniquement l'adresse sans le montant ou d'autres détails"
+  },
+  "receiveError": "Erreur : {error}",
+  "@receiveError": {
+    "description": "Message d'erreur générique avec détails de l'erreur",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveFeeExplanation": "Ces frais seront déduits du montant envoyé",
+  "@receiveFeeExplanation": {
+    "description": "Explication que les frais sont déduits du montant envoyé"
+  },
+  "receiveNotePlaceholder": "Note",
+  "@receiveNotePlaceholder": {
+    "description": "Texte de substitution pour le champ de saisie de note"
+  },
+  "receiveReceiveAmount": "Montant à recevoir",
+  "@receiveReceiveAmount": {
+    "description": "Libellé pour le montant qui sera reçu après les frais"
+  },
+  "receiveSendNetworkFee": "Frais de réseau d'envoi",
+  "@receiveSendNetworkFee": {
+    "description": "Libellé pour les frais de réseau sur le réseau d'envoi dans une transaction d'échange"
+  },
+  "receiveServerNetworkFees": "Frais de réseau du serveur",
+  "@receiveServerNetworkFees": {
+    "description": "Libellé pour les frais de réseau facturés par le serveur d'échange"
+  },
+  "receiveSwapId": "ID d'échange",
+  "@receiveSwapId": {
+    "description": "Libellé pour l'identifiant d'échange dans une transaction de réception"
+  },
+  "receiveTransferFee": "Frais de transfert",
+  "@receiveTransferFee": {
+    "description": "Libellé pour les frais de transfert dans une transaction de réception"
+  },
+  "receiveVerifyAddressError": "Impossible de vérifier l'adresse : Informations de portefeuille ou d'adresse manquantes",
+  "@receiveVerifyAddressError": {
+    "description": "Message d'erreur lorsque la vérification de l'adresse n'est pas possible"
+  },
+  "receiveVerifyAddressLedger": "Vérifier l'adresse sur Ledger",
+  "@receiveVerifyAddressLedger": {
+    "description": "Libellé du bouton pour vérifier une adresse sur un portefeuille matériel Ledger"
+  },
+  "receiveBitcoinConfirmationMessage": "La transaction Bitcoin prendra du temps pour être confirmée.",
+  "@receiveBitcoinConfirmationMessage": {
+    "description": "Message d'information sur le temps de confirmation de la transaction Bitcoin"
+  },
+  "receiveLiquidConfirmationMessage": "Elle sera confirmée dans quelques secondes",
+  "@receiveLiquidConfirmationMessage": {
+    "description": "Message indiquant un temps de confirmation rapide pour les transactions Liquid"
+  },
+  "receiveWaitForPayjoin": "Attendez que l'expéditeur termine la transaction payjoin",
+  "@receiveWaitForPayjoin": {
+    "description": "Instructions pour attendre l'expéditeur pendant une transaction payjoin"
+  },
+  "receivePayjoinFailQuestion": "Pas le temps d'attendre ou le payjoin a-t-il échoué du côté de l'expéditeur ?",
+  "@receivePayjoinFailQuestion": {
+    "description": "Question demandant à l'utilisateur s'il souhaite procéder sans payjoin"
   },
   "buyTitle": "Acheter du Bitcoin",
   "@buyTitle": {
@@ -6567,6 +6705,239 @@
       }
     }
   },
+  "recoverbullBalance": "Solde : {balance}",
+  "@recoverbullBalance": {
+    "description": "Label showing wallet balance during vault recovery",
+    "placeholders": {
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullCheckingConnection": "Vérification de la connexion pour RecoverBull",
+  "@recoverbullCheckingConnection": {
+    "description": "Screen title while checking connection status"
+  },
+  "recoverbullConfirm": "Confirmer",
+  "@recoverbullConfirm": {
+    "description": "Button text to confirm an action"
+  },
+  "recoverbullConfirmInput": "Confirmer {inputType}",
+  "@recoverbullConfirmInput": {
+    "description": "Label to confirm input (PIN or password)",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnected": "Connecté",
+  "@recoverbullConnected": {
+    "description": "Status label indicating successful connection"
+  },
+  "recoverbullConnecting": "Connexion en cours",
+  "@recoverbullConnecting": {
+    "description": "Status label indicating connection in progress"
+  },
+  "recoverbullConnectingTor": "Connexion au serveur de clés via Tor.\nCela peut prendre jusqu'à une minute.",
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullConnectionFailed": "Échec de la connexion",
+  "@recoverbullConnectionFailed": {
+    "description": "Status label indicating connection failure"
+  },
+  "recoverbullContinue": "Continuer",
+  "@recoverbullContinue": {
+    "description": "Button text to proceed to next step"
+  },
+  "recoverbullCreatingVault": "Création du coffre-fort chiffré",
+  "@recoverbullCreatingVault": {
+    "description": "Screen title while vault is being created"
+  },
+  "recoverbullDecryptVault": "Déchiffrer le coffre-fort",
+  "@recoverbullDecryptVault": {
+    "description": "Button text to decrypt the selected vault"
+  },
+  "recoverbullEncryptedVaultCreated": "Coffre-fort chiffré créé !",
+  "@recoverbullEncryptedVaultCreated": {
+    "description": "Success message title after vault creation"
+  },
+  "recoverbullEnterInput": "Entrez votre {inputType}",
+  "@recoverbullEnterInput": {
+    "description": "Input field label prompting for PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToDecrypt": "Veuillez entrer votre {inputType} pour déchiffrer votre coffre-fort.",
+  "@recoverbullEnterToDecrypt": {
+    "description": "Instruction to enter PIN or password for vault decryption",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToTest": "Veuillez entrer votre {inputType} pour tester votre coffre-fort.",
+  "@recoverbullEnterToTest": {
+    "description": "Instruction to enter PIN or password to test vault recovery",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToView": "Veuillez entrer votre {inputType} pour voir votre clé de coffre-fort.",
+  "@recoverbullEnterToView": {
+    "description": "Instruction to enter PIN or password to view vault key",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterVaultKeyInstead": "Entrer une clé de coffre-fort à la place",
+  "@recoverbullEnterVaultKeyInstead": {
+    "description": "Button text to switch to manual vault key entry"
+  },
+  "recoverbullErrorCheckStatusFailed": "Échec de la vérification de l'état du coffre-fort",
+  "@recoverbullErrorCheckStatusFailed": {
+    "description": "Error message when vault status check fails"
+  },
+  "recoverbullErrorConnectionFailed": "Échec de la connexion au serveur de clés cible. Veuillez réessayer plus tard !",
+  "@recoverbullErrorConnectionFailed": {
+    "description": "Error message when server connection fails"
+  },
+  "recoverbullErrorDecryptedVaultNotSet": "Le coffre-fort déchiffré n'est pas défini",
+  "@recoverbullErrorDecryptedVaultNotSet": {
+    "description": "Error when attempting operation without decrypted vault"
+  },
+  "recoverbullErrorDecryptFailed": "Échec du déchiffrement du coffre-fort",
+  "@recoverbullErrorDecryptFailed": {
+    "description": "Error message when vault decryption fails"
+  },
+  "recoverbullErrorFetchKeyFailed": "Échec de la récupération de la clé du coffre-fort depuis le serveur",
+  "@recoverbullErrorFetchKeyFailed": {
+    "description": "Error message when server key fetch fails"
+  },
+  "recoverbullErrorInvalidFlow": "Flux invalide",
+  "@recoverbullErrorInvalidFlow": {
+    "description": "Error message for invalid operation flow"
+  },
+  "recoverbullErrorMissingBytes": "Octets manquants dans la réponse Tor. Réessayez, mais si le problème persiste, il s'agit d'un problème connu pour certains appareils avec Tor.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullErrorPasswordNotSet": "Le mot de passe n'est pas défini",
+  "@recoverbullErrorPasswordNotSet": {
+    "description": "Error when attempting operation without setting password"
+  },
+  "recoverbullErrorRecoveryFailed": "Échec de la récupération du coffre-fort",
+  "@recoverbullErrorRecoveryFailed": {
+    "description": "Error message when vault recovery fails"
+  },
+  "recoverbullErrorSelectVault": "Échec de la sélection du coffre-fort",
+  "@recoverbullErrorSelectVault": {
+    "description": "Error message when vault selection fails"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "Échec : Fichier de coffre-fort créé mais clé non stockée sur le serveur",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullErrorVaultCreationFailed": "Échec de la création du coffre-fort, cela peut être le fichier ou la clé",
+  "@recoverbullErrorVaultCreationFailed": {
+    "description": "Error message when overall vault creation fails"
+  },
+  "recoverbullErrorVaultNotSet": "Le coffre-fort n'est pas défini",
+  "@recoverbullErrorVaultNotSet": {
+    "description": "Error when attempting operation without selected vault"
+  },
+  "recoverbullFailed": "Échec",
+  "@recoverbullFailed": {
+    "description": "Status label indicating operation failure"
+  },
+  "recoverbullFetchingVaultKey": "Récupération de la clé de coffre-fort",
+  "@recoverbullFetchingVaultKey": {
+    "description": "Screen title while fetching vault key from server"
+  },
+  "recoverbullFetchVaultKey": "Récupérer la clé de coffre-fort",
+  "@recoverbullFetchVaultKey": {
+    "description": "Screen title for vault key fetch screen"
+  },
+  "recoverbullGoBackEdit": "<< Retour pour modifier",
+  "@recoverbullGoBackEdit": {
+    "description": "Button text to return to previous screen for editing"
+  },
+  "recoverbullGotIt": "Compris",
+  "@recoverbullGotIt": {
+    "description": "Button text to acknowledge and dismiss message"
+  },
+  "recoverbullKeyServer": "Serveur de clés ",
+  "@recoverbullKeyServer": {
+    "description": "Label for key server connection status"
+  },
+  "recoverbullLookingForBalance": "Recherche du solde et des transactions…",
+  "@recoverbullLookingForBalance": {
+    "description": "Loading message while scanning wallet"
+  },
+  "recoverbullMemorizeWarning": "Vous devez mémoriser ce {inputType} pour récupérer l'accès à votre portefeuille. Il doit contenir au moins 6 chiffres. Si vous perdez ce {inputType}, vous ne pourrez pas récupérer votre sauvegarde.",
+  "@recoverbullMemorizeWarning": {
+    "description": "Warning message about memorizing PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullPassword": "Mot de passe",
+  "@recoverbullPassword": {
+    "description": "Label for password input type"
+  },
+  "recoverbullPasswordMismatch": "Les mots de passe ne correspondent pas",
+  "@recoverbullPasswordMismatch": {
+    "description": "Validation error when passwords don't match"
+  },
+  "recoverbullPasswordRequired": "Le mot de passe est requis",
+  "@recoverbullPasswordRequired": {
+    "description": "Validation error when password field is empty"
+  },
+  "recoverbullPasswordTooCommon": "Ce mot de passe est trop courant. Veuillez en choisir un autre",
+  "@recoverbullPasswordTooCommon": {
+    "description": "Validation error for commonly used passwords"
+  },
+  "recoverbullPasswordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+  "@recoverbullPasswordTooShort": {
+    "description": "Validation error for passwords under minimum length"
+  },
+  "recoverbullPIN": "NIP",
+  "@recoverbullPIN": {
+    "description": "Label for PIN input type"
+  },
+  "recoverbullPleaseWait": "Veuillez patienter pendant que nous établissons une connexion sécurisée...",
+  "@recoverbullPleaseWait": {
+    "description": "Message shown during connection establishment"
+  },
+  "recoverbullReenterConfirm": "Veuillez re-saisir votre {inputType} pour confirmer.",
+  "@recoverbullReenterConfirm": {
+    "description": "Instruction to re-enter PIN or password for confirmation",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullReenterRequired": "Re-saisir votre {inputType}",
+  "@recoverbullReenterRequired": {
+    "description": "Label for confirmation input field",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
   "recoverbullGoogleDriveErrorFetchFailed": "Échec de la récupération de toutes les sauvegardes Drive",
   "@recoverbullGoogleDriveErrorFetchFailed": {
     "description": "Error message when fetching drive backups fails"
@@ -6582,6 +6953,22 @@
   "recoverbullGoogleDriveScreenTitle": "Coffres-forts Google Drive",
   "@recoverbullGoogleDriveScreenTitle": {
     "description": "Screen title for Google Drive vaults management"
+  },
+  "recoverbullRecoverBullServer": "Serveur RecoverBull",
+  "@recoverbullRecoverBullServer": {
+    "description": "Label for RecoverBull server connection status"
+  },
+  "recoverbullRetry": "Réessayer",
+  "@recoverbullRetry": {
+    "description": "Button text to retry failed operation"
+  },
+  "recoverbullSecureBackup": "Sécurisez votre sauvegarde",
+  "@recoverbullSecureBackup": {
+    "description": "Screen title for backup security setup"
+  },
+  "recoverbullSeeMoreVaults": "Voir plus de coffres-forts",
+  "@recoverbullSeeMoreVaults": {
+    "description": "Button text to view additional vault options"
   },
   "recoverbullSelectRecoverWallet": "Récupérer le portefeuille",
   "@recoverbullSelectRecoverWallet": {
@@ -6654,6 +7041,75 @@
   "recoverbullSelectBackupFileNotValidError": "Le fichier de sauvegarde RecoverBull n'est pas valide",
   "@recoverbullSelectBackupFileNotValidError": {
     "description": "Error when selected file is not a valid RecoverBull backup format"
+  },
+  "recoverbullSelectVaultProvider": "Sélectionnez le fournisseur de coffre-fort",
+  "@recoverbullSelectVaultProvider": {
+    "description": "Screen title for vault provider selection"
+  },
+  "recoverbullSwitchToPassword": "Choisir un mot de passe plutôt",
+  "@recoverbullSwitchToPassword": {
+    "description": "Button text to switch from PIN to password input"
+  },
+  "recoverbullSwitchToPIN": "Choisir un NIP plutôt",
+  "@recoverbullSwitchToPIN": {
+    "description": "Button text to switch from password to PIN input"
+  },
+  "recoverbullTestBackupDescription": "Maintenant, testons votre sauvegarde pour nous assurer que tout a été fait correctement.",
+  "@recoverbullTestBackupDescription": {
+    "description": "Description message before testing backup"
+  },
+  "recoverbullTestCompletedTitle": "Test réussi !",
+  "@recoverbullTestCompletedTitle": {
+    "description": "Success title after completing backup test"
+  },
+  "recoverbullTestRecovery": "Tester la récupération",
+  "@recoverbullTestRecovery": {
+    "description": "Button text to initiate recovery test"
+  },
+  "recoverbullTestSuccessDescription": "Vous pouvez récupérer l'accès à un portefeuille Bitcoin perdu",
+  "@recoverbullTestSuccessDescription": {
+    "description": "Description shown after successful recovery test"
+  },
+  "recoverbullTorNetwork": "Réseau Tor",
+  "@recoverbullTorNetwork": {
+    "description": "Label for Tor network connection status"
+  },
+  "recoverbullTransactions": "Transactions : {count}",
+  "@recoverbullTransactions": {
+    "description": "Label showing transaction count during vault recovery",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullVaultCreatedSuccess": "Coffre-fort créé avec succès",
+  "@recoverbullVaultCreatedSuccess": {
+    "description": "Success message after vault creation"
+  },
+  "recoverbullVaultImportedSuccess": "Votre coffre-fort a été importé avec succès",
+  "@recoverbullVaultImportedSuccess": {
+    "description": "Success message after vault import"
+  },
+  "recoverbullVaultKey": "Clé de coffre-fort",
+  "@recoverbullVaultKey": {
+    "description": "Screen title and label for vault key"
+  },
+  "recoverbullVaultKeyInput": "Clé de coffre-fort",
+  "@recoverbullVaultKeyInput": {
+    "description": "Input field label for vault key entry"
+  },
+  "recoverbullVaultRecovery": "Récupération de coffre-fort",
+  "@recoverbullVaultRecovery": {
+    "description": "Screen title for vault recovery process"
+  },
+  "recoverbullVaultSelected": "Coffre-fort sélectionné",
+  "@recoverbullVaultSelected": {
+    "description": "Screen title after vault has been selected"
+  },
+  "recoverbullWaiting": "En attente",
+  "@recoverbullWaiting": {
+    "description": "Status label indicating waiting state"
   },
   "recoverbullRecoveryTitle": "Récupération du coffre-fort RecoverBull",
   "@recoverbullRecoveryTitle": {
@@ -6765,6 +7221,206 @@
   "psbtImDone": "J'ai terminé",
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
+  },
+  "psbtFlowSignTransaction": "Signer la transaction",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "psbtFlowInstructions": "Instructions",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "psbtFlowDone": "J'ai terminé",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "psbtFlowError": "Erreur : {error}",
+  "@psbtFlowError": {
+    "description": "Error message in psbt flow",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowNoPartsToDisplay": "Aucune partie à afficher",
+  "@psbtFlowNoPartsToDisplay": {
+    "description": "Message when there are no QR code parts to show"
+  },
+  "psbtFlowPartProgress": "Partie {current} de {total}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowKruxTitle": "Instructions Krux",
+  "@psbtFlowKruxTitle": {
+    "description": "Title for Krux device signing instructions"
+  },
+  "psbtFlowKeystoneTitle": "Instructions Keystone",
+  "@psbtFlowKeystoneTitle": {
+    "description": "Title for Keystone device signing instructions"
+  },
+  "psbtFlowPassportTitle": "Instructions Foundation Passport",
+  "@psbtFlowPassportTitle": {
+    "description": "Title for Foundation Passport device signing instructions"
+  },
+  "psbtFlowSeedSignerTitle": "Instructions SeedSigner",
+  "@psbtFlowSeedSignerTitle": {
+    "description": "Title for SeedSigner device signing instructions"
+  },
+  "psbtFlowSpecterTitle": "Instructions Specter",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "psbtFlowColdcardTitle": "Instructions Coldcard Q",
+  "@psbtFlowColdcardTitle": {
+    "description": "Title for Coldcard Q device signing instructions"
+  },
+  "psbtFlowJadeTitle": "Instructions PSBT Blockstream Jade",
+  "@psbtFlowJadeTitle": {
+    "description": "Title for Blockstream Jade PSBT signing instructions"
+  },
+  "psbtFlowLoginToDevice": "Connectez-vous à votre appareil {device}",
+  "@psbtFlowLoginToDevice": {
+    "description": "Instruction to login to hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowTurnOnDevice": "Allumez votre appareil {device}",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowAddPassphrase": "Ajoutez une phrase de passe si vous en avez une (optionnel)",
+  "@psbtFlowAddPassphrase": {
+    "description": "Optional instruction to add BIP39 passphrase"
+  },
+  "psbtFlowClickScan": "Cliquez sur Scanner",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "psbtFlowClickSign": "Cliquez sur Signer",
+  "@psbtFlowClickSign": {
+    "description": "Instruction to click sign button on device"
+  },
+  "psbtFlowClickPsbt": "Cliquez sur PSBT",
+  "@psbtFlowClickPsbt": {
+    "description": "Instruction to click PSBT option on device"
+  },
+  "psbtFlowLoadFromCamera": "Cliquez sur Charger depuis la caméra",
+  "@psbtFlowLoadFromCamera": {
+    "description": "Instruction to select camera load option on device"
+  },
+  "psbtFlowScanQrOption": "Sélectionnez l'option « Scanner le QR »",
+  "@psbtFlowScanQrOption": {
+    "description": "Instruction to select scan QR menu option"
+  },
+  "psbtFlowScanAnyQr": "Sélectionnez l'option « Scanner n'importe quel code QR »",
+  "@psbtFlowScanAnyQr": {
+    "description": "Instruction to select scan any QR code option"
+  },
+  "psbtFlowSignWithQr": "Cliquez sur Signer avec un code QR",
+  "@psbtFlowSignWithQr": {
+    "description": "Instruction to select QR code signing method"
+  },
+  "psbtFlowScanQrShown": "Scannez le code QR affiché dans le portefeuille Bull",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "psbtFlowTroubleScanningTitle": "Si vous avez du mal à scanner :",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "psbtFlowIncreaseBrightness": "Augmentez la luminosité de l'écran de votre appareil",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "psbtFlowMoveLaser": "Déplacez le laser rouge de haut en bas sur le code QR",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "psbtFlowMoveBack": "Essayez de reculer légèrement votre appareil",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "psbtFlowHoldSteady": "Maintenez le code QR stable et centré",
+  "@psbtFlowHoldSteady": {
+    "description": "Troubleshooting tip to hold QR code still"
+  },
+  "psbtFlowMoveCloserFurther": "Essayez de rapprocher ou d'éloigner votre appareil",
+  "@psbtFlowMoveCloserFurther": {
+    "description": "Troubleshooting tip to adjust distance"
+  },
+  "psbtFlowReviewTransaction": "Une fois la transaction importée dans votre {device}, vérifiez l'adresse de destination et le montant.",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowSelectSeed": "Une fois la transaction importée dans votre {device}, vous devriez sélectionner la graine avec laquelle vous souhaitez signer.",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowSignTransactionOnDevice": "Cliquez sur les boutons pour signer la transaction sur votre {device}.",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowDeviceShowsQr": "Le {device} vous montrera ensuite son propre code QR.",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowClickDone": "Cliquez sur « J'ai terminé » dans le portefeuille Bull Bitcoin.",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "psbtFlowScanDeviceQr": "Le portefeuille Bull Bitcoin vous demandera de scanner le code QR sur le {device}. Scannez-le.",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowTransactionImported": "La transaction sera importée dans le portefeuille Bull Bitcoin.",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "psbtFlowReadyToBroadcast": "C'est maintenant prêt à diffuser ! Dès que vous cliquerez sur diffuser, la transaction sera publiée sur le réseau Bitcoin et les fonds seront envoyés.",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
   },
   "hwConnectTitle": "Connecter un portefeuille matériel",
   "@hwConnectTitle": {

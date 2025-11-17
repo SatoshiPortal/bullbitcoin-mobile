@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/selectors/recoverbull_vault_provider_selector.dart';
@@ -17,7 +18,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Vault Provider'),
+        title: Text(context.loc.recoverbullSelectVaultProvider),
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 20),
@@ -40,7 +41,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
               case RecoverBullFlow.secureVault:
                 SnackBarUtils.showSnackBar(
                   context,
-                  'Vault created successfully',
+                  context.loc.recoverbullVaultCreatedSuccess,
                 );
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -72,12 +73,11 @@ class VaultProviderSelectionPage extends StatelessWidget {
               ),
 
               if (state.flow == RecoverBullFlow.secureVault && state.isLoading)
-                const Center(
+                Center(
                   child: ProgressScreen(
                     isLoading: true,
-                    title: 'Creating Encrypted Vault',
-                    description:
-                        'Connecting to Key Server over Tor.\nThis can take upto a minute.',
+                    title: context.loc.recoverbullCreatingVault,
+                    description: context.loc.recoverbullConnectingTor,
                   ),
                 ),
 
@@ -90,7 +90,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
                   child: RecoverbullVaultProviderSelector(
                     onProviderSelected: (provider) {
                       context.read<RecoverBullBloc>().add(
-                        OnVaultProviderSelection(provider: provider),
+                        OnVaultProviderSelection(provider: provider, context: context),
                       );
                     },
                   ),

@@ -1,65 +1,63 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/material.dart';
 
 class RecoverBullError extends BullError {
   RecoverBullError(super.message);
 }
 
 class SelectVaultError extends RecoverBullError {
-  SelectVaultError() : super('Failed to select vault');
+  SelectVaultError(BuildContext context) : super(context.loc.recoverbullErrorSelectVault);
 }
 
 class PasswordIsNotSetError extends RecoverBullError {
-  PasswordIsNotSetError() : super('Password is not set');
+  PasswordIsNotSetError(BuildContext context) : super(context.loc.recoverbullErrorPasswordNotSet);
 }
 
 class VaultIsNotSetError extends RecoverBullError {
-  VaultIsNotSetError() : super('Vault is not set');
+  VaultIsNotSetError(BuildContext context) : super(context.loc.recoverbullErrorVaultNotSet);
 }
 
 class DecryptedVaultIsNotSetError extends RecoverBullError {
-  DecryptedVaultIsNotSetError() : super('Decrypted vault is not set');
+  DecryptedVaultIsNotSetError(BuildContext context) : super(context.loc.recoverbullErrorDecryptedVaultNotSet);
 }
 
 class KeyServerConnectionError extends RecoverBullError {
-  KeyServerConnectionError()
-    : super(
-        'Failed to connect to the target key server. Please try again later!',
-      );
+  KeyServerConnectionError(BuildContext context)
+    : super(context.loc.recoverbullErrorConnectionFailed);
 }
 
 class InvalidFlowError extends RecoverBullError {
-  InvalidFlowError() : super('Invalid flow');
+  InvalidFlowError(BuildContext context) : super(context.loc.recoverbullErrorInvalidFlow);
 }
 
 class VaultKeyNotStoredError extends RecoverBullError {
-  VaultKeyNotStoredError()
-    : super('Failed: Vault file created but key not stored in server');
+  VaultKeyNotStoredError(BuildContext context)
+    : super(context.loc.recoverbullErrorVaultCreatedKeyNotStored);
 }
 
 class VaultCreationError extends RecoverBullError {
-  VaultCreationError()
-    : super('Vault creation failed, it can be the file or the key');
+  VaultCreationError(BuildContext context)
+    : super(context.loc.recoverbullErrorVaultCreationFailed);
 }
 
 class TorResponseFormatExceptionError extends RecoverBullError {
-  TorResponseFormatExceptionError()
-    : super(
-        'Missing bytes from the Tor response. Retry but if the issue persists, it is a known issue for some devices with Tor.',
-      );
+  TorResponseFormatExceptionError(BuildContext context)
+    : super(context.loc.recoverbullErrorMissingBytes);
 }
 
 class VaultKeyFetchError extends RecoverBullError {
-  VaultKeyFetchError() : super('Failed to fetch vault key from server');
+  VaultKeyFetchError(BuildContext context) : super(context.loc.recoverbullErrorFetchKeyFailed);
 }
 
 class VaultDecryptionError extends RecoverBullError {
-  VaultDecryptionError() : super('Failed to decrypt the vault');
+  VaultDecryptionError(BuildContext context) : super(context.loc.recoverbullErrorDecryptFailed);
 }
 
 class VaultCheckStatusError extends RecoverBullError {
-  VaultCheckStatusError() : super('Failed to check the vault status');
+  VaultCheckStatusError(BuildContext context) : super(context.loc.recoverbullErrorCheckStatusFailed);
 }
 
 class VaultRecoveryError extends RecoverBullError {
-  VaultRecoveryError() : super('Failed to recover the vault');
+  VaultRecoveryError(BuildContext context) : super(context.loc.recoverbullErrorRecoveryFailed);
 }
