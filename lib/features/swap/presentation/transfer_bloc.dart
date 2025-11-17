@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.d
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -58,6 +59,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     required BroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase,
     required UpdatePaidChainSwapUsecase updatePaidChainSwapUsecase,
     required UpdateSendSwapLockupFeesUsecase updateSendSwapLockupFeesUsecase,
+    required VerifyChainSwapAmountSendUsecase verifyChainSwapAmountSendUsecase,
     required DetectBitcoinStringUsecase detectBitcoinStringUsecase,
   }) : _getSettingsUsecase = getSettingsUsecase,
        _getWalletsUsecase = getWalletsUsecase,
@@ -78,6 +80,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
        _broadcastLiquidTxUsecase = broadcastLiquidTxUsecase,
        _updatePaidChainSwapUsecase = updatePaidChainSwapUsecase,
        _updateSendSwapLockupFeesUsecase = updateSendSwapLockupFeesUsecase,
+       _verifyChainSwapAmountSendUsecase = verifyChainSwapAmountSendUsecase,
        _detectBitcoinStringUsecase = detectBitcoinStringUsecase,
        super(const TransferState()) {
     on<TransferStarted>(_onStarted);
@@ -110,6 +113,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
   final UpdatePaidChainSwapUsecase _updatePaidChainSwapUsecase;
   final UpdateSendSwapLockupFeesUsecase _updateSendSwapLockupFeesUsecase;
+  final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
 
   @override
@@ -304,6 +308,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           inputAmountSat,
         );
       }
+      // For max send, paymentAmountSat = inputAmountSat = maxAmountSat
+      // (balance - estimatedFees), which is what we want to pass to newSwap
+      final isMaxSend =
+          state.maxAmountSat != null && inputAmountSat == state.maxAmountSat;
 
       ChainSwap swap;
       String signedPsbt;
@@ -336,8 +344,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
         if (state.fromWallet!.isLiquid) {
           final liquidWalletId = state.fromWallet!.id;
-          final isMaxSend = state.maxAmountSat == paymentAmountSat;
-
           final psbt = await _prepareLiquidSendUsecase.execute(
             walletId: liquidWalletId,
             address: swap.paymentAddress,
@@ -345,6 +351,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
             networkFee: state.liquidNetworkFees!.fastest,
             drain: isMaxSend,
           );
+
+          await _verifyChainSwapAmountSendUsecase.execute(
+            psbtOrPset: psbt,
+            swap: swap,
+            walletId: liquidWalletId,
+          );
+
           signedPsbt = await _signLiquidTxUsecase.execute(
             walletId: liquidWalletId,
             pset: psbt,
@@ -374,9 +387,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
               .execute(
                 walletId: bitcoinWalletId,
                 address: swap.paymentAddress,
-                amountSat: swap.paymentAmount,
+                amountSat: isMaxSend ? null : swap.paymentAmount,
                 networkFee: state.bitcoinNetworkFees!.fastest,
+                drain: isMaxSend,
               );
+
+          await _verifyChainSwapAmountSendUsecase.execute(
+            psbtOrPset: unsignedPsbtAndTxSize.unsignedPsbt,
+            swap: swap,
+            walletId: bitcoinWalletId,
+          );
 
           final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
             walletId: bitcoinWalletId,
@@ -419,8 +439,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: bitcoinWalletId,
           address: swap.paymentAddress,
-          amountSat: swap.paymentAmount,
+          amountSat: isMaxSend ? null : swap.paymentAmount,
           networkFee: state.bitcoinNetworkFees!.fastest,
+          drain: isMaxSend,
+        );
+
+        await _verifyChainSwapAmountSendUsecase.execute(
+          psbtOrPset: unsignedPsbtAndTxSize.unsignedPsbt,
+          swap: swap,
+          walletId: bitcoinWalletId,
         );
 
         final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
@@ -460,8 +487,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           type: SwapType.liquidToBitcoin,
           amountSat: paymentAmountSat,
         );
-        final isMaxSend = state.maxAmountSat == swap.paymentAmount;
-
         final psbt = await _prepareLiquidSendUsecase.execute(
           walletId: liquidWalletId,
           address: swap.paymentAddress,
@@ -469,6 +494,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           networkFee: state.liquidNetworkFees!.fastest,
           drain: isMaxSend,
         );
+
+        await _verifyChainSwapAmountSendUsecase.execute(
+          psbtOrPset: psbt,
+          swap: swap,
+          walletId: liquidWalletId,
+        );
+
         signedPsbt = await _signLiquidTxUsecase.execute(
           walletId: liquidWalletId,
           pset: psbt,
@@ -717,6 +749,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       final signedPsbt = state.signedPsbt;
       if (signedPsbt.isEmpty) return;
 
+      // Verification already happened before signing during swap creation
       final settings = await _getSettingsUsecase.execute();
       final isTestnet = settings.environment == Environment.testnet;
       String txId;

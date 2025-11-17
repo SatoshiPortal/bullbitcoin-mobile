@@ -162,4 +162,10 @@ class Logger {
     final tabNewLine = RegExp(r'[\t\n\r]');
     return input.replaceAll(tabNewLine, ' ').replaceAll(colors, '');
   }
+
+  static String redactAddressOrTxId(String? value) {
+    if (value == null || value.isEmpty) return value ?? '';
+    if (value.length <= 6) return value;
+    return '${value.substring(0, 3)}...${value.substring(value.length - 3)}';
+  }
 }
