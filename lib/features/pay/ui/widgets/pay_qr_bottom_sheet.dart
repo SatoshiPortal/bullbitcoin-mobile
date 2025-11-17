@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -32,7 +33,7 @@ class PayQrBottomSheet extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Center(
           child: BBText(
-            'No invoice data available',
+            context.loc.payNoInvoiceData,
             style: context.font.bodyMedium,
           ),
         ),
@@ -48,7 +49,7 @@ class PayQrBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              BBText('QR Code', style: context.font.headlineSmall),
+              BBText(context.loc.payQrCode, style: context.font.headlineSmall),
               IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.close),

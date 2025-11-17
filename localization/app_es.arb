@@ -1642,6 +1642,142 @@
   "@payOrderDetails": {
     "description": "Título para la pantalla de detalles de la orden SINPE"
   },
+  "paySinpeMonto": "Monto",
+  "@paySinpeMonto": {
+    "description": "Etiqueta para el monto en detalles de orden SINPE"
+  },
+  "paySinpeNumeroOrden": "Número de orden",
+  "@paySinpeNumeroOrden": {
+    "description": "Etiqueta para el número de orden en detalles SINPE"
+  },
+  "paySinpeNumeroComprobante": "Número de comprobante",
+  "@paySinpeNumeroComprobante": {
+    "description": "Etiqueta para el número de comprobante en detalles SINPE"
+  },
+  "paySinpeBeneficiario": "Beneficiario",
+  "@paySinpeBeneficiario": {
+    "description": "Etiqueta para el beneficiario en detalles SINPE"
+  },
+  "paySinpeOrigen": "Origen",
+  "@paySinpeOrigen": {
+    "description": "Etiqueta para el origen en detalles SINPE"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Texto para información no disponible"
+  },
+  "payContinue": "Continuar",
+  "@payContinue": {
+    "description": "Etiqueta del botón para continuar"
+  },
+  "paySelectNetwork": "Seleccionar red",
+  "@paySelectNetwork": {
+    "description": "Título de la barra de aplicación para la pantalla de selección de red"
+  },
+  "payHowToPayInvoice": "¿Cómo desea pagar esta factura?",
+  "@payHowToPayInvoice": {
+    "description": "Pregunta para seleccionar la red de pago"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Opción para pago Bitcoin on-chain"
+  },
+  "payLightningNetwork": "Lightning Network",
+  "@payLightningNetwork": {
+    "description": "Opción para pago Lightning Network"
+  },
+  "payLiquidNetwork": "Liquid Network",
+  "@payLiquidNetwork": {
+    "description": "Opción para pago Liquid Network"
+  },
+  "payAboveMaxAmount": "Está intentando pagar un monto superior al monto máximo que se puede pagar con esta billetera.",
+  "@payAboveMaxAmount": {
+    "description": "Mensaje de error cuando el monto de pago excede el máximo"
+  },
+  "payBelowMinAmount": "Está intentando pagar un monto inferior al monto mínimo que se puede pagar con esta billetera.",
+  "@payBelowMinAmount": {
+    "description": "Mensaje de error cuando el monto de pago está por debajo del mínimo"
+  },
+  "payNotAuthenticated": "No está autenticado. Por favor, inicie sesión para continuar.",
+  "@payNotAuthenticated": {
+    "description": "Mensaje de error cuando el usuario no está autenticado"
+  },
+  "payOrderNotFound": "No se encontró la orden de pago. Por favor, intente nuevamente.",
+  "@payOrderNotFound": {
+    "description": "Mensaje de error cuando no se encuentra la orden de pago"
+  },
+  "payOrderAlreadyConfirmed": "Esta orden de pago ya ha sido confirmada.",
+  "@payOrderAlreadyConfirmed": {
+    "description": "Mensaje de error cuando la orden de pago ya está confirmada"
+  },
+  "payPaymentInProgress": "¡Pago en curso!",
+  "@payPaymentInProgress": {
+    "description": "Título para la pantalla de pago en curso"
+  },
+  "payPaymentInProgressDescription": "Su pago ha sido iniciado y el destinatario recibirá los fondos después de que su transacción reciba 1 confirmación on-chain.",
+  "@payPaymentInProgressDescription": {
+    "description": "Descripción para el pago en curso"
+  },
+  "payInvalidState": "Estado inválido",
+  "@payInvalidState": {
+    "description": "Mensaje de error para estado inválido"
+  },
+  "payPleasePayInvoice": "Por favor, pague esta factura",
+  "@payPleasePayInvoice": {
+    "description": "Instrucción para pagar la factura"
+  },
+  "payPriceRefreshIn": "El precio se actualizará en ",
+  "@payPriceRefreshIn": {
+    "description": "Texto antes del temporizador de cuenta regresiva"
+  },
+  "payFor": "Para",
+  "@payFor": {
+    "description": "Etiqueta para la sección de información del destinatario"
+  },
+  "payRecipient": "Destinatario",
+  "@payRecipient": {
+    "description": "Etiqueta para el destinatario"
+  },
+  "payAmount": "Monto",
+  "@payAmount": {
+    "description": "Etiqueta para el monto"
+  },
+  "payFee": "Comisión",
+  "@payFee": {
+    "description": "Etiqueta para la comisión"
+  },
+  "payNetwork": "Red",
+  "@payNetwork": {
+    "description": "Etiqueta para la red"
+  },
+  "payViewRecipient": "Ver destinatario",
+  "@payViewRecipient": {
+    "description": "Botón para ver los detalles del destinatario"
+  },
+  "payOpenInvoice": "Abrir factura",
+  "@payOpenInvoice": {
+    "description": "Botón para abrir la factura"
+  },
+  "payCopied": "¡Copiado!",
+  "@payCopied": {
+    "description": "Mensaje de éxito después de copiar"
+  },
+  "payPayee": "Beneficiario",
+  "@payPayee": {
+    "description": "Etiqueta para el beneficiario en el pago de factura"
+  },
+  "payAccount": "Cuenta",
+  "@payAccount": {
+    "description": "Etiqueta para la información de cuenta"
+  },
+  "payAllCountries": "Todos los países",
+  "@payAllCountries": {
+    "description": "Opción de filtro para todos los países"
+  },
+  "payAllTypes": "Todos los tipos",
+  "@payAllTypes": {
+    "description": "Opción de filtro para todos los tipos"
+  },
   "transactionTitle": "Transacciones",
   "@transactionTitle": {
     "description": "Título para la pantalla de transacciones"

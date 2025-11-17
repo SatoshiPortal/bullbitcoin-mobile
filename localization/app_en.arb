@@ -1642,6 +1642,142 @@
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
   },
+  "paySinpeMonto": "Amount",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "paySinpeNumeroOrden": "Order number",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "paySinpeNumeroComprobante": "Reference number",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySinpeBeneficiario": "Beneficiary",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "paySinpeOrigen": "Origin",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payContinue": "Continue",
+  "@payContinue": {
+    "description": "Button label to continue"
+  },
+  "paySelectNetwork": "Select Network",
+  "@paySelectNetwork": {
+    "description": "AppBar title for network selection screen"
+  },
+  "payHowToPayInvoice": "How do you want to pay this invoice?",
+  "@payHowToPayInvoice": {
+    "description": "Question prompt for selecting payment network"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "payLightningNetwork": "Lightning Network",
+  "@payLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "payLiquidNetwork": "Liquid Network",
+  "@payLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "payAboveMaxAmount": "You are trying to pay above the maximum amount that can be paid with this wallet.",
+  "@payAboveMaxAmount": {
+    "description": "Error message when payment amount exceeds maximum"
+  },
+  "payBelowMinAmount": "You are trying to pay below the minimum amount that can be paid with this wallet.",
+  "@payBelowMinAmount": {
+    "description": "Error message when payment amount is below minimum"
+  },
+  "payNotAuthenticated": "You are not authenticated. Please log in to continue.",
+  "@payNotAuthenticated": {
+    "description": "Error message when user is not authenticated"
+  },
+  "payOrderNotFound": "The pay order was not found. Please try again.",
+  "@payOrderNotFound": {
+    "description": "Error message when pay order is not found"
+  },
+  "payOrderAlreadyConfirmed": "This pay order has already been confirmed.",
+  "@payOrderAlreadyConfirmed": {
+    "description": "Error message when pay order is already confirmed"
+  },
+  "payPaymentInProgress": "Payment In Progress!",
+  "@payPaymentInProgress": {
+    "description": "Title for payment in progress screen"
+  },
+  "payPaymentInProgressDescription": "Your payment has been initiated and the recipient will receive the funds after your transaction receives 1 confirmation onchain.",
+  "@payPaymentInProgressDescription": {
+    "description": "Description for payment in progress"
+  },
+  "payInvalidState": "Invalid state",
+  "@payInvalidState": {
+    "description": "Error message for invalid state"
+  },
+  "payPleasePayInvoice": "Please pay this invoice",
+  "@payPleasePayInvoice": {
+    "description": "Instruction to pay invoice"
+  },
+  "payPriceRefreshIn": "Price will refresh in ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "payFor": "For",
+  "@payFor": {
+    "description": "Label for recipient information section"
+  },
+  "payRecipient": "Recipient",
+  "@payRecipient": {
+    "description": "Label for recipient"
+  },
+  "payAmount": "Amount",
+  "@payAmount": {
+    "description": "Label for amount"
+  },
+  "payFee": "Fee",
+  "@payFee": {
+    "description": "Label for fee"
+  },
+  "payNetwork": "Network",
+  "@payNetwork": {
+    "description": "Label for network"
+  },
+  "payViewRecipient": "View recipient",
+  "@payViewRecipient": {
+    "description": "Button to view recipient details"
+  },
+  "payOpenInvoice": "Open invoice",
+  "@payOpenInvoice": {
+    "description": "Button to open invoice"
+  },
+  "payCopied": "Copied!",
+  "@payCopied": {
+    "description": "Success message after copying"
+  },
+  "payPayee": "Payee",
+  "@payPayee": {
+    "description": "Label for payee in bill payment"
+  },
+  "payAccount": "Account",
+  "@payAccount": {
+    "description": "Label for account information"
+  },
+  "payAllCountries": "All countries",
+  "@payAllCountries": {
+    "description": "Filter option for all countries"
+  },
+  "payAllTypes": "All types",
+  "@payAllTypes": {
+    "description": "Filter option for all types"
+  },
   "transactionTitle": "Transactions",
   "@transactionTitle": {
     "description": "Title for the transactions screen"

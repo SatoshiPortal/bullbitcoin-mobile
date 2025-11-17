@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -24,7 +25,7 @@ class PayRecipientsFilterDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     // Filter recipients by selected country first
     final recipientsForCountry =
-        selectedCountryFilter == 'All countries'
+        selectedCountryFilter == context.loc.payAllCountries
             ? allEligibleRecipients
             : allEligibleRecipients
                 .where(
@@ -40,11 +41,11 @@ class PayRecipientsFilterDropdown extends StatelessWidget {
             .map((recipient) => recipient.recipientType.displayName)
             .toSet()
             .toList();
-    final typeOptions = ['All types', ...eligibleTypes];
+    final typeOptions = [context.loc.payAllTypes, ...eligibleTypes];
 
     // Use the common countries list, plus "All countries"
     final countryOptions = [
-      'All countries',
+      context.loc.payAllCountries,
       ...CountryConstants.countries.map((c) => c['code']!),
     ];
 
@@ -68,7 +69,7 @@ class PayRecipientsFilterDropdown extends StatelessWidget {
                   value: selectedCountryFilter,
                   isExpanded: true,
                   hint: Text(
-                    'Select country',
+                    context.loc.paySelectCountry,
                     style: context.font.headlineSmall?.copyWith(
                       color: context.colour.outline,
                     ),
@@ -79,11 +80,11 @@ class PayRecipientsFilterDropdown extends StatelessWidget {
                   ),
                   items:
                       countryOptions.map((countryCode) {
-                        if (countryCode == 'All countries') {
+                        if (countryCode == context.loc.payAllCountries) {
                           return DropdownMenuItem<String>(
                             value: countryCode,
                             child: Text(
-                              'All countries',
+                              context.loc.payAllCountries,
                               style: context.font.headlineSmall,
                             ),
                           );
