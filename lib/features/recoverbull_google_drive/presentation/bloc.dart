@@ -47,7 +47,11 @@ class RecoverBullGoogleDriveBloc
       log.fine('$OnFetchDriveVaults ${driveMetadata.length} metadata found');
     } catch (e) {
       log.severe('$OnFetchDriveVaults: $e');
-      emit(state.copyWith(error: FetchAllDriveFilesError()));
+      if (event.context != null) {
+        emit(state.copyWith(error: FetchAllDriveFilesError(event.context!)));
+      } else {
+        emit(state.copyWith(error: RecoverBullGoogleDriveError('Failed to fetch all drive backups')));
+      }
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -64,7 +68,11 @@ class RecoverBullGoogleDriveBloc
       emit(state.copyWith(selectedVault: vault));
     } catch (e) {
       log.severe('$OnSelectDriveFileMetadata: $e');
-      emit(state.copyWith(error: FetchAllDriveFilesError()));
+      if (event.context != null) {
+        emit(state.copyWith(error: FetchAllDriveFilesError(event.context!)));
+      } else {
+        emit(state.copyWith(error: RecoverBullGoogleDriveError('Failed to fetch all drive backups')));
+      }
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -85,7 +93,11 @@ class RecoverBullGoogleDriveBloc
       log.fine('$OnDeleteDriveFile succeed');
     } catch (e) {
       log.severe('$OnDeleteDriveFile: $e');
-      emit(state.copyWith(error: FetchAllDriveFilesError()));
+      if (event.context != null) {
+        emit(state.copyWith(error: FetchAllDriveFilesError(event.context!)));
+      } else {
+        emit(state.copyWith(error: RecoverBullGoogleDriveError('Failed to fetch all drive backups')));
+      }
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -101,7 +113,11 @@ class RecoverBullGoogleDriveBloc
       log.fine('$OnExportDriveFile succeed');
     } catch (e) {
       log.severe('$OnExportDriveFile: $e');
-      emit(state.copyWith(error: FetchAllDriveFilesError()));
+      if (event.context != null) {
+        emit(state.copyWith(error: FetchAllDriveFilesError(event.context!)));
+      } else {
+        emit(state.copyWith(error: RecoverBullGoogleDriveError('Failed to fetch all drive backups')));
+      }
     } finally {
       emit(state.copyWith(isLoading: false));
     }
