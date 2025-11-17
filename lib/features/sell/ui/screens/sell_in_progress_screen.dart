@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -18,7 +19,7 @@ class SellInProgressScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Sell Bitcoin'),
+          title: Text(context.loc.sellTitle),
           automaticallyImplyLeading: false,
         ),
         body: SafeArea(
@@ -37,7 +38,7 @@ class SellInProgressScreen extends StatelessWidget {
                       image: AssetImage(Assets.animations.cubesLoading.path),
                     ),
                     Text(
-                      'Sell in progress...',
+                      context.loc.sellInProgress,
                       style: context.font.headlineLarge?.copyWith(
                         color: context.colour.outlineVariant,
                       ),
@@ -46,7 +47,7 @@ class SellInProgressScreen extends StatelessWidget {
                 ),
                 const Spacer(),
                 BBButton.big(
-                  label: 'Go home',
+                  label: context.loc.sellGoHome,
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeHome.name);
                   },

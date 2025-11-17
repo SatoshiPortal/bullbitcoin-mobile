@@ -10307,5 +10307,67 @@
   "exchangeAmountInputValidationInsufficient": "Solde insuffisant",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
+  },
+  "sellBitcoinPriceLabel": "Prix Bitcoin",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "sellViewDetailsButton": "Voir les détails",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "sellKycPendingTitle": "Vérification KYC en attente",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "sellKycPendingDescription": "Vous devez d'abord compléter la vérification d'identité",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellErrorPrepareTransaction": "Échec de préparation de la transaction : {error}",
+  "@sellErrorPrepareTransaction": {
+    "description": "Error message when transaction preparation fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellErrorNoWalletSelected": "Aucun portefeuille sélectionné pour envoyer le paiement",
+  "@sellErrorNoWalletSelected": {
+    "description": "Error message when no wallet is selected for payment"
+  },
+  "sellErrorFeesNotCalculated": "Frais de transaction non calculés. Veuillez réessayer.",
+  "@sellErrorFeesNotCalculated": {
+    "description": "Error message when transaction fees calculation failed"
+  },
+  "sellErrorUnexpectedOrderType": "SellOrder attendu mais un type de commande différent reçu",
+  "@sellErrorUnexpectedOrderType": {
+    "description": "Error message when wrong order type is received"
+  },
+  "sellErrorLoadUtxos": "Échec du chargement des UTXOs : {error}",
+  "@sellErrorLoadUtxos": {
+    "description": "Error message when loading UTXOs fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellErrorRecalculateFees": "Échec du recalcul des frais : {error}",
+  "@sellErrorRecalculateFees": {
+    "description": "Error message when fee recalculation fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellLoadingGeneric": "Chargement...",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
   }
 }

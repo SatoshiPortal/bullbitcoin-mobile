@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -47,14 +48,14 @@ class SellAmountInputBottomButtons extends StatelessWidget {
       return Column(
         children: [
           InfoCard(
-            title: 'KYC ID Verification Pending',
-            description: 'You must complete ID Verification first',
+            title: context.loc.sellKycPendingTitle,
+            description: context.loc.sellKycPendingDescription,
             bgColor: context.colour.tertiary.withValues(alpha: 0.1),
             tagColor: context.colour.onTertiary,
           ),
           const Gap(16.0),
           BBButton.big(
-            label: 'Complete KYC',
+            label: context.loc.sellCompleteKYC,
             onPressed: () {
               context.pushReplacementNamed(ExchangeRoute.exchangeKyc.name);
             },
@@ -65,7 +66,7 @@ class SellAmountInputBottomButtons extends StatelessWidget {
       );
     } else {
       return BBButton.big(
-        label: 'Continue',
+        label: context.loc.sellSendPaymentContinue,
         onPressed: () {
           if (formKey.currentState!.validate()) {
             final sellBloc = context.read<SellBloc>();
