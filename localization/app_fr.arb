@@ -68,6 +68,63 @@
   "@settingsSecurityPinTitle": {
     "description": "Titre de la section du code PIN de sécurité dans le menu des paramètres"
   },
+  "pinCodeAuthentication": "Authentification",
+  "@pinCodeAuthentication": {
+    "description": "Titre de la barre d'application pour les écrans d'authentification par code PIN"
+  },
+  "pinCodeCreateTitle": "Créer un nouveau code PIN",
+  "@pinCodeCreateTitle": {
+    "description": "Titre pour la création d'un nouveau code PIN"
+  },
+  "pinCodeCreateDescription": "Votre code PIN protège l'accès à votre portefeuille et à vos paramètres. Gardez-le mémorisable.",
+  "@pinCodeCreateDescription": {
+    "description": "Description expliquant le but du code PIN"
+  },
+  "pinCodeMinLengthError": "Le code PIN doit contenir au moins {minLength} chiffres",
+  "@pinCodeMinLengthError": {
+    "description": "Message d'erreur lorsque le code PIN est trop court",
+    "placeholders": {
+      "minLength": {
+        "type": "String"
+      }
+    }
+  },
+  "pinCodeConfirmTitle": "Confirmer le nouveau code PIN",
+  "@pinCodeConfirmTitle": {
+    "description": "Titre pour confirmer le nouveau code PIN"
+  },
+  "pinCodeMismatchError": "Les codes PIN ne correspondent pas",
+  "@pinCodeMismatchError": {
+    "description": "Message d'erreur lorsque la confirmation du code PIN ne correspond pas"
+  },
+  "pinCodeSecurityPinTitle": "Code PIN de sécurité",
+  "@pinCodeSecurityPinTitle": {
+    "description": "Titre de la barre d'application pour l'écran des paramètres du code PIN"
+  },
+  "pinCodeManageTitle": "Gérer votre code PIN de sécurité",
+  "@pinCodeManageTitle": {
+    "description": "Titre d'en-tête pour la section de gestion du code PIN"
+  },
+  "pinCodeChangeButton": "Modifier le code PIN",
+  "@pinCodeChangeButton": {
+    "description": "Libellé du bouton pour modifier le code PIN existant"
+  },
+  "pinCodeCreateButton": "Créer un code PIN",
+  "@pinCodeCreateButton": {
+    "description": "Libellé du bouton pour créer un nouveau code PIN"
+  },
+  "pinCodeRemoveButton": "Supprimer le code PIN de sécurité",
+  "@pinCodeRemoveButton": {
+    "description": "Libellé du bouton pour supprimer le code PIN de sécurité"
+  },
+  "pinCodeContinue": "Continuer",
+  "@pinCodeContinue": {
+    "description": "Libellé du bouton pour continuer avec la saisie du code PIN"
+  },
+  "pinCodeConfirm": "Confirmer",
+  "@pinCodeConfirm": {
+    "description": "Libellé du bouton pour confirmer la saisie du code PIN"
+  },
   "settingsCurrencyTitle": "Devise",
   "@settingsCurrencyTitle": {
     "description": "Titre de la section des paramètres de devise dans le menu des paramètres"

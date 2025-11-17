@@ -68,6 +68,63 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
+  "pinCodeAuthentication": "Authentication",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeCreateTitle": "Create new pin",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeCreateDescription": "Your PIN protects access to your wallet and settings. Keep it memorable.",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeMinLengthError": "PIN must be at least {minLength} digits long",
+  "@pinCodeMinLengthError": {
+    "description": "Error message when PIN is too short",
+    "placeholders": {
+      "minLength": {
+        "type": "String"
+      }
+    }
+  },
+  "pinCodeConfirmTitle": "Confirm new pin",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeMismatchError": "PINs do not match",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "pinCodeSecurityPinTitle": "Security PIN",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeManageTitle": "Manage your security PIN",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "pinCodeChangeButton": "Change PIN",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCreateButton": "Create PIN",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeRemoveButton": "Remove Security PIN",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "pinCodeContinue": "Continue",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "pinCodeConfirm": "Confirm",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
   "settingsCurrencyTitle": "Currency",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
