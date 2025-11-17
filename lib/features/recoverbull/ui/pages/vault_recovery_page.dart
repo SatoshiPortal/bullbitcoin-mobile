@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -16,7 +17,7 @@ class VaultRecoveryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Vault Recovery')),
+      appBar: AppBar(title: Text(context.loc.recoverbullVaultRecovery)),
       body: BlocConsumer<RecoverBullBloc, RecoverBullState>(
         listenWhen:
             (previous, current) =>
@@ -61,10 +62,10 @@ class VaultRecoveryPage extends StatelessWidget {
                         child: BBButton.big(
                           onPressed: () {
                             context.read<RecoverBullBloc>().add(
-                              const OnVaultRecovery(),
+                              OnVaultRecovery(context: context),
                             );
                           },
-                          label: 'Continue',
+                          label: context.loc.recoverbullContinue,
                           bgColor: context.colour.secondary,
                           textColor: context.colour.onPrimary,
                           disabled: state.decryptedVault == null,

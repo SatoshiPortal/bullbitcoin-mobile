@@ -6680,6 +6680,255 @@
       }
     }
   },
+  "recoverbullBalance": "Balance: {balance}",
+  "@recoverbullBalance": {
+    "description": "Label showing wallet balance during vault recovery",
+    "placeholders": {
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullCheckingConnection": "Checking connection for RecoverBull",
+  "@recoverbullCheckingConnection": {
+    "description": "Screen title while checking connection status"
+  },
+  "recoverbullConfirm": "Confirm",
+  "@recoverbullConfirm": {
+    "description": "Button text to confirm an action"
+  },
+  "recoverbullConfirmInput": "Confirm {inputType}",
+  "@recoverbullConfirmInput": {
+    "description": "Label to confirm input (PIN or password)",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnected": "Connected",
+  "@recoverbullConnected": {
+    "description": "Status label indicating successful connection"
+  },
+  "recoverbullConnecting": "Connecting",
+  "@recoverbullConnecting": {
+    "description": "Status label indicating connection in progress"
+  },
+  "recoverbullConnectingTor": "Connecting to Key Server over Tor.\nThis can take up to a minute.",
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullConnectionFailed": "Connection failed",
+  "@recoverbullConnectionFailed": {
+    "description": "Status label indicating connection failure"
+  },
+  "recoverbullContinue": "Continue",
+  "@recoverbullContinue": {
+    "description": "Button text to proceed to next step"
+  },
+  "recoverbullCreatingVault": "Creating Encrypted Vault",
+  "@recoverbullCreatingVault": {
+    "description": "Screen title while vault is being created"
+  },
+  "recoverbullDecryptVault": "Decrypt vault",
+  "@recoverbullDecryptVault": {
+    "description": "Button text to decrypt the selected vault"
+  },
+  "recoverbullEncryptedVaultCreated": "Encrypted Vault created!",
+  "@recoverbullEncryptedVaultCreated": {
+    "description": "Success message title after vault creation"
+  },
+  "recoverbullEnterInput": "Enter your {inputType}",
+  "@recoverbullEnterInput": {
+    "description": "Input field label prompting for PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToDecrypt": "Please enter your {inputType} to decrypt your vault.",
+  "@recoverbullEnterToDecrypt": {
+    "description": "Instruction to enter PIN or password for vault decryption",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToTest": "Please enter your {inputType} to test your vault.",
+  "@recoverbullEnterToTest": {
+    "description": "Instruction to enter PIN or password to test vault recovery",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToView": "Please enter your {inputType} to view your vault key.",
+  "@recoverbullEnterToView": {
+    "description": "Instruction to enter PIN or password to view vault key",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterVaultKeyInstead": "Enter a vault key instead",
+  "@recoverbullEnterVaultKeyInstead": {
+    "description": "Button text to switch to manual vault key entry"
+  },
+  "recoverbullErrorCheckStatusFailed": "Failed to check the vault status",
+  "@recoverbullErrorCheckStatusFailed": {
+    "description": "Error message when vault status check fails"
+  },
+  "recoverbullErrorConnectionFailed": "Failed to connect to the target key server. Please try again later!",
+  "@recoverbullErrorConnectionFailed": {
+    "description": "Error message when server connection fails"
+  },
+  "recoverbullErrorDecryptedVaultNotSet": "Decrypted vault is not set",
+  "@recoverbullErrorDecryptedVaultNotSet": {
+    "description": "Error when attempting operation without decrypted vault"
+  },
+  "recoverbullErrorDecryptFailed": "Failed to decrypt the vault",
+  "@recoverbullErrorDecryptFailed": {
+    "description": "Error message when vault decryption fails"
+  },
+  "recoverbullErrorFetchKeyFailed": "Failed to fetch vault key from server",
+  "@recoverbullErrorFetchKeyFailed": {
+    "description": "Error message when server key fetch fails"
+  },
+  "recoverbullErrorInvalidFlow": "Invalid flow",
+  "@recoverbullErrorInvalidFlow": {
+    "description": "Error message for invalid operation flow"
+  },
+  "recoverbullErrorMissingBytes": "Missing bytes from the Tor response. Retry but if the issue persists, it is a known issue for some devices with Tor.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullErrorPasswordNotSet": "Password is not set",
+  "@recoverbullErrorPasswordNotSet": {
+    "description": "Error when attempting operation without setting password"
+  },
+  "recoverbullErrorRecoveryFailed": "Failed to recover the vault",
+  "@recoverbullErrorRecoveryFailed": {
+    "description": "Error message when vault recovery fails"
+  },
+  "recoverbullErrorSelectVault": "Failed to select vault",
+  "@recoverbullErrorSelectVault": {
+    "description": "Error message when vault selection fails"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "Failed: Vault file created but key not stored in server",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullErrorVaultCreationFailed": "Vault creation failed, it can be the file or the key",
+  "@recoverbullErrorVaultCreationFailed": {
+    "description": "Error message when overall vault creation fails"
+  },
+  "recoverbullErrorVaultNotSet": "Vault is not set",
+  "@recoverbullErrorVaultNotSet": {
+    "description": "Error when attempting operation without selected vault"
+  },
+  "recoverbullFailed": "Failed",
+  "@recoverbullFailed": {
+    "description": "Status label indicating operation failure"
+  },
+  "recoverbullFetchingVaultKey": "Fetching Vault Key",
+  "@recoverbullFetchingVaultKey": {
+    "description": "Screen title while fetching vault key from server"
+  },
+  "recoverbullFetchVaultKey": "Fetch Vault Key",
+  "@recoverbullFetchVaultKey": {
+    "description": "Screen title for vault key fetch screen"
+  },
+  "recoverbullGoBackEdit": "<< Go back and edit",
+  "@recoverbullGoBackEdit": {
+    "description": "Button text to return to previous screen for editing"
+  },
+  "recoverbullGotIt": "Got it",
+  "@recoverbullGotIt": {
+    "description": "Button text to acknowledge and dismiss message"
+  },
+  "recoverbullKeyServer": "Key Server ",
+  "@recoverbullKeyServer": {
+    "description": "Label for key server connection status"
+  },
+  "recoverbullLookingForBalance": "Looking for balance and transactions…",
+  "@recoverbullLookingForBalance": {
+    "description": "Loading message while scanning wallet"
+  },
+  "recoverbullMemorizeWarning": "You must memorize this {inputType} to recover access to your wallet. It must be at least 6 digits. If you lose this {inputType} you cannot recover your backup.",
+  "@recoverbullMemorizeWarning": {
+    "description": "Warning message about memorizing PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullPassword": "Password",
+  "@recoverbullPassword": {
+    "description": "Label for password input type"
+  },
+  "recoverbullPasswordMismatch": "Passwords do not match",
+  "@recoverbullPasswordMismatch": {
+    "description": "Validation error when passwords don't match"
+  },
+  "recoverbullPasswordRequired": "Password is required",
+  "@recoverbullPasswordRequired": {
+    "description": "Validation error when password field is empty"
+  },
+  "recoverbullPasswordTooCommon": "This password is too common. Please choose a different one",
+  "@recoverbullPasswordTooCommon": {
+    "description": "Validation error for commonly used passwords"
+  },
+  "recoverbullPasswordTooShort": "Password must be at least 6 characters long",
+  "@recoverbullPasswordTooShort": {
+    "description": "Validation error for passwords under minimum length"
+  },
+  "recoverbullPIN": "PIN",
+  "@recoverbullPIN": {
+    "description": "Label for PIN input type"
+  },
+  "recoverbullPleaseWait": "Please wait while we establish a secure connection...",
+  "@recoverbullPleaseWait": {
+    "description": "Message shown during connection establishment"
+  },
+  "recoverbullReenterConfirm": "Please re-enter your {inputType} to confirm.",
+  "@recoverbullReenterConfirm": {
+    "description": "Instruction to re-enter PIN or password for confirmation",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullReenterRequired": "Re-enter your {inputType}",
+  "@recoverbullReenterRequired": {
+    "description": "Label for confirmation input field",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullRecoverBullServer": "RecoverBull Server",
+  "@recoverbullRecoverBullServer": {
+    "description": "Label for RecoverBull server connection status"
+  },
+  "recoverbullRetry": "Retry",
+  "@recoverbullRetry": {
+    "description": "Button text to retry failed operation"
+  },
+  "recoverbullSecureBackup": "Secure your backup",
+  "@recoverbullSecureBackup": {
+    "description": "Screen title for backup security setup"
+  },
+  "recoverbullSeeMoreVaults": "See more vaults",
+  "@recoverbullSeeMoreVaults": {
+    "description": "Button text to view additional vault options"
+  },
   "recoverbullSelectRecoverWallet": "Recover Wallet",
   "@recoverbullSelectRecoverWallet": {
     "description": "AppBar title for initial provider selection screen"
@@ -6751,6 +7000,75 @@
   "recoverbullSelectBackupFileNotValidError": "Recoverbull backup file is not valid",
   "@recoverbullSelectBackupFileNotValidError": {
     "description": "Error when selected file is not a valid RecoverBull backup format"
+  },
+  "recoverbullSelectVaultProvider": "Select Vault Provider",
+  "@recoverbullSelectVaultProvider": {
+    "description": "Screen title for vault provider selection"
+  },
+  "recoverbullSwitchToPassword": "Pick a password instead",
+  "@recoverbullSwitchToPassword": {
+    "description": "Button text to switch from PIN to password input"
+  },
+  "recoverbullSwitchToPIN": "Pick a PIN instead",
+  "@recoverbullSwitchToPIN": {
+    "description": "Button text to switch from password to PIN input"
+  },
+  "recoverbullTestBackupDescription": "Now let's test your backup to make sure everything was done properly.",
+  "@recoverbullTestBackupDescription": {
+    "description": "Description message before testing backup"
+  },
+  "recoverbullTestCompletedTitle": "Test completed successfully!",
+  "@recoverbullTestCompletedTitle": {
+    "description": "Success title after completing backup test"
+  },
+  "recoverbullTestRecovery": "Test Recovery",
+  "@recoverbullTestRecovery": {
+    "description": "Button text to initiate recovery test"
+  },
+  "recoverbullTestSuccessDescription": "You are able to recover access to a lost Bitcoin wallet",
+  "@recoverbullTestSuccessDescription": {
+    "description": "Description shown after successful recovery test"
+  },
+  "recoverbullTorNetwork": "Tor Network",
+  "@recoverbullTorNetwork": {
+    "description": "Label for Tor network connection status"
+  },
+  "recoverbullTransactions": "Transactions: {count}",
+  "@recoverbullTransactions": {
+    "description": "Label showing transaction count during vault recovery",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullVaultCreatedSuccess": "Vault created successfully",
+  "@recoverbullVaultCreatedSuccess": {
+    "description": "Success message after vault creation"
+  },
+  "recoverbullVaultImportedSuccess": "Your vault was successfully imported",
+  "@recoverbullVaultImportedSuccess": {
+    "description": "Success message after vault import"
+  },
+  "recoverbullVaultKey": "Vault Key",
+  "@recoverbullVaultKey": {
+    "description": "Screen title and label for vault key"
+  },
+  "recoverbullVaultKeyInput": "Vault Key",
+  "@recoverbullVaultKeyInput": {
+    "description": "Input field label for vault key entry"
+  },
+  "recoverbullVaultRecovery": "Vault Recovery",
+  "@recoverbullVaultRecovery": {
+    "description": "Screen title for vault recovery process"
+  },
+  "recoverbullVaultSelected": "Vault Selected",
+  "@recoverbullVaultSelected": {
+    "description": "Screen title after vault has been selected"
+  },
+  "recoverbullWaiting": "Waiting",
+  "@recoverbullWaiting": {
+    "description": "Status label indicating waiting state"
   },
   "recoverbullRecoveryTitle": "Recoverbull vault recovery",
   "@recoverbullRecoveryTitle": {
