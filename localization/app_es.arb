@@ -3119,24 +3119,24 @@
   "@gotItButton": {
     "description": "Etiqueta del botón para reconocer la prueba exitosa"
   },
-  "legacySeedsTitle": "Semillas heredadas",
-  "@legacySeedsTitle": {
+  "legacySeedViewScreenTitle": "Semillas heredadas",
+  "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "noLegacySeedsFound": "No se encontraron semillas heredadas.",
-  "@noLegacySeedsFound": {
+  "legacySeedViewNoSeedsMessage": "No se encontraron semillas heredadas.",
+  "@legacySeedViewNoSeedsMessage": {
     "description": "Mensaje mostrado cuando no se encuentran semillas heredadas"
   },
-  "mnemonicLabel": "Mnemónico",
-  "@mnemonicLabel": {
+  "legacySeedViewMnemonicLabel": "Mnemónico",
+  "@legacySeedViewMnemonicLabel": {
     "description": "Etiqueta para palabras mnemónicas"
   },
-  "passphrasesLabel": "Frases de contraseña:",
-  "@passphrasesLabel": {
+  "legacySeedViewPassphrasesLabel": "Frases de contraseña:",
+  "@legacySeedViewPassphrasesLabel": {
     "description": "Etiqueta para la sección de frases de contraseña"
   },
-  "emptyPassphrase": "(vacía)",
-  "@emptyPassphrase": {
+  "legacySeedViewEmptyPassphrase": "(vacía)",
+  "@legacySeedViewEmptyPassphrase": {
     "description": "Texto mostrado para frase de contraseña vacía"
   },
   "enterBackupKeyManuallyTitle": "Ingresar clave de respaldo manualmente",
@@ -7239,18 +7239,6 @@
         "type": "int"
       }
     }
-  },
-  "legacySeedsNoSeeds": "No se encontraron semillas heredadas.",
-  "@legacySeedsNoSeeds": {
-    "description": "Empty state message when no legacy seeds exist"
-  },
-  "legacySeedsMnemonic": "Mnemónica",
-  "@legacySeedsMnemonic": {
-    "description": "Label for mnemonic display in legacy seed card"
-  },
-  "legacySeedsLoading": "Cargando semillas heredadas...",
-  "@legacySeedsLoading": {
-    "description": "Loading message while fetching legacy seeds"
   },
   "broadcastSignedTxTitle": "Transmitir transacción",
   "@broadcastSignedTxTitle": {
