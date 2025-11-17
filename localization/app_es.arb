@@ -68,6 +68,79 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
+  "pinCodeAuthentication": "Autenticación",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeCreateTitle": "Crear nuevo PIN",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeCreateDescription": "Su PIN protege el acceso a su billetera y configuración. Manténgalo memorable.",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeMinLengthError": "El PIN debe tener al menos {minLength} dígitos",
+  "@pinCodeMinLengthError": {
+    "description": "Error message when PIN is too short",
+    "placeholders": {
+      "minLength": {
+        "type": "String"
+      }
+    }
+  },
+  "pinCodeConfirmTitle": "Confirmar nuevo PIN",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeMismatchError": "Los PINs no coinciden",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "pinCodeSecurityPinTitle": "PIN de seguridad",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeManageTitle": "Administrar su PIN de seguridad",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "pinCodeChangeButton": "Cambiar PIN",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCreateButton": "Crear PIN",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeRemoveButton": "Eliminar PIN de seguridad",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "pinCodeContinue": "Continuar",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "pinCodeConfirm": "Confirmar",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
+  "pinCodeLoading": "Cargando",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "pinCodeCheckingStatus": "Verificando estado del PIN",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeProcessing": "Procesando",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeSettingUp": "Configurando su código PIN",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
+  },
   "settingsCurrencyTitle": "Moneda",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"

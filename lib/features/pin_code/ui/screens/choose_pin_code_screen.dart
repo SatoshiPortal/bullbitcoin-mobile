@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -21,7 +22,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           onBack: () => context.pop(),
-          title: "Authentication",
+          title: context.loc.pinCodeAuthentication,
         ),
       ),
       body: SafeArea(
@@ -36,7 +37,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                     children: [
                       const Gap(30),
                       Text(
-                        'Create new pin',
+                        context.loc.pinCodeCreateTitle,
                         textAlign: TextAlign.center,
                         style: context.font.headlineMedium?.copyWith(
                           color: context.colour.outline,
@@ -45,7 +46,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                       ),
                       const Gap(16),
                       Text(
-                        'Your PIN protects access to your wallet and settings. Keep it memorable.',
+                        context.loc.pinCodeCreateDescription,
                         textAlign: TextAlign.center,
                         style: context.font.bodyMedium?.copyWith(
                           color: context.colour.outline,
@@ -87,7 +88,9 @@ class ChoosePinCodeScreen extends StatelessWidget {
                                       .pinCode
                                       .isNotEmpty
                               ? Text(
-                                'PIN must be at least ${context.read<PinCodeSettingBloc>().state.minPinCodeLength} digits long',
+                                context.loc.pinCodeMinLengthError(
+                                  context.read<PinCodeSettingBloc>().state.minPinCodeLength.toString(),
+                                ),
                                 textAlign: TextAlign.start,
                                 style: context.font.labelSmall?.copyWith(
                                   color: context.colour.error,
@@ -147,7 +150,7 @@ class _ConfirmButton extends StatelessWidget {
         selector: (state) => state.isValidPinCode,
         builder: (context, isValidPinCode) {
           return BBButton.big(
-            label: 'Continue',
+            label: context.loc.pinCodeContinue,
             textStyle: context.font.headlineLarge,
             disabled: !isValidPinCode,
             bgColor:
