@@ -487,6 +487,43 @@ class LwkWalletDatasource {
     }
   }
 
+  Future<int> getAmountSentToAddress(
+    String pset,
+    String address, {
+    required WalletModel wallet,
+  }) async {
+    try {
+      final lwkWallet = await _createPublicWallet(wallet);
+      final decoded = await lwkWallet.decodeTx(pset: pset);
+
+      // Get the L-BTC asset ID for the network
+      final network =
+          wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet;
+      final lbtcAssetId = _lBtcAssetId(network);
+
+      // Find the L-BTC balance in the decoded amounts
+      final lbtcBalance = decoded.balances.firstWhere(
+        (balance) => balance.assetId == lbtcAssetId,
+        orElse: () => throw Exception('L-BTC balance not found in PSET'),
+      );
+
+      // The balance value in PsetAmounts represents the net balance change
+      // (negative for sends). The absolute value includes both output and fees.
+      // So: output amount = |balance| - fees
+      final balanceAbs = lbtcBalance.value.abs();
+      final fees = decoded.absoluteFees.toInt();
+      final outputAmount = balanceAbs - fees;
+
+      return outputAmount;
+    } catch (e) {
+      if (e is lwk.LwkError) {
+        throw e.msg;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
   Future<Map<String, ({String standard, String confidential, int index})>>
   _getUsedAddressesMap({
     required WalletModel wallet,

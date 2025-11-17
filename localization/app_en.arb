@@ -2285,7 +2285,7 @@
   "@fundExchangeWarningTactic8": {
     "description": "Eighth scammer tactic warning"
   },
-  "fundExchangeWarningConfirmation": "I confirm that I am not being asked asked to buy Bitcoin by someone else.",
+  "fundExchangeWarningConfirmation": "I confirm that I am not being asked to buy Bitcoin by someone else.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
   },

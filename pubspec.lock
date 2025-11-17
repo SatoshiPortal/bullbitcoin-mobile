@@ -200,8 +200,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "187237ae477b09964f8580e24d7155c4e70254e4"
-      resolved-ref: "187237ae477b09964f8580e24d7155c4e70254e4"
+      ref: "9bd530462e9638d6088bc6998bebc0dd76dde1ca"
+      resolved-ref: "9bd530462e9638d6088bc6998bebc0dd76dde1ca"
       url: "https://github.com/SatoshiPortal/boltz-dart"
     source: git
     version: "0.2.1"
@@ -1641,8 +1641,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: e3ada75cbf0992d6a60729bf29342ddc4915a3d0
-      resolved-ref: e3ada75cbf0992d6a60729bf29342ddc4915a3d0
+      ref: "7d7e67afa24d0ec70928831564f5d9d083ed6053"
+      resolved-ref: "7d7e67afa24d0ec70928831564f5d9d083ed6053"
       url: "https://github.com/SatoshiPortal/dart-satoshifier"
     source: git
     version: "0.0.1"
@@ -1936,10 +1936,10 @@ packages:
     dependency: transitive
     description:
       name: universal_io
-      sha256: "1722b2dcc462b4b2f3ee7d188dad008b6eb4c40bbd03a3de451d82c78bba9aad"
+      sha256: ba9dde5f7c6d8ec7ed856bef0eb01c425881acae7748f77dac4d5cc46f2edf04
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.2"
+    version: "2.2.3"
   universal_platform:
     dependency: transitive
     description:
