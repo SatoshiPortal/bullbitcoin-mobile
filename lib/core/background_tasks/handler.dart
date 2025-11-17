@@ -51,16 +51,22 @@ Future<bool> tasksHandler(String task) async {
         }
       case BackgroundTask.swapsSync:
         final wallets = await getWalletsUsecase.execute();
-        if (wallets.isEmpty) log.warning('No wallets to sync');
-        await restartSwapWatcherUsecase.execute();
+        if (wallets.isEmpty) {
+          log.warning('No wallets to sync');
+        } else {
+          await restartSwapWatcherUsecase.execute();
+        }
       case BackgroundTask.logsPrune:
         await log.prune();
       case BackgroundTask.servicesCheck:
         final wallets = await getWalletsUsecase.execute();
-        if (wallets.isEmpty) log.warning('No wallets to check services status');
-        final defaultWallet = wallets.firstWhere((w) => w.isDefault);
-        final network = defaultWallet.network;
-        await checkAllServiceStatusUsecase.execute(network: network);
+        if (wallets.isEmpty) {
+          log.warning('No wallets to check services status');
+        } else {
+          final defaultWallet = wallets.firstWhere((w) => w.isDefault);
+          final network = defaultWallet.network;
+          await checkAllServiceStatusUsecase.execute(network: network);
+        }
     }
 
     final elapsedTime = DateTime.now().difference(startTime).inSeconds;
