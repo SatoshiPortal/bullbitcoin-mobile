@@ -493,7 +493,7 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       final decoded = await lwkWallet.decodeTx(pset: pset);
 
       // Get the L-BTC asset ID for the network

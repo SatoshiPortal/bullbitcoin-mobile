@@ -75,11 +75,11 @@
 		</array>
 		<key>BGTaskSchedulerPermittedIdentifiers</key>
 		<array>
-			<string>com.bullbitcoin.app.bitcoinSync</string>
-			<string>com.bullbitcoin.app.liquidSync</string>
-			<string>com.bullbitcoin.app.swapsSync</string>
-			<string>com.bullbitcoin.app.logsPrune</string>
-			<string>com.bullbitcoin.app.servicesCheck</string>
+			<string>com.bullbitcoin.mobile.bitcoin-sync-id</string>
+			<string>com.bullbitcoin.mobile.liquid-sync-id</string>
+			<string>com.bullbitcoin.mobile.swaps-sync-id</string>
+			<string>com.bullbitcoin.mobile.logs-prune-id</string>
+			<string>com.bullbitcoin.mobile.services-check-id</string>
 		</array>
 	</dict>
 </plist>

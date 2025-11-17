@@ -79,7 +79,7 @@ Future main() async {
       int delay = 0;
       for (final task in BackgroundTask.values) {
         await Workmanager().registerPeriodicTask(
-          "${task.name}-task-id",
+          task.id,
           task.name,
           frequency: Duration(minutes: 15 + delay),
           constraints: Constraints(

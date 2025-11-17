@@ -10,23 +10,23 @@ import workmanager
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
     WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.app.bitcoinSync",
+      withIdentifier: "com.bullbitcoin.mobile.bitcoin-sync-id",
       frequency: NSNumber(value: 20 * 60)
     )
     WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.app.liquidSync",
+      withIdentifier: "com.bullbitcoin.mobile.liquid-sync-id",
       frequency: NSNumber(value: 20 * 60)
     )
     WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.app.swapsSync",
+      withIdentifier: "com.bullbitcoin.mobile.swaps-sync-id",
       frequency: NSNumber(value: 20 * 60)
     )
     WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.app.logsPrune",
+      withIdentifier: "com.bullbitcoin.mobile.logs-prune-id",
       frequency: NSNumber(value: 20 * 60)
     )
     WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.app.servicesCheck",
+      withIdentifier: "com.bullbitcoin.mobile.services-check-id",
       frequency: NSNumber(value: 20 * 60)
     )
     
