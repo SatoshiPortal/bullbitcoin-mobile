@@ -125,6 +125,22 @@
   "@pinCodeConfirm": {
     "description": "Button label to confirm PIN entry"
   },
+  "pinCodeLoading": "Cargando",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "pinCodeCheckingStatus": "Verificando estado del PIN",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeProcessing": "Procesando",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeSettingUp": "Configurando su código PIN",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
+  },
   "settingsCurrencyTitle": "Moneda",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"

@@ -125,6 +125,22 @@
   "@pinCodeConfirm": {
     "description": "Libellé du bouton pour confirmer la saisie du code PIN"
   },
+  "pinCodeLoading": "Chargement",
+  "@pinCodeLoading": {
+    "description": "Titre de l'écran d'état lors du chargement des paramètres du code PIN"
+  },
+  "pinCodeCheckingStatus": "Vérification du statut du code PIN",
+  "@pinCodeCheckingStatus": {
+    "description": "Description de l'écran d'état lors de la vérification du statut du code PIN"
+  },
+  "pinCodeProcessing": "Traitement",
+  "@pinCodeProcessing": {
+    "description": "Titre de l'écran d'état lors du traitement des modifications du code PIN"
+  },
+  "pinCodeSettingUp": "Configuration de votre code PIN",
+  "@pinCodeSettingUp": {
+    "description": "Description de l'écran d'état lors de la configuration du code PIN"
+  },
   "settingsCurrencyTitle": "Devise",
   "@settingsCurrencyTitle": {
     "description": "Titre de la section des paramètres de devise dans le menu des paramètres"
