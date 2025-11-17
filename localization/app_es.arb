@@ -873,6 +873,71 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
+  "receiveCopyAddressOnly": "Copiar o escanear solo la dirección",
+  "@receiveCopyAddressOnly": {
+    "description": "Opción para copiar o escanear solo la dirección sin el monto u otros detalles"
+  },
+  "receiveError": "Error: {error}",
+  "@receiveError": {
+    "description": "Mensaje de error genérico con detalles del error",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveFeeExplanation": "Esta comisión se deducirá del monto enviado",
+  "@receiveFeeExplanation": {
+    "description": "Explicación de que las comisiones se deducen del monto enviado"
+  },
+  "receiveNotePlaceholder": "Nota",
+  "@receiveNotePlaceholder": {
+    "description": "Texto de marcador de posición para el campo de entrada de nota"
+  },
+  "receiveReceiveAmount": "Monto a recibir",
+  "@receiveReceiveAmount": {
+    "description": "Etiqueta para el monto que se recibirá después de las comisiones"
+  },
+  "receiveSendNetworkFee": "Comisión de red de envío",
+  "@receiveSendNetworkFee": {
+    "description": "Etiqueta para la comisión de red en la red de envío en una transacción de intercambio"
+  },
+  "receiveServerNetworkFees": "Comisiones de red del servidor",
+  "@receiveServerNetworkFees": {
+    "description": "Etiqueta para las comisiones de red cobradas por el servidor de intercambio"
+  },
+  "receiveSwapId": "ID de intercambio",
+  "@receiveSwapId": {
+    "description": "Etiqueta para el identificador de intercambio en una transacción de recepción"
+  },
+  "receiveTransferFee": "Comisión de transferencia",
+  "@receiveTransferFee": {
+    "description": "Etiqueta para la comisión de transferencia en una transacción de recepción"
+  },
+  "receiveVerifyAddressError": "No se puede verificar la dirección: Falta información de la billetera o de la dirección",
+  "@receiveVerifyAddressError": {
+    "description": "Mensaje de error cuando no es posible verificar la dirección"
+  },
+  "receiveVerifyAddressLedger": "Verificar dirección en Ledger",
+  "@receiveVerifyAddressLedger": {
+    "description": "Etiqueta del botón para verificar una dirección en una billetera de hardware Ledger"
+  },
+  "receiveBitcoinConfirmationMessage": "La transacción Bitcoin tomará tiempo en confirmarse.",
+  "@receiveBitcoinConfirmationMessage": {
+    "description": "Mensaje de información sobre el tiempo de confirmación de la transacción Bitcoin"
+  },
+  "receiveLiquidConfirmationMessage": "Se confirmará en pocos segundos",
+  "@receiveLiquidConfirmationMessage": {
+    "description": "Mensaje que indica un tiempo de confirmación rápido para transacciones Liquid"
+  },
+  "receiveWaitForPayjoin": "Espere a que el remitente termine la transacción payjoin",
+  "@receiveWaitForPayjoin": {
+    "description": "Instrucciones para esperar al remitente durante una transacción payjoin"
+  },
+  "receivePayjoinFailQuestion": "¿No tiene tiempo para esperar o falló el payjoin del lado del remitente?",
+  "@receivePayjoinFailQuestion": {
+    "description": "Pregunta que solicita al usuario si desea proceder sin payjoin"
+  },
   "buyTitle": "Comprar Bitcoin",
   "@buyTitle": {
     "description": "Título de la pantalla para comprar Bitcoin"
