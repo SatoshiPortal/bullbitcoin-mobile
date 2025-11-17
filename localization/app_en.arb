@@ -800,6 +800,71 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
+  "receiveCopyAddressOnly": "Copy or scan address only",
+  "@receiveCopyAddressOnly": {
+    "description": "Option to copy or scan only the address without amount or other details"
+  },
+  "receiveError": "Error: {error}",
+  "@receiveError": {
+    "description": "Generic error message with error details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveFeeExplanation": "This fee will be deducted from the amount sent",
+  "@receiveFeeExplanation": {
+    "description": "Explanation that fees are deducted from the sent amount"
+  },
+  "receiveNotePlaceholder": "Note",
+  "@receiveNotePlaceholder": {
+    "description": "Placeholder text for note input field"
+  },
+  "receiveReceiveAmount": "Receive Amount",
+  "@receiveReceiveAmount": {
+    "description": "Label for the amount that will be received after fees"
+  },
+  "receiveSendNetworkFee": "Send Network Fee",
+  "@receiveSendNetworkFee": {
+    "description": "Label for the network fee on the sending network in a swap transaction"
+  },
+  "receiveServerNetworkFees": "Server Network Fees",
+  "@receiveServerNetworkFees": {
+    "description": "Label for network fees charged by the swap server"
+  },
+  "receiveSwapId": "Swap ID",
+  "@receiveSwapId": {
+    "description": "Label for the swap identifier in a receive transaction"
+  },
+  "receiveTransferFee": "Transfer Fee",
+  "@receiveTransferFee": {
+    "description": "Label for the transfer fee in a receive transaction"
+  },
+  "receiveVerifyAddressError": "Unable to verify address: Missing wallet or address information",
+  "@receiveVerifyAddressError": {
+    "description": "Error message when address verification is not possible"
+  },
+  "receiveVerifyAddressLedger": "Verify Address on Ledger",
+  "@receiveVerifyAddressLedger": {
+    "description": "Button label for verifying an address on a Ledger hardware wallet"
+  },
+  "receiveBitcoinConfirmationMessage": "Bitcoin transaction will take a while to confirm.",
+  "@receiveBitcoinConfirmationMessage": {
+    "description": "Information message about Bitcoin transaction confirmation time"
+  },
+  "receiveLiquidConfirmationMessage": "It will be confirmed in a few seconds",
+  "@receiveLiquidConfirmationMessage": {
+    "description": "Message indicating quick confirmation time for Liquid transactions"
+  },
+  "receiveWaitForPayjoin": "Wait for the sender to finish the payjoin transaction",
+  "@receiveWaitForPayjoin": {
+    "description": "Instructions to wait for the sender during a payjoin transaction"
+  },
+  "receivePayjoinFailQuestion": "No time to wait or did the payjoin fail on the sender's side?",
+  "@receivePayjoinFailQuestion": {
+    "description": "Question prompting user if they want to proceed without payjoin"
+  },
   "buyTitle": "Buy Bitcoin",
   "@buyTitle": {
     "description": "Screen title for buying Bitcoin"

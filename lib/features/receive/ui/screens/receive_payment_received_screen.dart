@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -29,7 +30,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
           flexibleSpace: TopBar(
-            title: 'Receive',
+            title: context.loc.receiveTitle,
             actionIcon: Icons.close,
             onAction: () => context.go(WalletRoute.walletHome.path),
           ),
@@ -67,7 +68,7 @@ class PaymentReceivedPage extends StatelessWidget {
             width: 100,
           ),
           const Gap(20),
-          BBText('Payment received', style: context.font.headlineLarge),
+          BBText(context.loc.receivePaymentReceived, style: context.font.headlineLarge),
           const Gap(24),
           CurrencyText(
             finalAmount,
@@ -97,7 +98,7 @@ class ReceiveDetailsButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: BBButton.big(
-        label: 'Details',
+        label: context.loc.receiveDetails,
         onPressed: () {
           final transaction = context.read<ReceiveBloc>().state.transaction;
           if (transaction.walletTransaction != null) {
