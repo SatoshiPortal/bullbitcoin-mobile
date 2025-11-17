@@ -166,9 +166,15 @@ class _PayRecipientsTab extends StatefulWidget {
 }
 
 class _PayRecipientsTabState extends State<_PayRecipientsTab> {
-  String _filterRecipientType = 'All types';
+  late String _filterRecipientType;
   String _filterCountry = 'CA';
   Recipient? _selectedRecipient;
+
+  @override
+  void initState() {
+    super.initState();
+    _filterRecipientType = context.loc.payAllTypes;
+  }
 
   void _onTypeFilterChanged(String filter) {
     setState(() {
@@ -180,17 +186,17 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
     setState(() {
       _filterCountry = filter;
       // Reset type filter when country changes
-      _filterRecipientType = 'All types';
+      _filterRecipientType = context.loc.payAllTypes;
     });
   }
 
   List<Recipient> _applyFilters(List<Recipient> allEligibleRecipients) {
     return allEligibleRecipients.where((recipient) {
       final typeMatch =
-          _filterRecipientType == 'All types' ||
+          _filterRecipientType == context.loc.payAllTypes ||
           recipient.recipientType.displayName == _filterRecipientType;
       final countryMatch =
-          _filterCountry == 'All countries' ||
+          _filterCountry == context.loc.payAllCountries ||
           recipient.recipientType.countryCode == _filterCountry;
       return typeMatch && countryMatch;
     }).toList();
