@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_cubit.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_state.dart';
@@ -89,7 +90,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
             ),
             child: Center(
               child: Text(
-                'Error: ${state.error}',
+                context.loc.psbtFlowError(state.error!),
                 style: context.font.bodyMedium?.copyWith(
                   color: context.colour.error,
                 ),
@@ -108,7 +109,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
             ),
             child: Center(
               child: Text(
-                'No parts to display',
+                context.loc.psbtFlowNoPartsToDisplay,
                 style: context.font.bodyMedium?.copyWith(
                   color: context.colour.error,
                 ),
@@ -156,7 +157,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
 
               if (state.parts.length > 1) ...[
                 BBText(
-                  'Part ${state.currentIndex + 1} of ${state.parts.length}',
+                  context.loc.psbtFlowPartProgress((state.currentIndex + 1).toString(), state.parts.length.toString()),
                   style: context.font.bodyMedium?.copyWith(
                     color: context.colour.secondary,
                   ),

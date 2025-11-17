@@ -6721,6 +6721,206 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
+  "psbtFlowSignTransaction": "Sign transaction",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "psbtFlowInstructions": "Instructions",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "psbtFlowDone": "I'm done",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "psbtFlowError": "Error: {error}",
+  "@psbtFlowError": {
+    "description": "Error message in psbt flow",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowNoPartsToDisplay": "No parts to display",
+  "@psbtFlowNoPartsToDisplay": {
+    "description": "Message when there are no QR code parts to show"
+  },
+  "psbtFlowPartProgress": "Part {current} of {total}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowKruxTitle": "Krux Instructions",
+  "@psbtFlowKruxTitle": {
+    "description": "Title for Krux device signing instructions"
+  },
+  "psbtFlowKeystoneTitle": "Keystone Instructions",
+  "@psbtFlowKeystoneTitle": {
+    "description": "Title for Keystone device signing instructions"
+  },
+  "psbtFlowPassportTitle": "Foundation Passport Instructions",
+  "@psbtFlowPassportTitle": {
+    "description": "Title for Foundation Passport device signing instructions"
+  },
+  "psbtFlowSeedSignerTitle": "SeedSigner Instructions",
+  "@psbtFlowSeedSignerTitle": {
+    "description": "Title for SeedSigner device signing instructions"
+  },
+  "psbtFlowSpecterTitle": "Specter Instructions",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "psbtFlowColdcardTitle": "Coldcard Q Instructions",
+  "@psbtFlowColdcardTitle": {
+    "description": "Title for Coldcard Q device signing instructions"
+  },
+  "psbtFlowJadeTitle": "Blockstream Jade PSBT Instructions",
+  "@psbtFlowJadeTitle": {
+    "description": "Title for Blockstream Jade PSBT signing instructions"
+  },
+  "psbtFlowLoginToDevice": "Login to your {device} device",
+  "@psbtFlowLoginToDevice": {
+    "description": "Instruction to login to hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowTurnOnDevice": "Turn on your {device} device",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowAddPassphrase": "Add a passphrase if you have one (optional)",
+  "@psbtFlowAddPassphrase": {
+    "description": "Optional instruction to add BIP39 passphrase"
+  },
+  "psbtFlowClickScan": "Click Scan",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "psbtFlowClickSign": "Click Sign",
+  "@psbtFlowClickSign": {
+    "description": "Instruction to click sign button on device"
+  },
+  "psbtFlowClickPsbt": "Click PSBT",
+  "@psbtFlowClickPsbt": {
+    "description": "Instruction to click PSBT option on device"
+  },
+  "psbtFlowLoadFromCamera": "Click Load from camera",
+  "@psbtFlowLoadFromCamera": {
+    "description": "Instruction to select camera load option on device"
+  },
+  "psbtFlowScanQrOption": "Select \"Scan QR\" option",
+  "@psbtFlowScanQrOption": {
+    "description": "Instruction to select scan QR menu option"
+  },
+  "psbtFlowScanAnyQr": "Select \"Scan any QR code\" option",
+  "@psbtFlowScanAnyQr": {
+    "description": "Instruction to select scan any QR code option"
+  },
+  "psbtFlowSignWithQr": "Click Sign with QR Code",
+  "@psbtFlowSignWithQr": {
+    "description": "Instruction to select QR code signing method"
+  },
+  "psbtFlowScanQrShown": "Scan the QR code shown in the Bull wallet",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "psbtFlowTroubleScanningTitle": "If you have trouble scanning:",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "psbtFlowIncreaseBrightness": "Increase screen brightness on your device",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "psbtFlowMoveLaser": "Move the red laser up and down over QR code",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "psbtFlowMoveBack": "Try moving your device back a little bit",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "psbtFlowHoldSteady": "Hold the QR code steady and centered",
+  "@psbtFlowHoldSteady": {
+    "description": "Troubleshooting tip to hold QR code still"
+  },
+  "psbtFlowMoveCloserFurther": "Try moving your device closer or further away",
+  "@psbtFlowMoveCloserFurther": {
+    "description": "Troubleshooting tip to adjust distance"
+  },
+  "psbtFlowReviewTransaction": "Once the transaction is imported in your {device}, review the destination address and the amount.",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowSelectSeed": "Once the transaction is imported in your {device}, you should select the seed you wish to sign with.",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowSignTransactionOnDevice": "Click the buttons to sign the transaction on your {device}.",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowDeviceShowsQr": "The {device} will then show you its own QR code.",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowClickDone": "Click \"I'm done\" in the Bull Bitcoin wallet.",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "psbtFlowScanDeviceQr": "The Bull Bitcoin wallet will ask you to scan the QR code on the {device}. Scan it.",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowTransactionImported": "The transaction will be imported in the Bull Bitcoin wallet.",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "psbtFlowReadyToBroadcast": "It's now ready to broadcast! As soon as you click broadcast, the transaction will be published on the Bitcoin network and the funds will be sent.",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
+  },
   "hwConnectTitle": "Connect Hardware Wallet",
   "@hwConnectTitle": {
     "description": "AppBar title for hardware wallet selection screen"
