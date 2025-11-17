@@ -1778,6 +1778,102 @@
   "@payAllTypes": {
     "description": "Option de filtre pour tous les types"
   },
+  "paySelectRecipient": "Sélectionner le destinataire",
+  "@paySelectRecipient": {
+    "description": "Titre de la barre d'application pour l'écran de sélection du destinataire"
+  },
+  "payWhoAreYouPaying": "Qui payez-vous?",
+  "@payWhoAreYouPaying": {
+    "description": "Question pour la sélection du destinataire"
+  },
+  "payNewRecipients": "Nouveaux destinataires",
+  "@payNewRecipients": {
+    "description": "Libellé de l'onglet pour les nouveaux destinataires"
+  },
+  "payMyFiatRecipients": "Mes destinataires fiat",
+  "@payMyFiatRecipients": {
+    "description": "Libellé de l'onglet pour les destinataires fiat enregistrés"
+  },
+  "payConfirmPayment": "Confirmer le paiement",
+  "@payConfirmPayment": {
+    "description": "Titre de l'écran de confirmation de paiement"
+  },
+  "payRecipientDetails": "Détails du destinataire",
+  "@payRecipientDetails": {
+    "description": "Libellé pour la section des détails du destinataire"
+  },
+  "payPayinAmount": "Montant à payer",
+  "@payPayinAmount": {
+    "description": "Libellé pour le montant à payer"
+  },
+  "payExchangeRate": "Taux de change",
+  "@payExchangeRate": {
+    "description": "Libellé pour le taux de change"
+  },
+  "payPayFromWallet": "Payer depuis le portefeuille",
+  "@payPayFromWallet": {
+    "description": "Libellé pour la sélection du portefeuille"
+  },
+  "payInstantPayments": "Paiements instantanés",
+  "@payInstantPayments": {
+    "description": "Description pour le portefeuille Lightning"
+  },
+  "paySecureBitcoinWallet": "Portefeuille Bitcoin sécurisé",
+  "@paySecureBitcoinWallet": {
+    "description": "Description pour le portefeuille Bitcoin standard"
+  },
+  "payFeePriority": "Priorité des frais",
+  "@payFeePriority": {
+    "description": "Libellé pour le paramètre de priorité des frais"
+  },
+  "payFastest": "Le plus rapide",
+  "@payFastest": {
+    "description": "Option de priorité des frais la plus rapide"
+  },
+  "payNetworkFees": "Frais de réseau",
+  "@payNetworkFees": {
+    "description": "Libellé pour les frais de réseau"
+  },
+  "payCalculating": "Calcul en cours...",
+  "@payCalculating": {
+    "description": "Texte d'état pendant le calcul des frais"
+  },
+  "payAdvancedSettings": "Paramètres avancés",
+  "@payAdvancedSettings": {
+    "description": "Libellé du bouton pour les paramètres avancés"
+  },
+  "paySelectWallet": "Sélectionner le portefeuille",
+  "@paySelectWallet": {
+    "description": "Titre de la barre d'application pour l'écran de sélection du portefeuille"
+  },
+  "payWhichWallet": "De quel portefeuille souhaitez-vous payer?",
+  "@payWhichWallet": {
+    "description": "Question pour la sélection du portefeuille"
+  },
+  "payExternalWallet": "Portefeuille externe",
+  "@payExternalWallet": {
+    "description": "Option pour le paiement depuis un portefeuille externe"
+  },
+  "payExternalWalletDescription": "Payer depuis un autre portefeuille Bitcoin",
+  "@payExternalWalletDescription": {
+    "description": "Description pour l'option de portefeuille externe"
+  },
+  "payInsufficientBalance": "Solde insuffisant dans le portefeuille sélectionné pour compléter cette commande de paiement.",
+  "@payInsufficientBalance": {
+    "description": "Message d'erreur pour solde insuffisant"
+  },
+  "payAdvancedOptions": "Options avancées",
+  "@payAdvancedOptions": {
+    "description": "Titre pour le panneau des options avancées"
+  },
+  "payRbfActivated": "Replace-by-fee activé",
+  "@payRbfActivated": {
+    "description": "Libellé pour le bouton RBF"
+  },
+  "paySelectCoinsManually": "Sélectionner les pièces manuellement",
+  "@paySelectCoinsManually": {
+    "description": "Libellé pour la sélection manuelle des pièces"
+  },
   "transactionTitle": "Transactions",
   "@transactionTitle": {
     "description": "Titre de l'écran des transactions"

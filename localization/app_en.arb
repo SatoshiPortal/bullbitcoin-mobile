@@ -1778,6 +1778,102 @@
   "@payAllTypes": {
     "description": "Filter option for all types"
   },
+  "paySelectRecipient": "Select recipient",
+  "@paySelectRecipient": {
+    "description": "AppBar title for recipient selection screen"
+  },
+  "payWhoAreYouPaying": "Who are you paying?",
+  "@payWhoAreYouPaying": {
+    "description": "Question prompt for recipient selection"
+  },
+  "payNewRecipients": "New recipients",
+  "@payNewRecipients": {
+    "description": "Tab label for new recipients"
+  },
+  "payMyFiatRecipients": "My fiat recipients",
+  "@payMyFiatRecipients": {
+    "description": "Tab label for saved fiat recipients"
+  },
+  "payConfirmPayment": "Confirm payment",
+  "@payConfirmPayment": {
+    "description": "Title for payment confirmation screen"
+  },
+  "payRecipientDetails": "Recipient details",
+  "@payRecipientDetails": {
+    "description": "Label for recipient details section"
+  },
+  "payPayinAmount": "Payin amount",
+  "@payPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "payExchangeRate": "Exchange rate",
+  "@payExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "payPayFromWallet": "Pay from wallet",
+  "@payPayFromWallet": {
+    "description": "Label for wallet selection"
+  },
+  "payInstantPayments": "Instant payments",
+  "@payInstantPayments": {
+    "description": "Description for Lightning wallet"
+  },
+  "paySecureBitcoinWallet": "Secure Bitcoin wallet",
+  "@paySecureBitcoinWallet": {
+    "description": "Description for standard Bitcoin wallet"
+  },
+  "payFeePriority": "Fee Priority",
+  "@payFeePriority": {
+    "description": "Label for fee priority setting"
+  },
+  "payFastest": "Fastest",
+  "@payFastest": {
+    "description": "Fastest fee priority option"
+  },
+  "payNetworkFees": "Network fees",
+  "@payNetworkFees": {
+    "description": "Label for network fees"
+  },
+  "payCalculating": "Calculating...",
+  "@payCalculating": {
+    "description": "Status text while calculating fees"
+  },
+  "payAdvancedSettings": "Advanced Settings",
+  "@payAdvancedSettings": {
+    "description": "Button label for advanced settings"
+  },
+  "paySelectWallet": "Select Wallet",
+  "@paySelectWallet": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "payWhichWallet": "Which wallet do you want to pay from?",
+  "@payWhichWallet": {
+    "description": "Question prompt for wallet selection"
+  },
+  "payExternalWallet": "External wallet",
+  "@payExternalWallet": {
+    "description": "Option for external wallet payment"
+  },
+  "payExternalWalletDescription": "Pay from another Bitcoin wallet",
+  "@payExternalWalletDescription": {
+    "description": "Description for external wallet option"
+  },
+  "payInsufficientBalance": "Insufficient balance in the selected wallet to complete this pay order.",
+  "@payInsufficientBalance": {
+    "description": "Error message for insufficient balance"
+  },
+  "payAdvancedOptions": "Advanced options",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "payRbfActivated": "Replace-by-fee activated",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "paySelectCoinsManually": "Select coins manually",
+  "@paySelectCoinsManually": {
+    "description": "Label for manual coin selection"
+  },
   "transactionTitle": "Transactions",
   "@transactionTitle": {
     "description": "Title for the transactions screen"

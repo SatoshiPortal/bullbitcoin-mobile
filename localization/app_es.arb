@@ -1778,6 +1778,102 @@
   "@payAllTypes": {
     "description": "Opción de filtro para todos los tipos"
   },
+  "paySelectRecipient": "Seleccionar destinatario",
+  "@paySelectRecipient": {
+    "description": "Título de la barra de aplicación para la pantalla de selección de destinatario"
+  },
+  "payWhoAreYouPaying": "¿A quién está pagando?",
+  "@payWhoAreYouPaying": {
+    "description": "Pregunta para la selección de destinatario"
+  },
+  "payNewRecipients": "Nuevos destinatarios",
+  "@payNewRecipients": {
+    "description": "Etiqueta de pestaña para nuevos destinatarios"
+  },
+  "payMyFiatRecipients": "Mis destinatarios fiat",
+  "@payMyFiatRecipients": {
+    "description": "Etiqueta de pestaña para destinatarios fiat guardados"
+  },
+  "payConfirmPayment": "Confirmar pago",
+  "@payConfirmPayment": {
+    "description": "Título para la pantalla de confirmación de pago"
+  },
+  "payRecipientDetails": "Detalles del destinatario",
+  "@payRecipientDetails": {
+    "description": "Etiqueta para la sección de detalles del destinatario"
+  },
+  "payPayinAmount": "Monto a pagar",
+  "@payPayinAmount": {
+    "description": "Etiqueta para el monto a pagar"
+  },
+  "payExchangeRate": "Tasa de cambio",
+  "@payExchangeRate": {
+    "description": "Etiqueta para la tasa de cambio"
+  },
+  "payPayFromWallet": "Pagar desde billetera",
+  "@payPayFromWallet": {
+    "description": "Etiqueta para la selección de billetera"
+  },
+  "payInstantPayments": "Pagos instantáneos",
+  "@payInstantPayments": {
+    "description": "Descripción para la billetera Lightning"
+  },
+  "paySecureBitcoinWallet": "Billetera Bitcoin segura",
+  "@paySecureBitcoinWallet": {
+    "description": "Descripción para la billetera Bitcoin estándar"
+  },
+  "payFeePriority": "Prioridad de comisión",
+  "@payFeePriority": {
+    "description": "Etiqueta para el ajuste de prioridad de comisión"
+  },
+  "payFastest": "Más rápido",
+  "@payFastest": {
+    "description": "Opción de prioridad de comisión más rápida"
+  },
+  "payNetworkFees": "Comisiones de red",
+  "@payNetworkFees": {
+    "description": "Etiqueta para las comisiones de red"
+  },
+  "payCalculating": "Calculando...",
+  "@payCalculating": {
+    "description": "Texto de estado mientras se calculan las comisiones"
+  },
+  "payAdvancedSettings": "Configuración avanzada",
+  "@payAdvancedSettings": {
+    "description": "Etiqueta del botón para configuración avanzada"
+  },
+  "paySelectWallet": "Seleccionar billetera",
+  "@paySelectWallet": {
+    "description": "Título de la barra de aplicación para la pantalla de selección de billetera"
+  },
+  "payWhichWallet": "¿Desde qué billetera desea pagar?",
+  "@payWhichWallet": {
+    "description": "Pregunta para la selección de billetera"
+  },
+  "payExternalWallet": "Billetera externa",
+  "@payExternalWallet": {
+    "description": "Opción para pago desde billetera externa"
+  },
+  "payExternalWalletDescription": "Pagar desde otra billetera Bitcoin",
+  "@payExternalWalletDescription": {
+    "description": "Descripción para la opción de billetera externa"
+  },
+  "payInsufficientBalance": "Saldo insuficiente en la billetera seleccionada para completar esta orden de pago.",
+  "@payInsufficientBalance": {
+    "description": "Mensaje de error para saldo insuficiente"
+  },
+  "payAdvancedOptions": "Opciones avanzadas",
+  "@payAdvancedOptions": {
+    "description": "Título para el panel de opciones avanzadas"
+  },
+  "payRbfActivated": "Replace-by-fee activado",
+  "@payRbfActivated": {
+    "description": "Etiqueta para el interruptor RBF"
+  },
+  "paySelectCoinsManually": "Seleccionar monedas manualmente",
+  "@paySelectCoinsManually": {
+    "description": "Etiqueta para la selección manual de monedas"
+  },
   "transactionTitle": "Transacciones",
   "@transactionTitle": {
     "description": "Título para la pantalla de transacciones"
