@@ -24,6 +24,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecas
 import 'package:bb_mobile/features/recoverbull/errors.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -108,12 +109,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   ) async {
     try {
       await _initializeTorUsecase.execute();
-      add(const OnServerCheck());
+      add(OnServerCheck(context: event.context));
     } catch (e) {
       log.severe('$OnTorInitialization failed: $e');
       emit(
         state.copyWith(
-          error: BullError(e.toString()),
+          error: event.context != null
+            ? BullError(e.toString())
+            : BullError(e.toString()),
           keyServerStatus: KeyServerStatus.offline,
         ),
       );
@@ -148,7 +151,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         log.severe('Recoverbull server is not ready after $retries retries');
         emit(
           state.copyWith(
-            error: KeyServerConnectionError(),
+            error: event.context != null
+              ? KeyServerConnectionError(event.context!)
+              : BullError('Key server connection failed'),
             keyServerStatus: KeyServerStatus.offline,
           ),
         );
@@ -165,7 +170,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.severe('$OnServerCheck: $e');
       emit(
         state.copyWith(
-          error: BullError(e.toString()),
+          error: event.context != null
+            ? BullError(e.toString())
+            : BullError(e.toString()),
           keyServerStatus: KeyServerStatus.offline,
         ),
       );
@@ -180,11 +187,17 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       case RecoverBullFlow.secureVault:
         emit(state.copyWith(vaultPassword: event.password));
       default:
-        if (state.vault == null) throw VaultIsNotSetError();
+        if (state.vault == null) {
+          if (event.context != null) {
+            throw VaultIsNotSetError(event.context!);
+          } else {
+            throw BullError('Vault is not set');
+          }
+        }
         emit(state.copyWith(vaultPassword: event.password));
 
         await _onFetchVaultKey(
-          OnVaultFetchKey(vault: state.vault!, password: event.password),
+          OnVaultFetchKey(vault: state.vault!, password: event.password, context: event.context),
           emit,
         );
     }
@@ -199,30 +212,39 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
       switch (state.flow) {
         case RecoverBullFlow.secureVault:
-          if (state.vaultPassword == null) throw PasswordIsNotSetError();
+          if (state.vaultPassword == null) {
+            if (event.context != null) {
+              throw PasswordIsNotSetError(event.context!);
+            } else {
+              throw BullError('Password is not set');
+            }
+          }
 
           await _onVaultCreation(
             OnVaultCreation(
               provider: event.provider,
               password: state.vaultPassword!,
+              context: event.context,
             ),
             emit,
           );
           emit(state.copyWith(vaultProvider: event.provider));
         case RecoverBullFlow.recoverVault:
           emit(state.copyWith(vaultProvider: event.provider));
-          add(OnVaultSelection(provider: event.provider));
+          add(OnVaultSelection(provider: event.provider, context: event.context));
         case RecoverBullFlow.testVault:
           emit(state.copyWith(vaultProvider: event.provider));
-          add(OnVaultSelection(provider: event.provider));
+          add(OnVaultSelection(provider: event.provider, context: event.context));
         case RecoverBullFlow.viewVaultKey:
           emit(state.copyWith(vaultProvider: event.provider));
-          add(OnVaultSelection(provider: event.provider));
+          add(OnVaultSelection(provider: event.provider, context: event.context));
       }
       log.fine('Vault provider ${event.provider.name} selected');
     } catch (e) {
       log.severe('$OnVaultProviderSelection: $e');
-      emit(state.copyWith(error: BullError(e.toString())));
+      emit(state.copyWith(error: event.context != null
+        ? BullError(e.toString())
+        : BullError(e.toString())));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -251,7 +273,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.fine('Vault selected');
     } catch (e) {
       log.severe('$OnVaultSelection: $e');
-      emit(state.copyWith(error: SelectVaultError()));
+      emit(state.copyWith(error: event.context != null
+        ? SelectVaultError(event.context!)
+        : BullError('Failed to select vault')));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -268,7 +292,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           await _createEncryptedVaultUsecase.execute();
 
       final isConnected = await _checkKeyServerConnectionUsecase.execute();
-      if (!isConnected) throw KeyServerConnectionError();
+      if (!isConnected) {
+        if (event.context != null) {
+          throw KeyServerConnectionError(event.context!);
+        } else {
+          throw BullError('Key server connection failed');
+        }
+      }
 
       switch (event.provider) {
         case VaultProvider.customLocation:
@@ -294,9 +324,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     } catch (e) {
       log.severe('$OnVaultCreation: $e');
       if (e is FormatException) {
-        emit(state.copyWith(error: TorResponseFormatExceptionError()));
+        emit(state.copyWith(error: event.context != null
+          ? TorResponseFormatExceptionError(event.context!)
+          : BullError('Tor response format error')));
       } else {
-        emit(state.copyWith(error: VaultCreationError()));
+        emit(state.copyWith(error: event.context != null
+          ? VaultCreationError(event.context!)
+          : BullError('Vault creation failed')));
       }
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -320,13 +354,17 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(vaultKey: vaultKey));
       log.fine('Vault key fetched from server');
 
-      await _onVaultDecryption(OnVaultDecryption(vaultKey: vaultKey), emit);
+      await _onVaultDecryption(OnVaultDecryption(vaultKey: vaultKey, context: event.context), emit);
     } catch (e) {
       log.severe('$OnVaultFetchKey: $e');
       if (e is FormatException) {
-        emit(state.copyWith(error: TorResponseFormatExceptionError()));
+        emit(state.copyWith(error: event.context != null
+          ? TorResponseFormatExceptionError(event.context!)
+          : BullError('Tor response format error')));
       } else {
-        emit(state.copyWith(error: VaultKeyFetchError()));
+        emit(state.copyWith(error: event.context != null
+          ? VaultKeyFetchError(event.context!)
+          : BullError('Failed to fetch vault key')));
       }
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -337,7 +375,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnVaultDecryption event,
     Emitter<RecoverBullState> emit,
   ) async {
-    if (state.vault == null) throw VaultIsNotSetError();
+    if (state.vault == null) {
+      if (event.context != null) {
+        throw VaultIsNotSetError(event.context!);
+      } else {
+        throw BullError('Vault is not set');
+      }
+    }
 
     final vaultKey = event.vaultKey;
     final vault = state.vault!;
@@ -362,7 +406,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
             decryptedVault: decryptedVault,
           );
           await _onVaultCheckStatus(
-            OnVaultCheckStatus(decryptedVault: decryptedVault),
+            OnVaultCheckStatus(decryptedVault: decryptedVault, context: event.context),
             emit,
           );
         case RecoverBullFlow.secureVault:
@@ -373,7 +417,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.fine('Vault decrypted');
     } catch (e) {
       log.severe('$OnVaultDecryption: $e');
-      emit(state.copyWith(error: VaultDecryptionError()));
+      emit(state.copyWith(error: event.context != null
+        ? VaultDecryptionError(event.context!)
+        : BullError('Vault decryption failed')));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -404,7 +450,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.fine('Vault Liquid status checked');
     } catch (e) {
       log.severe('$OnVaultCheckStatus: $e');
-      emit(state.copyWith(error: VaultCheckStatusError()));
+      emit(state.copyWith(error: event.context != null
+        ? VaultCheckStatusError(event.context!)
+        : BullError('Failed to check vault status')));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -414,8 +462,20 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnVaultRecovery event,
     Emitter<RecoverBullState> emit,
   ) async {
-    if (state.decryptedVault == null) throw DecryptedVaultIsNotSetError();
-    if (state.flow != RecoverBullFlow.recoverVault) throw InvalidFlowError();
+    if (state.decryptedVault == null) {
+      if (event.context != null) {
+        throw DecryptedVaultIsNotSetError(event.context!);
+      } else {
+        throw BullError('Decrypted vault is not set');
+      }
+    }
+    if (state.flow != RecoverBullFlow.recoverVault) {
+      if (event.context != null) {
+        throw InvalidFlowError(event.context!);
+      } else {
+        throw BullError('Invalid flow');
+      }
+    }
 
     try {
       emit(state.copyWith(isLoading: true));
@@ -426,7 +486,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(isFlowFinished: true));
     } catch (e) {
       log.severe('$OnVaultRecovery: $e');
-      emit(state.copyWith(error: VaultRecoveryError()));
+      emit(state.copyWith(error: event.context != null
+        ? VaultRecoveryError(event.context!)
+        : BullError('Vault recovery failed')));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
