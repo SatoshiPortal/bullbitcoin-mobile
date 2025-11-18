@@ -3,9 +3,8 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
-import 'package:bb_mobile/features/replace_by_fee/errors.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
-import 'package:flutter/material.dart';
+import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
@@ -41,18 +40,17 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
     );
   }
 
-  void clearError() => emit(state.copyWith(error: null));
+  void clearError() => emit(state.copyWith(errorKey: null));
 
   void reset() => emit(const ReplaceByFeeState());
 
-  Future<void> broadcast(BuildContext? context) async {
+  Future<void> broadcast() async {
     try {
+      emit(state.copyWith(errorKey: null));
+
       if (state.newFeeRate == null) {
-        if (context != null) {
-          throw NoFeeRateSelectedError(context);
-        } else {
-          throw ReplaceByFeeError('Please select a fee rate');
-        }
+        emit(state.copyWith(errorKey: 'replaceByFeeErrorNoFeeRateSelected'));
+        return;
       }
 
       final psbt = await bumpFeeUsecase.execute(
@@ -67,12 +65,13 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
       );
 
       emit(state.copyWith(txid: txid));
+    } on TransactionConfirmedException catch (_) {
+      emit(state.copyWith(errorKey: 'replaceByFeeErrorTransactionConfirmed'));
+    } on FeeRateTooLowException catch (_) {
+      emit(state.copyWith(errorKey: 'replaceByFeeErrorFeeRateTooLow'));
     } catch (e) {
-      if (e is ReplaceByFeeError) {
-        emit(state.copyWith(error: e));
-      } else {
-        emit(state.copyWith(error: ReplaceByFeeError(e.toString())));
-      }
+      // For any other errors, use a generic error key or the error message
+      emit(state.copyWith(errorKey: 'replaceByFeeErrorGeneric'));
     }
   }
 

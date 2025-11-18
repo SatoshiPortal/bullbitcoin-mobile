@@ -16,6 +16,19 @@ class ReplaceByFeeHomePage extends StatelessWidget {
 
   const ReplaceByFeeHomePage({super.key, required this.tx});
 
+  String _getLocalizedError(BuildContext context, String errorKey) {
+    switch (errorKey) {
+      case 'replaceByFeeErrorNoFeeRateSelected':
+        return context.loc.replaceByFeeErrorNoFeeRateSelected;
+      case 'replaceByFeeErrorTransactionConfirmed':
+        return context.loc.replaceByFeeErrorTransactionConfirmed;
+      case 'replaceByFeeErrorFeeRateTooLow':
+        return context.loc.replaceByFeeErrorFeeRateTooLow;
+      default:
+        return errorKey; // Fallback to the key itself for unknown errors
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,10 +62,10 @@ class ReplaceByFeeHomePage extends StatelessWidget {
                     txSize: tx.vsize,
                     onChanged: cubit.onChangeFee,
                   ),
-                  if (state.error != null) ...[
+                  if (state.errorKey != null) ...[
                     const Gap(16),
                     BBText(
-                      state.error!.message,
+                      _getLocalizedError(context, state.errorKey!),
                       style: context.font.bodyMedium,
                       color: context.colour.error,
                     ),
@@ -61,7 +74,7 @@ class ReplaceByFeeHomePage extends StatelessWidget {
 
                   BBButton.big(
                     label: context.loc.replaceByFeeBroadcastButton,
-                    onPressed: () => cubit.broadcast(context),
+                    onPressed: () => cubit.broadcast(),
                     bgColor: context.colour.secondary,
                     textColor: context.colour.onSecondary,
                   ),

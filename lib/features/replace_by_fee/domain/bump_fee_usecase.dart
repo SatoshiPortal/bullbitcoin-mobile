@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/features/replace_by_fee/errors.dart';
-import 'package:bdk_flutter/bdk_flutter.dart';
 
 class BumpFeeUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;
@@ -23,12 +21,7 @@ class BumpFeeUsecase {
       return psbt;
     } catch (e) {
       log.severe('$BumpFeeUsecase: $e');
-      if (e is TransactionConfirmedException) {
-        throw ReplaceByFeeError('The original transaction has been confirmed');
-      }
-      if (e is FeeRateTooLowException) {
-        throw ReplaceByFeeError('You need to increase the fee rate by at least 1 sat/vbyte compared to the original transaction');
-      }
+      // Re-throw BDK exceptions to be caught and handled by the cubit
       rethrow;
     }
   }
