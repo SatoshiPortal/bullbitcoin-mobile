@@ -227,7 +227,7 @@ class AddressErrorSection extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BBText(
-          balanceError.message,
+          context.loc.sendErrorInsufficientBalanceForPayment,
           style: context.font.bodyMedium,
           color: context.colour.error,
           textAlign: TextAlign.center,
@@ -237,7 +237,7 @@ class AddressErrorSection extends StatelessWidget {
     }
     if (swapError != null) {
       return BBText(
-        swapError.message,
+        context.loc.sendErrorSwapCreationFailed,
         style: context.font.bodyMedium,
         color: context.colour.error,
         textAlign: TextAlign.center,
@@ -246,7 +246,7 @@ class AddressErrorSection extends StatelessWidget {
     }
     if (invalidAddress != null) {
       return BBText(
-        invalidAddress.toString(),
+        context.loc.sendErrorInvalidAddressOrInvoice,
         style: context.font.bodyMedium,
         color: context.colour.error,
         textAlign: TextAlign.center,
@@ -398,12 +398,14 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               },
                               error:
                                   balanceError != null
-                                      ? balanceError.toString()
+                                      ? context.loc.sendErrorInsufficientBalanceForPayment
                                       : !walletHasBalance
                                       ? context.loc.sendInsufficientBalance
                                       : swapLimitsError != null
-                                      ? swapLimitsError.toString()
-                                      : swapCreationError?.toString(),
+                                      ? _getSwapLimitsErrorMessage(context, swapLimitsError)
+                                      : swapCreationError != null
+                                      ? context.loc.sendErrorSwapCreationFailed
+                                      : null,
                               focusNode: _amountFocusNode,
                               readOnly: _isMax,
                               isMax: _isMax,
@@ -492,7 +494,7 @@ class SendAmountConfirmButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.inputAmountSat,
     );
     return BBButton.big(
-      label: 'Continue',
+      label: context.loc.sendContinue,
       onPressed: () {
         context.read<SendCubit>().onAmountConfirmed();
       },
@@ -612,7 +614,7 @@ class _SendError extends StatelessWidget {
         child: Column(
           children: [
             BBText(
-              context.loc.sendCouldNotBuildTransaction,
+              context.loc.sendErrorBuildFailed,
               style: context.font.bodyLarge,
               color: context.colour.error,
               maxLines: 5,
@@ -636,7 +638,7 @@ class _SendError extends StatelessWidget {
         child: Column(
           children: [
             BBText(
-              confirmError.title,
+              context.loc.sendErrorConfirmationFailed,
               style: context.font.bodyLarge,
               color: context.colour.error,
               maxLines: 5,
@@ -1292,7 +1294,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           InfoRow(
-            title: 'Send Amount',
+            title: context.loc.sendSendAmount,
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -1745,5 +1747,20 @@ class SignLedgerButton extends StatelessWidget {
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
     );
+  }
+}
+
+/// Helper function to get localized error message for SwapLimitsException
+String _getSwapLimitsErrorMessage(BuildContext context, SwapLimitsException error) {
+  if (error.isBelowMinimum && error.minLimit != null) {
+    return context.loc.sendErrorAmountBelowMinimum(error.minLimit.toString());
+  } else if (error.isAboveMaximum && error.maxLimit != null) {
+    return context.loc.sendErrorAmountAboveMaximum(error.maxLimit.toString());
+  } else if (error.message.contains('Balance too low')) {
+    return context.loc.sendErrorBalanceTooLowForMinimum;
+  } else if (error.message.contains('exceeds maximum')) {
+    return context.loc.sendErrorAmountExceedsMaximum;
+  } else {
+    return context.loc.sendErrorAmountBelowSwapLimits;
   }
 }
