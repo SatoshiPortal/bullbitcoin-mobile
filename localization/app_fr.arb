@@ -6938,9 +6938,25 @@
       }
     }
   },
+  "recoverbullGoogleDriveErrorDeleteFailed": "Échec de la suppression de la sauvegarde du coffre-fort",
+  "@recoverbullGoogleDriveErrorDeleteFailed": {
+    "description": "Error message when deleting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Échec de l'exportation de la sauvegarde du coffre-fort",
+  "@recoverbullGoogleDriveErrorExportFailed": {
+    "description": "Error message when exporting a drive backup fails"
+  },
   "recoverbullGoogleDriveErrorFetchFailed": "Échec de la récupération de toutes les sauvegardes Drive",
   "@recoverbullGoogleDriveErrorFetchFailed": {
     "description": "Error message when fetching drive backups fails"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "Une erreur s'est produite. Veuillez réessayer.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Échec du chargement de la sauvegarde du coffre-fort",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
   },
   "recoverbullGoogleDriveExportButton": "Exporter",
   "@recoverbullGoogleDriveExportButton": {

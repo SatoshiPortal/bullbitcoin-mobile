@@ -6938,9 +6938,25 @@
       }
     }
   },
+  "recoverbullGoogleDriveErrorDeleteFailed": "Error al eliminar la copia de seguridad de la bóveda",
+  "@recoverbullGoogleDriveErrorDeleteFailed": {
+    "description": "Error message when deleting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Error al exportar la copia de seguridad de la bóveda",
+  "@recoverbullGoogleDriveErrorExportFailed": {
+    "description": "Error message when exporting a drive backup fails"
+  },
   "recoverbullGoogleDriveErrorFetchFailed": "Error al obtener todas las copias de seguridad de Drive",
   "@recoverbullGoogleDriveErrorFetchFailed": {
     "description": "Error message when fetching drive backups fails"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "Se produjo un error. Por favor, inténtelo de nuevo.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Error al cargar la copia de seguridad de la bóveda",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
   },
   "recoverbullGoogleDriveExportButton": "Exportar",
   "@recoverbullGoogleDriveExportButton": {

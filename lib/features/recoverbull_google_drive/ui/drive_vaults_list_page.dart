@@ -18,6 +18,21 @@ import 'package:intl/intl.dart';
 class DriveVaultsListPage extends StatelessWidget {
   const DriveVaultsListPage({super.key});
 
+  String _getLocalizedError(BuildContext context, String errorKey) {
+    switch (errorKey) {
+      case 'recoverbullGoogleDriveErrorFetchFailed':
+        return context.loc.recoverbullGoogleDriveErrorFetchFailed;
+      case 'recoverbullGoogleDriveErrorSelectFailed':
+        return context.loc.recoverbullGoogleDriveErrorSelectFailed;
+      case 'recoverbullGoogleDriveErrorDeleteFailed':
+        return context.loc.recoverbullGoogleDriveErrorDeleteFailed;
+      case 'recoverbullGoogleDriveErrorExportFailed':
+        return context.loc.recoverbullGoogleDriveErrorExportFailed;
+      default:
+        return context.loc.recoverbullGoogleDriveErrorGeneric;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context
@@ -25,7 +40,7 @@ class DriveVaultsListPage extends StatelessWidget {
           (bloc) => bloc.state,
         );
 
-    final error = state.error;
+    final errorKey = state.errorKey;
     final driveMetadata = state.driveMetadata;
 
     return Scaffold(
@@ -47,8 +62,8 @@ class DriveVaultsListPage extends StatelessWidget {
           ),
           Expanded(
             child:
-                error != null
-                    ? Center(child: Text(context.loc.recoverbullGoogleDriveErrorDisplay(error.toString())))
+                errorKey != null
+                    ? Center(child: Text(_getLocalizedError(context, errorKey)))
                     : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: SingleChildScrollView(
@@ -109,7 +124,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
                     onPressed: () {
                       context.pop();
                       bloc.add(
-                        OnExportDriveFile(fileMetadata: driveFileMetadata, context: context),
+                        OnExportDriveFile(fileMetadata: driveFileMetadata),
                       );
                     },
                     bgColor: context.colour.secondary,
@@ -172,7 +187,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
                     onPressed: () {
                       context.pop();
                       bloc.add(
-                        OnDeleteDriveFile(fileMetadata: driveFileMetadata, context: context),
+                        OnDeleteDriveFile(fileMetadata: driveFileMetadata),
                       );
                     },
                     bgColor: context.colour.primary,
@@ -203,7 +218,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
       ),
       onTap:
           () => bloc.add(
-            OnSelectDriveFileMetadata(fileMetadata: driveFileMetadata, context: context),
+            OnSelectDriveFileMetadata(fileMetadata: driveFileMetadata),
           ),
       onLongPress: () => _showActionsBottomSheet(context),
       enabled: !state.isLoading,

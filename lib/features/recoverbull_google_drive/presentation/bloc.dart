@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_al
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
-import 'package:bb_mobile/features/recoverbull_google_drive/errors.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/event.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,17 +40,13 @@ class RecoverBullGoogleDriveBloc
     Emitter<RecoverBullGoogleDriveState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true));
+      emit(state.copyWith(isLoading: true, errorKey: null));
       final driveMetadata = await _fetchAllDriveFileMetadataUsecase.execute();
       emit(state.copyWith(driveMetadata: driveMetadata));
       log.fine('$OnFetchDriveVaults ${driveMetadata.length} metadata found');
     } catch (e) {
       log.severe('$OnFetchDriveVaults: $e');
-      if (event.context != null) {
-        emit(state.copyWith(error: FetchAllDriveFilesError(event.context!)));
-      } else {
-        emit(state.copyWith(error: RecoverBullGoogleDriveError('Failed to fetch all drive backups')));
-      }
+      emit(state.copyWith(errorKey: 'recoverbullGoogleDriveErrorFetchFailed'));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -62,17 +57,13 @@ class RecoverBullGoogleDriveBloc
     Emitter<RecoverBullGoogleDriveState> emit,
   ) async {
     try {
-      emit(state.copyWith(error: null, selectedVault: null, isLoading: true));
+      emit(state.copyWith(errorKey: null, selectedVault: null, isLoading: true));
 
       final vault = await _fetchDriveVaultUsecase.execute(event.fileMetadata);
       emit(state.copyWith(selectedVault: vault));
     } catch (e) {
       log.severe('$OnSelectDriveFileMetadata: $e');
-      if (event.context != null) {
-        emit(state.copyWith(error: FetchAllDriveFilesError(event.context!)));
-      } else {
-        emit(state.copyWith(error: RecoverBullGoogleDriveError('Failed to fetch all drive backups')));
-      }
+      emit(state.copyWith(errorKey: 'recoverbullGoogleDriveErrorSelectFailed'));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -83,7 +74,7 @@ class RecoverBullGoogleDriveBloc
     Emitter<RecoverBullGoogleDriveState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true));
+      emit(state.copyWith(isLoading: true, errorKey: null));
       await _deleteDriveFileUsecase.execute(event.fileMetadata.id);
       final updatedMetadata =
           state.driveMetadata
@@ -93,11 +84,7 @@ class RecoverBullGoogleDriveBloc
       log.fine('$OnDeleteDriveFile succeed');
     } catch (e) {
       log.severe('$OnDeleteDriveFile: $e');
-      if (event.context != null) {
-        emit(state.copyWith(error: FetchAllDriveFilesError(event.context!)));
-      } else {
-        emit(state.copyWith(error: RecoverBullGoogleDriveError('Failed to fetch all drive backups')));
-      }
+      emit(state.copyWith(errorKey: 'recoverbullGoogleDriveErrorDeleteFailed'));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -108,16 +95,12 @@ class RecoverBullGoogleDriveBloc
     Emitter<RecoverBullGoogleDriveState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true));
+      emit(state.copyWith(isLoading: true, errorKey: null));
       await _exportDriveFileUsecase.execute(event.fileMetadata);
       log.fine('$OnExportDriveFile succeed');
     } catch (e) {
       log.severe('$OnExportDriveFile: $e');
-      if (event.context != null) {
-        emit(state.copyWith(error: FetchAllDriveFilesError(event.context!)));
-      } else {
-        emit(state.copyWith(error: RecoverBullGoogleDriveError('Failed to fetch all drive backups')));
-      }
+      emit(state.copyWith(errorKey: 'recoverbullGoogleDriveErrorExportFailed'));
     } finally {
       emit(state.copyWith(isLoading: false));
     }

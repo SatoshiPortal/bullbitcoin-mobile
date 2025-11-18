@@ -1,12 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:flutter/material.dart';
-
-class RecoverBullGoogleDriveError extends BullException {
-  RecoverBullGoogleDriveError(super.message);
-}
-
-class FetchAllDriveFilesError extends RecoverBullGoogleDriveError {
-  FetchAllDriveFilesError(BuildContext context)
-      : super(context.loc.recoverbullGoogleDriveErrorFetchFailed);
-}
+// Error handling for RecoverBull Google Drive feature
+// Errors are now handled using error keys instead of exception classes
+// See presentation/bloc.dart for error key emissions
+// See ui/drive_vaults_list_page.dart for error message localization
