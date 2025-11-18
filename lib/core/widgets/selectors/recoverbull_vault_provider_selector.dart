@@ -27,12 +27,9 @@ class RecoverbullVaultProviderSelector extends StatelessWidget {
         for (final provider in VaultProvider.values.where(
           (p) => p != VaultProvider.iCloud,
         )) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-            child: ProviderCard(
-              provider: provider,
-              onTap: () => onProviderSelected(provider),
-            ),
+          ProviderCard(
+            provider: provider,
+            onTap: () => onProviderSelected(provider),
           ),
           const Gap(12),
         ],

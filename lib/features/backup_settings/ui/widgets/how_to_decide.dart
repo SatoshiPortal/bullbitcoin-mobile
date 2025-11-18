@@ -70,13 +70,19 @@ class HowToDecideBackupOption extends StatelessWidget {
                           style: context.font.bodyMedium,
                           children: [
                             TextSpan(
-                              text: context.loc.backupWalletHowToDecideBackupPhysicalRecommendation,
+                              text:
+                                  context
+                                      .loc
+                                      .backupWalletHowToDecideBackupPhysicalRecommendation,
                               style: context.font.labelMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             TextSpan(
-                              text: context.loc.backupWalletHowToDecideBackupPhysicalRecommendationText,
+                              text:
+                                  context
+                                      .loc
+                                      .backupWalletHowToDecideBackupPhysicalRecommendationText,
                               style: context.font.labelMedium,
                             ),
                           ],
@@ -88,13 +94,19 @@ class HowToDecideBackupOption extends StatelessWidget {
                           style: context.font.bodyMedium,
                           children: [
                             TextSpan(
-                              text: context.loc.backupWalletHowToDecideBackupEncryptedRecommendation,
+                              text:
+                                  context
+                                      .loc
+                                      .backupWalletHowToDecideBackupEncryptedRecommendation,
                               style: context.font.labelMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             TextSpan(
-                              text: context.loc.backupWalletHowToDecideBackupEncryptedRecommendationText,
+                              text:
+                                  context
+                                      .loc
+                                      .backupWalletHowToDecideBackupEncryptedRecommendationText,
                               style: context.font.labelMedium,
                             ),
                           ],
@@ -108,124 +120,6 @@ class HowToDecideBackupOption extends StatelessWidget {
                           fontSize: 14,
                         ),
                       ),
-                      const Gap(20),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class HowToDecideVaultLocation extends StatelessWidget {
-  const HowToDecideVaultLocation({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      heightFactor: 0.75,
-      child: Container(
-        decoration: BoxDecoration(
-          color: context.colour.onPrimary,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 30),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Spacer(),
-                  BBText(
-                    context.loc.backupWalletHowToDecideBackupModalTitle,
-                    style: context.font.headlineMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Icon(Icons.close, color: context.colour.secondary),
-                  ),
-                ],
-              ),
-            ),
-            const Gap(32),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BBText(
-                        context.loc.backupWalletHowToDecideVaultCloudSecurity,
-                        style: context.font.labelMedium?.copyWith(
-                          height: 1.5,
-                          fontSize: 14,
-                        ),
-                        maxLines: 16,
-                      ),
-                      const Gap(32),
-                      BBText(
-                        context.loc.backupWalletHowToDecideVaultCustomLocation,
-                        style: context.font.labelMedium?.copyWith(
-                          height: 1.5,
-                          fontSize: 14,
-                        ),
-                        maxLines: 16,
-                      ),
-                      const Gap(12),
-                      RichText(
-                        text: TextSpan(
-                          style: context.font.bodyMedium,
-                          children: [
-                            TextSpan(
-                              text: context.loc.backupWalletHowToDecideVaultCustomRecommendation,
-                              style: context.font.labelMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            TextSpan(
-                              text: context.loc.backupWalletHowToDecideVaultCustomRecommendationText,
-                              style: context.font.labelMedium,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Gap(12),
-                      RichText(
-                        text: TextSpan(
-                          style: context.font.bodyMedium,
-                          children: [
-                            TextSpan(
-                              text: context.loc.backupWalletHowToDecideVaultCloudRecommendation,
-                              style: context.font.labelMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            TextSpan(
-                              text: context.loc.backupWalletHowToDecideVaultCloudRecommendationText,
-                              style: context.font.labelMedium,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Gap(12),
-                      BBText(
-                        context.loc.backupWalletHowToDecideVaultMoreInfo,
-                        style: context.font.labelMedium?.copyWith(
-                          height: 1.5,
-                          fontSize: 14,
-                        ),
-                      ),
-
                       const Gap(20),
                     ],
                   ),
