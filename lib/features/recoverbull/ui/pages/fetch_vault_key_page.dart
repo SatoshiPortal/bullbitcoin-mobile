@@ -114,6 +114,8 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
                 );
               case RecoverBullFlow.secureVault:
                 break; // should not fetch anything
+              case RecoverBullFlow.settings:
+                throw UnimplementedError();
             }
           }
         },

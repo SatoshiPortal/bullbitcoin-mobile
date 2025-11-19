@@ -1,18 +1,24 @@
+import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 class RecoverBullRemoteDatasource {
-  final Uri _address;
+  final RecoverbullSettingsDatasource _recoverbullSettingsDatasource;
   final TorDatasource _torDatasource;
 
-  RecoverBullRemoteDatasource(this._address, this._torDatasource);
+  RecoverBullRemoteDatasource({
+    required RecoverbullSettingsDatasource recoverbullSettingsDatasource,
+    required TorDatasource torDatasource,
+  }) : _recoverbullSettingsDatasource = recoverbullSettingsDatasource,
+       _torDatasource = torDatasource;
 
   Future<void> info() async {
     final client = _torDatasource.httpClient;
+    final url = await _recoverbullSettingsDatasource.fetch();
     try {
-      final info = await KeyServer(address: _address, client: client).infos();
+      final info = await KeyServer(address: url, client: client).infos();
       log.info('KeyServer canary: ${info.canary}');
     } catch (e) {
       log.severe('infos error: $e');
@@ -28,7 +34,8 @@ class RecoverBullRemoteDatasource {
   ) async {
     try {
       final client = _torDatasource.httpClient;
-      await KeyServer(address: _address, client: client).storeBackupKey(
+      final url = await _recoverbullSettingsDatasource.fetch();
+      await KeyServer(address: url, client: client).storeBackupKey(
         backupId: backupId,
         password: password,
         backupKey: backupKey,
@@ -47,8 +54,9 @@ class RecoverBullRemoteDatasource {
   ) async {
     try {
       final client = _torDatasource.httpClient;
+      final url = await _recoverbullSettingsDatasource.fetch();
       return await KeyServer(
-        address: _address,
+        address: url,
         client: client,
       ).fetchBackupKey(backupId: backupId, password: password, salt: salt);
     } catch (e) {
@@ -64,8 +72,9 @@ class RecoverBullRemoteDatasource {
   ) async {
     try {
       final client = _torDatasource.httpClient;
+      final url = await _recoverbullSettingsDatasource.fetch();
       await KeyServer(
-        address: _address,
+        address: url,
         client: client,
       ).trashBackupKey(backupId: backupId, password: password, salt: salt);
     } catch (e) {
@@ -82,7 +91,8 @@ class RecoverBullRemoteDatasource {
       }
 
       final client = _torDatasource.httpClient;
-      await KeyServer(address: _address, client: client).infos();
+      final url = await _recoverbullSettingsDatasource.fetch();
+      await KeyServer(address: url, client: client).infos();
     } catch (e) {
       log.severe('checkConnection: $e');
       rethrow;

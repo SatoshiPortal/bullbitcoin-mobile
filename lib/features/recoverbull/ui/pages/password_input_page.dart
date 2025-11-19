@@ -74,6 +74,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
           RecoverBullFlow.viewVaultKey => context.loc.recoverbullEnterInput(
             inputTypeString,
           ),
+          RecoverBullFlow.settings => throw UnimplementedError(),
         };
 
         final description = switch (state.flow) {
@@ -90,6 +91,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
           RecoverBullFlow.viewVaultKey => context.loc.recoverbullEnterToView(
             inputTypeString,
           ),
+          RecoverBullFlow.settings => throw UnimplementedError(),
         };
 
         return Scaffold(

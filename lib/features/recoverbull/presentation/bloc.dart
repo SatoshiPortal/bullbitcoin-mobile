@@ -99,8 +99,10 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     on<OnTorInitialization>(_onTorInitialization);
     on<OnClearError>(_onClearError);
 
-    add(const OnTorInitialization());
-    add(const OnServerCheck());
+    if (flow != RecoverBullFlow.settings) {
+      add(const OnTorInitialization());
+      add(const OnServerCheck());
+    }
   }
 
   Future<void> _onTorInitialization(
@@ -223,6 +225,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         case RecoverBullFlow.viewVaultKey:
           emit(state.copyWith(vaultProvider: event.provider));
           add(OnVaultSelection(provider: event.provider));
+        case RecoverBullFlow.settings:
+          throw UnimplementedError();
       }
       log.fine('Vault provider ${event.provider.name} selected');
     } catch (e) {
@@ -381,7 +385,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
             emit,
           );
         case RecoverBullFlow.secureVault:
-          return;
+          throw UnimplementedError();
+        case RecoverBullFlow.settings:
+          throw UnimplementedError();
       }
 
       emit(state.copyWith(vaultKey: vaultKey));
