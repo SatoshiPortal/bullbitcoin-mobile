@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -118,13 +119,18 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                         ),
                       ),
-                      const Gap(24),
-                      BBButton.big(
-                        label: 'Save',
-                        onPressed: () => _saveUrl(),
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onSecondary,
-                        disabled: _isSaving,
+                      const Spacer(),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: Device.screen.height * 0.05,
+                        ),
+                        child: BBButton.big(
+                          label: 'Save',
+                          onPressed: () => _saveUrl(),
+                          bgColor: context.colour.secondary,
+                          textColor: context.colour.onSecondary,
+                          disabled: _isSaving,
+                        ),
                       ),
                     ],
                   ),
