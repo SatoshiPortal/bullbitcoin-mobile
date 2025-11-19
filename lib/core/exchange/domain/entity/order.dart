@@ -222,7 +222,8 @@ enum OrderPaymentMethod {
   thinAir('Thin Air'),
   refundCrc('Refund to CRC Balance'),
   refundUsd('Refund to USD Balance'),
-  loadhub('Canada Post In-Person Deposit (CAD)');
+  loadhub('Canada Post In-Person Deposit (CAD)'),
+  unknown('Unknown');
 
   final String value;
   const OrderPaymentMethod(this.value);
@@ -230,7 +231,7 @@ enum OrderPaymentMethod {
   static OrderPaymentMethod fromValue(String value) {
     return OrderPaymentMethod.values.firstWhere(
       (e) => e.value == value,
-      orElse: () => throw Exception('Unknown OrderPaymentMethod: $value'),
+      orElse: () => OrderPaymentMethod.unknown,
     );
   }
 }
