@@ -38,6 +38,10 @@ class LabelRepository {
     return labelModels.map((model) => model.toEntity()).toList();
   }
 
+  Future<List<String>> fetchDistinct() async {
+    return await _labelDatasource.fetchDistinct();
+  }
+
   Future<void> trashAll() async {
     await _labelDatasource.trashAll();
   }
