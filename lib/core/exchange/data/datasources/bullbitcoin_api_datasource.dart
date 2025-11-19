@@ -34,7 +34,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
   @override
   Future<List<String>> get availableCurrencies async {
     // TODO: fetch the actual list of currencies from the api
-    return ['USD', 'CAD', 'MXN', 'CRC', 'EUR'];
+    return ['USD', 'CAD', 'MXN', 'CRC', 'EUR', 'ARS', 'COP'];
   }
 
   @override

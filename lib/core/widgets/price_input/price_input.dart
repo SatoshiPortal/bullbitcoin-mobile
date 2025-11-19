@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -247,22 +248,41 @@ class CurrencyBottomSheet extends StatelessWidget {
 }
 
 extension _CurrencyStrEx on String {
+  // This feels like it shouldn't be here and we should get this data differently
   String get currencyIcon {
     switch (this) {
       case 'USD':
-        return '🇺🇸';
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'US',
+        )['flag']!;
       case 'EUR':
-        return '🇪🇺';
-      case 'FR':
-        return '🇫🇷';
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'EU',
+        )['flag']!;
       case 'CAD':
-        return '🇨🇦';
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'CA',
+        )['flag']!;
       case 'INR':
-        return '🇮🇳';
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'IN',
+        )['flag']!;
       case 'CRC':
-        return '🇨🇷';
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'CR',
+        )['flag']!;
       case 'MXN':
-        return '🇲🇽';
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'MX',
+        )['flag']!;
+      case 'ARS':
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'AR',
+        )['flag']!;
+      case 'COP':
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'CO',
+        )['flag']!;
       case 'sats':
       case 'BTC':
       default:

@@ -1207,6 +1207,14 @@
   "@sellMxnBalance": {
     "description": "Display text for MXN balance payout method"
   },
+  "sellArsBalance": "ARS Balance",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellCopBalance": "COP Balance",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
   "sellPayinAmount": "Payin amount",
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"

@@ -1207,6 +1207,14 @@
   "@sellMxnBalance": {
     "description": "Texte d'affichage pour la méthode de paiement en solde MXN"
   },
+  "sellArsBalance": "Solde ARS",
+  "@sellArsBalance": {
+    "description": "Texte d'affichage pour la méthode de paiement en solde ARS"
+  },
+  "sellCopBalance": "Solde COP",
+  "@sellCopBalance": {
+    "description": "Texte d'affichage pour la méthode de paiement en solde COP"
+  },
   "sellPayinAmount": "Montant à payer",
   "@sellPayinAmount": {
     "description": "Libellé du montant que l'utilisateur paie"
