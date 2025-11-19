@@ -223,7 +223,9 @@ enum OrderPaymentMethod {
   refundCrc('Refund to CRC Balance'),
   refundUsd('Refund to USD Balance'),
   loadhub('Canada Post In-Person Deposit (CAD)'),
-  unknown('Unknown');
+  unknown(
+    'Unknown', // If we want this value to be parameterizable with the value of the unknown payment method, we shouldn't use an enum but classes with factory constructor
+  );
 
   final String value;
   const OrderPaymentMethod(this.value);
