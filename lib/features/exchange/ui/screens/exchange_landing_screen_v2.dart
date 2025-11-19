@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -8,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 class ExchangeLandingScreenV2 extends StatelessWidget {
   const ExchangeLandingScreenV2({super.key});
 
@@ -56,7 +56,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                         ),
                         const Gap(16),
                         BBText(
-                          'BULL BITCOIN',
+                          context.loc.exchangeBrandName,
                           style: AppFonts.textTitleTheme.textStyle.copyWith(
                             color: context.colour.onSecondary,
                             fontSize: 64,
@@ -64,7 +64,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                         ),
                         const Gap(12),
                         BBText(
-                          'Recommended Bitcoin Exchange',
+                          context.loc.exchangeLandingRecommendedExchange,
                           style: context.font.headlineSmall?.copyWith(
                             color: context.colour.onSecondary,
                           ),
@@ -87,42 +87,42 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         BBText(
-                          '• Buy Bitcoin straight to self-custody',
+                          context.loc.exchangeFeatureSelfCustody,
                           style: context.font.bodyLarge?.copyWith(
                             color: context.colour.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
-                          '• DCA, Limit orders and Auto-buy',
+                          context.loc.exchangeFeatureDcaOrders,
                           style: context.font.bodyLarge?.copyWith(
                             color: context.colour.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
-                          '• Sell Bitcoin, get paid with Bitcoin',
+                          context.loc.exchangeFeatureSellBitcoin,
                           style: context.font.bodyLarge?.copyWith(
                             color: context.colour.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
-                          '• Send bank transfers and pay bills',
+                          context.loc.exchangeFeatureBankTransfers,
                           style: context.font.bodyLarge?.copyWith(
                             color: context.colour.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
-                          '• Chat with customer support',
+                          context.loc.exchangeFeatureCustomerSupport,
                           style: context.font.bodyLarge?.copyWith(
                             color: context.colour.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
-                          '• Unified transaction history',
+                          context.loc.exchangeFeatureUnifiedHistory,
                           style: context.font.bodyLarge?.copyWith(
                             color: context.colour.onSecondary,
                           ),
@@ -152,7 +152,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               BBText(
-                                'Cryptocurrency exchange services are not available in the Bull Bitcoin mobile application.',
+                                context.loc.exchangeLandingDisclaimerNotAvailable,
                                 style: context.font.bodySmall?.copyWith(
                                   color: context.colour.onSecondary,
                                 ),
@@ -168,7 +168,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: BBButton.big(
-                      label: 'Go to Bull Bitcoin exchange website',
+                      label: context.loc.exchangeGoToWebsiteButton,
                       onPressed: () async {
                         final Uri url = Uri.parse(
                           'https://app.bullbitcoin.com',

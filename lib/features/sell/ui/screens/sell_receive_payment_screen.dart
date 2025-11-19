@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -59,7 +60,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
           children: [
             Center(
               child: BBText(
-                'Please pay this invoice',
+                context.loc.sellPleasePayInvoice,
                 style: context.font.headlineMedium,
               ),
             ),
@@ -68,7 +69,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   BBText(
-                    'Price will refresh in ',
+                    context.loc.sellPriceWillRefreshIn,
                     style: context.font.bodyMedium,
                     color: context.colour.outline,
                   ),
@@ -110,24 +111,26 @@ class SellReceivePaymentScreen extends StatelessWidget {
             const Gap(16),
             _buildDetailRow(
               context,
-              'Payout recipient',
+              context.loc.sellPayoutRecipient,
               order == null
-                  ? 'Loading...'
+                  ? context.loc.sellLoadingGeneric
                   : switch (order.payoutMethod) {
-                    OrderPaymentMethod.cadBalance => 'CAD Balance',
-                    OrderPaymentMethod.crcBalance => 'CRC Balance',
-                    OrderPaymentMethod.eurBalance => 'EUR Balance',
-                    OrderPaymentMethod.usdBalance => 'USD Balance',
-                    OrderPaymentMethod.mxnBalance => 'MXN Balance',
+                    OrderPaymentMethod.cadBalance => context.loc.sellCadBalance,
+                    OrderPaymentMethod.crcBalance => context.loc.sellCrcBalance,
+                    OrderPaymentMethod.eurBalance => context.loc.sellEurBalance,
+                    OrderPaymentMethod.usdBalance => context.loc.sellUsdBalance,
+                    OrderPaymentMethod.mxnBalance => context.loc.sellMxnBalance,
+                    OrderPaymentMethod.arsBalance => context.loc.sellArsBalance,
+                    OrderPaymentMethod.copBalance => context.loc.sellCopBalance,
                     _ => order.payoutMethod.name,
                   },
             ),
             const Gap(8),
             _buildDetailRow(
               context,
-              'Bitcoin amount',
+              context.loc.sellBitcoinAmount,
               order == null
-                  ? 'Loading...'
+                  ? context.loc.sellLoadingGeneric
                   : bitcoinUnit == BitcoinUnit.btc
                   ? FormatAmount.btc(order.payinAmount)
                   : FormatAmount.sats(
@@ -137,17 +140,17 @@ class SellReceivePaymentScreen extends StatelessWidget {
             const Gap(8),
             _buildDetailRow(
               context,
-              'Payout amount',
+              context.loc.sellPayoutAmount,
               order == null
-                  ? 'Loading...'
+                  ? context.loc.sellLoadingGeneric
                   : FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
             ),
             const Gap(8),
             _buildDetailRow(
               context,
-              'Bitcoin Price',
+              context.loc.sellBitcoinPriceLabel,
               order == null
-                  ? 'Loading...'
+                  ? context.loc.sellLoadingGeneric
                   : FormatAmount.fiat(
                     order.exchangeRateAmount ??
                         order.payoutAmount / order.payinAmount,
@@ -157,7 +160,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
             const Gap(8),
             _buildDetailRow(
               context,
-              'Order Number',
+              context.loc.sellOrderNumber,
               order?.orderNumber.toString() ?? 'Loading...',
               copyValue: order?.orderNumber.toString(),
             ),
@@ -166,7 +169,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: BBButton.big(
-                    label: 'Copy invoice',
+                    label: context.loc.sellCopyInvoice,
                     onPressed: () {
                       if (bip21InvoiceData.isNotEmpty) {
                         Clipboard.setData(
@@ -184,7 +187,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                 const Gap(16),
                 Expanded(
                   child: BBButton.big(
-                    label: 'Show QR code',
+                    label: context.loc.sellShowQrCode,
                     bgColor: Colors.transparent,
                     textColor: context.colour.secondary,
                     outlined: true,

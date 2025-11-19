@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -94,7 +95,7 @@ class PaySendPaymentScreen extends StatelessWidget {
             ),
             const Gap(24.0),
             Text(
-              'Confirm payment',
+              context.loc.payConfirmPayment,
               style: context.font.headlineMedium?.copyWith(
                 color: context.colour.secondary,
               ),
@@ -104,7 +105,7 @@ class PaySendPaymentScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Price will refresh in ',
+                  context.loc.payPriceRefreshIn,
                   style: context.font.bodyMedium?.copyWith(
                     color: context.colour.outline,
                   ),
@@ -123,12 +124,12 @@ class PaySendPaymentScreen extends StatelessWidget {
 
             const Gap(8.0),
             _DetailRow(
-              title: 'Order number',
+              title: context.loc.payOrderNumber,
               value: order?.orderNumber.toString(),
               copyValue: order?.orderNumber.toString(),
             ),
             _DetailRow(
-              title: 'Recipient type',
+              title: context.loc.payRecipientType,
               value:
                   recipient != null
                       ? switch (recipient.type) {
@@ -154,19 +155,22 @@ class PaySendPaymentScreen extends StatelessWidget {
                       }
                       : null,
             ),
-            _DetailRow(title: 'Recipient name', value: recipient?.displayName),
             _DetailRow(
-              title: 'Recipient details',
+              title: context.loc.payRecipientName,
+              value: recipient?.displayName,
+            ),
+            _DetailRow(
+              title: context.loc.payRecipientDetails,
               value:
                   recipient != null ? _getRecipientInfoValue(recipient) : null,
             ),
             const _Divider(),
             _DetailRow(
-              title: 'Payin amount',
+              title: context.loc.payPayinAmount,
               value: order == null ? null : FormatAmount.btc(order.payinAmount),
             ),
             _DetailRow(
-              title: 'Payout amount',
+              title: context.loc.payPayoutAmount,
               value:
                   order == null
                       ? null
@@ -176,7 +180,7 @@ class PaySendPaymentScreen extends StatelessWidget {
                       ),
             ),
             _DetailRow(
-              title: 'Exchange rate',
+              title: context.loc.payExchangeRate,
               value:
                   order == null
                       ? null
@@ -188,26 +192,26 @@ class PaySendPaymentScreen extends StatelessWidget {
             ),
             const _Divider(),
             _DetailRow(
-              title: 'Pay from wallet',
+              title: context.loc.payPayFromWallet,
               value:
                   wallet?.label ??
                   (wallet?.isDefault == true
                       ? wallet?.isLiquid == true
-                          ? 'Instant payments'
-                          : 'Secure Bitcoin wallet'
+                          ? context.loc.payInstantPayments
+                          : context.loc.paySecureBitcoinWallet
                       : ''),
             ),
             if (wallet != null && !wallet.isLiquid) ...[
               _DetailRow(
-                title: 'Fee Priority',
-                value: 'Fastest',
+                title: context.loc.payFeePriority,
+                value: context.loc.payFastest,
                 onTap: () {
                   debugPrint('Tapped Fee Priority');
                 },
               ),
             ],
             _DetailRow(
-              title: 'Network fees',
+              title: context.loc.payNetworkFees,
               value: context.select((PayBloc bloc) {
                 final state = bloc.state;
                 if (state is PayPaymentState && state.absoluteFees != null) {
@@ -215,7 +219,7 @@ class PaySendPaymentScreen extends StatelessWidget {
                     ConvertAmount.satsToBtc(state.absoluteFees!),
                   );
                 }
-                return 'Calculating...';
+                return context.loc.payCalculating;
               }),
             ),
             const Spacer(),
@@ -395,7 +399,7 @@ class _BottomButtons extends StatelessWidget {
         const _PayError(),
         if (wallet != null && !wallet.isLiquid) ...[
           BBButton.big(
-            label: 'Advanced Settings',
+            label: context.loc.payAdvancedSettings,
             onPressed: () {
               showModalBottomSheet(
                 context: context,
@@ -418,7 +422,7 @@ class _BottomButtons extends StatelessWidget {
           const Gap(16),
         ],
         BBButton.big(
-          label: 'Continue',
+          label: context.loc.payContinue,
           disabled: isConfirmingPayment,
           onPressed: onContinuePressed,
           bgColor: context.colour.secondary,
@@ -446,7 +450,7 @@ class _PayError extends StatelessWidget {
         AboveMaxAmountPayError _ => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
           child: Text(
-            'You are trying to pay above the maximum amount that can be paid with this wallet.',
+            context.loc.payAboveMaxAmount,
             style: context.font.bodyMedium?.copyWith(
               color: context.colour.error,
             ),
@@ -456,7 +460,7 @@ class _PayError extends StatelessWidget {
         BelowMinAmountPayError _ => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
           child: Text(
-            'You are trying to pay below the minimum amount that can be paid with this wallet.',
+            context.loc.payBelowMinAmount,
             style: context.font.bodyMedium?.copyWith(
               color: context.colour.error,
             ),
@@ -466,7 +470,7 @@ class _PayError extends StatelessWidget {
         InsufficientBalancePayError _ => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
           child: Text(
-            'Insufficient balance in the selected wallet to complete this pay order.',
+            context.loc.payInsufficientBalance,
             style: context.font.bodyMedium?.copyWith(
               color: context.colour.error,
             ),

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
@@ -38,9 +39,9 @@ class BuyConfirmScreen extends StatelessWidget {
       buyOrder.exchangeRateAmount!,
       buyOrder.exchangeRateCurrency!,
     );
-    const externalBitcoinWalletLabel = 'External Bitcoin wallet';
-    const secureBitcoinWalletLabel = 'Secure Bitcoin Wallet';
-    const instantPaymentWalletLabel = 'Instant payment wallet';
+    final externalBitcoinWalletLabel = context.loc.buyConfirmExternalWallet;
+    final secureBitcoinWalletLabel = context.loc.buyConfirmSecureWallet;
+    final instantPaymentWalletLabel = context.loc.buyConfirmInstantWallet;
     final selectedWallet = context.select(
       (BuyBloc bloc) => bloc.state.selectedWallet,
     );
@@ -60,7 +61,7 @@ class BuyConfirmScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Buy Bitcoin')),
+      appBar: AppBar(title: Text(context.loc.buyConfirmTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -89,19 +90,19 @@ class BuyConfirmScreen extends StatelessWidget {
                 ),
                 const Gap(32),
                 BuyConfirmDetailRow(
-                  label: 'You pay',
+                  label: context.loc.buyConfirmYouPay,
                   value: formattedPayInAmount,
                 ),
                 BuyConfirmDetailRow(
-                  label: 'You receive',
+                  label: context.loc.buyConfirmYouReceive,
                   value: formattedPayOutAmount,
                 ),
                 BuyConfirmDetailRow(
-                  label: 'Bitcoin Price',
+                  label: context.loc.buyConfirmBitcoinPrice,
                   value: formattedExchangeRate,
                 ),
                 BuyConfirmDetailRow(
-                  label: 'Payout method',
+                  label: context.loc.buyConfirmPayoutMethod,
                   value: payoutMethod,
                 ),
                 const Gap(32),
@@ -123,7 +124,7 @@ class BuyConfirmScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Awaiting confirmation ',
+                      context.loc.buyConfirmAwaitingConfirmation,
                       style: context.font.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                         color: context.colour.outline,
@@ -142,7 +143,7 @@ class BuyConfirmScreen extends StatelessWidget {
                 ),
               const Gap(16),
               BBButton.big(
-                label: 'Confirm purchase',
+                label: context.loc.buyConfirmPurchase,
                 disabled: isConfirmingOrder || isRefreshingOrder,
                 onPressed: () {
                   context.read<BuyBloc>().add(const BuyEvent.confirmOrder());

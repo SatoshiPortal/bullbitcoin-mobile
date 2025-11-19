@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class KeyServerStatusWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.read<RecoverBullBloc>().add(const OnServerCheck());
+        context.read<RecoverBullBloc>().add(OnServerCheck(context: context));
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -31,7 +32,7 @@ class KeyServerStatusWidget extends StatelessWidget {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: 'Key Server ',
+                    text: context.loc.recoverbullKeyServer,
                     style: context.font.labelLarge?.copyWith(
                       fontSize: 12,
                       color: context.colour.secondary,

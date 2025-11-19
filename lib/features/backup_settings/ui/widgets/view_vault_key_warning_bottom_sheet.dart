@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -40,7 +41,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                   children: [
                     const Gap(24),
                     BBText(
-                      'Security Warning',
+                      context.loc.backupSettingsSecurityWarning,
                       style: context.font.headlineMedium,
                     ),
                     GestureDetector(
@@ -60,7 +61,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     BBText(
-                      'Warning: Be careful where you save the backup key.',
+                      context.loc.backupSettingsKeyWarningBold,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.secondary,
                         fontWeight: FontWeight.bold,
@@ -69,13 +70,13 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                     ),
                     const Gap(24),
                     BBText(
-                      'It is critically important that you do not save the backup key at the same place where you save your backup file. Always store them on separate devices or separate cloud providers.',
+                      context.loc.backupSettingsKeyWarningMessage,
                       maxLines: 4,
                       style: context.font.bodyMedium,
                     ),
                     const Gap(16),
                     BBText(
-                      'For example, if you used Google Drive for your backup file, do not use Google Drive for your backup key.',
+                      context.loc.backupSettingsKeyWarningExample,
                       maxLines: 3,
                       style: context.font.bodyMedium,
                     ),
@@ -84,7 +85,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                       children: [
                         Expanded(
                           child: BBButton.big(
-                            label: 'Cancel',
+                            label: context.loc.cancelButton,
                             onPressed: () => Navigator.of(context).pop(false),
                             bgColor: Colors.transparent,
                             outlined: true,
@@ -95,7 +96,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                         const Gap(16),
                         Expanded(
                           child: BBButton.big(
-                            label: 'Continue',
+                            label: context.loc.sendContinue,
                             onPressed: () => context.pop(true),
                             bgColor: context.colour.secondary,
                             textStyle: context.font.headlineLarge,

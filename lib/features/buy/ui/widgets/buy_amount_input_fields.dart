@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +58,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Enter amount', style: context.font.bodyMedium),
+        Text(context.loc.buyEnterAmount, style: context.font.bodyMedium),
         const Gap(4.0),
         Card(
           elevation: 1,
@@ -186,7 +187,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                             _amountController.text = balance?.toString() ?? '0';
                           },
                           child: Text(
-                            'Max',
+                            context.loc.buyMax,
                             style: context.font.bodyMedium?.copyWith(
                               color: context.colour.primary,
                             ),
@@ -200,7 +201,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
           ),
         ),
         const Gap(16.0),
-        Text('Payment method', style: context.font.bodyMedium),
+        Text(context.loc.buyPaymentMethod, style: context.font.bodyMedium),
         const Gap(4.0),
         SizedBox(
           height: 56,

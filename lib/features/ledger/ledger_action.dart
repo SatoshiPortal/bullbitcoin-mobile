@@ -1,6 +1,8 @@
 
 
 
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'ledger_action.freezed.dart';
@@ -13,53 +15,51 @@ sealed class LedgerAction with _$LedgerAction {
 
   const LedgerAction._();
 
-  String get title {
+  String getTitle(BuildContext context) {
     return when(
-      importWallet: () => 'Import Ledger Wallet',
-      signTransaction: () => 'Sign Transaction',
-      verifyAddress: () => 'Verify Address on Ledger',
+      importWallet: () => context.loc.ledgerImportTitle,
+      signTransaction: () => context.loc.ledgerSignTitle,
+      verifyAddress: () => context.loc.ledgerVerifyTitle,
     );
   }
 
-  String get buttonText {
+  String getButtonText(BuildContext context) {
     return when(
-      importWallet: () => 'Start Import',
-      signTransaction: () => 'Start Signing',
-      verifyAddress: () => 'Verify Address',
+      importWallet: () => context.loc.ledgerImportButton,
+      signTransaction: () => context.loc.ledgerSignButton,
+      verifyAddress: () => context.loc.ledgerVerifyButton,
     );
   }
 
-  String get processingText {
+  String getProcessingText(BuildContext context) {
     return when(
-      importWallet: () => 'Importing Wallet',
-      signTransaction: () => 'Signing Transaction',
-      verifyAddress: () => 'Showing address on Ledger...',
+      importWallet: () => context.loc.ledgerProcessingImport,
+      signTransaction: () => context.loc.ledgerProcessingSign,
+      verifyAddress: () => context.loc.ledgerProcessingVerify,
     );
   }
 
-  String get successText {
+  String getSuccessText(BuildContext context) {
     return when(
-      importWallet: () => 'Wallet Imported Successfully',
-      signTransaction: () => 'Transaction Signed Successfully',
-      verifyAddress: () => 'Verifying address on Ledger...',
+      importWallet: () => context.loc.ledgerSuccessImportTitle,
+      signTransaction: () => context.loc.ledgerSuccessSignTitle,
+      verifyAddress: () => context.loc.ledgerSuccessVerifyTitle,
     );
   }
 
-  String get successSubText {
+  String getProcessingSubtext(BuildContext context) {
     return when(
-      importWallet: () => 'Your Ledger wallet has been imported successfully.',
-      signTransaction: () => 'Your transaction has been signed successfully.',
-      verifyAddress:
-          () => 'The address has been verified on your Ledger device.',
+      importWallet: () => context.loc.ledgerProcessingImportSubtext,
+      signTransaction: () => context.loc.ledgerProcessingSignSubtext,
+      verifyAddress: () => context.loc.ledgerProcessingVerifySubtext,
     );
   }
 
-  String get processingSubText {
+  String getSuccessSubtext(BuildContext context) {
     return when(
-      importWallet: () => 'Setting up your watch-only wallet...',
-      signTransaction:
-          () => 'Please confirm the transaction on your Ledger device...',
-      verifyAddress: () => 'Please confirm the address on your Ledger device.',
+      importWallet: () => context.loc.ledgerSuccessImportDescription,
+      signTransaction: () => context.loc.ledgerSuccessSignDescription,
+      verifyAddress: () => context.loc.ledgerSuccessVerifyDescription,
     );
   }
 }

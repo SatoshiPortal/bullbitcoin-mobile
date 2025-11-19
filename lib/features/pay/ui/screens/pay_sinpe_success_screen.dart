@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -28,7 +29,9 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
   }
 
   String _formatSinpePhoneNumber(String? phoneNumber) {
-    if (phoneNumber == null || phoneNumber.isEmpty) return 'N/A';
+    if (phoneNumber == null || phoneNumber.isEmpty) {
+      return context.loc.payNotAvailable;
+    }
 
     // Remove any existing formatting
     final String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
@@ -98,7 +101,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
         backgroundColor: context.colour.secondaryFixed,
         appBar: AppBar(
           title: Text(
-            'Order Details',
+            context.loc.payOrderDetails,
             style: context.font.headlineMedium?.copyWith(
               color: context.colour.outline,
             ),
@@ -132,14 +135,14 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         height: 150,
                       ),
                       Text(
-                        'SINPE ENVIADO!',
+                        context.loc.paySinpeEnviado,
                         style: context.font.headlineLarge?.copyWith(
                           color: context.colour.secondary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const Gap(16),
-                      Text("Monto", style: context.font.bodyMedium),
+                      Text(context.loc.paySinpeMonto, style: context.font.bodyMedium),
                       const Gap(4),
                       Text(
                         '${order.payoutAmount.toStringAsFixed(2)} ${order.payoutCurrency}',
@@ -149,7 +152,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         ),
                       ),
                       const Gap(8),
-                      Text('Numero de orden', style: context.font.bodyMedium),
+                      Text(context.loc.paySinpeNumeroOrden, style: context.font.bodyMedium),
                       const Gap(4),
                       Text(
                         order.orderNumber.toString(),
@@ -160,22 +163,22 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                       ),
                       const Gap(8),
                       Text(
-                        'Numero de comprobante',
+                        context.loc.paySinpeNumeroComprobante,
                         style: context.font.bodyMedium,
                       ),
                       const Gap(4),
                       Text(
-                        order.referenceNumber ?? 'N/A',
+                        order.referenceNumber ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
                           color: context.colour.secondary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const Gap(8),
-                      Text('Beneficiario', style: context.font.bodyMedium),
+                      Text(context.loc.paySinpeBeneficiario, style: context.font.bodyMedium),
                       const Gap(4),
                       Text(
-                        order.beneficiaryName ?? 'N/A',
+                        order.beneficiaryName ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
                           color: context.colour.secondary,
                           fontWeight: FontWeight.bold,
@@ -190,10 +193,10 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         ),
                       ),
                       const Gap(8),
-                      Text('Origen', style: context.font.bodyMedium),
+                      Text(context.loc.paySinpeOrigen, style: context.font.bodyMedium),
                       const Gap(4),
                       Text(
-                        order.originName ?? 'N/A',
+                        order.originName ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
                           color: context.colour.secondary,
                           fontWeight: FontWeight.bold,
@@ -201,7 +204,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                       ),
                       const Gap(4),
                       Text(
-                        order.originCedula ?? 'N/A',
+                        order.originCedula ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
                           color: context.colour.secondary,
                           fontWeight: FontWeight.bold,
@@ -216,7 +219,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
               SizedBox(
                 width: double.infinity,
                 child: BBButton.big(
-                  label: 'Done',
+                  label: context.loc.payDone,
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeHome.name);
                   },

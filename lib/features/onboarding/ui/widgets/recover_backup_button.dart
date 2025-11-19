@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ class RecoverWalletButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.big(
-      label: 'Recover Wallet',
+      label: context.loc.onboardingRecoverWalletButton,
       bgColor: Colors.transparent,
       textColor: context.colour.onPrimary,
       iconData: Icons.history_edu,

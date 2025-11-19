@@ -1,4 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+class Device {
+  static late Size screen;
+
+  static void init(BuildContext context) {
+    screen = MediaQuery.of(context).size;
+  }
+}
 
 class SettingsConstants {
   static const telegramSupportLink = 'https://t.me/+gUHV3ZcQ-_RmZDdh';
@@ -124,11 +133,16 @@ class LabelConstants {
 }
 
 class CountryConstants {
+  // Better to make this a map to fetch by code directly instead of needing a where
+  // clause each time. But for now keeping it as is since best would be to get
+  // this from an external API or package anyway in the future.
   static const List<Map<String, String>> countries = [
+    {'code': 'US', 'name': 'United States', 'flag': '🇺🇸'},
     {'code': 'CA', 'name': 'Canada', 'flag': '🇨🇦'},
     {'code': 'EU', 'name': 'Europe', 'flag': '🇪🇺'},
     {'code': 'MX', 'name': 'Mexico', 'flag': '🇲🇽'},
     {'code': 'CR', 'name': 'Costa Rica', 'flag': '🇨🇷'},
     {'code': 'AR', 'name': 'Argentina', 'flag': '🇦🇷'},
+    {'code': 'CO', 'name': 'Colombia', 'flag': '🇨🇴'},
   ];
 }

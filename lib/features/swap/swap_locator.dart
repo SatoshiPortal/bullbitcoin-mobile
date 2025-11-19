@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.d
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
@@ -82,6 +83,11 @@ class SwapLocator {
         ),
       ),
     );
+    locator.registerFactory<VerifyChainSwapAmountSendUsecase>(
+      () => VerifyChainSwapAmountSendUsecase(
+        walletRepository: locator<WalletRepository>(),
+      ),
+    );
     locator.registerFactory<CreateChainSwapToExternalUsecase>(
       () => CreateChainSwapToExternalUsecase(
         walletRepository: locator<WalletRepository>(),
@@ -125,6 +131,8 @@ class SwapLocator {
         updatePaidChainSwapUsecase: locator<UpdatePaidChainSwapUsecase>(),
         updateSendSwapLockupFeesUsecase:
             locator<UpdateSendSwapLockupFeesUsecase>(),
+        verifyChainSwapAmountSendUsecase:
+            locator<VerifyChainSwapAmountSendUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
       ),
     );

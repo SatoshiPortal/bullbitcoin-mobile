@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -25,7 +26,7 @@ class DcaWalletRadioList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Select Bitcoin Wallet Type', style: context.font.bodyMedium),
+        Text(context.loc.dcaSelectWalletTypeLabel, style: context.font.bodyMedium),
         const Gap(4),
         ...DcaNetwork.values.map((walletType) {
           return Column(
@@ -36,15 +37,15 @@ class DcaWalletRadioList extends StatelessWidget {
                   side: BorderSide(color: borderColor),
                 ),
                 title: Text(switch (walletType) {
-                  DcaNetwork.bitcoin => 'Bitcoin (BTC)',
-                  DcaNetwork.lightning => 'Lightning Network (LN)',
-                  DcaNetwork.liquid => 'Liquid (LBTC)',
+                  DcaNetwork.bitcoin => context.loc.dcaWalletTypeBitcoin,
+                  DcaNetwork.lightning => context.loc.dcaWalletTypeLightning,
+                  DcaNetwork.liquid => context.loc.dcaWalletTypeLiquid,
                 }, style: context.font.headlineSmall),
                 subtitle: Text(switch (walletType) {
-                  DcaNetwork.bitcoin => 'Minimum 0.001 BTC',
+                  DcaNetwork.bitcoin => context.loc.dcaWalletBitcoinSubtitle,
                   DcaNetwork.lightning =>
-                    'Requires compatible wallet, maximum 0.25 BTC',
-                  DcaNetwork.liquid => 'Requires compatible wallet',
+                    context.loc.dcaWalletLightningSubtitle,
+                  DcaNetwork.liquid => context.loc.dcaWalletLiquidSubtitle,
                 }, style: context.font.bodySmall),
                 value: walletType,
                 groupValue: selectedWallet,

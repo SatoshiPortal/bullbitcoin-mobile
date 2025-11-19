@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
@@ -21,7 +22,7 @@ class PinSettingsScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           onBack: () => context.pop(),
-          title: "Security PIN",
+          title: context.loc.pinCodeSecurityPinTitle,
         ),
       ),
       body: SafeArea(
@@ -37,14 +38,14 @@ class PinSettingsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Manage your security PIN',
+                      context.loc.pinCodeManageTitle,
                       style: context.font.headlineMedium?.copyWith(
                         color: context.colour.outlineVariant,
                       ),
                     ),
                     const Gap(16),
                     Text(
-                      'Your PIN protects access to your wallet and settings. Keep it memorable.',
+                      context.loc.pinCodeCreateDescription,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.outline,
                       ),
@@ -58,7 +59,7 @@ class PinSettingsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   BBButton.big(
-                    label: isPinCodeSet ? 'Change PIN' : 'Create PIN',
+                    label: isPinCodeSet ? context.loc.pinCodeChangeButton : context.loc.pinCodeCreateButton,
                     onPressed: () => bloc.add(const PinCodeCreate()),
                     bgColor: context.colour.secondary,
                     textColor: context.colour.onSecondary,
@@ -66,7 +67,7 @@ class PinSettingsScreen extends StatelessWidget {
                   const Gap(16),
                   if (isPinCodeSet)
                     BBButton.big(
-                      label: 'Remove Security PIN',
+                      label: context.loc.pinCodeRemoveButton,
                       onPressed: () => bloc.add(const PinCodeDelete()),
                       bgColor: context.colour.errorContainer,
                       textColor: context.colour.onSecondary,

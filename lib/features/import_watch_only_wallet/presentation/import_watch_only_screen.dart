@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -32,7 +33,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
             importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
           )..init(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Import watch-only')),
+        appBar: AppBar(title: Text(context.loc.importWatchOnlyTitle)),
         body: BlocConsumer<ImportWatchOnlyCubit, ImportWatchOnlyState>(
           listener: (context, state) {
             if (state.importedWallet != null) {
@@ -57,7 +58,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                       if (state.watchOnlyWallet == null) ...[
                         PasteInput(
                           text: state.input,
-                          hint: 'Paste xpub, ypub, zpub or descriptor',
+                          hint: context.loc.importWatchOnlyPasteHint,
                           onChanged: cubit.parsePastedInput,
                         ),
                         if (state.error.isNotEmpty)

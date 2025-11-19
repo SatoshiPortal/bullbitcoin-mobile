@@ -1,4 +1,6 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recoverbull/utils/most_common_passwords.dart';
+import 'package:flutter/material.dart';
 
 class PasswordValidator {
   static const int minPasswordLength = 6;
@@ -15,26 +17,26 @@ class PasswordValidator {
   static bool isValid(String password) =>
       hasValidLength(password) && !isTooCommon(password);
 
-  static String? validateLength(String password) {
+  static String? validateLength(String password, BuildContext context) {
     if (hasValidLength(password)) return null;
-    return 'Password must be at least 6 characters long';
+    return context.loc.recoverbullPasswordTooShort;
   }
 
-  static String? validateNotCommon(String password) {
+  static String? validateNotCommon(String password, BuildContext context) {
     if (!isTooCommon(password)) return null;
-    return 'This password is too common. Please choose a different one';
+    return context.loc.recoverbullPasswordTooCommon;
   }
 
-  static String? validateMatching(String password, String confirmPassword) {
+  static String? validateMatching(String password, String confirmPassword, BuildContext context) {
     if (areMatching(password, confirmPassword)) return null;
-    return 'Passwords do not match';
+    return context.loc.recoverbullPasswordMismatch;
   }
 
-  static String? validate(String? password) {
-    if (password == null) return 'Password is required';
-    final length = validateLength(password);
+  static String? validate(String? password, BuildContext context) {
+    if (password == null) return context.loc.recoverbullPasswordRequired;
+    final length = validateLength(password, context);
     if (length != null) return length;
-    final isCommon = validateNotCommon(password);
+    final isCommon = validateNotCommon(password, context);
     if (isCommon != null) return isCommon;
     return null;
   }

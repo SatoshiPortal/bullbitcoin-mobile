@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -34,12 +35,12 @@ class TestCompletedPage extends StatelessWidget {
                 ),
                 const Gap(8),
                 BBText(
-                  'Test completed successfully!',
+                  context.loc.recoverbullTestCompletedTitle,
                   style: context.font.headlineLarge,
                 ),
                 const Gap(8),
                 BBText(
-                  'You are able to recover access to a lost Bitcoin wallet',
+                  context.loc.recoverbullTestSuccessDescription,
                   style: context.font.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -51,7 +52,7 @@ class TestCompletedPage extends StatelessWidget {
                 bottom: MediaQuery.of(context).size.height * 0.05,
               ),
               child: BBButton.big(
-                label: 'Got it',
+                label: context.loc.recoverbullGotIt,
                 bgColor: context.colour.secondary,
                 textColor: context.colour.onPrimary,
                 onPressed: () {

@@ -110,6 +110,25 @@ class BitcoinWalletRepository {
     return feeAbsolute;
   }
 
+  Future<int> getAmountSentToAddress({
+    required String psbt,
+    required String address,
+    required String walletId,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+    return await _bdkWallet.getAmountSentToAddress(
+      psbt,
+      address,
+      isTestnet: metadata.isTestnet,
+    );
+  }
+
   Future<PrivateBdkWalletModel> getPrivateWallet({
     required String walletId,
   }) async {

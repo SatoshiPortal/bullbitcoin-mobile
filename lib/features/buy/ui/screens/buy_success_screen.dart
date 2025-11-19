@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
@@ -45,7 +46,7 @@ class BuySuccessScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Buy Bitcoin'),
+          title: Text(context.loc.buyConfirmTitle),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -65,7 +66,7 @@ class BuySuccessScreen extends StatelessWidget {
                 const Icon(Icons.check_circle, size: 100, color: Colors.green),
                 const SizedBox(height: 20),
                 Text(
-                  'You bought $formattedPayOutAmount',
+                  context.loc.buyYouBought(formattedPayOutAmount),
                   style: context.font.titleLarge,
                 ),
                 const SizedBox(height: 10),
@@ -74,7 +75,7 @@ class BuySuccessScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Your payout will be sent in ',
+                        context.loc.buyPayoutWillBeSentIn,
                         style: context.font.bodyMedium,
                         textAlign: TextAlign.center,
                       ),
@@ -113,7 +114,7 @@ class BuySuccessScreen extends StatelessWidget {
                   ),
                 const Gap(16),
                 BBButton.big(
-                  label: 'View details',
+                  label: context.loc.buyViewDetails,
                   onPressed: () {
                     context.pushNamed(
                       TransactionsRoute.orderTransactionDetails.name,

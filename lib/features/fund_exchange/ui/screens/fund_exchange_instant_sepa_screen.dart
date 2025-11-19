@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -22,7 +23,10 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
       (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
+      appBar: AppBar(
+        title: Text(context.loc.fundExchangeTitle),
+        scrolledUnderElevation: 0.0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -30,16 +34,18 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BBText('SEPA transfer', style: theme.textTheme.displaySmall),
+              BBText(
+                context.loc.fundExchangeSepaTitle,
+                style: theme.textTheme.displaySmall,
+              ),
               const Gap(16.0),
               RichText(
                 text: TextSpan(
-                  text:
-                      "Send a SEPA transfer from your bank account using the details below ",
+                  text: context.loc.fundExchangeSepaDescription,
                   style: theme.textTheme.headlineSmall,
                   children: [
                     TextSpan(
-                      text: 'exactly.',
+                      text: context.loc.fundExchangeSepaDescriptionExactly,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -54,8 +60,7 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
                 const Gap(24.0),
               ] else ...[
                 InfoCard(
-                  description:
-                      'Only use for transactions below €20,000. For larger transactions, use the Regular SEPA option.',
+                  description: context.loc.fundExchangeInstantSepaInfo,
                   tagColor: theme.colorScheme.secondary,
                   bgColor: theme.colorScheme.inverseSurface.withValues(
                     alpha: 0.1,
@@ -63,12 +68,12 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'IBAN account number',
+                  label: context.loc.fundExchangeLabelIban,
                   value: details?.iban,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Beneficiary name',
+                  label: context.loc.fundExchangeLabelBeneficiaryName,
                   value: details?.beneficiaryName,
                 ),
                 const Gap(16.0),
@@ -77,12 +82,11 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
                     alpha: 0.1,
                   ),
                   tagColor: theme.colorScheme.secondary,
-                  description:
-                      'The name of the beneficiary should be LEONOD. If you put anything else, your payment will be rejected.',
+                  description: context.loc.fundExchangeInfoBeneficiaryNameLeonod,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Transfer code (add this as payment description)',
+                  label: context.loc.fundExchangeLabelTransferCode,
                   value: details?.code,
                 ),
                 const Gap(16.0),
@@ -91,12 +95,11 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
                     alpha: 0.1,
                   ),
                   tagColor: theme.colorScheme.secondary,
-                  description:
-                      'In the payment description, add your transfer code.',
+                  description: context.loc.fundExchangeInfoPaymentDescription,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Bank account country',
+                  label: context.loc.fundExchangeLabelBankAccountCountry,
                   value: details?.bankAccountCountry,
                 ),
                 const Gap(16.0),
@@ -105,15 +108,17 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
                     alpha: 0.1,
                   ),
                   tagColor: theme.colorScheme.secondary,
-                  description: 'Our bank country is the United Kingdom.',
+                  description: context.loc.fundExchangeInfoBankCountryUk,
                 ),
                 const Gap(24.0),
-                FundExchangeDetail(label: 'BIC code', value: details?.bic),
+                FundExchangeDetail(
+                  label: context.loc.fundExchangeLabelBicCode,
+                  value: details?.bic,
+                ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Beneficiary address',
-                  helpText:
-                      'Our official address, in case this is required by your bank',
+                  label: context.loc.fundExchangeLabelBeneficiaryAddress,
+                  helpText: context.loc.fundExchangeHelpBeneficiaryAddress,
                   value: details?.beneficiaryAddress,
                 ),
                 const Gap(24.0),

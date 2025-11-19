@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -28,7 +29,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(onBack: backHandler, title: "Authentication"),
+          flexibleSpace: TopBar(onBack: backHandler, title: context.loc.pinCodeAuthentication),
         ),
         body: SafeArea(
           child: Column(
@@ -42,7 +43,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                       children: [
                         const Gap(30),
                         Text(
-                          'Confirm new pin',
+                          context.loc.pinCodeConfirmTitle,
                           textAlign: TextAlign.center,
                           style: context.font.headlineMedium?.copyWith(
                             color: context.colour.outline,
@@ -84,7 +85,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                           builder: (context, showError) {
                             return showError
                                 ? Text(
-                                  'PINs do not match',
+                                  context.loc.pinCodeMismatchError,
                                   textAlign: TextAlign.start,
                                   style: context.font.labelSmall?.copyWith(
                                     color: context.colour.error,
@@ -147,7 +148,7 @@ class _ConfirmButton extends StatelessWidget {
         selector: (state) => state.canConfirm,
         builder: (context, canConfirm) {
           return BBButton.big(
-            label: 'Confirm',
+            label: context.loc.pinCodeConfirm,
             textStyle: context.font.headlineLarge,
             disabled: !canConfirm,
             bgColor:
