@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/storage/migrations/schema_5_to_6.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_6_to_7.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_7_to_8.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_8_to_9.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_9_to_10.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
@@ -16,6 +17,7 @@ import 'package:bb_mobile/core/storage/tables/electrum_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
+import 'package:bb_mobile/core/storage/tables/recoverbull_table.dart';
 import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
@@ -38,6 +40,7 @@ part 'sqlite_database.g.dart';
     Swaps,
     AutoSwap,
     Bip85Derivations,
+    Recoverbull,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
@@ -45,7 +48,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -79,6 +82,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from6To7: Schema6To7.migrate,
         from7To8: Schema7To8.migrate,
         from8To9: Schema8To9.migrate,
+        from9To10: Schema9To10.migrate,
       ),
     );
   }

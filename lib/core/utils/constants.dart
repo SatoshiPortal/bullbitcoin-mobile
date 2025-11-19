@@ -18,6 +18,8 @@ class SettingsConstants {
   //  a configurable setting, in which case they should be added to the Settings
   //  table in sqlite and not be defined here as constants anymore.
   static const autoSyncIntervalSeconds = 5;
+  static const recoverbullUrl =
+      'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion';
 }
 
 class ConversionConstants {
@@ -90,9 +92,6 @@ class ApiServiceConstants {
   static const boltzReferralId = 'BULL';
 
   // BullBitcoin API
-  static final bullBitcoinKeyServerApiUrlPath =
-      dotenv.env['KEY_SERVER'] ??
-      'http://o7rwmpnfkzdcay2gotla6sbrviu27wcgck7nsjrq77nqhtwbjvwcraad.onion';
   static String bbApiUrl =
       dotenv.env['BB_API_URL'] ?? 'https://api.bullbitcoin.com';
   static String bbApiTestUrl =
