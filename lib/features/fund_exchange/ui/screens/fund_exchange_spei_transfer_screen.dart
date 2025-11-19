@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -23,7 +24,10 @@ class FundExchangeSpeiTransferScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
+      appBar: AppBar(
+        title: Text(context.loc.fundExchangeTitle),
+        scrolledUnderElevation: 0.0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -31,10 +35,13 @@ class FundExchangeSpeiTransferScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BBText('SPEI transfer', style: theme.textTheme.displaySmall),
+              BBText(
+                context.loc.fundExchangeSpeiTitle,
+                style: theme.textTheme.displaySmall,
+              ),
               const Gap(16.0),
               Text(
-                "Transfer funds using your CLABE",
+                context.loc.fundExchangeSpeiDescription,
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(24.0),
@@ -48,22 +55,28 @@ class FundExchangeSpeiTransferScreen extends StatelessWidget {
                     alpha: 0.1,
                   ),
                   tagColor: theme.colorScheme.secondary,
-                  description: 'Make a deposit using SPEI transfer (instant).',
+                  description: context.loc.fundExchangeSpeiInfo,
                 ),
                 const Gap(24.0),
-                FundExchangeDetail(label: 'CLABE', value: details?.clabe),
+                FundExchangeDetail(
+                  label: context.loc.fundExchangeLabelClabe,
+                  value: details?.clabe,
+                ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Beneficiary name',
+                  label: context.loc.fundExchangeLabelBeneficiaryName,
                   value: details?.beneficiaryName,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: 'Bank name',
+                  label: context.loc.fundExchangeLabelBankName,
                   value: details?.bankName,
                 ),
                 const Gap(24.0),
-                FundExchangeDetail(label: 'Memo', value: details?.code),
+                FundExchangeDetail(
+                  label: context.loc.fundExchangeLabelMemo,
+                  value: details?.code,
+                ),
                 const Gap(24.0),
               ],
             ],

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -15,7 +16,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sliver_tools/sliver_tools.dart';
-
 class ExchangeHomeScreen extends StatelessWidget {
   const ExchangeHomeScreen({super.key});
 
@@ -134,7 +134,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                     Expanded(
                       child: BBButton.big(
                         iconData: Icons.arrow_downward,
-                        label: 'Deposit',
+                        label: context.loc.exchangeHomeDepositButton,
                         iconFirst: true,
                         onPressed:
                             () => context.pushNamed(
@@ -148,7 +148,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                     Expanded(
                       child: BBButton.big(
                         iconData: Icons.arrow_upward,
-                        label: 'Withdraw',
+                        label: context.loc.exchangeHomeWithdrawButton,
                         iconFirst: true,
                         disabled: false,
                         onPressed:

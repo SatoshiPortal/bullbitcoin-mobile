@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
@@ -26,7 +27,7 @@ class ReceivePaymentInProgressScreen extends StatelessWidget {
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
           flexibleSpace: TopBar(
-            title: 'Receive',
+            title: context.loc.receiveTitle,
             actionIcon: Icons.close,
             onAction: () => context.go(WalletRoute.walletHome.path),
           ),
@@ -57,15 +58,15 @@ class PaymentInProgressPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          BBText('Payment in progress', style: context.font.headlineLarge),
+          BBText(context.loc.receivePaymentInProgress, style: context.font.headlineLarge),
           if (isBitcoin) ...[
             BBText(
-              'Bitcoin transaction will take a while to confirm.',
+              context.loc.receiveBitcoinConfirmationMessage,
               style: context.font.headlineMedium,
             ),
           ] else ...[
             BBText(
-              'It will be confirmed in a few seconds',
+              context.loc.receiveLiquidConfirmationMessage,
               style: context.font.headlineMedium,
             ),
           ],

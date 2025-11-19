@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
@@ -81,7 +82,7 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                                       allowMultipleMnemonicLength: true,
                                       allowLabel: false,
                                       allowPassphrase: false,
-                                      submitLabel: 'Recover',
+                                      submitLabel: context.loc.onboardingRecover,
                                       onSubmit: (mnemonic) {
                                         context.read<OnboardingBloc>().add(
                                           OnboardingRecoverWalletClicked(

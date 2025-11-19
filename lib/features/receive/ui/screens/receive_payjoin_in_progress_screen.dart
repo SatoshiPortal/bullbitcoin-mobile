@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart'
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -36,7 +37,7 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
           flexibleSpace: TopBar(
-            title: 'Receive',
+            title: context.loc.receiveTitle,
             actionIcon: Icons.close,
             onAction: () => context.go(WalletRoute.walletHome.path),
           ),
@@ -79,15 +80,15 @@ class PayjoinInProgressPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (isBroadcasted) ...[
-            Text('Payment in progress', style: context.font.headlineLarge),
+            Text(context.loc.receivePaymentInProgress, style: context.font.headlineLarge),
             Text(
-              'Bitcoin transaction will take a while to confirm.',
+              context.loc.receiveBitcoinConfirmationMessage,
               style: context.font.headlineMedium,
             ),
           ] else ...[
-            Text('Payjoin in progress', style: context.font.headlineLarge),
+            Text(context.loc.receivePayjoinInProgress, style: context.font.headlineLarge),
             Text(
-              'Wait for the sender to finish the payjoin transaction',
+              context.loc.receiveWaitForPayjoin,
               style: context.font.bodyMedium,
             ),
           ],
@@ -135,14 +136,14 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            "No time to wait or did the payjoin fail on the sender's side?",
+            context.loc.receivePayjoinFailQuestion,
             style: context.font.titleSmall,
             textAlign: TextAlign.center,
             maxLines: 2,
           ),
           const Gap(16),
           BBButton.big(
-            label: 'Receive payment normally',
+            label: context.loc.receivePaymentNormally,
             disabled: isBroadcasting,
             onPressed: () {
               log.info('Receive payment normally');
@@ -156,7 +157,7 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
           const Gap(16),
           if (broadcastOriginalTransactionException != null) ...[
             Text(
-              'Error: ${broadcastOriginalTransactionException.message}',
+              context.loc.receiveError(broadcastOriginalTransactionException.message),
               style: context.font.bodyMedium?.copyWith(
                 color: context.colour.error,
               ),

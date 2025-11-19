@@ -190,21 +190,21 @@ class _SwapPageState extends State<SwapPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       BlocSelector<TransferBloc, TransferState, bool>(
-                        selector: (state) => state.sendExactAmount,
-                        builder: (context, sendExactAmount) {
+                        selector: (state) => state.receiveExactAmount,
+                        builder: (context, receiveExactAmount) {
                           return Text(
-                            sendExactAmount
-                                ? 'Send exact amount'
+                            receiveExactAmount
+                                ? 'Receive exact amount'
                                 : 'Subtract fees from amount',
                             style: context.font.bodyLarge,
                           );
                         },
                       ),
                       BlocSelector<TransferBloc, TransferState, bool>(
-                        selector: (state) => state.sendExactAmount,
-                        builder: (context, sendExactAmount) {
+                        selector: (state) => state.receiveExactAmount,
+                        builder: (context, receiveExactAmount) {
                           return Switch(
-                            value: sendExactAmount,
+                            value: receiveExactAmount,
                             activeColor: context.colour.onSecondary,
                             activeTrackColor: context.colour.secondary,
                             inactiveThumbColor: context.colour.onSecondary,
@@ -214,7 +214,7 @@ class _SwapPageState extends State<SwapPage> {
                             >((Set<WidgetState> states) => Colors.transparent),
                             onChanged: (value) {
                               context.read<TransferBloc>().add(
-                                TransferEvent.sendExactAmountToggled(value),
+                                TransferEvent.receiveExactAmountToggled(value),
                               );
                             },
                           );

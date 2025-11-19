@@ -1578,9 +1578,8 @@ class SendSucessScreen extends StatelessWidget {
                       style: context.font.headlineLarge,
                       textAlign: TextAlign.center,
                     ),
-                  ] else if (isLnSwap &&
-                      (lnSwap.status == SwapStatus.completed ||
-                          lnSwap.completionTime != null)) ...[
+                  ] else if (isLnSwap && lnSwap.status == SwapStatus.canCoop ||
+                      lnSwap?.status == SwapStatus.completed) ...[
                     Gif(
                       image: AssetImage(Assets.animations.successTick.path),
                       autostart: Autostart.once,
@@ -1591,8 +1590,8 @@ class SendSucessScreen extends StatelessWidget {
                     BBText('Invoice Paid', style: context.font.headlineLarge),
                   ] else if (isLnSwap &&
                       !isBitcoin &&
-                      (lnSwap.status != SwapStatus.completed ||
-                          lnSwap.completionTime == null))
+                      lnSwap.status != SwapStatus.canCoop &&
+                      lnSwap.status != SwapStatus.completed)
                     BBText(
                       'The payment is being processed. It may take up to a minute',
                       style: context.font.headlineLarge,

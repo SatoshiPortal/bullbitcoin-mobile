@@ -1,4 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+class Device {
+  static late Size screen;
+
+  static void init(BuildContext context) {
+    screen = MediaQuery.of(context).size;
+  }
+}
 
 class SettingsConstants {
   static const telegramSupportLink = 'https://t.me/+gUHV3ZcQ-_RmZDdh';

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/create_wallet_button.dart';
@@ -36,7 +37,7 @@ class OnboardingSplash extends StatelessWidget {
                   ),
                   const Gap(36),
                   BBText(
-                    'Bull Bitcoin',
+                    context.loc.onboardingBullBitcoin,
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 54,
                       fontWeight: FontWeight.w500,
@@ -45,7 +46,7 @@ class OnboardingSplash extends StatelessWidget {
                     ),
                   ),
                   BBText(
-                    'Own your Money',
+                    context.loc.onboardingOwnYourMoney,
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 40,
                       fontWeight: FontWeight.w500,
@@ -57,7 +58,7 @@ class OnboardingSplash extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 48),
                     child: BBText(
-                      'Sovereign self custody Bitcoin wallet and Bitcoin-only exchange service.',
+                      context.loc.onboardingSplashDescription,
                       style: context.font.labelSmall,
                       color: context.colour.onPrimary,
                       textAlign: TextAlign.center,

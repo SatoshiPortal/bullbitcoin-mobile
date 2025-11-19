@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 
@@ -53,7 +54,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
     final state = context.select((PayBloc bloc) => bloc.state);
 
     if (state is! PayPaymentState) {
-      return const Scaffold(body: Center(child: Text('Invalid state')));
+      return Scaffold(body: Center(child: Text(context.loc.payInvalidState)));
     }
 
     final order = state.payOrder;
@@ -76,7 +77,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
           children: [
             Center(
               child: BBText(
-                'Please pay this invoice',
+                context.loc.payPleasePayInvoice,
                 style: context.font.headlineMedium,
               ),
             ),
@@ -85,7 +86,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   BBText(
-                    'Price will refresh in ',
+                    context.loc.payPriceRefreshIn,
                     style: context.font.bodyMedium,
                     color: context.colour.outline,
                   ),
@@ -120,13 +121,13 @@ class PayReceivePaymentScreen extends StatelessWidget {
             const Gap(16),
             _buildDetailRow(
               context,
-              'Recipient type',
+              context.loc.payRecipientType,
               recipient.recipientType.displayName,
             ),
             const Gap(8),
             _buildDetailRow(
               context,
-              'Recipient name',
+              context.loc.payRecipientName,
               recipient.getRecipientFullName(),
             ),
             const Gap(8),
@@ -138,7 +139,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
             const Gap(8),
             _buildDetailRow(
               context,
-              'Bitcoin amount',
+              context.loc.payBitcoinAmount,
               bitcoinUnit == BitcoinUnit.btc
                   ? FormatAmount.btc(order.payinAmount)
                   : FormatAmount.sats(
@@ -148,13 +149,13 @@ class PayReceivePaymentScreen extends StatelessWidget {
             const Gap(8),
             _buildDetailRow(
               context,
-              'Payout amount',
+              context.loc.payPayoutAmount,
               FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
             ),
             const Gap(8),
             _buildDetailRow(
               context,
-              'Bitcoin Price',
+              context.loc.payBitcoinPrice,
               FormatAmount.fiat(
                 order.exchangeRateAmount ??
                     order.payoutAmount / order.payinAmount,
@@ -164,7 +165,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
             const Gap(8),
             _buildDetailRow(
               context,
-              'Order Number',
+              context.loc.payOrderNumber,
               order.orderNumber.toString(),
               copyValue: order.orderNumber.toString(),
             ),
@@ -173,7 +174,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: BBButton.big(
-                    label: 'Copy invoice',
+                    label: context.loc.payCopyInvoice,
                     onPressed: () {
                       if (bip21InvoiceData.isNotEmpty) {
                         Clipboard.setData(
@@ -191,7 +192,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
                 const Gap(16),
                 Expanded(
                   child: BBButton.big(
-                    label: 'Show QR code',
+                    label: context.loc.payShowQrCode,
                     bgColor: Colors.transparent,
                     textColor: context.colour.secondary,
                     outlined: true,

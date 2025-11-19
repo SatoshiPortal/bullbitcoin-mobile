@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,7 @@ class FundExchangeDoneBottomNavigationBar extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BBButton.big(
-          label: 'Done',
+          label: context.loc.fundExchangeDoneButton,
           bgColor: theme.colorScheme.secondary,
           textColor: theme.colorScheme.onSecondary,
           onPressed: () {

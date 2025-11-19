@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
@@ -51,24 +52,24 @@ class DcaSuccessScreen extends StatelessWidget {
               ),
               const Gap(24),
               Text(
-                'Recurring Buy is Active!',
-                style: context.theme.textTheme.displaySmall,
+                context.loc.dcaSuccessTitle,
+                style: Theme.of(context).textTheme.displaySmall,
                 textAlign: TextAlign.center,
               ),
               const Gap(16),
               Text(
                 switch (frequency) {
-                  DcaBuyFrequency.hourly => 'You will buy $amount every hour',
-                  DcaBuyFrequency.daily => 'You will buy $amount every day',
-                  DcaBuyFrequency.weekly => 'You will buy $amount every week',
-                  DcaBuyFrequency.monthly => 'You will buy $amount every month',
+                  DcaBuyFrequency.hourly => context.loc.dcaSuccessMessageHourly(amount),
+                  DcaBuyFrequency.daily => context.loc.dcaSuccessMessageDaily(amount),
+                  DcaBuyFrequency.weekly => context.loc.dcaSuccessMessageWeekly(amount),
+                  DcaBuyFrequency.monthly => context.loc.dcaSuccessMessageMonthly(amount),
                 },
-                style: context.theme.textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
               const Spacer(),
               BBButton.big(
-                label: 'Back to home',
+                label: context.loc.dcaBackToHomeButton,
                 onPressed: () {
                   context.goNamed(ExchangeRoute.exchangeHome.name);
                 },

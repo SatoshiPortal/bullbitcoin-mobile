@@ -15,6 +15,6 @@ sealed class TransferEvent with _$TransferEvent {
       TransferSendToExternalToggled;
   const factory TransferEvent.externalAddressChanged(String address) =
       TransferExternalAddressChanged;
-  const factory TransferEvent.sendExactAmountToggled(bool enabled) =
-      TransferSendExactAmountToggled;
+  const factory TransferEvent.receiveExactAmountToggled(bool enabled) =
+      TransferReceiveExactAmountToggled;
 }

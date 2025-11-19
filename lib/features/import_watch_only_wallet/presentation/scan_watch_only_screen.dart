@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
@@ -130,10 +131,10 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
 void showCopiedSnackBar(BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: const Text(
-        'Copied to clipboard',
+      content: Text(
+        context.loc.importWatchOnlyCopiedToClipboard,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 14, color: Colors.white),
+        style: const TextStyle(fontSize: 14, color: Colors.white),
       ),
       duration: const Duration(seconds: 2),
       backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(204),
@@ -184,7 +185,7 @@ Future<String?> _choosePassportDerivation(
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: Text(
-                  'Select derivation',
+                  ctx.loc.importWatchOnlySelectDerivation,
                   style: Theme.of(ctx).textTheme.titleMedium,
                 ),
               ),

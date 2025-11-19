@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_widget.dart';
@@ -17,7 +18,7 @@ class ShowPsbtScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign transaction')),
+      appBar: AppBar(title: Text(context.loc.psbtFlowSignTransaction)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -40,7 +41,7 @@ class ShowPsbtScreen extends StatelessWidget {
 
                 if (signerDevice != null)
                   BBButton.small(
-                    label: 'Instructions',
+                    label: context.loc.psbtFlowInstructions,
                     onPressed: () {
                       switch (signerDevice) {
                         case SignerDeviceEntity.jade:
@@ -73,7 +74,7 @@ class ShowPsbtScreen extends StatelessWidget {
             ),
 
             BBButton.big(
-              label: "I'm done",
+              label: context.loc.psbtFlowDone,
               bgColor: context.colour.secondary,
               textColor: context.colour.onPrimary,
               onPressed: () {

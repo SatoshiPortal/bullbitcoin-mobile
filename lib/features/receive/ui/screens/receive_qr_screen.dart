@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -103,7 +104,7 @@ class ReceiveQRDetails extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: BBText(
-              'Payjoin activated',
+              context.loc.receivePayjoinActivated,
               style: context.font.bodyLarge,
               textAlign: TextAlign.center,
             ),
@@ -116,7 +117,7 @@ class ReceiveQRDetails extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               BBText(
-                isLightning ? 'Lightning invoice' : 'Address',
+                isLightning ? context.loc.receiveLightningInvoice : context.loc.receiveAddress,
                 style: context.font.bodyMedium,
               ),
               const Gap(6),
@@ -127,7 +128,7 @@ class ReceiveQRDetails extends StatelessWidget {
                 clipboardText: clipboardData,
                 overflow: TextOverflow.ellipsis,
                 canShowValueModal: true,
-                modalTitle: isLightning ? 'Lightning invoice' : 'Address',
+                modalTitle: isLightning ? context.loc.receiveLightningInvoice : context.loc.receiveAddress,
                 modalContent:
                     isLightning
                         ? addressOrInvoiceOnly
@@ -191,7 +192,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         BBText(
-                          'Amount',
+                          context.loc.receiveAmount,
                           style: context.font.labelSmall,
                           color: context.colour.outline,
                         ),
@@ -263,13 +264,13 @@ class ReceiveInfoDetails extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         BBText(
-                          'Note',
+                          context.loc.receiveNote,
                           style: context.font.labelSmall,
                           color: context.colour.outline,
                         ),
                         const Gap(4),
                         BBText(
-                          note.isNotEmpty ? note : 'Enter here...',
+                          note.isNotEmpty ? note : context.loc.receiveEnterHere,
                           style: context.font.bodyMedium,
                           maxLines: 4,
                           overflow: TextOverflow.ellipsis,
@@ -339,7 +340,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BBText(
-                  'Amount',
+                  context.loc.receiveAmount,
                   style: context.font.bodySmall,
                   color: context.colour.surfaceContainer,
                 ),
@@ -370,7 +371,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BBText(
-                    'Receive Amount',
+                    context.loc.receiveReceiveAmount,
                     style: context.font.bodySmall,
                     color: context.colour.surfaceContainer,
                   ),
@@ -391,7 +392,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
               child: Row(
                 children: [
                   BBText(
-                    'Note',
+                    context.loc.receiveNote,
                     style: context.font.labelSmall,
                     color: context.colour.outline,
                   ),
@@ -427,7 +428,7 @@ class ReceiveLnSwapID extends StatelessWidget {
       child: Row(
         children: [
           BBText(
-            'Swap ID',
+            context.loc.receiveSwapId,
             style: context.font.bodySmall,
             color: context.colour.surfaceContainer,
           ),
@@ -503,7 +504,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
           child: Row(
             children: [
               BBText(
-                'Total Fee',
+                context.loc.receiveTotalFee,
                 style: context.font.bodySmall,
                 color: context.colour.surfaceContainer,
               ),
@@ -528,22 +529,22 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: BBText(
-              'This fees will be deducted from the amount sent',
+              context.loc.receiveFeeExplanation,
               style: context.font.labelSmall,
               color: context.colour.surfaceContainer,
             ),
           ),
           if (swap.fees!.lockupFee != null)
-            _feeRow(context, 'Send Network Fee', swap.fees!.lockupFee!),
+            _feeRow(context, context.loc.receiveSendNetworkFee, swap.fees!.lockupFee!),
           if (swap.fees!.claimFee != null)
-            _feeRow(context, 'Receive Network Fee', swap.fees!.claimFee!),
+            _feeRow(context, context.loc.receiveNetworkFee, swap.fees!.claimFee!),
           if (swap.fees!.serverNetworkFees != null)
             _feeRow(
               context,
-              'Server Network Fees',
+              context.loc.receiveServerNetworkFees,
               swap.fees!.serverNetworkFees!,
             ),
-          _feeRow(context, 'Transfer Fee', swap.fees?.boltzFee ?? 0),
+          _feeRow(context, context.loc.receiveTransferFee, swap.fees?.boltzFee ?? 0),
           const Gap(16),
         ],
       ],
@@ -561,7 +562,7 @@ class ReceiveCopyAddress extends StatelessWidget {
       child: Row(
         children: [
           BBText(
-            'Copy or scan address only',
+            context.loc.receiveCopyAddressOnly,
             style: context.font.headlineSmall,
           ),
           const Spacer(),
@@ -590,7 +591,7 @@ class ReceiveNewAddressButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: BBButton.big(
-        label: 'New address',
+        label: context.loc.receiveNewAddress,
         onPressed: () {
           context.read<ReceiveBloc>().add(
             const ReceiveEvent.receiveNewAddressGenerated(),
@@ -611,14 +612,14 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: BBButton.big(
-        label: 'Verify Address on Ledger',
+        label: context.loc.receiveVerifyAddressLedger,
         onPressed: () {
           final state = context.read<ReceiveBloc>().state;
 
           if (state.wallet == null || state.bitcoinAddress == null) {
             SnackBarUtils.showSnackBar(
               context,
-              'Unable to verify address: Missing wallet or address information',
+              context.loc.receiveVerifyAddressError,
             );
             return;
           }

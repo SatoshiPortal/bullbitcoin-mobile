@@ -232,6 +232,28 @@ class BdkWalletDatasource {
     final fee = psbt.feeAmount() ?? BigInt.zero;
     return fee.toInt();
   }
+
+  Future<int> getAmountSentToAddress(
+    String psbtString,
+    String address, {
+    required bool isTestnet,
+  }) async {
+    final psbt = await bdk.PartiallySignedTransaction.fromString(psbtString);
+    final tx = psbt.extractTx();
+    final outputs = tx.output();
+    int totalAmount = 0;
+    for (final output in outputs) {
+      final scriptPubkey = output.scriptPubkey;
+      final outputAddress = await bdk.Address.fromScript(
+        script: bdk.ScriptBuf(bytes: scriptPubkey.bytes),
+        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+      );
+      if (outputAddress.asString() == address) {
+        totalAmount += output.value.toInt();
+      }
+    }
+    return totalAmount;
+  }
   // 25000 - 988
 
   Future<String> signPsbt(

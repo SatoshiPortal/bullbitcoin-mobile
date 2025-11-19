@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
@@ -106,7 +107,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Pay'),
+            title: Text(context.loc.payTitle),
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
@@ -129,12 +130,12 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                     width: 100,
                   ),
                   const Gap(20),
-                  Text('Payment In Progress!', style: context.font.titleLarge),
+                  Text(context.loc.payPaymentInProgress, style: context.font.titleLarge),
                   const Gap(10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32.0),
                     child: Text(
-                      'Your payment has been initiated and the recipient will receive the funds after your transaction receives 1 confirmation onchain.',
+                      context.loc.payPaymentInProgressDescription,
                       style: context.font.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
@@ -151,7 +152,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                 children: [
                   if (order != null)
                     BBButton.big(
-                      label: 'View details',
+                      label: context.loc.payViewDetails,
                       onPressed: () {
                         context.pushNamed(
                           TransactionsRoute.orderTransactionDetails.name,
