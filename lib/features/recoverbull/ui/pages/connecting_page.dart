@@ -89,7 +89,8 @@ class ConnectingPage extends StatelessWidget {
                   const Gap(40),
                   if (hasError) ...[
                     BBText(
-                      state.error?.message ?? context.loc.recoverbullConnectionFailed,
+                      state.error?.toTranslated(context) ??
+                          context.loc.recoverbullConnectionFailed,
                       textAlign: TextAlign.center,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.error,
@@ -104,8 +105,8 @@ class ConnectingPage extends StatelessWidget {
                       textColor: context.colour.onSecondary,
                       onPressed: () {
                         context.read<RecoverBullBloc>()
-                          ..add(OnTorInitialization(context: context))
-                          ..add(OnServerCheck(context: context));
+                          ..add(const OnTorInitialization())
+                          ..add(const OnServerCheck());
                       },
                     ),
                   ] else ...[

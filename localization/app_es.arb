@@ -1,5 +1,32 @@
 {
   "@@locale": "es",
+  "durationSeconds": "{seconds} segundos",
+  "@durationSeconds": {
+    "description": "Duration format for seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinute": "{minutes} minuto",
+  "@durationMinute": {
+    "description": "Duration format for singular minute",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinutes": "{minutes} minutos",
+  "@durationMinutes": {
+    "description": "Duration format for plural minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingScreenTitle": "Bienvenido",
   "@onboardingScreenTitle": {
     "description": "El título de la pantalla de inicio"
@@ -6806,6 +6833,10 @@
   "@recoverbullErrorFetchKeyFailed": {
     "description": "Error message when server key fetch fails"
   },
+  "recoverbullErrorInvalidCredentials": "Contraseña incorrecta para este archivo de respaldo",
+  "@recoverbullErrorInvalidCredentials": {
+    "description": "Error message when wrong password is entered for vault"
+  },
   "recoverbullErrorInvalidFlow": "Flujo inválido",
   "@recoverbullErrorInvalidFlow": {
     "description": "Error message for invalid operation flow"
@@ -6822,6 +6853,24 @@
   "@recoverbullErrorRecoveryFailed": {
     "description": "Error message when vault recovery fails"
   },
+  "recoverbullTorNotStarted": "Tor no está iniciado",
+  "@recoverbullTorNotStarted": {
+    "description": "Error message when Tor is not started"
+  },
+  "recoverbullErrorRateLimited": "Límite de solicitudes alcanzado. Por favor, inténtalo en {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "description": "Error message when rate limited by the server",
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorUnexpected": "Error inesperado, ver registros",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullUnexpectedError": "Error inesperado",
   "recoverbullErrorSelectVault": "Error al seleccionar la bóveda",
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"

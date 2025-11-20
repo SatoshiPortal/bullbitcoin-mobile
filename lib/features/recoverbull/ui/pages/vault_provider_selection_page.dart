@@ -35,7 +35,11 @@ class VaultProviderSelectionPage extends StatelessWidget {
                 current.vault != null && previous.vault != current.vault,
         listener: (context, state) {
           if (state.error != null) {
-            SnackBarUtils.showSnackBar(context, state.error!.message);
+            SnackBarUtils.showSnackBar(
+              context,
+              state.error!.toTranslated(context),
+            );
+            context.read<RecoverBullBloc>().add(const OnClearError());
           }
 
           if (state.vault != null && state.vaultProvider != null) {
@@ -89,10 +93,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
                   child: RecoverbullVaultProviderSelector(
                     onProviderSelected: (provider) {
                       context.read<RecoverBullBloc>().add(
-                        OnVaultProviderSelection(
-                          provider: provider,
-                          context: context,
-                        ),
+                        OnVaultProviderSelection(provider: provider),
                       );
                     },
                   ),
