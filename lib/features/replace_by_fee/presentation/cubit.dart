@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
+import 'package:bb_mobile/features/replace_by_fee/errors.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,16 +41,16 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
     );
   }
 
-  void clearError() => emit(state.copyWith(errorKey: null));
+  void clearError() => emit(state.copyWith(error: null));
 
   void reset() => emit(const ReplaceByFeeState());
 
   Future<void> broadcast() async {
     try {
-      emit(state.copyWith(errorKey: null));
+      emit(state.copyWith(error: null));
 
       if (state.newFeeRate == null) {
-        emit(state.copyWith(errorKey: 'replaceByFeeErrorNoFeeRateSelected'));
+        emit(state.copyWith(error: NoFeeRateSelectedError()));
         return;
       }
 
@@ -66,12 +67,11 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
 
       emit(state.copyWith(txid: txid));
     } on TransactionConfirmedException catch (_) {
-      emit(state.copyWith(errorKey: 'replaceByFeeErrorTransactionConfirmed'));
+      emit(state.copyWith(error: TransactionConfirmedError()));
     } on FeeRateTooLowException catch (_) {
-      emit(state.copyWith(errorKey: 'replaceByFeeErrorFeeRateTooLow'));
+      emit(state.copyWith(error: FeeRateTooLowError()));
     } catch (e) {
-      // For any other errors, use a generic error key or the error message
-      emit(state.copyWith(errorKey: 'replaceByFeeErrorGeneric'));
+      emit(state.copyWith(error: GenericError()));
     }
   }
 

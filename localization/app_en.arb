@@ -4740,6 +4740,10 @@
   "@replaceByFeeErrorTransactionConfirmed": {
     "description": "Error message when original transaction is already confirmed"
   },
+  "replaceByFeeErrorGeneric": "An error occurred while attempting to replace the transaction",
+  "@replaceByFeeErrorGeneric": {
+    "description": "Generic error message for replace-by-fee operation failures"
+  },
   "replaceByFeeFastestDescription": "Estimated delivery ~ 10 minutes",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
