@@ -30,8 +30,11 @@ class TorDatasource {
     status = TorStatus.connecting;
     final start = DateTime.now();
     await _tor.enable();
+    log.config('Tor enabled');
     await _tor.start();
+    log.config('Tor started');
     await _tor.isReady();
+    log.config('Tor ready');
     final end = DateTime.now();
     log.fine(
       'Tor started in ${end.difference(start).inSeconds}s on port ${_tor.port}',
