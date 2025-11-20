@@ -25,7 +25,11 @@ class VaultRecoveryPage extends StatelessWidget {
                 previous.isFlowFinished != current.isFlowFinished,
         listener: (context, state) {
           if (state.error != null) {
-            SnackBarUtils.showSnackBar(context, state.error!.message);
+            SnackBarUtils.showSnackBar(
+              context,
+              state.error!.toTranslated(context),
+            );
+            context.read<RecoverBullBloc>().add(const OnClearError());
           }
           if (state.isFlowFinished) {
             context.goNamed(WalletRoute.walletHome.name);
@@ -62,7 +66,7 @@ class VaultRecoveryPage extends StatelessWidget {
                         child: BBButton.big(
                           onPressed: () {
                             context.read<RecoverBullBloc>().add(
-                              OnVaultRecovery(context: context),
+                              const OnVaultRecovery(),
                             );
                           },
                           label: context.loc.recoverbullContinue,

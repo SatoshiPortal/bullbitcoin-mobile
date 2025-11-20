@@ -28,6 +28,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
       BackupSettingsFlow.backup => context.loc.backupWalletTitle,
       BackupSettingsFlow.test => context.loc.testBackupTitle,
     };
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -59,15 +60,17 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                 description: context.loc.backupWalletEncryptedVaultDescription,
                 tag: context.loc.backupWalletEncryptedVaultTag,
                 onTap:
-                    () => {
-                      context.pushNamed(
-                        RecoverBullRoute.recoverbullFlows.name,
-                        extra: RecoverBullFlowsExtra(
-                          flow: RecoverBullFlow.secureVault,
-                          vault: null,
-                        ),
+                    () => context.pushNamed(
+                      RecoverBullRoute.recoverbullFlows.name,
+                      extra: RecoverBullFlowsExtra(
+                        flow: switch (widget.flow) {
+                          BackupSettingsFlow.backup =>
+                            RecoverBullFlow.secureVault,
+                          BackupSettingsFlow.test => RecoverBullFlow.testVault,
+                        },
+                        vault: null,
                       ),
-                    },
+                    ),
               ),
               const Gap(16),
 
