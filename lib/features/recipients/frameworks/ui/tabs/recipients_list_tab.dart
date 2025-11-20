@@ -19,14 +19,17 @@ class RecipientsListTab extends StatefulWidget {
 
 class _RecipientsListTabState extends State<RecipientsListTab> {
   String? _jurisdictionFilter;
+  String _searchQuery = '';
   List<RecipientViewModel>? _recipients;
   RecipientViewModel? _selectedRecipient;
   late StreamSubscription<RecipientsState> _stateSubscription;
   late ScrollController _scrollController;
+  late TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
 
@@ -34,8 +37,8 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
     // Listen for changes in the RecipientsBloc state to update the recipients list
     _stateSubscription = bloc.stream.listen((state) {
       setState(() {
-        _recipients = state.filteredRecipientsByJurisdiction(
-          _jurisdictionFilter,
+        _recipients = _applyFilters(
+          state.filteredRecipientsByJurisdiction(_jurisdictionFilter),
         );
         _jurisdictionFilter =
             state.availableJurisdictions.length == 1
@@ -44,8 +47,8 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
       });
     });
     // Initialize the recipients list
-    _recipients = bloc.state.filteredRecipientsByJurisdiction(
-      _jurisdictionFilter,
+    _recipients = _applyFilters(
+      bloc.state.filteredRecipientsByJurisdiction(_jurisdictionFilter),
     );
     _jurisdictionFilter =
         bloc.state.availableJurisdictions.length == 1
@@ -60,8 +63,36 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
     }
   }
 
+  List<RecipientViewModel>? _applyFilters(
+    List<RecipientViewModel>? recipients,
+  ) {
+    if (recipients == null) return null;
+
+    if (_searchQuery.isEmpty) return recipients;
+
+    final searchLower = _searchQuery.toLowerCase();
+    final filtered =
+        recipients.where((recipient) {
+          final displayName = recipient.displayName?.toLowerCase() ?? '';
+          return displayName.contains(searchLower);
+        }).toList();
+
+    // If search returns no results and there are more recipients to load, trigger loading
+    if (filtered.isEmpty &&
+        _searchQuery.isNotEmpty &&
+        context.read<RecipientsBloc>().state.hasMoreRecipientsToLoad) {
+      // Schedule loading more recipients after this build completes
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<RecipientsBloc>().add(const RecipientsEvent.moreLoaded());
+      });
+    }
+
+    return filtered;
+  }
+
   @override
   void dispose() {
+    _searchController.dispose();
     _scrollController.dispose();
     _stateSubscription.cancel();
     super.dispose();
@@ -73,6 +104,48 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: 'Search recipients by name',
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon:
+                _searchQuery.isNotEmpty
+                    ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        setState(() {
+                          _searchController.clear();
+                          _searchQuery = '';
+                          _recipients = _applyFilters(
+                            context
+                                .read<RecipientsBloc>()
+                                .state
+                                .filteredRecipientsByJurisdiction(
+                                  _jurisdictionFilter,
+                                ),
+                          );
+                        });
+                      },
+                    )
+                    : null,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+          onChanged: (value) {
+            setState(() {
+              _searchQuery = value;
+              _recipients = _applyFilters(
+                context
+                    .read<RecipientsBloc>()
+                    .state
+                    .filteredRecipientsByJurisdiction(_jurisdictionFilter),
+              );
+            });
+          },
+        ),
+        const Gap(16.0),
         Text('Filter by Jurisdiction:', style: context.font.bodyMedium),
         const Gap(8.0),
         JurisdictionsDropdown(
@@ -81,10 +154,12 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
           onChanged: (newJurisdiction) {
             setState(() {
               _jurisdictionFilter = newJurisdiction;
-              _recipients = context
-                  .read<RecipientsBloc>()
-                  .state
-                  .filteredRecipientsByJurisdiction(newJurisdiction);
+              _recipients = _applyFilters(
+                context
+                    .read<RecipientsBloc>()
+                    .state
+                    .filteredRecipientsByJurisdiction(newJurisdiction),
+              );
               _selectedRecipient =
                   newJurisdiction == null ||
                           _selectedRecipient?.jurisdictionCode ==
