@@ -33,20 +33,22 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
                const AllowedRecipientFiltersViewModel(),
          ),
        ) {
-    on<RecipientsLoaded>(_onLoaded);
+    on<RecipientsStarted>(_onStarted);
+    on<RecipientsMoreLoaded>(_onMoreLoaded);
     on<RecipientsAdded>(_onAdded);
     on<RecipientsSinpeChecked>(_onSinpeChecked);
     on<RecipientsCadBillersSearched>(_onCadBillersSearched);
     on<RecipientsSelected>(_onSelected);
   }
 
+  static const pageSize = 50;
   final AddRecipientUsecase _addRecipientUsecase;
   final GetRecipientsUsecase _getRecipientsUsecase;
   final CheckSinpeUsecase _checkSinpeUsecase;
   final ListCadBillersUsecase _listCadBillersUsecase;
 
-  Future<void> _onLoaded(
-    RecipientsLoaded event,
+  Future<void> _onStarted(
+    RecipientsStarted event,
     Emitter<RecipientsState> emit,
   ) async {
     emit(
@@ -57,11 +59,16 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       ),
     );
     try {
-      log.info('Loading recipients');
-      final result = await _getRecipientsUsecase.execute(GetRecipientsParams());
-      log.fine('Loaded ${result.recipients.length} recipients');
+      log.info('Loading first recipients');
+      final result = await _getRecipientsUsecase.execute(
+        GetRecipientsParams(pageSize: pageSize),
+      );
+      log.fine(
+        'Loaded first ${result.recipients.length} recipients of ${result.totalRecipients} total',
+      );
       emit(
         state.copyWith(
+          totalRecipients: result.totalRecipients,
           recipients:
               result.recipients
                   .map((recipient) {
@@ -86,6 +93,65 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       emit(
         state.copyWith(
           failedToLoadRecipients: Exception('Failed to load recipients: $e'),
+        ),
+      );
+    } finally {
+      emit(state.copyWith(isLoadingRecipients: false));
+    }
+  }
+
+  Future<void> _onMoreLoaded(
+    RecipientsMoreLoaded event,
+    Emitter<RecipientsState> emit,
+  ) async {
+    if (state.isLoadingRecipients || !state.hasMoreRecipientsToLoad) {
+      return;
+    }
+
+    emit(
+      state.copyWith(isLoadingRecipients: true, failedToLoadRecipients: null),
+    );
+    try {
+      log.info('Loading more recipients');
+      final result = await _getRecipientsUsecase.execute(
+        GetRecipientsParams(
+          page: (state.recipients!.length ~/ pageSize) + 1,
+          pageSize: pageSize,
+        ),
+      );
+      log.fine(
+        'Loaded additional ${result.recipients.length} recipients, '
+        'total loaded: ${state.recipients!.length + result.recipients.length} '
+        'of ${result.totalRecipients} total',
+      );
+      emit(
+        state.copyWith(
+          totalRecipients: result.totalRecipients,
+          recipients: [
+            ...state.recipients!,
+            ...result.recipients.map((recipient) {
+              // Wrap each transformation in try/catch so a single malformed element
+              // doesn't fail the entire list. Nulls are filtered out with the
+              // whereType.
+              try {
+                return RecipientViewModel.fromDto(recipient);
+              } catch (err, stackTrace) {
+                log.severe(
+                  'Error transforming recipient to view model: $err',
+                  trace: stackTrace,
+                );
+                return null;
+              }
+            }).whereType<RecipientViewModel>(),
+          ],
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          failedToLoadRecipients: Exception(
+            'Failed to load more recipients: $e',
+          ),
         ),
       );
     } finally {

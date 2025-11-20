@@ -22,10 +22,14 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
   List<RecipientViewModel>? _recipients;
   RecipientViewModel? _selectedRecipient;
   late StreamSubscription<RecipientsState> _stateSubscription;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+
     final bloc = context.read<RecipientsBloc>();
     // Listen for changes in the RecipientsBloc state to update the recipients list
     _stateSubscription = bloc.stream.listen((state) {
@@ -49,8 +53,16 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
             : _jurisdictionFilter;
   }
 
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.9) {
+      context.read<RecipientsBloc>().add(const RecipientsEvent.moreLoaded());
+    }
+  }
+
   @override
   void dispose() {
+    _scrollController.dispose();
     _stateSubscription.cancel();
     super.dispose();
   }
@@ -73,6 +85,12 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
                   .read<RecipientsBloc>()
                   .state
                   .filteredRecipientsByJurisdiction(newJurisdiction);
+              _selectedRecipient =
+                  newJurisdiction == null ||
+                          _selectedRecipient?.jurisdictionCode ==
+                              newJurisdiction
+                      ? _selectedRecipient
+                      : null;
             });
           },
         ),
@@ -89,6 +107,7 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
                     ),
                   )
                   : ListView.builder(
+                    controller: _scrollController,
                     itemBuilder: (context, index) {
                       final recipient = _recipients![index];
                       return RecipientsListTile(

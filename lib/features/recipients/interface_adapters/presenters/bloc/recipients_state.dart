@@ -7,6 +7,7 @@ sealed class RecipientsState with _$RecipientsState {
     Exception? failedToLoadRecipients,
     required AllowedRecipientFiltersViewModel allowedRecipientFilters,
     List<RecipientViewModel>? recipients,
+    int? totalRecipients,
     @Default(false) bool isSearchingCadBillers,
     Exception? failedToSearchCadBillers,
     List<CadBillerViewModel>? cadBillers,
@@ -24,6 +25,13 @@ sealed class RecipientsState with _$RecipientsState {
       isAddingRecipient ||
       isCheckingSinpe ||
       isSearchingCadBillers;
+
+  bool get hasMoreRecipientsToLoad {
+    if (recipients == null || totalRecipients == null) {
+      return false;
+    }
+    return recipients!.length < totalRecipients!;
+  }
 
   bool get hasSelectedRecipient => selectedRecipient != null;
 
@@ -46,14 +54,22 @@ sealed class RecipientsState with _$RecipientsState {
   List<RecipientViewModel>? get selectableRecipients {
     // Apply filters to the full recipient list based on the allowed recipient types
     // and ownership criteria.
-    return recipients
-        ?.where(
-          (recipient) =>
-              selectableRecipientTypes.any((type) => type == recipient.type) &&
-              !(onlyOwnerRecipients && !(recipient.isOwner == true) ||
-                  onlyNonOwnerRecipients && !(recipient.isOwner == false)),
-        )
-        .toList();
+    final filtered =
+        recipients
+            ?.where(
+              (recipient) =>
+                  selectableRecipientTypes.any(
+                    (type) => type == recipient.type,
+                  ) &&
+                  !(onlyOwnerRecipients && !(recipient.isOwner == true) ||
+                      onlyNonOwnerRecipients && !(recipient.isOwner == false)),
+            )
+            .toList();
+
+    // Remove duplicates based on recipient ID
+    if (filtered == null) return null;
+    final seen = <String>{};
+    return filtered.where((recipient) => seen.add(recipient.id)).toList();
   }
 
   List<RecipientViewModel>? filteredRecipientsByJurisdiction(

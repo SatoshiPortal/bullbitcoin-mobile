@@ -141,8 +141,8 @@ class PayReceivePaymentScreen extends StatelessWidget {
                 RecipientType.sinpeMovilCrc => 'SINPE Móvil',
                 // ARGENTINA types
                 RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina',
-                // TODO: Handle this case.
                 RecipientType.pseColombia => 'Bank Account COP',
+                RecipientType.nequiColombia => 'Nequi',
               },
             ),
             const Gap(8),
@@ -331,8 +331,9 @@ class PayReceivePaymentScreen extends StatelessWidget {
         // TODO: Handle this case.
         throw UnimplementedError();
       case RecipientType.pseColombia:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        return 'Bank Account';
+      case RecipientType.nequiColombia:
+        return 'Phone Number';
     }
   }
 
@@ -340,7 +341,9 @@ class PayReceivePaymentScreen extends StatelessWidget {
     switch (recipient.type) {
       case RecipientType.cbuCvuArgentina:
       case RecipientType.pseColombia:
-        return '-';
+        return recipient.bankAccount;
+      case RecipientType.nequiColombia:
+        return recipient.phoneNumber;
       case RecipientType.interacEmailCad:
         return recipient.email;
       case RecipientType.billPaymentCad:

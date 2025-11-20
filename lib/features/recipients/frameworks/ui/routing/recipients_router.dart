@@ -36,7 +36,7 @@ class RecipientsRouter {
         create:
             (context) =>
                 locator<RecipientsBloc>(param1: extra.allowedRecipientsFilters)
-                  ..add(const RecipientsEvent.loaded()),
+                  ..add(const RecipientsEvent.started()),
         child: BlocListener<RecipientsBloc, RecipientsState>(
           listenWhen:
               (previous, current) =>

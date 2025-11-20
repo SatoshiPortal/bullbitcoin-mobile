@@ -28,6 +28,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
     String? phoneNumber,
     String? debitcard,
     bool? isOwner,
+    String? bankAccount,
   }) = _RecipientViewModel;
   const RecipientViewModel._();
 
@@ -54,6 +55,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
       phoneNumber: dto.details.phoneNumber,
       debitcard: dto.details.debitcard,
       isOwner: dto.isOwner,
+      bankAccount: dto.details.bankAccount,
     );
   }
 
@@ -153,7 +155,9 @@ sealed class RecipientViewModel with _$RecipientViewModel {
       case RecipientType.cbuCvuArgentina:
         return null;
       case RecipientType.pseColombia:
-        return null;
+        return name;
+      case RecipientType.nequiColombia:
+        return name;
     }
   }
 }

@@ -29,8 +29,8 @@ class RecipientTypeText extends StatelessWidget {
       RecipientType.sinpeMovilCrc => 'SINPE Móvil',
       // ARGENTINA types
       RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina',
-      // TODO: Handle this case.
       RecipientType.pseColombia => 'Bank Account COP',
+      RecipientType.nequiColombia => 'Nequi',
     }, style: style);
   }
 }

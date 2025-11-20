@@ -131,7 +131,9 @@ class WithdrawConfirmationScreen extends StatelessWidget {
       case RecipientType.cbuCvuArgentina:
         return 'Account'; // TODO: Update when implemented
       case RecipientType.pseColombia:
-        return 'Account'; // TODO: Update when implemented
+        return 'Bank Account';
+      case RecipientType.nequiColombia:
+        return 'Phone';
     }
   }
 
@@ -164,7 +166,9 @@ class WithdrawConfirmationScreen extends StatelessWidget {
       case RecipientType.cbuCvuArgentina:
         return null; // TODO: Implement
       case RecipientType.pseColombia:
-        return null; // TODO: Implement
+        return recipient.bankAccount;
+      case RecipientType.nequiColombia:
+        return recipient.phoneNumber;
     }
   }
 }

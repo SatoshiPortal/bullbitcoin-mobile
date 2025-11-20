@@ -115,9 +115,13 @@ class RecipientsListTile extends StatelessWidget {
                 value: null,
               ),
               // TODO: Handle this case.
-              RecipientType.pseColombia => const _InfoRow(
+              RecipientType.pseColombia => _InfoRow(
                 label: 'Account Number',
-                value: null,
+                value: recipient.bankAccount,
+              ),
+              RecipientType.nequiColombia => _InfoRow(
+                label: 'Phone',
+                value: recipient.phoneNumber,
               ),
             },
           ],

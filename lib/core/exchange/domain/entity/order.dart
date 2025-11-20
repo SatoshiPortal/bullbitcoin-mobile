@@ -192,6 +192,7 @@ enum OrderPayoutStatus {
 enum OrderPaymentMethod {
   eTransfer('E-Transfer'),
   eTransferArs('E-Transfer ARS'),
+  bankTransferCop('Bank Transfer COP'),
   billPayment('Bill Payment'),
   bankTransfer('Bank Transfer'),
   loadhub('Loadhub'),

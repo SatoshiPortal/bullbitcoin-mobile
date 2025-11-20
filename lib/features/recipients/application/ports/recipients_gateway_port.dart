@@ -8,9 +8,11 @@ abstract class RecipientsGatewayPort {
     bool isFiatRecipient = true,
     required bool isTestnet,
   });
-  Future<List<Recipient>> listRecipients({
+  Future<({List<Recipient> recipients, int totalRecipients})> listRecipients({
     bool fiatOnly = true,
     required bool isTestnet,
+    int page = 1,
+    int pageSize = 50,
   });
   Future<List<CadBiller>> listCadBillers({
     required String searchTerm,

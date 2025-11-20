@@ -56,9 +56,11 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
   }
 
   @override
-  Future<List<Recipient>> listRecipients({
+  Future<({List<Recipient> recipients, int totalRecipients})> listRecipients({
     bool fiatOnly = true,
     required bool isTestnet,
+    int page = 1,
+    int pageSize = 50,
   }) async {
     final resp = await _authenticatedApiClient.post(
       _recipientsPath,
@@ -67,7 +69,8 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
         'id': '0',
         'method': fiatOnly ? 'listRecipientsFiat' : 'listRecipients',
         'params': {
-          'paginator': {'page': 1, 'pageSize': 50},
+          // The API expects 1-based page indexing, so we add 1 to the 0-based page parameter.
+          'paginator': {'page': page, 'pageSize': pageSize},
         },
       },
     );
@@ -81,28 +84,35 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
       throw Exception('Failed to list fiat recipients: $error');
     }
 
+    final totalElements = resp.data['result']['totalElements'] as int;
     final elements = resp.data['result']['elements'] as List<dynamic>?;
-    if (elements == null) return [];
+    if (elements == null) {
+      return (recipients: <Recipient>[], totalRecipients: totalElements);
+    }
 
-    return elements
-        .map((e) {
-          // Wrap each transformation in try/catch so a single malformed element
-          // doesn't fail the entire list. Nulls are filtered out below.
-          // This also helps when the api supports recipient types that the app
-          // doesn't support yet, which without does would cause the user not
-          // to see any recipients at all.
-          try {
-            return RecipientModel.fromJson(e as Map<String, dynamic>).toDomain;
-          } catch (err, stackTrace) {
-            log.severe(
-              'Error parsing recipient element: $err',
-              trace: stackTrace,
-            );
-            return null;
-          }
-        })
-        .whereType<Recipient>()
-        .toList();
+    final recipients =
+        elements
+            .map((e) {
+              // Wrap each transformation in try/catch so a single malformed element
+              // doesn't fail the entire list. Nulls are filtered out below.
+              // This also helps when the api supports recipient types that the app
+              // doesn't support yet, which without does would cause the user not
+              // to see any recipients at all.
+              try {
+                return RecipientModel.fromJson(
+                  e as Map<String, dynamic>,
+                ).toDomain;
+              } catch (err, stackTrace) {
+                log.severe(
+                  'Error parsing recipient element: $err',
+                  trace: stackTrace,
+                );
+                return null;
+              }
+            })
+            .whereType<Recipient>()
+            .toList();
+    return (recipients: recipients, totalRecipients: totalElements);
   }
 
   @override

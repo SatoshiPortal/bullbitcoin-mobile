@@ -35,18 +35,24 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }
 
   @override
-  Future<List<Recipient>> listRecipients({
+  Future<({List<Recipient> recipients, int totalRecipients})> listRecipients({
     bool fiatOnly = true,
     required bool isTestnet,
+    int page = 1,
+    int pageSize = 50,
   }) {
     return isTestnet
         ? _bullBitcoinTestnetApiClient.listRecipients(
           fiatOnly: fiatOnly,
           isTestnet: isTestnet,
+          page: page,
+          pageSize: pageSize,
         )
         : _bullbitcoinApiClient.listRecipients(
           fiatOnly: fiatOnly,
           isTestnet: isTestnet,
+          page: page,
+          pageSize: pageSize,
         );
   }
 

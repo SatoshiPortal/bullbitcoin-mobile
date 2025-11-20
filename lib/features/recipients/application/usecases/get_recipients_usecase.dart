@@ -4,14 +4,24 @@ import 'package:bb_mobile/features/recipients/application/ports/recipients_gatew
 
 class GetRecipientsParams {
   final bool fiatOnly;
+  final int page;
+  final int pageSize;
 
-  GetRecipientsParams({this.fiatOnly = true});
+  GetRecipientsParams({
+    this.fiatOnly = true,
+    this.page = 1,
+    this.pageSize = 50,
+  });
 }
 
 class GetRecipientsResult {
   final List<RecipientDto> recipients;
+  final int totalRecipients;
 
-  GetRecipientsResult({required this.recipients});
+  GetRecipientsResult({
+    required this.recipients,
+    required this.totalRecipients,
+  });
 }
 
 class GetRecipientsUsecase {
@@ -31,12 +41,18 @@ class GetRecipientsUsecase {
     final settings = await _settingsRepository.fetch();
     final isTestnet = settings.environment.isTestnet;
 
-    final recipients = await _recipientsGateway.listRecipients(
+    final recipientsResult = await _recipientsGateway.listRecipients(
       isTestnet: isTestnet,
       fiatOnly: params.fiatOnly,
+      page: params.page,
+      pageSize: params.pageSize,
     );
     return GetRecipientsResult(
-      recipients: recipients.map((e) => RecipientDto.fromDomain(e)).toList(),
+      recipients:
+          recipientsResult.recipients
+              .map((e) => RecipientDto.fromDomain(e))
+              .toList(),
+      totalRecipients: recipientsResult.totalRecipients,
     );
   }
 }

@@ -1936,10 +1936,10 @@ packages:
     dependency: transitive
     description:
       name: universal_io
-      sha256: ba9dde5f7c6d8ec7ed856bef0eb01c425881acae7748f77dac4d5cc46f2edf04
+      sha256: f63cbc48103236abf48e345e07a03ce5757ea86285ed313a6a032596ed9301e2
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.3"
+    version: "2.3.1"
   universal_platform:
     dependency: transitive
     description:

@@ -19,7 +19,8 @@ enum RecipientType {
   // ARGENTINA
   cbuCvuArgentina('CBU_CVU_ARGENTINA'),
   // Colombia
-  pseColombia('PSE_COLOMBIA_COP');
+  pseColombia('PSE_COLOMBIA_COP'),
+  nequiColombia('NEQUI_COLOMBIA_COP');
 
   final String value;
   const RecipientType(this.value);
@@ -51,6 +52,8 @@ enum RecipientType {
         return 'AR';
       case RecipientType.pseColombia:
         return 'CO';
+      case RecipientType.nequiColombia:
+        return 'CO';
     }
   }
 
@@ -74,6 +77,8 @@ enum RecipientType {
       case RecipientType.cbuCvuArgentina:
         return 'ARS';
       case RecipientType.pseColombia:
+        return 'COP';
+      case RecipientType.nequiColombia:
         return 'COP';
     }
   }

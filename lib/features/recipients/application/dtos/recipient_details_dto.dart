@@ -6,84 +6,75 @@ import 'package:meta/meta.dart';
 class RecipientDetailsDto {
   // discriminator
   final RecipientType recipientType; // e.g. 'SEPA_EUR'
-
-  // shared (RecipientDetails base)
+  // shared fields
   final String? label;
-  final bool? isOwner; // optional - only meaningful for certain recipient types
-  final bool? isDefault; // nullable so we can omit over the wire when false
-
-  // ── Interac Email (CAD)
+  final bool? isOwner;
+  final bool? isDefault;
+  // specific fields for recipient types
   final String? email;
-  final String? name; // also used by some MXN types
+  final String? name;
   final String? securityQuestion;
   final String? securityAnswer;
-
-  // ── Bill Payment (CAD)
   final String? payeeName;
   final String? payeeCode;
   final String? payeeAccountNumber;
-
-  // ── Bank Transfer (CAD)
   final String? institutionNumber;
   final String? transitNumber;
   final String? accountNumber;
   final String? defaultComment;
-
-  // ── SEPA (EUR)
   final String? iban;
   final bool? isCorporate;
   final String? firstname;
   final String? lastname;
   final String? corporateName;
-
-  // ── SPEI (MXN)
-  final String? clabe; // CLABE
-  final String? institutionCode; // SMS/Card
-  final String? phone; // SMS
-  final String? debitcard; // Card
-
-  // ── SINPE (CRC/USD)
-  final String? ownerName; // IBAN USD/CRC, Movil
-  final String? phoneNumber; // Movil
-
-  // ── CBU/CVU (Argentina)
+  final String? clabe;
+  final String? institutionCode;
+  final String? phone;
+  final String? debitcard;
+  final String? ownerName;
+  final String? phoneNumber;
   final String? cbuCvu;
+  final String? bankCode;
+  final String? accountType;
+  final String? bankAccount;
+  final String? bankName;
+  final String? documentId;
+  final String? documentType;
 
   const RecipientDetailsDto({
     required this.recipientType,
     this.isOwner,
     this.label,
     this.isDefault,
-    // Interac
     this.email,
     this.name,
     this.securityQuestion,
     this.securityAnswer,
-    // Bill Payment
     this.payeeName,
     this.payeeCode,
     this.payeeAccountNumber,
-    // Bank Transfer
     this.institutionNumber,
     this.transitNumber,
     this.accountNumber,
     this.defaultComment,
-    // SEPA
     this.iban,
     this.isCorporate,
     this.firstname,
     this.lastname,
     this.corporateName,
-    // SPEI
     this.clabe,
     this.institutionCode,
     this.phone,
     this.debitcard,
-    // SINPE
     this.ownerName,
     this.phoneNumber,
-    // CBU/CVU Argentina
     this.cbuCvu,
+    this.bankCode,
+    this.accountType,
+    this.bankAccount,
+    this.bankName,
+    this.documentId,
+    this.documentType,
   });
 
   // VO → DTO
@@ -232,9 +223,35 @@ class RecipientDetailsDto {
           name: d.name,
         );
       }(),
-      // TODO: Handle this case.
+      // Colombia
       RecipientType.pseColombia => () {
-        return RecipientDetailsDto(recipientType: type);
+        final d = details as PseColombiaDetails;
+        return RecipientDetailsDto(
+          recipientType: type,
+          isOwner: d.isOwner,
+          label: d.label,
+          isDefault: d.isDefault,
+          name: d.name,
+          accountType: d.accountType,
+          bankAccount: d.bankAccount,
+          bankCode: d.bankCode,
+          bankName: d.bankName,
+          documentId: d.documentId,
+          documentType: d.documentType,
+        );
+      }(),
+      RecipientType.nequiColombia => () {
+        final d = details as NequiColombiaDetails;
+        return RecipientDetailsDto(
+          recipientType: type,
+          isOwner: d.isOwner,
+          label: d.label,
+          isDefault: d.isDefault,
+          phoneNumber: d.phoneNumber,
+          documentId: d.documentId,
+          documentType: d.documentType,
+          name: d.name,
+        );
       }(),
     };
   }
@@ -442,8 +459,47 @@ class RecipientDetailsDto {
           name: name!,
         );
       case RecipientType.pseColombia:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        if (name == null) {
+          throw StateError('name is required for PSE_COLOMBIA.');
+        }
+        if (accountType == null) {
+          throw StateError('accountType is required for PSE_COLOMBIA.');
+        }
+        if (bankAccount == null) {
+          throw StateError('bankAccount is required for PSE_COLOMBIA.');
+        }
+        if (bankCode == null) {
+          throw StateError('bankCode is required for PSE_COLOMBIA.');
+        }
+        if (documentId == null) {
+          throw StateError('documentId is required for PSE_COLOMBIA.');
+        }
+        if (documentType == null) {
+          throw StateError('documentType is required for PSE_COLOMBIA.');
+        }
+        return PseColombiaDetails.create(
+          label: label,
+          isDefault: def,
+          isOwner: isOwner,
+          name: name!,
+          accountType: accountType!,
+          bankAccount: bankAccount!,
+          bankCode: bankCode!,
+          bankName: bankName ?? '',
+          documentId: documentId!,
+          documentType: documentType!,
+        );
+      case RecipientType.nequiColombia:
+        return NequiColombiaDetails.create(
+          label: label,
+          isDefault: def,
+          isOwner: isOwner,
+          // Nequi uses phone number as bank account and API field is bankAccount
+          phoneNumber: bankAccount!,
+          documentId: documentId!,
+          documentType: documentType!,
+          name: name!,
+        );
     }
   }
 }

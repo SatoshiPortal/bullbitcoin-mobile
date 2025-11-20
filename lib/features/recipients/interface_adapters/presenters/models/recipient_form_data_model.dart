@@ -306,3 +306,66 @@ class CbuCvuArgentinaFormDataModel extends RecipientFormDataModel {
     );
   }
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// COLOMBIA
+// ══════════════════════════════════════════════════════════════════════════════
+class PseColombiaFormDataModel extends RecipientFormDataModel {
+  final String bankCode;
+  final String accountType;
+  final String bankAccount;
+  final String documentType;
+  final String documentId;
+  final String name;
+
+  const PseColombiaFormDataModel({
+    required this.bankCode,
+    required this.accountType,
+    required this.bankAccount,
+    required this.documentType,
+    required this.documentId,
+    required this.name,
+    super.label,
+  }) : super(type: RecipientType.pseColombia);
+
+  @override
+  RecipientDetailsDto toDto() {
+    return RecipientDetailsDto(
+      recipientType: type,
+      bankCode: bankCode,
+      accountType: accountType,
+      bankAccount: bankAccount,
+      documentType: documentType,
+      documentId: documentId,
+      name: name,
+      label: label,
+    );
+  }
+}
+
+class NequiColombiaFormDataModel extends RecipientFormDataModel {
+  final String phoneNumber;
+  final String documentType;
+  final String documentId;
+  final String name;
+
+  const NequiColombiaFormDataModel({
+    required this.phoneNumber,
+    required this.documentType,
+    required this.documentId,
+    required this.name,
+    super.label,
+  }) : super(type: RecipientType.nequiColombia);
+
+  @override
+  RecipientDetailsDto toDto() {
+    return RecipientDetailsDto(
+      recipientType: type,
+      phoneNumber: phoneNumber,
+      documentType: documentType,
+      documentId: documentId,
+      name: name,
+      label: label,
+    );
+  }
+}

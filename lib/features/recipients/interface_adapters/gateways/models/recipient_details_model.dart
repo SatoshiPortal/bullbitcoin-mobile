@@ -20,44 +20,37 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
     String? label,
     bool? isOwner,
     bool? isDefault,
+    // specific fields
     @Default(false) bool isArchived,
-
-    // Interac Email (CAD)
     String? email,
     String? name,
     String? securityQuestion,
     String? securityAnswer,
-
-    // Bill Payment (CAD)
     String? payeeName,
     String? payeeCode,
     String? payeeAccountNumber,
-
-    // Bank Transfer (CAD)
     String? institutionNumber,
     String? transitNumber,
     String? accountNumber,
     String? defaultComment,
-
-    // SEPA (EUR)
     String? iban,
     bool? isCorporate,
     String? firstname,
     String? lastname,
     String? corporateName,
-
-    // SPEI (MXN)
     String? clabe,
     String? institutionCode,
     String? phone,
     String? debitcard,
-
-    // SINPE (CRC/USD)
     String? ownerName,
     String? phoneNumber,
-
-    // CBU/CVU (Argentina)
-    //String? cbuCvu,
+    String? cbuCvu,
+    String? bankCode,
+    String? accountType,
+    String? bankAccount,
+    String? bankName,
+    String? documentId,
+    String? documentType,
   }) = _RecipientDetailsModel;
 
   factory RecipientDetailsModel.fromJson(Map<String, dynamic> json) =>
@@ -208,18 +201,45 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
-          // cbuCvu: d.cbuCvu,
+          cbuCvu: d.cbuCvu,
           name: d.name,
         );
       }(),
-      // TODO: Handle this case.
-      RecipientType.pseColombia => throw UnimplementedError(),
+      RecipientType.pseColombia => () {
+        final d = details as PseColombiaDetails;
+        return RecipientDetailsModel(
+          recipientTypeFiat: type.value,
+          isOwner: d.isOwner,
+          label: d.label,
+          isDefault: d.isDefault,
+          accountType: d.accountType,
+          bankAccount: d.bankAccount,
+          bankCode: d.bankCode,
+          bankName: d.bankName,
+          documentId: d.documentId,
+          documentType: d.documentType,
+          name: d.name,
+        );
+      }(),
+      RecipientType.nequiColombia => () {
+        final d = details as NequiColombiaDetails;
+        return RecipientDetailsModel(
+          recipientTypeFiat: type.value,
+          isOwner: d.isOwner,
+          label: d.label,
+          isDefault: d.isDefault,
+          // Nequi uses phone number as bank account and API field is bankAccount
+          bankAccount: d.phoneNumber,
+          documentId: d.documentId,
+          documentType: d.documentType,
+          name: d.name,
+        );
+      }(),
     };
   }
 
   /// Convert from model to domain value object via DTO
   RecipientDetails toDomain() {
-    // Use DTO as intermediate for validation
     final dto = RecipientDetailsDto(
       recipientType: RecipientType.fromValue(recipientTypeFiat),
       isOwner: isOwner,
@@ -248,6 +268,12 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       ownerName: ownerName,
       phoneNumber: phoneNumber,
       //cbuCvu: cbuCvu,
+      bankCode: bankCode,
+      accountType: accountType,
+      bankAccount: bankAccount,
+      bankName: bankName,
+      documentId: documentId,
+      documentType: documentType,
     );
 
     return dto.toDomain();

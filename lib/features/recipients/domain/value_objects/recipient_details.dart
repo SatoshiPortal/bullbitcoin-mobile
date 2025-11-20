@@ -542,3 +542,132 @@ class CbuCvuArgentinaDetails extends RecipientDetails {
   @override
   RecipientType get type => RecipientType.cbuCvuArgentina;
 }
+
+// ── PSE (Colombia)
+@immutable
+class PseColombiaDetails extends RecipientDetails {
+  final String name;
+  final String accountType;
+  final String bankAccount;
+  final String bankCode;
+  final String bankName;
+  final String documentId;
+  final String documentType;
+
+  const PseColombiaDetails._({
+    super.label,
+    super.isDefault = false,
+    super.isOwner,
+    required this.name,
+    required this.accountType,
+    required this.bankAccount,
+    required this.bankCode,
+    required this.bankName,
+    required this.documentId,
+    required this.documentType,
+  });
+
+  factory PseColombiaDetails.create({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required String name,
+    required String accountType,
+    required String bankAccount,
+    required String bankCode,
+    required String bankName,
+    required String documentId,
+    required String documentType,
+  }) {
+    if (name.trim().isEmpty) {
+      throw ArgumentError('Name cannot be empty');
+    }
+    if (accountType.trim().isEmpty) {
+      throw ArgumentError('Account type cannot be empty');
+    }
+    if (bankAccount.trim().isEmpty) {
+      throw ArgumentError('Bank account cannot be empty');
+    }
+    if (bankCode.trim().isEmpty) {
+      throw ArgumentError('Bank code cannot be empty');
+    }
+
+    if (documentId.trim().isEmpty) {
+      throw ArgumentError('Document ID cannot be empty');
+    }
+    if (documentType.trim().isEmpty) {
+      throw ArgumentError('Document type cannot be empty');
+    }
+
+    return PseColombiaDetails._(
+      label: label,
+      isDefault: isDefault,
+      isOwner: isOwner,
+      name: name.trim(),
+      accountType: accountType.trim(),
+      bankAccount: bankAccount.trim(),
+      bankCode: bankCode.trim(),
+      bankName: bankName.trim(),
+      documentId: documentId.trim(),
+      documentType: documentType.trim(),
+    );
+  }
+
+  @override
+  RecipientType get type => RecipientType.pseColombia;
+}
+
+// ── Nequi (Colombia)
+@immutable
+class NequiColombiaDetails extends RecipientDetails {
+  final String phoneNumber;
+  final String documentId;
+  final String documentType;
+  final String name;
+
+  const NequiColombiaDetails._({
+    super.label,
+    super.isDefault = false,
+    super.isOwner,
+    required this.phoneNumber,
+    required this.documentId,
+    required this.documentType,
+    required this.name,
+  });
+
+  factory NequiColombiaDetails.create({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required String name,
+    required String phoneNumber,
+    required String documentId,
+    required String documentType,
+  }) {
+    if (name.trim().isEmpty) {
+      throw ArgumentError('Name cannot be empty');
+    }
+    if (phoneNumber.trim().isEmpty) {
+      throw ArgumentError('Phone number cannot be empty');
+    }
+    if (documentId.trim().isEmpty) {
+      throw ArgumentError('Document ID cannot be empty');
+    }
+    if (documentType.trim().isEmpty) {
+      throw ArgumentError('Document type cannot be empty');
+    }
+
+    return NequiColombiaDetails._(
+      label: label,
+      isDefault: isDefault,
+      isOwner: isOwner,
+      name: name.trim(),
+      phoneNumber: phoneNumber.trim(),
+      documentId: documentId.trim(),
+      documentType: documentType.trim(),
+    );
+  }
+
+  @override
+  RecipientType get type => RecipientType.nequiColombia;
+}
