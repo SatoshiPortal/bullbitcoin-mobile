@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/exchange/domain/usecases/refresh_rate_history_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
@@ -30,6 +31,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     required CheckBackupUsecase checkBackupUsecase,
     required IsTorRequiredUsecase isTorRequiredUsecase,
     required InitTorUsecase initTorUsecase,
+    required RefreshRateHistoryUsecase refreshRateHistoryUsecase,
   }) : _resetAppDataUsecase = resetAppDataUsecase,
        _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
        _checkForExistingDefaultWalletsUsecase =
@@ -40,6 +42,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
        _checkBackupUsecase = checkBackupUsecase,
        _isTorRequiredUsecase = isTorRequiredUsecase,
        _initTorUsecase = initTorUsecase,
+       _refreshRateHistoryUsecase = refreshRateHistoryUsecase,
        super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
@@ -54,6 +57,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   final CheckBackupUsecase _checkBackupUsecase;
   final IsTorRequiredUsecase _isTorRequiredUsecase;
   final InitTorUsecase _initTorUsecase;
+  final RefreshRateHistoryUsecase _refreshRateHistoryUsecase;
 
   Future<void> _onAppStartupStarted(
     AppStartupStarted event,
@@ -123,6 +127,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       // Run Tor initialization in background
       final isTorRequired = await _isTorRequiredUsecase.execute();
       if (isTorRequired) unawaited(_initTorUsecase.execute());
+
+      // Refresh rate history data on app startup
+      unawaited(_refreshRateHistoryUsecase.execute());
 
       emit(
         AppStartupState.success(
