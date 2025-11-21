@@ -2,13 +2,18 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_local_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
+import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:hex/hex.dart';
 
 class RecoverBullRepository {
   final RecoverBullRemoteDatasource remoteDatasource;
+  final RecoverbullSettingsDatasource recoverbullSettingsDatasource;
 
-  RecoverBullRepository({required this.remoteDatasource});
+  RecoverBullRepository({
+    required this.remoteDatasource,
+    required this.recoverbullSettingsDatasource,
+  });
 
   String createJsonVault(String vaultKey, String plaintext) {
     final backupKeyBytes = HEX.decode(vaultKey);
@@ -77,5 +82,13 @@ class RecoverBullRepository {
 
   Future<void> checkConnection() async {
     await remoteDatasource.checkConnection();
+  }
+
+  Future<Uri> fetchUrl() async {
+    return await recoverbullSettingsDatasource.fetch();
+  }
+
+  Future<void> storeUrl(Uri url) async {
+    await recoverbullSettingsDatasource.store(url);
   }
 }

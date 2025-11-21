@@ -20,7 +20,6 @@ class CreateChainSwapToExternalUsecase {
     required String sendWalletId,
     required String receiveAddress,
     required SwapType type,
-    bool drain = false,
     required int amountSat,
   }) async {
     try {

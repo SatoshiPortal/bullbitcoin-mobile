@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
@@ -30,7 +31,7 @@ class PayAdvancedOptionsBottomSheet extends StatelessWidget {
             children: [
               Center(
                 child: BBText(
-                  "Advanced options",
+                  context.loc.payAdvancedOptions,
                   style: context.font.headlineMedium,
                 ),
               ),
@@ -49,7 +50,7 @@ class PayAdvancedOptionsBottomSheet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               BBText(
-                "Replace-by-fee activated",
+                context.loc.payRbfActivated,
                 style: context.font.headlineMedium,
               ),
               Switch(
@@ -65,7 +66,7 @@ class PayAdvancedOptionsBottomSheet extends StatelessWidget {
           const Gap(24),
           ListTile(
             title: BBText(
-              "Select coins manually",
+              context.loc.paySelectCoinsManually,
               style: context.font.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w500,
               ),
@@ -88,7 +89,7 @@ class PayAdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(24),
           BBButton.big(
-            label: "Done",
+            label: context.loc.payDone,
             onPressed: context.pop,
             bgColor: context.colour.secondary,
             textColor: context.colour.onSecondary,

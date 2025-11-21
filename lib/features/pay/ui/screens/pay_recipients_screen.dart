@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
@@ -12,18 +13,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 enum RecipientsTab {
-  newRecipient(displayValue: 'New recipients'),
-  myRecipients(displayValue: 'My fiat recipients');
+  newRecipient,
+  myRecipients;
 
-  final String displayValue;
-
-  const RecipientsTab({required this.displayValue});
-
-  static RecipientsTab fromDisplayValue(String value) {
-    return RecipientsTab.values.firstWhere(
-      (tab) => tab.displayValue == value,
-      orElse: () => RecipientsTab.myRecipients,
-    );
+  String getDisplayValue(BuildContext context) {
+    return switch (this) {
+      RecipientsTab.newRecipient => context.loc.payNewRecipients,
+      RecipientsTab.myRecipients => context.loc.payMyFiatRecipients,
+    };
   }
 }
 
@@ -65,7 +62,7 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Select recipient'),
+            title: Text(context.loc.paySelectRecipient),
             scrolledUnderElevation: 0,
           ),
           body: Column(
@@ -96,7 +93,7 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
                             children: [
                               const Gap(16.0),
                               Text(
-                                'Who are you paying?',
+                                context.loc.payWhoAreYouPaying,
                                 style: context.font.labelMedium?.copyWith(
                                   color: context.colour.secondary,
                                 ),
@@ -106,22 +103,23 @@ class _PayRecipientsScreenState extends State<PayRecipientsScreen> {
                                 width: double.infinity,
                                 child: BBSegmentFull(
                                   items: {
-                                    RecipientsTab.newRecipient.displayValue,
-                                    RecipientsTab.myRecipients.displayValue,
+                                    RecipientsTab.newRecipient.getDisplayValue(context),
+                                    RecipientsTab.myRecipients.getDisplayValue(context),
                                   },
-                                  initialValue: _selectedTab.displayValue,
+                                  initialValue: _selectedTab.getDisplayValue(context),
                                   disabledItems:
                                       isLoadedWithoutUserSummary
                                           ? {
                                             RecipientsTab
                                                 .myRecipients
-                                                .displayValue,
+                                                .getDisplayValue(context),
                                           }
                                           : {},
                                   onSelected: (value) {
-                                    _onTabSelected(
-                                      RecipientsTab.fromDisplayValue(value),
-                                    );
+                                    final newTab = value == RecipientsTab.newRecipient.getDisplayValue(context)
+                                        ? RecipientsTab.newRecipient
+                                        : RecipientsTab.myRecipients;
+                                    _onTabSelected(newTab);
                                   },
                                 ),
                               ),
@@ -168,9 +166,15 @@ class _PayRecipientsTab extends StatefulWidget {
 }
 
 class _PayRecipientsTabState extends State<_PayRecipientsTab> {
-  String _filterRecipientType = 'All types';
+  late String _filterRecipientType;
   String _filterCountry = 'CA';
   Recipient? _selectedRecipient;
+
+  @override
+  void initState() {
+    super.initState();
+    _filterRecipientType = context.loc.payAllTypes;
+  }
 
   void _onTypeFilterChanged(String filter) {
     setState(() {
@@ -182,17 +186,17 @@ class _PayRecipientsTabState extends State<_PayRecipientsTab> {
     setState(() {
       _filterCountry = filter;
       // Reset type filter when country changes
-      _filterRecipientType = 'All types';
+      _filterRecipientType = context.loc.payAllTypes;
     });
   }
 
   List<Recipient> _applyFilters(List<Recipient> allEligibleRecipients) {
     return allEligibleRecipients.where((recipient) {
       final typeMatch =
-          _filterRecipientType == 'All types' ||
+          _filterRecipientType == context.loc.payAllTypes ||
           recipient.recipientType.displayName == _filterRecipientType;
       final countryMatch =
-          _filterCountry == 'All countries' ||
+          _filterCountry == context.loc.payAllCountries ||
           recipient.recipientType.countryCode == _filterCountry;
       return typeMatch && countryMatch;
     }).toList();
@@ -306,12 +310,12 @@ class _ContinueButton extends StatelessWidget {
     );
 
     return ColoredBox(
-      color: context.theme.scaffoldBackgroundColor,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         children: [
           const Gap(16.0),
           BBButton.big(
-            label: 'Continue',
+            label: context.loc.payContinue,
             disabled: !enabled || isCreatingPayOrder,
             onPressed: onPressed,
             bgColor: context.colour.secondary,

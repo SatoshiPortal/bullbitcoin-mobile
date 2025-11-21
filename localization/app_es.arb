@@ -1,5 +1,32 @@
 {
   "@@locale": "es",
+  "durationSeconds": "{seconds} segundos",
+  "@durationSeconds": {
+    "description": "Duration format for seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinute": "{minutes} minuto",
+  "@durationMinute": {
+    "description": "Duration format for singular minute",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinutes": "{minutes} minutos",
+  "@durationMinutes": {
+    "description": "Duration format for plural minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingScreenTitle": "Bienvenido",
   "@onboardingScreenTitle": {
     "description": "El título de la pantalla de inicio"
@@ -67,6 +94,79 @@
   "settingsSecurityPinTitle": "PIN de seguridad",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
+  },
+  "pinCodeAuthentication": "Autenticación",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeCreateTitle": "Crear nuevo PIN",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeCreateDescription": "Su PIN protege el acceso a su billetera y configuración. Manténgalo memorable.",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeMinLengthError": "El PIN debe tener al menos {minLength} dígitos",
+  "@pinCodeMinLengthError": {
+    "description": "Error message when PIN is too short",
+    "placeholders": {
+      "minLength": {
+        "type": "String"
+      }
+    }
+  },
+  "pinCodeConfirmTitle": "Confirmar nuevo PIN",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeMismatchError": "Los PINs no coinciden",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "pinCodeSecurityPinTitle": "PIN de seguridad",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeManageTitle": "Administrar su PIN de seguridad",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "pinCodeChangeButton": "Cambiar PIN",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCreateButton": "Crear PIN",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeRemoveButton": "Eliminar PIN de seguridad",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "pinCodeContinue": "Continuar",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "pinCodeConfirm": "Confirmar",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
+  "pinCodeLoading": "Cargando",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "pinCodeCheckingStatus": "Verificando estado del PIN",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeProcessing": "Procesando",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeSettingUp": "Configurando su código PIN",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
   },
   "settingsCurrencyTitle": "Moneda",
   "@settingsCurrencyTitle": {
@@ -800,6 +900,71 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
+  "receiveCopyAddressOnly": "Copiar o escanear solo la dirección",
+  "@receiveCopyAddressOnly": {
+    "description": "Opción para copiar o escanear solo la dirección sin el monto u otros detalles"
+  },
+  "receiveError": "Error: {error}",
+  "@receiveError": {
+    "description": "Mensaje de error genérico con detalles del error",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveFeeExplanation": "Esta comisión se deducirá del monto enviado",
+  "@receiveFeeExplanation": {
+    "description": "Explicación de que las comisiones se deducen del monto enviado"
+  },
+  "receiveNotePlaceholder": "Nota",
+  "@receiveNotePlaceholder": {
+    "description": "Texto de marcador de posición para el campo de entrada de nota"
+  },
+  "receiveReceiveAmount": "Monto a recibir",
+  "@receiveReceiveAmount": {
+    "description": "Etiqueta para el monto que se recibirá después de las comisiones"
+  },
+  "receiveSendNetworkFee": "Comisión de red de envío",
+  "@receiveSendNetworkFee": {
+    "description": "Etiqueta para la comisión de red en la red de envío en una transacción de intercambio"
+  },
+  "receiveServerNetworkFees": "Comisiones de red del servidor",
+  "@receiveServerNetworkFees": {
+    "description": "Etiqueta para las comisiones de red cobradas por el servidor de intercambio"
+  },
+  "receiveSwapId": "ID de intercambio",
+  "@receiveSwapId": {
+    "description": "Etiqueta para el identificador de intercambio en una transacción de recepción"
+  },
+  "receiveTransferFee": "Comisión de transferencia",
+  "@receiveTransferFee": {
+    "description": "Etiqueta para la comisión de transferencia en una transacción de recepción"
+  },
+  "receiveVerifyAddressError": "No se puede verificar la dirección: Falta información de la billetera o de la dirección",
+  "@receiveVerifyAddressError": {
+    "description": "Mensaje de error cuando no es posible verificar la dirección"
+  },
+  "receiveVerifyAddressLedger": "Verificar dirección en Ledger",
+  "@receiveVerifyAddressLedger": {
+    "description": "Etiqueta del botón para verificar una dirección en una billetera de hardware Ledger"
+  },
+  "receiveBitcoinConfirmationMessage": "La transacción Bitcoin tomará tiempo en confirmarse.",
+  "@receiveBitcoinConfirmationMessage": {
+    "description": "Mensaje de información sobre el tiempo de confirmación de la transacción Bitcoin"
+  },
+  "receiveLiquidConfirmationMessage": "Se confirmará en pocos segundos",
+  "@receiveLiquidConfirmationMessage": {
+    "description": "Mensaje que indica un tiempo de confirmación rápido para transacciones Liquid"
+  },
+  "receiveWaitForPayjoin": "Espere a que el remitente termine la transacción payjoin",
+  "@receiveWaitForPayjoin": {
+    "description": "Instrucciones para esperar al remitente durante una transacción payjoin"
+  },
+  "receivePayjoinFailQuestion": "¿No tiene tiempo para esperar o falló el payjoin del lado del remitente?",
+  "@receivePayjoinFailQuestion": {
+    "description": "Pregunta que solicita al usuario si desea proceder sin payjoin"
+  },
   "buyTitle": "Comprar Bitcoin",
   "@buyTitle": {
     "description": "Título de la pantalla para comprar Bitcoin"
@@ -1068,6 +1233,14 @@
   "sellMxnBalance": "Saldo MXN",
   "@sellMxnBalance": {
     "description": "Texto para el método de pago de saldo MXN"
+  },
+  "sellArsBalance": "Saldo ARS",
+  "@sellArsBalance": {
+    "description": "Texto para el método de pago de saldo ARS"
+  },
+  "sellCopBalance": "Saldo COP",
+  "@sellCopBalance": {
+    "description": "Texto para el método de pago de saldo COP"
   },
   "sellPayinAmount": "Monto de pago",
   "@sellPayinAmount": {
@@ -1641,6 +1814,238 @@
   "payOrderDetails": "Detalles de la orden",
   "@payOrderDetails": {
     "description": "Título para la pantalla de detalles de la orden SINPE"
+  },
+  "paySinpeMonto": "Monto",
+  "@paySinpeMonto": {
+    "description": "Etiqueta para el monto en detalles de orden SINPE"
+  },
+  "paySinpeNumeroOrden": "Número de orden",
+  "@paySinpeNumeroOrden": {
+    "description": "Etiqueta para el número de orden en detalles SINPE"
+  },
+  "paySinpeNumeroComprobante": "Número de comprobante",
+  "@paySinpeNumeroComprobante": {
+    "description": "Etiqueta para el número de comprobante en detalles SINPE"
+  },
+  "paySinpeBeneficiario": "Beneficiario",
+  "@paySinpeBeneficiario": {
+    "description": "Etiqueta para el beneficiario en detalles SINPE"
+  },
+  "paySinpeOrigen": "Origen",
+  "@paySinpeOrigen": {
+    "description": "Etiqueta para el origen en detalles SINPE"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Texto para información no disponible"
+  },
+  "payContinue": "Continuar",
+  "@payContinue": {
+    "description": "Etiqueta del botón para continuar"
+  },
+  "paySelectNetwork": "Seleccionar red",
+  "@paySelectNetwork": {
+    "description": "Título de la barra de aplicación para la pantalla de selección de red"
+  },
+  "payHowToPayInvoice": "¿Cómo desea pagar esta factura?",
+  "@payHowToPayInvoice": {
+    "description": "Pregunta para seleccionar la red de pago"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Opción para pago Bitcoin on-chain"
+  },
+  "payLightningNetwork": "Lightning Network",
+  "@payLightningNetwork": {
+    "description": "Opción para pago Lightning Network"
+  },
+  "payLiquidNetwork": "Liquid Network",
+  "@payLiquidNetwork": {
+    "description": "Opción para pago Liquid Network"
+  },
+  "payAboveMaxAmount": "Está intentando pagar un monto superior al monto máximo que se puede pagar con esta billetera.",
+  "@payAboveMaxAmount": {
+    "description": "Mensaje de error cuando el monto de pago excede el máximo"
+  },
+  "payBelowMinAmount": "Está intentando pagar un monto inferior al monto mínimo que se puede pagar con esta billetera.",
+  "@payBelowMinAmount": {
+    "description": "Mensaje de error cuando el monto de pago está por debajo del mínimo"
+  },
+  "payNotAuthenticated": "No está autenticado. Por favor, inicie sesión para continuar.",
+  "@payNotAuthenticated": {
+    "description": "Mensaje de error cuando el usuario no está autenticado"
+  },
+  "payOrderNotFound": "No se encontró la orden de pago. Por favor, intente nuevamente.",
+  "@payOrderNotFound": {
+    "description": "Mensaje de error cuando no se encuentra la orden de pago"
+  },
+  "payOrderAlreadyConfirmed": "Esta orden de pago ya ha sido confirmada.",
+  "@payOrderAlreadyConfirmed": {
+    "description": "Mensaje de error cuando la orden de pago ya está confirmada"
+  },
+  "payPaymentInProgress": "¡Pago en curso!",
+  "@payPaymentInProgress": {
+    "description": "Título para la pantalla de pago en curso"
+  },
+  "payPaymentInProgressDescription": "Su pago ha sido iniciado y el destinatario recibirá los fondos después de que su transacción reciba 1 confirmación on-chain.",
+  "@payPaymentInProgressDescription": {
+    "description": "Descripción para el pago en curso"
+  },
+  "payInvalidState": "Estado inválido",
+  "@payInvalidState": {
+    "description": "Mensaje de error para estado inválido"
+  },
+  "payPleasePayInvoice": "Por favor, pague esta factura",
+  "@payPleasePayInvoice": {
+    "description": "Instrucción para pagar la factura"
+  },
+  "payPriceRefreshIn": "El precio se actualizará en ",
+  "@payPriceRefreshIn": {
+    "description": "Texto antes del temporizador de cuenta regresiva"
+  },
+  "payFor": "Para",
+  "@payFor": {
+    "description": "Etiqueta para la sección de información del destinatario"
+  },
+  "payRecipient": "Destinatario",
+  "@payRecipient": {
+    "description": "Etiqueta para el destinatario"
+  },
+  "payAmount": "Monto",
+  "@payAmount": {
+    "description": "Etiqueta para el monto"
+  },
+  "payFee": "Comisión",
+  "@payFee": {
+    "description": "Etiqueta para la comisión"
+  },
+  "payNetwork": "Red",
+  "@payNetwork": {
+    "description": "Etiqueta para la red"
+  },
+  "payViewRecipient": "Ver destinatario",
+  "@payViewRecipient": {
+    "description": "Botón para ver los detalles del destinatario"
+  },
+  "payOpenInvoice": "Abrir factura",
+  "@payOpenInvoice": {
+    "description": "Botón para abrir la factura"
+  },
+  "payCopied": "¡Copiado!",
+  "@payCopied": {
+    "description": "Mensaje de éxito después de copiar"
+  },
+  "payPayee": "Beneficiario",
+  "@payPayee": {
+    "description": "Etiqueta para el beneficiario en el pago de factura"
+  },
+  "payAccount": "Cuenta",
+  "@payAccount": {
+    "description": "Etiqueta para la información de cuenta"
+  },
+  "payAllCountries": "Todos los países",
+  "@payAllCountries": {
+    "description": "Opción de filtro para todos los países"
+  },
+  "payAllTypes": "Todos los tipos",
+  "@payAllTypes": {
+    "description": "Opción de filtro para todos los tipos"
+  },
+  "paySelectRecipient": "Seleccionar destinatario",
+  "@paySelectRecipient": {
+    "description": "Título de la barra de aplicación para la pantalla de selección de destinatario"
+  },
+  "payWhoAreYouPaying": "¿A quién está pagando?",
+  "@payWhoAreYouPaying": {
+    "description": "Pregunta para la selección de destinatario"
+  },
+  "payNewRecipients": "Nuevos destinatarios",
+  "@payNewRecipients": {
+    "description": "Etiqueta de pestaña para nuevos destinatarios"
+  },
+  "payMyFiatRecipients": "Mis destinatarios fiat",
+  "@payMyFiatRecipients": {
+    "description": "Etiqueta de pestaña para destinatarios fiat guardados"
+  },
+  "payConfirmPayment": "Confirmar pago",
+  "@payConfirmPayment": {
+    "description": "Título para la pantalla de confirmación de pago"
+  },
+  "payRecipientDetails": "Detalles del destinatario",
+  "@payRecipientDetails": {
+    "description": "Etiqueta para la sección de detalles del destinatario"
+  },
+  "payPayinAmount": "Monto a pagar",
+  "@payPayinAmount": {
+    "description": "Etiqueta para el monto a pagar"
+  },
+  "payExchangeRate": "Tasa de cambio",
+  "@payExchangeRate": {
+    "description": "Etiqueta para la tasa de cambio"
+  },
+  "payPayFromWallet": "Pagar desde billetera",
+  "@payPayFromWallet": {
+    "description": "Etiqueta para la selección de billetera"
+  },
+  "payInstantPayments": "Pagos instantáneos",
+  "@payInstantPayments": {
+    "description": "Descripción para la billetera Lightning"
+  },
+  "paySecureBitcoinWallet": "Billetera Bitcoin segura",
+  "@paySecureBitcoinWallet": {
+    "description": "Descripción para la billetera Bitcoin estándar"
+  },
+  "payFeePriority": "Prioridad de comisión",
+  "@payFeePriority": {
+    "description": "Etiqueta para el ajuste de prioridad de comisión"
+  },
+  "payFastest": "Más rápido",
+  "@payFastest": {
+    "description": "Opción de prioridad de comisión más rápida"
+  },
+  "payNetworkFees": "Comisiones de red",
+  "@payNetworkFees": {
+    "description": "Etiqueta para las comisiones de red"
+  },
+  "payCalculating": "Calculando...",
+  "@payCalculating": {
+    "description": "Texto de estado mientras se calculan las comisiones"
+  },
+  "payAdvancedSettings": "Configuración avanzada",
+  "@payAdvancedSettings": {
+    "description": "Etiqueta del botón para configuración avanzada"
+  },
+  "paySelectWallet": "Seleccionar billetera",
+  "@paySelectWallet": {
+    "description": "Título de la barra de aplicación para la pantalla de selección de billetera"
+  },
+  "payWhichWallet": "¿Desde qué billetera desea pagar?",
+  "@payWhichWallet": {
+    "description": "Pregunta para la selección de billetera"
+  },
+  "payExternalWallet": "Billetera externa",
+  "@payExternalWallet": {
+    "description": "Opción para pago desde billetera externa"
+  },
+  "payExternalWalletDescription": "Pagar desde otra billetera Bitcoin",
+  "@payExternalWalletDescription": {
+    "description": "Descripción para la opción de billetera externa"
+  },
+  "payInsufficientBalance": "Saldo insuficiente en la billetera seleccionada para completar esta orden de pago.",
+  "@payInsufficientBalance": {
+    "description": "Mensaje de error para saldo insuficiente"
+  },
+  "payAdvancedOptions": "Opciones avanzadas",
+  "@payAdvancedOptions": {
+    "description": "Título para el panel de opciones avanzadas"
+  },
+  "payRbfActivated": "Replace-by-fee activado",
+  "@payRbfActivated": {
+    "description": "Etiqueta para el interruptor RBF"
+  },
+  "paySelectCoinsManually": "Seleccionar monedas manualmente",
+  "@paySelectCoinsManually": {
+    "description": "Etiqueta para la selección manual de monedas"
   },
   "transactionTitle": "Transacciones",
   "@transactionTitle": {
@@ -2229,7 +2634,7 @@
   "@walletArkExperimental": {
     "description": "Descripción para la billetera Ark indicando estado experimental"
   },
-  "fundExchangeTitle": "Financiamiento",
+  "fundExchangeTitle": "Financiación",
   "@fundExchangeTitle": {
     "description": "AppBar title for funding screen"
   },
@@ -2705,8 +3110,156 @@
   "@fundExchangeErrorLoadingDetails": {
     "description": "Mensaje de error cuando los detalles de financiamiento no se pueden cargar"
   },
+  "fundExchangeSinpeTitle": "SINPE Móvil",
+  "@fundExchangeSinpeTitle": {
+    "description": "Título de pantalla para el método de pago SINPE Móvil (Costa Rica)"
+  },
+  "fundExchangeSinpeDescription": "Envía los fondos a nuestro número de teléfono SINPE Móvil. Debes enviar los fondos desde el mismo número de teléfono asociado a tu cuenta Bull Bitcoin. Si envías el pago desde un número diferente, o si le pides a alguien más que haga el pago por ti, ",
+  "@fundExchangeSinpeDescription": {
+    "description": "Descripción principal para el método de pago SINPE Móvil explicando los requisitos"
+  },
+  "fundExchangeSinpeDescriptionBold": "será rechazado.",
+  "@fundExchangeSinpeDescriptionBold": {
+    "description": "Texto en negrita advirtiendo que el pago desde un número incorrecto será rechazado"
+  },
+  "fundExchangeSinpeAddedToBalance": "Una vez que se envíe el pago, se agregará a tu saldo de cuenta.",
+  "@fundExchangeSinpeAddedToBalance": {
+    "description": "Mensaje explicando que el pago se agregará al saldo de la cuenta"
+  },
+  "fundExchangeSinpeWarningNoBitcoin": "No pongas",
+  "@fundExchangeSinpeWarningNoBitcoin": {
+    "description": "Texto de advertencia en negrita al inicio del mensaje de advertencia sobre bitcoin"
+  },
+  "fundExchangeSinpeWarningNoBitcoinDescription": " la palabra \"Bitcoin\" o \"Crypto\" en la descripción del pago. Esto bloqueará tu pago.",
+  "@fundExchangeSinpeWarningNoBitcoinDescription": {
+    "description": "Advertencia de que incluir Bitcoin o Crypto en la descripción bloqueará el pago"
+  },
+  "fundExchangeSinpeLabelPhone": "Envía a este número de teléfono",
+  "@fundExchangeSinpeLabelPhone": {
+    "description": "Etiqueta para el campo de número de teléfono SINPE Móvil"
+  },
+  "fundExchangeSinpeLabelRecipientName": "Nombre del destinatario",
+  "@fundExchangeSinpeLabelRecipientName": {
+    "description": "Etiqueta para el nombre del destinatario en transferencia SINPE"
+  },
+  "fundExchangeCrIbanCrcTitle": "Transferencia Bancaria (CRC)",
+  "@fundExchangeCrIbanCrcTitle": {
+    "description": "Título de pantalla para transferencia bancaria IBAN de Costa Rica en CRC (Colón)"
+  },
+  "fundExchangeCrIbanCrcDescription": "Envía una transferencia bancaria desde tu cuenta bancaria usando los detalles a continuación ",
+  "@fundExchangeCrIbanCrcDescription": {
+    "description": "Primera parte de la descripción para transferencia CR IBAN CRC"
+  },
+  "fundExchangeCrIbanCrcDescriptionBold": "exactamente",
+  "@fundExchangeCrIbanCrcDescriptionBold": {
+    "description": "Palabra de énfasis en negrita para las instrucciones de transferencia CR IBAN"
+  },
+  "fundExchangeCrIbanCrcDescriptionEnd": ". Los fondos se agregarán a tu saldo de cuenta.",
+  "@fundExchangeCrIbanCrcDescriptionEnd": {
+    "description": "Final de la descripción para transferencia CR IBAN CRC"
+  },
+  "fundExchangeCrIbanCrcLabelIban": "Número de cuenta IBAN (solo para Colones)",
+  "@fundExchangeCrIbanCrcLabelIban": {
+    "description": "Etiqueta para el campo de número IBAN para CRC (Colones) únicamente"
+  },
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "Descripción del pago",
+  "@fundExchangeCrIbanCrcLabelPaymentDescription": {
+    "description": "Etiqueta para el campo de descripción del pago en transferencia CR IBAN"
+  },
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "Tu código de transferencia.",
+  "@fundExchangeCrIbanCrcPaymentDescriptionHelp": {
+    "description": "Texto de ayuda explicando que la descripción del pago es el código de transferencia"
+  },
+  "fundExchangeCrIbanCrcTransferCodeWarning": "Debes agregar el código de transferencia como \"mensaje\" o \"razón\" o \"descripción\" al realizar el pago. Si olvidas poner este código, tu pago puede ser rechazado.",
+  "@fundExchangeCrIbanCrcTransferCodeWarning": {
+    "description": "Advertencia sobre incluir el código de transferencia en el pago"
+  },
+  "fundExchangeCrIbanCrcLabelRecipientName": "Nombre del destinatario",
+  "@fundExchangeCrIbanCrcLabelRecipientName": {
+    "description": "Etiqueta para el nombre del destinatario en transferencia CR IBAN CRC"
+  },
+  "fundExchangeCrIbanCrcRecipientNameHelp": "Usa nuestro nombre corporativo oficial. No uses \"Bull Bitcoin\".",
+  "@fundExchangeCrIbanCrcRecipientNameHelp": {
+    "description": "Texto de ayuda para el campo del nombre del destinatario explicando usar el nombre corporativo"
+  },
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
+  "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
+    "description": "Etiqueta para Cédula Jurídica (número de identificación legal en Costa Rica)"
+  },
+  "fundExchangeCrIbanUsdTitle": "Transferencia Bancaria (USD)",
+  "@fundExchangeCrIbanUsdTitle": {
+    "description": "Título de pantalla para transferencia bancaria IBAN de Costa Rica en USD"
+  },
+  "fundExchangeCrIbanUsdDescription": "Envía una transferencia bancaria desde tu cuenta bancaria usando los detalles a continuación ",
+  "@fundExchangeCrIbanUsdDescription": {
+    "description": "Primera parte de la descripción para transferencia CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdDescriptionBold": "exactamente",
+  "@fundExchangeCrIbanUsdDescriptionBold": {
+    "description": "Palabra de énfasis en negrita para las instrucciones de transferencia CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdDescriptionEnd": ". Los fondos se agregarán a tu saldo de cuenta.",
+  "@fundExchangeCrIbanUsdDescriptionEnd": {
+    "description": "Final de la descripción para transferencia CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdLabelIban": "Número de cuenta IBAN (solo para dólares estadounidenses)",
+  "@fundExchangeCrIbanUsdLabelIban": {
+    "description": "Etiqueta para el campo de número IBAN para USD únicamente"
+  },
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "Descripción del pago",
+  "@fundExchangeCrIbanUsdLabelPaymentDescription": {
+    "description": "Etiqueta para el campo de descripción del pago en transferencia CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Tu código de transferencia.",
+  "@fundExchangeCrIbanUsdPaymentDescriptionHelp": {
+    "description": "Texto de ayuda explicando que la descripción del pago es el código de transferencia"
+  },
+  "fundExchangeCrIbanUsdTransferCodeWarning": "Debes agregar el código de transferencia como \"mensaje\" o \"razón\" o \"descripción\" al realizar el pago. Si olvidas poner este código, tu pago puede ser rechazado.",
+  "@fundExchangeCrIbanUsdTransferCodeWarning": {
+    "description": "Advertencia sobre incluir el código de transferencia en el pago para transferencias USD"
+  },
+  "fundExchangeCrIbanUsdLabelRecipientName": "Nombre del destinatario",
+  "@fundExchangeCrIbanUsdLabelRecipientName": {
+    "description": "Etiqueta para el nombre del destinatario en transferencia CR IBAN USD"
+  },
+  "fundExchangeCrIbanUsdRecipientNameHelp": "Usa nuestro nombre corporativo oficial. No uses \"Bull Bitcoin\".",
+  "@fundExchangeCrIbanUsdRecipientNameHelp": {
+    "description": "Texto de ayuda para el campo del nombre del destinatario explicando usar el nombre corporativo"
+  },
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
+  "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
+    "description": "Etiqueta para Cédula Jurídica (número de identificación legal en Costa Rica) para USD"
+  },
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
+  "@fundExchangeCostaRicaMethodSinpeTitle": {
+    "description": "Título del método de pago para SINPE Móvil en la lista de métodos"
+  },
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "Transfiere Colones usando SINPE",
+  "@fundExchangeCostaRicaMethodSinpeSubtitle": {
+    "description": "Descripción de subtítulo para el método de pago SINPE Móvil"
+  },
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Costa Rica (CRC)",
+  "@fundExchangeCostaRicaMethodIbanCrcTitle": {
+    "description": "Título del método de pago para IBAN CRC en la lista de métodos"
+  },
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Transfiere fondos en Colón Costarricense (CRC)",
+  "@fundExchangeCostaRicaMethodIbanCrcSubtitle": {
+    "description": "Descripción de subtítulo para el método de pago IBAN CRC"
+  },
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
+  "@fundExchangeCostaRicaMethodIbanUsdTitle": {
+    "description": "Título del método de pago para IBAN USD en la lista de métodos"
+  },
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Transfiere fondos en Dólares Estadounidenses (USD)",
+  "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
+    "description": "Descripción de subtítulo para el método de pago IBAN USD"
+  },
   "backupWalletTitle": "Respaldar su billetera",
   "@backupWalletTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "testBackupTitle": "Prueba tu respaldo",
+  "@testBackupTitle": {
     "description": "AppBar title for main backup options screen"
   },
   "backupImportanceMessage": "Sin un respaldo, eventualmente perderás acceso a tu dinero. Es críticamente importante hacer un respaldo.",
@@ -2975,24 +3528,24 @@
   "@gotItButton": {
     "description": "Etiqueta del botón para reconocer la prueba exitosa"
   },
-  "legacySeedsTitle": "Semillas heredadas",
-  "@legacySeedsTitle": {
+  "legacySeedViewScreenTitle": "Semillas heredadas",
+  "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "noLegacySeedsFound": "No se encontraron semillas heredadas.",
-  "@noLegacySeedsFound": {
+  "legacySeedViewNoSeedsMessage": "No se encontraron semillas heredadas.",
+  "@legacySeedViewNoSeedsMessage": {
     "description": "Mensaje mostrado cuando no se encuentran semillas heredadas"
   },
-  "mnemonicLabel": "Mnemónico",
-  "@mnemonicLabel": {
+  "legacySeedViewMnemonicLabel": "Mnemónico",
+  "@legacySeedViewMnemonicLabel": {
     "description": "Etiqueta para palabras mnemónicas"
   },
-  "passphrasesLabel": "Frases de contraseña:",
-  "@passphrasesLabel": {
+  "legacySeedViewPassphrasesLabel": "Frases de contraseña:",
+  "@legacySeedViewPassphrasesLabel": {
     "description": "Etiqueta para la sección de frases de contraseña"
   },
-  "emptyPassphrase": "(vacía)",
-  "@emptyPassphrase": {
+  "legacySeedViewEmptyPassphrase": "(vacía)",
+  "@legacySeedViewEmptyPassphrase": {
     "description": "Texto mostrado para frase de contraseña vacía"
   },
   "enterBackupKeyManuallyTitle": "Ingresar clave de respaldo manualmente",
@@ -4201,6 +4754,59 @@
   "replaceByFeeActivatedLabel": "Reemplazo por tarifa activado",
   "@replaceByFeeActivatedLabel": {
     "description": "Label for RBF toggle switch"
+  },
+  "replaceByFeeBroadcastButton": "Transmitir",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "replaceByFeeCustomFeeTitle": "Tarifa personalizada",
+  "@replaceByFeeCustomFeeTitle": {
+    "description": "Title for custom fee input section"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "Necesita aumentar la tasa de tarifa en al menos 1 sat/vbyte en comparación con la transacción original",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "replaceByFeeErrorNoFeeRateSelected": "Por favor seleccione una tasa de tarifa",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "replaceByFeeErrorTransactionConfirmed": "La transacción original ha sido confirmada",
+  "@replaceByFeeErrorTransactionConfirmed": {
+    "description": "Error message when original transaction is already confirmed"
+  },
+  "replaceByFeeErrorGeneric": "Ocurrió un error al intentar reemplazar la transacción",
+  "@replaceByFeeErrorGeneric": {
+    "description": "Generic error message for replace-by-fee operation failures"
+  },
+  "replaceByFeeFastestDescription": "Entrega estimada ~ 10 minutos",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "replaceByFeeFastestTitle": "Más rápido",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeFeeRateDisplay": "Tasa de tarifa: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "replaceByFeeOriginalTransactionTitle": "Transacción original",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "replaceByFeeSatsVbUnit": "sats/vB",
+  "@replaceByFeeSatsVbUnit": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "replaceByFeeScreenTitle": "Reemplazo por tarifa",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
   },
   "selectCoinsManuallyLabel": "Seleccionar monedas manualmente",
   "@selectCoinsManuallyLabel": {
@@ -6162,6 +6768,277 @@
       }
     }
   },
+  "recoverbullBalance": "Saldo: {balance}",
+  "@recoverbullBalance": {
+    "description": "Label showing wallet balance during vault recovery",
+    "placeholders": {
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullCheckingConnection": "Verificando conexión para RecoverBull",
+  "@recoverbullCheckingConnection": {
+    "description": "Screen title while checking connection status"
+  },
+  "recoverbullConfirm": "Confirmar",
+  "@recoverbullConfirm": {
+    "description": "Button text to confirm an action"
+  },
+  "recoverbullConfirmInput": "Confirmar {inputType}",
+  "@recoverbullConfirmInput": {
+    "description": "Label to confirm input (PIN or password)",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnected": "Conectado",
+  "@recoverbullConnected": {
+    "description": "Status label indicating successful connection"
+  },
+  "recoverbullConnecting": "Conectando",
+  "@recoverbullConnecting": {
+    "description": "Status label indicating connection in progress"
+  },
+  "recoverbullConnectingTor": "Conectando al servidor de claves a través de Tor.\nEsto puede tomar hasta un minuto.",
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullConnectionFailed": "Conexión fallida",
+  "@recoverbullConnectionFailed": {
+    "description": "Status label indicating connection failure"
+  },
+  "recoverbullContinue": "Continuar",
+  "@recoverbullContinue": {
+    "description": "Button text to proceed to next step"
+  },
+  "recoverbullCreatingVault": "Creando Bóveda Cifrada",
+  "@recoverbullCreatingVault": {
+    "description": "Screen title while vault is being created"
+  },
+  "recoverbullDecryptVault": "Descifrar bóveda",
+  "@recoverbullDecryptVault": {
+    "description": "Button text to decrypt the selected vault"
+  },
+  "recoverbullEncryptedVaultCreated": "¡Bóveda Cifrada creada!",
+  "@recoverbullEncryptedVaultCreated": {
+    "description": "Success message title after vault creation"
+  },
+  "recoverbullEnterInput": "Ingrese su {inputType}",
+  "@recoverbullEnterInput": {
+    "description": "Input field label prompting for PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToDecrypt": "Por favor ingrese su {inputType} para descifrar su bóveda.",
+  "@recoverbullEnterToDecrypt": {
+    "description": "Instruction to enter PIN or password for vault decryption",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToTest": "Por favor ingrese su {inputType} para probar su bóveda.",
+  "@recoverbullEnterToTest": {
+    "description": "Instruction to enter PIN or password to test vault recovery",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToView": "Por favor ingrese su {inputType} para ver su clave de bóveda.",
+  "@recoverbullEnterToView": {
+    "description": "Instruction to enter PIN or password to view vault key",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterVaultKeyInstead": "Ingresar una clave de bóveda en su lugar",
+  "@recoverbullEnterVaultKeyInstead": {
+    "description": "Button text to switch to manual vault key entry"
+  },
+  "recoverbullErrorCheckStatusFailed": "Error al verificar el estado de la bóveda",
+  "@recoverbullErrorCheckStatusFailed": {
+    "description": "Error message when vault status check fails"
+  },
+  "recoverbullErrorConnectionFailed": "Error al conectar con el servidor de claves de destino. ¡Por favor intente de nuevo más tarde!",
+  "@recoverbullErrorConnectionFailed": {
+    "description": "Error message when server connection fails"
+  },
+  "recoverbullErrorDecryptedVaultNotSet": "La bóveda descifrada no está configurada",
+  "@recoverbullErrorDecryptedVaultNotSet": {
+    "description": "Error when attempting operation without decrypted vault"
+  },
+  "recoverbullErrorDecryptFailed": "Error al descifrar la bóveda",
+  "@recoverbullErrorDecryptFailed": {
+    "description": "Error message when vault decryption fails"
+  },
+  "recoverbullErrorFetchKeyFailed": "Error al obtener la clave de bóveda del servidor",
+  "@recoverbullErrorFetchKeyFailed": {
+    "description": "Error message when server key fetch fails"
+  },
+  "recoverbullErrorInvalidCredentials": "Contraseña incorrecta para este archivo de respaldo",
+  "@recoverbullErrorInvalidCredentials": {
+    "description": "Error message when wrong password is entered for vault"
+  },
+  "recoverbullErrorInvalidFlow": "Flujo inválido",
+  "@recoverbullErrorInvalidFlow": {
+    "description": "Error message for invalid operation flow"
+  },
+  "recoverbullErrorMissingBytes": "Faltan bytes en la respuesta de Tor. Reintente, pero si el problema persiste, es un problema conocido para algunos dispositivos con Tor.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullErrorPasswordNotSet": "La contraseña no está configurada",
+  "@recoverbullErrorPasswordNotSet": {
+    "description": "Error when attempting operation without setting password"
+  },
+  "recoverbullErrorRecoveryFailed": "Error al recuperar la bóveda",
+  "@recoverbullErrorRecoveryFailed": {
+    "description": "Error message when vault recovery fails"
+  },
+  "recoverbullTorNotStarted": "Tor no está iniciado",
+  "@recoverbullTorNotStarted": {
+    "description": "Error message when Tor is not started"
+  },
+  "recoverbullErrorRateLimited": "Límite de solicitudes alcanzado. Por favor, inténtalo en {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "description": "Error message when rate limited by the server",
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorUnexpected": "Error inesperado, ver registros",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullUnexpectedError": "Error inesperado",
+  "recoverbullErrorSelectVault": "Error al seleccionar la bóveda",
+  "@recoverbullErrorSelectVault": {
+    "description": "Error message when vault selection fails"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "Error: Archivo de bóveda creado pero clave no almacenada en el servidor",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullErrorVaultCreationFailed": "Error al crear la bóveda, puede ser el archivo o la clave",
+  "@recoverbullErrorVaultCreationFailed": {
+    "description": "Error message when overall vault creation fails"
+  },
+  "recoverbullErrorVaultNotSet": "La bóveda no está configurada",
+  "@recoverbullErrorVaultNotSet": {
+    "description": "Error when attempting operation without selected vault"
+  },
+  "recoverbullFailed": "Fallido",
+  "@recoverbullFailed": {
+    "description": "Status label indicating operation failure"
+  },
+  "recoverbullFetchingVaultKey": "Obteniendo Clave de Bóveda",
+  "@recoverbullFetchingVaultKey": {
+    "description": "Screen title while fetching vault key from server"
+  },
+  "recoverbullFetchVaultKey": "Obtener Clave de Bóveda",
+  "@recoverbullFetchVaultKey": {
+    "description": "Screen title for vault key fetch screen"
+  },
+  "recoverbullGoBackEdit": "<< Volver y editar",
+  "@recoverbullGoBackEdit": {
+    "description": "Button text to return to previous screen for editing"
+  },
+  "recoverbullGotIt": "Entendido",
+  "@recoverbullGotIt": {
+    "description": "Button text to acknowledge and dismiss message"
+  },
+  "recoverbullKeyServer": "Servidor de Claves ",
+  "@recoverbullKeyServer": {
+    "description": "Label for key server connection status"
+  },
+  "recoverbullLookingForBalance": "Buscando saldo y transacciones…",
+  "@recoverbullLookingForBalance": {
+    "description": "Loading message while scanning wallet"
+  },
+  "recoverbullMemorizeWarning": "Debe memorizar este {inputType} para recuperar el acceso a su billetera. Debe tener al menos 6 dígitos. Si pierde este {inputType} no podrá recuperar su respaldo.",
+  "@recoverbullMemorizeWarning": {
+    "description": "Warning message about memorizing PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullPassword": "Contraseña",
+  "@recoverbullPassword": {
+    "description": "Label for password input type"
+  },
+  "recoverbullPasswordMismatch": "Las contraseñas no coinciden",
+  "@recoverbullPasswordMismatch": {
+    "description": "Validation error when passwords don't match"
+  },
+  "recoverbullPasswordRequired": "La contraseña es requerida",
+  "@recoverbullPasswordRequired": {
+    "description": "Validation error when password field is empty"
+  },
+  "recoverbullPasswordTooCommon": "Esta contraseña es muy común. Por favor elija una diferente",
+  "@recoverbullPasswordTooCommon": {
+    "description": "Validation error for commonly used passwords"
+  },
+  "recoverbullPasswordTooShort": "La contraseña debe tener al menos 6 caracteres",
+  "@recoverbullPasswordTooShort": {
+    "description": "Validation error for passwords under minimum length"
+  },
+  "recoverbullPIN": "PIN",
+  "@recoverbullPIN": {
+    "description": "Label for PIN input type"
+  },
+  "recoverbullPleaseWait": "Por favor espere mientras establecemos una conexión segura...",
+  "@recoverbullPleaseWait": {
+    "description": "Message shown during connection establishment"
+  },
+  "recoverbullReenterConfirm": "Por favor vuelva a ingresar su {inputType} para confirmar.",
+  "@recoverbullReenterConfirm": {
+    "description": "Instruction to re-enter PIN or password for confirmation",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullReenterRequired": "Vuelva a ingresar su {inputType}",
+  "@recoverbullReenterRequired": {
+    "description": "Label for confirmation input field",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullRecoverBullServer": "Servidor RecoverBull",
+  "@recoverbullRecoverBullServer": {
+    "description": "Label for RecoverBull server connection status"
+  },
+  "recoverbullRetry": "Reintentar",
+  "@recoverbullRetry": {
+    "description": "Button text to retry failed operation"
+  },
+  "recoverbullSecureBackup": "Asegure su respaldo",
+  "@recoverbullSecureBackup": {
+    "description": "Screen title for backup security setup"
+  },
+  "recoverbullSeeMoreVaults": "Ver más bóvedas",
+  "@recoverbullSeeMoreVaults": {
+    "description": "Button text to view additional vault options"
+  },
   "recoverbullSelectRecoverWallet": "Recuperar Billetera",
   "@recoverbullSelectRecoverWallet": {
     "description": "AppBar title for initial provider selection screen"
@@ -6233,6 +7110,75 @@
   "recoverbullSelectBackupFileNotValidError": "El archivo de respaldo de RecoverBull no es válido",
   "@recoverbullSelectBackupFileNotValidError": {
     "description": "Error when selected file is not a valid RecoverBull backup format"
+  },
+  "recoverbullSelectVaultProvider": "Seleccionar Proveedor de Bóveda",
+  "@recoverbullSelectVaultProvider": {
+    "description": "Screen title for vault provider selection"
+  },
+  "recoverbullSwitchToPassword": "Elegir una contraseña en su lugar",
+  "@recoverbullSwitchToPassword": {
+    "description": "Button text to switch from PIN to password input"
+  },
+  "recoverbullSwitchToPIN": "Elegir un PIN en su lugar",
+  "@recoverbullSwitchToPIN": {
+    "description": "Button text to switch from password to PIN input"
+  },
+  "recoverbullTestBackupDescription": "Ahora probemos su respaldo para asegurarnos de que todo se hizo correctamente.",
+  "@recoverbullTestBackupDescription": {
+    "description": "Description message before testing backup"
+  },
+  "recoverbullTestCompletedTitle": "¡Prueba completada con éxito!",
+  "@recoverbullTestCompletedTitle": {
+    "description": "Success title after completing backup test"
+  },
+  "recoverbullTestRecovery": "Probar Recuperación",
+  "@recoverbullTestRecovery": {
+    "description": "Button text to initiate recovery test"
+  },
+  "recoverbullTestSuccessDescription": "Puede recuperar el acceso a una billetera Bitcoin perdida",
+  "@recoverbullTestSuccessDescription": {
+    "description": "Description shown after successful recovery test"
+  },
+  "recoverbullTorNetwork": "Red Tor",
+  "@recoverbullTorNetwork": {
+    "description": "Label for Tor network connection status"
+  },
+  "recoverbullTransactions": "Transacciones: {count}",
+  "@recoverbullTransactions": {
+    "description": "Label showing transaction count during vault recovery",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullVaultCreatedSuccess": "Bóveda creada con éxito",
+  "@recoverbullVaultCreatedSuccess": {
+    "description": "Success message after vault creation"
+  },
+  "recoverbullVaultImportedSuccess": "Su bóveda se importó exitosamente",
+  "@recoverbullVaultImportedSuccess": {
+    "description": "Success message after vault import"
+  },
+  "recoverbullVaultKey": "Clave de Bóveda",
+  "@recoverbullVaultKey": {
+    "description": "Screen title and label for vault key"
+  },
+  "recoverbullVaultKeyInput": "Clave de Bóveda",
+  "@recoverbullVaultKeyInput": {
+    "description": "Input field label for vault key entry"
+  },
+  "recoverbullVaultRecovery": "Recuperación de Bóveda",
+  "@recoverbullVaultRecovery": {
+    "description": "Screen title for vault recovery process"
+  },
+  "recoverbullVaultSelected": "Bóveda Seleccionada",
+  "@recoverbullVaultSelected": {
+    "description": "Screen title after vault has been selected"
+  },
+  "recoverbullWaiting": "Esperando",
+  "@recoverbullWaiting": {
+    "description": "Status label indicating waiting state"
   },
   "recoverbullRecoveryTitle": "Recuperación de bóveda RecoverBull",
   "@recoverbullRecoveryTitle": {
@@ -6344,6 +7290,206 @@
   "psbtImDone": "He terminado",
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
+  },
+  "psbtFlowSignTransaction": "Firmar transacción",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "psbtFlowInstructions": "Instrucciones",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "psbtFlowDone": "He terminado",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "psbtFlowError": "Error: {error}",
+  "@psbtFlowError": {
+    "description": "Error message in psbt flow",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowNoPartsToDisplay": "No hay partes para mostrar",
+  "@psbtFlowNoPartsToDisplay": {
+    "description": "Message when there are no QR code parts to show"
+  },
+  "psbtFlowPartProgress": "Parte {current} de {total}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowKruxTitle": "Instrucciones de Krux",
+  "@psbtFlowKruxTitle": {
+    "description": "Title for Krux device signing instructions"
+  },
+  "psbtFlowKeystoneTitle": "Instrucciones de Keystone",
+  "@psbtFlowKeystoneTitle": {
+    "description": "Title for Keystone device signing instructions"
+  },
+  "psbtFlowPassportTitle": "Instrucciones de Foundation Passport",
+  "@psbtFlowPassportTitle": {
+    "description": "Title for Foundation Passport device signing instructions"
+  },
+  "psbtFlowSeedSignerTitle": "Instrucciones de SeedSigner",
+  "@psbtFlowSeedSignerTitle": {
+    "description": "Title for SeedSigner device signing instructions"
+  },
+  "psbtFlowSpecterTitle": "Instrucciones de Specter",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "psbtFlowColdcardTitle": "Instrucciones de Coldcard Q",
+  "@psbtFlowColdcardTitle": {
+    "description": "Title for Coldcard Q device signing instructions"
+  },
+  "psbtFlowJadeTitle": "Instrucciones PSBT de Blockstream Jade",
+  "@psbtFlowJadeTitle": {
+    "description": "Title for Blockstream Jade PSBT signing instructions"
+  },
+  "psbtFlowLoginToDevice": "Inicie sesión en su dispositivo {device}",
+  "@psbtFlowLoginToDevice": {
+    "description": "Instruction to login to hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowTurnOnDevice": "Encienda su dispositivo {device}",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowAddPassphrase": "Agregue una frase de contraseña si tiene una (opcional)",
+  "@psbtFlowAddPassphrase": {
+    "description": "Optional instruction to add BIP39 passphrase"
+  },
+  "psbtFlowClickScan": "Haga clic en Escanear",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "psbtFlowClickSign": "Haga clic en Firmar",
+  "@psbtFlowClickSign": {
+    "description": "Instruction to click sign button on device"
+  },
+  "psbtFlowClickPsbt": "Haga clic en PSBT",
+  "@psbtFlowClickPsbt": {
+    "description": "Instruction to click PSBT option on device"
+  },
+  "psbtFlowLoadFromCamera": "Haga clic en Cargar desde la cámara",
+  "@psbtFlowLoadFromCamera": {
+    "description": "Instruction to select camera load option on device"
+  },
+  "psbtFlowScanQrOption": "Seleccione la opción \"Escanear QR\"",
+  "@psbtFlowScanQrOption": {
+    "description": "Instruction to select scan QR menu option"
+  },
+  "psbtFlowScanAnyQr": "Seleccione la opción \"Escanear cualquier código QR\"",
+  "@psbtFlowScanAnyQr": {
+    "description": "Instruction to select scan any QR code option"
+  },
+  "psbtFlowSignWithQr": "Haga clic en Firmar con código QR",
+  "@psbtFlowSignWithQr": {
+    "description": "Instruction to select QR code signing method"
+  },
+  "psbtFlowScanQrShown": "Escanee el código QR que se muestra en la billetera Bull",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "psbtFlowTroubleScanningTitle": "Si tiene problemas para escanear:",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "psbtFlowIncreaseBrightness": "Aumente el brillo de la pantalla en su dispositivo",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "psbtFlowMoveLaser": "Mueva el láser rojo hacia arriba y abajo sobre el código QR",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "psbtFlowMoveBack": "Intente alejar un poco su dispositivo",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "psbtFlowHoldSteady": "Mantenga el código QR estable y centrado",
+  "@psbtFlowHoldSteady": {
+    "description": "Troubleshooting tip to hold QR code still"
+  },
+  "psbtFlowMoveCloserFurther": "Intente acercar o alejar más su dispositivo",
+  "@psbtFlowMoveCloserFurther": {
+    "description": "Troubleshooting tip to adjust distance"
+  },
+  "psbtFlowReviewTransaction": "Una vez que la transacción se importe en su {device}, revise la dirección de destino y el monto.",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowSelectSeed": "Una vez que la transacción se importe en su {device}, debe seleccionar la semilla con la que desea firmar.",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowSignTransactionOnDevice": "Haga clic en los botones para firmar la transacción en su {device}.",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowDeviceShowsQr": "El {device} le mostrará entonces su propio código QR.",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowClickDone": "Haga clic en \"He terminado\" en la billetera Bull Bitcoin.",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "psbtFlowScanDeviceQr": "La billetera Bull Bitcoin le pedirá que escanee el código QR en el {device}. Escanéelo.",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowTransactionImported": "La transacción se importará en la billetera Bull Bitcoin.",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "psbtFlowReadyToBroadcast": "¡Ahora está lista para transmitir! Tan pronto como haga clic en transmitir, la transacción se publicará en la red Bitcoin y se enviarán los fondos.",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
   },
   "hwConnectTitle": "Conectar Billetera de Hardware",
   "@hwConnectTitle": {
@@ -6629,6 +7775,42 @@
   "@seedsignerStep14": {
     "description": "SeedSigner final instruction about broadcasting"
   },
+  "connectHardwareWalletTitle": "Conectar billetera de hardware",
+  "@connectHardwareWalletTitle": {
+    "description": "Title for connect hardware wallet page"
+  },
+  "connectHardwareWalletDescription": "Elija la billetera de hardware que desea conectar",
+  "@connectHardwareWalletDescription": {
+    "description": "Description text on connect hardware wallet page"
+  },
+  "connectHardwareWalletColdcardQ": "Coldcard Q",
+  "@connectHardwareWalletColdcardQ": {
+    "description": "Coldcard Q hardware wallet option"
+  },
+  "connectHardwareWalletLedger": "Ledger",
+  "@connectHardwareWalletLedger": {
+    "description": "Ledger hardware wallet option"
+  },
+  "connectHardwareWalletJade": "Blockstream Jade",
+  "@connectHardwareWalletJade": {
+    "description": "Blockstream Jade hardware wallet option"
+  },
+  "connectHardwareWalletKeystone": "Keystone",
+  "@connectHardwareWalletKeystone": {
+    "description": "Keystone hardware wallet option"
+  },
+  "connectHardwareWalletKrux": "Krux",
+  "@connectHardwareWalletKrux": {
+    "description": "Krux hardware wallet option"
+  },
+  "connectHardwareWalletPassport": "Foundation Passport",
+  "@connectHardwareWalletPassport": {
+    "description": "Foundation Passport hardware wallet option"
+  },
+  "connectHardwareWalletSeedSigner": "SeedSigner",
+  "@connectHardwareWalletSeedSigner": {
+    "description": "SeedSigner hardware wallet option"
+  },
   "coldcardInstructionsTitle": "Instrucciones Coldcard Q",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
@@ -6773,6 +7955,46 @@
   "@importWalletImportWatchOnly": {
     "description": "Button to import watch-only wallet"
   },
+  "importWalletSectionGeneric": "Billeteras genéricas",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "Billeteras de hardware",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletColdcardQ": "Coldcard Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletLedger": "Ledger",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletJade": "Blockstream Jade",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "Keystone",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletPassport": "Foundation Passport",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSeedSigner": "SeedSigner",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "Specter",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletKrux": "Krux",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
   "importMnemonicContinue": "Continuar",
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
@@ -6839,6 +8061,24 @@
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
   },
+  "importMnemonicBalanceLabel": "Saldo: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicTransactionsLabel": "Transacciones: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "importWatchOnlyTitle": "Importar solo lectura",
   "@importWatchOnlyTitle": {
     "description": "AppBar title for watch-only import screen"
@@ -6886,6 +8126,50 @@
   "importWatchOnlyCancel": "Cancelar",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
+  },
+  "importWatchOnlyBuyDevice": "Comprar un dispositivo",
+  "@importWatchOnlyBuyDevice": {
+    "description": "Button label to purchase a hardware wallet device"
+  },
+  "importWatchOnlyWalletGuides": "Guías de billetera",
+  "@importWatchOnlyWalletGuides": {
+    "description": "Button label for wallet documentation and guides"
+  },
+  "importWatchOnlyCopiedToClipboard": "Copiado al portapapeles",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlySelectDerivation": "Seleccionar derivación",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "importWatchOnlyType": "Tipo",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlySigningDevice": "Dispositivo de firma",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyUnknown": "Desconocido",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyLabel": "Etiqueta",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyRequired": "Requerido",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyImport": "Importar",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyExtendedPublicKey": "Clave pública extendida",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
   "bip85Title": "Entropías determinísticas BIP85",
   "@bip85Title": {
@@ -6957,18 +8241,6 @@
         "type": "int"
       }
     }
-  },
-  "legacySeedsNoSeeds": "No se encontraron semillas heredadas.",
-  "@legacySeedsNoSeeds": {
-    "description": "Empty state message when no legacy seeds exist"
-  },
-  "legacySeedsMnemonic": "Mnemónica",
-  "@legacySeedsMnemonic": {
-    "description": "Label for mnemonic display in legacy seed card"
-  },
-  "legacySeedsLoading": "Cargando semillas heredadas...",
-  "@legacySeedsLoading": {
-    "description": "Loading message while fetching legacy seeds"
   },
   "broadcastSignedTxTitle": "Transmitir transacción",
   "@broadcastSignedTxTitle": {
@@ -7050,7 +8322,7 @@
   "@addressViewShowQR": {
     "description": "Button to display address as QR code"
   },
-  "importQrDeviceTitle": "Importar {deviceName}",
+  "importQrDeviceTitle": "Conectar {deviceName}",
   "@importQrDeviceTitle": {
     "description": "AppBar title for QR device import",
     "placeholders": {
@@ -7100,7 +8372,271 @@
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
   },
-  "importColdcardTitle": "Importar Coldcard Q",
+  "importQrDeviceButtonOpenCamera": "Abrir la cámara",
+  "@importQrDeviceButtonOpenCamera": {
+    "description": "ImportQrDevice: Button to open camera for QR scanning"
+  },
+  "importQrDeviceButtonInstructions": "Instrucciones",
+  "@importQrDeviceButtonInstructions": {
+    "description": "ImportQrDevice: Button to show setup instructions"
+  },
+  "importQrDeviceJadeName": "Blockstream Jade",
+  "@importQrDeviceJadeName": {
+    "description": "Name of Blockstream Jade device"
+  },
+  "importQrDeviceJadeInstructionsTitle": "Instrucciones de Blockstream Jade",
+  "@importQrDeviceJadeInstructionsTitle": {
+    "description": "Title for Jade setup instructions"
+  },
+  "importQrDeviceJadeStep1": "Encienda su dispositivo Jade",
+  "@importQrDeviceJadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "importQrDeviceJadeStep2": "Seleccione \"Modo QR\" en el menú principal",
+  "@importQrDeviceJadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "importQrDeviceJadeStep3": "Siga las instrucciones del dispositivo para desbloquear el Jade",
+  "@importQrDeviceJadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "importQrDeviceJadeStep4": "Seleccione \"Opciones\" en el menú principal",
+  "@importQrDeviceJadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "importQrDeviceJadeStep5": "Seleccione \"Billetera\" en la lista de opciones",
+  "@importQrDeviceJadeStep5": {
+    "description": "Jade instruction step 5"
+  },
+  "importQrDeviceJadeStep6": "Seleccione \"Exportar Xpub\" en el menú de billetera",
+  "@importQrDeviceJadeStep6": {
+    "description": "Jade instruction step 6"
+  },
+  "importQrDeviceJadeStep7": "Si es necesario, seleccione \"Opciones\" para cambiar el tipo de dirección",
+  "@importQrDeviceJadeStep7": {
+    "description": "Jade instruction step 7"
+  },
+  "importQrDeviceJadeStep8": "Haga clic en el botón \"abrir cámara\"",
+  "@importQrDeviceJadeStep8": {
+    "description": "Jade instruction step 8"
+  },
+  "importQrDeviceJadeStep9": "Escanee el código QR que ve en su dispositivo.",
+  "@importQrDeviceJadeStep9": {
+    "description": "Jade instruction step 9"
+  },
+  "importQrDeviceJadeStep10": "¡Eso es todo!",
+  "@importQrDeviceJadeStep10": {
+    "description": "Jade instruction step 10"
+  },
+  "importQrDeviceKruxName": "Krux",
+  "@importQrDeviceKruxName": {
+    "description": "Name of Krux device"
+  },
+  "importQrDeviceKruxInstructionsTitle": "Instrucciones de Krux",
+  "@importQrDeviceKruxInstructionsTitle": {
+    "description": "Title for Krux setup instructions"
+  },
+  "importQrDeviceKruxStep1": "Encienda su dispositivo Krux",
+  "@importQrDeviceKruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "importQrDeviceKruxStep2": "Haga clic en Clave Pública Extendida",
+  "@importQrDeviceKruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "importQrDeviceKruxStep3": "Haga clic en XPUB - Código QR",
+  "@importQrDeviceKruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "importQrDeviceKruxStep4": "Haga clic en el botón \"abrir cámara\"",
+  "@importQrDeviceKruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "importQrDeviceKruxStep5": "Escanee el código QR que ve en su dispositivo.",
+  "@importQrDeviceKruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "importQrDeviceKruxStep6": "¡Eso es todo!",
+  "@importQrDeviceKruxStep6": {
+    "description": "Krux instruction step 6"
+  },
+  "importQrDeviceKeystoneName": "Keystone",
+  "@importQrDeviceKeystoneName": {
+    "description": "Name of Keystone device"
+  },
+  "importQrDeviceKeystoneInstructionsTitle": "Instrucciones de Keystone",
+  "@importQrDeviceKeystoneInstructionsTitle": {
+    "description": "Title for Keystone setup instructions"
+  },
+  "importQrDeviceKeystoneStep1": "Encienda su dispositivo Keystone",
+  "@importQrDeviceKeystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "importQrDeviceKeystoneStep2": "Haga clic en los 3 puntos en la parte superior derecha",
+  "@importQrDeviceKeystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "importQrDeviceKeystoneStep3": "Seleccione Conectar Billetera de Software",
+  "@importQrDeviceKeystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "importQrDeviceKeystoneStep4": "Haga clic en el botón \"abrir cámara\"",
+  "@importQrDeviceKeystoneStep4": {
+    "description": "Keystone instruction step 4"
+  },
+  "importQrDeviceKeystoneStep5": "Escanee el código QR que ve en su dispositivo.",
+  "@importQrDeviceKeystoneStep5": {
+    "description": "Keystone instruction step 5"
+  },
+  "importQrDeviceKeystoneStep6": "¡Eso es todo!",
+  "@importQrDeviceKeystoneStep6": {
+    "description": "Keystone instruction step 6"
+  },
+  "importQrDevicePassportName": "Foundation Passport",
+  "@importQrDevicePassportName": {
+    "description": "Name of Foundation Passport device"
+  },
+  "importQrDevicePassportInstructionsTitle": "Instrucciones de Foundation Passport",
+  "@importQrDevicePassportInstructionsTitle": {
+    "description": "Title for Passport setup instructions"
+  },
+  "importQrDevicePassportStep1": "Encienda su dispositivo Passport",
+  "@importQrDevicePassportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "importQrDevicePassportStep2": "Seleccione Administrar Cuenta",
+  "@importQrDevicePassportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "importQrDevicePassportStep3": "Seleccione Conectar Billetera",
+  "@importQrDevicePassportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "importQrDevicePassportStep4": "Seleccione Sparrow",
+  "@importQrDevicePassportStep4": {
+    "description": "Passport instruction step 4"
+  },
+  "importQrDevicePassportStep5": "Seleccione Firma Única",
+  "@importQrDevicePassportStep5": {
+    "description": "Passport instruction step 5"
+  },
+  "importQrDevicePassportStep6": "Seleccione Código QR",
+  "@importQrDevicePassportStep6": {
+    "description": "Passport instruction step 6"
+  },
+  "importQrDevicePassportStep7": "Haga clic en el botón \"abrir cámara\"",
+  "@importQrDevicePassportStep7": {
+    "description": "Passport instruction step 7"
+  },
+  "importQrDevicePassportStep8": "Escanee el código QR que ve en su dispositivo.",
+  "@importQrDevicePassportStep8": {
+    "description": "Passport instruction step 8"
+  },
+  "importQrDevicePassportStep9": "¡Eso es todo!",
+  "@importQrDevicePassportStep9": {
+    "description": "Passport instruction step 9"
+  },
+  "importQrDeviceSeedsignerName": "SeedSigner",
+  "@importQrDeviceSeedsignerName": {
+    "description": "Name of SeedSigner device"
+  },
+  "importQrDeviceSeedsignerInstructionsTitle": "Instrucciones de SeedSigner",
+  "@importQrDeviceSeedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner setup instructions"
+  },
+  "importQrDeviceSeedsignerStep1": "Encienda su dispositivo SeedSigner",
+  "@importQrDeviceSeedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "importQrDeviceSeedsignerStep2": "Abra el menú \"Seeds\"",
+  "@importQrDeviceSeedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "importQrDeviceSeedsignerStep3": "Escanee un SeedQR o ingrese su frase de 12 o 24 palabras",
+  "@importQrDeviceSeedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "importQrDeviceSeedsignerStep4": "Seleccione \"Exportar Xpub\"",
+  "@importQrDeviceSeedsignerStep4": {
+    "description": "SeedSigner instruction step 4"
+  },
+  "importQrDeviceSeedsignerStep5": "Elija \"Firma Única\", luego seleccione su tipo de script preferido (elija Native Segwit si no está seguro).",
+  "@importQrDeviceSeedsignerStep5": {
+    "description": "SeedSigner instruction step 5"
+  },
+  "importQrDeviceSeedsignerStep6": "Seleccione \"Sparrow\" como opción de exportación",
+  "@importQrDeviceSeedsignerStep6": {
+    "description": "SeedSigner instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep7": "En su dispositivo móvil, toque Abrir Cámara",
+  "@importQrDeviceSeedsignerStep7": {
+    "description": "SeedSigner instruction step 7"
+  },
+  "importQrDeviceSeedsignerStep8": "Escanee el código QR que se muestra en su SeedSigner",
+  "@importQrDeviceSeedsignerStep8": {
+    "description": "SeedSigner instruction step 8"
+  },
+  "importQrDeviceSeedsignerStep9": "Ingrese una etiqueta para su billetera SeedSigner y toque Importar",
+  "@importQrDeviceSeedsignerStep9": {
+    "description": "SeedSigner instruction step 9"
+  },
+  "importQrDeviceSeedsignerStep10": "Configuración completa",
+  "@importQrDeviceSeedsignerStep10": {
+    "description": "SeedSigner instruction step 10"
+  },
+  "importQrDeviceSpecterName": "Specter",
+  "@importQrDeviceSpecterName": {
+    "description": "Name of Specter device"
+  },
+  "importQrDeviceSpecterInstructionsTitle": "Instrucciones de Specter",
+  "@importQrDeviceSpecterInstructionsTitle": {
+    "description": "Title for Specter setup instructions"
+  },
+  "importQrDeviceSpecterStep1": "Encienda su dispositivo Specter",
+  "@importQrDeviceSpecterStep1": {
+    "description": "Specter instruction step 1"
+  },
+  "importQrDeviceSpecterStep2": "Ingrese su PIN",
+  "@importQrDeviceSpecterStep2": {
+    "description": "Specter instruction step 2"
+  },
+  "importQrDeviceSpecterStep3": "Ingrese su seed/clave (elija la opción que le convenga)",
+  "@importQrDeviceSpecterStep3": {
+    "description": "Specter instruction step 3"
+  },
+  "importQrDeviceSpecterStep4": "Siga las indicaciones según el método elegido",
+  "@importQrDeviceSpecterStep4": {
+    "description": "Specter instruction step 4"
+  },
+  "importQrDeviceSpecterStep5": "Seleccione \"Claves públicas maestras\"",
+  "@importQrDeviceSpecterStep5": {
+    "description": "Specter instruction step 5"
+  },
+  "importQrDeviceSpecterStep6": "Elija \"Clave única\"",
+  "@importQrDeviceSpecterStep6": {
+    "description": "Specter instruction step 6"
+  },
+  "importQrDeviceSpecterStep7": "Desactive \"Usar SLIP-132\"",
+  "@importQrDeviceSpecterStep7": {
+    "description": "Specter instruction step 7"
+  },
+  "importQrDeviceSpecterStep8": "En su dispositivo móvil, toque Abrir Cámara",
+  "@importQrDeviceSpecterStep8": {
+    "description": "Specter instruction step 8"
+  },
+  "importQrDeviceSpecterStep9": "Escanee el código QR que se muestra en su Specter",
+  "@importQrDeviceSpecterStep9": {
+    "description": "Specter instruction step 9"
+  },
+  "importQrDeviceSpecterStep10": "Ingrese una etiqueta para su billetera Specter y toque Importar",
+  "@importQrDeviceSpecterStep10": {
+    "description": "Specter instruction step 10"
+  },
+  "importQrDeviceSpecterStep11": "La configuración está completa",
+  "@importQrDeviceSpecterStep11": {
+    "description": "Specter instruction step 11"
+  },
+  "importColdcardTitle": "Conectar Coldcard Q",
   "@importColdcardTitle": {
     "description": "AppBar title for Coldcard Q import"
   },
@@ -7131,6 +8667,66 @@
   "importColdcardInvalidQR": "Código QR de Coldcard inválido",
   "@importColdcardInvalidQR": {
     "description": "Error for invalid QR format"
+  },
+  "importColdcardDescription": "Importa el código QR descriptor de billetera de tu Coldcard Q",
+  "@importColdcardDescription": {
+    "description": "ImportColdcardQ: Main instruction text on import page"
+  },
+  "importColdcardButtonOpenCamera": "Abrir la cámara",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardButtonInstructions": "Instrucciones",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonPurchase": "Comprar dispositivo",
+  "@importColdcardButtonPurchase": {
+    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
+  },
+  "importColdcardInstructionsTitle": "Instrucciones Coldcard Q",
+  "@importColdcardInstructionsTitle": {
+    "description": "ImportColdcardQ: Title of instructions bottom sheet"
+  },
+  "importColdcardInstructionsStep1": "Inicia sesión en tu dispositivo Coldcard Q",
+  "@importColdcardInstructionsStep1": {
+    "description": "ImportColdcardQ: First instruction step"
+  },
+  "importColdcardInstructionsStep2": "Ingresa una frase de contraseña si corresponde",
+  "@importColdcardInstructionsStep2": {
+    "description": "ImportColdcardQ: Second instruction step"
+  },
+  "importColdcardInstructionsStep3": "Navega a \"Avanzado/Herramientas\"",
+  "@importColdcardInstructionsStep3": {
+    "description": "ImportColdcardQ: Third instruction step"
+  },
+  "importColdcardInstructionsStep4": "Verifica que tu firmware esté actualizado a la versión 1.3.4Q",
+  "@importColdcardInstructionsStep4": {
+    "description": "ImportColdcardQ: Fourth instruction step"
+  },
+  "importColdcardInstructionsStep5": "Selecciona \"Exportar billetera\"",
+  "@importColdcardInstructionsStep5": {
+    "description": "ImportColdcardQ: Fifth instruction step"
+  },
+  "importColdcardInstructionsStep6": "Elige \"Bull Bitcoin\" como opción de exportación",
+  "@importColdcardInstructionsStep6": {
+    "description": "ImportColdcardQ: Sixth instruction step"
+  },
+  "importColdcardInstructionsStep7": "En tu dispositivo móvil, toca \"abrir cámara\"",
+  "@importColdcardInstructionsStep7": {
+    "description": "ImportColdcardQ: Seventh instruction step"
+  },
+  "importColdcardInstructionsStep8": "Escanea el código QR mostrado en tu Coldcard Q",
+  "@importColdcardInstructionsStep8": {
+    "description": "ImportColdcardQ: Eighth instruction step"
+  },
+  "importColdcardInstructionsStep9": "Ingresa una 'Etiqueta' para tu billetera Coldcard Q y toca \"Importar\"",
+  "@importColdcardInstructionsStep9": {
+    "description": "ImportColdcardQ: Ninth instruction step"
+  },
+  "importColdcardInstructionsStep10": "Configuración completada",
+  "@importColdcardInstructionsStep10": {
+    "description": "ImportColdcardQ: Final instruction step"
   },
   "exchangeLandingTitle": "BULL BITCOIN",
   "@exchangeLandingTitle": {
@@ -7857,6 +9453,240 @@
   "@electrumAddServer": {
     "description": "Add server button label"
   },
+  "electrumEnableSsl": "Activar SSL",
+  "@electrumEnableSsl": {
+    "description": "SSL toggle label in add custom server sheet"
+  },
+  "electrumProtocolError": "No incluya el protocolo (ssl:// o tcp://).",
+  "@electrumProtocolError": {
+    "description": "Validation error when protocol is included in server URL"
+  },
+  "electrumFormatError": "Use el formato host:puerto (p. ej., ejemplo.com:50001)",
+  "@electrumFormatError": {
+    "description": "Validation error for incorrect server URL format"
+  },
+  "electrumBitcoinServerInfo": "Ingrese la dirección del servidor en el formato: host:puerto (p. ej., ejemplo.com:50001)",
+  "@electrumBitcoinServerInfo": {
+    "description": "Info text for Bitcoin server URL format"
+  },
+  "electrumStopGap": "Intervalo de parada",
+  "@electrumStopGap": {
+    "description": "Stop Gap field label and hint in advanced options"
+  },
+  "electrumTimeout": "Tiempo de espera (segundos)",
+  "@electrumTimeout": {
+    "description": "Timeout field label and hint in advanced options"
+  },
+  "electrumRetryCount": "Número de reintentos",
+  "@electrumRetryCount": {
+    "description": "Retry Count field label and hint in advanced options"
+  },
+  "electrumValidateDomain": "Validar dominio",
+  "@electrumValidateDomain": {
+    "description": "Validate Domain switch label in advanced options"
+  },
+  "electrumStopGapEmptyError": "El intervalo de parada no puede estar vacío",
+  "@electrumStopGapEmptyError": {
+    "description": "Validation error for empty Stop Gap field"
+  },
+  "electrumInvalidNumberError": "Ingrese un número válido",
+  "@electrumInvalidNumberError": {
+    "description": "Validation error for non-numeric input"
+  },
+  "electrumStopGapNegativeError": "El intervalo de parada no puede ser negativo",
+  "@electrumStopGapNegativeError": {
+    "description": "Validation error for negative Stop Gap value"
+  },
+  "electrumStopGapTooHighError": "El intervalo de parada parece demasiado alto. (Máx. {maxStopGap})",
+  "@electrumStopGapTooHighError": {
+    "description": "Validation error for Stop Gap exceeding maximum",
+    "placeholders": {
+      "maxStopGap": {}
+    }
+  },
+  "electrumTimeoutEmptyError": "El tiempo de espera no puede estar vacío",
+  "@electrumTimeoutEmptyError": {
+    "description": "Validation error for empty Timeout field"
+  },
+  "electrumTimeoutPositiveError": "El tiempo de espera debe ser positivo",
+  "@electrumTimeoutPositiveError": {
+    "description": "Validation error for non-positive Timeout value"
+  },
+  "electrumTimeoutTooHighError": "El tiempo de espera parece demasiado alto. (Máx. {maxTimeout} segundos)",
+  "@electrumTimeoutTooHighError": {
+    "description": "Validation error for Timeout exceeding maximum",
+    "placeholders": {
+      "maxTimeout": {}
+    }
+  },
+  "electrumRetryCountEmptyError": "El número de reintentos no puede estar vacío",
+  "@electrumRetryCountEmptyError": {
+    "description": "Validation error for empty Retry Count field"
+  },
+  "electrumRetryCountNegativeError": "El número de reintentos no puede ser negativo",
+  "@electrumRetryCountNegativeError": {
+    "description": "Validation error for negative Retry Count value"
+  },
+  "electrumTimeoutWarning": "Su tiempo de espera ({timeoutValue} segundos) es menor que el valor recomendado ({recommended} segundos) para este intervalo de parada.",
+  "@electrumTimeoutWarning": {
+    "description": "Warning message when timeout is too low for the configured Stop Gap",
+    "placeholders": {
+      "timeoutValue": {},
+      "recommended": {}
+    }
+  },
+  "electrumInvalidStopGapError": "Valor de intervalo de parada inválido: {value}",
+  "@electrumInvalidStopGapError": {
+    "description": "Error message for invalid Stop Gap value from backend",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "electrumInvalidTimeoutError": "Valor de tiempo de espera inválido: {value}",
+  "@electrumInvalidTimeoutError": {
+    "description": "Error message for invalid Timeout value from backend",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "electrumInvalidRetryError": "Valor de número de reintentos inválido: {value}",
+  "@electrumInvalidRetryError": {
+    "description": "Error message for invalid Retry Count value from backend",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "electrumSaveFailedError": "Error al guardar las opciones avanzadas",
+  "@electrumSaveFailedError": {
+    "description": "Error message when saving advanced options fails"
+  },
+  "electrumUnknownError": "Ocurrió un error",
+  "@electrumUnknownError": {
+    "description": "Generic error message for unknown errors"
+  },
+  "electrumReset": "Restablecer",
+  "@electrumReset": {
+    "description": "Reset button label in advanced options"
+  },
+  "electrumConfirm": "Confirmar",
+  "@electrumConfirm": {
+    "description": "Confirm button label in advanced options"
+  },
+  "electrumDeleteServerTitle": "Eliminar servidor personalizado",
+  "@electrumDeleteServerTitle": {
+    "description": "Delete server dialog title"
+  },
+  "electrumDeletePrivacyNotice": "Aviso de privacidad:\nUsar su propio nodo garantiza que ningún tercero pueda vincular su dirección IP con sus transacciones. Al eliminar su último servidor personalizado, se conectará a un servidor BullBitcoin.\n\n",
+  "@electrumDeletePrivacyNotice": {
+    "description": "Privacy notice shown when deleting last custom server"
+  },
+  "electrumDeleteConfirmation": "¿Está seguro de que desea eliminar este servidor?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "description": "Confirmation message for server deletion",
+    "placeholders": {
+      "serverUrl": {}
+    }
+  },
+  "electrumCancel": "Cancelar",
+  "@electrumCancel": {
+    "description": "Cancel button label in delete dialog"
+  },
+  "electrumDelete": "Eliminar",
+  "@electrumDelete": {
+    "description": "Delete button label in delete dialog"
+  },
+  "electrumDefaultServers": "Servidores predeterminados",
+  "@electrumDefaultServers": {
+    "description": "Section header for default servers list"
+  },
+  "electrumDefaultServersInfo": "Para proteger su privacidad, los servidores predeterminados no se utilizan cuando se configuran servidores personalizados.",
+  "@electrumDefaultServersInfo": {
+    "description": "Info message explaining default servers behavior"
+  },
+  "electrumCustomServers": "Servidores personalizados",
+  "@electrumCustomServers": {
+    "description": "Section header for custom servers list"
+  },
+  "electrumDragToReorder": "(Mantenga presionado para arrastrar y cambiar la prioridad)",
+  "@electrumDragToReorder": {
+    "description": "Instruction text for reordering servers"
+  },
+  "electrumAddCustomServer": "Agregar servidor personalizado",
+  "@electrumAddCustomServer": {
+    "description": "Button label to add a custom server"
+  },
+  "electrumLoadFailedError": "Error al cargar los servidores{reason}",
+  "@electrumLoadFailedError": {
+    "description": "Error message when loading servers fails",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumSavePriorityFailedError": "Error al guardar la prioridad del servidor{reason}",
+  "@electrumSavePriorityFailedError": {
+    "description": "Error message when saving server priority fails",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumAddFailedError": "Error al agregar el servidor personalizado{reason}",
+  "@electrumAddFailedError": {
+    "description": "Error message when adding custom server fails",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDeleteFailedError": "Error al eliminar el servidor personalizado{reason}",
+  "@electrumDeleteFailedError": {
+    "description": "Error message when deleting custom server fails",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumServerAlreadyExists": "Este servidor ya existe",
+  "@electrumServerAlreadyExists": {
+    "description": "Error message when trying to add a duplicate server"
+  },
+  "electrumPrivacyNoticeTitle": "Aviso de privacidad",
+  "@electrumPrivacyNoticeTitle": {
+    "description": "Title for privacy notice bottom sheet"
+  },
+  "electrumPrivacyNoticeContent1": "Aviso de privacidad: El uso de su propio nodo garantiza que ningún tercero pueda vincular su dirección IP con sus transacciones.",
+  "@electrumPrivacyNoticeContent1": {
+    "description": "First paragraph of privacy notice"
+  },
+  "electrumPrivacyNoticeContent2": "Sin embargo, si visualiza transacciones a través de mempool haciendo clic en su ID de transacción o en la página de Detalles del destinatario, esta información será conocida por BullBitcoin.",
+  "@electrumPrivacyNoticeContent2": {
+    "description": "Second paragraph of privacy notice"
+  },
+  "electrumPrivacyNoticeCancel": "Cancelar",
+  "@electrumPrivacyNoticeCancel": {
+    "description": "Cancel button in privacy notice dialog"
+  },
+  "electrumPrivacyNoticeSave": "Guardar",
+  "@electrumPrivacyNoticeSave": {
+    "description": "Save button in privacy notice dialog"
+  },
+  "electrumServerNotUsed": "No utilizado",
+  "@electrumServerNotUsed": {
+    "description": "Status text for disabled servers"
+  },
+  "electrumServerOnline": "En línea",
+  "@electrumServerOnline": {
+    "description": "Status text for online servers"
+  },
+  "electrumServerOffline": "Fuera de línea",
+  "@electrumServerOffline": {
+    "description": "Status text for offline servers"
+  },
   "arkSendRecipientLabel": "Dirección del destinatario",
   "@arkSendRecipientLabel": {
     "description": "Label for recipient address field"
@@ -8113,5 +9943,541 @@
   "appStartupContactSupportButton": "Contactar Soporte",
   "@appStartupContactSupportButton": {
     "description": "Etiqueta del botón para contactar al soporte cuando falla el inicio de la aplicación"
+  },
+  "ledgerImportTitle": "Importar Cartera Ledger",
+  "@ledgerImportTitle": {
+    "description": "Título para importar una cartera hardware Ledger"
+  },
+  "ledgerSignTitle": "Firmar Transacción",
+  "@ledgerSignTitle": {
+    "description": "Título para firmar una transacción con Ledger"
+  },
+  "ledgerVerifyTitle": "Verificar Dirección en Ledger",
+  "@ledgerVerifyTitle": {
+    "description": "Título para verificar una dirección en el dispositivo Ledger"
+  },
+  "ledgerImportButton": "Comenzar Importación",
+  "@ledgerImportButton": {
+    "description": "Etiqueta del botón para comenzar la importación de cartera Ledger"
+  },
+  "ledgerSignButton": "Comenzar Firma",
+  "@ledgerSignButton": {
+    "description": "Etiqueta del botón para comenzar la firma de transacción con Ledger"
+  },
+  "ledgerVerifyButton": "Verificar Dirección",
+  "@ledgerVerifyButton": {
+    "description": "Etiqueta del botón para comenzar la verificación de dirección en Ledger"
+  },
+  "ledgerProcessingImport": "Importando Cartera",
+  "@ledgerProcessingImport": {
+    "description": "Mensaje de estado mostrado mientras se importa la cartera Ledger"
+  },
+  "ledgerProcessingSign": "Firmando Transacción",
+  "@ledgerProcessingSign": {
+    "description": "Mensaje de estado mostrado mientras se firma la transacción con Ledger"
+  },
+  "ledgerProcessingVerify": "Mostrando dirección en Ledger...",
+  "@ledgerProcessingVerify": {
+    "description": "Mensaje de estado mostrado mientras se verifica la dirección en Ledger"
+  },
+  "ledgerSuccessImportTitle": "Cartera Importada Exitosamente",
+  "@ledgerSuccessImportTitle": {
+    "description": "Título del mensaje de éxito después de importar la cartera Ledger"
+  },
+  "ledgerSuccessSignTitle": "Transacción Firmada Exitosamente",
+  "@ledgerSuccessSignTitle": {
+    "description": "Título del mensaje de éxito después de firmar la transacción con Ledger"
+  },
+  "ledgerSuccessVerifyTitle": "Verificando dirección en Ledger...",
+  "@ledgerSuccessVerifyTitle": {
+    "description": "Título del mensaje de éxito para la verificación de dirección en Ledger"
+  },
+  "ledgerSuccessImportDescription": "Su cartera Ledger ha sido importada exitosamente.",
+  "@ledgerSuccessImportDescription": {
+    "description": "Descripción del mensaje de éxito después de importar la cartera Ledger"
+  },
+  "ledgerSuccessSignDescription": "Su transacción ha sido firmada exitosamente.",
+  "@ledgerSuccessSignDescription": {
+    "description": "Descripción del mensaje de éxito después de firmar la transacción con Ledger"
+  },
+  "ledgerSuccessVerifyDescription": "La dirección ha sido verificada en su dispositivo Ledger.",
+  "@ledgerSuccessVerifyDescription": {
+    "description": "Descripción del mensaje de éxito después de verificar la dirección en Ledger"
+  },
+  "ledgerProcessingImportSubtext": "Configurando su cartera de solo lectura...",
+  "@ledgerProcessingImportSubtext": {
+    "description": "Subtexto de procesamiento mostrado mientras se importa la cartera Ledger"
+  },
+  "ledgerProcessingSignSubtext": "Por favor confirme la transacción en su dispositivo Ledger...",
+  "@ledgerProcessingSignSubtext": {
+    "description": "Subtexto de procesamiento mostrado mientras se firma la transacción"
+  },
+  "ledgerProcessingVerifySubtext": "Por favor confirme la dirección en su dispositivo Ledger.",
+  "@ledgerProcessingVerifySubtext": {
+    "description": "Subtexto de procesamiento mostrado mientras se verifica la dirección"
+  },
+  "ledgerConnectTitle": "Conecte su Dispositivo Ledger",
+  "@ledgerConnectTitle": {
+    "description": "Título de la pantalla de conexión inicial de Ledger"
+  },
+  "ledgerScanningTitle": "Buscando Dispositivos",
+  "@ledgerScanningTitle": {
+    "description": "Título mostrado mientras se buscan dispositivos Ledger"
+  },
+  "ledgerConnectingMessage": "Conectando a {deviceName}",
+  "@ledgerConnectingMessage": {
+    "description": "Mensaje mostrado mientras se conecta a un dispositivo Ledger específico",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerActionFailedMessage": "{action} Falló",
+  "@ledgerActionFailedMessage": {
+    "description": "Mensaje de error cuando una acción de Ledger falla",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerInstructionsIos": "Asegúrese de que su Ledger esté desbloqueado con la aplicación Bitcoin abierta y Bluetooth habilitado.",
+  "@ledgerInstructionsIos": {
+    "description": "Instrucciones de conexión para dispositivos iOS (solo Bluetooth)"
+  },
+  "ledgerInstructionsAndroidUsb": "Asegúrese de que su Ledger esté desbloqueado con la aplicación Bitcoin abierta y conéctelo vía USB.",
+  "@ledgerInstructionsAndroidUsb": {
+    "description": "Instrucciones de conexión para dispositivos Android (solo USB)"
+  },
+  "ledgerInstructionsAndroidDual": "Asegúrese de que su Ledger esté desbloqueado con la aplicación Bitcoin abierta y Bluetooth habilitado, o conecte el dispositivo vía USB.",
+  "@ledgerInstructionsAndroidDual": {
+    "description": "Instrucciones de conexión para dispositivos Android (Bluetooth o USB)"
+  },
+  "ledgerScanningMessage": "Buscando dispositivos Ledger cercanos...",
+  "@ledgerScanningMessage": {
+    "description": "Mensaje mostrado mientras se buscan dispositivos Ledger"
+  },
+  "ledgerConnectingSubtext": "Estableciendo conexión segura...",
+  "@ledgerConnectingSubtext": {
+    "description": "Subtexto mostrado mientras se conecta al Ledger"
+  },
+  "ledgerErrorUnknown": "Error desconocido",
+  "@ledgerErrorUnknown": {
+    "description": "Mensaje de error genérico para errores de Ledger desconocidos"
+  },
+  "ledgerErrorUnknownOccurred": "Ocurrió un error desconocido",
+  "@ledgerErrorUnknownOccurred": {
+    "description": "Mensaje de error cuando ocurre un error desconocido durante una operación de Ledger"
+  },
+  "ledgerErrorNoConnection": "No hay conexión Ledger disponible",
+  "@ledgerErrorNoConnection": {
+    "description": "Mensaje de error cuando no hay conexión Ledger disponible"
+  },
+  "ledgerErrorRejectedByUser": "La transacción fue rechazada por el usuario en el dispositivo Ledger.",
+  "@ledgerErrorRejectedByUser": {
+    "description": "Mensaje de error cuando el usuario rechaza la transacción en Ledger (código de error 6985)"
+  },
+  "ledgerErrorDeviceLocked": "El dispositivo Ledger está bloqueado. Por favor desbloquee su dispositivo e intente nuevamente.",
+  "@ledgerErrorDeviceLocked": {
+    "description": "Mensaje de error cuando el dispositivo Ledger está bloqueado (código de error 5515)"
+  },
+  "ledgerErrorBitcoinAppNotOpen": "Por favor abra la aplicación Bitcoin en su dispositivo Ledger e intente nuevamente.",
+  "@ledgerErrorBitcoinAppNotOpen": {
+    "description": "Mensaje de error cuando la aplicación Bitcoin no está abierta en Ledger (códigos de error 6e01, 6a87, 6d02, 6511, 6e00)"
+  },
+  "ledgerErrorMissingPsbt": "Se requiere PSBT para firmar",
+  "@ledgerErrorMissingPsbt": {
+    "description": "Mensaje de error cuando falta el parámetro PSBT para firmar"
+  },
+  "ledgerErrorMissingDerivationPathSign": "Se requiere ruta de derivación para firmar",
+  "@ledgerErrorMissingDerivationPathSign": {
+    "description": "Mensaje de error cuando falta la ruta de derivación para firmar"
+  },
+  "ledgerErrorMissingScriptTypeSign": "Se requiere tipo de script para firmar",
+  "@ledgerErrorMissingScriptTypeSign": {
+    "description": "Mensaje de error cuando falta el tipo de script para firmar"
+  },
+  "ledgerErrorMissingAddress": "Se requiere dirección para verificación",
+  "@ledgerErrorMissingAddress": {
+    "description": "Mensaje de error cuando falta la dirección para verificación"
+  },
+  "ledgerErrorMissingDerivationPathVerify": "Se requiere ruta de derivación para verificación",
+  "@ledgerErrorMissingDerivationPathVerify": {
+    "description": "Mensaje de error cuando falta la ruta de derivación para verificación"
+  },
+  "ledgerErrorMissingScriptTypeVerify": "Se requiere tipo de script para verificación",
+  "@ledgerErrorMissingScriptTypeVerify": {
+    "description": "Mensaje de error cuando falta el tipo de script para verificación"
+  },
+  "ledgerButtonTryAgain": "Intentar Nuevamente",
+  "@ledgerButtonTryAgain": {
+    "description": "Etiqueta del botón para reintentar una operación de Ledger fallida"
+  },
+  "ledgerButtonManagePermissions": "Administrar Permisos de la Aplicación",
+  "@ledgerButtonManagePermissions": {
+    "description": "Etiqueta del botón para abrir la configuración de permisos de la aplicación"
+  },
+  "ledgerButtonNeedHelp": "¿Necesita Ayuda?",
+  "@ledgerButtonNeedHelp": {
+    "description": "Etiqueta del botón para mostrar las instrucciones de ayuda/solución de problemas"
+  },
+  "ledgerVerifyAddressLabel": "Dirección a verificar:",
+  "@ledgerVerifyAddressLabel": {
+    "description": "Etiqueta para la dirección que se está verificando en Ledger"
+  },
+  "ledgerWalletTypeLabel": "Tipo de Cartera:",
+  "@ledgerWalletTypeLabel": {
+    "description": "Etiqueta para la selección de tipo de cartera/script"
+  },
+  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
+  "@ledgerWalletTypeSegwit": {
+    "description": "Nombre para mostrar del tipo de cartera Segwit (BIP84)"
+  },
+  "ledgerWalletTypeSegwitDescription": "Native SegWit - Recomendado",
+  "@ledgerWalletTypeSegwitDescription": {
+    "description": "Descripción para el tipo de cartera Segwit"
+  },
+  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
+  "@ledgerWalletTypeNestedSegwit": {
+    "description": "Nombre para mostrar del tipo de cartera Nested Segwit (BIP49)"
+  },
+  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
+  "@ledgerWalletTypeNestedSegwitDescription": {
+    "description": "Descripción técnica para el tipo de cartera Nested Segwit"
+  },
+  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
+  "@ledgerWalletTypeLegacy": {
+    "description": "Nombre para mostrar del tipo de cartera Legacy (BIP44)"
+  },
+  "ledgerWalletTypeLegacyDescription": "P2PKH - Formato antiguo",
+  "@ledgerWalletTypeLegacyDescription": {
+    "description": "Descripción para el tipo de cartera Legacy"
+  },
+  "ledgerWalletTypeSelectTitle": "Seleccionar Tipo de Cartera",
+  "@ledgerWalletTypeSelectTitle": {
+    "description": "Título para el modal de selección de tipo de cartera"
+  },
+  "ledgerSuccessAddressVerified": "¡Dirección verificada exitosamente!",
+  "@ledgerSuccessAddressVerified": {
+    "description": "Mensaje de notificación de éxito después de la verificación de dirección"
+  },
+  "ledgerHelpTitle": "Solución de Problemas de Ledger",
+  "@ledgerHelpTitle": {
+    "description": "Título para el modal de ayuda de solución de problemas de Ledger"
+  },
+  "ledgerHelpSubtitle": "Primero, asegúrese de que su dispositivo Ledger esté desbloqueado y que la aplicación Bitcoin esté abierta. Si su dispositivo aún no se conecta con la aplicación, intente lo siguiente:",
+  "@ledgerHelpSubtitle": {
+    "description": "Subtítulo/introducción para la ayuda de solución de problemas de Ledger"
+  },
+  "ledgerHelpStep1": "Reinicie su dispositivo Ledger.",
+  "@ledgerHelpStep1": {
+    "description": "Primer paso de solución de problemas para problemas de conexión de Ledger"
+  },
+  "ledgerHelpStep2": "Asegúrese de que su teléfono tenga Bluetooth activado y permitido.",
+  "@ledgerHelpStep2": {
+    "description": "Segundo paso de solución de problemas para problemas de conexión de Ledger"
+  },
+  "ledgerHelpStep3": "Asegúrese de que su Ledger tenga Bluetooth activado.",
+  "@ledgerHelpStep3": {
+    "description": "Tercer paso de solución de problemas para problemas de conexión de Ledger"
+  },
+  "ledgerHelpStep4": "Asegúrese de haber instalado la última versión de la aplicación Bitcoin desde Ledger Live.",
+  "@ledgerHelpStep4": {
+    "description": "Cuarto paso de solución de problemas para problemas de conexión de Ledger"
+  },
+  "ledgerHelpStep5": "Asegúrese de que su dispositivo Ledger esté usando el firmware más reciente, puede actualizar el firmware usando la aplicación Ledger Live para escritorio.",
+  "@ledgerHelpStep5": {
+    "description": "Quinto paso de solución de problemas para problemas de conexión de Ledger"
+  },
+  "ledgerDefaultWalletLabel": "Cartera Ledger",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Etiqueta predeterminada para la cartera Ledger importada"
+  },
+  "exchangeBrandName": "BULL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLandingConnectAccount": "Conecta tu cuenta de intercambio Bull Bitcoin",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeLandingRecommendedExchange": "Intercambio de Bitcoin recomendado",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureSelfCustody": "• Compra Bitcoin directamente en autocustodia",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, órdenes limitadas y compra automática",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureSellBitcoin": "• Vende Bitcoin, recibe pagos en Bitcoin",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeFeatureBankTransfers": "• Envía transferencias bancarias y paga facturas",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeFeatureCustomerSupport": "• Chatea con el soporte al cliente",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeFeatureUnifiedHistory": "• Historial de transacciones unificado",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  },
+  "exchangeLandingDisclaimerLegal": "El acceso a los servicios de intercambio estará restringido a países donde Bull Bitcoin pueda operar legalmente y puede requerir KYC.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "Los servicios de intercambio de criptomonedas no están disponibles en la aplicación móvil de Bull Bitcoin.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLoginButton": "Iniciar sesión o registrarse",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeGoToWebsiteButton": "Ir al sitio web del intercambio Bull Bitcoin",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  },
+  "exchangeAuthLoginFailedTitle": "Error de inicio de sesión",
+  "@exchangeAuthLoginFailedTitle": {
+    "description": "Title of the dialog shown when exchange login fails"
+  },
+  "exchangeAuthLoginFailedMessage": "Ocurrió un error, por favor intenta iniciar sesión nuevamente.",
+  "@exchangeAuthLoginFailedMessage": {
+    "description": "Message shown when exchange login fails"
+  },
+  "exchangeAuthLoginFailedOkButton": "OK",
+  "@exchangeAuthLoginFailedOkButton": {
+    "description": "OK button label in the login failed dialog"
+  },
+  "exchangeHomeDepositButton": "Depositar",
+  "@exchangeHomeDepositButton": {
+    "description": "Button label for depositing funds to the exchange"
+  },
+  "exchangeHomeWithdrawButton": "Retirar",
+  "@exchangeHomeWithdrawButton": {
+    "description": "Button label for withdrawing funds from the exchange"
+  },
+  "exchangeDcaUnableToGetConfig": "No se puede obtener la configuración de DCA",
+  "@exchangeDcaUnableToGetConfig": {
+    "description": "Error message when DCA configuration cannot be retrieved"
+  },
+  "exchangeDcaDeactivateTitle": "Desactivar compra recurrente",
+  "@exchangeDcaDeactivateTitle": {
+    "description": "Title shown when DCA is active and can be deactivated"
+  },
+  "exchangeDcaActivateTitle": "Activar compra recurrente",
+  "@exchangeDcaActivateTitle": {
+    "description": "Title shown when DCA is inactive and can be activated"
+  },
+  "exchangeDcaHideSettings": "Ocultar configuración",
+  "@exchangeDcaHideSettings": {
+    "description": "Link text to hide DCA settings details"
+  },
+  "exchangeDcaViewSettings": "Ver configuración",
+  "@exchangeDcaViewSettings": {
+    "description": "Link text to view DCA settings details"
+  },
+  "exchangeDcaCancelDialogTitle": "¿Cancelar compra recurrente de Bitcoin?",
+  "@exchangeDcaCancelDialogTitle": {
+    "description": "Title of the dialog confirming DCA cancellation"
+  },
+  "exchangeDcaCancelDialogMessage": "Tu plan de compra recurrente de Bitcoin se detendrá y las compras programadas finalizarán. Para reiniciar, deberás configurar un nuevo plan.",
+  "@exchangeDcaCancelDialogMessage": {
+    "description": "Message explaining the consequences of canceling DCA"
+  },
+  "exchangeDcaCancelDialogCancelButton": "Cancelar",
+  "@exchangeDcaCancelDialogCancelButton": {
+    "description": "Button label to cancel the DCA cancellation dialog"
+  },
+  "exchangeDcaCancelDialogConfirmButton": "Sí, desactivar",
+  "@exchangeDcaCancelDialogConfirmButton": {
+    "description": "Button label to confirm DCA deactivation"
+  },
+  "exchangeDcaFrequencyHour": "hora",
+  "@exchangeDcaFrequencyHour": {
+    "description": "DCA frequency unit: hour"
+  },
+  "exchangeDcaFrequencyDay": "día",
+  "@exchangeDcaFrequencyDay": {
+    "description": "DCA frequency unit: day"
+  },
+  "exchangeDcaFrequencyWeek": "semana",
+  "@exchangeDcaFrequencyWeek": {
+    "description": "DCA frequency unit: week"
+  },
+  "exchangeDcaFrequencyMonth": "mes",
+  "@exchangeDcaFrequencyMonth": {
+    "description": "DCA frequency unit: month"
+  },
+  "exchangeDcaNetworkBitcoin": "Red Bitcoin",
+  "@exchangeDcaNetworkBitcoin": {
+    "description": "DCA network option: Bitcoin"
+  },
+  "exchangeDcaNetworkLightning": "Red Lightning",
+  "@exchangeDcaNetworkLightning": {
+    "description": "DCA network option: Lightning"
+  },
+  "exchangeDcaNetworkLiquid": "Red Liquid",
+  "@exchangeDcaNetworkLiquid": {
+    "description": "DCA network option: Liquid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Dirección Bitcoin",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Dirección Lightning",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Dirección Liquid",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaSummaryMessage": "Estás comprando {amount} cada {frequency} a través de {network} mientras haya fondos en tu cuenta.",
+  "@exchangeDcaSummaryMessage": {
+    "description": "Summary message describing the DCA configuration",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "The amount being purchased (e.g., '$100 CAD')"
+      },
+      "frequency": {
+        "type": "String",
+        "description": "The purchase frequency (e.g., 'day', 'week')"
+      },
+      "network": {
+        "type": "String",
+        "description": "The network being used (e.g., 'Bitcoin Network')"
+      }
+    }
+  },
+  "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
+  "@exchangeDcaAddressDisplay": {
+    "description": "Format for displaying address label and address",
+    "placeholders": {
+      "addressLabel": {
+        "type": "String",
+        "description": "The address label (e.g., 'Bitcoin address')"
+      },
+      "address": {
+        "type": "String",
+        "description": "The actual address"
+      }
+    }
+  },
+  "exchangeCurrencyDropdownTitle": "Seleccionar moneda",
+  "@exchangeCurrencyDropdownTitle": {
+    "description": "Title for the currency selection dropdown"
+  },
+  "exchangeCurrencyDropdownValidation": "Por favor selecciona una moneda",
+  "@exchangeCurrencyDropdownValidation": {
+    "description": "Validation message when no currency is selected"
+  },
+  "exchangeKycLevelLight": "Ligera",
+  "@exchangeKycLevelLight": {
+    "description": "KYC verification level: Light"
+  },
+  "exchangeKycLevelLimited": "Limitada",
+  "@exchangeKycLevelLimited": {
+    "description": "KYC verification level: Limited"
+  },
+  "exchangeKycCardTitle": "Completa tu verificación KYC",
+  "@exchangeKycCardTitle": {
+    "description": "Title of the KYC completion card"
+  },
+  "exchangeKycCardSubtitle": "Para eliminar los límites de transacción",
+  "@exchangeKycCardSubtitle": {
+    "description": "Subtitle explaining why to complete KYC"
+  },
+  "exchangeAmountInputTitle": "Ingresar monto",
+  "@exchangeAmountInputTitle": {
+    "description": "Title for the amount input field"
+  },
+  "exchangeAmountInputValidationEmpty": "Por favor ingresa un monto",
+  "@exchangeAmountInputValidationEmpty": {
+    "description": "Validation message when amount field is empty"
+  },
+  "exchangeAmountInputValidationInvalid": "Monto inválido",
+  "@exchangeAmountInputValidationInvalid": {
+    "description": "Validation message when amount is invalid"
+  },
+  "exchangeAmountInputValidationZero": "El monto debe ser mayor que cero",
+  "@exchangeAmountInputValidationZero": {
+    "description": "Validation message when amount is zero or negative"
+  },
+  "exchangeAmountInputValidationInsufficient": "Saldo insuficiente",
+  "@exchangeAmountInputValidationInsufficient": {
+    "description": "Validation message when amount exceeds available balance"
+  },
+  "sellBitcoinPriceLabel": "Precio de Bitcoin",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "sellViewDetailsButton": "Ver detalles",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "sellKycPendingTitle": "Verificación KYC pendiente",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "sellKycPendingDescription": "Debes completar la verificación de identidad primero",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellErrorPrepareTransaction": "Error al preparar la transacción: {error}",
+  "@sellErrorPrepareTransaction": {
+    "description": "Error message when transaction preparation fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellErrorNoWalletSelected": "No se seleccionó ninguna billetera para enviar el pago",
+  "@sellErrorNoWalletSelected": {
+    "description": "Error message when no wallet is selected for payment"
+  },
+  "sellErrorFeesNotCalculated": "Tarifas de transacción no calculadas. Por favor, inténtalo de nuevo.",
+  "@sellErrorFeesNotCalculated": {
+    "description": "Error message when transaction fees calculation failed"
+  },
+  "sellErrorUnexpectedOrderType": "Se esperaba SellOrder pero se recibió un tipo de orden diferente",
+  "@sellErrorUnexpectedOrderType": {
+    "description": "Error message when wrong order type is received"
+  },
+  "sellErrorLoadUtxos": "Error al cargar UTXOs: {error}",
+  "@sellErrorLoadUtxos": {
+    "description": "Error message when loading UTXOs fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellErrorRecalculateFees": "Error al recalcular tarifas: {error}",
+  "@sellErrorRecalculateFees": {
+    "description": "Error message when fee recalculation fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellLoadingGeneric": "Cargando...",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
   }
 }

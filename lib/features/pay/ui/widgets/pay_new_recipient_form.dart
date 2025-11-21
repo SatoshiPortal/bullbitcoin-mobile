@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -171,9 +172,8 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
         children: [
           if (!widget.isLoading && widget.userSummary == null) ...[
             InfoCard(
-              title: 'Not Logged In',
-              description:
-                  'You are not logged in. Please log in to continue using the pay feature.',
+              title: context.loc.payNotLoggedIn,
+              description: context.loc.payNotLoggedInDescription,
               tagColor: context.colour.error,
               bgColor: context.colour.secondaryFixedDim,
               onTap: () {
@@ -205,7 +205,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
     final isDisabled = !canContinue || widget.userSummary == null;
 
     return BBButton.big(
-      label: 'Continue',
+      label: context.loc.payContinue,
       onPressed:
           isDisabled
               ? () {}
@@ -243,7 +243,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
               value: selectedCountry,
               isExpanded: true,
               hint: BBText(
-                'Select country',
+                context.loc.paySelectCountry,
                 style: context.font.headlineSmall?.copyWith(
                   color: context.colour.outline,
                 ),
@@ -288,7 +288,7 @@ class _PayNewRecipientFormState extends State<PayNewRecipientForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          'Payout method',
+          context.loc.payPayoutMethod,
           style: context.font.bodyLarge?.copyWith(
             color: context.colour.secondary,
             fontWeight: FontWeight.w500,
@@ -482,18 +482,18 @@ class _InteracEmailForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'Email',
+          context.loc.payEmail,
           'email',
-          'Enter email address',
+          context.loc.payEmailHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Name',
+          context.loc.payName,
           'name',
-          'Enter recipient name',
+          context.loc.payNameHint,
           formData,
           onFormDataChanged,
         ),
@@ -502,18 +502,18 @@ class _InteracEmailForm extends StatelessWidget {
         const Gap(12),
         _buildInputField(
           context,
-          'Security Answer',
+          context.loc.paySecurityAnswer,
           'securityAnswer',
-          'Enter security answer',
+          context.loc.paySecurityAnswerHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Label (optional)',
+          context.loc.payLabelOptional,
           'label',
-          'Enter a label for this recipient',
+          context.loc.payLabelHint,
           formData,
           onFormDataChanged,
         ),
@@ -595,7 +595,7 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
               // Biller Name (Read-only)
               _buildReadOnlyField(
                 context,
-                'Biller Name',
+                context.loc.payBillerName,
                 'payeeName',
                 _selectedBiller?.payeeName ?? '',
                 widget.formData,
@@ -605,9 +605,9 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
               // Payee Account Number
               _buildInputField(
                 context,
-                'Payee Account Number',
+                context.loc.payPayeeAccountNumber,
                 'payeeAccountNumber',
-                'Enter account number',
+                context.loc.payPayeeAccountNumberHint,
                 widget.formData,
                 widget.onFormDataChanged,
               ),
@@ -616,9 +616,9 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
               // Label (optional)
               _buildInputField(
                 context,
-                'Label (optional)',
+                context.loc.payLabelOptional,
                 'label',
-                'Enter a label for this recipient',
+                context.loc.payLabelHint,
                 widget.formData,
                 widget.onFormDataChanged,
               ),
@@ -637,7 +637,7 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
         TextField(
           controller: _searchController,
           decoration: InputDecoration(
-            hintText: 'Enter first 3 letters of biller name',
+            hintText: context.loc.payBillerSearchHint,
             prefixIcon: const Icon(Icons.search),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             contentPadding: const EdgeInsets.symmetric(
@@ -715,7 +715,7 @@ class _BillPaymentFormState extends State<_BillPaymentForm> {
             children: [
               Expanded(
                 child: BBText(
-                  value.isEmpty ? 'Selected Biller Name' : value,
+                  value.isEmpty ? context.loc.payBillerNameValue : value,
                   style: context.font.bodyMedium?.copyWith(
                     color:
                         value.isEmpty
@@ -753,54 +753,54 @@ class _BankTransferForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'Institution Number',
+          context.loc.payInstitutionNumber,
           'institutionNumber',
-          'Enter institution number',
+          context.loc.payInstitutionNumberHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Transit Number',
+          context.loc.payTransitNumber,
           'transitNumber',
-          'Enter transit number',
+          context.loc.payTransitNumberHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Account Number',
+          context.loc.payAccountNumber,
           'accountNumber',
-          'Enter account number',
+          context.loc.payAccountNumberHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Name',
+          context.loc.payName,
           'name',
-          'Enter recipient name',
+          context.loc.payNameHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Default Comment (optional)',
+          context.loc.payDefaultCommentOptional,
           'defaultComment',
-          'Enter default comment',
+          context.loc.payDefaultCommentHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Label (optional)',
+          context.loc.payLabelOptional,
           'label',
-          'Enter a label for this recipient',
+          context.loc.payLabelHint,
           formData,
           onFormDataChanged,
         ),
@@ -832,18 +832,18 @@ class _SepaFormState extends State<_SepaForm> {
       children: [
         _buildInputField(
           context,
-          'IBAN',
+          context.loc.payIban,
           'iban',
-          'Enter IBAN',
+          context.loc.payIbanHint,
           widget.formData,
           widget.onFormDataChanged,
         ),
         const Gap(12),
         _buildCheckboxField(
           context,
-          'Corporate',
+          context.loc.payCorporate,
           'isCorporate',
-          'Is this a corporate account?',
+          context.loc.payIsCorporateAccount,
           widget.formData,
           widget.onFormDataChanged,
         ),
@@ -851,18 +851,18 @@ class _SepaFormState extends State<_SepaForm> {
         if (widget.formData['isCorporate'] != 'true') ...[
           _buildInputField(
             context,
-            'First Name',
+            context.loc.payFirstName,
             'firstname',
-            'Enter first name',
+            context.loc.payFirstNameHint,
             widget.formData,
             widget.onFormDataChanged,
           ),
           const Gap(12),
           _buildInputField(
             context,
-            'Last Name',
+            context.loc.payLastName,
             'lastname',
-            'Enter last name',
+            context.loc.payLastNameHint,
             widget.formData,
             widget.onFormDataChanged,
           ),
@@ -872,9 +872,9 @@ class _SepaFormState extends State<_SepaForm> {
           const Gap(12),
           _buildInputField(
             context,
-            'Corporate Name',
+            context.loc.payCorporateName,
             'corporateName',
-            'Enter corporate name',
+            context.loc.payCorporateNameHint,
             widget.formData,
             widget.onFormDataChanged,
           ),
@@ -882,9 +882,9 @@ class _SepaFormState extends State<_SepaForm> {
         ],
         _buildInputField(
           context,
-          'Label (optional)',
+          context.loc.payLabelOptional,
           'label',
-          'Enter a label for this recipient',
+          context.loc.payLabelHint,
           widget.formData,
           widget.onFormDataChanged,
         ),
@@ -914,27 +914,27 @@ class _SpeiClabeForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'CLABE',
+          context.loc.payClabe,
           'clabe',
-          'Enter CLABE number',
+          context.loc.payClabeHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Name',
+          context.loc.payName,
           'name',
-          'Enter recipient name',
+          context.loc.payNameHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Label (optional)',
+          context.loc.payLabelOptional,
           'label',
-          'Enter a label for this recipient',
+          context.loc.payLabelHint,
           formData,
           onFormDataChanged,
         ),
@@ -956,36 +956,36 @@ class _SpeiSmsForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'Institution Code',
+          context.loc.payInstitutionCode,
           'institutionCode',
-          'Enter institution code',
+          context.loc.payInstitutionCodeHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Phone Number',
+          context.loc.payPhoneNumber,
           'phoneNumber',
-          'Enter phone number',
+          context.loc.payPhoneNumberHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Name',
+          context.loc.payName,
           'name',
-          'Enter recipient name',
+          context.loc.payNameHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Label (optional)',
+          context.loc.payLabelOptional,
           'label',
-          'Enter a label for this recipient',
+          context.loc.payLabelHint,
           formData,
           onFormDataChanged,
         ),
@@ -1010,36 +1010,36 @@ class _SpeiCardForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'Institution Code',
+          context.loc.payInstitutionCode,
           'institutionCode',
-          'Enter institution code',
+          context.loc.payInstitutionCodeHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Debit Card Number',
+          context.loc.payDebitCardNumber,
           'debitCard',
-          'Enter debit card number',
+          context.loc.payDebitCardNumberHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Name',
+          context.loc.payName,
           'name',
-          'Enter recipient name',
+          context.loc.payNameHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Label (optional)',
+          context.loc.payLabelOptional,
           'label',
-          'Enter a label for this recipient',
+          context.loc.payLabelHint,
           formData,
           onFormDataChanged,
         ),
@@ -1064,27 +1064,27 @@ class _SinpeIbanForm extends StatelessWidget {
       children: [
         _buildInputField(
           context,
-          'IBAN',
+          context.loc.payIban,
           'iban',
-          'Enter IBAN',
+          context.loc.payIbanHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Owner Name',
+          context.loc.payOwnerName,
           'ownerName',
-          'Enter owner name',
+          context.loc.payOwnerNameHint,
           formData,
           onFormDataChanged,
         ),
         const Gap(12),
         _buildInputField(
           context,
-          'Label (optional)',
+          context.loc.payLabelOptional,
           'label',
-          'Enter a label for this recipient',
+          context.loc.payLabelHint,
           formData,
           onFormDataChanged,
         ),
@@ -1168,7 +1168,7 @@ class _SinpeMovilFormState extends State<_SinpeMovilForm> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _sinpeValidationMessage = 'Invalid Sinpe';
+          _sinpeValidationMessage = context.loc.payInvalidSinpe;
           _isValidatingSinpe = false;
           _isSinpeValid = false;
         });
@@ -1190,9 +1190,9 @@ class _SinpeMovilFormState extends State<_SinpeMovilForm> {
         const Gap(12),
         _buildInputField(
           context,
-          'Label (optional)',
+          context.loc.payLabelOptional,
           'label',
-          'Enter a label for this recipient',
+          context.loc.payLabelHint,
           widget.formData,
           widget.onFormDataChanged,
         ),
@@ -1205,7 +1205,7 @@ class _SinpeMovilFormState extends State<_SinpeMovilForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          'Phone Number',
+          context.loc.payPhoneNumber,
           style: context.font.bodyLarge?.copyWith(
             color: context.colour.secondary,
             fontWeight: FontWeight.w500,
@@ -1215,7 +1215,7 @@ class _SinpeMovilFormState extends State<_SinpeMovilForm> {
         BBInputText(
           value: (widget.formData['phoneNumber'] as String?) ?? '',
           onChanged: _onPhoneNumberChanged,
-          hint: 'Enter phone number',
+          hint: context.loc.payPhoneNumberHint,
           hintStyle: context.font.bodyMedium?.copyWith(
             color: context.colour.outline,
           ),
@@ -1243,7 +1243,7 @@ class _SinpeMovilFormState extends State<_SinpeMovilForm> {
             ),
             const Gap(8),
             BBText(
-              'Validating...',
+              context.loc.payValidating,
               style: context.font.bodySmall?.copyWith(
                 color: context.colour.primary,
               ),
@@ -1352,7 +1352,7 @@ Widget _buildSecurityQuestionField(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       BBText(
-        'Security Question',
+        context.loc.paySecurityQuestion,
         style: context.font.bodyLarge?.copyWith(
           color: context.colour.secondary,
           fontWeight: FontWeight.w500,
@@ -1362,7 +1362,7 @@ Widget _buildSecurityQuestionField(
       BBInputText(
         value: currentValue,
         onChanged: (value) => onFormDataChanged('securityQuestion', value),
-        hint: 'Enter security question (10-40 characters)',
+        hint: context.loc.paySecurityQuestionHint,
         hintStyle: context.font.bodyMedium?.copyWith(
           color: context.colour.outline,
         ),
@@ -1379,7 +1379,7 @@ Widget _buildSecurityQuestionField(
           ),
           if (!isValid && currentValue.isNotEmpty)
             BBText(
-              'Must be 10-40 characters',
+              context.loc.paySecurityQuestionLengthError,
               style: context.font.bodySmall?.copyWith(
                 color: context.colour.error,
               ),

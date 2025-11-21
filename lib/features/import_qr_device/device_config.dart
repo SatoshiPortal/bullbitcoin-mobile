@@ -1,111 +1,119 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/material.dart';
 
 class DeviceConfig {
   final SignerDeviceEntity device;
-  final String name;
-  final String instructionsTitle;
-  final List<String> instructions;
+  final String Function(BuildContext) getName;
+  final String Function(BuildContext) getInstructionsTitle;
+  final List<String> Function(BuildContext) getInstructions;
 
   const DeviceConfig({
     required this.device,
-    required this.name,
-    required this.instructionsTitle,
-    required this.instructions,
+    required this.getName,
+    required this.getInstructionsTitle,
+    required this.getInstructions,
   });
 
-  static const Map<SignerDeviceEntity, DeviceConfig> configs = {
+  static final Map<SignerDeviceEntity, DeviceConfig> configs = {
     SignerDeviceEntity.jade: DeviceConfig(
       device: SignerDeviceEntity.jade,
-      name: 'Blockstream Jade',
-      instructionsTitle: 'Blockstream Jade Instructions',
-      instructions: [
-        'Turn on your Jade device',
-        'Select "QR Mode" from the main menu',
-        'Follow the device instructions to unlock the Jade',
-        'Select "Options" from the main menu',
-        'Select "Wallet" from the options list',
-        'Select "Export Xpub" from the wallet menu',
-        'If needed, select "Options" to change the address type',
-        'Click the "open camera" button',
-        'Scan the QR code you see on your device.',
-        "That's it!",
+      getName: (context) => context.loc.importQrDeviceJadeName,
+      getInstructionsTitle: (context) =>
+          context.loc.importQrDeviceJadeInstructionsTitle,
+      getInstructions: (context) => [
+        context.loc.importQrDeviceJadeStep1,
+        context.loc.importQrDeviceJadeStep2,
+        context.loc.importQrDeviceJadeStep3,
+        context.loc.importQrDeviceJadeStep4,
+        context.loc.importQrDeviceJadeStep5,
+        context.loc.importQrDeviceJadeStep6,
+        context.loc.importQrDeviceJadeStep7,
+        context.loc.importQrDeviceJadeStep8,
+        context.loc.importQrDeviceJadeStep9,
+        context.loc.importQrDeviceJadeStep10,
       ],
     ),
     SignerDeviceEntity.krux: DeviceConfig(
       device: SignerDeviceEntity.krux,
-      name: 'Krux',
-      instructionsTitle: 'Krux Instructions',
-      instructions: [
-        'Turn on your Krux device',
-        'Click Extended Public Key',
-        'Click XPUB - QR Code',
-        'Click the "open camera" button',
-        'Scan the QR code you see on your device.',
-        "That's it!",
+      getName: (context) => context.loc.importQrDeviceKruxName,
+      getInstructionsTitle: (context) =>
+          context.loc.importQrDeviceKruxInstructionsTitle,
+      getInstructions: (context) => [
+        context.loc.importQrDeviceKruxStep1,
+        context.loc.importQrDeviceKruxStep2,
+        context.loc.importQrDeviceKruxStep3,
+        context.loc.importQrDeviceKruxStep4,
+        context.loc.importQrDeviceKruxStep5,
+        context.loc.importQrDeviceKruxStep6,
       ],
     ),
     SignerDeviceEntity.keystone: DeviceConfig(
       device: SignerDeviceEntity.keystone,
-      name: 'Keystone',
-      instructionsTitle: 'Keystone Instructions',
-      instructions: [
-        'Turn on your Keystone device',
-        'Click the 3 dots at the top right',
-        'Select Connect Software Wallet',
-        'Click the "open camera" button',
-        'Scan the QR code you see on your device.',
-        "That's it!",
+      getName: (context) => context.loc.importQrDeviceKeystoneName,
+      getInstructionsTitle: (context) =>
+          context.loc.importQrDeviceKeystoneInstructionsTitle,
+      getInstructions: (context) => [
+        context.loc.importQrDeviceKeystoneStep1,
+        context.loc.importQrDeviceKeystoneStep2,
+        context.loc.importQrDeviceKeystoneStep3,
+        context.loc.importQrDeviceKeystoneStep4,
+        context.loc.importQrDeviceKeystoneStep5,
+        context.loc.importQrDeviceKeystoneStep6,
       ],
     ),
     SignerDeviceEntity.passport: DeviceConfig(
       device: SignerDeviceEntity.passport,
-      name: 'Foundation Passport',
-      instructionsTitle: 'Foundation Passport Instructions',
-      instructions: [
-        'Turn on your Passport device',
-        'Select Manage Account',
-        'Select Connect Wallet',
-        'Select Sparrow',
-        'Select Single-sig',
-        'Select QR Code',
-        'Click the "open camera" button',
-        'Scan the QR code you see on your device.',
-        "That's it!",
+      getName: (context) => context.loc.importQrDevicePassportName,
+      getInstructionsTitle: (context) =>
+          context.loc.importQrDevicePassportInstructionsTitle,
+      getInstructions: (context) => [
+        context.loc.importQrDevicePassportStep1,
+        context.loc.importQrDevicePassportStep2,
+        context.loc.importQrDevicePassportStep3,
+        context.loc.importQrDevicePassportStep4,
+        context.loc.importQrDevicePassportStep5,
+        context.loc.importQrDevicePassportStep6,
+        context.loc.importQrDevicePassportStep7,
+        context.loc.importQrDevicePassportStep8,
+        context.loc.importQrDevicePassportStep9,
       ],
     ),
     SignerDeviceEntity.seedsigner: DeviceConfig(
       device: SignerDeviceEntity.seedsigner,
-      name: 'SeedSigner',
-      instructionsTitle: 'SeedSigner Instructions',
-      instructions: [
-        'Power on your SeedSigner device',
-        'Open the "Seeds" menu',
-        'Scan a SeedQR or enter your 12- or 24-word seed phrase',
-        'Select "Export Xpub"',
-        'Choose "Single Sig", then select your preferred script type (choose Native Segwit if unsure).',
-        'Select "Sparrow" as the export option',
-        'On your mobile device, tap Open Camera',
-        'Scan the QR code displayed on your SeedSigner',
-        'Enter a label for your SeedSigner wallet and tap Import',
-        'Setup complete',
+      getName: (context) => context.loc.importQrDeviceSeedsignerName,
+      getInstructionsTitle: (context) =>
+          context.loc.importQrDeviceSeedsignerInstructionsTitle,
+      getInstructions: (context) => [
+        context.loc.importQrDeviceSeedsignerStep1,
+        context.loc.importQrDeviceSeedsignerStep2,
+        context.loc.importQrDeviceSeedsignerStep3,
+        context.loc.importQrDeviceSeedsignerStep4,
+        context.loc.importQrDeviceSeedsignerStep5,
+        context.loc.importQrDeviceSeedsignerStep6,
+        context.loc.importQrDeviceSeedsignerStep7,
+        context.loc.importQrDeviceSeedsignerStep8,
+        context.loc.importQrDeviceSeedsignerStep9,
+        context.loc.importQrDeviceSeedsignerStep10,
       ],
     ),
     SignerDeviceEntity.specter: DeviceConfig(
       device: SignerDeviceEntity.specter,
-      name: 'Specter',
-      instructionsTitle: 'Specter Instructions',
-      instructions: [
-        'Power on your Specter device',
-        'Enter your PIN',
-        'Enter your seed/key (chose which ever option suits you)',
-        'Follow the prompts according to your chosen method',
-        'Select "Master public keys"',
-        'Choose "Single key"',
-        'Disable "Use SLIP-132"',
-        'On your mobile device, tap Open Camera',
-        'Scan the QR code displayed on your Specter',
-        'Enter a label for your Specter wallet and tap Import',
-        'Setup is complete',
+      getName: (context) => context.loc.importQrDeviceSpecterName,
+      getInstructionsTitle: (context) =>
+          context.loc.importQrDeviceSpecterInstructionsTitle,
+      getInstructions: (context) => [
+        context.loc.importQrDeviceSpecterStep1,
+        context.loc.importQrDeviceSpecterStep2,
+        context.loc.importQrDeviceSpecterStep3,
+        context.loc.importQrDeviceSpecterStep4,
+        context.loc.importQrDeviceSpecterStep5,
+        context.loc.importQrDeviceSpecterStep6,
+        context.loc.importQrDeviceSpecterStep7,
+        context.loc.importQrDeviceSpecterStep8,
+        context.loc.importQrDeviceSpecterStep9,
+        context.loc.importQrDeviceSpecterStep10,
+        context.loc.importQrDeviceSpecterStep11,
       ],
     ),
   };

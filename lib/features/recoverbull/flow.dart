@@ -1,5 +1,8 @@
+import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/connecting_page.dart';
+import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecoverBullFlowNavigator extends StatefulWidget {
   const RecoverBullFlowNavigator({super.key});
@@ -25,7 +28,13 @@ class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
         key: _navigatorKey,
         onGenerateRoute: (settings) {
           return MaterialPageRoute(
-            builder: (context) => const ConnectingPage(),
+            builder: (context) {
+              final flow = context.read<RecoverBullBloc>().state.flow;
+              return switch (flow) {
+                RecoverBullFlow.settings => const SettingsPage(),
+                _ => const ConnectingPage(),
+              };
+            },
           );
         },
       ),

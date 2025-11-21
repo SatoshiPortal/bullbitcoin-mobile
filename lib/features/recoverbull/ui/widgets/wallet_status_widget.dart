@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -19,7 +20,7 @@ class WalletStatusWidget extends StatelessWidget {
       return Column(
         children: [
           BBText(
-            'Looking for balance and transactions…',
+            context.loc.recoverbullLookingForBalance,
             style: context.font.bodyMedium?.copyWith(
               color: context.colour.secondary,
             ),
@@ -27,17 +28,20 @@ class WalletStatusWidget extends StatelessWidget {
         ],
       );
     } else {
+      final totalBalance = (bip84Status!.satoshis + liquidStatus!.satoshis).toString();
+      final totalTransactions = bip84Status!.transactions + liquidStatus!.transactions;
+
       return Column(
         children: [
           BBText(
-            'Balance: ${bip84Status!.satoshis + liquidStatus!.satoshis}',
+            context.loc.recoverbullBalance(totalBalance),
             style: context.font.bodyMedium?.copyWith(
               color: context.colour.secondary,
             ),
           ),
           const Gap(4),
           BBText(
-            'Transactions: ${bip84Status!.transactions + liquidStatus!.transactions}',
+            context.loc.recoverbullTransactions(totalTransactions),
             style: context.font.bodyMedium?.copyWith(
               color: context.colour.secondary,
             ),

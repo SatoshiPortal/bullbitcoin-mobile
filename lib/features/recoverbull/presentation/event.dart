@@ -52,3 +52,7 @@ class OnVaultRecovery extends RecoverBullEvent {
 class OnTorInitialization extends RecoverBullEvent {
   const OnTorInitialization();
 }
+
+class OnClearError extends RecoverBullEvent {
+  const OnClearError();
+}

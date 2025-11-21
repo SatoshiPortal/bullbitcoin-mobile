@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -8,7 +9,6 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-
 class ExchangeLandingScreen extends StatelessWidget {
   const ExchangeLandingScreen({super.key});
 
@@ -47,7 +47,7 @@ class ExchangeLandingScreen extends StatelessWidget {
                     ),
                     const Gap(16),
                     BBText(
-                      'BULL BITCOIN',
+                      context.loc.exchangeBrandName,
                       style: AppFonts.textTitleTheme.textStyle.copyWith(
                         color: context.colour.onSecondary,
                         fontSize: 64,
@@ -55,7 +55,7 @@ class ExchangeLandingScreen extends StatelessWidget {
                     ),
                     const Gap(12),
                     BBText(
-                      'Connect your Bull Bitcoin exchange account',
+                      context.loc.exchangeLandingConnectAccount,
                       style: context.font.headlineSmall?.copyWith(
                         color: context.colour.onSecondary,
                       ),
@@ -74,42 +74,42 @@ class ExchangeLandingScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     BBText(
-                      '• Buy Bitcoin straight to self-custody',
+                      context.loc.exchangeFeatureSelfCustody,
                       style: context.font.bodyLarge?.copyWith(
                         color: context.colour.onSecondary,
                       ),
                     ),
                     const Gap(12),
                     BBText(
-                      '• DCA, Limit orders and Auto-buy',
+                      context.loc.exchangeFeatureDcaOrders,
                       style: context.font.bodyLarge?.copyWith(
                         color: context.colour.onSecondary,
                       ),
                     ),
                     const Gap(12),
                     BBText(
-                      '• Sell Bitcoin, get paid with Bitcoin',
+                      context.loc.exchangeFeatureSellBitcoin,
                       style: context.font.bodyLarge?.copyWith(
                         color: context.colour.onSecondary,
                       ),
                     ),
                     const Gap(12),
                     BBText(
-                      '• Send bank transfers and pay bills',
+                      context.loc.exchangeFeatureBankTransfers,
                       style: context.font.bodyLarge?.copyWith(
                         color: context.colour.onSecondary,
                       ),
                     ),
                     const Gap(12),
                     BBText(
-                      '• Chat with customer support',
+                      context.loc.exchangeFeatureCustomerSupport,
                       style: context.font.bodyLarge?.copyWith(
                         color: context.colour.onSecondary,
                       ),
                     ),
                     const Gap(12),
                     BBText(
-                      '• Unified transaction history',
+                      context.loc.exchangeFeatureUnifiedHistory,
                       style: context.font.bodyLarge?.copyWith(
                         color: context.colour.onSecondary,
                       ),
@@ -125,7 +125,7 @@ class ExchangeLandingScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: BBText(
-                  'Access to exchange services will be restricted to countries where Bull Bitcoin can legally operate and may require KYC.',
+                  context.loc.exchangeLandingDisclaimerLegal,
                   style: context.font.bodySmall?.copyWith(
                     color: context.colour.onSecondary,
                   ),
@@ -137,7 +137,7 @@ class ExchangeLandingScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: BBButton.big(
-                      label: 'Login Or Sign up',
+                      label: context.loc.exchangeLoginButton,
                       onPressed: () {
                         context.goNamed(ExchangeRoute.exchangeAuth.name);
                       },

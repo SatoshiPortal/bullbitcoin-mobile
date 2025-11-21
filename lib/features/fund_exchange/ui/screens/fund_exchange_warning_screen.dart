@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
@@ -21,7 +22,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Funding'), scrolledUnderElevation: 0.0),
+      appBar: AppBar(title: Text(context.loc.fundExchangeTitle), scrolledUnderElevation: 0.0),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -40,12 +41,12 @@ class FundExchangeWarningScreen extends StatelessWidget {
               ),
               const Gap(8.0),
               BBText(
-                'Watch out for scammers',
+                context.loc.fundExchangeWarningTitle,
                 style: theme.textTheme.displaySmall,
               ),
               const Gap(8.0),
               BBText(
-                'If someone is asking you to buy Bitcoin or "helping you", be careful, they may be trying to scam you!',
+                context.loc.fundExchangeWarningDescription,
                 style: theme.textTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
@@ -57,11 +58,11 @@ class FundExchangeWarningScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       BBText(
-                        'Common scammer tactics',
+                        context.loc.fundExchangeWarningTacticsTitle,
                         style: theme.textTheme.headlineSmall,
                       ),
                       const Gap(8.0),
-                      ..._tactics.map(
+                      ..._getTactics(context).map(
                         (tactic) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
@@ -96,7 +97,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
                   );
                 },
                 title: BBText(
-                  'I confirm that I am not being asked asked to buy Bitcoin by someone else.',
+                  context.loc.fundExchangeWarningConfirmation,
                   style: theme.textTheme.bodyLarge,
                 ),
                 controlAffinity: ListTileControlAffinity.leading,
@@ -109,7 +110,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: BBButton.big(
-            label: 'Continue',
+            label: context.loc.fundExchangeContinueButton,
             disabled: !hasConfirmedNoCoercion,
             onPressed: () {
               // To not go back to the warning but directly go to payment method selection
@@ -169,14 +170,14 @@ class FundExchangeWarningScreen extends StatelessWidget {
     );
   }
 
-  List<String> get _tactics => const [
-    'They are promising returns on investment',
-    'They are offering you a loan',
-    'They say they work for debt or tax collection',
-    'They ask to send Bitcoin to their address',
-    'They ask to send Bitcoin on another platform',
-    'They want you to share your screen',
-    'They tell you not to worry about this warning',
-    'They are pressuring you to act quickly',
+  List<String> _getTactics(BuildContext context) => [
+    context.loc.fundExchangeWarningTactic1,
+    context.loc.fundExchangeWarningTactic2,
+    context.loc.fundExchangeWarningTactic3,
+    context.loc.fundExchangeWarningTactic4,
+    context.loc.fundExchangeWarningTactic5,
+    context.loc.fundExchangeWarningTactic6,
+    context.loc.fundExchangeWarningTactic7,
+    context.loc.fundExchangeWarningTactic8,
   ];
 }

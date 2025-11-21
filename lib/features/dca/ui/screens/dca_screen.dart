@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
@@ -47,7 +48,7 @@ class _DcaScreenState extends State<DcaScreen> {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-          appBar: AppBar(title: const Text('Set Recurring Buy')),
+          appBar: AppBar(title: Text(context.loc.dcaSetupTitle)),
           body: SafeArea(
             child: Form(
               key: _formKey,
@@ -58,15 +59,15 @@ class _DcaScreenState extends State<DcaScreen> {
                   if (!_hasFunds) ...[
                     const Spacer(),
                     InfoCard(
-                      title: 'Insufficient Balance',
+                      title: context.loc.dcaSetupInsufficientBalance,
                       description:
-                          'You do not have enough balance to create this order.',
+                          context.loc.dcaSetupInsufficientBalanceMessage,
                       bgColor: context.colour.tertiary.withValues(alpha: 0.1),
                       tagColor: context.colour.onTertiary,
                     ),
                     const Gap(16.0),
                     BBButton.big(
-                      label: 'Fund your account',
+                      label: context.loc.dcaSetupFundAccount,
                       onPressed: () {
                         context.pushReplacementNamed(
                           FundExchangeRoute.fundExchangeAccount.name,
@@ -79,8 +80,8 @@ class _DcaScreenState extends State<DcaScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 48),
                       child: Text(
-                        'Bitcoin purchases will be placed automatically per this schedule.',
-                        style: context.theme.textTheme.bodyMedium,
+                        context.loc.dcaSetupScheduleMessage,
+                        style: Theme.of(context).textTheme.bodyMedium,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -99,7 +100,7 @@ class _DcaScreenState extends State<DcaScreen> {
                       initialValue: _frequency,
                       validator:
                           (val) =>
-                              val == null ? 'Please select a frequency' : null,
+                              val == null ? context.loc.dcaSetupFrequencyError : null,
                       builder: (field) {
                         return DcaFrequencyRadioList(
                           selectedFrequency: field.value,
@@ -115,7 +116,7 @@ class _DcaScreenState extends State<DcaScreen> {
                     ),
                     const Spacer(),
                     BBButton.big(
-                      label: 'Continue',
+                      label: context.loc.dcaSetupContinue,
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           context.read<DcaBloc>().add(

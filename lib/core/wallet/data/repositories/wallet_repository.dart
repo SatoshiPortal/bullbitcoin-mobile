@@ -534,4 +534,34 @@ class WalletRepository {
 
     return defaultWallets.first.latestEncryptedBackup != null;
   }
+
+  Future<int> getAmountSentToAddress({
+    required String psbtOrPset,
+    required String address,
+    required String walletId,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+
+    if (metadata.isLiquid) {
+      final wallet = WalletModel.publicLwk(
+        combinedCtDescriptor: metadata.externalPublicDescriptor,
+        isTestnet: metadata.isTestnet,
+        id: metadata.id,
+      );
+      return await _lwkWallet.getAmountSentToAddress(
+        psbtOrPset,
+        address,
+        wallet: wallet,
+      );
+    } else {
+      return await _bdkWallet.getAmountSentToAddress(
+        psbtOrPset,
+        address,
+        isTestnet: metadata.isTestnet,
+      );
+    }
+  }
 }

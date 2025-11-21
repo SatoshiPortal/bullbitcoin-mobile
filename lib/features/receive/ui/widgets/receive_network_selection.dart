@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
@@ -11,34 +12,38 @@ class ReceiveNetworkSelection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bitcoin = context.loc.receiveBitcoin;
+    final lightning = context.loc.receiveLightning;
+    final liquid = context.loc.receiveLiquid;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: BBSegmentFull(
         items:
             wallet == null
-                ? const {'Bitcoin', 'Lightning', 'Liquid'}
+                ? {bitcoin, lightning, liquid}
                 : wallet!.isLiquid
                 ? !wallet!.signsLocally
-                    ? const {'Liquid'}
-                    : const {'Lightning', 'Liquid'}
+                    ? {liquid}
+                    : {lightning, liquid}
                 : !wallet!.signsLocally
-                ? const {'Bitcoin'}
-                : const {'Bitcoin', 'Lightning'},
+                ? {bitcoin}
+                : {bitcoin, lightning},
         onSelected: (c) {
-          if (c == 'Bitcoin') {
+          if (c == bitcoin) {
             context.goNamed(ReceiveRoute.receiveBitcoin.name, extra: wallet);
-          } else if (c == 'Lightning') {
+          } else if (c == lightning) {
             context.goNamed(ReceiveRoute.receiveLightning.name, extra: wallet);
-          } else if (c == 'Liquid') {
+          } else if (c == liquid) {
             context.goNamed(ReceiveRoute.receiveLiquid.name, extra: wallet);
           }
         },
         initialValue:
             wallet == null
-                ? 'Bitcoin'
+                ? bitcoin
                 : wallet!.isLiquid
-                ? 'Liquid'
-                : 'Bitcoin',
+                ? liquid
+                : bitcoin,
       ),
     );
   }

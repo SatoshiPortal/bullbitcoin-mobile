@@ -1,65 +1,142 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/material.dart';
 
-class RecoverBullError extends BullError {
-  RecoverBullError(super.message);
+abstract class RecoverBullError {
+  String toTranslated(BuildContext context);
+}
+
+class UnexpectedError extends RecoverBullError {
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorUnexpected;
+  }
 }
 
 class SelectVaultError extends RecoverBullError {
-  SelectVaultError() : super('Failed to select vault');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorSelectVault;
+  }
 }
 
 class PasswordIsNotSetError extends RecoverBullError {
-  PasswordIsNotSetError() : super('Password is not set');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorPasswordNotSet;
+  }
 }
 
 class VaultIsNotSetError extends RecoverBullError {
-  VaultIsNotSetError() : super('Vault is not set');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorVaultNotSet;
+  }
 }
 
 class DecryptedVaultIsNotSetError extends RecoverBullError {
-  DecryptedVaultIsNotSetError() : super('Decrypted vault is not set');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorDecryptedVaultNotSet;
+  }
 }
 
 class KeyServerConnectionError extends RecoverBullError {
-  KeyServerConnectionError()
-    : super(
-        'Failed to connect to the target key server. Please try again later!',
-      );
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorConnectionFailed;
+  }
 }
 
 class InvalidFlowError extends RecoverBullError {
-  InvalidFlowError() : super('Invalid flow');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorInvalidFlow;
+  }
 }
 
 class VaultKeyNotStoredError extends RecoverBullError {
-  VaultKeyNotStoredError()
-    : super('Failed: Vault file created but key not stored in server');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorVaultCreatedKeyNotStored;
+  }
 }
 
 class VaultCreationError extends RecoverBullError {
-  VaultCreationError()
-    : super('Vault creation failed, it can be the file or the key');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorVaultCreationFailed;
+  }
+}
+
+class TorNotStartedError extends RecoverBullError {
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullTorNotStarted;
+  }
 }
 
 class TorResponseFormatExceptionError extends RecoverBullError {
-  TorResponseFormatExceptionError()
-    : super(
-        'Missing bytes from the Tor response. Retry but if the issue persists, it is a known issue for some devices with Tor.',
-      );
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorMissingBytes;
+  }
 }
 
 class VaultKeyFetchError extends RecoverBullError {
-  VaultKeyFetchError() : super('Failed to fetch vault key from server');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorFetchKeyFailed;
+  }
 }
 
 class VaultDecryptionError extends RecoverBullError {
-  VaultDecryptionError() : super('Failed to decrypt the vault');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorDecryptFailed;
+  }
 }
 
 class VaultCheckStatusError extends RecoverBullError {
-  VaultCheckStatusError() : super('Failed to check the vault status');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorCheckStatusFailed;
+  }
 }
 
 class VaultRecoveryError extends RecoverBullError {
-  VaultRecoveryError() : super('Failed to recover the vault');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorRecoveryFailed;
+  }
+}
+
+class VaultRateLimitedError extends RecoverBullError {
+  final Duration retryIn;
+
+  VaultRateLimitedError({required this.retryIn});
+
+  @override
+  String toTranslated(BuildContext context) {
+    final seconds = retryIn.inSeconds;
+    final minutes = retryIn.inMinutes;
+
+    final String formattedTime;
+    if (seconds < 60) {
+      formattedTime = context.loc.durationSeconds(seconds.toString());
+    } else {
+      formattedTime =
+          minutes == 1
+              ? context.loc.durationMinute(minutes.toString())
+              : context.loc.durationMinutes(minutes.toString());
+    }
+
+    return context.loc.recoverbullErrorRateLimited(formattedTime);
+  }
+}
+
+class InvalidVaultCredentials extends RecoverBullError {
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullErrorInvalidCredentials;
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
@@ -25,7 +26,7 @@ class SellSuccessScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Sell Bitcoin'),
+          title: Text(context.loc.sellTitle),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -43,10 +44,10 @@ class SellSuccessScreen extends StatelessWidget {
               children: [
                 const Icon(Icons.check_circle, size: 100, color: Colors.green),
                 const SizedBox(height: 20),
-                Text('Order completed!', style: context.font.titleLarge),
+                Text(context.loc.sellOrderCompleted, style: context.font.titleLarge),
                 const SizedBox(height: 10),
                 Text(
-                  'Your account balance will be credited after your transaction receives 1 confirmation onchain.',
+                  context.loc.sellBalanceWillBeCredited,
                   style: context.font.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -62,7 +63,7 @@ class SellSuccessScreen extends StatelessWidget {
               children: [
                 if (order != null)
                   BBButton.big(
-                    label: 'View details',
+                    label: context.loc.sellViewDetailsButton,
                     onPressed: () {
                       context.pushNamed(
                         TransactionsRoute.orderTransactionDetails.name,

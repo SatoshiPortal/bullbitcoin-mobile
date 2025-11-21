@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -20,7 +21,7 @@ class MnemonicPage extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Import Mnemonic',
+          title: context.loc.importMnemonicTitle,
           color: context.colour.secondaryFixedDim,
           onBack: () => context.pop(),
         ),
@@ -48,7 +49,7 @@ class MnemonicPage extends StatelessWidget {
                 MnemonicWidget(
                   initialLength: bip39.MnemonicLength.words12,
                   onSubmit: context.read<ImportMnemonicCubit>().updateMnemonic,
-                  submitLabel: 'Continue',
+                  submitLabel: context.loc.importMnemonicContinue,
                 ),
               ],
             ),

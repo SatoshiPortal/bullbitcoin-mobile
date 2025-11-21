@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
@@ -28,11 +26,10 @@ class TestWalletBackupBloc
        super(const TestWalletBackupState()) {
     on<OnWordsSelected>(_onWordsSelected);
     on<VerifyPhysicalBackup>(_verifyPhysicalBackup);
-    on<StartPhysicalBackupVerification>((event, emit) {
-      emit(state.copyWith(status: TestWalletBackupStatus.verifying));
-    });
+    on<StartPhysicalBackupVerification>((event, emit) {});
     on<LoadWallets>(_onLoadWallets);
     on<LoadMnemonicForWallet>(_onLoadMnemonicForWallet);
+    on<ClearError>((event, emit) => emit(state.copyWith(statusError: '')));
   }
 
   final CompletePhysicalBackupVerificationUsecase
@@ -46,34 +43,34 @@ class TestWalletBackupBloc
     OnWordsSelected event,
     Emitter<TestWalletBackupState> emit,
   ) async {
-    final testMnemonic = state.testMnemonicOrder.toList();
-    if (testMnemonic.length == 12) return;
-
-    final (word, isSelected, actualIdx) = state.shuffleElementAt(
-      event.shuffledIdx,
+    final mnemonic = state.mnemonic;
+    final reorderedMnemonic = List<String>.from(
+      state.reorderedMnemonic + [event.word],
     );
-    if (isSelected) return;
-    if (actualIdx != testMnemonic.length) {
-      await Future.delayed(const Duration(milliseconds: 300));
-      final shuffled = state.mnemonic.toList()..shuffle();
+
+    final isCorrect = mnemonic
+        .join(' ')
+        .startsWith(reorderedMnemonic.join(' '));
+
+    if (isCorrect) {
+      emit(
+        state.copyWith(
+          reorderedMnemonic: [...state.reorderedMnemonic, event.word],
+          statusError: '',
+          selectedMnemonicWords: [...state.selectedMnemonicWords, event.index],
+        ),
+      );
+    } else {
+      final shuffled = List<String>.from(mnemonic)..shuffle();
       emit(
         state.copyWith(
           shuffledMnemonic: shuffled,
-          testMnemonicOrder: [], // Reset selection when order is wrong
+          reorderedMnemonic: [],
+          selectedMnemonicWords: [],
+          statusError: 'Incorrect word order. Please try again.',
         ),
       );
-      return;
     }
-
-    // Add the selected word to testMnemonicOrder
-    testMnemonic.add((
-      word: word,
-      shuffleIdx: event.shuffledIdx,
-      selectedActualIdx: actualIdx,
-    ));
-
-    // Emit new state with updated testMnemonicOrder
-    emit(state.copyWith(testMnemonicOrder: testMnemonic, statusError: ''));
   }
 
   Future<void> _verifyPhysicalBackup(
@@ -82,57 +79,35 @@ class TestWalletBackupBloc
   ) async {
     try {
       if (state.mnemonic.isEmpty) {
-        emit(
-          state.copyWith(
-            status: TestWalletBackupStatus.error,
-            statusError: 'No mnemonic loaded',
-          ),
-        );
+        emit(state.copyWith(statusError: 'No mnemonic loaded'));
         return;
       }
 
-      if (state.testMnemonicOrder.length != state.mnemonic.length) {
-        emit(
-          state.copyWith(
-            status: TestWalletBackupStatus.error,
-            statusError: 'Please select all words',
-          ),
-        );
+      if (state.reorderedMnemonic.length != state.mnemonic.length) {
+        emit(state.copyWith(statusError: 'Please select all words'));
         return;
       }
-
-      // Get the words in order from testMnemonicOrder
-      final submittedWords =
-          state.testMnemonicOrder.map((e) => e.word).toList();
 
       // Compare with original mnemonic
-      final isCorrect = List.generate(
-        state.mnemonic.length,
-        (i) => state.mnemonic[i] == submittedWords[i],
-      ).every((matched) => matched);
+      final isCorrect =
+          state.mnemonic.join(' ') == state.reorderedMnemonic.join(' ');
 
       if (isCorrect) {
         await _completePhysicalBackupVerificationUsecase.execute();
-        emit(state.copyWith(status: TestWalletBackupStatus.success));
       } else {
         // Reset test state when wrong
         final shuffled = state.mnemonic.toList()..shuffle();
         emit(
           state.copyWith(
-            status: TestWalletBackupStatus.error,
             statusError: 'Incorrect word order. Please try again.',
             shuffledMnemonic: shuffled,
-            testMnemonicOrder: [],
+            reorderedMnemonic: [],
+            selectedMnemonicWords: [],
           ),
         );
       }
     } catch (e) {
-      emit(
-        state.copyWith(
-          status: TestWalletBackupStatus.error,
-          statusError: 'Verification failed: $e',
-        ),
-      );
+      emit(state.copyWith(statusError: 'Verification failed: $e'));
     }
   }
 
@@ -140,8 +115,9 @@ class TestWalletBackupBloc
     LoadWallets event,
     Emitter<TestWalletBackupState> emit,
   ) async {
-    emit(state.copyWith(status: TestWalletBackupStatus.loading));
     try {
+      emit(state.copyWith(selectedWallet: null));
+
       final wallets = await _loadWalletsForNetworkUsecase.execute();
       if (wallets.isEmpty) throw Exception('No wallets found');
       final Wallet selected = wallets.firstWhere(
@@ -150,17 +126,9 @@ class TestWalletBackupBloc
       );
       emit(state.copyWith(wallets: wallets, selectedWallet: selected));
 
-      // Small delay to allow smooth UI transition before loading mnemonic
-      Future.delayed(const Duration(milliseconds: 500), () {
-        add(LoadMnemonicForWallet(wallet: selected));
-      });
+      add(LoadMnemonicForWallet(wallet: selected));
     } catch (e) {
-      emit(
-        state.copyWith(
-          status: TestWalletBackupStatus.error,
-          statusError: 'Failed to load wallets: $e',
-        ),
-      );
+      emit(state.copyWith(statusError: 'Failed to load wallets: $e'));
     }
   }
 
@@ -169,6 +137,8 @@ class TestWalletBackupBloc
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
+      emit(state.copyWith(selectedWallet: null));
+
       final wallet = event.wallet;
       final (
         mnemonicWords,
@@ -183,17 +153,12 @@ class TestWalletBackupBloc
           mnemonic: mnemonicWords,
           passphrase: passphrase ?? '',
           shuffledMnemonic: mnemonicWords.toList()..shuffle(),
-          testMnemonicOrder: [],
-          status: TestWalletBackupStatus.success,
+          reorderedMnemonic: [],
+          selectedMnemonicWords: [],
         ),
       );
     } catch (e) {
-      emit(
-        state.copyWith(
-          status: TestWalletBackupStatus.error,
-          statusError: 'Failed to load mnemonic: $e',
-        ),
-      );
+      emit(state.copyWith(statusError: 'Failed to load mnemonic: $e'));
     }
   }
 }

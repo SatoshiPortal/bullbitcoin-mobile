@@ -164,41 +164,44 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     SellWalletSelected event,
     Emitter<SellState> emit,
   ) async {
+    int absoluteFees = 0;
+    double exchangeRateEstimate = 0.0;
+
     final walletSelectionState = state.toCleanWalletSelectionState;
     if (walletSelectionState == null) {
       log.severe('Expected to be on SellWalletSelectionState but on: $state');
       return;
     }
     emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
-
-    int requiredAmountSat;
-    final exchangeRateEstimate = await _convertSatsToCurrencyAmountUsecase
-        .execute(currencyCode: walletSelectionState.fiatCurrency.code);
-
-    if (walletSelectionState.orderAmount.isFiat) {
-      requiredAmountSat = ConvertAmount.fiatToSats(
-        walletSelectionState.orderAmount.amount,
-        exchangeRateEstimate,
-      );
-    } else {
-      requiredAmountSat =
-          walletSelectionState.bitcoinUnit == BitcoinUnit.btc
-              ? ConvertAmount.btcToSats(walletSelectionState.orderAmount.amount)
-              : walletSelectionState.orderAmount.amount.toInt();
-    }
-
-    if (event.wallet.balanceSat.toInt() < requiredAmountSat) {
-      emit(
-        walletSelectionState.copyWith(
-          error: SellError.insufficientBalance(
-            requiredAmountSat: requiredAmountSat,
-          ),
-        ),
-      );
-      return;
-    }
-    int absoluteFees = 0;
     try {
+      int requiredAmountSat;
+      exchangeRateEstimate = await _convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: walletSelectionState.fiatCurrency.code,
+      );
+
+      if (walletSelectionState.orderAmount.isFiat) {
+        requiredAmountSat = ConvertAmount.fiatToSats(
+          walletSelectionState.orderAmount.amount,
+          exchangeRateEstimate,
+        );
+      } else {
+        // The order amount is in BTC
+        requiredAmountSat = ConvertAmount.btcToSats(
+          walletSelectionState.orderAmount.amount,
+        );
+      }
+
+      if (event.wallet.balanceSat.toInt() < requiredAmountSat) {
+        emit(
+          walletSelectionState.copyWith(
+            error: SellError.insufficientBalance(
+              requiredAmountSat: requiredAmountSat,
+            ),
+          ),
+        );
+        return;
+      }
+
       final dummyAddressForFeeCalculation = await _getAddressAtIndexUsecase
           .execute(walletId: event.wallet.id, index: 0);
 

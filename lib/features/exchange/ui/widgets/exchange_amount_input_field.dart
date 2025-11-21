@@ -2,12 +2,12 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
-
 class ExchangeAmountInputField extends StatelessWidget {
   const ExchangeAmountInputField({
     super.key,
@@ -51,7 +51,7 @@ class ExchangeAmountInputField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Enter Amount', style: context.font.bodyMedium),
+        Text(context.loc.exchangeAmountInputTitle, style: context.font.bodyMedium),
         const Gap(4.0),
         Card(
           elevation: 1,
@@ -99,28 +99,28 @@ class ExchangeAmountInputField extends StatelessWidget {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter an amount';
+                              return context.loc.exchangeAmountInputValidationEmpty;
                             }
 
                             if (_isFiatCurrencyInput ||
                                 _bitcoinUnit == BitcoinUnit.btc) {
                               final amount = double.tryParse(value);
                               if (amount == null) {
-                                return 'Invalid amount';
+                                return context.loc.exchangeAmountInputValidationInvalid;
                               } else if (amount <= 0) {
-                                return 'Amount must be greater than zero';
+                                return context.loc.exchangeAmountInputValidationZero;
                               }
                             } else if (int.tryParse(value) == null) {
-                              return 'Invalid amount';
+                              return context.loc.exchangeAmountInputValidationInvalid;
                             } else if (int.parse(value) <= 0) {
-                              return 'Amount must be greater than zero';
+                              return context.loc.exchangeAmountInputValidationZero;
                             }
                             if (!_canExceedBalance &&
                                 _isFiatCurrencyInput &&
                                 _fiatBalance != null) {
                               final amount = double.parse(value);
                               if (amount > _fiatBalance.amount) {
-                                return 'Insufficient balance';
+                                return context.loc.exchangeAmountInputValidationInsufficient;
                               }
                             }
 

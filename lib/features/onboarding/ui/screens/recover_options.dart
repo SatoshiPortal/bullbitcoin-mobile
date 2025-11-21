@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_option_card.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
@@ -25,7 +26,7 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           onBack: () => context.pop(),
-          title: 'Recover your wallet',
+          title: context.loc.onboardingRecoverYourWallet,
         ),
       ),
       body: Padding(
@@ -41,8 +42,8 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                 height: 45,
                 fit: BoxFit.cover,
               ),
-              title: 'Encrypted vault',
-              description: 'Recover your backup via cloud using your PIN.',
+              title: context.loc.onboardingEncryptedVault,
+              description: context.loc.onboardingEncryptedVaultDescription,
               onTap:
                   () => {
                     context.pushNamed(
@@ -62,8 +63,8 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                 height: 45,
                 fit: BoxFit.cover,
               ),
-              title: 'Physical backup',
-              description: 'Recover your wallet via 12 words.',
+              title: context.loc.onboardingPhysicalBackup,
+              description: context.loc.onboardingPhysicalBackupDescription,
 
               onTap:
                   () => context.pushNamed(
