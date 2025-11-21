@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ Future<void> showTransactionLabelBottomSheet(
         child: TransactionLabelBottomsheet(
           initialNote: initialNote,
           onEditComplete: onEditComplete,
+          distinctLabelsFuture: detailsCubit.fetchDistinctLabels(),
         ),
       );
     },
@@ -39,10 +42,12 @@ class TransactionLabelBottomsheet extends StatefulWidget {
     super.key,
     this.initialNote,
     this.onEditComplete,
+    required this.distinctLabelsFuture,
   });
 
   final String? initialNote;
   final Function(String)? onEditComplete;
+  final Future<List<String>> distinctLabelsFuture;
 
   @override
   State<TransactionLabelBottomsheet> createState() =>
@@ -70,82 +75,157 @@ class _TransactionLabelBottomsheetState
     super.dispose();
   }
 
+  void _onSuggestionTap(String label) {
+    _controller.text = label;
+    context.read<TransactionDetailsCubit>().onNoteChanged(label);
+  }
+
+  Widget _buildSuggestions(List<String> existingLabels) {
+    final height = Device.screen.height * 0.05;
+    final currentText = _controller.text.trim().toLowerCase();
+
+    final suggestions =
+        existingLabels
+            .where((label) => label.toLowerCase().startsWith(currentText))
+            .toList();
+
+    if (suggestions.isEmpty ||
+        (suggestions.length == 1 &&
+            suggestions.first.toLowerCase() == currentText)) {
+      return SizedBox(height: height);
+    }
+
+    return SizedBox(
+      height: height,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: suggestions.length,
+        separatorBuilder: (_, _) => SizedBox(width: Device.screen.width * 0.01),
+        itemBuilder: (context, index) {
+          final suggestion = suggestions[index];
+          return _LabelSuggestionChip(
+            label: suggestion,
+            onTap: () => _onSuggestionTap(suggestion),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<TransactionDetailsCubit>().state;
     final isEditing = widget.initialNote != null;
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        0,
-        16,
-        MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Gap(22),
-          Row(
+    return FutureBuilder<List<String>>(
+      future: widget.distinctLabelsFuture,
+      builder: (context, snapshot) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            Device.screen.width * 0.03,
+            0,
+            Device.screen.width * 0.03,
+            MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Gap(22),
-              const Spacer(),
-              BBText(
-                isEditing ? 'Edit note' : 'Add note',
-                style: context.font.headlineMedium,
+              Gap(Device.screen.height * 0.01),
+              Row(
+                children: [
+                  const Spacer(),
+                  BBText(
+                    isEditing ? 'Edit note' : 'Add note',
+                    style: context.font.headlineMedium,
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      context.pop();
+                    },
+                    color: context.colour.secondary,
+                    icon: const Icon(Icons.close_sharp),
+                  ),
+                ],
               ),
-              const Spacer(),
-              IconButton(
-                onPressed: () {
-                  context.pop();
+              FadingLinearProgress(
+                trigger: snapshot.connectionState == ConnectionState.waiting,
+              ),
+              Gap(Device.screen.height * 0.01),
+              _buildSuggestions(snapshot.data ?? []),
+              Gap(Device.screen.height * 0.01),
+              BBInputText(
+                controller: _controller,
+                hint: 'Note',
+                hintStyle: context.font.bodyLarge?.copyWith(
+                  color: context.colour.surfaceContainer,
+                ),
+                maxLines: 2,
+                value: state.note ?? widget.initialNote ?? '',
+                maxLength: NoteValidator.maxNoteLength,
+                onChanged: (note) {
+                  context.read<TransactionDetailsCubit>().onNoteChanged(note);
                 },
-                color: context.colour.secondary,
-                icon: const Icon(Icons.close_sharp),
               ),
+              if (state.err != null) ...[
+                Gap(Device.screen.height * 0.01),
+                BBText(
+                  state.err!.toString(),
+                  style: context.font.bodySmall?.copyWith(color: Colors.red),
+                ),
+              ],
+              Gap(Device.screen.height * 0.03),
+              BBButton.big(
+                label: isEditing ? 'Update' : 'Save',
+                disabled: state.err != null || _controller.text.trim().isEmpty,
+                onPressed: () {
+                  final validation = NoteValidator.validate(_controller.text);
+                  if (validation.isValid) {
+                    if (widget.onEditComplete != null) {
+                      widget.onEditComplete!(_controller.text.trim());
+                    } else {
+                      context
+                          .read<TransactionDetailsCubit>()
+                          .saveTransactionNote();
+                    }
+                    context.pop();
+                  }
+                },
+                bgColor: context.colour.secondary,
+                textColor: context.colour.onSecondary,
+              ),
+              Gap(Device.screen.height * 0.03),
             ],
           ),
-          const Gap(33),
-          BBInputText(
-            controller: _controller,
-            hint: 'Note',
-            hintStyle: context.font.bodyLarge?.copyWith(
-              color: context.colour.surfaceContainer,
-            ),
-            maxLines: 2,
-            value: state.note ?? widget.initialNote ?? '',
-            maxLength: NoteValidator.maxNoteLength,
-            onChanged: (note) {
-              context.read<TransactionDetailsCubit>().onNoteChanged(note);
-            },
-          ),
-          if (state.err != null) ...[
-            const Gap(8),
-            BBText(
-              state.err!.toString(),
-              style: context.font.bodySmall?.copyWith(color: Colors.red),
-            ),
-          ],
-          const Gap(40),
-          BBButton.big(
-            label: isEditing ? 'Update' : 'Save',
-            disabled: state.err != null || _controller.text.trim().isEmpty,
-            onPressed: () {
-              final validation = NoteValidator.validate(_controller.text);
-              if (validation.isValid) {
-                if (widget.onEditComplete != null) {
-                  widget.onEditComplete!(_controller.text.trim());
-                } else {
-                  context.read<TransactionDetailsCubit>().saveTransactionNote();
-                }
-                context.pop();
-              }
-            },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
-          ),
-          const Gap(24),
-        ],
+        );
+      },
+    );
+  }
+}
+
+class _LabelSuggestionChip extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _LabelSuggestionChip({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: Device.screen.width * 0.03,
+          vertical: Device.screen.height * 0.01,
+        ),
+        height: Device.screen.height * 0.05,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          color: context.colour.onPrimary,
+          border: Border.all(color: context.colour.surface),
+        ),
+        child: Center(child: BBText(label, style: context.font.bodyLarge)),
       ),
     );
   }
