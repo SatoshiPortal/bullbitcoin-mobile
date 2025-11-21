@@ -73,7 +73,6 @@ class CreateChainSwapUsecase {
           }
 
           return await swapRepository.createBitcoinToLiquidSwap(
-            sendWalletMnemonic: bitcoinMnemonicSeed.mnemonicWords.join(' '),
             sendWalletId: bitcoinWalletId,
             receiveWalletId: liquidWalletId,
             amountSat: amountSat!,
@@ -89,7 +88,6 @@ class CreateChainSwapUsecase {
           }
 
           return await swapRepository.createLiquidToBitcoinSwap(
-            sendWalletMnemonic: liquidMnemonicSeed.mnemonicWords.join(' '),
             sendWalletId: liquidWalletId,
             receiveWalletId: bitcoinWalletId,
             amountSat: amountSat!,

@@ -13,9 +13,11 @@ import 'package:bb_mobile/core/swaps/domain/ports/blockchain_port.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/create_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
@@ -234,7 +236,6 @@ class SwapsLocator {
         walletRepository: locator<WalletRepository>(),
         liquidWalletRepository: locator<LiquidWalletRepository>(),
         blockchainPort: locator<BlockchainPort>(),
-        seedRepository: locator<SeedRepository>(),
         walletTxRepository: locator<WalletTransactionRepository>(),
         labelRepository: locator<LabelRepository>(),
       ),
@@ -257,7 +258,6 @@ class SwapsLocator {
     locator.registerFactory<CreateChainSwapToExternalUsecase>(
       () => CreateChainSwapToExternalUsecase(
         walletRepository: locator<WalletRepository>(),
-        seedRepository: locator<SeedRepository>(),
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
@@ -275,6 +275,36 @@ class SwapsLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
         ),
+      ),
+    );
+    locator.registerFactory<CreateSwapMasterKeyUsecase>(
+      () => CreateSwapMasterKeyUsecase(
+        mainnetRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        testnetRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
+        seedRepository: locator<SeedRepository>(),
+      ),
+    );
+    locator.registerFactory<GetSwapMnemonicUsecase>(
+      () => GetSwapMnemonicUsecase(
+        mainnetRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        testnetRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }
