@@ -1,6 +1,12 @@
 part of 'bloc.dart';
 
-enum RecoverBullFlow { secureVault, recoverVault, testVault, viewVaultKey }
+enum RecoverBullFlow {
+  secureVault,
+  recoverVault,
+  testVault,
+  viewVaultKey,
+  settings,
+}
 
 enum KeyServerStatus { unknown, connecting, online, offline }
 
