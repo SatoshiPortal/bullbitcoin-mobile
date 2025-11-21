@@ -7,7 +7,7 @@ part 'state.freezed.dart';
 @freezed
 sealed class ReplaceByFeeState with _$ReplaceByFeeState {
   const factory ReplaceByFeeState({
-    ReplaceByFeeError? error,
+    @Default(null) ReplaceByFeeError? error,
     @Default(null) FeeEntity? fastestFeeRate,
     @Default(null) FeeEntity? newFeeRate,
     @Default(null) String? txid,

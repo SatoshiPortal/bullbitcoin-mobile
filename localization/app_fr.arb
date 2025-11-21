@@ -4755,6 +4755,59 @@
   "@replaceByFeeActivatedLabel": {
     "description": "Label for RBF toggle switch"
   },
+  "replaceByFeeBroadcastButton": "Diffuser",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "replaceByFeeCustomFeeTitle": "Frais personnalisés",
+  "@replaceByFeeCustomFeeTitle": {
+    "description": "Title for custom fee input section"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "Vous devez augmenter le taux de frais d'au moins 1 sat/vbyte par rapport à la transaction originale",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "replaceByFeeErrorNoFeeRateSelected": "Veuillez sélectionner un taux de frais",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "replaceByFeeErrorTransactionConfirmed": "La transaction originale a été confirmée",
+  "@replaceByFeeErrorTransactionConfirmed": {
+    "description": "Error message when original transaction is already confirmed"
+  },
+  "replaceByFeeErrorGeneric": "Une erreur s'est produite lors de la tentative de remplacement de la transaction",
+  "@replaceByFeeErrorGeneric": {
+    "description": "Generic error message for replace-by-fee operation failures"
+  },
+  "replaceByFeeFastestDescription": "Livraison estimée ~ 10 minutes",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "replaceByFeeFastestTitle": "Le plus rapide",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeFeeRateDisplay": "Taux de frais : {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "replaceByFeeOriginalTransactionTitle": "Transaction originale",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "replaceByFeeSatsVbUnit": "sats/vB",
+  "@replaceByFeeSatsVbUnit": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "replaceByFeeScreenTitle": "Remplacement par frais",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
   "selectCoinsManuallyLabel": "Sélectionner les pièces manuellement",
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
