@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -41,8 +42,8 @@ class CoinSelectTile extends StatelessWidget {
     final address = utxo.address;
     final addressType =
         utxo.addressKeyChain == WalletAddressKeyChain.external
-            ? 'Receive'
-            : 'Change';
+            ? context.loc.sendReceive
+            : context.loc.sendChange;
     final label = utxo.labels.join(', ');
 
     return GestureDetector(
@@ -105,7 +106,7 @@ class CoinSelectTile extends StatelessWidget {
                   Row(
                     children: [
                       BBText(
-                        'Address: ',
+                        context.loc.sendAddress,
                         style: context.font.labelMedium?.copyWith(
                           color: context.colour.surfaceContainer,
                         ),
@@ -119,7 +120,7 @@ class CoinSelectTile extends StatelessWidget {
                         ),
                       ),
                       BBText(
-                        'Type: ',
+                        context.loc.sendType,
                         style: context.font.labelMedium?.copyWith(
                           color: context.colour.surfaceContainer,
                         ),

@@ -462,18 +462,30 @@ class InvalidBitcoinStringException extends BullException {
   ]);
 }
 
+/// Exception for swap limit violations.
+/// Stored in SendState with min/max limit values for localized error messages.
+/// UI displays context-specific messages using sendErrorAmountBelowMinimum,
+/// sendErrorAmountAboveMaximum, sendErrorBalanceTooLowForMinimum, etc.
 class SwapLimitsException extends BullException {
-  SwapLimitsException(super.message);
+  SwapLimitsException(super.message, {this.minLimit, this.maxLimit});
+
+  final int? minLimit;
+  final int? maxLimit;
+
+  bool get isBelowMinimum => minLimit != null;
+  bool get isAboveMaximum => maxLimit != null;
 }
 
+/// Exception for transaction build failures.
+/// Stored in SendState and displayed by UI using sendErrorBuildFailed.
+/// The message parameter is for debugging/logging only.
 class BuildTransactionException extends BullException {
   BuildTransactionException(super.message);
-
-  String get title => 'Build Failed';
 }
 
+/// Exception for transaction confirmation failures.
+/// Stored in SendState and displayed by UI using sendErrorConfirmationFailed.
+/// The message parameter is for debugging/logging only.
 class ConfirmTransactionException extends BullException {
   ConfirmTransactionException(super.message);
-
-  String get title => 'Confirmation Failed';
 }

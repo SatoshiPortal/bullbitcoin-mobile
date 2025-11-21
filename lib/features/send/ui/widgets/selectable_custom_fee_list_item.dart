@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -96,22 +97,22 @@ class _SelectableCustomFeeListItemState
         _customFee == null || feeOptions == null
             ? ''
             : 'Estimated delivery ~ ${customAbsValue >= fastestAbsValue
-                ? '10 minutes'
+                ? context.loc.sendEstimatedDelivery10Minutes
                 : customAbsValue >= economicAbsValue
-                ? '10-30 minutes'
+                ? context.loc.sendEstimatedDelivery10to30Minutes
                 : customAbsValue >= slowAbsValue
-                ? 'few hours'
-                : 'hours to days'}';
+                ? context.loc.sendEstimatedDeliveryFewHours
+                : context.loc.sendEstimatedDeliveryHoursToDays}';
 
     final subtitle2 =
         _customFee == null
             ? ''
-            : '${_customFee!.value} ${_isAbsolute ? 'sats' : 'sats/vB'} = $customAbsValue sats (~ $fiatEq $fiatCurrencyCode)';
+            : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = $customAbsValue ${context.loc.sendSats} (~ $fiatEq $fiatCurrencyCode)';
 
     Future<void> submitCustomFee() async {
       await context.read<SendCubit>().customFeesChanged(_customFee!);
       // ignore: use_build_context_synchronously
-      Navigator.pop(context, 'Custom Fee');
+      Navigator.pop(context, context.loc.sendCustomFee);
     }
 
     return InkWell(
@@ -138,7 +139,7 @@ class _SelectableCustomFeeListItemState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        BBText('Custom Fee', style: context.font.headlineLarge),
+                        BBText(context.loc.sendCustomFee, style: context.font.headlineLarge),
                         if (subtitle1.isNotEmpty) ...[
                           const Gap(4),
                           BBText(subtitle1, style: context.font.labelMedium),
@@ -164,7 +165,7 @@ class _SelectableCustomFeeListItemState
               Row(
                 children: [
                   BBText(
-                    _isAbsolute ? 'Absolute fees' : 'Relative fees',
+                    _isAbsolute ? context.loc.sendAbsoluteFees : context.loc.sendRelativeFees,
                     style: context.font.bodySmall,
                   ),
                   const Spacer(),
@@ -211,12 +212,12 @@ class _SelectableCustomFeeListItemState
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                   hintText:
                       _isAbsolute
-                          ? 'Enter absolute fee in sats'
-                          : 'Enter relative fee in sats/vB',
+                          ? context.loc.sendEnterAbsoluteFee
+                          : context.loc.sendEnterRelativeFee,
                   hintStyle: context.font.bodyMedium?.copyWith(
                     color: context.colour.outline,
                   ),
-                  suffixText: _isAbsolute ? 'sats' : 'sats/vB',
+                  suffixText: _isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB,
                 ),
                 onFieldSubmitted: (_) => submitCustomFee(),
                 onChanged: _onValueChanged,
@@ -224,7 +225,7 @@ class _SelectableCustomFeeListItemState
               const Gap(12),
               BBButton.big(
                 disabled: _customFee == null,
-                label: 'Confirm custom fee',
+                label: context.loc.sendConfirmCustomFee,
                 onPressed: submitCustomFee,
                 bgColor: context.colour.secondary,
                 textColor: context.colour.onPrimary,
