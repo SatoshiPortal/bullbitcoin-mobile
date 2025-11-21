@@ -1,9 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-
-class RecoverBullGoogleDriveError extends BullException {
-  RecoverBullGoogleDriveError(super.message);
-}
-
-class FetchAllDriveFilesError extends RecoverBullGoogleDriveError {
-  FetchAllDriveFilesError() : super('Failed to fetch all drive backups');
-}
+// Error handling for RecoverBull Google Drive feature
+// Errors are now handled using error keys instead of exception classes
+// See presentation/bloc.dart for error key emissions
+// See ui/drive_vaults_list_page.dart for error message localization

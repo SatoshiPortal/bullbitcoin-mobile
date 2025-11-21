@@ -9,16 +9,22 @@ class OnFetchDriveVaults extends RecoverBullGoogleDriveEvent {
 }
 
 class OnSelectDriveFileMetadata extends RecoverBullGoogleDriveEvent {
-  const OnSelectDriveFileMetadata({required this.fileMetadata});
+  const OnSelectDriveFileMetadata({
+    required this.fileMetadata,
+  });
   final DriveFileMetadata fileMetadata;
 }
 
 class OnDeleteDriveFile extends RecoverBullGoogleDriveEvent {
-  const OnDeleteDriveFile({required this.fileMetadata});
+  const OnDeleteDriveFile({
+    required this.fileMetadata,
+  });
   final DriveFileMetadata fileMetadata;
 }
 
 class OnExportDriveFile extends RecoverBullGoogleDriveEvent {
-  const OnExportDriveFile({required this.fileMetadata});
+  const OnExportDriveFile({
+    required this.fileMetadata,
+  });
   final DriveFileMetadata fileMetadata;
 }

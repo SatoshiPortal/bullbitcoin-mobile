@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -17,6 +18,21 @@ import 'package:intl/intl.dart';
 class DriveVaultsListPage extends StatelessWidget {
   const DriveVaultsListPage({super.key});
 
+  String _getLocalizedError(BuildContext context, String errorKey) {
+    switch (errorKey) {
+      case 'recoverbullGoogleDriveErrorFetchFailed':
+        return context.loc.recoverbullGoogleDriveErrorFetchFailed;
+      case 'recoverbullGoogleDriveErrorSelectFailed':
+        return context.loc.recoverbullGoogleDriveErrorSelectFailed;
+      case 'recoverbullGoogleDriveErrorDeleteFailed':
+        return context.loc.recoverbullGoogleDriveErrorDeleteFailed;
+      case 'recoverbullGoogleDriveErrorExportFailed':
+        return context.loc.recoverbullGoogleDriveErrorExportFailed;
+      default:
+        return context.loc.recoverbullGoogleDriveErrorGeneric;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context
@@ -24,7 +40,7 @@ class DriveVaultsListPage extends StatelessWidget {
           (bloc) => bloc.state,
         );
 
-    final error = state.error;
+    final errorKey = state.errorKey;
     final driveMetadata = state.driveMetadata;
 
     return Scaffold(
@@ -33,7 +49,7 @@ class DriveVaultsListPage extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           onBack: () => context.pop(),
-          title: "Google Drive Vaults",
+          title: context.loc.recoverbullGoogleDriveScreenTitle,
         ),
       ),
       body: Column(
@@ -46,15 +62,15 @@ class DriveVaultsListPage extends StatelessWidget {
           ),
           Expanded(
             child:
-                error != null
-                    ? Center(child: Text('Error: $error'))
+                errorKey != null
+                    ? Center(child: Text(_getLocalizedError(context, errorKey)))
                     : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
                             if (!state.isLoading && driveMetadata.isEmpty)
-                              const Center(child: Text('No backups found')),
+                              Center(child: Text(context.loc.recoverbullGoogleDriveNoBackupsFound)),
 
                             ...List.generate(driveMetadata.length, (index) {
                               final driveBackupMetadata = driveMetadata[index];
@@ -104,7 +120,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   BBButton.small(
-                    label: 'Export',
+                    label: context.loc.recoverbullGoogleDriveExportButton,
                     onPressed: () {
                       context.pop();
                       bloc.add(
@@ -115,7 +131,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
                     textColor: context.colour.onSecondary,
                   ),
                   BBButton.small(
-                    label: 'Delete',
+                    label: context.loc.recoverbullGoogleDriveDeleteButton,
                     onPressed: () {
                       context.pop();
                       _showDeleteConfirmationBottomSheet(context);
@@ -149,10 +165,10 @@ class _DriveFileMetadataItem extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              BBText('Delete Vault', style: context.font.headlineMedium),
+              BBText(context.loc.recoverbullGoogleDriveDeleteVaultTitle, style: context.font.headlineMedium),
               const Gap(16),
               BBText(
-                'Are you sure you want to delete this vault backup? This action cannot be undone.',
+                context.loc.recoverbullGoogleDriveDeleteConfirmation,
                 style: context.font.bodyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -161,13 +177,13 @@ class _DriveFileMetadataItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   BBButton.small(
-                    label: 'Cancel',
+                    label: context.loc.recoverbullGoogleDriveCancelButton,
                     onPressed: () => context.pop(),
                     bgColor: context.colour.secondary,
                     textColor: context.colour.onSecondary,
                   ),
                   BBButton.small(
-                    label: 'Delete',
+                    label: context.loc.recoverbullGoogleDriveDeleteButton,
                     onPressed: () {
                       context.pop();
                       bloc.add(
