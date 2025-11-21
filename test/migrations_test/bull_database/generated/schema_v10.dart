@@ -3897,6 +3897,25 @@ class ElectrumSettings extends Table
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  late final GeneratedColumn<bool> useTorProxy = GeneratedColumn<bool>(
+    'use_tor_proxy',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("use_tor_proxy" IN (0, 1))',
+    ),
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<int> torProxyPort = GeneratedColumn<int>(
+    'tor_proxy_port',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const CustomExpression('9050'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     network,
@@ -3905,6 +3924,8 @@ class ElectrumSettings extends Table
     timeout,
     retry,
     socks5,
+    useTorProxy,
+    torProxyPort,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3946,6 +3967,16 @@ class ElectrumSettings extends Table
         DriftSqlType.string,
         data['${effectivePrefix}socks5'],
       ),
+      useTorProxy:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}use_tor_proxy'],
+          )!,
+      torProxyPort:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}tor_proxy_port'],
+          )!,
     );
   }
 
@@ -3963,6 +3994,8 @@ class ElectrumSettingsData extends DataClass
   final int timeout;
   final int retry;
   final String? socks5;
+  final bool useTorProxy;
+  final int torProxyPort;
   const ElectrumSettingsData({
     required this.network,
     required this.validateDomain,
@@ -3970,6 +4003,8 @@ class ElectrumSettingsData extends DataClass
     required this.timeout,
     required this.retry,
     this.socks5,
+    required this.useTorProxy,
+    required this.torProxyPort,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3982,6 +4017,8 @@ class ElectrumSettingsData extends DataClass
     if (!nullToAbsent || socks5 != null) {
       map['socks5'] = Variable<String>(socks5);
     }
+    map['use_tor_proxy'] = Variable<bool>(useTorProxy);
+    map['tor_proxy_port'] = Variable<int>(torProxyPort);
     return map;
   }
 
@@ -3994,6 +4031,8 @@ class ElectrumSettingsData extends DataClass
       retry: Value(retry),
       socks5:
           socks5 == null && nullToAbsent ? const Value.absent() : Value(socks5),
+      useTorProxy: Value(useTorProxy),
+      torProxyPort: Value(torProxyPort),
     );
   }
 
@@ -4009,6 +4048,8 @@ class ElectrumSettingsData extends DataClass
       timeout: serializer.fromJson<int>(json['timeout']),
       retry: serializer.fromJson<int>(json['retry']),
       socks5: serializer.fromJson<String?>(json['socks5']),
+      useTorProxy: serializer.fromJson<bool>(json['useTorProxy']),
+      torProxyPort: serializer.fromJson<int>(json['torProxyPort']),
     );
   }
   @override
@@ -4021,6 +4062,8 @@ class ElectrumSettingsData extends DataClass
       'timeout': serializer.toJson<int>(timeout),
       'retry': serializer.toJson<int>(retry),
       'socks5': serializer.toJson<String?>(socks5),
+      'useTorProxy': serializer.toJson<bool>(useTorProxy),
+      'torProxyPort': serializer.toJson<int>(torProxyPort),
     };
   }
 
@@ -4031,6 +4074,8 @@ class ElectrumSettingsData extends DataClass
     int? timeout,
     int? retry,
     Value<String?> socks5 = const Value.absent(),
+    bool? useTorProxy,
+    int? torProxyPort,
   }) => ElectrumSettingsData(
     network: network ?? this.network,
     validateDomain: validateDomain ?? this.validateDomain,
@@ -4038,6 +4083,8 @@ class ElectrumSettingsData extends DataClass
     timeout: timeout ?? this.timeout,
     retry: retry ?? this.retry,
     socks5: socks5.present ? socks5.value : this.socks5,
+    useTorProxy: useTorProxy ?? this.useTorProxy,
+    torProxyPort: torProxyPort ?? this.torProxyPort,
   );
   ElectrumSettingsData copyWithCompanion(ElectrumSettingsCompanion data) {
     return ElectrumSettingsData(
@@ -4050,6 +4097,12 @@ class ElectrumSettingsData extends DataClass
       timeout: data.timeout.present ? data.timeout.value : this.timeout,
       retry: data.retry.present ? data.retry.value : this.retry,
       socks5: data.socks5.present ? data.socks5.value : this.socks5,
+      useTorProxy:
+          data.useTorProxy.present ? data.useTorProxy.value : this.useTorProxy,
+      torProxyPort:
+          data.torProxyPort.present
+              ? data.torProxyPort.value
+              : this.torProxyPort,
     );
   }
 
@@ -4061,14 +4114,24 @@ class ElectrumSettingsData extends DataClass
           ..write('stopGap: $stopGap, ')
           ..write('timeout: $timeout, ')
           ..write('retry: $retry, ')
-          ..write('socks5: $socks5')
+          ..write('socks5: $socks5, ')
+          ..write('useTorProxy: $useTorProxy, ')
+          ..write('torProxyPort: $torProxyPort')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(network, validateDomain, stopGap, timeout, retry, socks5);
+  int get hashCode => Object.hash(
+    network,
+    validateDomain,
+    stopGap,
+    timeout,
+    retry,
+    socks5,
+    useTorProxy,
+    torProxyPort,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4078,7 +4141,9 @@ class ElectrumSettingsData extends DataClass
           other.stopGap == this.stopGap &&
           other.timeout == this.timeout &&
           other.retry == this.retry &&
-          other.socks5 == this.socks5);
+          other.socks5 == this.socks5 &&
+          other.useTorProxy == this.useTorProxy &&
+          other.torProxyPort == this.torProxyPort);
 }
 
 class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
@@ -4088,6 +4153,8 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
   final Value<int> timeout;
   final Value<int> retry;
   final Value<String?> socks5;
+  final Value<bool> useTorProxy;
+  final Value<int> torProxyPort;
   final Value<int> rowid;
   const ElectrumSettingsCompanion({
     this.network = const Value.absent(),
@@ -4096,6 +4163,8 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
     this.timeout = const Value.absent(),
     this.retry = const Value.absent(),
     this.socks5 = const Value.absent(),
+    this.useTorProxy = const Value.absent(),
+    this.torProxyPort = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ElectrumSettingsCompanion.insert({
@@ -4105,6 +4174,8 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
     required int timeout,
     required int retry,
     this.socks5 = const Value.absent(),
+    this.useTorProxy = const Value.absent(),
+    this.torProxyPort = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : network = Value(network),
        validateDomain = Value(validateDomain),
@@ -4118,6 +4189,8 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
     Expression<int>? timeout,
     Expression<int>? retry,
     Expression<String>? socks5,
+    Expression<bool>? useTorProxy,
+    Expression<int>? torProxyPort,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4127,6 +4200,8 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
       if (timeout != null) 'timeout': timeout,
       if (retry != null) 'retry': retry,
       if (socks5 != null) 'socks5': socks5,
+      if (useTorProxy != null) 'use_tor_proxy': useTorProxy,
+      if (torProxyPort != null) 'tor_proxy_port': torProxyPort,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4138,6 +4213,8 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
     Value<int>? timeout,
     Value<int>? retry,
     Value<String?>? socks5,
+    Value<bool>? useTorProxy,
+    Value<int>? torProxyPort,
     Value<int>? rowid,
   }) {
     return ElectrumSettingsCompanion(
@@ -4147,6 +4224,8 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
       timeout: timeout ?? this.timeout,
       retry: retry ?? this.retry,
       socks5: socks5 ?? this.socks5,
+      useTorProxy: useTorProxy ?? this.useTorProxy,
+      torProxyPort: torProxyPort ?? this.torProxyPort,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4172,6 +4251,12 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
     if (socks5.present) {
       map['socks5'] = Variable<String>(socks5.value);
     }
+    if (useTorProxy.present) {
+      map['use_tor_proxy'] = Variable<bool>(useTorProxy.value);
+    }
+    if (torProxyPort.present) {
+      map['tor_proxy_port'] = Variable<int>(torProxyPort.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4187,6 +4272,8 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
           ..write('timeout: $timeout, ')
           ..write('retry: $retry, ')
           ..write('socks5: $socks5, ')
+          ..write('useTorProxy: $useTorProxy, ')
+          ..write('torProxyPort: $torProxyPort, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

@@ -2,20 +2,24 @@ import 'package:bb_mobile/core/electrum/application/dtos/requests/check_for_onli
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 
 class CheckForOnlineElectrumServersUsecase {
   final ElectrumServerRepository _electrumServerRepository;
+  final ElectrumSettingsRepository _electrumSettingsRepository;
   final EnvironmentPort _environmentPort;
   final ServerStatusPort _serverStatusPort;
 
   const CheckForOnlineElectrumServersUsecase({
     required ElectrumServerRepository electrumServerRepository,
+    required ElectrumSettingsRepository electrumSettingsRepository,
     required EnvironmentPort environmentPort,
     required ServerStatusPort serverStatusPort,
   }) : _electrumServerRepository = electrumServerRepository,
+       _electrumSettingsRepository = electrumSettingsRepository,
        _environmentPort = environmentPort,
        _serverStatusPort = serverStatusPort;
 
@@ -23,10 +27,16 @@ class CheckForOnlineElectrumServersUsecase {
     final isLiquid = request.isLiquid;
     final environment = await _environmentPort.getEnvironment();
 
-    // Fetch servers in parallel
-    final servers = await _electrumServerRepository.fetchAll(
-      isTestnet: environment.isTestnet,
-    );
+    // Fetch servers and Bitcoin settings in parallel
+    final (servers, bitcoinSettings) =
+        await (
+          _electrumServerRepository.fetchAll(isTestnet: environment.isTestnet),
+          _electrumSettingsRepository.fetchByNetwork(
+            environment.isTestnet
+                ? ElectrumServerNetwork.bitcoinTestnet
+                : ElectrumServerNetwork.bitcoinMainnet,
+          ),
+        ).wait;
 
     if (isLiquid != null) {
       // Filter servers by network
@@ -46,11 +56,14 @@ class CheckForOnlineElectrumServersUsecase {
               ? customFilteredServers
               : filteredServers;
 
-      // Check server statuses
+      // Check server statuses (use Tor for Bitcoin, not Liquid)
+      final useTorProxy = !isLiquid && bitcoinSettings.useTorProxy;
       final filteredServersStatusses = await Future.wait(
         filteredServersToUse.map((server) async {
           final status = await _serverStatusPort.checkServerStatus(
             url: server.url,
+            useTorProxy: useTorProxy,
+            torProxyPort: bitcoinSettings.torProxyPort,
           );
           return status;
         }),
@@ -78,11 +91,13 @@ class CheckForOnlineElectrumServersUsecase {
               ? customBitcoinServers
               : bitcoinServers;
 
-      // Check server statuses
+      // Check server statuses (use Tor for Bitcoin, not Liquid)
       final liquidServersStatusses = await Future.wait(
         liquidServersToUse.map((server) async {
           final status = await _serverStatusPort.checkServerStatus(
             url: server.url,
+            useTorProxy: false,
+            torProxyPort: bitcoinSettings.torProxyPort,
           );
           return status;
         }),
@@ -91,6 +106,8 @@ class CheckForOnlineElectrumServersUsecase {
         bitcoinServersToUse.map((server) async {
           final status = await _serverStatusPort.checkServerStatus(
             url: server.url,
+            useTorProxy: bitcoinSettings.useTorProxy,
+            torProxyPort: bitcoinSettings.torProxyPort,
           );
           return status;
         }),

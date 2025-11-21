@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/draggable_server_list.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/set_advanced_options_bottom_sheet.dart';
+import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/tor_proxy_error_banner.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -71,6 +72,7 @@ class ElectrumSettingsScreen extends StatelessWidget {
                             );
                           },
                         ),
+                        const TorProxyErrorBanner(),
                         const Gap(16),
                         const DraggableServerList(),
                       ],

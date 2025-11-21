@@ -10,9 +10,12 @@ class ElectrumSettings {
   //  as they are tied to just one environment, so it's final
   final ElectrumServerNetwork _network;
   String? _socks5;
+  bool _useTorProxy;
+  int _torProxyPort;
 
   static const int maxStopGap = 3000;
   static const int maxTimeout = 300; // 5 minutes
+  static const int defaultTorProxyPort = 9050; // Orbot default port
 
   ElectrumSettings({
     required int stopGap,
@@ -21,12 +24,16 @@ class ElectrumSettings {
     required bool validateDomain,
     required ElectrumServerNetwork network,
     String? socks5,
+    bool useTorProxy = false,
+    int torProxyPort = defaultTorProxyPort,
   }) : _stopGap = stopGap,
        _timeout = timeout,
        _retry = retry,
        _validateDomain = validateDomain,
        _network = network,
-       _socks5 = socks5;
+       _socks5 = socks5,
+       _useTorProxy = useTorProxy,
+       _torProxyPort = torProxyPort;
 
   int get stopGap => _stopGap;
   int get timeout => _timeout;
@@ -34,6 +41,8 @@ class ElectrumSettings {
   bool get validateDomain => _validateDomain;
   ElectrumServerNetwork get network => _network;
   String? get socks5 => _socks5;
+  bool get useTorProxy => _useTorProxy;
+  int get torProxyPort => _torProxyPort;
 
   void update({
     int? newStopGap,
@@ -45,6 +54,8 @@ class ElectrumSettings {
     // `newSocks5Supplier: () => 'new_value'` to set a new value
     // `newSocks5Supplier: () => null` to clear the value and make socks5 null
     String? Function()? newSocks5Supplier,
+    bool? newUseTorProxy,
+    int? newTorProxyPort,
   }) {
     if (newStopGap != null) {
       _ensureValidStopGap(newStopGap);
@@ -55,6 +66,9 @@ class ElectrumSettings {
     if (newRetry != null) {
       _ensureValidRetry(newRetry);
     }
+    if (newTorProxyPort != null) {
+      _ensureValidTorProxyPort(newTorProxyPort);
+    }
     // TODO: Add validation for socks5 format or are there too many valid formats?
 
     _stopGap = newStopGap ?? _stopGap;
@@ -62,6 +76,8 @@ class ElectrumSettings {
     _retry = newRetry ?? _retry;
     _validateDomain = newValidateDomain ?? _validateDomain;
     _socks5 = newSocks5Supplier != null ? newSocks5Supplier() : _socks5;
+    _useTorProxy = newUseTorProxy ?? _useTorProxy;
+    _torProxyPort = newTorProxyPort ?? _torProxyPort;
   }
 
   void _ensureValidStopGap(int stopGap) {
@@ -79,6 +95,12 @@ class ElectrumSettings {
   void _ensureValidRetry(int retry) {
     if (retry < 0) {
       throw InvalidRetryException(retry);
+    }
+  }
+
+  void _ensureValidTorProxyPort(int port) {
+    if (port < 1 || port > 65535) {
+      throw InvalidTorProxyPortException(port);
     }
   }
 }
