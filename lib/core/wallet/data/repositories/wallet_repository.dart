@@ -269,6 +269,20 @@ class WalletRepository {
             )
             .toList();
 
+    // Sort wallets: Liquid first, then Bitcoin; defaults before non-defaults within each network
+    filteredWallets.sort((a, b) {
+      // First, sort by network (Liquid first)
+      if (a.isLiquid != b.isLiquid) {
+        return a.isLiquid ? -1 : 1;
+      }
+      // Within same network, defaults first
+      if (a.isDefault != b.isDefault) {
+        return a.isDefault ? -1 : 1;
+      }
+      // If both same network and same default status, maintain original order
+      return 0;
+    });
+
     final balances = await Future.wait(
       filteredWallets.map((wallet) => _getBalance(wallet, sync: sync)),
     );
