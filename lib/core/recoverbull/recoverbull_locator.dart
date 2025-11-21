@@ -1,12 +1,14 @@
 import 'package:bb_mobile/core/recoverbull/data/datasources/file_storage_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/google_drive_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
+import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/delete_drive_file_usecase.dart';
@@ -17,11 +19,12 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_va
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/locator.dart';
@@ -32,10 +35,14 @@ class RecoverbullLocator {
       () => GoogleDriveAppDatasource(),
     );
 
+    locator.registerLazySingleton<RecoverbullSettingsDatasource>(
+      () => RecoverbullSettingsDatasource(sqlite: locator<SqliteDatabase>()),
+    );
+
     locator.registerSingletonWithDependencies<RecoverBullRemoteDatasource>(
       () => RecoverBullRemoteDatasource(
-        Uri.parse(ApiServiceConstants.bullBitcoinKeyServerApiUrlPath),
-        locator<TorDatasource>(),
+        recoverbullSettingsDatasource: locator<RecoverbullSettingsDatasource>(),
+        torDatasource: locator<TorDatasource>(),
       ),
       dependsOn: [TorDatasource],
     );
@@ -59,9 +66,11 @@ class RecoverbullLocator {
     locator.registerSingletonWithDependencies<RecoverBullRepository>(
       () => RecoverBullRepository(
         remoteDatasource: locator<RecoverBullRemoteDatasource>(),
+        recoverbullSettingsDatasource: locator<RecoverbullSettingsDatasource>(),
       ),
       dependsOn: [RecoverBullRemoteDatasource],
     );
+
     await locator.isReady<RecoverBullRepository>();
   }
 
@@ -148,6 +157,16 @@ class RecoverbullLocator {
     locator.registerFactory<UpdateLatestEncryptedVaultTestUsecase>(
       () => UpdateLatestEncryptedVaultTestUsecase(
         walletRepository: locator<WalletRepository>(),
+      ),
+    );
+    locator.registerFactory<FetchRecoverbullUrlUsecase>(
+      () => FetchRecoverbullUrlUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+      ),
+    );
+    locator.registerFactory<StoreRecoverbullUrlUsecase>(
+      () => StoreRecoverbullUrlUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
       ),
     );
   }

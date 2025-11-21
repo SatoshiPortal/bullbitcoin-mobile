@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
@@ -16,7 +18,8 @@ class AppSettingsScreen extends StatelessWidget {
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
     );
     final currentLanguage = context.select(
-      (SettingsCubit cubit) => cubit.state.language ?? Language.unitedStatesEnglish,
+      (SettingsCubit cubit) =>
+          cubit.state.language ?? Language.unitedStatesEnglish,
     );
 
     return Scaffold(
@@ -34,6 +37,19 @@ class AppSettingsScreen extends StatelessWidget {
                     context.pushNamed(SettingsRoute.logs.name);
                   },
                 ),
+                SettingsEntryItem(
+                  icon: Icons.backup_table,
+                  title: 'Recoverbull',
+                  onTap: () {
+                    context.pushNamed(
+                      RecoverBullRoute.recoverbullFlows.name,
+                      extra: RecoverBullFlowsExtra(
+                        flow: RecoverBullFlow.settings,
+                        vault: null,
+                      ),
+                    );
+                  },
+                ),
                 if (isSuperuser)
                   SettingsEntryItem(
                     icon: Icons.language,
@@ -41,19 +57,22 @@ class AppSettingsScreen extends StatelessWidget {
                     trailing: DropdownButton<Language>(
                       value: currentLanguage,
                       underline: const SizedBox.shrink(),
-                      items: Language.values
-                          .map(
-                            (language) => DropdownMenuItem<Language>(
-                              value: language,
-                              child: Text(
-                                '${language.languageCode}${language.countryCode != null ? ' (${language.countryCode})' : ''}',
-                              ),
-                            ),
-                          )
-                          .toList(),
+                      items:
+                          Language.values
+                              .map(
+                                (language) => DropdownMenuItem<Language>(
+                                  value: language,
+                                  child: Text(
+                                    '${language.languageCode}${language.countryCode != null ? ' (${language.countryCode})' : ''}',
+                                  ),
+                                ),
+                              )
+                              .toList(),
                       onChanged: (Language? newLanguage) {
                         if (newLanguage != null) {
-                          context.read<SettingsCubit>().changeLanguage(newLanguage);
+                          context.read<SettingsCubit>().changeLanguage(
+                            newLanguage,
+                          );
                         }
                       },
                     ),

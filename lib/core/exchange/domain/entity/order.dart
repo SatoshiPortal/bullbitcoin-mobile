@@ -190,36 +190,42 @@ enum OrderPayoutStatus {
 // }
 
 enum OrderPaymentMethod {
-  eTransfer('E-Transfer'),
-  eTransferArs('E-Transfer ARS'),
-  bankTransferCop('Bank Transfer COP'),
-  billPayment('Bill Payment'),
-  bankTransfer('Bank Transfer'),
-  loadhub('Loadhub'),
-  sepa('SEPA'),
-  iban('IBAN'),
-  sinpe('SINPE'),
+  eTransfer('Interac e-Transfer (CAD)'),
+  eTransferArs('Bank Transfer CBU (ARS)'),
+  bankTransferCop('PSE Colombia (COP)'),
+  billPayment('Bill Payment (CAD)'),
+  bankTransfer('Bank Transfer EFT (CAD)'),
+  sepa('SEPA Transfer (EUR)'),
+  ibanCrc('SINPE IBAN (CRC)'),
+  ibanUsd('SINPE IBAN (USD)'),
+  sinpe('SINPE Móvil (CRC)'),
   cadBalance('CAD Balance'),
   eurBalance('EUR Balance'),
   mxnBalance('MXN Balance'),
-  crcBalance('CRC Balance'),
-  usdBalance('USD Balance'),
   arsBalance('ARS Balance'),
   copBalance('COP Balance'),
-  bitcoin('Bitcoin'),
-  liquid('Liquid'),
-  lnAddress('Lightning Address'),
-  lnInvoice('Lightning Invoice'),
-  lnUrl('Lightning (LNURL)'),
-  referralCad('Referral CAD'),
-  referralEur('Referral EUR'),
-  referralMxn('Referral MXN'),
-  referralUsd('Referral USD'),
-  referralCrc('Referral CRC'),
-  spei('SPEI'),
+  crcBalance('CRC Balance'),
+  usdBalance('USD Balance'),
+  bitcoin('Bitcoin On-Chain'),
+  liquid('Liquid Network'),
+  lnAddress('Lightning Address (LNURL-PAY)'),
+  lnInvoice('Lightning Invoice (BOLT11)'),
+  lnUrl('LNURL-Withdraw'),
+  referralCad('Referral Payout CAD'),
+  referralEur('Referral Payout EUR'),
+  referralMxn('Referral Payout MXN'),
+  referralUsd('Referral Payout USD'),
+  referralCrc('Referral Payout CRC'),
+  referralArs('Referral Payout ARS'),
+  referralCop('Referral Payout COP'),
+  spei('SPEI transfer (MXN)'),
   thinAir('Thin Air'),
-  refundCrc('Refund CRC'),
-  refundUsd('Refund USD');
+  refundCrc('Refund to CRC Balance'),
+  refundUsd('Refund to USD Balance'),
+  loadhub('Canada Post In-Person Deposit (CAD)'),
+  unknown(
+    'Unknown', // If we want this value to be parameterizable with the value of the unknown payment method, we shouldn't use an enum but classes with factory constructor
+  );
 
   final String value;
   const OrderPaymentMethod(this.value);
@@ -227,7 +233,7 @@ enum OrderPaymentMethod {
   static OrderPaymentMethod fromValue(String value) {
     return OrderPaymentMethod.values.firstWhere(
       (e) => e.value == value,
-      orElse: () => throw Exception('Unknown OrderPaymentMethod: $value'),
+      orElse: () => OrderPaymentMethod.unknown,
     );
   }
 }

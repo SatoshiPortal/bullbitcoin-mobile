@@ -24,7 +24,7 @@ class ScanQrPage extends StatelessWidget {
             children: [
               QrScannerWidget(
                 onScanned: cubit.onQrScanned,
-                resolution: ResolutionPreset.max,
+                resolution: ResolutionPreset.high,
                 scanDelay:
                     state
                             .bbqr

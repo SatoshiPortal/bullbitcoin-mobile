@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/fetch_distinct_labels_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/labels/domain/label_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
@@ -12,6 +13,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
@@ -42,6 +44,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required BroadcastOriginalTransactionUsecase
     broadcastOriginalTransactionUsecase,
     required ProcessSwapUsecase processSwapUsecase,
+    required FetchDistinctLabelsUsecase fetchDistinctLabelsUsecase,
   }) : _getWalletUsecase = getWalletUsecase,
        _getTransactionsByTxIdUsecase = getTransactionsByTxIdUsecase,
        _watchWalletTransactionByTxIdUsecase =
@@ -56,6 +59,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
        _broadcastOriginalTransactionUsecase =
            broadcastOriginalTransactionUsecase,
        _processSwapUsecase = processSwapUsecase,
+       _fetchDistinctLabelsUsecase = fetchDistinctLabelsUsecase,
        super(const TransactionDetailsState());
 
   final GetWalletUsecase _getWalletUsecase;
@@ -72,6 +76,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
   final ProcessSwapUsecase _processSwapUsecase;
+  final FetchDistinctLabelsUsecase _fetchDistinctLabelsUsecase;
 
   StreamSubscription? _walletTransactionSubscription;
   StreamSubscription? _swapSubscription;
@@ -434,5 +439,15 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     emit(state.copyWith(retryingSwap: true));
     await _processSwapUsecase.execute(swap);
     emit(state.copyWith(retryingSwap: false));
+  }
+
+  Future<List<String>> fetchDistinctLabels() async {
+    try {
+      return await _fetchDistinctLabelsUsecase.execute();
+    } catch (e) {
+      log.warning('Failed to fetch distinct labels: $e');
+      emit(state.copyWith(err: e));
+      return [];
+    }
   }
 }

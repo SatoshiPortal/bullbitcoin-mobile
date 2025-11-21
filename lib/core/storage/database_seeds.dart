@@ -94,4 +94,13 @@ class DatabaseSeeds {
           ),
         );
   }
+
+  static Future<void> seedDefaultRecoverbull(SqliteDatabase db) async {
+    log.info('[SqliteDatabase] seeding default recoverbull...');
+    await db
+        .into(db.recoverbull)
+        .insert(
+          const RecoverbullRow(id: 1, url: SettingsConstants.recoverbullUrl),
+        );
+  }
 }
