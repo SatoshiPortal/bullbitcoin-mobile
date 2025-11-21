@@ -266,7 +266,11 @@ class SellReceivePaymentScreen extends StatelessWidget {
       OrderPaymentMethod.bitcoin => order.bitcoinAddress ?? '',
       OrderPaymentMethod.liquid => order.liquidAddress ?? '',
       OrderPaymentMethod.lnInvoice => order.lightningInvoice ?? '',
-      _ => '',
+      _ =>
+        order.bitcoinAddress ??
+            order.liquidAddress ??
+            order.lightningInvoice ??
+            '',
     };
 
     if (order.payinMethod == OrderPaymentMethod.lnInvoice &&
