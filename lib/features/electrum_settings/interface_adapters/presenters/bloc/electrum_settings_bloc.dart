@@ -111,6 +111,8 @@ class ElectrumSettingsBloc
             stopGap: settings.stopGap,
             validateDomain: settings.validateDomain,
             socks5: settings.socks5,
+            useTorProxy: settings.useTorProxy,
+            torProxyPort: settings.torProxyPort,
           ),
         ),
       );
@@ -311,6 +313,8 @@ class ElectrumSettingsBloc
           validateDomain: event.validateDomain,
           socks5: event.socks5,
           network: network,
+          useTorProxy: event.useTorProxy ?? false,
+          torProxyPort: event.torProxyPort ?? 9050,
         ),
       );
       await _setAdvancedElectrumOptionsUsecase.execute(request);
@@ -322,6 +326,8 @@ class ElectrumSettingsBloc
         stopGap: stopGap,
         validateDomain: event.validateDomain,
         socks5: event.socks5,
+        useTorProxy: event.useTorProxy ?? false,
+        torProxyPort: event.torProxyPort ?? 9050,
       );
       emit(state.copyWith(advancedOptions: updatedOptions));
     } on advanced_options_domain_errors.InvalidStopGapException catch (e) {

@@ -51,12 +51,15 @@ class LoadElectrumServerDataUsecase {
       throw Exception('No Electrum servers found');
     }
 
-    // Check server statuses
+    // Check server statuses (use Tor proxy if enabled for Bitcoin/Testnet, not Liquid)
+    final useTorProxy = !isLiquid && settings.useTorProxy;
     final serverStatusMap = <String, ElectrumServerStatus>{};
     await Future.wait(
       servers.map((server) async {
         final status = await _serverStatusPort.checkServerStatus(
           url: server.url,
+          useTorProxy: useTorProxy,
+          torProxyPort: settings.torProxyPort,
         );
         serverStatusMap[server.url] = status;
       }),

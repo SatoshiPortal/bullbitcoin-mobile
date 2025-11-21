@@ -39,6 +39,8 @@ class ElectrumAdvancedOptionsSaved extends ElectrumSettingsEvent {
   final String retry;
   final bool validateDomain;
   final String? socks5;
+  final bool? useTorProxy;
+  final int? torProxyPort;
 
   const ElectrumAdvancedOptionsSaved({
     required this.stopGap,
@@ -46,6 +48,8 @@ class ElectrumAdvancedOptionsSaved extends ElectrumSettingsEvent {
     required this.retry,
     required this.validateDomain,
     this.socks5,
+    this.useTorProxy,
+    this.torProxyPort,
   });
 }
 

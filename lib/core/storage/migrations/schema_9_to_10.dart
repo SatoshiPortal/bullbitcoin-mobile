@@ -4,5 +4,9 @@ import 'package:drift/drift.dart';
 class Schema9To10 {
   static Future<void> migrate(Migrator m, Schema10 schema10) async {
     await m.createTable(schema10.recoverbull);
+
+    final electrumSettings = schema10.electrumSettings;
+    await m.addColumn(electrumSettings, electrumSettings.useTorProxy);
+    await m.addColumn(electrumSettings, electrumSettings.torProxyPort);
   }
 }

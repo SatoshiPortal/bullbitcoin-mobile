@@ -24,6 +24,16 @@ class ElectrumServerAdapter implements ElectrumServerPort {
       request,
     );
     final settings = serversAndSetting.settings;
+
+    // Build SOCKS5 proxy URL if Tor is enabled
+    String? socks5Url = settings.socks5;
+    if (settings.useTorProxy && socks5Url == null) {
+      // Only use Tor proxy for Bitcoin mainnet/testnet, not Liquid
+      if (!isLiquid) {
+        socks5Url = '127.0.0.1:${settings.torProxyPort}';
+      }
+    }
+
     final servers =
         serversAndSetting.servers
             .map(
@@ -34,7 +44,7 @@ class ElectrumServerAdapter implements ElectrumServerPort {
                 timeout: settings.timeout,
                 stopGap: settings.stopGap,
                 validateDomain: settings.validateDomain,
-                socks5: settings.socks5,
+                socks5: socks5Url,
                 isCustom: e.isCustom,
               ),
             )
