@@ -8171,6 +8171,14 @@
   "@importWatchOnlyExtendedPublicKey": {
     "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
+  "importWatchOnlyDisclaimerTitle": "Advertencia sobre la ruta de derivación",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyDisclaimerDescription": "Asegúrate de que la ruta de derivación que elijas coincida con la que produjo la xpub dada, ya que usar la ruta incorrecta puede llevar a la pérdida de fondos",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
   "bip85Title": "Entropías determinísticas BIP85",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"

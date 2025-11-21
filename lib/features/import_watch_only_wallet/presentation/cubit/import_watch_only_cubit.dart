@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xp
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
 class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   final ImportWatchOnlyDescriptorUsecase _importWatchOnlyDescriptorUsecase;
@@ -87,5 +88,26 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
       signer: device == null ? SignerEntity.none : SignerEntity.remote,
     );
     emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
+  }
+
+  void onDerivationChanged(satoshifier.Derivation? value) {
+    if (state.watchOnlyWallet == null) return;
+    if (state.watchOnlyWallet is! WatchOnlyXpubEntity) return;
+    if (value == null) return;
+
+    final entity = state.watchOnlyWallet! as WatchOnlyXpubEntity;
+    final newPubkey = switch (value) {
+      satoshifier.Derivation.bip84 => satoshifier.Bip32Utils.convertToZpub(
+        entity.extendedPubkey.pubkey,
+      ),
+      satoshifier.Derivation.bip49 => satoshifier.Bip32Utils.convertToYpub(
+        entity.extendedPubkey.pubkey,
+      ),
+      satoshifier.Derivation.bip44 => satoshifier.Bip32Utils.convertToXpub(
+        entity.extendedPubkey.pubkey,
+      ),
+    };
+
+    parsePastedInput(newPubkey);
   }
 }
