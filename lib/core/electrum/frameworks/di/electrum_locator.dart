@@ -66,6 +66,7 @@ class ElectrumLocator {
     locator.registerFactory<AddCustomServerUsecase>(
       () => AddCustomServerUsecase(
         electrumServerRepository: locator<ElectrumServerRepository>(),
+        electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
         serverStatusPort: locator<ServerStatusPort>(),
       ),
     );
@@ -73,6 +74,7 @@ class ElectrumLocator {
       () => CheckForOnlineElectrumServersUsecase(
         environmentPort: locator<EnvironmentPort>(),
         electrumServerRepository: locator<ElectrumServerRepository>(),
+        electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
         serverStatusPort: locator<ServerStatusPort>(),
       ),
     );

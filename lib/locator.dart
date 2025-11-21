@@ -28,6 +28,7 @@ import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
+import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
@@ -54,6 +55,7 @@ class AppLocator {
 
     // Register feature-specific dependencies
     ElectrumSettingsLocator.setup();
+    TorSettingsLocator.setup();
     PinCodeLocator.setup();
     AppStartupLocator.setup();
     AppUnlockLocator.setup();

@@ -8,6 +8,8 @@ class ElectrumSettingsDto {
   final bool validateDomain;
   final ElectrumServerNetwork network;
   final String? socks5;
+  final bool useTorProxy;
+  final int torProxyPort;
 
   ElectrumSettingsDto({
     required this.stopGap,
@@ -16,6 +18,8 @@ class ElectrumSettingsDto {
     required this.validateDomain,
     required this.network,
     this.socks5,
+    required this.useTorProxy,
+    required this.torProxyPort,
   });
 
   factory ElectrumSettingsDto.fromDomain(ElectrumSettings domain) {
@@ -26,6 +30,8 @@ class ElectrumSettingsDto {
       validateDomain: domain.validateDomain,
       network: domain.network,
       socks5: domain.socks5,
+      useTorProxy: domain.useTorProxy,
+      torProxyPort: domain.torProxyPort,
     );
   }
 }

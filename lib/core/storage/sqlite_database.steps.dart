@@ -3534,7 +3534,7 @@ final class Schema10 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape17 electrumSettings = Shape17(
+  late final Shape19 electrumSettings = Shape19(
     source: i0.VersionedTable(
       entityName: 'electrum_settings',
       withoutRowId: false,
@@ -3547,6 +3547,8 @@ final class Schema10 extends i0.VersionedSchema {
         _column_61,
         _column_62,
         _column_59,
+        _column_111,
+        _column_112,
       ],
       attachedDatabase: database,
     ),
@@ -3617,7 +3619,7 @@ final class Schema10 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape19 recoverbull = Shape19(
+  late final Shape20 recoverbull = Shape20(
     source: i0.VersionedTable(
       entityName: 'recoverbull',
       withoutRowId: false,
@@ -3632,6 +3634,46 @@ final class Schema10 extends i0.VersionedSchema {
 
 class Shape19 extends i0.VersionedTable {
   Shape19({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get network =>
+      columnsByName['network']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<bool> get validateDomain =>
+      columnsByName['validate_domain']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<int> get stopGap =>
+      columnsByName['stop_gap']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get timeout =>
+      columnsByName['timeout']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get retry =>
+      columnsByName['retry']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get socks5 =>
+      columnsByName['socks5']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<bool> get useTorProxy =>
+      columnsByName['use_tor_proxy']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<int> get torProxyPort =>
+      columnsByName['tor_proxy_port']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<bool> _column_111(String aliasedName) =>
+    i1.GeneratedColumn<bool>(
+      'use_tor_proxy',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.bool,
+      defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
+        'CHECK ("use_tor_proxy" IN (0, 1))',
+      ),
+      defaultValue: const CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_112(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'tor_proxy_port',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      defaultValue: const CustomExpression('9050'),
+    );
+
+class Shape20 extends i0.VersionedTable {
+  Shape20({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<int> get id =>
       columnsByName['id']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<String> get url =>
