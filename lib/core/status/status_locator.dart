@@ -12,10 +12,10 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class StatusLocator {
-  static void setup() {
+  static void setup(GetIt locator) {
     // Port
     locator.registerFactory<ElectrumConnectivityPort>(
       () => ElectrumConnectivityAdapter(

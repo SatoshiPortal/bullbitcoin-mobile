@@ -27,10 +27,10 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class RecoverbullLocator {
-  static Future<void> registerDatasources() async {
+  static Future<void> registerDatasources(GetIt locator) async {
     locator.registerLazySingleton<GoogleDriveAppDatasource>(
       () => GoogleDriveAppDatasource(),
     );
@@ -54,7 +54,7 @@ class RecoverbullLocator {
     await locator.isReady<RecoverBullRemoteDatasource>();
   }
 
-  static Future<void> registerRepositories() async {
+  static Future<void> registerRepositories(GetIt locator) async {
     locator.registerLazySingleton<GoogleDriveRepository>(
       () => GoogleDriveRepository(),
     );
@@ -74,7 +74,7 @@ class RecoverbullLocator {
     await locator.isReady<RecoverBullRepository>();
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<CreateEncryptedVaultUsecase>(
       () => CreateEncryptedVaultUsecase(
         seedRepository: locator<SeedRepository>(),

@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 class WalletMetadataDatasource {
   final SqliteDatabase _sqlite;
 
-  WalletMetadataDatasource({required SqliteDatabase sqliteDatasource})
-    : _sqlite = sqliteDatasource;
+  WalletMetadataDatasource({required SqliteDatabase sqlite}) : _sqlite = sqlite;
 
   Future<void> store(WalletMetadataModel metadata) async {
     final companion = metadata.toSqlite();

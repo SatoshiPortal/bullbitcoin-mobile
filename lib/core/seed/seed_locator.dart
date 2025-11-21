@@ -7,10 +7,10 @@ import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dar
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class SeedLocator {
-  static void registerDatasources() {
+  static void registerDatasources(GetIt locator) {
     locator.registerLazySingleton<SeedDatasource>(
       () => SeedDatasource(
         secureStorage: locator<KeyValueStorageDatasource<String>>(
@@ -20,7 +20,7 @@ class SeedLocator {
     );
   }
 
-  static void registerRepositories() {
+  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<SeedRepository>(
       () => SeedRepository(source: locator<SeedDatasource>()),
     );
@@ -30,13 +30,13 @@ class SeedLocator {
     );
   }
 
-  static void registerServices() {
+  static void registerServices(GetIt locator) {
     locator.registerLazySingleton<MnemonicGenerator>(
       () => const MnemonicGenerator(),
     );
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<FindMnemonicWordsUsecase>(
       () => FindMnemonicWordsUsecase(
         wordListRepository: locator<WordListRepository>(),

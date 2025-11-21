@@ -13,10 +13,10 @@ import 'package:bb_mobile/core/storage/secure_storage.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class StorageLocator {
-  static Future<void> registerDatasources() async {
+  static Future<void> registerDatasources(GetIt locator) async {
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
       () => SecureStorageDatasourceImpl(SecureStorage.init()),
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
@@ -30,7 +30,7 @@ class StorageLocator {
     );
   }
 
-  static void registerRepositories() {
+  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<OldSeedRepository>(
       () => OldSeedRepository(locator<MigrationSecureStorageDatasource>()),
     );
@@ -39,7 +39,7 @@ class StorageLocator {
     );
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<MigrateToV5HiveToSqliteToUsecase>(
       () => MigrateToV5HiveToSqliteToUsecase(
         newSeedRepository: locator<SeedRepository>(),

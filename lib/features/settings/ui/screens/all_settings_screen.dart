@@ -7,6 +7,8 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
+import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,8 +17,19 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AllSettingsScreen extends StatelessWidget {
+class AllSettingsScreen extends StatefulWidget {
   const AllSettingsScreen({super.key});
+
+  @override
+  State<AllSettingsScreen> createState() => _AllSettingsScreenState();
+}
+
+class _AllSettingsScreenState extends State<AllSettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ServiceStatusCubit>().checkStatus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +37,10 @@ class AllSettingsScreen extends StatelessWidget {
 
     final appVersion = context.select(
       (SettingsCubit cubit) => cubit.state.appVersion,
+    );
+
+    final serviceStatus = context.select(
+      (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
     return Scaffold(
@@ -110,6 +127,17 @@ class AllSettingsScreen extends StatelessWidget {
                       SettingsConstants.termsAndConditionsLink,
                     );
                     launchUrl(url, mode: LaunchMode.inAppBrowserView);
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.monitor_heart,
+                  iconColor:
+                      serviceStatus?.allServicesOnline ?? false
+                          ? Colors.green
+                          : Colors.red,
+                  title: 'Services Status',
+                  onTap: () {
+                    context.pushNamed(StatusCheckRoute.serviceStatus.name);
                   },
                 ),
               ],

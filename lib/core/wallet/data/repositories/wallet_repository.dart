@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:async/async.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -37,7 +37,6 @@ class WalletRepository {
     // Keep track of the last sync time in the wallet metadata
     _walletSyncFinishedStream.listen(_updateWalletSyncTime);
     // Start auto syncing wallets
-    _startAutoSyncing();
   }
 
   Stream<Wallet> get walletSyncStartedStream =>
@@ -402,52 +401,6 @@ class WalletRepository {
     await _walletMetadataDatasource.store(updatedWalletMetadata);
   }
 
-  Future<void> _startAutoSyncing() async {
-    // TODO: get from constants
-    // TODO(azad): shouldn't we store `autoSyncIntervalSeconds` in sqlite settings?
-    // @azad Yes we should, but for now it is not an option in the UI yet,
-    //  so OK as a constant for now. When we add the option to the UI, we can
-    //  move it to the settings table.
-    const autoSyncInterval = Duration(
-      seconds: SettingsConstants.autoSyncIntervalSeconds,
-    );
-
-    Timer.periodic(autoSyncInterval, (timer) async {
-      try {
-        final metadatas = await _walletMetadataDatasource.fetchAll();
-        for (final metadata in metadatas) {
-          // Only sync if the time since the last sync is greater than the interval
-          if (metadata.syncedAt == null ||
-              metadata.syncedAt!.compareTo(
-                    DateTime.now().subtract(autoSyncInterval),
-                  ) <=
-                  0) {
-            final wallet =
-                metadata.isLiquid
-                    ? WalletModel.publicLwk(
-                      combinedCtDescriptor: metadata.externalPublicDescriptor,
-                      isTestnet: metadata.isTestnet,
-                      id: metadata.id,
-                    )
-                    : WalletModel.publicBdk(
-                      externalDescriptor: metadata.externalPublicDescriptor,
-                      internalDescriptor: metadata.internalPublicDescriptor,
-                      isTestnet: metadata.isTestnet,
-                      id: metadata.id,
-                    );
-            await _syncWallet(wallet);
-          }
-        }
-      } catch (e, stackTrace) {
-        log.severe(
-          'Error during auto-syncing wallets',
-          error: e,
-          trace: stackTrace,
-        );
-      }
-    });
-  }
-
   Future<BalanceModel> _getBalance(
     WalletMetadataModel metadata, {
     bool sync = false,
@@ -481,6 +434,25 @@ class WalletRepository {
     }
 
     return balance;
+  }
+
+  Future<void> sync(Wallet wallet) async {
+    final walletModel = WalletModel.fromMetadata(
+      WalletMetadataModel(
+        id: wallet.id,
+        masterFingerprint: wallet.masterFingerprint,
+        xpubFingerprint: wallet.xpubFingerprint,
+        isEncryptedVaultTested: wallet.isEncryptedVaultTested,
+        isPhysicalBackupTested: wallet.isPhysicalBackupTested,
+        externalPublicDescriptor: wallet.externalPublicDescriptor,
+        internalPublicDescriptor: wallet.internalPublicDescriptor,
+        xpub: wallet.xpub,
+        isDefault: wallet.isDefault,
+        label: wallet.label,
+        signer: Signer.fromEntity(wallet.signer),
+      ),
+    );
+    await _syncWallet(walletModel);
   }
 
   Future<void> _syncWallet(WalletModel wallet) async {

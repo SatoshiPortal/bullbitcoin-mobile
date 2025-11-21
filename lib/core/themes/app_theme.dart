@@ -119,6 +119,9 @@ class AppTheme {
           fontWeight: FontWeight.w500,
         ),
       ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        refreshBackgroundColor: colours.secondary,
+      ),
     );
   }
 }

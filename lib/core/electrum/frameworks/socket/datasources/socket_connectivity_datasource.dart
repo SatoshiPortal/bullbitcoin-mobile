@@ -25,7 +25,7 @@ class SocketConnectivityDatasource {
       socket.destroy();
       return true;
     } on SocketException catch (e) {
-      log.fine('Socket connection failed for $host:$port - $e');
+      log.warning('Socket connection failed for $host:$port - $e');
       return false;
     } catch (e) {
       log.severe('Unexpected error checking socket connection: $e');

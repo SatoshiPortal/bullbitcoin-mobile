@@ -9,10 +9,10 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_trans
 import 'package:bb_mobile/core/blockchain/interface_adapters/adapters/electrum_server_adapter.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class BlockchainLocator {
-  static void registerDatasources() {
+  static void registerDatasources(GetIt locator) {
     locator.registerLazySingleton<BdkBitcoinBlockchainDatasource>(
       () => const BdkBitcoinBlockchainDatasource(),
     );
@@ -22,7 +22,7 @@ class BlockchainLocator {
     );
   }
 
-  static void registerRepositories() {
+  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BitcoinBlockchainRepository>(
       () => BitcoinBlockchainRepository(
         blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),
@@ -36,7 +36,7 @@ class BlockchainLocator {
     );
   }
 
-  static void registerPorts() {
+  static void registerPorts(GetIt locator) {
     locator.registerLazySingleton<ElectrumServerPort>(
       () => ElectrumServerAdapter(
         getElectrumServersToUseUsecase:
@@ -45,7 +45,7 @@ class BlockchainLocator {
     );
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<BroadcastBitcoinTransactionUsecase>(
       () => BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
