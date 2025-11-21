@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
 import 'package:bb_mobile/features/legacy_seed_view/ui/legacy_seed_view_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings_screen.dart';
@@ -31,7 +30,6 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/language/language_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/swap/swap_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -264,15 +262,6 @@ class SettingsRouter {
         path: SettingsRoute.currency.path,
         name: SettingsRoute.currency.name,
         builder: (context, state) => const CurrencySettingsScreen(),
-      ),
-      GoRoute(
-        path: SettingsRoute.swapSettings.path,
-        name: SettingsRoute.swapSettings.name,
-        builder:
-            (context, state) => BlocProvider(
-              create: (_) => locator<SwapSettingsCubit>()..loadSwapMasterKey(),
-              child: const SwapSettingsScreen(),
-            ),
       ),
     ],
   );
