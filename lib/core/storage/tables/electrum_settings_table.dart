@@ -9,6 +9,8 @@ class ElectrumSettings extends Table {
   IntColumn get timeout => integer()();
   IntColumn get retry => integer()();
   TextColumn get socks5 => text().nullable()();
+  BoolColumn get useTorProxy => boolean().withDefault(const Constant(false))();
+  IntColumn get torProxyPort => integer().withDefault(const Constant(9050))();
 
   @override
   Set<Column> get primaryKey => {network};

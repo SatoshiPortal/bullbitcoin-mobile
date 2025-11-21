@@ -27,3 +27,10 @@ class InvalidRetryException extends ElectrumServerSettingsException {
   InvalidRetryException(this.value)
     : super('retry must be non-negative, got: $value');
 }
+
+class InvalidTorProxyPortException extends ElectrumServerSettingsException {
+  final int value;
+
+  InvalidTorProxyPortException(this.value)
+    : super('Tor proxy port must be between 1 and 65535, got: $value');
+}

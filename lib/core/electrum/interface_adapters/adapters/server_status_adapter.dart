@@ -14,6 +14,8 @@ class ServerStatusAdapter implements ServerStatusPort {
   Future<ElectrumServerStatus> checkServerStatus({
     required String url,
     int? timeout,
+    bool useTorProxy = false,
+    int torProxyPort = 9050,
   }) async {
     try {
       if (url.isEmpty) {
@@ -35,10 +37,17 @@ class ServerStatusAdapter implements ServerStatusPort {
         return ElectrumServerStatus.offline;
       }
 
+      // Onion addresses need longer timeouts due to Tor circuit building
+      // Default: 5 seconds for clearnet, 30 seconds for onion addresses
+      final isOnionAddress = uri.host.endsWith('.onion');
+      final effectiveTimeout = timeout ?? (isOnionAddress ? 30 : 5);
+
       final isConnectable = await _socketDatasource.checkConnection(
         host: uri.host,
         port: uri.port,
-        timeoutSeconds: timeout ?? 5,
+        timeoutSeconds: effectiveTimeout,
+        useTorProxy: useTorProxy,
+        torProxyPort: torProxyPort,
       );
 
       return isConnectable
