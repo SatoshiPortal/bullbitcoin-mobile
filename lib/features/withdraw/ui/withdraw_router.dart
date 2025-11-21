@@ -52,10 +52,22 @@ class WithdrawRouter {
                 context.pushNamed(
                   RecipientsRoute.recipients.name,
                   extra: RecipientsRouteExtra(
-                    onRecipientSelected: (RecipientViewModel recipient) {
-                      context.read<WithdrawBloc>().add(
-                        WithdrawEvent.recipientSelected(recipient),
+                    onRecipientSelected: (RecipientViewModel recipient) async {
+                      final bloc = context.read<WithdrawBloc>();
+                      bloc.add(WithdrawEvent.recipientSelected(recipient));
+
+                      // Wait for the bloc to process and check for errors if any
+                      final resultState = await bloc.stream.firstWhere(
+                        (state) =>
+                            (state is WithdrawRecipientInputState &&
+                                !state.isCreatingWithdrawOrder) ||
+                            state is WithdrawConfirmationState,
                       );
+
+                      if (resultState is WithdrawRecipientInputState &&
+                          resultState.error != null) {
+                        throw resultState.error!;
+                      }
                     },
                     allowedRecipientsFilters: AllowedRecipientFiltersViewModel(
                       types:

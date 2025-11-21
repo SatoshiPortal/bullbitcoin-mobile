@@ -199,6 +199,18 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
                     itemCount: _recipients!.length,
                   ),
         ),
+        BlocSelector<RecipientsBloc, RecipientsState, Exception?>(
+          selector: (state) => state.failedToHandleSelectedRecipient,
+          builder: (context, e) {
+            return Text(
+              '$e',
+              style: context.font.bodyMedium?.copyWith(
+                color: e == null ? Colors.transparent : context.colour.error,
+              ),
+            );
+          },
+        ),
+        const Gap(16.0),
         BBButton.big(
           label: 'Continue',
           disabled: _selectedRecipient == null,

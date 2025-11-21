@@ -15,7 +15,8 @@ enum RecipientsRoute {
 
 class RecipientsRouteExtra {
   final AllowedRecipientFiltersViewModel? allowedRecipientsFilters;
-  final void Function(RecipientViewModel recipient) onRecipientSelected;
+  final Future<void>? Function(RecipientViewModel recipient)
+  onRecipientSelected;
 
   RecipientsRouteExtra({
     this.allowedRecipientsFilters,
@@ -34,22 +35,11 @@ class RecipientsRouter {
 
       return BlocProvider<RecipientsBloc>(
         create:
-            (context) =>
-                locator<RecipientsBloc>(param1: extra.allowedRecipientsFilters)
-                  ..add(const RecipientsEvent.started()),
-        child: BlocListener<RecipientsBloc, RecipientsState>(
-          listenWhen:
-              (previous, current) =>
-                  previous.selectedRecipient != current.selectedRecipient &&
-                  current.hasSelectedRecipient,
-          listener: (context, state) {
-            // TODO: Move this callback to the 'onContinue' handler in the BLoC
-            // so ze cqn catch errors and show loading indicators.
-            // Pass the handler as the second Bloc parameter.
-            extra.onRecipientSelected.call(state.selectedRecipient!);
-          },
-          child: const RecipientsScreen(),
-        ),
+            (context) => locator<RecipientsBloc>(
+              param1: extra.allowedRecipientsFilters,
+              param2: extra.onRecipientSelected,
+            )..add(const RecipientsEvent.started()),
+        child: const RecipientsScreen(),
       );
     },
   );

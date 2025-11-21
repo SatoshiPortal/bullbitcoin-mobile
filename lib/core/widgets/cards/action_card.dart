@@ -117,8 +117,10 @@ class _ActionRow extends StatelessWidget {
                       context.pushNamed(
                         RecipientsRoute.recipients.name,
                         extra: RecipientsRouteExtra(
-                          onRecipientSelected: (RecipientViewModel recipient) {
-                            context.pushNamed(
+                          onRecipientSelected: (
+                            RecipientViewModel recipient,
+                          ) async {
+                            await context.pushNamed(
                               PayRoute.pay.name,
                               extra: recipient,
                             );
@@ -134,8 +136,10 @@ class _ActionRow extends StatelessWidget {
                     context.pushNamed(
                       RecipientsRoute.recipients.name,
                       extra: RecipientsRouteExtra(
-                        onRecipientSelected: (RecipientViewModel recipient) {
-                          context.pushNamed(
+                        onRecipientSelected: (
+                          RecipientViewModel recipient,
+                        ) async {
+                          await context.pushNamed(
                             PayRoute.pay.name,
                             extra: recipient,
                           );

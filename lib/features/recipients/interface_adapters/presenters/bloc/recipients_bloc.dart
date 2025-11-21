@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
@@ -18,11 +20,14 @@ part 'recipients_bloc.freezed.dart';
 class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   RecipientsBloc({
     AllowedRecipientFiltersViewModel? allowedRecipientFilters,
+    Future<void>? Function(RecipientViewModel recipient)?
+    onRecipientSelectedHook,
     required AddRecipientUsecase addRecipientUsecase,
     required GetRecipientsUsecase getRecipientsUsecase,
     required CheckSinpeUsecase checkSinpeUsecase,
     required ListCadBillersUsecase listCadBillersUsecase,
-  }) : _addRecipientUsecase = addRecipientUsecase,
+  }) : _onRecipientSelectedHook = onRecipientSelectedHook,
+       _addRecipientUsecase = addRecipientUsecase,
        _getRecipientsUsecase = getRecipientsUsecase,
        _checkSinpeUsecase = checkSinpeUsecase,
        _listCadBillersUsecase = listCadBillersUsecase,
@@ -42,6 +47,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   }
 
   static const pageSize = 50;
+  final Future<void>? Function(RecipientViewModel recipient)?
+  _onRecipientSelectedHook;
   final AddRecipientUsecase _addRecipientUsecase;
   final GetRecipientsUsecase _getRecipientsUsecase;
   final CheckSinpeUsecase _checkSinpeUsecase;
@@ -178,11 +185,10 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       log.fine(
         'Successfully added recipient with ID: ${result.recipient.recipientId}',
       );
-      emit(
-        state.copyWith(
-          selectedRecipient: RecipientViewModel.fromDto(result.recipient),
-        ),
-      );
+      final addedRecipient = RecipientViewModel.fromDto(result.recipient);
+
+      // Select the newly added recipient
+      add(RecipientsEvent.selected(addedRecipient));
     } catch (e) {
       emit(
         state.copyWith(
@@ -281,7 +287,30 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   ) async {
     // Clear any previously selected recipient before setting the new one
     // to ensure we can listen to changes properly.
-    emit(state.copyWith(selectedRecipient: null));
-    emit(state.copyWith(selectedRecipient: event.recipient));
+    emit(
+      state.copyWith(
+        selectedRecipient: null,
+        isHandlingSelectedRecipient: true,
+        failedToHandleSelectedRecipient: null,
+      ),
+    );
+    try {
+      log.info('Recipient selected: ${event.recipient}');
+      if (_onRecipientSelectedHook != null) {
+        await _onRecipientSelectedHook(event.recipient);
+      }
+      emit(state.copyWith(selectedRecipient: event.recipient));
+    } catch (e) {
+      log.severe('Error in recipient selection logging: $e');
+      emit(
+        state.copyWith(
+          failedToHandleSelectedRecipient: Exception(
+            'Error when selecting recipient: $e',
+          ),
+        ),
+      );
+    } finally {
+      emit(state.copyWith(isHandlingSelectedRecipient: false));
+    }
   }
 }

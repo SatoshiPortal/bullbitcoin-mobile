@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbi
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -112,10 +113,11 @@ class RecipientsLocator {
     locator.registerFactoryParam<
       RecipientsBloc,
       AllowedRecipientFiltersViewModel?,
-      void
+      Future<void>? Function(RecipientViewModel recipient)?
     >(
-      (allowedRecipientFilters, _) => RecipientsBloc(
+      (allowedRecipientFilters, onRecipientSelected) => RecipientsBloc(
         allowedRecipientFilters: allowedRecipientFilters,
+        onRecipientSelectedHook: onRecipientSelected,
         addRecipientUsecase: locator<AddRecipientUsecase>(),
         getRecipientsUsecase: locator<GetRecipientsUsecase>(),
         checkSinpeUsecase: locator<CheckSinpeUsecase>(),

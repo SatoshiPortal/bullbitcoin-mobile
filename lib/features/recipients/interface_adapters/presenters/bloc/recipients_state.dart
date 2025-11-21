@@ -17,6 +17,8 @@ sealed class RecipientsState with _$RecipientsState {
     @Default(false) bool isAddingRecipient,
     Exception? failedToAddRecipient,
     RecipientViewModel? selectedRecipient,
+    @Default(false) bool isHandlingSelectedRecipient,
+    Exception? failedToHandleSelectedRecipient,
   }) = _RecipientsState;
   const RecipientsState._();
 
@@ -24,7 +26,8 @@ sealed class RecipientsState with _$RecipientsState {
       isLoadingRecipients ||
       isAddingRecipient ||
       isCheckingSinpe ||
-      isSearchingCadBillers;
+      isSearchingCadBillers ||
+      isHandlingSelectedRecipient;
 
   bool get hasMoreRecipientsToLoad {
     if (recipients == null || totalRecipients == null) {

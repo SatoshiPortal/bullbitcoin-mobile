@@ -495,7 +495,8 @@ class RecipientDetailsDto {
           isDefault: def,
           isOwner: isOwner,
           // Nequi uses phone number as bank account and API field is bankAccount
-          phoneNumber: bankAccount!,
+          // Phone number has a value when entered by user, bank account has a value when retrieved from API
+          phoneNumber: phoneNumber ?? bankAccount!,
           documentId: documentId!,
           documentType: documentType!,
           name: name!,
