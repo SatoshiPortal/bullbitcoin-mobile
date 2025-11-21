@@ -3,10 +3,6 @@ part of 'pay_bloc.dart';
 @freezed
 sealed class PayEvent with _$PayEvent {
   const factory PayEvent.started() = PayStarted;
-  const factory PayEvent.newRecipientCreated(NewRecipient newRecipient) =
-      PayNewRecipientCreated;
-  const factory PayEvent.recipientSelected(Recipient recipient) =
-      PayRecipientSelected;
   const factory PayEvent.amountInputContinuePressed({
     required String amountInput,
     required FiatCurrency fiatCurrency,

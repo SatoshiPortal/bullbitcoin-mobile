@@ -6,6 +6,8 @@ import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/routing/recipients_router.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
@@ -110,12 +112,40 @@ class _ActionRow extends StatelessWidget {
                         context.read<SettingsCubit>().state.isSuperuser ??
                         false;
                     if (isSuperuser) {
-                      context.pushNamed(PayRoute.pay.name);
+                      // Reuse the recipients screen to select a recipient before
+                      // navigating to the Pay screen.
+                      context.pushNamed(
+                        RecipientsRoute.recipients.name,
+                        extra: RecipientsRouteExtra(
+                          onRecipientSelected: (
+                            RecipientViewModel recipient,
+                          ) async {
+                            await context.pushNamed(
+                              PayRoute.pay.name,
+                              extra: recipient,
+                            );
+                          },
+                        ),
+                      );
                     } else {
                       context.goNamed(ExchangeRoute.exchangeLanding.name);
                     }
                   } else {
-                    context.pushNamed(PayRoute.pay.name);
+                    // Reuse the recipients screen to select a recipient before
+                    // navigating to the Pay screen.
+                    context.pushNamed(
+                      RecipientsRoute.recipients.name,
+                      extra: RecipientsRouteExtra(
+                        onRecipientSelected: (
+                          RecipientViewModel recipient,
+                        ) async {
+                          await context.pushNamed(
+                            PayRoute.pay.name,
+                            extra: recipient,
+                          );
+                        },
+                      ),
+                    );
                   }
                 }
               },

@@ -59,7 +59,6 @@ class ExchangeHomeScreen extends StatelessWidget {
                             if (!isFullyVerified) const ExchangeHomeKycCard(),
                             const Gap(12),
                             DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
-                            const Gap(12),
                             /*
                             SwitchListTile(
                               value: false,

@@ -3,18 +3,12 @@ import 'dart:async';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/cad_biller.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/new_recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/create_fiat_recipient_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/list_cad_billers_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/list_recipients_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -26,6 +20,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -42,10 +37,8 @@ part 'pay_state.dart';
 
 class PayBloc extends Bloc<PayEvent, PayState> {
   PayBloc({
+    required RecipientViewModel recipient,
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required ListRecipientsUsecase listRecipientsUsecase,
-    required CreateFiatRecipientUsecase createFiatRecipientUsecase,
-    required ListCadBillersUsecase listCadBillersUsecase,
     required PlacePayOrderUsecase placePayOrderUsecase,
     required RefreshPayOrderUsecase refreshPayOrderUsecase,
     required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
@@ -67,9 +60,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     required GetWalletUtxosUsecase getWalletUtxosUsecase,
     required GetOrderUsecase getOrderUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _listRecipientsUsecase = listRecipientsUsecase,
-       _createFiatRecipientUsecase = createFiatRecipientUsecase,
-       _listCadBillersUsecase = listCadBillersUsecase,
        _placePayOrderUsecase = placePayOrderUsecase,
        _refreshPayOrderUsecase = refreshPayOrderUsecase,
        _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
@@ -86,12 +76,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
        _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
        _getWalletUtxosUsecase = getWalletUtxosUsecase,
        _getOrderUsecase = getOrderUsecase,
-       super(const PayRecipientInputState(isLoadingRecipients: true)) {
+       super(PayAmountInputState(selectedRecipient: recipient)) {
     on<PayStarted>(_onStarted);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);
-    on<PayNewRecipientCreated>(_onNewRecipientCreated);
-    on<PayRecipientSelected>(_onRecipientSelected);
-    on<PayGetCadBillers>(_onGetCadBillers);
     on<PayWalletSelected>(_onWalletSelected);
     on<PayExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
     on<PayOrderRefreshTimePassed>(_onOrderRefreshTimePassed);
@@ -104,9 +91,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final ListRecipientsUsecase _listRecipientsUsecase;
-  final CreateFiatRecipientUsecase _createFiatRecipientUsecase;
-  final ListCadBillersUsecase _listCadBillersUsecase;
   final PlacePayOrderUsecase _placePayOrderUsecase;
   final RefreshPayOrderUsecase _refreshPayOrderUsecase;
 
@@ -126,116 +110,32 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   final GetOrderUsecase _getOrderUsecase;
   Timer? _pollingTimer;
 
-  // From Withdraw: Initialize with user summary and recipients
   Future<void> _onStarted(PayStarted event, Emitter<PayState> emit) async {
+    final amountInputState = state.cleanAmountInputState;
+    emit(amountInputState!.copyWith(isLoadingUserSummary: true));
     try {
-      emit(const PayState.recipientInput(isLoadingRecipients: true));
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
-      // Emit loading state for recipients
-      emit(
-        PayState.recipientInput(userSummary: userSummary, recipients: const []),
-      );
 
-      final recipients = await _listRecipientsUsecase.execute(fiatOnly: true);
-
-      emit(
-        PayState.recipientInput(
-          userSummary: userSummary,
-          recipients: recipients,
-        ),
-      );
+      emit(amountInputState.copyWith(userSummary: userSummary));
     } on ApiKeyException catch (e) {
       // Handle API key error by showing error in current state
-      if (state is PayRecipientInputState) {
-        emit(
-          (state as PayRecipientInputState).copyWith(
-            error: PayError.unexpected(message: e.message),
-          ),
-        );
-      }
-    } on GetExchangeUserSummaryException catch (e) {
-      if (state is PayRecipientInputState) {
-        emit(
-          (state as PayRecipientInputState).copyWith(
-            error: PayError.unexpected(message: e.message),
-          ),
-        );
-      }
-    } on ListRecipientsException catch (e) {
-      if (state is PayRecipientInputState) {
-        emit(
-          (state as PayRecipientInputState).copyWith(
-            error: PayError.unexpected(message: e.message),
-          ),
-        );
-      }
-    } finally {
-      if (state is PayRecipientInputState) {
-        emit(
-          (state as PayRecipientInputState).copyWith(
-            isLoadingRecipients: false,
-          ),
-        );
-      }
-    }
-  }
 
-  // From Withdraw: Create new recipient and create pay order
-  Future<void> _onNewRecipientCreated(
-    PayNewRecipientCreated event,
-    Emitter<PayState> emit,
-  ) async {
-    final recipientInputState = state.cleanRecipientInputState;
-    if (recipientInputState == null) {
-      // Unexpected state, do nothing
-      log.severe('Expected to be on PayRecipientInputState but on: $state');
-      return;
-    }
-    emit(recipientInputState.copyWith(isCreatingNewRecipient: true));
-
-    // Use the recipient from the event directly
-    final newRecipient = event.newRecipient;
-    try {
-      final createdRecipient = await _createFiatRecipientUsecase.execute(
-        newRecipient,
+      emit(
+        (state as PayAmountInputState).copyWith(
+          error: PayError.unexpected(message: e.message),
+        ),
       );
-
-      emit(recipientInputState.toAmountInputState(recipient: createdRecipient));
-    } catch (e) {
-      log.severe('Error creating new recipient: $e');
-      if (state is PayRecipientInputState) {
-        emit(
-          (state as PayRecipientInputState).copyWith(
-            error: PayError.unexpected(
-              message: 'Failed to create recipient: $e',
-            ),
-          ),
-        );
-      }
+    } on GetExchangeUserSummaryException catch (e) {
+      emit(
+        (state as PayAmountInputState).copyWith(
+          error: PayError.unexpected(message: e.message),
+        ),
+      );
     } finally {
-      if (state is PayRecipientInputState) {
-        emit(
-          (state as PayRecipientInputState).copyWith(
-            isCreatingNewRecipient: false,
-          ),
-        );
-      }
+      emit(
+        (state as PayAmountInputState).copyWith(isLoadingUserSummary: false),
+      );
     }
-  }
-
-  Future<void> _onRecipientSelected(
-    PayRecipientSelected event,
-    Emitter<PayState> emit,
-  ) async {
-    final recipientInputState = state.cleanRecipientInputState;
-    if (recipientInputState == null) {
-      log.severe('Expected to be on PayRecipientInputState but on: $state');
-      // Unexpected state, do nothing
-      return;
-    }
-    emit(recipientInputState);
-
-    emit(recipientInputState.toAmountInputState(recipient: event.recipient));
   }
 
   Future<void> _onAmountInputContinuePressed(
@@ -260,43 +160,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     final fiatAmount = FiatAmount(amount);
 
     emit(amountInputState.toWalletSelectionState(amount: fiatAmount));
-  }
-
-  // From Withdraw: Get CAD billers for search
-  Future<void> _onGetCadBillers(
-    PayGetCadBillers event,
-    Emitter<PayState> emit,
-  ) async {
-    if (state is PayRecipientInputState) {
-      final currentState = state as PayRecipientInputState;
-
-      // Only search if search term has at least 3 characters
-      if (event.searchTerm.length < 3) {
-        return;
-      }
-
-      emit(currentState.copyWith(isLoadingCadBillers: true));
-
-      try {
-        final cadBillers = await _listCadBillersUsecase.execute(
-          searchTerm: event.searchTerm,
-        );
-        emit(
-          currentState.copyWith(
-            cadBillers: cadBillers,
-            isLoadingCadBillers: false,
-          ),
-        );
-      } catch (e) {
-        log.severe('Error fetching CAD billers: $e');
-        emit(
-          currentState.copyWith(
-            isLoadingCadBillers: false,
-            error: PayError.unexpected(message: 'Failed to load billers: $e'),
-          ),
-        );
-      }
-    }
   }
 
   // From Sell: Select internal wallet, calculate fees, create pay order
@@ -376,7 +239,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     try {
       final createdPayOrder = await _placePayOrderUsecase.execute(
         orderAmount: walletSelectionState.amount,
-        recipientId: walletSelectionState.selectedRecipient.recipientId,
+        recipientId: walletSelectionState.selectedRecipient.id,
         network:
             event.wallet.isLiquid
                 ? OrderBitcoinNetwork.liquid
@@ -450,7 +313,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     try {
       final createdPayOrder = await _placePayOrderUsecase.execute(
         orderAmount: walletSelectionState.amount,
-        recipientId: walletSelectionState.selectedRecipient.recipientId,
+        recipientId: walletSelectionState.selectedRecipient.id,
         network: event.network,
       );
 

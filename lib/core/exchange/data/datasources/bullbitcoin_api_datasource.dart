@@ -1,13 +1,10 @@
 import 'dart:math' show pow;
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/exchange/data/models/cad_biller_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/dca_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_request_params_model.dart';
-import 'package:bb_mobile/core/exchange/data/models/new_recipient_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
-import 'package:bb_mobile/core/exchange/data/models/recipient_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -490,120 +487,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 
-  Future<List<RecipientModel>> listRecipients({required String apiKey}) async {
-    final resp = await _http.post(
-      _recipientsPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'listRecipients',
-        'params': {
-          "paginator": {"page": 1, "pageSize": 50},
-        },
-      },
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to list recipients');
-    }
-    final elements = resp.data['result']['elements'] as List<dynamic>?;
-    if (elements == null) return [];
-    return elements
-        .map((e) => RecipientModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
-
-  Future<List<RecipientModel>> listRecipientsFiat({
-    required String apiKey,
-  }) async {
-    final resp = await _http.post(
-      _recipientsPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'listRecipientsFiat',
-        'params': {
-          "paginator": {"page": 1, "pageSize": 50},
-        },
-      },
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
-
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to list fiat recipients');
-    }
-    final elements = resp.data['result']['elements'] as List<dynamic>?;
-
-    if (elements == null) return [];
-    return elements
-        .map((e) => RecipientModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
-
-  Future<RecipientModel> createFiatRecipient({
-    required NewRecipientModel recipient,
-    required String apiKey,
-  }) async {
-    final resp = await _http.post(
-      _recipientsPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'createRecipientFiat',
-        'params': recipient.toApiParams(),
-      },
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to create fiat recipient');
-    }
-
-    final error = resp.data['error'];
-    if (error != null) {
-      throw Exception('Failed to create fiat recipient: $error');
-    }
-
-    try {
-      final result = resp.data['result']['element'] as Map<String, dynamic>;
-      return RecipientModel.fromJson(result);
-    } catch (e, stackTrace) {
-      log.severe('Error parsing RecipientModel.fromJson: $e');
-      log.severe('Stack trace: $stackTrace');
-      log.severe(
-        'Element data that failed to parse: ${resp.data['result']['element']}',
-      );
-      rethrow;
-    }
-  }
-
-  Future<List<CadBillerModel>> listCadBillers({
-    required String apiKey,
-    required String searchTerm,
-  }) async {
-    final params = <String, dynamic>{
-      'filters': {'search': searchTerm},
-    };
-
-    final resp = await _http.post(
-      _recipientsPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'listAplBillers',
-        'params': params,
-      },
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to list CAD billers');
-    }
-    final elements = resp.data['result']['elements'] as List<dynamic>?;
-    if (elements == null) return [];
-    return elements
-        .map((e) => CadBillerModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
-
   Future<DcaModel> createDca({
     required double amount,
     required FiatCurrency currency,
@@ -651,36 +534,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     return DcaModel.fromJson(
       resp.data['result']['element'] as Map<String, dynamic>,
     );
-  }
-
-  Future<String> checkSinpe({
-    required String phoneNumber,
-    required String apiKey,
-  }) async {
-    final resp = await _http.post(
-      _recipientsPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'checkSinpe',
-        'params': {'phoneNumber': phoneNumber},
-      },
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
-
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to check SINPE');
-    }
-
-    final error = resp.data['error'];
-    if (error != null) {
-      throw Exception('Failed to check SINPE: $error');
-    }
-
-    final result = resp.data['result'] as Map<String, dynamic>;
-    final ownerName = result['ownerName'] as String;
-
-    return ownerName;
   }
 
   Future<Map<String, dynamic>> getBuyLimits({required String apiKey}) async {
