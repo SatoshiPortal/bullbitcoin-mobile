@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:ark_wallet/ark_wallet.dart';
 import 'package:bb_mobile/bloc_observer.dart';
@@ -16,6 +17,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
+import 'package:bitbox_flutter/bitbox_flutter.dart';
 import 'package:boltz/boltz.dart';
 import 'package:dart_bbqr/bbqr.dart';
 import 'package:flutter/material.dart';
@@ -27,14 +29,20 @@ import 'package:payjoin_flutter/common.dart';
 
 class Bull {
   static Future<void> init() async {
-    await Future.wait([
+    final initTasks = [
       LibLwk.init(),
       BoltzCore.init(),
       PConfig.initializeApp(),
       dotenv.load(isOptional: true),
       LibBbqr.init(),
       LibArk.init(),
-    ]);
+    ];
+
+    if (Platform.isAndroid) {
+      initTasks.add(BitBoxFlutterApi.initialize());
+    }
+
+    await Future.wait(initTasks);
 
     final logDirectory = await getApplicationDocumentsDirectory();
     log = Logger.init(directory: logDirectory);

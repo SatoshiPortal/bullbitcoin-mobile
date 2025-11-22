@@ -38,6 +38,10 @@ dependencies:
     git:
       url: https://github.com/LtbLightning/bitcoin-utils-flutter
       ref: afbcbfae4addb833f46bf8b3c3899085e66941e0
+  bitbox_flutter:
+    git:
+      url: https://github.com/ben-kaufman/bitbox-flutter
+      ref: 81fbfb07b7bed6321467419f161387e20bd39bd6
   flutter_dotenv: ^5.2.1
   hex: ^0.2.0
   auto_size_text: ^3.0.0
