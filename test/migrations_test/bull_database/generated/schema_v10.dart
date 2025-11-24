@@ -1787,6 +1787,25 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     ),
     defaultValue: const CustomExpression('0'),
   );
+  late final GeneratedColumn<bool> useTorProxy = GeneratedColumn<bool>(
+    'use_tor_proxy',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("use_tor_proxy" IN (0, 1))',
+    ),
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<int> torProxyPort = GeneratedColumn<int>(
+    'tor_proxy_port',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const CustomExpression('9050'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1797,6 +1816,8 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     hideAmounts,
     isSuperuser,
     isDevModeEnabled,
+    useTorProxy,
+    torProxyPort,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1849,6 +1870,16 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
             DriftSqlType.bool,
             data['${effectivePrefix}is_dev_mode_enabled'],
           )!,
+      useTorProxy:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}use_tor_proxy'],
+          )!,
+      torProxyPort:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}tor_proxy_port'],
+          )!,
     );
   }
 
@@ -1867,6 +1898,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final bool hideAmounts;
   final bool isSuperuser;
   final bool isDevModeEnabled;
+  final bool useTorProxy;
+  final int torProxyPort;
   const SettingsData({
     required this.id,
     required this.environment,
@@ -1876,6 +1909,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.hideAmounts,
     required this.isSuperuser,
     required this.isDevModeEnabled,
+    required this.useTorProxy,
+    required this.torProxyPort,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1888,6 +1923,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['hide_amounts'] = Variable<bool>(hideAmounts);
     map['is_superuser'] = Variable<bool>(isSuperuser);
     map['is_dev_mode_enabled'] = Variable<bool>(isDevModeEnabled);
+    map['use_tor_proxy'] = Variable<bool>(useTorProxy);
+    map['tor_proxy_port'] = Variable<int>(torProxyPort);
     return map;
   }
 
@@ -1901,6 +1938,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       hideAmounts: Value(hideAmounts),
       isSuperuser: Value(isSuperuser),
       isDevModeEnabled: Value(isDevModeEnabled),
+      useTorProxy: Value(useTorProxy),
+      torProxyPort: Value(torProxyPort),
     );
   }
 
@@ -1918,6 +1957,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       hideAmounts: serializer.fromJson<bool>(json['hideAmounts']),
       isSuperuser: serializer.fromJson<bool>(json['isSuperuser']),
       isDevModeEnabled: serializer.fromJson<bool>(json['isDevModeEnabled']),
+      useTorProxy: serializer.fromJson<bool>(json['useTorProxy']),
+      torProxyPort: serializer.fromJson<int>(json['torProxyPort']),
     );
   }
   @override
@@ -1932,6 +1973,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'hideAmounts': serializer.toJson<bool>(hideAmounts),
       'isSuperuser': serializer.toJson<bool>(isSuperuser),
       'isDevModeEnabled': serializer.toJson<bool>(isDevModeEnabled),
+      'useTorProxy': serializer.toJson<bool>(useTorProxy),
+      'torProxyPort': serializer.toJson<int>(torProxyPort),
     };
   }
 
@@ -1944,6 +1987,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     bool? hideAmounts,
     bool? isSuperuser,
     bool? isDevModeEnabled,
+    bool? useTorProxy,
+    int? torProxyPort,
   }) => SettingsData(
     id: id ?? this.id,
     environment: environment ?? this.environment,
@@ -1953,6 +1998,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     hideAmounts: hideAmounts ?? this.hideAmounts,
     isSuperuser: isSuperuser ?? this.isSuperuser,
     isDevModeEnabled: isDevModeEnabled ?? this.isDevModeEnabled,
+    useTorProxy: useTorProxy ?? this.useTorProxy,
+    torProxyPort: torProxyPort ?? this.torProxyPort,
   );
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
@@ -1971,6 +2018,12 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           data.isDevModeEnabled.present
               ? data.isDevModeEnabled.value
               : this.isDevModeEnabled,
+      useTorProxy:
+          data.useTorProxy.present ? data.useTorProxy.value : this.useTorProxy,
+      torProxyPort:
+          data.torProxyPort.present
+              ? data.torProxyPort.value
+              : this.torProxyPort,
     );
   }
 
@@ -1984,7 +2037,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('currency: $currency, ')
           ..write('hideAmounts: $hideAmounts, ')
           ..write('isSuperuser: $isSuperuser, ')
-          ..write('isDevModeEnabled: $isDevModeEnabled')
+          ..write('isDevModeEnabled: $isDevModeEnabled, ')
+          ..write('useTorProxy: $useTorProxy, ')
+          ..write('torProxyPort: $torProxyPort')
           ..write(')'))
         .toString();
   }
@@ -1999,6 +2054,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     hideAmounts,
     isSuperuser,
     isDevModeEnabled,
+    useTorProxy,
+    torProxyPort,
   );
   @override
   bool operator ==(Object other) =>
@@ -2011,7 +2068,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.currency == this.currency &&
           other.hideAmounts == this.hideAmounts &&
           other.isSuperuser == this.isSuperuser &&
-          other.isDevModeEnabled == this.isDevModeEnabled);
+          other.isDevModeEnabled == this.isDevModeEnabled &&
+          other.useTorProxy == this.useTorProxy &&
+          other.torProxyPort == this.torProxyPort);
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -2023,6 +2082,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<bool> hideAmounts;
   final Value<bool> isSuperuser;
   final Value<bool> isDevModeEnabled;
+  final Value<bool> useTorProxy;
+  final Value<int> torProxyPort;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.environment = const Value.absent(),
@@ -2032,6 +2093,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.hideAmounts = const Value.absent(),
     this.isSuperuser = const Value.absent(),
     this.isDevModeEnabled = const Value.absent(),
+    this.useTorProxy = const Value.absent(),
+    this.torProxyPort = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -2042,6 +2105,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     required bool hideAmounts,
     required bool isSuperuser,
     this.isDevModeEnabled = const Value.absent(),
+    this.useTorProxy = const Value.absent(),
+    this.torProxyPort = const Value.absent(),
   }) : environment = Value(environment),
        bitcoinUnit = Value(bitcoinUnit),
        language = Value(language),
@@ -2057,6 +2122,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<bool>? hideAmounts,
     Expression<bool>? isSuperuser,
     Expression<bool>? isDevModeEnabled,
+    Expression<bool>? useTorProxy,
+    Expression<int>? torProxyPort,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2067,6 +2134,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (hideAmounts != null) 'hide_amounts': hideAmounts,
       if (isSuperuser != null) 'is_superuser': isSuperuser,
       if (isDevModeEnabled != null) 'is_dev_mode_enabled': isDevModeEnabled,
+      if (useTorProxy != null) 'use_tor_proxy': useTorProxy,
+      if (torProxyPort != null) 'tor_proxy_port': torProxyPort,
     });
   }
 
@@ -2079,6 +2148,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<bool>? hideAmounts,
     Value<bool>? isSuperuser,
     Value<bool>? isDevModeEnabled,
+    Value<bool>? useTorProxy,
+    Value<int>? torProxyPort,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -2089,6 +2160,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       hideAmounts: hideAmounts ?? this.hideAmounts,
       isSuperuser: isSuperuser ?? this.isSuperuser,
       isDevModeEnabled: isDevModeEnabled ?? this.isDevModeEnabled,
+      useTorProxy: useTorProxy ?? this.useTorProxy,
+      torProxyPort: torProxyPort ?? this.torProxyPort,
     );
   }
 
@@ -2119,6 +2192,12 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (isDevModeEnabled.present) {
       map['is_dev_mode_enabled'] = Variable<bool>(isDevModeEnabled.value);
     }
+    if (useTorProxy.present) {
+      map['use_tor_proxy'] = Variable<bool>(useTorProxy.value);
+    }
+    if (torProxyPort.present) {
+      map['tor_proxy_port'] = Variable<int>(torProxyPort.value);
+    }
     return map;
   }
 
@@ -2132,7 +2211,9 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('currency: $currency, ')
           ..write('hideAmounts: $hideAmounts, ')
           ..write('isSuperuser: $isSuperuser, ')
-          ..write('isDevModeEnabled: $isDevModeEnabled')
+          ..write('isDevModeEnabled: $isDevModeEnabled, ')
+          ..write('useTorProxy: $useTorProxy, ')
+          ..write('torProxyPort: $torProxyPort')
           ..write(')'))
         .toString();
   }
