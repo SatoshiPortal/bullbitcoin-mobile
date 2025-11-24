@@ -1787,7 +1787,6 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     ),
     defaultValue: const CustomExpression('0'),
   );
-<<<<<<< HEAD
   late final GeneratedColumn<bool> useTorProxy = GeneratedColumn<bool>(
     'use_tor_proxy',
     aliasedName,
@@ -1807,8 +1806,6 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     requiredDuringInsert: false,
     defaultValue: const CustomExpression('9050'),
   );
-=======
->>>>>>> 6bb080e1b (Price graph)
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1819,11 +1816,8 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     hideAmounts,
     isSuperuser,
     isDevModeEnabled,
-<<<<<<< HEAD
     useTorProxy,
     torProxyPort,
-=======
->>>>>>> 6bb080e1b (Price graph)
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1876,7 +1870,6 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
             DriftSqlType.bool,
             data['${effectivePrefix}is_dev_mode_enabled'],
           )!,
-<<<<<<< HEAD
       useTorProxy:
           attachedDatabase.typeMapping.read(
             DriftSqlType.bool,
@@ -1887,8 +1880,6 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
             DriftSqlType.int,
             data['${effectivePrefix}tor_proxy_port'],
           )!,
-=======
->>>>>>> 6bb080e1b (Price graph)
     );
   }
 
@@ -1907,11 +1898,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final bool hideAmounts;
   final bool isSuperuser;
   final bool isDevModeEnabled;
-<<<<<<< HEAD
   final bool useTorProxy;
   final int torProxyPort;
-=======
->>>>>>> 6bb080e1b (Price graph)
   const SettingsData({
     required this.id,
     required this.environment,
@@ -1921,11 +1909,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.hideAmounts,
     required this.isSuperuser,
     required this.isDevModeEnabled,
-<<<<<<< HEAD
     required this.useTorProxy,
     required this.torProxyPort,
-=======
->>>>>>> 6bb080e1b (Price graph)
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1938,11 +1923,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['hide_amounts'] = Variable<bool>(hideAmounts);
     map['is_superuser'] = Variable<bool>(isSuperuser);
     map['is_dev_mode_enabled'] = Variable<bool>(isDevModeEnabled);
-<<<<<<< HEAD
     map['use_tor_proxy'] = Variable<bool>(useTorProxy);
     map['tor_proxy_port'] = Variable<int>(torProxyPort);
-=======
->>>>>>> 6bb080e1b (Price graph)
     return map;
   }
 
@@ -1956,11 +1938,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       hideAmounts: Value(hideAmounts),
       isSuperuser: Value(isSuperuser),
       isDevModeEnabled: Value(isDevModeEnabled),
-<<<<<<< HEAD
       useTorProxy: Value(useTorProxy),
       torProxyPort: Value(torProxyPort),
-=======
->>>>>>> 6bb080e1b (Price graph)
     );
   }
 
@@ -1978,11 +1957,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       hideAmounts: serializer.fromJson<bool>(json['hideAmounts']),
       isSuperuser: serializer.fromJson<bool>(json['isSuperuser']),
       isDevModeEnabled: serializer.fromJson<bool>(json['isDevModeEnabled']),
-<<<<<<< HEAD
       useTorProxy: serializer.fromJson<bool>(json['useTorProxy']),
       torProxyPort: serializer.fromJson<int>(json['torProxyPort']),
-=======
->>>>>>> 6bb080e1b (Price graph)
     );
   }
   @override
@@ -1997,11 +1973,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'hideAmounts': serializer.toJson<bool>(hideAmounts),
       'isSuperuser': serializer.toJson<bool>(isSuperuser),
       'isDevModeEnabled': serializer.toJson<bool>(isDevModeEnabled),
-<<<<<<< HEAD
       'useTorProxy': serializer.toJson<bool>(useTorProxy),
       'torProxyPort': serializer.toJson<int>(torProxyPort),
-=======
->>>>>>> 6bb080e1b (Price graph)
     };
   }
 
@@ -2014,11 +1987,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     bool? hideAmounts,
     bool? isSuperuser,
     bool? isDevModeEnabled,
-<<<<<<< HEAD
     bool? useTorProxy,
     int? torProxyPort,
-=======
->>>>>>> 6bb080e1b (Price graph)
   }) => SettingsData(
     id: id ?? this.id,
     environment: environment ?? this.environment,
@@ -2028,11 +1998,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     hideAmounts: hideAmounts ?? this.hideAmounts,
     isSuperuser: isSuperuser ?? this.isSuperuser,
     isDevModeEnabled: isDevModeEnabled ?? this.isDevModeEnabled,
-<<<<<<< HEAD
     useTorProxy: useTorProxy ?? this.useTorProxy,
     torProxyPort: torProxyPort ?? this.torProxyPort,
-=======
->>>>>>> 6bb080e1b (Price graph)
   );
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
@@ -2051,15 +2018,12 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           data.isDevModeEnabled.present
               ? data.isDevModeEnabled.value
               : this.isDevModeEnabled,
-<<<<<<< HEAD
       useTorProxy:
           data.useTorProxy.present ? data.useTorProxy.value : this.useTorProxy,
       torProxyPort:
           data.torProxyPort.present
               ? data.torProxyPort.value
               : this.torProxyPort,
-=======
->>>>>>> 6bb080e1b (Price graph)
     );
   }
 
@@ -2073,13 +2037,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('currency: $currency, ')
           ..write('hideAmounts: $hideAmounts, ')
           ..write('isSuperuser: $isSuperuser, ')
-<<<<<<< HEAD
           ..write('isDevModeEnabled: $isDevModeEnabled, ')
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort')
-=======
-          ..write('isDevModeEnabled: $isDevModeEnabled')
->>>>>>> 6bb080e1b (Price graph)
           ..write(')'))
         .toString();
   }
@@ -2094,11 +2054,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     hideAmounts,
     isSuperuser,
     isDevModeEnabled,
-<<<<<<< HEAD
     useTorProxy,
     torProxyPort,
-=======
->>>>>>> 6bb080e1b (Price graph)
   );
   @override
   bool operator ==(Object other) =>
@@ -2111,13 +2068,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.currency == this.currency &&
           other.hideAmounts == this.hideAmounts &&
           other.isSuperuser == this.isSuperuser &&
-<<<<<<< HEAD
           other.isDevModeEnabled == this.isDevModeEnabled &&
           other.useTorProxy == this.useTorProxy &&
           other.torProxyPort == this.torProxyPort);
-=======
-          other.isDevModeEnabled == this.isDevModeEnabled);
->>>>>>> 6bb080e1b (Price graph)
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -2129,11 +2082,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<bool> hideAmounts;
   final Value<bool> isSuperuser;
   final Value<bool> isDevModeEnabled;
-<<<<<<< HEAD
   final Value<bool> useTorProxy;
   final Value<int> torProxyPort;
-=======
->>>>>>> 6bb080e1b (Price graph)
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.environment = const Value.absent(),
@@ -2143,11 +2093,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.hideAmounts = const Value.absent(),
     this.isSuperuser = const Value.absent(),
     this.isDevModeEnabled = const Value.absent(),
-<<<<<<< HEAD
     this.useTorProxy = const Value.absent(),
     this.torProxyPort = const Value.absent(),
-=======
->>>>>>> 6bb080e1b (Price graph)
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -2158,11 +2105,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     required bool hideAmounts,
     required bool isSuperuser,
     this.isDevModeEnabled = const Value.absent(),
-<<<<<<< HEAD
     this.useTorProxy = const Value.absent(),
     this.torProxyPort = const Value.absent(),
-=======
->>>>>>> 6bb080e1b (Price graph)
   }) : environment = Value(environment),
        bitcoinUnit = Value(bitcoinUnit),
        language = Value(language),
@@ -2178,11 +2122,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<bool>? hideAmounts,
     Expression<bool>? isSuperuser,
     Expression<bool>? isDevModeEnabled,
-<<<<<<< HEAD
     Expression<bool>? useTorProxy,
     Expression<int>? torProxyPort,
-=======
->>>>>>> 6bb080e1b (Price graph)
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2193,11 +2134,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (hideAmounts != null) 'hide_amounts': hideAmounts,
       if (isSuperuser != null) 'is_superuser': isSuperuser,
       if (isDevModeEnabled != null) 'is_dev_mode_enabled': isDevModeEnabled,
-<<<<<<< HEAD
       if (useTorProxy != null) 'use_tor_proxy': useTorProxy,
       if (torProxyPort != null) 'tor_proxy_port': torProxyPort,
-=======
->>>>>>> 6bb080e1b (Price graph)
     });
   }
 
@@ -2210,11 +2148,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<bool>? hideAmounts,
     Value<bool>? isSuperuser,
     Value<bool>? isDevModeEnabled,
-<<<<<<< HEAD
     Value<bool>? useTorProxy,
     Value<int>? torProxyPort,
-=======
->>>>>>> 6bb080e1b (Price graph)
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -2225,11 +2160,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       hideAmounts: hideAmounts ?? this.hideAmounts,
       isSuperuser: isSuperuser ?? this.isSuperuser,
       isDevModeEnabled: isDevModeEnabled ?? this.isDevModeEnabled,
-<<<<<<< HEAD
       useTorProxy: useTorProxy ?? this.useTorProxy,
       torProxyPort: torProxyPort ?? this.torProxyPort,
-=======
->>>>>>> 6bb080e1b (Price graph)
     );
   }
 
@@ -2260,15 +2192,12 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (isDevModeEnabled.present) {
       map['is_dev_mode_enabled'] = Variable<bool>(isDevModeEnabled.value);
     }
-<<<<<<< HEAD
     if (useTorProxy.present) {
       map['use_tor_proxy'] = Variable<bool>(useTorProxy.value);
     }
     if (torProxyPort.present) {
       map['tor_proxy_port'] = Variable<int>(torProxyPort.value);
     }
-=======
->>>>>>> 6bb080e1b (Price graph)
     return map;
   }
 
@@ -2282,13 +2211,9 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('currency: $currency, ')
           ..write('hideAmounts: $hideAmounts, ')
           ..write('isSuperuser: $isSuperuser, ')
-<<<<<<< HEAD
           ..write('isDevModeEnabled: $isDevModeEnabled, ')
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort')
-=======
-          ..write('isDevModeEnabled: $isDevModeEnabled')
->>>>>>> 6bb080e1b (Price graph)
           ..write(')'))
         .toString();
   }
@@ -6146,19 +6071,11 @@ class Bip85DerivationsCompanion extends UpdateCompanion<Bip85DerivationsData> {
   }
 }
 
-<<<<<<< HEAD
 class Recoverbull extends Table with TableInfo<Recoverbull, RecoverbullData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   Recoverbull(this.attachedDatabase, [this._alias]);
-=======
-class RateHistory extends Table with TableInfo<RateHistory, RateHistoryData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  RateHistory(this.attachedDatabase, [this._alias]);
->>>>>>> 6bb080e1b (Price graph)
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
     'id',
     aliasedName,
@@ -6170,10 +6087,171 @@ class RateHistory extends Table with TableInfo<RateHistory, RateHistoryData> {
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
-<<<<<<< HEAD
   late final GeneratedColumn<String> url = GeneratedColumn<String>(
     'url',
-=======
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, url];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recoverbull';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RecoverbullData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecoverbullData(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      url:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}url'],
+          )!,
+    );
+  }
+
+  @override
+  Recoverbull createAlias(String alias) {
+    return Recoverbull(attachedDatabase, alias);
+  }
+}
+
+class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
+  final int id;
+  final String url;
+  const RecoverbullData({required this.id, required this.url});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['url'] = Variable<String>(url);
+    return map;
+  }
+
+  RecoverbullCompanion toCompanion(bool nullToAbsent) {
+    return RecoverbullCompanion(id: Value(id), url: Value(url));
+  }
+
+  factory RecoverbullData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecoverbullData(
+      id: serializer.fromJson<int>(json['id']),
+      url: serializer.fromJson<String>(json['url']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'url': serializer.toJson<String>(url),
+    };
+  }
+
+  RecoverbullData copyWith({int? id, String? url}) =>
+      RecoverbullData(id: id ?? this.id, url: url ?? this.url);
+  RecoverbullData copyWithCompanion(RecoverbullCompanion data) {
+    return RecoverbullData(
+      id: data.id.present ? data.id.value : this.id,
+      url: data.url.present ? data.url.value : this.url,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecoverbullData(')
+          ..write('id: $id, ')
+          ..write('url: $url')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, url);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecoverbullData &&
+          other.id == this.id &&
+          other.url == this.url);
+}
+
+class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
+  final Value<int> id;
+  final Value<String> url;
+  const RecoverbullCompanion({
+    this.id = const Value.absent(),
+    this.url = const Value.absent(),
+  });
+  RecoverbullCompanion.insert({
+    this.id = const Value.absent(),
+    required String url,
+  }) : url = Value(url);
+  static Insertable<RecoverbullData> custom({
+    Expression<int>? id,
+    Expression<String>? url,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (url != null) 'url': url,
+    });
+  }
+
+  RecoverbullCompanion copyWith({Value<int>? id, Value<String>? url}) {
+    return RecoverbullCompanion(id: id ?? this.id, url: url ?? this.url);
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecoverbullCompanion(')
+          ..write('id: $id, ')
+          ..write('url: $url')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class RateHistory extends Table with TableInfo<RateHistory, RateHistoryData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  RateHistory(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
   late final GeneratedColumn<String> fromCurrency = GeneratedColumn<String>(
     'from_currency',
     aliasedName,
@@ -6239,16 +6317,12 @@ class RateHistory extends Table with TableInfo<RateHistory, RateHistoryData> {
   );
   late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
     'created_at',
->>>>>>> 6bb080e1b (Price graph)
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
   @override
-<<<<<<< HEAD
-  List<GeneratedColumn> get $columns => [id, url];
-=======
   List<GeneratedColumn> get $columns => [
     id,
     fromCurrency,
@@ -6262,20 +6336,10 @@ class RateHistory extends Table with TableInfo<RateHistory, RateHistoryData> {
     userPrice,
     createdAt,
   ];
->>>>>>> 6bb080e1b (Price graph)
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-<<<<<<< HEAD
-  static const String $name = 'recoverbull';
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  RecoverbullData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return RecoverbullData(
-=======
   static const String $name = 'rate_history';
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
@@ -6287,18 +6351,11 @@ class RateHistory extends Table with TableInfo<RateHistory, RateHistoryData> {
   RateHistoryData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return RateHistoryData(
->>>>>>> 6bb080e1b (Price graph)
       id:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
             data['${effectivePrefix}id'],
           )!,
-<<<<<<< HEAD
-      url:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}url'],
-=======
       fromCurrency:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
@@ -6342,23 +6399,11 @@ class RateHistory extends Table with TableInfo<RateHistory, RateHistoryData> {
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
             data['${effectivePrefix}created_at'],
->>>>>>> 6bb080e1b (Price graph)
           )!,
     );
   }
 
   @override
-<<<<<<< HEAD
-  Recoverbull createAlias(String alias) {
-    return Recoverbull(attachedDatabase, alias);
-  }
-}
-
-class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
-  final int id;
-  final String url;
-  const RecoverbullData({required this.id, required this.url});
-=======
   RateHistory createAlias(String alias) {
     return RateHistory(attachedDatabase, alias);
   }
@@ -6389,22 +6434,10 @@ class RateHistoryData extends DataClass implements Insertable<RateHistoryData> {
     this.userPrice,
     required this.createdAt,
   });
->>>>>>> 6bb080e1b (Price graph)
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-<<<<<<< HEAD
-    map['url'] = Variable<String>(url);
-    return map;
-  }
-
-  RecoverbullCompanion toCompanion(bool nullToAbsent) {
-    return RecoverbullCompanion(id: Value(id), url: Value(url));
-  }
-
-  factory RecoverbullData.fromJson(
-=======
     map['from_currency'] = Variable<String>(fromCurrency);
     map['to_currency'] = Variable<String>(toCurrency);
     map['interval'] = Variable<String>(interval);
@@ -6463,16 +6496,10 @@ class RateHistoryData extends DataClass implements Insertable<RateHistoryData> {
   }
 
   factory RateHistoryData.fromJson(
->>>>>>> 6bb080e1b (Price graph)
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-<<<<<<< HEAD
-    return RecoverbullData(
-      id: serializer.fromJson<int>(json['id']),
-      url: serializer.fromJson<String>(json['url']),
-=======
     return RateHistoryData(
       id: serializer.fromJson<int>(json['id']),
       fromCurrency: serializer.fromJson<String>(json['fromCurrency']),
@@ -6485,7 +6512,6 @@ class RateHistoryData extends DataClass implements Insertable<RateHistoryData> {
       indexPrice: serializer.fromJson<double?>(json['indexPrice']),
       userPrice: serializer.fromJson<double?>(json['userPrice']),
       createdAt: serializer.fromJson<String>(json['createdAt']),
->>>>>>> 6bb080e1b (Price graph)
     );
   }
   @override
@@ -6493,18 +6519,6 @@ class RateHistoryData extends DataClass implements Insertable<RateHistoryData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-<<<<<<< HEAD
-      'url': serializer.toJson<String>(url),
-    };
-  }
-
-  RecoverbullData copyWith({int? id, String? url}) =>
-      RecoverbullData(id: id ?? this.id, url: url ?? this.url);
-  RecoverbullData copyWithCompanion(RecoverbullCompanion data) {
-    return RecoverbullData(
-      id: data.id.present ? data.id.value : this.id,
-      url: data.url.present ? data.url.value : this.url,
-=======
       'fromCurrency': serializer.toJson<String>(fromCurrency),
       'toCurrency': serializer.toJson<String>(toCurrency),
       'interval': serializer.toJson<String>(interval),
@@ -6566,17 +6580,11 @@ class RateHistoryData extends DataClass implements Insertable<RateHistoryData> {
           data.indexPrice.present ? data.indexPrice.value : this.indexPrice,
       userPrice: data.userPrice.present ? data.userPrice.value : this.userPrice,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
->>>>>>> 6bb080e1b (Price graph)
     );
   }
 
   @override
   String toString() {
-<<<<<<< HEAD
-    return (StringBuffer('RecoverbullData(')
-          ..write('id: $id, ')
-          ..write('url: $url')
-=======
     return (StringBuffer('RateHistoryData(')
           ..write('id: $id, ')
           ..write('fromCurrency: $fromCurrency, ')
@@ -6589,46 +6597,11 @@ class RateHistoryData extends DataClass implements Insertable<RateHistoryData> {
           ..write('indexPrice: $indexPrice, ')
           ..write('userPrice: $userPrice, ')
           ..write('createdAt: $createdAt')
->>>>>>> 6bb080e1b (Price graph)
           ..write(')'))
         .toString();
   }
 
   @override
-<<<<<<< HEAD
-  int get hashCode => Object.hash(id, url);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is RecoverbullData &&
-          other.id == this.id &&
-          other.url == this.url);
-}
-
-class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
-  final Value<int> id;
-  final Value<String> url;
-  const RecoverbullCompanion({
-    this.id = const Value.absent(),
-    this.url = const Value.absent(),
-  });
-  RecoverbullCompanion.insert({
-    this.id = const Value.absent(),
-    required String url,
-  }) : url = Value(url);
-  static Insertable<RecoverbullData> custom({
-    Expression<int>? id,
-    Expression<String>? url,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (url != null) 'url': url,
-    });
-  }
-
-  RecoverbullCompanion copyWith({Value<int>? id, Value<String>? url}) {
-    return RecoverbullCompanion(id: id ?? this.id, url: url ?? this.url);
-=======
   int get hashCode => Object.hash(
     id,
     fromCurrency,
@@ -6754,7 +6727,6 @@ class RateHistoryCompanion extends UpdateCompanion<RateHistoryData> {
       userPrice: userPrice ?? this.userPrice,
       createdAt: createdAt ?? this.createdAt,
     );
->>>>>>> 6bb080e1b (Price graph)
   }
 
   @override
@@ -6763,10 +6735,6 @@ class RateHistoryCompanion extends UpdateCompanion<RateHistoryData> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-<<<<<<< HEAD
-    if (url.present) {
-      map['url'] = Variable<String>(url.value);
-=======
     if (fromCurrency.present) {
       map['from_currency'] = Variable<String>(fromCurrency.value);
     }
@@ -6796,18 +6764,12 @@ class RateHistoryCompanion extends UpdateCompanion<RateHistoryData> {
     }
     if (createdAt.present) {
       map['created_at'] = Variable<String>(createdAt.value);
->>>>>>> 6bb080e1b (Price graph)
     }
     return map;
   }
 
   @override
   String toString() {
-<<<<<<< HEAD
-    return (StringBuffer('RecoverbullCompanion(')
-          ..write('id: $id, ')
-          ..write('url: $url')
-=======
     return (StringBuffer('RateHistoryCompanion(')
           ..write('id: $id, ')
           ..write('fromCurrency: $fromCurrency, ')
@@ -6820,7 +6782,6 @@ class RateHistoryCompanion extends UpdateCompanion<RateHistoryData> {
           ..write('indexPrice: $indexPrice, ')
           ..write('userPrice: $userPrice, ')
           ..write('createdAt: $createdAt')
->>>>>>> 6bb080e1b (Price graph)
           ..write(')'))
         .toString();
   }
@@ -6839,11 +6800,8 @@ class DatabaseAtV10 extends GeneratedDatabase {
   late final Swaps swaps = Swaps(this);
   late final AutoSwap autoSwap = AutoSwap(this);
   late final Bip85Derivations bip85Derivations = Bip85Derivations(this);
-<<<<<<< HEAD
   late final Recoverbull recoverbull = Recoverbull(this);
-=======
   late final RateHistory rateHistory = RateHistory(this);
->>>>>>> 6bb080e1b (Price graph)
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6860,11 +6818,8 @@ class DatabaseAtV10 extends GeneratedDatabase {
     swaps,
     autoSwap,
     bip85Derivations,
-<<<<<<< HEAD
     recoverbull,
-=======
     rateHistory,
->>>>>>> 6bb080e1b (Price graph)
   ];
   @override
   int get schemaVersion => 10;

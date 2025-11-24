@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/usecases/refresh_rate_history_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
@@ -43,7 +42,6 @@ class AppStartupLocator {
         checkBackupUsecase: locator<CheckBackupUsecase>(),
         isTorRequiredUsecase: locator<IsTorRequiredUsecase>(),
         initTorUsecase: locator<InitTorUsecase>(),
-        refreshRateHistoryUsecase: locator<RefreshRateHistoryUsecase>(),
       ),
     );
   }

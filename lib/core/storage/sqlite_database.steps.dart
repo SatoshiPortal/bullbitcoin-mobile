@@ -3385,11 +3385,8 @@ final class Schema10 extends i0.VersionedSchema {
     swaps,
     autoSwap,
     bip85Derivations,
-<<<<<<< HEAD
     recoverbull,
-=======
     rateHistory,
->>>>>>> 6bb080e1b (Price graph)
   ];
   late final Shape0 transactions = Shape0(
     source: i0.VersionedTable(
@@ -3454,11 +3451,7 @@ final class Schema10 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-<<<<<<< HEAD
   late final Shape19 settings = Shape19(
-=======
-  late final Shape15 settings = Shape15(
->>>>>>> 6bb080e1b (Price graph)
     source: i0.VersionedTable(
       entityName: 'settings',
       withoutRowId: false,
@@ -3473,11 +3466,8 @@ final class Schema10 extends i0.VersionedSchema {
         _column_36,
         _column_37,
         _column_106,
-<<<<<<< HEAD
         _column_111,
         _column_112,
-=======
->>>>>>> 6bb080e1b (Price graph)
       ],
       attachedDatabase: database,
     ),
@@ -3630,7 +3620,6 @@ final class Schema10 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-<<<<<<< HEAD
   late final Shape20 recoverbull = Shape20(
     source: i0.VersionedTable(
       entityName: 'recoverbull',
@@ -3638,8 +3627,11 @@ final class Schema10 extends i0.VersionedSchema {
       isStrict: false,
       tableConstraints: [],
       columns: [_column_31, _column_58],
-=======
-  late final Shape19 rateHistory = Shape19(
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape21 rateHistory = Shape21(
     source: i0.VersionedTable(
       entityName: 'rate_history',
       withoutRowId: false,
@@ -3649,8 +3641,6 @@ final class Schema10 extends i0.VersionedSchema {
       ],
       columns: [
         _column_31,
-        _column_111,
-        _column_112,
         _column_113,
         _column_114,
         _column_115,
@@ -3659,8 +3649,9 @@ final class Schema10 extends i0.VersionedSchema {
         _column_118,
         _column_119,
         _column_120,
+        _column_121,
+        _column_122,
       ],
->>>>>>> 6bb080e1b (Price graph)
       attachedDatabase: database,
     ),
     alias: null,
@@ -3671,7 +3662,6 @@ class Shape19 extends i0.VersionedTable {
   Shape19({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<int> get id =>
       columnsByName['id']! as i1.GeneratedColumn<int>;
-<<<<<<< HEAD
   i1.GeneratedColumn<String> get environment =>
       columnsByName['environment']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get bitcoinUnit =>
@@ -3720,7 +3710,10 @@ class Shape20 extends i0.VersionedTable {
       columnsByName['url']! as i1.GeneratedColumn<String>;
 }
 
-=======
+class Shape21 extends i0.VersionedTable {
+  Shape21({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<String> get fromCurrency =>
       columnsByName['from_currency']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get toCurrency =>
@@ -3743,77 +3736,76 @@ class Shape20 extends i0.VersionedTable {
       columnsByName['created_at']! as i1.GeneratedColumn<String>;
 }
 
-i1.GeneratedColumn<String> _column_111(String aliasedName) =>
+i1.GeneratedColumn<String> _column_113(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'from_currency',
       aliasedName,
       false,
       type: i1.DriftSqlType.string,
     );
-i1.GeneratedColumn<String> _column_112(String aliasedName) =>
+i1.GeneratedColumn<String> _column_114(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'to_currency',
       aliasedName,
       false,
       type: i1.DriftSqlType.string,
     );
-i1.GeneratedColumn<String> _column_113(String aliasedName) =>
+i1.GeneratedColumn<String> _column_115(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'interval',
       aliasedName,
       false,
       type: i1.DriftSqlType.string,
     );
-i1.GeneratedColumn<double> _column_114(String aliasedName) =>
+i1.GeneratedColumn<double> _column_116(String aliasedName) =>
     i1.GeneratedColumn<double>(
       'market_price',
       aliasedName,
       true,
       type: i1.DriftSqlType.double,
     );
-i1.GeneratedColumn<double> _column_115(String aliasedName) =>
+i1.GeneratedColumn<double> _column_117(String aliasedName) =>
     i1.GeneratedColumn<double>(
       'price',
       aliasedName,
       true,
       type: i1.DriftSqlType.double,
     );
-i1.GeneratedColumn<String> _column_116(String aliasedName) =>
+i1.GeneratedColumn<String> _column_118(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'price_currency',
       aliasedName,
       true,
       type: i1.DriftSqlType.string,
     );
-i1.GeneratedColumn<int> _column_117(String aliasedName) =>
+i1.GeneratedColumn<int> _column_119(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'precision',
       aliasedName,
       true,
       type: i1.DriftSqlType.int,
     );
-i1.GeneratedColumn<double> _column_118(String aliasedName) =>
+i1.GeneratedColumn<double> _column_120(String aliasedName) =>
     i1.GeneratedColumn<double>(
       'index_price',
       aliasedName,
       true,
       type: i1.DriftSqlType.double,
     );
-i1.GeneratedColumn<double> _column_119(String aliasedName) =>
+i1.GeneratedColumn<double> _column_121(String aliasedName) =>
     i1.GeneratedColumn<double>(
       'user_price',
       aliasedName,
       true,
       type: i1.DriftSqlType.double,
     );
-i1.GeneratedColumn<String> _column_120(String aliasedName) =>
+i1.GeneratedColumn<String> _column_122(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'created_at',
       aliasedName,
       false,
       type: i1.DriftSqlType.string,
     );
->>>>>>> 6bb080e1b (Price graph)
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
