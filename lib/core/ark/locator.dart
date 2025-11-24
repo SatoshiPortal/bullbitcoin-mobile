@@ -6,10 +6,10 @@ import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class ArkCoreLocator {
-  static void setup() {
+  static void setup(GetIt locator) {
     locator.registerFactory<CreateArkSecretUsecase>(
       () => CreateArkSecretUsecase(
         bip85Repository: locator<Bip85Repository>(),

@@ -6,8 +6,6 @@ import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/check_for_online_electrum_servers_request.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
-import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
-import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
@@ -49,7 +47,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required SaveAutoSwapSettingsUsecase saveAutoSwapSettingsUsecase,
     required AutoSwapExecutionUsecase autoSwapExecutionUsecase,
     required DeleteWalletUsecase deleteWalletUsecase,
-    required CheckAllServiceStatusUsecase checkAllServiceStatusUsecase,
     required CheckForOnlineElectrumServersUsecase
     checkForOnlineElectrumServersUsecase,
     required GetArkWalletUsecase getArkWalletUsecase,
@@ -68,7 +65,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _saveAutoSwapSettingsUsecase = saveAutoSwapSettingsUsecase,
        _autoSwapExecutionUsecase = autoSwapExecutionUsecase,
        _deleteWalletUsecase = deleteWalletUsecase,
-       _checkAllServiceStatusUsecase = checkAllServiceStatusUsecase,
        _checkForOnlineElectrumServersUsecase =
            checkForOnlineElectrumServersUsecase,
        _getArkWalletUsecase = getArkWalletUsecase,
@@ -84,14 +80,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<ExecuteAutoSwap>(_onExecuteAutoSwap);
     on<ExecuteAutoSwapFeeOverride>(_onExecuteAutoSwapFeeOverride);
     on<WalletDeleted>(_onDeleted);
-    on<CheckServiceStatus>(_onCheckServiceStatus);
-    on<ServiceStatusChecked>(_onServiceStatusChecked);
     on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
-
-    // Start periodic service status checks every 21 seconds
-    _serviceStatusTimer = Timer.periodic(const Duration(seconds: 21), (timer) {
-      add(const CheckServiceStatus());
-    });
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -107,13 +96,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
   final AutoSwapExecutionUsecase _autoSwapExecutionUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
-  final CheckAllServiceStatusUsecase _checkAllServiceStatusUsecase;
   final CheckForOnlineElectrumServersUsecase
   _checkForOnlineElectrumServersUsecase;
   final GetArkWalletUsecase _getArkWalletUsecase;
   final CheckArkWalletSetupUsecase _checkArkWalletSetupUsecase;
-
-  Timer? _serviceStatusTimer;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -121,7 +107,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   @override
   Future<void> close() {
-    _serviceStatusTimer?.cancel();
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();
     _autoSwapSubscription?.cancel();
@@ -539,43 +524,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(autoSwapExecuting: false));
       log.severe('[WalletBloc] Failed to execute auto swap: $e');
     }
-  }
-
-  Future<void> _onCheckServiceStatus(
-    CheckServiceStatus event,
-    Emitter<WalletState> emit,
-  ) async {
-    try {
-      emit(state.copyWith(isCheckingServiceStatus: true));
-
-      final defaultWallet =
-          state.defaultBitcoinWallet() ?? state.defaultLiquidWallet();
-      if (defaultWallet == null) {
-        emit(state.copyWith(isCheckingServiceStatus: false));
-        return;
-      }
-
-      final serviceStatus = await _checkAllServiceStatusUsecase.execute(
-        network: defaultWallet.network,
-      );
-
-      add(ServiceStatusChecked(serviceStatus));
-    } catch (e) {
-      log.severe('[WalletBloc] Failed to check service status: $e');
-      emit(state.copyWith(isCheckingServiceStatus: false));
-    }
-  }
-
-  void _onServiceStatusChecked(
-    ServiceStatusChecked event,
-    Emitter<WalletState> emit,
-  ) {
-    emit(
-      state.copyWith(
-        serviceStatus: event.status,
-        isCheckingServiceStatus: false,
-      ),
-    );
   }
 
   Future<void> _onRefreshArkWalletBalance(

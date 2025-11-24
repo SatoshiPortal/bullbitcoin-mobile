@@ -150,6 +150,8 @@ PODS:
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
     - FlutterMacOS
+  - workmanager (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - ark_wallet (from `.symlinks/plugins/ark_wallet/ios`)
@@ -179,6 +181,7 @@ DEPENDENCIES:
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - webview_cookie_manager (from `.symlinks/plugins/webview_cookie_manager/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
+  - workmanager (from `.symlinks/plugins/workmanager/ios`)
 
 SPEC REPOS:
   trunk:
@@ -251,6 +254,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_cookie_manager/ios"
   webview_flutter_wkwebview:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
+  workmanager:
+    :path: ".symlinks/plugins/workmanager/ios"
 
 SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
@@ -288,11 +293,12 @@ SPEC CHECKSUMS:
   sqlite3: 73513155ec6979715d3904ef53a8d68892d4032b
   sqlite3_flutter_libs: 86f82662868ee26ff3451f73cac9c5fc2a1f57fa
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
-  tor: 662a9f5b980b5c86decb8ba611de9bcd4c8286eb
-  universal_ble: cf52a7b3fd2e7c14d6d7262e9fdadb72ab6b88a6
-  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
-  webview_cookie_manager: eaf920722b493bd0f7611b5484771ca53fed03f7
-  webview_flutter_wkwebview: a4af96a051138e28e29f60101d094683b9f82188
+  tor: 767208930250ef7be241963b75568c55c0a81890
+  universal_ble: ff19787898040d721109c6324472e5dd4bc86adc
+  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
+  webview_cookie_manager: d63a76cabdf42a7ea3d92768ac67d4853a1367f8
+  webview_flutter_wkwebview: 1821ceac936eba6f7984d89a9f3bcb4dea99ebb2
+  workmanager: b89e4e4445d8b57ee2fdbf1c3925696ebe5b8990
 
 PODFILE CHECKSUM: 3402bb9f9a69470d12a30feec0fd288c203ab3f5
 

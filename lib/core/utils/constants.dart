@@ -14,10 +14,6 @@ class SettingsConstants {
   static const githubSupportLink =
       'https://github.com/SatoshiPortal/bullbitcoin-mobile';
   static const termsAndConditionsLink = 'https://wallet.bullbitcoin.com/terms';
-  // The following are constants that in the future potentially can become
-  //  a configurable setting, in which case they should be added to the Settings
-  //  table in sqlite and not be defined here as constants anymore.
-  static const autoSyncIntervalSeconds = 5;
   static const recoverbullUrl =
       'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion';
 }

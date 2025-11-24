@@ -26,6 +26,23 @@ class Logger {
     }
   }
 
+  Future<int> getSizeInKb() async {
+    final logsBytes = await logsFile.readAsBytes();
+    return logsBytes.length ~/ 1000;
+  }
+
+  Future<void> prune() async {
+    final logsSizeInKb = await getSizeInKb();
+    if (logsSizeInKb <= 100) return;
+
+    final logs = await readLogs();
+    final linesToDelete = logs.length ~/ 2;
+    final logsToKeep = logs.sublist(linesToDelete);
+    await logsFile.writeAsString(logsToKeep.join('\n'));
+    final logsSizeInKbAfter = await getSizeInKb();
+    log.fine('Logs pruned from $logsSizeInKb kB to $logsSizeInKbAfter kB');
+  }
+
   Logger._(this.dir, this.logger) {
     dep.Logger.root.level = dep.Level.ALL;
 
@@ -63,14 +80,10 @@ class Logger {
 
   Future<void> ensureLogsExist() async {
     try {
-      if (await logsFile.exists()) {
-        final logsBytes = await logsFile.readAsBytes();
-        fine('Logs exists: ${logsBytes.length / 1000} kB');
-        return;
-      } else {
-        await logsFile.create(recursive: true);
-        fine('Logs created');
-      }
+      if (await logsFile.exists()) return;
+
+      await logsFile.create(recursive: true);
+      fine('Logs created');
     } catch (e) {
       severe('Logs existence: $e');
     }
