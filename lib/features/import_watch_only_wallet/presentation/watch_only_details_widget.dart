@@ -11,30 +11,15 @@ import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_en
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 import 'package:satoshifier/enums/derivation.dart' as satoshifier;
 
-class WatchOnlyDetailsWidget extends StatefulWidget {
-  const WatchOnlyDetailsWidget({super.key});
-
-  @override
-  State<WatchOnlyDetailsWidget> createState() => _WatchOnlyDetailsWidgetState();
-}
-
-class _WatchOnlyDetailsWidgetState extends State<WatchOnlyDetailsWidget> {
-  WatchOnlyWalletEntity? watchOnlyWallet;
-
-  @override
-  void didChangeDependencies() {
-    watchOnlyWallet =
-        context.watch<ImportWatchOnlyCubit>().state.watchOnlyWallet;
-    if (watchOnlyWallet == null) context.pop();
-    super.didChangeDependencies();
-  }
+class WatchOnlyDetailsWidget extends StatelessWidget {
+  final WatchOnlyWalletEntity watchOnlyWallet;
+  const WatchOnlyDetailsWidget({super.key, required this.watchOnlyWallet});
 
   @override
   Widget build(BuildContext context) {
-    return watchOnlyWallet!.when(
+    return watchOnlyWallet.when(
       descriptor: (_, _, _) => const _DescriptorDetailsWidget(),
       xpub: (_, _, _) => const _XpubDetailsWidget(),
     );
