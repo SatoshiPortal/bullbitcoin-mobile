@@ -93,6 +93,6 @@ class AppLocator {
     Bip85EntropyLocator.setup();
     LedgerLocator.setup();
     BitBoxLocator.setup();
-    ArkCoreLocator.setup();
+    ArkCoreLocator.setup(locator);
   }
 }
