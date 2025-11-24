@@ -91,4 +91,12 @@ class RecoverBullRepository {
   Future<void> storeUrl(Uri url) async {
     await recoverbullSettingsDatasource.store(url);
   }
+
+  Future<void> allowPermission(bool isGranted) async {
+    await recoverbullSettingsDatasource.allowPermission(isGranted);
+  }
+
+  Future<bool> fetchPermission() async {
+    return await recoverbullSettingsDatasource.fetchPermission();
+  }
 }

@@ -102,7 +102,11 @@ class DatabaseSeeds {
     await db
         .into(db.recoverbull)
         .insert(
-          const RecoverbullRow(id: 1, url: SettingsConstants.recoverbullUrl),
+          const RecoverbullRow(
+            id: 1,
+            url: SettingsConstants.recoverbullUrl,
+            isPermissionGranted: false,
+          ),
         );
   }
 }

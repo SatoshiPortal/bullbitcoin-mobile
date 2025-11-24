@@ -4,4 +4,5 @@ import 'package:drift/drift.dart';
 class Recoverbull extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get url => text()();
+  BoolColumn get isPermissionGranted => boolean()();
 }
