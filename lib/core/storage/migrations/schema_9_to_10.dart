@@ -6,6 +6,7 @@ import 'package:drift/drift.dart';
 class Schema9To10 {
   static Future<void> migrate(Migrator m, Schema10 schema10) async {
     await m.createTable(schema10.recoverbull);
+    await m.createTable(schema10.rateHistory);
 
     final settings = schema10.settings;
     await m.addColumn(settings, settings.useTorProxy);
