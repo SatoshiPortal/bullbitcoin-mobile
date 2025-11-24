@@ -27,6 +27,7 @@ import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
+import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
@@ -75,12 +76,13 @@ class AppLocator {
     BroadcastSignedTxLocator.setup();
     SwapLocator.setup();
 
-    ExchangeLocator.setup();
+    ExchangeLocator.setup(locator);
     BuyLocator.setup();
     SellLocator.setup();
     WithdrawLocator.setup();
     PayLocator.setup();
-    StatusLocator.setup();
+    StatusLocator.setup(locator);
+    StatusCheckLocator.setup();
 
     FundExchangeLocator.setup();
     AutoSwapLocator.setup();
@@ -91,6 +93,6 @@ class AppLocator {
     Bip85EntropyLocator.setup();
     LedgerLocator.setup();
     BitBoxLocator.setup();
-    ArkCoreLocator.setup();
+    ArkCoreLocator.setup(locator);
   }
 }

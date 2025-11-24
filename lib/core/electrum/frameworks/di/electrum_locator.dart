@@ -19,10 +19,10 @@ import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_el
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class ElectrumLocator {
-  static Future<void> registerDatasources() async {
+  static Future<void> registerDatasources(GetIt locator) async {
     locator.registerLazySingleton<ElectrumServerStorageDatasource>(
       () => ElectrumServerStorageDatasource(sqlite: locator<SqliteDatabase>()),
     );
@@ -35,7 +35,7 @@ class ElectrumLocator {
     );
   }
 
-  static void registerRepositories() {
+  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<ElectrumServerRepository>(
       () => DriftElectrumServerRepository(
         electrumServerStorageDatasource:
@@ -51,7 +51,7 @@ class ElectrumLocator {
     );
   }
 
-  static void registerPorts() {
+  static void registerPorts(GetIt locator) {
     locator.registerLazySingleton<EnvironmentPort>(
       () =>
           EnvironmentAdapter(getSettingsUsecase: locator<GetSettingsUsecase>()),
@@ -63,7 +63,7 @@ class ElectrumLocator {
     );
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<AddCustomServerUsecase>(
       () => AddCustomServerUsecase(
         electrumServerRepository: locator<ElectrumServerRepository>(),

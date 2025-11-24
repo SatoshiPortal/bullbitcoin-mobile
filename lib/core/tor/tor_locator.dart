@@ -4,10 +4,10 @@ import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class TorLocator {
-  static Future<void> registerDatasources() async {
+  static Future<void> registerDatasources(GetIt locator) async {
     if (!locator.isRegistered<TorDatasource>()) {
       locator.registerSingletonAsync<TorDatasource>(() async {
         return await TorDatasource.init();
@@ -16,7 +16,7 @@ class TorLocator {
     await locator.isReady<TorDatasource>();
   }
 
-  static Future<void> registerRepositories() async {
+  static Future<void> registerRepositories(GetIt locator) async {
     locator.registerSingletonWithDependencies<TorRepository>(
       () => TorRepository(locator<TorDatasource>()),
       dependsOn: [TorDatasource],
@@ -24,7 +24,7 @@ class TorLocator {
     await locator.isReady<TorRepository>();
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<InitTorUsecase>(
       () => InitTorUsecase(locator<TorRepository>()),
     );

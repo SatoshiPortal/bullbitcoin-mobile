@@ -31,6 +31,7 @@ import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -150,6 +151,7 @@ class AppRouter {
       RecoverBullRouter.route,
       RecoverBullGoogleDriveRouter.route,
       Bip329LabelsRouter.route,
+      StatusCheckRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
