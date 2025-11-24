@@ -6294,6 +6294,557 @@ class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
   }
 }
 
+class RateHistory extends Table with TableInfo<RateHistory, RateHistoryData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  RateHistory(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  late final GeneratedColumn<String> fromCurrency = GeneratedColumn<String>(
+    'from_currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<String> toCurrency = GeneratedColumn<String>(
+    'to_currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<String> interval = GeneratedColumn<String>(
+    'interval',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<double> marketPrice = GeneratedColumn<double>(
+    'market_price',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<double> price = GeneratedColumn<double>(
+    'price',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<String> priceCurrency = GeneratedColumn<String>(
+    'price_currency',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<int> precision = GeneratedColumn<int>(
+    'precision',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<double> indexPrice = GeneratedColumn<double>(
+    'index_price',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<double> userPrice = GeneratedColumn<double>(
+    'user_price',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    fromCurrency,
+    toCurrency,
+    interval,
+    marketPrice,
+    price,
+    priceCurrency,
+    precision,
+    indexPrice,
+    userPrice,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'rate_history';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {fromCurrency, toCurrency, interval, createdAt},
+  ];
+  @override
+  RateHistoryData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RateHistoryData(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      fromCurrency:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}from_currency'],
+          )!,
+      toCurrency:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}to_currency'],
+          )!,
+      interval:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}interval'],
+          )!,
+      marketPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}market_price'],
+      ),
+      price: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}price'],
+      ),
+      priceCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}price_currency'],
+      ),
+      precision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}precision'],
+      ),
+      indexPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}index_price'],
+      ),
+      userPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}user_price'],
+      ),
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}created_at'],
+          )!,
+    );
+  }
+
+  @override
+  RateHistory createAlias(String alias) {
+    return RateHistory(attachedDatabase, alias);
+  }
+}
+
+class RateHistoryData extends DataClass implements Insertable<RateHistoryData> {
+  final int id;
+  final String fromCurrency;
+  final String toCurrency;
+  final String interval;
+  final double? marketPrice;
+  final double? price;
+  final String? priceCurrency;
+  final int? precision;
+  final double? indexPrice;
+  final double? userPrice;
+  final String createdAt;
+  const RateHistoryData({
+    required this.id,
+    required this.fromCurrency,
+    required this.toCurrency,
+    required this.interval,
+    this.marketPrice,
+    this.price,
+    this.priceCurrency,
+    this.precision,
+    this.indexPrice,
+    this.userPrice,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['from_currency'] = Variable<String>(fromCurrency);
+    map['to_currency'] = Variable<String>(toCurrency);
+    map['interval'] = Variable<String>(interval);
+    if (!nullToAbsent || marketPrice != null) {
+      map['market_price'] = Variable<double>(marketPrice);
+    }
+    if (!nullToAbsent || price != null) {
+      map['price'] = Variable<double>(price);
+    }
+    if (!nullToAbsent || priceCurrency != null) {
+      map['price_currency'] = Variable<String>(priceCurrency);
+    }
+    if (!nullToAbsent || precision != null) {
+      map['precision'] = Variable<int>(precision);
+    }
+    if (!nullToAbsent || indexPrice != null) {
+      map['index_price'] = Variable<double>(indexPrice);
+    }
+    if (!nullToAbsent || userPrice != null) {
+      map['user_price'] = Variable<double>(userPrice);
+    }
+    map['created_at'] = Variable<String>(createdAt);
+    return map;
+  }
+
+  RateHistoryCompanion toCompanion(bool nullToAbsent) {
+    return RateHistoryCompanion(
+      id: Value(id),
+      fromCurrency: Value(fromCurrency),
+      toCurrency: Value(toCurrency),
+      interval: Value(interval),
+      marketPrice:
+          marketPrice == null && nullToAbsent
+              ? const Value.absent()
+              : Value(marketPrice),
+      price:
+          price == null && nullToAbsent ? const Value.absent() : Value(price),
+      priceCurrency:
+          priceCurrency == null && nullToAbsent
+              ? const Value.absent()
+              : Value(priceCurrency),
+      precision:
+          precision == null && nullToAbsent
+              ? const Value.absent()
+              : Value(precision),
+      indexPrice:
+          indexPrice == null && nullToAbsent
+              ? const Value.absent()
+              : Value(indexPrice),
+      userPrice:
+          userPrice == null && nullToAbsent
+              ? const Value.absent()
+              : Value(userPrice),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory RateHistoryData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RateHistoryData(
+      id: serializer.fromJson<int>(json['id']),
+      fromCurrency: serializer.fromJson<String>(json['fromCurrency']),
+      toCurrency: serializer.fromJson<String>(json['toCurrency']),
+      interval: serializer.fromJson<String>(json['interval']),
+      marketPrice: serializer.fromJson<double?>(json['marketPrice']),
+      price: serializer.fromJson<double?>(json['price']),
+      priceCurrency: serializer.fromJson<String?>(json['priceCurrency']),
+      precision: serializer.fromJson<int?>(json['precision']),
+      indexPrice: serializer.fromJson<double?>(json['indexPrice']),
+      userPrice: serializer.fromJson<double?>(json['userPrice']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'fromCurrency': serializer.toJson<String>(fromCurrency),
+      'toCurrency': serializer.toJson<String>(toCurrency),
+      'interval': serializer.toJson<String>(interval),
+      'marketPrice': serializer.toJson<double?>(marketPrice),
+      'price': serializer.toJson<double?>(price),
+      'priceCurrency': serializer.toJson<String?>(priceCurrency),
+      'precision': serializer.toJson<int?>(precision),
+      'indexPrice': serializer.toJson<double?>(indexPrice),
+      'userPrice': serializer.toJson<double?>(userPrice),
+      'createdAt': serializer.toJson<String>(createdAt),
+    };
+  }
+
+  RateHistoryData copyWith({
+    int? id,
+    String? fromCurrency,
+    String? toCurrency,
+    String? interval,
+    Value<double?> marketPrice = const Value.absent(),
+    Value<double?> price = const Value.absent(),
+    Value<String?> priceCurrency = const Value.absent(),
+    Value<int?> precision = const Value.absent(),
+    Value<double?> indexPrice = const Value.absent(),
+    Value<double?> userPrice = const Value.absent(),
+    String? createdAt,
+  }) => RateHistoryData(
+    id: id ?? this.id,
+    fromCurrency: fromCurrency ?? this.fromCurrency,
+    toCurrency: toCurrency ?? this.toCurrency,
+    interval: interval ?? this.interval,
+    marketPrice: marketPrice.present ? marketPrice.value : this.marketPrice,
+    price: price.present ? price.value : this.price,
+    priceCurrency:
+        priceCurrency.present ? priceCurrency.value : this.priceCurrency,
+    precision: precision.present ? precision.value : this.precision,
+    indexPrice: indexPrice.present ? indexPrice.value : this.indexPrice,
+    userPrice: userPrice.present ? userPrice.value : this.userPrice,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  RateHistoryData copyWithCompanion(RateHistoryCompanion data) {
+    return RateHistoryData(
+      id: data.id.present ? data.id.value : this.id,
+      fromCurrency:
+          data.fromCurrency.present
+              ? data.fromCurrency.value
+              : this.fromCurrency,
+      toCurrency:
+          data.toCurrency.present ? data.toCurrency.value : this.toCurrency,
+      interval: data.interval.present ? data.interval.value : this.interval,
+      marketPrice:
+          data.marketPrice.present ? data.marketPrice.value : this.marketPrice,
+      price: data.price.present ? data.price.value : this.price,
+      priceCurrency:
+          data.priceCurrency.present
+              ? data.priceCurrency.value
+              : this.priceCurrency,
+      precision: data.precision.present ? data.precision.value : this.precision,
+      indexPrice:
+          data.indexPrice.present ? data.indexPrice.value : this.indexPrice,
+      userPrice: data.userPrice.present ? data.userPrice.value : this.userPrice,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RateHistoryData(')
+          ..write('id: $id, ')
+          ..write('fromCurrency: $fromCurrency, ')
+          ..write('toCurrency: $toCurrency, ')
+          ..write('interval: $interval, ')
+          ..write('marketPrice: $marketPrice, ')
+          ..write('price: $price, ')
+          ..write('priceCurrency: $priceCurrency, ')
+          ..write('precision: $precision, ')
+          ..write('indexPrice: $indexPrice, ')
+          ..write('userPrice: $userPrice, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    fromCurrency,
+    toCurrency,
+    interval,
+    marketPrice,
+    price,
+    priceCurrency,
+    precision,
+    indexPrice,
+    userPrice,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RateHistoryData &&
+          other.id == this.id &&
+          other.fromCurrency == this.fromCurrency &&
+          other.toCurrency == this.toCurrency &&
+          other.interval == this.interval &&
+          other.marketPrice == this.marketPrice &&
+          other.price == this.price &&
+          other.priceCurrency == this.priceCurrency &&
+          other.precision == this.precision &&
+          other.indexPrice == this.indexPrice &&
+          other.userPrice == this.userPrice &&
+          other.createdAt == this.createdAt);
+}
+
+class RateHistoryCompanion extends UpdateCompanion<RateHistoryData> {
+  final Value<int> id;
+  final Value<String> fromCurrency;
+  final Value<String> toCurrency;
+  final Value<String> interval;
+  final Value<double?> marketPrice;
+  final Value<double?> price;
+  final Value<String?> priceCurrency;
+  final Value<int?> precision;
+  final Value<double?> indexPrice;
+  final Value<double?> userPrice;
+  final Value<String> createdAt;
+  const RateHistoryCompanion({
+    this.id = const Value.absent(),
+    this.fromCurrency = const Value.absent(),
+    this.toCurrency = const Value.absent(),
+    this.interval = const Value.absent(),
+    this.marketPrice = const Value.absent(),
+    this.price = const Value.absent(),
+    this.priceCurrency = const Value.absent(),
+    this.precision = const Value.absent(),
+    this.indexPrice = const Value.absent(),
+    this.userPrice = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  RateHistoryCompanion.insert({
+    this.id = const Value.absent(),
+    required String fromCurrency,
+    required String toCurrency,
+    required String interval,
+    this.marketPrice = const Value.absent(),
+    this.price = const Value.absent(),
+    this.priceCurrency = const Value.absent(),
+    this.precision = const Value.absent(),
+    this.indexPrice = const Value.absent(),
+    this.userPrice = const Value.absent(),
+    required String createdAt,
+  }) : fromCurrency = Value(fromCurrency),
+       toCurrency = Value(toCurrency),
+       interval = Value(interval),
+       createdAt = Value(createdAt);
+  static Insertable<RateHistoryData> custom({
+    Expression<int>? id,
+    Expression<String>? fromCurrency,
+    Expression<String>? toCurrency,
+    Expression<String>? interval,
+    Expression<double>? marketPrice,
+    Expression<double>? price,
+    Expression<String>? priceCurrency,
+    Expression<int>? precision,
+    Expression<double>? indexPrice,
+    Expression<double>? userPrice,
+    Expression<String>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (fromCurrency != null) 'from_currency': fromCurrency,
+      if (toCurrency != null) 'to_currency': toCurrency,
+      if (interval != null) 'interval': interval,
+      if (marketPrice != null) 'market_price': marketPrice,
+      if (price != null) 'price': price,
+      if (priceCurrency != null) 'price_currency': priceCurrency,
+      if (precision != null) 'precision': precision,
+      if (indexPrice != null) 'index_price': indexPrice,
+      if (userPrice != null) 'user_price': userPrice,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  RateHistoryCompanion copyWith({
+    Value<int>? id,
+    Value<String>? fromCurrency,
+    Value<String>? toCurrency,
+    Value<String>? interval,
+    Value<double?>? marketPrice,
+    Value<double?>? price,
+    Value<String?>? priceCurrency,
+    Value<int?>? precision,
+    Value<double?>? indexPrice,
+    Value<double?>? userPrice,
+    Value<String>? createdAt,
+  }) {
+    return RateHistoryCompanion(
+      id: id ?? this.id,
+      fromCurrency: fromCurrency ?? this.fromCurrency,
+      toCurrency: toCurrency ?? this.toCurrency,
+      interval: interval ?? this.interval,
+      marketPrice: marketPrice ?? this.marketPrice,
+      price: price ?? this.price,
+      priceCurrency: priceCurrency ?? this.priceCurrency,
+      precision: precision ?? this.precision,
+      indexPrice: indexPrice ?? this.indexPrice,
+      userPrice: userPrice ?? this.userPrice,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (fromCurrency.present) {
+      map['from_currency'] = Variable<String>(fromCurrency.value);
+    }
+    if (toCurrency.present) {
+      map['to_currency'] = Variable<String>(toCurrency.value);
+    }
+    if (interval.present) {
+      map['interval'] = Variable<String>(interval.value);
+    }
+    if (marketPrice.present) {
+      map['market_price'] = Variable<double>(marketPrice.value);
+    }
+    if (price.present) {
+      map['price'] = Variable<double>(price.value);
+    }
+    if (priceCurrency.present) {
+      map['price_currency'] = Variable<String>(priceCurrency.value);
+    }
+    if (precision.present) {
+      map['precision'] = Variable<int>(precision.value);
+    }
+    if (indexPrice.present) {
+      map['index_price'] = Variable<double>(indexPrice.value);
+    }
+    if (userPrice.present) {
+      map['user_price'] = Variable<double>(userPrice.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RateHistoryCompanion(')
+          ..write('id: $id, ')
+          ..write('fromCurrency: $fromCurrency, ')
+          ..write('toCurrency: $toCurrency, ')
+          ..write('interval: $interval, ')
+          ..write('marketPrice: $marketPrice, ')
+          ..write('price: $price, ')
+          ..write('priceCurrency: $priceCurrency, ')
+          ..write('precision: $precision, ')
+          ..write('indexPrice: $indexPrice, ')
+          ..write('userPrice: $userPrice, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV10 extends GeneratedDatabase {
   DatabaseAtV10(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
@@ -6308,6 +6859,7 @@ class DatabaseAtV10 extends GeneratedDatabase {
   late final AutoSwap autoSwap = AutoSwap(this);
   late final Bip85Derivations bip85Derivations = Bip85Derivations(this);
   late final Recoverbull recoverbull = Recoverbull(this);
+  late final RateHistory rateHistory = RateHistory(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6325,6 +6877,7 @@ class DatabaseAtV10 extends GeneratedDatabase {
     autoSwap,
     bip85Derivations,
     recoverbull,
+    rateHistory,
   ];
   @override
   int get schemaVersion => 10;

@@ -5,6 +5,8 @@ import 'package:bb_mobile/core/exchange/data/models/dca_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/funding_details_request_params_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/rate_history_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/rate_history_request_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -73,6 +75,47 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     } catch (e) {
       log.warning(e.toString());
       return 0.0;
+    }
+  }
+
+  Future<RateHistoryModel> getIndexRateHistory({
+    required String fromCurrency,
+    required String toCurrency,
+    required String interval,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    try {
+      final requestModel = RateHistoryRequestModel(
+        fromCurrency: fromCurrency,
+        toCurrency: toCurrency,
+        interval: interval,
+        fromDate: fromDate,
+        toDate: toDate,
+      );
+
+      final resp = await _http.post(
+        _pricePath,
+        data: {
+          'id': 1,
+          'jsonrpc': '2.0',
+          'method': 'getIndexRateHistory',
+          'params': requestModel.toApiParams(),
+        },
+      );
+
+      if (resp.statusCode == null || resp.statusCode != 200) {
+        throw Exception('Failed to get index rate history');
+      }
+
+      final data = resp.data as Map<String, dynamic>;
+      final result = data['result'] as Map<String, dynamic>;
+      final element = result['element'] as Map<String, dynamic>;
+
+      return RateHistoryModel.fromJson(element);
+    } catch (e) {
+      log.warning('getIndexRateHistory error: $e');
+      rethrow;
     }
   }
 
