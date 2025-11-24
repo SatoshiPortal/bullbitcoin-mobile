@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
@@ -125,30 +126,11 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     ),
                     const Gap(24),
                     if (!_isUsingDefaultServer) ...[
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: context.colour.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: context.colour.onTertiaryContainer,
-                              size: 20,
-                            ),
-                            const Gap(12),
-                            Expanded(
-                              child: BBText(
-                                'You are using a custom Recoverbull server. Make sure you trust this server.',
-                                style: context.font.bodySmall?.copyWith(
-                                  color: context.colour.onTertiaryContainer,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                      InfoCard(
+                        description:
+                            'You are using a custom Recoverbull server. Make sure you trust this server.',
+                        tagColor: context.colour.error,
+                        bgColor: context.colour.error.withValues(alpha: 0.1),
                       ),
                       const Gap(24),
                     ],
