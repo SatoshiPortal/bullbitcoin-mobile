@@ -51,6 +51,10 @@
 		<string>We need access to Bluetooth in order to connect to your hardware wallet when needed</string>
 		<key>NSBluetoothAlwaysUsageDescription</key>
 		<string>We need access to Bluetooth in order to connect to your hardware wallet when needed</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>This app needs access to your location to show nearby Bitcoin merchants on the BTC Map</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>This app needs access to your location to show nearby Bitcoin merchants on the BTC Map</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UILaunchStoryboardName</key>

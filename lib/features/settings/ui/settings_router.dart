@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
@@ -66,7 +67,8 @@ enum SettingsRoute {
   exchangeReferrals('exchange-referrals'),
   exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
-  appSettings('app-settings');
+  appSettings('app-settings'),
+  btcMap('btc-map');
 
   final String path;
 
@@ -163,7 +165,11 @@ class SettingsRouter {
         path: SettingsRoute.appSettings.path,
         builder: (context, state) => const AppSettingsScreen(),
       ),
-
+      GoRoute(
+        name: SettingsRoute.btcMap.name,
+        path: SettingsRoute.btcMap.path,
+        builder: (context, state) => const BtcMapScreen(),
+      ),
       GoRoute(
         name: SettingsRoute.language.name,
         path: SettingsRoute.language.path,

@@ -101,7 +101,13 @@ class AllSettingsScreen extends StatelessWidget {
                     context.pushNamed(SettingsRoute.appSettings.name);
                   },
                 ),
-
+                SettingsEntryItem(
+                  icon: Icons.map,
+                  title: 'BTC Map',
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.btcMap.name);
+                  },
+                ),
                 SettingsEntryItem(
                   icon: Icons.description,
                   title: 'Terms of Service',
