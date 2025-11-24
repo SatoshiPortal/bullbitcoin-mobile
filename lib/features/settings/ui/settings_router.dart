@@ -33,6 +33,7 @@ import 'package:bb_mobile/features/settings/ui/screens/language/language_setting
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -158,6 +159,9 @@ class SettingsRouter {
         name: SettingsRoute.bitcoinSettings.name,
         path: SettingsRoute.bitcoinSettings.path,
         builder: (context, state) => const BitcoinSettingsScreen(),
+        routes: [
+          TorSettingsRouter.route,
+        ],
       ),
       GoRoute(
         name: SettingsRoute.appSettings.name,

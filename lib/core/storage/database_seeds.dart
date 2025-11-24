@@ -19,6 +19,8 @@ class DatabaseSeeds {
             hideAmounts: false,
             isSuperuser: false,
             isDevModeEnabled: false,
+            useTorProxy: false,
+            torProxyPort: 9050,
           ),
         );
   }

@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
+import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/buy_locator.dart';
@@ -29,6 +30,7 @@ import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
+import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
@@ -55,6 +57,7 @@ class AppLocator {
 
     // Register feature-specific dependencies
     ElectrumSettingsLocator.setup();
+    TorSettingsLocator.setup();
     PinCodeLocator.setup();
     AppStartupLocator.setup();
     AppUnlockLocator.setup();
@@ -89,6 +92,7 @@ class AppLocator {
     ReplaceByFeeLocator.setup();
     Bip85EntropyLocator.setup();
     LedgerLocator.setup();
-    ArkCoreLocator.setup(locator);
+    BitBoxLocator.setup();
+    ArkCoreLocator.setup();
   }
 }

@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
+import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -51,6 +52,15 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   onTap: () {
                     context.pushNamed(
                       ElectrumSettingsRoute.electrumSettings.name,
+                    );
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.security,
+                  title: 'Tor Settings',
+                  onTap: () {
+                    context.pushNamed(
+                      TorSettingsRoute.torSettings.name,
                     );
                   },
                 ),
