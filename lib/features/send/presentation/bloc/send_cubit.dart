@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_extern
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -77,6 +78,7 @@ class SendCubit extends Cubit<SendState> {
     required CalculateBitcoinAbsoluteFeesUsecase
     calculateBitcoinAbsoluteFeesUsecase,
     required UpdateSendSwapLockupFeesUsecase updateSendSwapLockupFeesUsecase,
+    required VerifyChainSwapAmountSendUsecase verifyChainSwapAmountSendUsecase,
   }) : _wallet = wallet,
        _getSettingsUsecase = getSettingsUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
@@ -107,6 +109,7 @@ class SendCubit extends Cubit<SendState> {
        _calculateBitcoinAbsoluteFeesUsecase =
            calculateBitcoinAbsoluteFeesUsecase,
        _updateSendSwapLockupFeesUsecase = updateSendSwapLockupFeesUsecase,
+       _verifyChainSwapAmountSendUsecase = verifyChainSwapAmountSendUsecase,
        super(const SendState());
 
   // ignore: unused_field
@@ -143,6 +146,7 @@ class SendCubit extends Cubit<SendState> {
   final CalculateBitcoinAbsoluteFeesUsecase
   _calculateBitcoinAbsoluteFeesUsecase;
   final UpdateSendSwapLockupFeesUsecase _updateSendSwapLockupFeesUsecase;
+  final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
 
   StreamSubscription<Swap>? _swapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
@@ -555,12 +559,11 @@ class SendCubit extends Cubit<SendState> {
           amountSat: paymentAmount,
         );
         _watchSendSwap(swap.id);
-        emit(state.copyWith(creatingSwap: false));
-        await Future.delayed(const Duration(seconds: 1));
         emit(
           state.copyWith(
             chainSwap: swap,
             confirmedAmountSat: swap.paymentAmount,
+            creatingSwap: false,
           ),
         );
       } catch (e) {
@@ -1097,6 +1100,13 @@ class SendCubit extends Cubit<SendState> {
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
+        if (state.chainSwap != null) {
+          await _verifyChainSwapAmountSendUsecase.execute(
+            psbtOrPset: pset,
+            swap: state.chainSwap!,
+            walletId: state.selectedWallet!.id,
+          );
+        }
         // final signedPset = await _signLiquidTxUsecase.execute(
         //   walletId: state.selectedWallet!.id,
         //   pset: pset,
@@ -1178,6 +1188,14 @@ class SendCubit extends Cubit<SendState> {
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
+
+        if (state.chainSwap != null) {
+          await _verifyChainSwapAmountSendUsecase.execute(
+            psbtOrPset: unsignedPsbtAndTxSize.unsignedPsbt,
+            swap: state.chainSwap!,
+            walletId: state.selectedWallet!.id,
+          );
+        }
 
         if (state.selectedWallet!.signsRemotely) {
           emit(
