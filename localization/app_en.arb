@@ -8167,6 +8167,8 @@
   "@importWatchOnlyExtendedPublicKey": {
     "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
+  "importWatchOnlyDisclaimerTitle": "Derivation Path Warning",
+  "importWatchOnlyDisclaimerDescription": "Make sure the derivation path you choose matches the one that produced the given xpub by verifying the first address derived from the wallet before use. Using the wrong path can lead to loss of funds",
   "bip85Title": "BIP85 Deterministic Entropies",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
