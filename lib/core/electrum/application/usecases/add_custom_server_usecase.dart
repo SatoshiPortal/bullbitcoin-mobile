@@ -3,22 +3,23 @@ import 'package:bb_mobile/core/electrum/application/errors/electrum_servers_exce
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
+
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 
 class AddCustomServerUsecase {
   final ElectrumServerRepository _electrumServerRepository;
-  final ElectrumSettingsRepository _electrumSettingsRepository;
   final ServerStatusPort _serverStatusPort;
+  final SettingsRepository _settingsRepository;
 
   AddCustomServerUsecase({
     required ElectrumServerRepository electrumServerRepository,
-    required ElectrumSettingsRepository electrumSettingsRepository,
     required ServerStatusPort serverStatusPort,
+    required SettingsRepository settingsRepository,
   }) : _electrumServerRepository = electrumServerRepository,
-       _electrumSettingsRepository = electrumSettingsRepository,
-       _serverStatusPort = serverStatusPort;
+       _serverStatusPort = serverStatusPort,
+       _settingsRepository = settingsRepository;
 
   Future<ElectrumServerStatus> execute(AddCustomServerRequest request) async {
     final server = ElectrumServer.createCustom(
@@ -37,21 +38,19 @@ class AddCustomServerUsecase {
       throw ElectrumServerAlreadyExistsException(server.url);
     }
 
-    // Fetch settings for this network to get Tor configuration
-    final settings = await _electrumSettingsRepository.fetchByNetwork(
-      server.network,
-    );
+    // Fetch app settings to get Tor configuration
+    final appSettings = await _settingsRepository.fetch();
 
     // Save the server and check its status concurrently
     // Use Tor proxy if enabled for Bitcoin/Testnet (not Liquid)
-    final useTorProxy = !server.network.isLiquid && settings.useTorProxy;
+    final useTorProxy = !server.network.isLiquid && appSettings.useTorProxy;
     final (_, status) =
         await (
           _electrumServerRepository.save(server),
           _serverStatusPort.checkServerStatus(
             url: server.url,
             useTorProxy: useTorProxy,
-            torProxyPort: settings.torProxyPort,
+            torProxyPort: appSettings.torProxyPort,
           ),
         ).wait;
 

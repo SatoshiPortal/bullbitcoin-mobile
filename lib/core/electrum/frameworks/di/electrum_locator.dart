@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/electrum/interface_adapters/adapters/server_statu
 import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -66,16 +67,16 @@ class ElectrumLocator {
     locator.registerFactory<AddCustomServerUsecase>(
       () => AddCustomServerUsecase(
         electrumServerRepository: locator<ElectrumServerRepository>(),
-        electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
         serverStatusPort: locator<ServerStatusPort>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<CheckForOnlineElectrumServersUsecase>(
       () => CheckForOnlineElectrumServersUsecase(
         environmentPort: locator<EnvironmentPort>(),
         electrumServerRepository: locator<ElectrumServerRepository>(),
-        electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
         serverStatusPort: locator<ServerStatusPort>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<SetCustomServersPriorityUsecase>(
@@ -92,6 +93,7 @@ class ElectrumLocator {
       () => GetElectrumServersToUseUsecase(
         electrumServerRepository: locator<ElectrumServerRepository>(),
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<LoadElectrumServerDataUsecase>(
@@ -100,6 +102,7 @@ class ElectrumLocator {
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
         environmentPort: locator<EnvironmentPort>(),
         serverStatusPort: locator<ServerStatusPort>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<SetAdvancedElectrumOptionsUsecase>(

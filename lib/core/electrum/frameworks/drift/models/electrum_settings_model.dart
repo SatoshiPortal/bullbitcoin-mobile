@@ -10,8 +10,6 @@ class ElectrumSettingsModel {
   final int timeout;
   final int retry;
   final String? socks5;
-  final bool useTorProxy;
-  final int torProxyPort;
 
   ElectrumSettingsModel({
     required this.network,
@@ -20,8 +18,6 @@ class ElectrumSettingsModel {
     required this.timeout,
     required this.retry,
     this.socks5,
-    required this.useTorProxy,
-    required this.torProxyPort,
   });
 
   ElectrumSettings toEntity() {
@@ -32,8 +28,6 @@ class ElectrumSettingsModel {
       timeout: timeout,
       retry: retry,
       socks5: socks5,
-      useTorProxy: useTorProxy,
-      torProxyPort: torProxyPort,
     );
   }
 
@@ -45,8 +39,6 @@ class ElectrumSettingsModel {
       timeout: entity.timeout,
       retry: entity.retry,
       socks5: entity.socks5,
-      useTorProxy: entity.useTorProxy,
-      torProxyPort: entity.torProxyPort,
     );
   }
 
@@ -58,8 +50,6 @@ class ElectrumSettingsModel {
       timeout: row.timeout,
       retry: row.retry,
       socks5: row.socks5,
-      useTorProxy: row.useTorProxy,
-      torProxyPort: row.torProxyPort,
     );
   }
 
@@ -71,8 +61,6 @@ class ElectrumSettingsModel {
       timeout: timeout,
       retry: retry,
       socks5: Value(socks5), // Should be nullable, so use Value
-      useTorProxy: Value(useTorProxy),
-      torProxyPort: Value(torProxyPort),
     );
   }
 }

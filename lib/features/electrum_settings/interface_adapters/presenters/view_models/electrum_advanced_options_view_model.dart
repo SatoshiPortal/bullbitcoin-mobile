@@ -15,8 +15,6 @@ sealed class ElectrumAdvancedOptionsViewModel
     required int retry,
     required bool validateDomain,
     String? socks5,
-    required bool useTorProxy,
-    required int torProxyPort,
   }) = _ElectrumAdvancedOptionsViewModel;
   const ElectrumAdvancedOptionsViewModel._();
 }

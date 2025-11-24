@@ -27,8 +27,8 @@ class TorPortInputBottomSheet extends StatefulWidget {
 }
 
 class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
+  final _formKey = GlobalKey<FormState>();
   late TextEditingController _controller;
-  String? _errorText;
 
   @override
   void initState() {
@@ -42,18 +42,24 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
     super.dispose();
   }
 
-  bool _validatePort(String value) {
+  String? _validatePort(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter a port number';
+    }
     final port = int.tryParse(value);
     if (port == null) {
-      setState(() => _errorText = 'Please enter a valid number');
-      return false;
+      return 'Please enter a valid number';
     }
     if (port < 1 || port > 65535) {
-      setState(() => _errorText = 'Port must be between 1 and 65535');
-      return false;
+      return 'Port must be between 1 and 65535';
     }
-    setState(() => _errorText = null);
-    return true;
+    return null;
+  }
+
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      Navigator.of(context).pop(int.parse(_controller.text));
+    }
   }
 
   @override
@@ -68,56 +74,54 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Center(
-                child: BBText(
-                  'Tor Proxy Port',
-                  style: context.font.headlineMedium,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Center(
+                  child: BBText(
+                    'Tor Proxy Port',
+                    style: context.font.headlineMedium,
+                  ),
                 ),
-              ),
-              Positioned(
-                right: 0,
-                child: IconButton(
-                  iconSize: 24,
-                  icon: const Icon(Icons.close),
-                  onPressed: context.pop,
+                Positioned(
+                  right: 0,
+                  child: IconButton(
+                    iconSize: 24,
+                    icon: const Icon(Icons.close),
+                    onPressed: context.pop,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const Gap(24),
-          TextField(
-            controller: _controller,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: InputDecoration(
-              labelText: 'Port Number',
-              hintText: '9050',
-              errorText: _errorText,
-              border: const OutlineInputBorder(),
-              helperText: 'Default Orbot port: 9050',
+              ],
             ),
-            onChanged: _validatePort,
-            autofocus: true,
-          ),
-          const Gap(24),
-          BBButton.big(
-            label: 'Save',
-            onPressed: () {
-              final value = _controller.text;
-              if (_validatePort(value)) {
-                Navigator.of(context).pop(int.parse(value));
-              }
-            },
-            bgColor: context.colour.primary,
-            textColor: context.colour.onPrimary,
-          ),
-        ],
+            const Gap(24),
+            TextFormField(
+              controller: _controller,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: const InputDecoration(
+                labelText: 'Port Number',
+                hintText: '9050',
+                border: OutlineInputBorder(),
+                helperText: 'Default Orbot port: 9050',
+              ),
+              validator: _validatePort,
+              onFieldSubmitted: (_) => _submit(),
+              autofocus: true,
+            ),
+            const Gap(24),
+            BBButton.big(
+              label: 'Save',
+              onPressed: _submit,
+              bgColor: context.colour.primary,
+              textColor: context.colour.onPrimary,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/electrum/domain/errors/electrum_settings_exceptio
     as advanced_options_domain_errors;
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/advanced_options_exception.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/electrum_servers_exception.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_advanced_options_view_model.dart';
@@ -111,8 +112,6 @@ class ElectrumSettingsBloc
             stopGap: settings.stopGap,
             validateDomain: settings.validateDomain,
             socks5: settings.socks5,
-            useTorProxy: settings.useTorProxy,
-            torProxyPort: settings.torProxyPort,
           ),
         ),
       );
@@ -313,8 +312,6 @@ class ElectrumSettingsBloc
           validateDomain: event.validateDomain,
           socks5: event.socks5,
           network: network,
-          useTorProxy: event.useTorProxy ?? false,
-          torProxyPort: event.torProxyPort ?? 9050,
         ),
       );
       await _setAdvancedElectrumOptionsUsecase.execute(request);
@@ -326,8 +323,6 @@ class ElectrumSettingsBloc
         stopGap: stopGap,
         validateDomain: event.validateDomain,
         socks5: event.socks5,
-        useTorProxy: event.useTorProxy ?? false,
-        torProxyPort: event.torProxyPort ?? 9050,
       );
       emit(state.copyWith(advancedOptions: updatedOptions));
     } on advanced_options_domain_errors.InvalidStopGapException catch (e) {

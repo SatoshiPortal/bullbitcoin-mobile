@@ -118,7 +118,8 @@ class _Actions extends StatelessWidget {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => BlocProvider(
-                      create: (_) => locator<ElectrumSettingsBloc>(),
+                      create: (_) => locator<ElectrumSettingsBloc>()
+                        ..add(const ElectrumSettingsLoaded(isLiquid: false)),
                       child: const AdvancedOptions(),
                     ),
                   ),

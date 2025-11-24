@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
-import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
+import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
+import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_port_input_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,44 +14,25 @@ class AdvancedOptions extends StatefulWidget {
   const AdvancedOptions({super.key});
 
   @override
-  State<AdvancedOptions> createState() =>
-      _AdvancedOptionsState();
+  State<AdvancedOptions> createState() => _AdvancedOptionsState();
 }
 
-class _AdvancedOptionsState
-    extends State<AdvancedOptions> {
+class _AdvancedOptionsState extends State<AdvancedOptions> {
   @override
   void initState() {
     super.initState();
-    // Load Electrum settings for Bitcoin Mainnet
-    context.read<ElectrumSettingsBloc>().add(
-      const ElectrumSettingsLoaded(isLiquid: false),
-    );
+    context.read<TorSettingsCubit>().init();
   }
 
   @override
   Widget build(BuildContext context) {
-    final advancedOptions = context.select(
-      (ElectrumSettingsBloc bloc) => bloc.state.advancedOptions,
-    );
-    final isLoading = context.select(
-      (ElectrumSettingsBloc bloc) => bloc.state.isLoading,
-    );
-
-    final useTorProxy = advancedOptions?.useTorProxy ?? false;
-    final torProxyPort = advancedOptions?.torProxyPort ?? 9050;
-    final stopGap = advancedOptions?.stopGap ?? 20;
-    final timeout = advancedOptions?.timeout ?? 5;
-    final retry = advancedOptions?.retry ?? 5;
-    final validateDomain = advancedOptions?.validateDomain ?? true;
-    final socks5 = advancedOptions?.socks5;
+    final torState = context.watch<TorSettingsCubit>().state;
+    final useTorProxy = torState.useTorProxy;
+    final torProxyPort = torState.torProxyPort;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Advanced Options')),
-      body:
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : SafeArea(
+      body: SafeArea(
                 child: Column(
                   children: [
                     Expanded(
@@ -60,11 +42,16 @@ class _AdvancedOptionsState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
                               child: Text(
                                 'Configure advanced settings before creating or recovering your wallet',
                                 style: context.font.bodyMedium?.copyWith(
-                                  color: context.colour.onSurface.withValues(alpha: 0.7),
+                                  color: context.colour.onSurface.withValues(
+                                    alpha: 0.7,
+                                  ),
                                 ),
                               ),
                             ),
@@ -75,17 +62,10 @@ class _AdvancedOptionsState
                               trailing: Switch(
                                 value: useTorProxy,
                                 onChanged: (value) {
-                                  context.read<ElectrumSettingsBloc>().add(
-                                    ElectrumAdvancedOptionsSaved(
-                                      stopGap: stopGap.toString(),
-                                      timeout: timeout.toString(),
-                                      retry: retry.toString(),
-                                      validateDomain: validateDomain,
-                                      socks5: socks5,
-                                      useTorProxy: value,
-                                      torProxyPort: torProxyPort,
-                                    ),
-                                  );
+                                  context.read<TorSettingsCubit>().updateTorSettings(
+                                    useTorProxy: value,
+                                    torProxyPort: torProxyPort,
+                                  ).ignore();
                                 },
                               ),
                             ),
@@ -100,22 +80,14 @@ class _AdvancedOptionsState
                                 onTap: () async {
                                   final newPort =
                                       await TorPortInputBottomSheet.show(
-                                    context,
-                                    torProxyPort,
-                                  );
-                                  if (newPort != null) {
-                                    if (!context.mounted) return;
-                                    context.read<ElectrumSettingsBloc>().add(
-                                      ElectrumAdvancedOptionsSaved(
-                                        stopGap: stopGap.toString(),
-                                        timeout: timeout.toString(),
-                                        retry: retry.toString(),
-                                        validateDomain: validateDomain,
-                                        socks5: socks5,
-                                        useTorProxy: useTorProxy,
-                                        torProxyPort: newPort,
-                                      ),
-                                    );
+                                        context,
+                                        torProxyPort,
+                                      );
+                                  if (newPort != null && context.mounted) {
+                                    context.read<TorSettingsCubit>().updateTorSettings(
+                                      useTorProxy: useTorProxy,
+                                      torProxyPort: newPort,
+                                    ).ignore();
                                   }
                                 },
                               ),
@@ -128,13 +100,28 @@ class _AdvancedOptionsState
                                 );
                               },
                             ),
+                            SettingsEntryItem(
+                              icon: Icons.cloud_sync,
+                              title: 'Custom Recoverbull Server',
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const SettingsPage(),
+                                  ),
+                                );
+                              },
+                            ),
                             const Gap(24),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               child: Text(
                                 'You can change these settings later in Bitcoin Settings',
                                 style: context.font.bodySmall?.copyWith(
-                                  color: context.colour.onSurface.withValues(alpha: 0.6),
+                                  color: context.colour.onSurface.withValues(
+                                    alpha: 0.6,
+                                  ),
                                 ),
                               ),
                             ),

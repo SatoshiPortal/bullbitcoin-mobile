@@ -19,8 +19,6 @@ class SetAdvancedElectrumOptionsUsecase {
       newRetry: request.retry,
       newValidateDomain: request.validateDomain,
       newSocks5Supplier: () => request.socks5,
-      newUseTorProxy: request.useTorProxy,
-      newTorProxyPort: request.torProxyPort,
     );
     try {
       await _electrumSettingsRepository.save(settings);

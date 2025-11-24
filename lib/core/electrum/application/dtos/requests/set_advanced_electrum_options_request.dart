@@ -11,7 +11,5 @@ class SetAdvancedElectrumOptionsRequest {
   int get retry => options.retry;
   bool get validateDomain => options.validateDomain;
   String? get socks5 => options.socks5;
-  bool get useTorProxy => options.useTorProxy;
-  int get torProxyPort => options.torProxyPort;
   ElectrumServerNetwork get network => options.network;
 }

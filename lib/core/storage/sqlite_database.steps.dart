@@ -3450,7 +3450,7 @@ final class Schema10 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape15 settings = Shape15(
+  late final Shape19 settings = Shape19(
     source: i0.VersionedTable(
       entityName: 'settings',
       withoutRowId: false,
@@ -3465,6 +3465,8 @@ final class Schema10 extends i0.VersionedSchema {
         _column_36,
         _column_37,
         _column_106,
+        _column_111,
+        _column_112,
       ],
       attachedDatabase: database,
     ),
@@ -3534,7 +3536,7 @@ final class Schema10 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape19 electrumSettings = Shape19(
+  late final Shape17 electrumSettings = Shape17(
     source: i0.VersionedTable(
       entityName: 'electrum_settings',
       withoutRowId: false,
@@ -3547,8 +3549,6 @@ final class Schema10 extends i0.VersionedSchema {
         _column_61,
         _column_62,
         _column_59,
-        _column_111,
-        _column_112,
       ],
       attachedDatabase: database,
     ),
@@ -3634,18 +3634,22 @@ final class Schema10 extends i0.VersionedSchema {
 
 class Shape19 extends i0.VersionedTable {
   Shape19({required super.source, required super.alias}) : super.aliased();
-  i1.GeneratedColumn<String> get network =>
-      columnsByName['network']! as i1.GeneratedColumn<String>;
-  i1.GeneratedColumn<bool> get validateDomain =>
-      columnsByName['validate_domain']! as i1.GeneratedColumn<bool>;
-  i1.GeneratedColumn<int> get stopGap =>
-      columnsByName['stop_gap']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get timeout =>
-      columnsByName['timeout']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get retry =>
-      columnsByName['retry']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<String> get socks5 =>
-      columnsByName['socks5']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get environment =>
+      columnsByName['environment']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get bitcoinUnit =>
+      columnsByName['bitcoin_unit']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get language =>
+      columnsByName['language']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get currency =>
+      columnsByName['currency']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<bool> get hideAmounts =>
+      columnsByName['hide_amounts']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<bool> get isSuperuser =>
+      columnsByName['is_superuser']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<bool> get isDevModeEnabled =>
+      columnsByName['is_dev_mode_enabled']! as i1.GeneratedColumn<bool>;
   i1.GeneratedColumn<bool> get useTorProxy =>
       columnsByName['use_tor_proxy']! as i1.GeneratedColumn<bool>;
   i1.GeneratedColumn<int> get torProxyPort =>

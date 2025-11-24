@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
-import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_connection_status_card.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_port_input_bottom_sheet.dart';
@@ -19,36 +18,19 @@ class _TorSettingsScreenState extends State<TorSettingsScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ElectrumSettingsBloc>().add(
-      const ElectrumSettingsLoaded(isLiquid: false),
-    );
     context.read<TorSettingsCubit>().init();
   }
 
   @override
   Widget build(BuildContext context) {
-    final advancedOptions = context.select(
-      (ElectrumSettingsBloc bloc) => bloc.state.advancedOptions,
-    );
-    final isLoading = context.select(
-      (ElectrumSettingsBloc bloc) => bloc.state.isLoading,
-    );
-
-    final useTorProxy = advancedOptions?.useTorProxy ?? false;
-    final torProxyPort = advancedOptions?.torProxyPort ?? 9050;
-    final stopGap = advancedOptions?.stopGap ?? 20;
-    final timeout = advancedOptions?.timeout ?? 5;
-    final retry = advancedOptions?.retry ?? 5;
-    final validateDomain = advancedOptions?.validateDomain ?? true;
-    final socks5 = advancedOptions?.socks5;
+    final torState = context.watch<TorSettingsCubit>().state;
+    final useTorProxy = torState.useTorProxy;
+    final torProxyPort = torState.torProxyPort;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Tor Settings')),
       body: SafeArea(
-        child:
-            isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -83,20 +65,10 @@ class _TorSettingsScreenState extends State<TorSettingsScreen> {
                           Switch(
                             value: useTorProxy,
                             onChanged: (value) {
-                              context.read<ElectrumSettingsBloc>().add(
-                                ElectrumAdvancedOptionsSaved(
-                                  stopGap: stopGap.toString(),
-                                  timeout: timeout.toString(),
-                                  retry: retry.toString(),
-                                  validateDomain: validateDomain,
-                                  socks5: socks5,
-                                  useTorProxy: value,
-                                  torProxyPort: torProxyPort,
-                                ),
+                              context.read<TorSettingsCubit>().updateTorSettings(
+                                useTorProxy: value,
+                                torProxyPort: torProxyPort,
                               );
-                              context
-                                  .read<TorSettingsCubit>()
-                                  .refreshSettings();
                             },
                           ),
                         ],
@@ -121,22 +93,11 @@ class _TorSettingsScreenState extends State<TorSettingsScreen> {
                         context,
                         torProxyPort,
                       );
-                      if (newPort != null) {
-                        if (!context.mounted) return;
-                        context.read<ElectrumSettingsBloc>().add(
-                          ElectrumAdvancedOptionsSaved(
-                            stopGap: stopGap.toString(),
-                            timeout: timeout.toString(),
-                            retry: retry.toString(),
-                            validateDomain: validateDomain,
-                            socks5: socks5,
-                            useTorProxy: useTorProxy,
-                            torProxyPort: newPort,
-                          ),
-                        );
-                        await context
-                            .read<TorSettingsCubit>()
-                            .refreshSettings();
+                      if (newPort != null && context.mounted) {
+                        context.read<TorSettingsCubit>().updateTorSettings(
+                          useTorProxy: useTorProxy,
+                          torProxyPort: newPort,
+                        ).ignore();
                       }
                     },
                   ),

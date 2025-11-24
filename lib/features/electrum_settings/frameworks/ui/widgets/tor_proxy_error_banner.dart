@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -10,34 +9,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class TorProxyErrorBanner extends StatelessWidget {
   const TorProxyErrorBanner({super.key});
 
-  bool _areAllServersOffline(ElectrumSettingsState state) {
-    final allServers = [...state.defaultServers, ...state.customServers];
-
-    if (allServers.isEmpty) {
-      return false;
-    }
-
-    return allServers.every(
-      (server) => server.status == ElectrumServerStatus.offline,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final electrumState = context.watch<ElectrumSettingsBloc>().state;
-    final torState = context.watch<TorSettingsCubit>().state;
-    final advancedOptions = electrumState.advancedOptions;
+    final useTorProxy = context.select(
+      (TorSettingsCubit cubit) => cubit.state.useTorProxy,
+    );
+    final torStatus = context.select(
+      (TorSettingsCubit cubit) => cubit.state.status,
+    );
+    final areAllServersOffline = context.select(
+      (ElectrumSettingsBloc bloc) => bloc.state.areAllServersOffline(),
+    );
+    final isLiquid = context.select(
+      (ElectrumSettingsBloc bloc) => bloc.state.isLiquid,
+    );
 
     // Don't show banner if:
     // - Tor is not enabled
     // - Tor proxy is online
     // - Not all servers are offline
     // - Only show for Bitcoin (not Liquid)
-    if (advancedOptions == null ||
-        !advancedOptions.useTorProxy ||
-        torState.status == TorStatus.online ||
-        !_areAllServersOffline(electrumState) ||
-        electrumState.isLiquid) {
+    if (!useTorProxy ||
+        torStatus == TorStatus.online ||
+        !areAllServersOffline ||
+        isLiquid) {
       return const SizedBox.shrink();
     }
 

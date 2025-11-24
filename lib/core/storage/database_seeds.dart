@@ -19,6 +19,8 @@ class DatabaseSeeds {
             hideAmounts: false,
             isSuperuser: false,
             isDevModeEnabled: false,
+            useTorProxy: false,
+            torProxyPort: 9050,
           ),
         );
   }
@@ -61,8 +63,6 @@ class DatabaseSeeds {
         stopGap: 20,
         timeout: 5,
         retry: 5,
-        useTorProxy: false,
-        torProxyPort: 9050,
       );
 
       await db.into(db.electrumSettings).insertOnConflictUpdate(settings);
