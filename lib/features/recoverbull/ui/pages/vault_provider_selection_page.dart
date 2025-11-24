@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widg
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class VaultProviderSelectionPage extends StatelessWidget {
   const VaultProviderSelectionPage({super.key});
@@ -158,7 +159,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                   ),
                   const Spacer(),
                   GestureDetector(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () => context.pop(),
                     child: Icon(Icons.close, color: context.colour.secondary),
                   ),
                 ],

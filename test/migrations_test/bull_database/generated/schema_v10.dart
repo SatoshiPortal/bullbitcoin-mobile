@@ -6094,8 +6094,18 @@ class Recoverbull extends Table with TableInfo<Recoverbull, RecoverbullData> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  late final GeneratedColumn<bool> isPermissionGranted = GeneratedColumn<bool>(
+    'is_permission_granted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_permission_granted" IN (0, 1))',
+    ),
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, url];
+  List<GeneratedColumn> get $columns => [id, url, isPermissionGranted];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -6117,6 +6127,11 @@ class Recoverbull extends Table with TableInfo<Recoverbull, RecoverbullData> {
             DriftSqlType.string,
             data['${effectivePrefix}url'],
           )!,
+      isPermissionGranted:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_permission_granted'],
+          )!,
     );
   }
 
@@ -6129,17 +6144,27 @@ class Recoverbull extends Table with TableInfo<Recoverbull, RecoverbullData> {
 class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
   final int id;
   final String url;
-  const RecoverbullData({required this.id, required this.url});
+  final bool isPermissionGranted;
+  const RecoverbullData({
+    required this.id,
+    required this.url,
+    required this.isPermissionGranted,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['url'] = Variable<String>(url);
+    map['is_permission_granted'] = Variable<bool>(isPermissionGranted);
     return map;
   }
 
   RecoverbullCompanion toCompanion(bool nullToAbsent) {
-    return RecoverbullCompanion(id: Value(id), url: Value(url));
+    return RecoverbullCompanion(
+      id: Value(id),
+      url: Value(url),
+      isPermissionGranted: Value(isPermissionGranted),
+    );
   }
 
   factory RecoverbullData.fromJson(
@@ -6150,6 +6175,9 @@ class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
     return RecoverbullData(
       id: serializer.fromJson<int>(json['id']),
       url: serializer.fromJson<String>(json['url']),
+      isPermissionGranted: serializer.fromJson<bool>(
+        json['isPermissionGranted'],
+      ),
     );
   }
   @override
@@ -6158,15 +6186,24 @@ class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'url': serializer.toJson<String>(url),
+      'isPermissionGranted': serializer.toJson<bool>(isPermissionGranted),
     };
   }
 
-  RecoverbullData copyWith({int? id, String? url}) =>
-      RecoverbullData(id: id ?? this.id, url: url ?? this.url);
+  RecoverbullData copyWith({int? id, String? url, bool? isPermissionGranted}) =>
+      RecoverbullData(
+        id: id ?? this.id,
+        url: url ?? this.url,
+        isPermissionGranted: isPermissionGranted ?? this.isPermissionGranted,
+      );
   RecoverbullData copyWithCompanion(RecoverbullCompanion data) {
     return RecoverbullData(
       id: data.id.present ? data.id.value : this.id,
       url: data.url.present ? data.url.value : this.url,
+      isPermissionGranted:
+          data.isPermissionGranted.present
+              ? data.isPermissionGranted.value
+              : this.isPermissionGranted,
     );
   }
 
@@ -6174,44 +6211,61 @@ class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
   String toString() {
     return (StringBuffer('RecoverbullData(')
           ..write('id: $id, ')
-          ..write('url: $url')
+          ..write('url: $url, ')
+          ..write('isPermissionGranted: $isPermissionGranted')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, url);
+  int get hashCode => Object.hash(id, url, isPermissionGranted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is RecoverbullData &&
           other.id == this.id &&
-          other.url == this.url);
+          other.url == this.url &&
+          other.isPermissionGranted == this.isPermissionGranted);
 }
 
 class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
   final Value<int> id;
   final Value<String> url;
+  final Value<bool> isPermissionGranted;
   const RecoverbullCompanion({
     this.id = const Value.absent(),
     this.url = const Value.absent(),
+    this.isPermissionGranted = const Value.absent(),
   });
   RecoverbullCompanion.insert({
     this.id = const Value.absent(),
     required String url,
-  }) : url = Value(url);
+    required bool isPermissionGranted,
+  }) : url = Value(url),
+       isPermissionGranted = Value(isPermissionGranted);
   static Insertable<RecoverbullData> custom({
     Expression<int>? id,
     Expression<String>? url,
+    Expression<bool>? isPermissionGranted,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (url != null) 'url': url,
+      if (isPermissionGranted != null)
+        'is_permission_granted': isPermissionGranted,
     });
   }
 
-  RecoverbullCompanion copyWith({Value<int>? id, Value<String>? url}) {
-    return RecoverbullCompanion(id: id ?? this.id, url: url ?? this.url);
+  RecoverbullCompanion copyWith({
+    Value<int>? id,
+    Value<String>? url,
+    Value<bool>? isPermissionGranted,
+  }) {
+    return RecoverbullCompanion(
+      id: id ?? this.id,
+      url: url ?? this.url,
+      isPermissionGranted: isPermissionGranted ?? this.isPermissionGranted,
+    );
   }
 
   @override
@@ -6223,6 +6277,9 @@ class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
     if (url.present) {
       map['url'] = Variable<String>(url.value);
     }
+    if (isPermissionGranted.present) {
+      map['is_permission_granted'] = Variable<bool>(isPermissionGranted.value);
+    }
     return map;
   }
 
@@ -6230,7 +6287,8 @@ class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
   String toString() {
     return (StringBuffer('RecoverbullCompanion(')
           ..write('id: $id, ')
-          ..write('url: $url')
+          ..write('url: $url, ')
+          ..write('isPermissionGranted: $isPermissionGranted')
           ..write(')'))
         .toString();
   }

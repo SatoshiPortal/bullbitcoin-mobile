@@ -1,24 +1,29 @@
+import 'package:bb_mobile/core/recoverbull/domain/usecases/allow_permission_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
-class ServerConfirmationPage extends StatefulWidget {
-  const ServerConfirmationPage({super.key, required this.onConfirm});
-
-  final VoidCallback onConfirm;
+class RequestPermissionPage extends StatefulWidget {
+  const RequestPermissionPage({super.key});
 
   @override
-  State<ServerConfirmationPage> createState() => _ServerConfirmationPageState();
+  State<RequestPermissionPage> createState() => _RequestPermissionPageState();
 }
 
-class _ServerConfirmationPageState extends State<ServerConfirmationPage> {
+class _RequestPermissionPageState extends State<RequestPermissionPage> {
   final _fetchUrlUsecase = locator<FetchRecoverbullUrlUsecase>();
+  final _allowPermissionUsecase = locator<AllowPermissionUsecase>();
+
   bool _isLoading = true;
   String? _serverUrl;
 
@@ -147,18 +152,29 @@ class _ServerConfirmationPageState extends State<ServerConfirmationPage> {
                       ),
                       const Gap(24),
                     ],
-                    const Spacer(),
                     BBText(
-                      'We will connect to this server to recover your encrypted vault backup.',
+                      'We will connect to this server through Tor',
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.onSurfaceVariant,
                       ),
                       textAlign: TextAlign.center,
                     ),
+                    const Spacer(),
                     const Gap(32),
                     BBButton.big(
                       label: 'Continue',
-                      onPressed: widget.onConfirm,
+                      onPressed: () async {
+                        await _allowPermissionUsecase.execute(true);
+                        if (!context.mounted) return;
+                        final state = context.read<RecoverBullBloc>().state;
+                        await context.pushNamed(
+                          RecoverBullRoute.recoverbullFlows.name,
+                          extra: RecoverBullFlowsExtra(
+                            flow: state.flow,
+                            vault: state.vault,
+                          ),
+                        );
+                      },
                       bgColor: context.colour.primary,
                       textColor: context.colour.onPrimary,
                     ),

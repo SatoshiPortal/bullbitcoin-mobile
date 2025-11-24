@@ -3625,7 +3625,7 @@ final class Schema10 extends i0.VersionedSchema {
       withoutRowId: false,
       isStrict: false,
       tableConstraints: [],
-      columns: [_column_31, _column_58],
+      columns: [_column_31, _column_58, _column_113],
       attachedDatabase: database,
     ),
     alias: null,
@@ -3682,8 +3682,20 @@ class Shape20 extends i0.VersionedTable {
       columnsByName['id']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<String> get url =>
       columnsByName['url']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<bool> get isPermissionGranted =>
+      columnsByName['is_permission_granted']! as i1.GeneratedColumn<bool>;
 }
 
+i1.GeneratedColumn<bool> _column_113(String aliasedName) =>
+    i1.GeneratedColumn<bool>(
+      'is_permission_granted',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.bool,
+      defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
+        'CHECK ("is_permission_granted" IN (0, 1))',
+      ),
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,

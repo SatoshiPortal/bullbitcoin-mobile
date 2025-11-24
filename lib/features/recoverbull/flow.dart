@@ -1,7 +1,10 @@
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_permission_usecase.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/connecting_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/server_confirmation_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,36 +18,49 @@ class RecoverBullFlowNavigator extends StatefulWidget {
 
 class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
   final _navigatorKey = GlobalKey<NavigatorState>();
-  bool _serverConfirmed = false;
-
-  void _onServerConfirmed() {
-    setState(() => _serverConfirmed = true);
-  }
+  final _fetchPermissionUsecase = locator<FetchPermissionUsecase>();
 
   @override
   Widget build(BuildContext context) {
-    final flow = context.read<RecoverBullBloc>().state.flow;
-
-    final page = switch (flow) {
-      RecoverBullFlow.settings => const SettingsPage(),
-      _ =>
-        _serverConfirmed
-            ? const ConnectingPage()
-            : ServerConfirmationPage(onConfirm: _onServerConfirmed),
-    };
-
-    return PopScope(
-      canPop: !(_navigatorKey.currentState?.canPop() ?? false),
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop && (_navigatorKey.currentState?.canPop() ?? false)) {
-          _navigatorKey.currentState?.pop();
+    return FutureBuilder<bool>(
+      future: _fetchPermissionUsecase.execute(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: FadingLinearProgress(trigger: true)),
+          );
         }
+
+        final flow = context.read<RecoverBullBloc>().state.flow;
+
+        Widget page = switch (flow) {
+          RecoverBullFlow.settings => const SettingsPage(),
+          _ => const ConnectingPage(),
+        };
+
+        final hasPermission = snapshot.data ?? false;
+        if (!hasPermission) {
+          page = const RequestPermissionPage();
+        } else {
+          context.read<RecoverBullBloc>().add(const OnTorInitialization());
+          context.read<RecoverBullBloc>().add(const OnServerCheck());
+        }
+
+        return PopScope(
+          canPop: !(_navigatorKey.currentState?.canPop() ?? false),
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop && (_navigatorKey.currentState?.canPop() ?? false)) {
+              _navigatorKey.currentState?.pop();
+            }
+          },
+          child: Navigator(
+            key: _navigatorKey,
+            onGenerateRoute: (settings) {
+              return MaterialPageRoute(builder: (context) => page);
+            },
+          ),
+        );
       },
-      child: Navigator(
-        key: _navigatorKey,
-        pages: [MaterialPage(key: ValueKey(_serverConfirmed), child: page)],
-        onDidRemovePage: (page) {},
-      ),
     );
   }
 }

@@ -98,11 +98,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     on<OnServerCheck>(_onServerCheck);
     on<OnTorInitialization>(_onTorInitialization);
     on<OnClearError>(_onClearError);
-
-    if (flow != RecoverBullFlow.settings) {
-      add(const OnTorInitialization());
-      add(const OnServerCheck());
-    }
   }
 
   Future<void> _onTorInitialization(
