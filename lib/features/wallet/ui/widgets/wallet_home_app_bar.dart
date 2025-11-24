@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/price_chart_bloc.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -20,6 +21,10 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final showChart = context.select(
       (PriceChartBloc bloc) => bloc.state.rateHistory != null,
+    );
+
+    final currency = context.select(
+      (BitcoinPriceBloc bloc) => bloc.state.currency ?? 'CAD',
     );
 
     return AppBar(
@@ -50,9 +55,22 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   },
                 ),
               )
-              : null,
-
-      leadingWidth: showChart ? 56 : 48,
+              : Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.show_chart,
+                    color: context.colour.onPrimary,
+                    size: 24,
+                  ),
+                  onPressed: () {
+                    context.read<PriceChartBloc>().add(
+                      PriceChartEvent.started(currency: currency),
+                    );
+                  },
+                ),
+              ),
+      leadingWidth: showChart ? 56 : 56,
       actionsIconTheme: IconThemeData(
         color: context.colour.onPrimary,
         size: 24,
