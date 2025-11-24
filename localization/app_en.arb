@@ -5120,10 +5120,6 @@
   "@payDescription": {
     "description": "Label for payment description/memo field"
   },
-  "payRecipient": "Recipient",
-  "@payRecipient": {
-    "description": "Label for payment recipient field"
-  },
   "payCancelPayment": "Cancel Payment",
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"

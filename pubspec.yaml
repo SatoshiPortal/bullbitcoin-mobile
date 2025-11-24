@@ -130,6 +130,7 @@ dependencies:
     git:
       url: https://github.com/Foundation-Devices/tor
       ref: 440a2d2  
+  meta: ^1.16.0
   workmanager: ^0.7.0
 
 dev_dependencies:
