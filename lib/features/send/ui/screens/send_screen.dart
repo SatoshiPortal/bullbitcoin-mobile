@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -15,6 +16,8 @@ import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
+import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
@@ -27,6 +30,7 @@ import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -735,7 +739,9 @@ class _BottomButtons extends StatelessWidget {
           if (wallet != null && wallet.signsRemotely && !hasFinalizedTx)
             (wallet.signerDevice != null && wallet.signerDevice!.isLedger)
                 ? const SignLedgerButton()
-                : const ShowPsbtButton()
+                : (wallet.signerDevice != null && wallet.signerDevice!.isBitBox)
+                    ? const SignBitBoxButton()
+                    : const ShowPsbtButton()
           else
             const ConfirmSendButton(),
         ],
@@ -1723,7 +1729,7 @@ class SignLedgerButton extends StatelessWidget {
         if (unsignedPsbt == null) return;
 
         final result = await context.pushNamed<String>(
-          LedgerRoute.signTransaction.name,
+          LedgerRoute.ledgerSignTransaction.name,
           extra: LedgerRouteParams(
             psbt: unsignedPsbt,
             derivationPath: derivationPath,
@@ -1744,5 +1750,69 @@ class SignLedgerButton extends StatelessWidget {
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
     );
+  }
+}
+
+class SignBitBoxButton extends StatelessWidget {
+  const SignBitBoxButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final unsignedPsbt = context.select(
+      (SendCubit cubit) => cubit.state.unsignedPsbt,
+    );
+
+    final derivationPath = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.derivationPath,
+    );
+
+    final deviceType = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.signerDevice,
+    );
+
+    final scriptType = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
+    );
+
+    return BBButton.big(
+      label: 'Sign with BitBox',
+      onPressed: () async {
+        if (unsignedPsbt == null) return;
+
+        final result = await context.pushNamed<String>(
+          BitBoxRoute.bitboxSignTransaction.name,
+          extra: BitBoxRouteParams(
+            psbt: unsignedPsbt,
+            derivationPath: derivationPath,
+            requestedDeviceType: deviceType,
+            scriptType: scriptType,
+          ),
+        );
+
+        if (result != null && context.mounted) {
+          final finalizedTx = await _finalizePsbt(result);
+          if (context.mounted) {
+            await context.read<SendCubit>().updateSignedBitcoinTx(finalizedTx);
+          }
+        }
+      },
+      bgColor: context.colour.secondary,
+      textColor: context.colour.onSecondary,
+    );
+  }
+
+  Future<String> _finalizePsbt(String signedPsbt) async {
+    try {
+      if (signedPsbt.startsWith('cHN')) {
+        final psbt = Psbt.fromBase64(signedPsbt);
+        final builder = PsbtBuilder.fromPsbt(psbt);
+        return builder.finalizeAll().toHex();
+      } else {
+        return signedPsbt;
+      }
+    } catch (e) {
+      log.warning('Failed to finalize PSBT');
+      return signedPsbt;
+    }
   }
 }
