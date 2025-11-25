@@ -116,15 +116,13 @@ class SocketConnectivityDatasource {
       if (connectResponse.length < 2 ||
           connectResponse[0] != 0x05 ||
           connectResponse[1] != 0x00) {
-        log.fine('SOCKS5 connection to $host:$port failed');
+        log.severe('SOCKS5 connection to $host:$port failed');
         return false;
       }
 
-      // Successfully connected through SOCKS5
-      log.fine('Successfully connected to $host:$port through SOCKS5');
       return true;
     } catch (e) {
-      log.fine('SOCKS5 connection check failed for $host:$port - $e');
+      log.severe('SOCKS5 connection check failed for $host:$port - $e');
       return false;
     } finally {
       await subscription?.cancel();
