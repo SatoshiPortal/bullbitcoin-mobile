@@ -56,7 +56,6 @@ class Bull {
     }
 
     await Future.wait(initTasks);
-
   }
 
   static Future<void> initLogs() async {
@@ -190,11 +189,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
         BlocProvider(create: (_) => locator<WalletBloc>()),
         // Make the exchange cubit available to the whole app so redirects
-        // can use it to check if the user is authenticated and also to fetch
-        // the user summary when the environment changes from anywhere in the app.
-        BlocProvider(
-          create: (_) => locator<ExchangeCubit>()..fetchUserSummary(),
-        ),
+        // can use it to check if the user is authenticated
+        BlocProvider(create: (_) => locator<ExchangeCubit>()),
       ],
       child: MultiBlocListener(
         listeners: [
