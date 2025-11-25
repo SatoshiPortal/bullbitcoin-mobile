@@ -15,20 +15,18 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
     required GetSettingsUsecase getSettingsUsecase,
     required UpdateTorSettingsUsecase updateTorSettingsUsecase,
     required CheckTorConnectionUsecase checkTorConnectionUsecase,
-  })  : _getSettingsUsecase = getSettingsUsecase,
-        _updateTorSettingsUsecase = updateTorSettingsUsecase,
-        _checkTorConnectionUsecase = checkTorConnectionUsecase,
-        super(const TorSettingsState());
+  }) : _getSettingsUsecase = getSettingsUsecase,
+       _updateTorSettingsUsecase = updateTorSettingsUsecase,
+       _checkTorConnectionUsecase = checkTorConnectionUsecase,
+       super(const TorSettingsState());
 
   final GetSettingsUsecase _getSettingsUsecase;
   final UpdateTorSettingsUsecase _updateTorSettingsUsecase;
   final CheckTorConnectionUsecase _checkTorConnectionUsecase;
-  Timer? _statusCheckTimer;
 
   Future<void> init() async {
     await _loadSettings();
     await checkConnectionStatus();
-    _startPeriodicStatusCheck();
   }
 
   Future<void> _loadSettings() async {
@@ -52,20 +50,8 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
     await refreshSettings();
   }
 
-  void _startPeriodicStatusCheck() {
-    _statusCheckTimer?.cancel();
-    if (state.useTorProxy) {
-      _statusCheckTimer = Timer.periodic(
-        const Duration(seconds: 10),
-        (_) => checkConnectionStatus(),
-      );
-    }
-  }
-
   Future<void> checkConnectionStatus() async {
-    if (!state.useTorProxy) {
-      return;
-    }
+    if (!state.useTorProxy) return;
 
     emit(state.copyWith(status: TorStatus.connecting));
 
@@ -76,13 +62,5 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
   Future<void> refreshSettings() async {
     await _loadSettings();
     await checkConnectionStatus();
-    // Restart periodic check (will start/stop based on useTorProxy state)
-    _startPeriodicStatusCheck();
-  }
-
-  @override
-  Future<void> close() {
-    _statusCheckTimer?.cancel();
-    return super.close();
   }
 }
