@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/exchange/data/mappers/user_summary_mapper.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 
 class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
   final BullbitcoinApiDatasource _bullbitcoinApiDatasource;
@@ -27,7 +26,6 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
         isTestnet: _isTestnet,
       );
       if (apiKey == null) {
-        log.severe('No API key found');
         throw ApiKeyException(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
@@ -68,7 +66,6 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
         isTestnet: _isTestnet,
       );
       if (apiKey == null) {
-        log.severe('No API key found');
         throw ApiKeyException(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
