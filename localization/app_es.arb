@@ -9584,7 +9584,7 @@
   "@electrumDeleteServerTitle": {
     "description": "Delete server dialog title"
   },
-  "electrumDeletePrivacyNotice": "Aviso de privacidad:\nUsar su propio nodo garantiza que ningún tercero pueda vincular su dirección IP con sus transacciones. Al eliminar su último servidor personalizado, se conectará a un servidor BullBitcoin.\n\n",
+  "electrumDeletePrivacyNotice": "Aviso de privacidad:\n\nUsar su propio nodo garantiza que ningún tercero pueda vincular su dirección IP con sus transacciones. Al eliminar su último servidor personalizado, se conectará a un servidor BullBitcoin.\n",
   "@electrumDeletePrivacyNotice": {
     "description": "Privacy notice shown when deleting last custom server"
   },
