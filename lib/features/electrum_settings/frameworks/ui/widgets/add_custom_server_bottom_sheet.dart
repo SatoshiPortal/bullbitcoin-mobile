@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+
 class CustomServerInput {
   final String url;
   final bool enableSsl;
@@ -42,21 +44,46 @@ class _AddCustomServerBottomSheetState
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   bool _enableSsl = true;
+  bool _sslAutoDetected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onUrlChanged);
+  }
 
   @override
   void dispose() {
+    _controller.removeListener(_onUrlChanged);
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
+  }
+
+  void _onUrlChanged() {
+    final input = _controller.text.trim();
+    if (input.isEmpty) return;
+
+    final result = ElectrumUrlParser.parse(input);
+    if (result != null) {
+      setState(() {
+        _enableSsl = result.enableSsl;
+        _sslAutoDetected = true;
+      });
+    }
   }
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
       // Unfocus to close keyboard before popping (optional, just looks nicer)
       FocusScope.of(context).unfocus();
-      Navigator.of(context).pop(
-        CustomServerInput(url: _controller.text.trim(), enableSsl: _enableSsl),
-      );
+
+      final result = ElectrumUrlParser.parse(_controller.text.trim());
+      final cleanUrl = result?.cleanUrl ?? _controller.text.trim();
+
+      Navigator.of(
+        context,
+      ).pop(CustomServerInput(url: cleanUrl, enableSsl: _enableSsl));
     }
   }
 
@@ -157,22 +184,14 @@ class _AddCustomServerBottomSheetState
                     onFieldSubmitted: (_) => _submit(),
                     validator: (v) {
                       final input = v?.trim() ?? '';
-                      if (input.isEmpty) {
-                        return context.loc.electrumEmptyFieldError;
-                      }
+                      final error = ElectrumUrlParser.validate(input);
 
-                      // Check if protocol is included
-                      final protocolPattern = RegExp('^([a-zA-Z]+)://');
-                      if (protocolPattern.hasMatch(input)) {
-                        return context.loc.electrumProtocolError;
-                      }
-
-                      // Validate host:port format
-                      final hostPortPattern = RegExp(r'^[a-zA-Z0-9.-]+:\d+$');
-                      if (!hostPortPattern.hasMatch(input)) {
-                        return context.loc.electrumFormatError;
-                      }
-                      return null;
+                      return switch (error) {
+                        ElectrumUrlValidationError.empty => context.loc.electrumEmptyFieldError,
+                        ElectrumUrlValidationError.hasProtocol => context.loc.electrumProtocolError,
+                        ElectrumUrlValidationError.invalidFormat => context.loc.electrumFormatError,
+                        null => null,
+                      };
                     },
                   ),
                   const Gap(8),
@@ -180,9 +199,25 @@ class _AddCustomServerBottomSheetState
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            context.loc.electrumEnableSsl,
-                            style: context.font.bodyMedium,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                context.loc.electrumEnableSsl,
+                                style: context.font.bodyMedium,
+                              ),
+                              if (_sslAutoDetected) ...[
+                                const Gap(2),
+                                Text(
+                                  '(Auto-detected)',
+                                  style: context.font.bodySmall?.copyWith(
+                                    color: context.colour.onSurface.withValues(
+                                      alpha: 0.6,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
                         ),
                         Switch(
@@ -190,6 +225,7 @@ class _AddCustomServerBottomSheetState
                           onChanged: (value) {
                             setState(() {
                               _enableSsl = value;
+                              _sslAutoDetected = false; // user override
                             });
                           },
                         ),
