@@ -86,7 +86,7 @@ class RecoverBullRemoteDatasource {
   Future<void> checkConnection() async {
     try {
       while (_torDatasource.status == TorStatus.connecting) {
-        log.config('Waiting for Tor to be ready...');
+        log.info('Waiting for Tor to be ready...');
         await Future.delayed(const Duration(seconds: 3));
       }
 
