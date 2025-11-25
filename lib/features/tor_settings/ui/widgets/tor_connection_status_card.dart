@@ -1,17 +1,14 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
-import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class TorConnectionStatusCard extends StatelessWidget {
-  const TorConnectionStatusCard({super.key});
+  final TorStatus status;
+  const TorConnectionStatusCard({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {
-    final torStatus = context.select((TorSettingsCubit cubit) => cubit.state.status);
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -22,21 +19,21 @@ class TorConnectionStatusCard extends StatelessWidget {
             const Gap(16),
             Row(
               children: [
-                _StatusIndicator(status: torStatus),
+                _StatusIndicator(status: status),
                 const Gap(12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _getStatusTitle(torStatus),
+                        _getStatusTitle(status),
                         style: context.font.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const Gap(4),
                       Text(
-                        _getStatusDescription(torStatus),
+                        _getStatusDescription(status),
                         style: context.font.bodySmall?.copyWith(
                           color: context.colour.onSurface.withValues(
                             alpha: 0.7,
