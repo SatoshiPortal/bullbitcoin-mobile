@@ -209,8 +209,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "9bd530462e9638d6088bc6998bebc0dd76dde1ca"
-      resolved-ref: "9bd530462e9638d6088bc6998bebc0dd76dde1ca"
+      ref: new-swap-secrets
+      resolved-ref: e5148229c5756c5b0c5b692f398c0b28fcec58ae
       url: "https://github.com/SatoshiPortal/boltz-dart"
     source: git
     version: "0.2.1"
@@ -1650,8 +1650,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "7d7e67afa24d0ec70928831564f5d9d083ed6053"
-      resolved-ref: "7d7e67afa24d0ec70928831564f5d9d083ed6053"
+      ref: update-boltz-dependency
+      resolved-ref: "2ce7a142ffb7b774e1a9a23264b7c71a405519e8"
       url: "https://github.com/SatoshiPortal/dart-satoshifier"
     source: git
     version: "0.0.1"
