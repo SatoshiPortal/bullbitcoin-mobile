@@ -112,13 +112,18 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  BBText(
-                    description,
-                    textAlign: TextAlign.center,
-                    style: context.font.labelMedium?.copyWith(
-                      color: context.colour.outline,
+                  SizedBox(
+                    height: 60,
+                    child: Center(
+                      child: BBText(
+                        description,
+                        textAlign: TextAlign.center,
+                        style: context.font.labelMedium?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                        maxLines: 3,
+                      ),
                     ),
-                    maxLines: 3,
                   ),
                   const Gap(16),
                   BBText(
@@ -234,22 +239,25 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                           ),
                       ],
                     ),
-                  if (inputType == InputType.pin)
-                    DialPad(
-                      disableFeedback: true,
-                      onlyDigits: true,
-                      onNumberPressed: (e) => inputController.text += e,
-                      onBackspacePressed: () {
-                        if (inputController.text.isNotEmpty) {
-                          inputController.text = inputController.text.substring(
-                            0,
-                            inputController.text.length - 1,
-                          );
-                        }
-                      },
-                    ),
                   const Spacer(),
-
+                  if (inputType == InputType.pin)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: DialPad(
+                        disableFeedback: true,
+                        onlyDigits: true,
+                        onNumberPressed: (e) => inputController.text += e,
+                        onBackspacePressed: () {
+                          if (inputController.text.isNotEmpty) {
+                            inputController.text = inputController.text.substring(
+                              0,
+                              inputController.text.length - 1,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  if (inputType == InputType.pin) const Gap(16),
                   Padding(
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).size.height * 0.05,

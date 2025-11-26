@@ -79,7 +79,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
-                          'You can change these settings later in Bitcoin Settings',
+                          'You can change these settings later in App Settings',
                           style: context.font.bodySmall?.copyWith(
                             color: context.colour.onSurface.withValues(
                               alpha: 0.6,
