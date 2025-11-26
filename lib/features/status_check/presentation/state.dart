@@ -6,7 +6,7 @@ part 'state.freezed.dart';
 @freezed
 sealed class ServiceStatusState with _$ServiceStatusState {
   const factory ServiceStatusState({
-    @Default(null) AllServicesStatus? serviceStatus,
+    @Default(AllServicesStatus()) AllServicesStatus serviceStatus,
     @Default(false) bool isLoading,
     @Default(null) String? error,
   }) = _ServiceStatusState;
