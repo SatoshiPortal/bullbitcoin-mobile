@@ -132,6 +132,7 @@ dependencies:
       ref: 440a2d2  
   meta: ^1.16.0
   workmanager: ^0.7.0
+  path: ^1.9.1
 
 dev_dependencies:
   build_runner: ^2.4.15
