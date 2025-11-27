@@ -10,10 +10,16 @@ class ElectrumUrlParser {
   ///   - `.onion` addresses default to TCP (no SSL)
   ///   - Clearnet addresses default to SSL
   ///
-  /// Returns null if URL is invalid or incomplete
-  static ({String cleanUrl, bool enableSsl})? parse(String input) {
+  /// Throws ElectrumUrlValidationError if URL is invalid or incomplete
+  static ({String cleanUrl, bool enableSsl}) parse(String input) {
     final trimmedInput = input.trim();
-    if (trimmedInput.isEmpty) return null;
+    if (trimmedInput.isEmpty) throw ElectrumUrlValidationError.empty;
+
+    // Check for protocol prefix
+    final protocolPattern = RegExp('^([a-zA-Z]+)://');
+    if (protocolPattern.hasMatch(trimmedInput)) {
+      throw ElectrumUrlValidationError.hasProtocol;
+    }
 
     // Check for :s or :t suffix
     final suffixMatch = RegExp(
@@ -40,34 +46,15 @@ class ElectrumUrlParser {
       return (cleanUrl: trimmedInput, enableSsl: !isOnion);
     }
 
-    return null;
+    throw ElectrumUrlValidationError.invalidFormat;
   }
 
-  /// Validates Electrum server URL format
-  ///
-  /// Accepts:
-  /// - `host:port` format
-  /// - Optional `:s` or `:t` suffix for SSL/TCP specification
-  ///
-  /// Rejects:
-  /// - Protocol prefixes (ssl://, tcp://, etc.)
-  /// - Invalid characters or format
-  static ElectrumUrlValidationError? validate(String input) {
-    final trimmedInput = input.trim();
-    if (trimmedInput.isEmpty) return ElectrumUrlValidationError.empty;
-
-    // Check for protocol prefix
-    final protocolPattern = RegExp('^([a-zA-Z]+)://');
-    if (protocolPattern.hasMatch(trimmedInput)) {
-      return ElectrumUrlValidationError.hasProtocol;
+  /// This is a non-throwing version of parse
+  static ({String cleanUrl, bool enableSsl})? tryParse(String input) {
+    try {
+      return parse(input);
+    } catch (_) {
+      return null;
     }
-
-    // Validate host:port format (with optional :s or :t suffix)
-    final hostPortPattern = RegExp(r'^[a-zA-Z0-9.-]+:\d+(:[st])?$');
-    if (!hostPortPattern.hasMatch(trimmedInput)) {
-      return ElectrumUrlValidationError.invalidFormat;
-    }
-
-    return null;
   }
 }

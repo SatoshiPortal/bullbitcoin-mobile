@@ -64,7 +64,7 @@ class _AddCustomServerBottomSheetState
     final input = _controller.text.trim();
     if (input.isEmpty) return;
 
-    final result = ElectrumUrlParser.parse(input);
+    final result = ElectrumUrlParser.tryParse(input);
     if (result != null) {
       setState(() {
         _enableSsl = result.enableSsl;
@@ -78,12 +78,9 @@ class _AddCustomServerBottomSheetState
       // Unfocus to close keyboard before popping (optional, just looks nicer)
       FocusScope.of(context).unfocus();
 
-      final result = ElectrumUrlParser.parse(_controller.text.trim());
-      final cleanUrl = result?.cleanUrl ?? _controller.text.trim();
-
-      Navigator.of(
-        context,
-      ).pop(CustomServerInput(url: cleanUrl, enableSsl: _enableSsl));
+      Navigator.of(context).pop(
+        CustomServerInput(url: _controller.text.trim(), enableSsl: _enableSsl),
+      );
     }
   }
 
@@ -184,14 +181,19 @@ class _AddCustomServerBottomSheetState
                     onFieldSubmitted: (_) => _submit(),
                     validator: (v) {
                       final input = v?.trim() ?? '';
-                      final error = ElectrumUrlParser.validate(input);
-
-                      return switch (error) {
-                        ElectrumUrlValidationError.empty => context.loc.electrumEmptyFieldError,
-                        ElectrumUrlValidationError.hasProtocol => context.loc.electrumProtocolError,
-                        ElectrumUrlValidationError.invalidFormat => context.loc.electrumFormatError,
-                        null => null,
-                      };
+                      try {
+                        ElectrumUrlParser.parse(input);
+                        return null;
+                      } on ElectrumUrlValidationError catch (error) {
+                        return switch (error) {
+                          ElectrumUrlValidationError.empty =>
+                            context.loc.electrumEmptyFieldError,
+                          ElectrumUrlValidationError.hasProtocol =>
+                            context.loc.electrumProtocolError,
+                          ElectrumUrlValidationError.invalidFormat =>
+                            context.loc.electrumFormatError,
+                        };
+                      }
                     },
                   ),
                   const Gap(8),

@@ -43,7 +43,6 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() => _isLoading = true);
     try {
       final url = await _fetchUrlUsecase.execute();
-      _urlController.text = url.toString();
       _originalUrl = url.toString();
     } catch (e) {
       log.warning('Error loading recoverbull url: $e');
@@ -70,12 +69,7 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  void _cancelEdit() {
-    setState(() {
-      _urlController.text = _originalUrl;
-      _isEditing = false;
-    });
-  }
+  void _cancelEdit() => setState(() => _isEditing = false);
 
   Future<void> _openRecoverBullWebsite() async {
     final uri = Uri.parse('https://recoverbull.com/');
@@ -132,7 +126,10 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                           if (!_isEditing)
                             TextButton.icon(
-                              onPressed: () => setState(() => _isEditing = true),
+                              onPressed: () {
+                                _urlController.text = _originalUrl;
+                                setState(() => _isEditing = true);
+                              },
                               icon: const Icon(Icons.edit, size: 18),
                               label: const Text('Edit'),
                             ),
@@ -161,11 +158,13 @@ class _SettingsPageState extends State<SettingsPage> {
                             color: context.colour.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: context.colour.outline.withValues(alpha: 0.2),
+                              color: context.colour.outline.withValues(
+                                alpha: 0.2,
+                              ),
                             ),
                           ),
                           child: BBText(
-                            _urlController.text,
+                            _originalUrl,
                             style: context.font.bodyMedium,
                             color: context.colour.onSurface,
                           ),
