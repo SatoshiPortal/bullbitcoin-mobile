@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RequestPermissionPage extends StatefulWidget {
   const RequestPermissionPage({super.key});
@@ -57,10 +58,21 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
   bool get _isUsingDefaultServer =>
       _serverUrl == SettingsConstants.recoverbullUrl;
 
+  Future<void> _openRecoverBullWebsite() async {
+    final uri = Uri.parse('https://recoverbull.com/');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.arrow_back),
+        ),
         title: BBText(
           'Vault Recovery Server',
           style: context.font.headlineMedium,
@@ -142,7 +154,6 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                       textAlign: TextAlign.center,
                     ),
                     const Spacer(),
-                    const Gap(32),
                     BBButton.big(
                       label: 'Continue',
                       onPressed: () async {
@@ -157,10 +168,30 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           ),
                         );
                       },
-                      bgColor: context.colour.primary,
+                      bgColor: context.colour.secondary,
                       textColor: context.colour.onPrimary,
                     ),
                     const Gap(16),
+                    GestureDetector(
+                      onTap: _openRecoverBullWebsite,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 20,
+                            color: context.colour.primary,
+                          ),
+                          const Gap(8),
+                          BBText(
+                            'Learn more about Recoverbull',
+                            style: context.font.bodyMedium,
+                            color: context.colour.primary,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Gap(24),
                   ],
                 ),
               ),
