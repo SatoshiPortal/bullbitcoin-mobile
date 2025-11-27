@@ -1,12 +1,14 @@
 import 'package:bb_mobile/core/background_tasks/locator.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
 import 'package:lwk/lwk.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -24,15 +26,19 @@ Future<bool> tasksHandler(String task) async {
   await Bull.initLogs();
   await LibLwk.init();
 
-  await BackgroundTasksLocator.setup();
-
   try {
-    final syncWalletUsecase = backgroundLocator<SyncWalletUsecase>();
-    final getWalletsUsecase = backgroundLocator<GetWalletsUsecase>();
-    final restartSwapWatcherUsecase =
-        backgroundLocator<RestartSwapWatcherUsecase>();
+    final driftIsolate = await SqliteDatabase.createIsolateWithSpawn();
+    final sqlite = SqliteDatabase(
+      await driftIsolate.connect(singleClientMode: true),
+    );
+    final locator = GetIt.asNewInstance();
+    await TaskLocator.setup(locator, sqlite);
+
+    final syncWalletUsecase = locator<SyncWalletUsecase>();
+    final getWalletsUsecase = locator<GetWalletsUsecase>();
+    final restartSwapWatcherUsecase = locator<RestartSwapWatcherUsecase>();
     final checkAllServiceStatusUsecase =
-        backgroundLocator<CheckAllServiceStatusUsecase>();
+        locator<CheckAllServiceStatusUsecase>();
 
     final backgroundTask = BackgroundTask.fromName(task);
 
