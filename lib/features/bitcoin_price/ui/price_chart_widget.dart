@@ -17,70 +17,59 @@ class PriceChartWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PriceChartBloc, PriceChartState>(
       builder: (context, state) {
-        if (state.isLoading && state.rateHistory == null) {
-          return Center(
-            child: CircularProgressIndicator(color: context.colour.onPrimary),
-          );
-        }
+        final compositeRateHistory = state.compositeRateHistory;
+        final rates = compositeRateHistory?.getAllRates() ?? [];
+        final hasNoLocalData = rates.isEmpty;
 
-        final rateHistory = state.rateHistory;
-        if (rateHistory == null ||
-            rateHistory.rates == null ||
-            rateHistory.rates!.isEmpty) {
-          return Center(
-            child: BBText(
-              'No data available',
-              style: context.font.bodyLarge?.copyWith(
-                color: context.colour.onPrimary,
+        if (state.isLoading || hasNoLocalData) {
+          if (state.isLoading) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: context.colour.onPrimary),
+                  const Gap(16),
+                  BBText(
+                    'No local price history, Fetching price history...',
+                    style: context.font.bodyLarge?.copyWith(
+                      color: context.colour.onPrimary,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          );
+            );
+          }
+          return const SizedBox.shrink();
         }
-
-        final rates = rateHistory.rates!;
         final selectedIndex = state.selectedDataPointIndex;
         final currency = state.currency ?? 'CAD';
 
-        return Stack(
-          children: [
-            Column(
-              children: [
-                const Gap(
-                  72,
-                ), // Space for app bar - currency aligned with back button
-                if (selectedIndex != null && selectedIndex < rates.length)
-                  _PriceDisplay(rate: rates[selectedIndex], currency: currency)
-                else if (rates.isNotEmpty)
-                  _PriceDisplay(rate: rates.last, currency: currency),
-                const Gap(16),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0),
-                    child: _Chart(
-                      rates: rates,
-                      selectedIndex: selectedIndex,
-                      onTap: (index) {
-                        context.read<PriceChartBloc>().add(
-                          PriceChartEvent.dataPointSelected(index),
-                        );
-                      },
-                    ),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 40.0),
+          child: Column(
+            children: [
+              const Gap(72),
+              if (selectedIndex != null && selectedIndex < rates.length)
+                _PriceDisplay(rate: rates[selectedIndex], currency: currency)
+              else if (rates.isNotEmpty)
+                _PriceDisplay(rate: rates.last, currency: currency),
+              const Gap(16),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: _Chart(
+                    rates: rates,
+                    selectedIndex: selectedIndex,
+                    onTap: (index) {
+                      context.read<PriceChartBloc>().add(
+                        PriceChartEvent.dataPointSelected(index),
+                      );
+                    },
                   ),
                 ),
-                const Gap(16),
-                _IntervalButtons(
-                  selectedInterval:
-                      state.selectedInterval ?? RateTimelineInterval.week,
-                  onIntervalChanged: (interval) {
-                    context.read<PriceChartBloc>().add(
-                      PriceChartEvent.intervalChanged(interval),
-                    );
-                  },
-                ),
-                const Gap(16),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         );
       },
     );
@@ -152,6 +141,7 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
   late AnimationController _dotPositionController;
   late Animation<double> _dotPositionAnimation;
   int _previousIndex = 0;
+  bool _isDragging = false;
 
   @override
   void initState() {
@@ -191,14 +181,10 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(_Chart oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.rates != widget.rates) {
-      _lineAnimationController.reset();
-      _lineAnimationController.forward();
-    }
 
     final currentIndex =
         widget.selectedIndex ?? _touchedIndex ?? (widget.rates.length - 1);
-    if (currentIndex != _previousIndex) {
+    if (currentIndex != _previousIndex && !_isDragging) {
       _previousIndex = currentIndex;
       _dotPositionController.reset();
       _dotPositionController.forward();
@@ -230,6 +216,11 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
     final lineColor = context.colour.onPrimary.withValues(alpha: 0.75);
 
     return GestureDetector(
+      onHorizontalDragStart: (_) {
+        setState(() {
+          _isDragging = true;
+        });
+      },
       onHorizontalDragUpdate: (details) {
         final box = context.findRenderObject() as RenderBox?;
         if (box == null) return;
@@ -247,6 +238,11 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
           });
           widget.onTap(index);
         }
+      },
+      onHorizontalDragEnd: (_) {
+        setState(() {
+          _isDragging = false;
+        });
       },
       onTapDown: (details) {
         final box = context.findRenderObject() as RenderBox?;
@@ -350,45 +346,6 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
   }
 }
 
-class _IntervalButtons extends StatelessWidget {
-  const _IntervalButtons({
-    required this.selectedInterval,
-    required this.onIntervalChanged,
-  });
-
-  final RateTimelineInterval selectedInterval;
-  final ValueChanged<RateTimelineInterval> onIntervalChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _IntervalButton(
-          label: 'Day',
-          interval: RateTimelineInterval.hour,
-          isSelected: selectedInterval == RateTimelineInterval.hour,
-          onTap: () => onIntervalChanged(RateTimelineInterval.hour),
-        ),
-        const Gap(8),
-        _IntervalButton(
-          label: 'Month',
-          interval: RateTimelineInterval.day,
-          isSelected: selectedInterval == RateTimelineInterval.day,
-          onTap: () => onIntervalChanged(RateTimelineInterval.day),
-        ),
-        const Gap(8),
-        _IntervalButton(
-          label: 'Year',
-          interval: RateTimelineInterval.week,
-          isSelected: selectedInterval == RateTimelineInterval.week,
-          onTap: () => onIntervalChanged(RateTimelineInterval.week),
-        ),
-      ],
-    );
-  }
-}
-
 class _RedDotPainter extends CustomPainter {
   _RedDotPainter({
     required this.index,
@@ -454,43 +411,5 @@ class _RedDotPainter extends CustomPainter {
         oldDelegate.price != price ||
         oldDelegate.totalPoints != totalPoints ||
         oldDelegate.pulseScale != pulseScale;
-  }
-}
-
-class _IntervalButton extends StatelessWidget {
-  const _IntervalButton({
-    required this.label,
-    required this.interval,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String label;
-  final RateTimelineInterval interval;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? context.colour.onPrimary : Colors.transparent,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: context.colour.onPrimary, width: 1),
-        ),
-        child: BBText(
-          label,
-          style: context.font.bodyMedium?.copyWith(
-            color:
-                isSelected
-                    ? context.colour.secondary
-                    : context.colour.onPrimary,
-          ),
-        ),
-      ),
-    );
   }
 }

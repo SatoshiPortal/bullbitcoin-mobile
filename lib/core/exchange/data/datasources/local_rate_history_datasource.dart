@@ -150,4 +150,19 @@ class LocalRateHistoryDatasource {
           t.interval.equals(interval),
     )).go();
   }
+
+  Future<void> deleteRateByDate({
+    required String fromCurrency,
+    required String toCurrency,
+    required String interval,
+    required String createdAt,
+  }) async {
+    await (_db.delete(_db.rateHistory)..where(
+      (t) =>
+          t.fromCurrency.equals(fromCurrency) &
+          t.toCurrency.equals(toCurrency) &
+          t.interval.equals(interval) &
+          t.createdAt.equals(createdAt),
+    )).go();
+  }
 }

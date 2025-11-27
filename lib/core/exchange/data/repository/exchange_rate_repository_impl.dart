@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/local_rate_history_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/models/rate_history_model.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/composite_rate_history.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/rate_history.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
@@ -44,15 +45,16 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
   Future<RateHistory> getIndexRateHistory({
     required String fromCurrency,
     required String toCurrency,
-    required String interval,
+    required RateTimelineInterval interval,
     DateTime? fromDate,
     DateTime? toDate,
   }) async {
     try {
+      final intervalString = interval.value;
       final localRates = await _localRateHistory.getRates(
         fromCurrency: fromCurrency,
         toCurrency: toCurrency,
-        interval: interval,
+        interval: intervalString,
         fromDate: fromDate,
         toDate: toDate,
       );
@@ -61,7 +63,7 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
         return RateHistory(
           fromCurrency: FiatCurrency.fromCode(fromCurrency),
           toCurrency: toCurrency,
-          interval: RateTimelineInterval.fromString(interval),
+          interval: interval,
           rates: [],
         );
       }
@@ -71,7 +73,7 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
         fromCurrency: fromCurrency,
         toCurrency: toCurrency,
         precision: firstRate.precision,
-        interval: interval,
+        interval: intervalString,
         rates: localRates,
       );
 
@@ -88,7 +90,10 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
     required String toCurrency,
   }) async {
     try {
-      final intervals = ['hour', 'day', 'week'];
+      final intervals = [
+        RateTimelineInterval.fifteen,
+        RateTimelineInterval.week,
+      ];
       final now = DateTime.now().toUtc();
 
       final latestDateAcrossAllIntervals = await _localRateHistory
@@ -102,49 +107,115 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
           DateTime apiFromDate;
           if (latestDateAcrossAllIntervals == null) {
             apiFromDate = switch (interval) {
-              'hour' => now.subtract(const Duration(days: 1)),
-              'day' => now.subtract(const Duration(days: 30)),
-              'week' => now.subtract(const Duration(days: 365)),
-              _ => now.subtract(const Duration(days: 365)),
+              RateTimelineInterval.fifteen => now.subtract(
+                const Duration(days: 1),
+              ),
+              RateTimelineInterval.week => now.subtract(
+                const Duration(days: 365 * 4),
+              ),
+              RateTimelineInterval.hour =>
+                throw UnimplementedError('Hour interval not supported'),
+              RateTimelineInterval.day =>
+                throw UnimplementedError('Day interval not supported'),
             };
           } else {
             final nextDate = switch (interval) {
-              'hour' => latestDateAcrossAllIntervals.add(
-                const Duration(hours: 1),
+              RateTimelineInterval.fifteen => latestDateAcrossAllIntervals.add(
+                const Duration(minutes: 15),
               ),
-              'day' => latestDateAcrossAllIntervals.add(
-                const Duration(days: 1),
-              ),
-              'week' => latestDateAcrossAllIntervals.add(
+              RateTimelineInterval.week => latestDateAcrossAllIntervals.add(
                 const Duration(days: 7),
               ),
-              _ => latestDateAcrossAllIntervals.add(const Duration(days: 1)),
+              RateTimelineInterval.hour =>
+                throw UnimplementedError('Hour interval not supported'),
+              RateTimelineInterval.day =>
+                throw UnimplementedError('Day interval not supported'),
             };
             apiFromDate = nextDate;
           }
 
           if (apiFromDate.isBefore(now)) {
             final apiDatasource = _bitcoinPrice as BullbitcoinApiDatasource;
+
+            final cutoffDate = switch (interval) {
+              RateTimelineInterval.fifteen => now.subtract(
+                const Duration(minutes: 15),
+              ),
+              RateTimelineInterval.week => now.subtract(
+                const Duration(days: 365 * 4),
+              ),
+              RateTimelineInterval.hour =>
+                throw UnimplementedError('Hour interval not supported'),
+              RateTimelineInterval.day =>
+                throw UnimplementedError('Day interval not supported'),
+            };
+
             final apiResponse = await apiDatasource.getIndexRateHistory(
               fromCurrency: fromCurrency,
               toCurrency: toCurrency,
-              interval: interval,
+              interval: interval.value,
               fromDate: apiFromDate,
               toDate: now,
             );
 
             if (apiResponse.rates != null && apiResponse.rates!.isNotEmpty) {
+              await _localRateHistory.cleanupOldRates(
+                fromCurrency: fromCurrency,
+                toCurrency: toCurrency,
+                interval: interval.value,
+                maxAge: now.difference(cutoffDate),
+              );
+
               await _localRateHistory.storeRates(
                 rates: apiResponse.rates!,
                 fromCurrency: fromCurrency,
                 toCurrency: toCurrency,
-                interval: interval,
+                interval: interval.value,
               );
+
+              final maxCount = switch (interval) {
+                RateTimelineInterval.fifteen => 1,
+                RateTimelineInterval.week => 52 * 4,
+                RateTimelineInterval.hour =>
+                  throw UnimplementedError('Hour interval not supported'),
+                RateTimelineInterval.day =>
+                  throw UnimplementedError('Day interval not supported'),
+              };
+
+              final allRates = await _localRateHistory.getRates(
+                fromCurrency: fromCurrency,
+                toCurrency: toCurrency,
+                interval: interval.value,
+                fromDate: null,
+                toDate: null,
+              );
+
+              if (allRates.length > maxCount) {
+                allRates.sort((a, b) {
+                  final dateA = DateTime.parse(a.createdAt!);
+                  final dateB = DateTime.parse(b.createdAt!);
+                  return dateB.compareTo(dateA);
+                });
+
+                final ratesToDelete = allRates.skip(maxCount);
+
+                for (final rateToDelete in ratesToDelete) {
+                  final createdAtStr = rateToDelete.createdAt;
+                  if (createdAtStr != null) {
+                    await _localRateHistory.deleteRateByDate(
+                      fromCurrency: fromCurrency,
+                      toCurrency: toCurrency,
+                      interval: interval.value,
+                      createdAt: createdAtStr,
+                    );
+                  }
+                }
+              }
             }
           }
         } catch (e) {
           log.warning(
-            'Failed to refresh rate history for interval $interval: $e',
+            'Failed to refresh rate history for interval ${interval.value}: $e',
           );
         }
       }
@@ -154,13 +225,17 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
   }
 
   @override
-  Future<Map<String, RateHistory>> getAllIntervalsRateHistory({
+  Future<Map<RateTimelineInterval, RateHistory>> getAllIntervalsRateHistory({
     required String fromCurrency,
     required String toCurrency,
     DateTime? fromDate,
     DateTime? toDate,
   }) async {
-    final intervals = ['hour', 'day', 'week'];
+    final intervals = [
+      RateTimelineInterval.hour,
+      RateTimelineInterval.day,
+      RateTimelineInterval.week,
+    ];
 
     final results = await Future.wait(
       intervals.map(
@@ -174,11 +249,151 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
       ),
     );
 
-    final map = <String, RateHistory>{};
+    final map = <RateTimelineInterval, RateHistory>{};
     for (var i = 0; i < intervals.length; i++) {
       map[intervals[i]] = results[i];
     }
 
     return map;
+  }
+
+  @override
+  Future<void> refreshRateHistory({
+    required String fromCurrency,
+    required String toCurrency,
+    required RateTimelineInterval interval,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    try {
+      final intervalString = interval.value;
+      final now = toDate ?? DateTime.now().toUtc();
+
+      final latestDate = await _localRateHistory.getLatestRateDate(
+        fromCurrency: fromCurrency,
+        toCurrency: toCurrency,
+        interval: intervalString,
+      );
+
+      final apiFromDate =
+          fromDate ??
+          latestDate?.add(switch (interval) {
+            RateTimelineInterval.fifteen => const Duration(minutes: 15),
+            RateTimelineInterval.hour => const Duration(hours: 1),
+            RateTimelineInterval.day => const Duration(days: 1),
+            RateTimelineInterval.week => const Duration(days: 7),
+          }) ??
+          switch (interval) {
+            RateTimelineInterval.fifteen => now.subtract(
+              const Duration(days: 1),
+            ),
+            RateTimelineInterval.hour => now.subtract(const Duration(days: 30)),
+            RateTimelineInterval.day => now.subtract(const Duration(days: 30)),
+            RateTimelineInterval.week => now.subtract(
+              const Duration(days: 365 * 4),
+            ),
+          };
+
+      if (apiFromDate.isBefore(now)) {
+        final apiDatasource = _bitcoinPrice as BullbitcoinApiDatasource;
+        final apiResponse = await apiDatasource.getIndexRateHistory(
+          fromCurrency: fromCurrency,
+          toCurrency: toCurrency,
+          interval: intervalString,
+          fromDate: apiFromDate,
+          toDate: now,
+        );
+
+        if (apiResponse.rates != null && apiResponse.rates!.isNotEmpty) {
+          await _localRateHistory.storeRates(
+            rates: apiResponse.rates!,
+            fromCurrency: fromCurrency,
+            toCurrency: toCurrency,
+            interval: intervalString,
+          );
+        }
+      }
+    } catch (e) {
+      log.warning(
+        'Failed to refresh rate history for interval ${interval.value}: $e',
+      );
+      rethrow;
+    }
+  }
+
+  @override
+  Future<CompositeRateHistory> getCompositeRateHistory({
+    required String fromCurrency,
+    required String toCurrency,
+  }) async {
+    try {
+      final now = DateTime.now().toUtc();
+
+      final fifteenFromDate = now.subtract(const Duration(minutes: 15));
+      final weekFromDate = now.subtract(const Duration(days: 365 * 4));
+
+      final fifteenRates = await _localRateHistory.getRates(
+        fromCurrency: fromCurrency,
+        toCurrency: toCurrency,
+        interval: RateTimelineInterval.fifteen.value,
+        fromDate: fifteenFromDate,
+        toDate: now,
+      );
+
+      final weekRates = await _localRateHistory.getRates(
+        fromCurrency: fromCurrency,
+        toCurrency: toCurrency,
+        interval: RateTimelineInterval.week.value,
+        fromDate: weekFromDate,
+        toDate: now,
+      );
+
+      final precision =
+          fifteenRates.isNotEmpty
+              ? fifteenRates.first.precision
+              : weekRates.isNotEmpty
+              ? weekRates.first.precision
+              : 2;
+
+      final latestRates =
+          fifteenRates.isNotEmpty ? [fifteenRates.last.toEntity()] : <Rate>[];
+      final yearsRateEntities = weekRates.map((r) => r.toEntity()).toList();
+
+      final composite = CompositeRateHistory(
+        latest: RateHistory(
+          fromCurrency: FiatCurrency.fromCode(fromCurrency),
+          toCurrency: toCurrency,
+          precision: precision,
+          interval: RateTimelineInterval.fifteen,
+          rates: latestRates,
+        ),
+        day: RateHistory(
+          fromCurrency: FiatCurrency.fromCode(fromCurrency),
+          toCurrency: toCurrency,
+          precision: precision,
+          interval: RateTimelineInterval.hour,
+          rates: <Rate>[],
+        ),
+        month: RateHistory(
+          fromCurrency: FiatCurrency.fromCode(fromCurrency),
+          toCurrency: toCurrency,
+          precision: precision,
+          interval: RateTimelineInterval.day,
+          rates: <Rate>[],
+        ),
+        years: RateHistory(
+          fromCurrency: FiatCurrency.fromCode(fromCurrency),
+          toCurrency: toCurrency,
+          precision: precision,
+          interval: RateTimelineInterval.week,
+          rates: yearsRateEntities,
+        ),
+      );
+
+      return composite;
+    } catch (e) {
+      log.warning('getCompositeRateHistory error: $e');
+      rethrow;
+    }
   }
 }

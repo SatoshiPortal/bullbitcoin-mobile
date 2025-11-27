@@ -1,8 +1,9 @@
-import 'package:bb_mobile/core/exchange/domain/entity/rate_history.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_all_intervals_rate_history_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_index_rate_history_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/composite_rate_history.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_composite_rate_history_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -12,24 +13,19 @@ part 'price_chart_state.dart';
 
 class PriceChartBloc extends Bloc<PriceChartEvent, PriceChartState> {
   PriceChartBloc({
-    required GetIndexRateHistoryUsecase getIndexRateHistoryUsecase,
-    required GetAllIntervalsRateHistoryUsecase
-    getAllIntervalsRateHistoryUsecase,
     required GetSettingsUsecase getSettingsUsecase,
-  }) : _getIndexRateHistoryUsecase = getIndexRateHistoryUsecase,
-       _getAllIntervalsRateHistoryUsecase = getAllIntervalsRateHistoryUsecase,
-       _getSettingsUsecase = getSettingsUsecase,
+    required GetCompositeRateHistoryUsecase getCompositeRateHistoryUsecase,
+  }) : _getSettingsUsecase = getSettingsUsecase,
+       _getCompositeRateHistoryUsecase = getCompositeRateHistoryUsecase,
        super(const PriceChartState()) {
     on<PriceChartStarted>(_onStarted);
-    on<PriceChartIntervalChanged>(_onIntervalChanged);
     on<PriceChartDataPointSelected>(_onDataPointSelected);
     on<PriceChartClosed>(_onClosed);
-    on<PriceChartFetchAllIntervals>(_onFetchAllIntervals);
+    on<PriceChartRefreshAllRates>(_onRefreshAllRates);
   }
 
-  final GetIndexRateHistoryUsecase _getIndexRateHistoryUsecase;
-  final GetAllIntervalsRateHistoryUsecase _getAllIntervalsRateHistoryUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
+  final GetCompositeRateHistoryUsecase _getCompositeRateHistoryUsecase;
 
   Future<void> _onStarted(
     PriceChartStarted event,
@@ -38,86 +34,29 @@ class PriceChartBloc extends Bloc<PriceChartEvent, PriceChartState> {
     try {
       final settings = await _getSettingsUsecase.execute();
       final currency = event.currency ?? settings.currencyCode;
-      final interval = event.interval ?? RateTimelineInterval.week;
 
-      final fromDate = _getFromDateForInterval(interval);
-      final toDate = DateTime.now().toUtc();
+      emit(state.copyWith(currency: currency, isLoading: true));
 
-      final rateHistory = await _getIndexRateHistoryUsecase.execute(
-        fromCurrency: currency,
-        toCurrency: 'BTC',
-        interval: interval.value,
-        fromDate: fromDate,
-        toDate: toDate,
-      );
+      final compositeRateHistory = await _getCompositeRateHistoryUsecase
+          .execute(fromCurrency: currency, toCurrency: 'BTC');
+
+      final allRates = compositeRateHistory.getAllRates();
+      final hasLocalData = allRates.isNotEmpty;
+      final isValid = compositeRateHistory.isValid();
 
       emit(
         state.copyWith(
           currency: currency,
-          selectedInterval: interval,
-          rateHistory: rateHistory,
-          isLoading: false,
+          compositeRateHistory: isValid ? compositeRateHistory : null,
+          isLoading: !hasLocalData || !isValid,
         ),
       );
 
-      // Only fetch all intervals once on app startup
-      if (!state.hasFetchedAllIntervals) {
-        add(PriceChartFetchAllIntervals(currency: currency));
+      if (!isValid || !hasLocalData) {
+        add(PriceChartRefreshAllRates(currency: currency));
       }
     } catch (e) {
       log.severe('[PriceChartBloc] _onStarted error: $e');
-      emit(state.copyWith(error: e, isLoading: false));
-    }
-  }
-
-  Future<void> _onIntervalChanged(
-    PriceChartIntervalChanged event,
-    Emitter<PriceChartState> emit,
-  ) async {
-    try {
-      emit(state.copyWith(isLoading: true, selectedDataPointIndex: null));
-
-      final currency = state.currency;
-      if (currency == null) return;
-
-      // Use cached data if available
-      final allIntervalsData = state.allIntervalsData;
-      if (allIntervalsData != null &&
-          allIntervalsData.containsKey(event.interval.value)) {
-        final cachedRateHistory = allIntervalsData[event.interval.value]!;
-        emit(
-          state.copyWith(
-            selectedInterval: event.interval,
-            rateHistory: cachedRateHistory,
-            isLoading: false,
-            selectedDataPointIndex: null,
-          ),
-        );
-        return;
-      }
-
-      // Otherwise fetch from API (incremental update)
-      final fromDate = _getFromDateForInterval(event.interval);
-      final toDate = DateTime.now().toUtc();
-
-      final rateHistory = await _getIndexRateHistoryUsecase.execute(
-        fromCurrency: currency,
-        toCurrency: 'BTC',
-        interval: event.interval.value,
-        fromDate: fromDate,
-        toDate: toDate,
-      );
-
-      emit(
-        state.copyWith(
-          selectedInterval: event.interval,
-          rateHistory: rateHistory,
-          isLoading: false,
-          selectedDataPointIndex: null,
-        ),
-      );
-    } catch (e) {
-      log.severe('[PriceChartBloc] _onIntervalChanged error: $e');
       emit(state.copyWith(error: e, isLoading: false));
     }
   }
@@ -133,40 +72,52 @@ class PriceChartBloc extends Bloc<PriceChartEvent, PriceChartState> {
     emit(const PriceChartState());
   }
 
-  Future<void> _onFetchAllIntervals(
-    PriceChartFetchAllIntervals event,
+  Future<void> _onRefreshAllRates(
+    PriceChartRefreshAllRates event,
     Emitter<PriceChartState> emit,
   ) async {
     try {
-      final currency = event.currency;
-      final fromDate =
-          DateTime.now().subtract(const Duration(days: 365)).toUtc();
-      final toDate = DateTime.now().toUtc();
+      final settings = await _getSettingsUsecase.execute();
+      final isTestnet = settings.environment.isTestnet;
+      final repo =
+          isTestnet
+              ? locator<ExchangeRateRepository>(
+                instanceName: 'testnetExchangeRateRepository',
+              )
+              : locator<ExchangeRateRepository>(
+                instanceName: 'mainnetExchangeRateRepository',
+              );
 
-      final allIntervals = await _getAllIntervalsRateHistoryUsecase.execute(
-        fromCurrency: currency,
+      await repo.refreshAllRateHistory(
+        fromCurrency: event.currency,
         toCurrency: 'BTC',
-        fromDate: fromDate,
-        toDate: toDate,
       );
 
-      emit(
-        state.copyWith(
-          allIntervalsData: allIntervals,
-          hasFetchedAllIntervals: true,
-        ),
-      );
+      final updatedCompositeRateHistory = await _getCompositeRateHistoryUsecase
+          .execute(fromCurrency: event.currency, toCurrency: 'BTC');
+
+      if (state.currency == event.currency) {
+        final allRates = updatedCompositeRateHistory.getAllRates();
+        final currentSelectedIndex = state.selectedDataPointIndex;
+        final normalizedSelectedIndex =
+            currentSelectedIndex != null &&
+                    currentSelectedIndex < allRates.length
+                ? currentSelectedIndex
+                : null;
+
+        emit(
+          state.copyWith(
+            compositeRateHistory: updatedCompositeRateHistory,
+            selectedDataPointIndex: normalizedSelectedIndex,
+            isLoading: false,
+          ),
+        );
+      }
     } catch (e) {
-      log.warning('[PriceChartBloc] _onFetchAllIntervals error: $e');
+      log.warning('[PriceChartBloc] _onRefreshAllRates error: $e');
+      if (state.currency == event.currency) {
+        emit(state.copyWith(isLoading: false));
+      }
     }
-  }
-
-  DateTime _getFromDateForInterval(RateTimelineInterval interval) {
-    final now = DateTime.now().toUtc();
-    return switch (interval) {
-      RateTimelineInterval.hour => now.subtract(const Duration(days: 1)),
-      RateTimelineInterval.day => now.subtract(const Duration(days: 30)),
-      RateTimelineInterval.week => now.subtract(const Duration(days: 54 * 7)),
-    };
   }
 }

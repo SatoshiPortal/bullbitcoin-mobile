@@ -16,7 +16,7 @@ class GetAllIntervalsRateHistoryUsecase {
        _testnetExchangeRateRepository = testnetExchangeRateRepository,
        _settingsRepository = settingsRepository;
 
-  Future<Map<String, RateHistory>> execute({
+  Future<Map<RateTimelineInterval, RateHistory>> execute({
     required String fromCurrency,
     required String toCurrency,
     DateTime? fromDate,

@@ -18,15 +18,11 @@ class WalletHomeTopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showChart = context.select(
-      (PriceChartBloc bloc) => bloc.state.rateHistory != null,
-    );
-
-    return SizedBox(
+    return const SizedBox(
       height: 264 + 78 + 46,
       child: Stack(
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(
@@ -37,16 +33,15 @@ class WalletHomeTopSection extends StatelessWidget {
               // const Gap(40),
             ],
           ),
-          if (!showChart)
-            const Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 13.0),
-                child: ActionCard(),
-              ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 13.0),
+              child: ActionCard(),
             ),
+          ),
         ],
       ),
     );
@@ -72,7 +67,7 @@ class _UIState extends State<_UI> {
   @override
   Widget build(BuildContext context) {
     final showChart = context.select(
-      (PriceChartBloc bloc) => bloc.state.rateHistory != null,
+      (PriceChartBloc bloc) => bloc.state.compositeRateHistory != null,
     );
 
     return Stack(

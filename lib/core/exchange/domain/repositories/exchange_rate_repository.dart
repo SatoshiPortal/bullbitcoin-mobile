@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/composite_rate_history.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/rate_history.dart';
 
 abstract class ExchangeRateRepository {
@@ -13,17 +14,29 @@ abstract class ExchangeRateRepository {
   Future<RateHistory> getIndexRateHistory({
     required String fromCurrency,
     required String toCurrency,
-    required String interval,
+    required RateTimelineInterval interval,
     DateTime? fromDate,
     DateTime? toDate,
   });
-  Future<Map<String, RateHistory>> getAllIntervalsRateHistory({
+  Future<Map<RateTimelineInterval, RateHistory>> getAllIntervalsRateHistory({
     required String fromCurrency,
     required String toCurrency,
     DateTime? fromDate,
     DateTime? toDate,
   });
   Future<void> refreshAllRateHistory({
+    required String fromCurrency,
+    required String toCurrency,
+  });
+  Future<void> refreshRateHistory({
+    required String fromCurrency,
+    required String toCurrency,
+    required RateTimelineInterval interval,
+    DateTime? fromDate,
+    DateTime? toDate,
+  });
+
+  Future<CompositeRateHistory> getCompositeRateHistory({
     required String fromCurrency,
     required String toCurrency,
   });

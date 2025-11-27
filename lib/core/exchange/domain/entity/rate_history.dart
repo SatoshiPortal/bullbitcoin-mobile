@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'rate_history.freezed.dart';
 
 enum RateTimelineInterval {
+  fifteen('fifteen'),
   hour('hour'),
   day('day'),
   week('week');
@@ -13,6 +14,8 @@ enum RateTimelineInterval {
 
   static RateTimelineInterval fromString(String value) {
     switch (value) {
+      case 'fifteen':
+        return RateTimelineInterval.fifteen;
       case 'hour':
         return RateTimelineInterval.hour;
       case 'day':

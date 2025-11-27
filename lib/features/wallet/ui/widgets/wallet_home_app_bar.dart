@@ -20,7 +20,7 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final showChart = context.select(
-      (PriceChartBloc bloc) => bloc.state.rateHistory != null,
+      (PriceChartBloc bloc) => bloc.state.compositeRateHistory != null,
     );
 
     final currency = context.select(
