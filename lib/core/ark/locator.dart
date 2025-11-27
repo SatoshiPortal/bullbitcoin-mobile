@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/ark/services/ark_dev_mode_listener.dart';
 import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/create_ark_secret_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/fetch_ark_secret_usecase.dart';
@@ -41,5 +42,15 @@ class ArkCoreLocator {
     locator.registerFactory<RevokeArkUsecase>(
       () => RevokeArkUsecase(bip85Repository: locator<Bip85Repository>()),
     );
+
+    locator.registerLazySingleton<ArkDevModeListener>(
+      () => ArkDevModeListener(
+        settingsRepository: locator<SettingsRepository>(),
+        revokeArkUsecase: locator<RevokeArkUsecase>(),
+      )..start(),
+    );
+
+    // Eagerly instantiate to start listener immediately
+    locator<ArkDevModeListener>();
   }
 }

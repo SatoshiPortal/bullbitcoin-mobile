@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/watch_dev_mode_changes_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/watch_superuser_mode_changes_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -10,6 +11,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usec
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/services/dev_mode_superuser_listener.dart';
 import 'package:bb_mobile/locator.dart';
 
 class SettingsLocator {
@@ -50,6 +52,18 @@ class SettingsLocator {
       ),
     );
 
+    locator.registerFactory<WatchDevModeChangesUsecase>(
+      () => WatchDevModeChangesUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<WatchSuperuserModeChangesUsecase>(
+      () => WatchSuperuserModeChangesUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
     // Blocs
     locator.registerFactory<SettingsCubit>(
       () => SettingsCubit(
@@ -62,8 +76,21 @@ class SettingsLocator {
         setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
         getOldSeedsUsecase: locator<GetOldSeedsUsecase>(),
         setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),
-        revokeArkUsecase: locator<RevokeArkUsecase>(),
+        watchDevModeChangesUsecase: locator<WatchDevModeChangesUsecase>(),
+        watchSuperuserModeChangesUsecase:
+            locator<WatchSuperuserModeChangesUsecase>(),
       ),
     );
+
+    // Services
+    locator.registerLazySingleton<DevModeSuperuserListener>(
+      () => DevModeSuperuserListener(
+        settingsRepository: locator<SettingsRepository>(),
+        setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),
+      )..start(),
+    );
+
+    // Eagerly instantiate to start listener immediately
+    locator<DevModeSuperuserListener>();
   }
 }

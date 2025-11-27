@@ -5,6 +5,8 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 
 abstract class SettingsRepository {
   Stream<String> get currencyChangeStream;
+  Stream<bool> get devModeChangeStream;
+  Stream<bool> get superuserModeChangeStream;
 
   Future<void> close();
 

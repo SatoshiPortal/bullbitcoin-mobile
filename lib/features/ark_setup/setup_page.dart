@@ -51,7 +51,7 @@ class ArkSetupPage extends StatelessWidget {
                                       .read<ArkSetupCubit>()
                                       .createArkSecretKey(),
                           label: context.loc.arkSetupEnable,
-                          bgColor: context.colour.primary,
+                          bgColor: context.colour.secondary,
                           textColor: context.colour.onPrimary,
                           disabled: arkWallet != null || isLoading,
                         ),

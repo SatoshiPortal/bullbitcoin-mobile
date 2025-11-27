@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -35,10 +34,7 @@ class DevModeSwitch extends StatelessWidget {
                 BBButton.big(
                   label: 'I understand',
                   onPressed: () {
-                    context.read<SettingsCubit>().toggleDevMode(
-                      true,
-                      walletBloc: context.read<WalletBloc>(),
-                    );
+                    context.read<SettingsCubit>().toggleDevMode(true);
                     context.pop();
                   },
                   bgColor: context.colour.primary,
@@ -63,10 +59,7 @@ class DevModeSwitch extends StatelessWidget {
         if (value) {
           await _showWarningDialog(context);
         } else {
-          await context.read<SettingsCubit>().toggleDevMode(
-            false,
-            walletBloc: context.read<WalletBloc>(),
-          );
+          await context.read<SettingsCubit>().toggleDevMode(false);
         }
       },
     );

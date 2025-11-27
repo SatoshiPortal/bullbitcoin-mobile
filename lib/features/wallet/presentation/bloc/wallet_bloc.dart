@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/check_for_online_electrum_servers_request.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/watch_dev_mode_changes_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
@@ -51,6 +52,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     checkForOnlineElectrumServersUsecase,
     required GetArkWalletUsecase getArkWalletUsecase,
     required CheckArkWalletSetupUsecase checkArkWalletSetupUsecase,
+    required WatchDevModeChangesUsecase watchDevModeChangesUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -69,6 +71,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
            checkForOnlineElectrumServersUsecase,
        _getArkWalletUsecase = getArkWalletUsecase,
        _checkArkWalletSetupUsecase = checkArkWalletSetupUsecase,
+       _watchDevModeChangesUsecase = watchDevModeChangesUsecase,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -81,6 +84,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<ExecuteAutoSwapFeeOverride>(_onExecuteAutoSwapFeeOverride);
     on<WalletDeleted>(_onDeleted);
     on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
+    on<ClearArkWalletState>(_onClearArkWalletState);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -100,16 +104,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   _checkForOnlineElectrumServersUsecase;
   final GetArkWalletUsecase _getArkWalletUsecase;
   final CheckArkWalletSetupUsecase _checkArkWalletSetupUsecase;
+  final WatchDevModeChangesUsecase _watchDevModeChangesUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
   StreamSubscription? _autoSwapSubscription;
+  StreamSubscription? _devModeSubscription;
 
   @override
   Future<void> close() {
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();
     _autoSwapSubscription?.cancel();
+    _devModeSubscription?.cancel();
     return super.close();
   }
 
@@ -154,6 +161,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       _finishedSyncsSubscription = _watchFinishedWalletSyncsUsecase
           .execute()
           .listen((wallet) => add(WalletSyncFinished(wallet)));
+
+      await _devModeSubscription?.cancel();
+      _devModeSubscription = _watchDevModeChangesUsecase.execute().listen(
+        (isEnabled) {
+          if (!isEnabled) {
+            add(const ClearArkWalletState());
+          }
+        },
+      );
     } on NoWalletsFoundException catch (e) {
       emit(
         state.copyWith(
@@ -559,5 +575,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         emit(state.copyWith(isArkWalletLoading: false));
       }
     }
+  }
+
+  Future<void> _onClearArkWalletState(
+    ClearArkWalletState event,
+    Emitter<WalletState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        isArkWalletSetup: false,
+        arkWallet: null,
+        arkBalanceSat: 0,
+      ),
+    );
   }
 }

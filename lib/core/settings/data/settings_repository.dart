@@ -9,17 +9,30 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
   final StreamController<String> _currencyChangeController;
+  final StreamController<bool> _devModeChangeController;
+  final StreamController<bool> _superuserModeChangeController;
 
   SettingsRepository({required SettingsDatasource settingsDatasource})
     : _settingsDatasource = settingsDatasource,
-      _currencyChangeController = StreamController<String>.broadcast();
+      _currencyChangeController = StreamController<String>.broadcast(),
+      _devModeChangeController = StreamController<bool>.broadcast(),
+      _superuserModeChangeController = StreamController<bool>.broadcast();
 
   @override
   Stream<String> get currencyChangeStream => _currencyChangeController.stream;
 
   @override
+  Stream<bool> get devModeChangeStream => _devModeChangeController.stream;
+
+  @override
+  Stream<bool> get superuserModeChangeStream =>
+      _superuserModeChangeController.stream;
+
+  @override
   Future<void> close() async {
     await _currencyChangeController.close();
+    await _devModeChangeController.close();
+    await _superuserModeChangeController.close();
   }
 
   @override
@@ -97,11 +110,13 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setIsSuperuser(bool superuser) async {
     await _settingsDatasource.setIsSuperuser(superuser);
+    _superuserModeChangeController.add(superuser);
   }
 
   @override
   Future<void> setIsDevMode(bool isEnabled) async {
     await _settingsDatasource.setIsDevMode(isEnabled);
+    _devModeChangeController.add(isEnabled);
   }
 
   @override

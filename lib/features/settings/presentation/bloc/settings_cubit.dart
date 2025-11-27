@@ -1,6 +1,9 @@
-import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
+import 'dart:async';
+
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/watch_dev_mode_changes_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/watch_superuser_mode_changes_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -10,7 +13,6 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -29,7 +31,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetIsSuperuserUsecase setIsSuperuserUsecase,
     required SetIsDevModeUsecase setIsDevModeUsecase,
     required GetOldSeedsUsecase getOldSeedsUsecase,
-    required RevokeArkUsecase revokeArkUsecase,
+    required WatchDevModeChangesUsecase watchDevModeChangesUsecase,
+    required WatchSuperuserModeChangesUsecase watchSuperuserModeChangesUsecase,
   }) : _setEnvironmentUsecase = setEnvironmentUsecase,
        _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
        _getSettingsUsecase = getSettingsUsecase,
@@ -39,7 +42,8 @@ class SettingsCubit extends Cubit<SettingsState> {
        _setIsSuperuserUsecase = setIsSuperuserUsecase,
        _getOldSeedsUsecase = getOldSeedsUsecase,
        _setIsDevModeUsecase = setIsDevModeUsecase,
-       _revokeArkUsecase = revokeArkUsecase,
+       _watchDevModeChangesUsecase = watchDevModeChangesUsecase,
+       _watchSuperuserModeChangesUsecase = watchSuperuserModeChangesUsecase,
        super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -51,7 +55,11 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
   final GetOldSeedsUsecase _getOldSeedsUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
-  final RevokeArkUsecase _revokeArkUsecase;
+  final WatchDevModeChangesUsecase _watchDevModeChangesUsecase;
+  final WatchSuperuserModeChangesUsecase _watchSuperuserModeChangesUsecase;
+
+  StreamSubscription? _devModeSubscription;
+  StreamSubscription? _superuserModeSubscription;
 
   Future<void> init() async {
     final (storedSettings, appInfo) =
@@ -62,6 +70,38 @@ class SettingsCubit extends Cubit<SettingsState> {
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
     );
     await checkHasLegacySeeds();
+    _subscribeToSettingsChanges();
+  }
+
+  void _subscribeToSettingsChanges() {
+    _devModeSubscription = _watchDevModeChangesUsecase.execute().listen((
+      isEnabled,
+    ) {
+      final settings = state.storedSettings;
+      emit(
+        state.copyWith(
+          storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+        ),
+      );
+    });
+
+    _superuserModeSubscription = _watchSuperuserModeChangesUsecase
+        .execute()
+        .listen((isEnabled) {
+          final settings = state.storedSettings;
+          emit(
+            state.copyWith(
+              storedSettings: settings?.copyWith(isSuperuser: isEnabled),
+            ),
+          );
+        });
+  }
+
+  @override
+  Future<void> close() async {
+    await _devModeSubscription?.cancel();
+    await _superuserModeSubscription?.cancel();
+    return super.close();
   }
 
   Future<void> toggleTestnetMode(bool active) async {
@@ -133,23 +173,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(state.copyWith(hasLegacySeeds: seeds.isNotEmpty));
   }
 
-  Future<void> toggleDevMode(
-    bool isEnabled, {
-    WalletBloc? walletBloc,
-  }) async {
+  Future<void> toggleDevMode(bool isEnabled) async {
     final settings = state.storedSettings;
-
-    // If disabling dev mode, revoke Ark first
-    if (!isEnabled && settings?.isDevModeEnabled == true) {
-      try {
-        await _revokeArkUsecase.execute();
-        // Only trigger refresh if walletBloc is provided
-        walletBloc?.add(const RefreshArkWalletBalance());
-      } catch (e) {
-        log.severe('Failed to revoke Ark: $e');
-      }
-    }
-
     await _setIsDevModeUsecase.execute(isEnabled);
     emit(
       state.copyWith(
