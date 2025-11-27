@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_0_to_1.dart';
 import 'package:bb_mobile/core/storage/migrations/schema_1_to_2.dart';
@@ -23,7 +25,12 @@ import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:drift/drift.dart';
+import 'package:drift/isolate.dart';
+import 'package:drift/native.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/services.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 part 'sqlite_database.g.dart';
 
@@ -44,6 +51,21 @@ part 'sqlite_database.g.dart';
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
+  static const name = 'bullbitcoin_sqlite';
+
+  static Future<DriftIsolate> createIsolateWithSpawn() async {
+    final token = RootIsolateToken.instance!;
+    return await DriftIsolate.spawn(() {
+      BackgroundIsolateBinaryMessenger.ensureInitialized(token);
+
+      return LazyDatabase(() async {
+        final dbFolder = await getApplicationDocumentsDirectory();
+        final dbPath = p.join(dbFolder.path, '${SqliteDatabase.name}.sqlite');
+        return NativeDatabase(File(dbPath));
+      });
+    });
+  }
+
   SqliteDatabase([QueryExecutor? executor])
     : super(executor ?? _openConnection());
 
@@ -52,8 +74,10 @@ class SqliteDatabase extends _$SqliteDatabase {
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
-      name: 'bullbitcoin_sqlite',
+      name: name,
       native: DriftNativeOptions(
+        databaseDirectory: getApplicationDocumentsDirectory,
+
         /// When using a shared instance, stream queries synchronize across the two
         /// isolates. Also, drift then manages concurrent access to the database,
         /// preventing "database is locked" errors due to concurrent transactions.
