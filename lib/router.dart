@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
-import 'package:bb_mobile/features/connect_hardware_wallet/router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -148,7 +147,6 @@ class AppRouter {
       ArkSetupRouter.route,
       ArkRouter.route,
       ...ImportQrDeviceRouter.routes,
-      ConnectHardwareWalletRouter.route,
       RecoverBullRouter.route,
       RecoverBullGoogleDriveRouter.route,
       RecipientsRouter.route,
