@@ -15,37 +15,29 @@ import 'package:bb_mobile/core/swaps/swaps_locator.dart';
 import 'package:bb_mobile/core/tor/tor_locator.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_locator.dart' as features;
-import 'package:bb_mobile/locator.dart';
 import 'package:get_it/get_it.dart';
 
-final GetIt backgroundLocator = GetIt.asNewInstance();
-
-class BackgroundTasksLocator {
-  static Future<void> setup() async {
+class TaskLocator {
+  static Future<void> setup(
+    GetIt backgroundLocator,
+    SqliteDatabase sqlite,
+  ) async {
     backgroundLocator.enableRegisteringMultipleInstancesOfOneType();
 
-    registerDatabase();
-    await registerDatasources();
-    registerPorts();
-    await registerRepositories();
-    registerServices();
-    registerUsecases();
-    registerFeatures();
+    registerDatabase(backgroundLocator, sqlite);
+    await registerDatasources(backgroundLocator);
+    registerPorts(backgroundLocator);
+    await registerRepositories(backgroundLocator);
+    registerServices(backgroundLocator);
+    registerUsecases(backgroundLocator);
+    registerFeatures(backgroundLocator);
   }
 
-  static void registerDatabase() {
-    if (locator.isRegistered<SqliteDatabase>()) {
-      backgroundLocator.registerLazySingleton<SqliteDatabase>(
-        () => locator<SqliteDatabase>(),
-      );
-    } else {
-      backgroundLocator.registerLazySingleton<SqliteDatabase>(
-        () => SqliteDatabase(),
-      );
-    }
+  static void registerDatabase(GetIt backgroundLocator, SqliteDatabase sqlite) {
+    backgroundLocator.registerLazySingleton<SqliteDatabase>(() => sqlite);
   }
 
-  static Future<void> registerDatasources() async {
+  static Future<void> registerDatasources(GetIt backgroundLocator) async {
     BlockchainLocator.registerDatasources(backgroundLocator);
     await ElectrumLocator.registerDatasources(backgroundLocator);
     // SeedLocator.registerDatasources();
@@ -62,14 +54,14 @@ class BackgroundTasksLocator {
     Bip85DerivationsLocator.registerDatasources(backgroundLocator);
   }
 
-  static void registerPorts() {
+  static void registerPorts(GetIt backgroundLocator) {
     ElectrumLocator.registerPorts(backgroundLocator);
     BlockchainLocator.registerPorts(backgroundLocator);
     SwapsLocator.registerPorts(backgroundLocator);
     WalletLocator.registerPorts(backgroundLocator);
   }
 
-  static Future<void> registerRepositories() async {
+  static Future<void> registerRepositories(GetIt backgroundLocator) async {
     BlockchainLocator.registerRepositories(backgroundLocator);
     ElectrumLocator.registerRepositories(backgroundLocator);
     StorageLocator.registerRepositories(backgroundLocator);
@@ -85,11 +77,11 @@ class BackgroundTasksLocator {
     Bip85DerivationsLocator.registerRepositories(backgroundLocator);
   }
 
-  static void registerServices() {
+  static void registerServices(GetIt backgroundLocator) {
     SwapsLocator.registerServices(backgroundLocator);
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt backgroundLocator) {
     ElectrumLocator.registerUsecases(backgroundLocator);
     BlockchainLocator.registerUsecases(backgroundLocator);
     StorageLocator.registerUsecases(backgroundLocator);
@@ -106,7 +98,7 @@ class BackgroundTasksLocator {
     Bip85DerivationsLocator.registerUsecases(backgroundLocator);
   }
 
-  static void registerFeatures() {
+  static void registerFeatures(GetIt backgroundLocator) {
     features.ExchangeLocator.setup(backgroundLocator);
     ArkCoreLocator.setup(backgroundLocator);
     StatusLocator.setup(backgroundLocator);
