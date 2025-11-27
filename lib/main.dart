@@ -204,7 +204,6 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
               // If wallets exist and the app has started successfully,
               // we can start the wallet bloc to fetch the wallets.
               context.read<WalletBloc>().add(const WalletStarted());
-              context.read<WalletBloc>().add(const CheckAllWarnings());
             },
           ),
           BlocListener<SettingsCubit, SettingsState>(

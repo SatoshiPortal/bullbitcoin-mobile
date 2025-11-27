@@ -34,10 +34,6 @@ class StartTorInitialization extends WalletEvent {
   const StartTorInitialization();
 }
 
-class CheckAllWarnings extends WalletEvent {
-  const CheckAllWarnings();
-}
-
 class BlockAutoSwapUntilNextExecution extends WalletEvent {
   const BlockAutoSwapUntilNextExecution();
 }
@@ -53,4 +49,9 @@ class ExecuteAutoSwapFeeOverride extends WalletEvent {
 class RefreshArkWalletBalance extends WalletEvent {
   final int? amount;
   const RefreshArkWalletBalance({this.amount});
+}
+
+class ElectrumSyncResultChanged extends WalletEvent {
+  final ElectrumSyncResult result;
+  const ElectrumSyncResultChanged(this.result);
 }

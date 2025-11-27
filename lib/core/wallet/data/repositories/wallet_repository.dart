@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:async/async.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
@@ -25,6 +26,9 @@ class WalletRepository {
   final LwkWalletDatasource _lwkWallet;
   final ElectrumServerPort _electrumServerPort;
 
+  final _electrumSyncResultController =
+      StreamController<ElectrumSyncResult>.broadcast();
+
   WalletRepository({
     required WalletMetadataDatasource walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
@@ -48,6 +52,9 @@ class WalletRepository {
       _walletSyncFinishedStream
           .asyncMap((walletId) async => await getWallet(walletId))
           .whereType<Wallet>();
+
+  Stream<ElectrumSyncResult> get electrumSyncResultStream =>
+      _electrumSyncResultController.stream;
 
   bool isWalletSyncing({String? walletId}) =>
       _bdkWallet.isWalletSyncing(walletId: walletId) ||
@@ -477,6 +484,9 @@ class WalletRepository {
               electrumServer: electrumServer,
             );
           }
+          _electrumSyncResultController.add(
+            ElectrumSyncResult(isLiquid: isLiquid, success: true),
+          );
           return;
         } catch (e, stackTrace) {
           log.severe(
@@ -485,6 +495,9 @@ class WalletRepository {
             trace: stackTrace,
           );
           if (i == electrumServers.length - 1) {
+            _electrumSyncResultController.add(
+              ElectrumSyncResult(isLiquid: isLiquid, success: false),
+            );
             throw Exception('All Electrum servers failed to sync.');
           }
           continue;
