@@ -39,6 +39,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (SettingsCubit cubit) => cubit.state.appVersion,
     );
 
+    final serviceStatusLoading = context.select(
+      (ServiceStatusCubit cubit) => cubit.state.isLoading,
+    );
+
     final serviceStatus = context.select(
       (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
@@ -132,7 +136,9 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 SettingsEntryItem(
                   icon: Icons.monitor_heart,
                   iconColor:
-                      serviceStatus?.allServicesOnline ?? false
+                      serviceStatusLoading
+                          ? Colors.grey
+                          : serviceStatus.allServicesOnline
                           ? Colors.green
                           : Colors.red,
                   title: 'Services Status',

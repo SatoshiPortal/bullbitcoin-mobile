@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
@@ -32,51 +31,47 @@ class ServiceStatusPage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (serviceStatus == null)
-                      FadingLinearProgress(trigger: serviceStatus == null)
-                    else
-                      Column(
-                        children: [
-                          _ServiceStatusItem(
-                            service: serviceStatus.internetConnection,
-                          ),
-                          const SizedBox(height: 12),
-                          _ServiceStatusItem(
-                            service: serviceStatus.bitcoinElectrum,
-                          ),
-                          const SizedBox(height: 12),
-                          _ServiceStatusItem(
-                            service: serviceStatus.liquidElectrum,
-                          ),
-                          const SizedBox(height: 12),
-                          _ServiceStatusItem(service: serviceStatus.boltz),
-                          const SizedBox(height: 12),
-                          _ServiceStatusItem(service: serviceStatus.payjoin),
-                          const SizedBox(height: 12),
-                          _ServiceStatusItem(service: serviceStatus.pricer),
-                          const SizedBox(height: 12),
-                          _ServiceStatusItem(service: serviceStatus.mempool),
-                          const SizedBox(height: 12),
-                          _ServiceStatusItem(service: serviceStatus.tor),
-                          const SizedBox(height: 12),
-                          _ServiceStatusItem(
-                            service: serviceStatus.recoverbull,
-                          ),
-                          const SizedBox(height: 12),
-                          _ServiceStatusItem(service: serviceStatus.ark),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
+                    Column(
+                      children: [
+                        _ServiceStatusItem(
+                          service: serviceStatus.internetConnection,
+                        ),
+                        const SizedBox(height: 12),
+                        _ServiceStatusItem(
+                          service: serviceStatus.bitcoinElectrum,
+                        ),
+                        const SizedBox(height: 12),
+                        _ServiceStatusItem(
+                          service: serviceStatus.liquidElectrum,
+                        ),
+                        const SizedBox(height: 12),
+                        _ServiceStatusItem(service: serviceStatus.boltz),
+                        const SizedBox(height: 12),
+                        _ServiceStatusItem(service: serviceStatus.payjoin),
+                        const SizedBox(height: 12),
+                        _ServiceStatusItem(service: serviceStatus.pricer),
+                        const SizedBox(height: 12),
+                        _ServiceStatusItem(service: serviceStatus.mempool),
+                        const SizedBox(height: 12),
+                        _ServiceStatusItem(service: serviceStatus.tor),
+                        const SizedBox(height: 12),
+                        _ServiceStatusItem(service: serviceStatus.recoverbull),
+                        const SizedBox(height: 12),
+                        _ServiceStatusItem(service: serviceStatus.ark),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (serviceStatus.lastChecked != null)
                               BBText(
-                                'Last checked: ${_formatDateTime(serviceStatus.lastChecked)}',
+                                'Last checked: ${_formatDateTime(serviceStatus.lastChecked!)}',
                                 style: context.font.bodySmall,
                                 color: context.colour.onSurfaceVariant,
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
