@@ -16,6 +16,7 @@ class CurrencyText extends StatelessWidget {
     this.textAlign,
     this.fiatAmount,
     this.fiatCurrency,
+    this.overrideHideAmounts = false,
   });
 
   final int satsAmount;
@@ -26,6 +27,8 @@ class CurrencyText extends StatelessWidget {
   final TextAlign? textAlign;
   final double? fiatAmount;
   final String? fiatCurrency;
+  // If true, the amount will not be hidden even if the settings are set to hide amounts
+  final bool overrideHideAmounts;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +60,7 @@ class CurrencyText extends StatelessWidget {
       (SettingsCubit cubit) => cubit.state.hideAmounts ?? true,
     );
 
-    if (hideAmt) {
+    if (hideAmt && !overrideHideAmounts) {
       text = '** ${text.split(' ').last}';
     }
 
