@@ -25,8 +25,11 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
+import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
+import 'package:bb_mobile/core/tor/interface_adapters/adapters/tor_config_adapter.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:get_it/get_it.dart';
@@ -65,10 +68,15 @@ class RecoverbullLocator {
       () => FileSystemRepository(),
     );
 
+    locator.registerLazySingleton<TorConfigPort>(
+      () => TorConfigAdapter(settingsRepository: locator<SettingsRepository>()),
+    );
+
     locator.registerSingletonWithDependencies<RecoverBullRepository>(
       () => RecoverBullRepository(
         remoteDatasource: locator<RecoverBullRemoteDatasource>(),
         recoverbullSettingsDatasource: locator<RecoverbullSettingsDatasource>(),
+        torConfigPort: locator<TorConfigPort>(),
       ),
       dependsOn: [RecoverBullRemoteDatasource],
     );

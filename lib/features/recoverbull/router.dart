@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
+import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
@@ -69,6 +70,7 @@ class RecoverBullRouter {
               updateLatestEncryptedVaultTestUsecase:
                   locator<UpdateLatestEncryptedVaultTestUsecase>(),
               torStatusUsecase: locator<TorStatusUsecase>(),
+              torConfigPort: locator<TorConfigPort>(),
             ),
         child: const RecoverBullFlowNavigator(),
       );

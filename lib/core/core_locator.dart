@@ -56,10 +56,10 @@ class CoreLocator {
     FeesLocator.registerRepositories(locator);
     LabelsLocator.registerRepositories();
     PayjoinLocator.registerRepositories(locator);
-    await RecoverbullLocator.registerRepositories(locator);
     SeedLocator.registerRepositories(locator);
     StorageLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
+    await RecoverbullLocator.registerRepositories(locator);
     SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerRepositories(locator);
