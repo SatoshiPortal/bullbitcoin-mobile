@@ -159,14 +159,14 @@ class SettingsRouter {
         name: SettingsRoute.bitcoinSettings.name,
         path: SettingsRoute.bitcoinSettings.path,
         builder: (context, state) => const BitcoinSettingsScreen(),
-        routes: [
-          TorSettingsRouter.route,
-        ],
       ),
       GoRoute(
         name: SettingsRoute.appSettings.name,
         path: SettingsRoute.appSettings.path,
         builder: (context, state) => const AppSettingsScreen(),
+        routes: [
+          TorSettingsRouter.route,
+        ],
       ),
 
       GoRoute(

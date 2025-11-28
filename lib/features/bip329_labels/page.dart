@@ -35,86 +35,80 @@ class Bip329LabelsPage extends StatelessWidget {
             title: context.loc.bip329LabelsTitle,
           ),
         ),
-        body: BlocConsumer<Bip329LabelsCubit, Bip329LabelsState>(
-          listener: (context, state) {
-            state.when(
-              initial: () {},
-              loading: () {},
-              exportSuccess: (labelsCount) {
-                SnackBarUtils.showSnackBar(
-                  context,
-                  context.loc.bip329LabelsExportSuccess(labelsCount),
-                );
-              },
-              importSuccess: (labelsCount) {
-                SnackBarUtils.showSnackBar(
-                  context,
-                  context.loc.bip329LabelsImportSuccess(labelsCount),
-                );
-              },
-              error: (message) {
-                SnackBarUtils.showSnackBar(context, message);
-              },
-            );
-          },
-          builder: (context, state) {
-            final cubit = context.read<Bip329LabelsCubit>();
-            final isLoading = state.maybeWhen(
-              loading: () => true,
-              orElse: () => false,
-            );
+        body: SafeArea(
+          child: BlocConsumer<Bip329LabelsCubit, Bip329LabelsState>(
+            listener: (context, state) {
+              state.when(
+                initial: () {},
+                loading: () {},
+                exportSuccess: (labelsCount) {
+                  SnackBarUtils.showSnackBar(
+                    context,
+                    context.loc.bip329LabelsExportSuccess(labelsCount),
+                  );
+                },
+                importSuccess: (labelsCount) {
+                  SnackBarUtils.showSnackBar(
+                    context,
+                    context.loc.bip329LabelsImportSuccess(labelsCount),
+                  );
+                },
+                error: (message) {
+                  SnackBarUtils.showSnackBar(context, message);
+                },
+              );
+            },
+            builder: (context, state) {
+              final cubit = context.read<Bip329LabelsCubit>();
+              final isLoading = state.maybeWhen(
+                loading: () => true,
+                orElse: () => false,
+              );
 
-            return Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Center(child: FadingLinearProgress(trigger: isLoading)),
-
-                  const Spacer(),
-
-                  BBText(
-                    context.loc.bip329LabelsHeading,
-                    style: context.font.headlineLarge,
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const Gap(16),
-
-                  BBText(
-                    context.loc.bip329LabelsDescription,
-                    style: context.font.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const Spacer(),
-
-                  BBButton.big(
-                    label: context.loc.bip329LabelsImportButton,
-                    onPressed: isLoading ? () {} : () => cubit.importLabels(),
-                    bgColor: Theme.of(context).colorScheme.primary,
-                    textColor: Theme.of(context).colorScheme.onPrimary,
-                    iconData: Icons.file_upload,
-                    iconFirst: true,
-                    disabled: isLoading,
-                  ),
-
-                  const Gap(16),
-
-                  BBButton.big(
-                    label: context.loc.bip329LabelsExportButton,
-                    onPressed: isLoading ? () {} : () => cubit.exportLabels(),
-                    bgColor: Theme.of(context).colorScheme.secondary,
-                    textColor: Theme.of(context).colorScheme.onSecondary,
-                    iconData: Icons.file_download,
-                    iconFirst: true,
-                    disabled: isLoading,
-                  ),
-                ],
-              ),
-            );
-          },
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Gap(20),
+                    Center(child: FadingLinearProgress(trigger: isLoading)),
+                    BBText(
+                      context.loc.bip329LabelsHeading,
+                      style: context.font.headlineLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    const Gap(16),
+                    BBText(
+                      context.loc.bip329LabelsDescription,
+                      style: context.font.bodyLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    const Spacer(),
+                    BBButton.big(
+                      label: context.loc.bip329LabelsImportButton,
+                      onPressed: isLoading ? () {} : () => cubit.importLabels(),
+                      bgColor: Theme.of(context).colorScheme.primary,
+                      textColor: Theme.of(context).colorScheme.onPrimary,
+                      iconData: Icons.file_upload,
+                      iconFirst: true,
+                      disabled: isLoading,
+                    ),
+                    const Gap(12),
+                    BBButton.big(
+                      label: context.loc.bip329LabelsExportButton,
+                      onPressed: isLoading ? () {} : () => cubit.exportLabels(),
+                      bgColor: Theme.of(context).colorScheme.secondary,
+                      textColor: Theme.of(context).colorScheme.onSecondary,
+                      iconData: Icons.file_download,
+                      iconFirst: true,
+                      disabled: isLoading,
+                    ),
+                    const Gap(20),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -9,6 +8,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -24,6 +24,8 @@ class _SettingsPageState extends State<SettingsPage> {
   final _storeUrlUsecase = locator<StoreRecoverbullUrlUsecase>();
   bool _isLoading = false;
   bool _isSaving = false;
+  bool _isEditing = false;
+  String _originalUrl = '';
 
   @override
   void initState() {
@@ -41,7 +43,7 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() => _isLoading = true);
     try {
       final url = await _fetchUrlUsecase.execute();
-      _urlController.text = url.toString();
+      _originalUrl = url.toString();
     } catch (e) {
       log.warning('Error loading recoverbull url: $e');
     } finally {
@@ -56,11 +58,23 @@ class _SettingsPageState extends State<SettingsPage> {
     try {
       final url = Uri.parse(_urlController.text);
       await _storeUrlUsecase.execute(url);
-      if (mounted) context.pop();
+      _originalUrl = url.toString();
+      if (mounted) {
+        setState(() => _isEditing = false);
+      }
     } catch (e) {
       log.warning('Error saving recoverbull url: $e');
     } finally {
       if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  void _cancelEdit() => setState(() => _isEditing = false);
+
+  Future<void> _openRecoverBullWebsite() async {
+    final uri = Uri.parse('https://recoverbull.com/');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
@@ -79,13 +93,12 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final borderDecoration = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(2),
-      borderSide: BorderSide(color: context.colour.secondaryFixedDim),
-    );
-
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.arrow_back),
+        ),
         title: BBText(
           'Recoverbull Settings',
           style: context.font.headlineMedium,
@@ -102,36 +115,107 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Gap(24),
-                      TextFormField(
-                        controller: _urlController,
-                        validator: _validateUrl,
-                        decoration: InputDecoration(
-                          labelText: 'Key Server URL',
-                          hintText: 'http://example.onion',
-                          border: borderDecoration,
-                          enabledBorder: borderDecoration,
-                          focusedBorder: borderDecoration.copyWith(
-                            borderSide: BorderSide(
-                              color: context.colour.primary,
-                              width: 2,
+                      const Gap(16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          BBText(
+                            'Key Server URL',
+                            style: context.font.titleMedium,
+                            color: context.colour.onSurface,
+                          ),
+                          if (!_isEditing)
+                            TextButton.icon(
+                              onPressed: () {
+                                _urlController.text = _originalUrl;
+                                setState(() => _isEditing = true);
+                              },
+                              icon: const Icon(Icons.edit, size: 18),
+                              label: const Text('Edit'),
                             ),
+                        ],
+                      ),
+                      const Gap(12),
+                      if (_isEditing) ...[
+                        TextFormField(
+                          controller: _urlController,
+                          validator: _validateUrl,
+                          maxLines: null,
+                          autofocus: true,
+                          style: context.font.bodyMedium,
+                          decoration: InputDecoration(
+                            hintText: 'http://example.onion',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            contentPadding: const EdgeInsets.all(16),
                           ),
                         ),
-                      ),
+                      ] else ...[
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: context.colour.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: context.colour.outline.withValues(
+                                alpha: 0.2,
+                              ),
+                            ),
+                          ),
+                          child: BBText(
+                            _originalUrl,
+                            style: context.font.bodyMedium,
+                            color: context.colour.onSurface,
+                          ),
+                        ),
+                      ],
                       const Spacer(),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: Device.screen.height * 0.05,
+                      if (_isEditing) ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: BBButton.big(
+                                label: 'Cancel',
+                                onPressed: _cancelEdit,
+                                bgColor: context.colour.surface,
+                                textColor: context.colour.onSurface,
+                              ),
+                            ),
+                            const Gap(8),
+                            Expanded(
+                              child: BBButton.big(
+                                label: 'Save',
+                                onPressed: _saveUrl,
+                                bgColor: context.colour.secondary,
+                                textColor: context.colour.onPrimary,
+                                disabled: _isSaving,
+                              ),
+                            ),
+                          ],
                         ),
-                        child: BBButton.big(
-                          label: 'Save',
-                          onPressed: () => _saveUrl(),
-                          bgColor: context.colour.secondary,
-                          textColor: context.colour.onSecondary,
-                          disabled: _isSaving,
+                        const Gap(16),
+                      ],
+                      GestureDetector(
+                        onTap: _openRecoverBullWebsite,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 20,
+                              color: context.colour.primary,
+                            ),
+                            const Gap(8),
+                            BBText(
+                              'Learn more about Recoverbull',
+                              style: context.font.bodyMedium,
+                              color: context.colour.primary,
+                            ),
+                          ],
                         ),
                       ),
+                      const Gap(24),
                     ],
                   ),
                 ),
