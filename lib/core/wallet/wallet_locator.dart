@@ -33,6 +33,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
@@ -147,6 +148,11 @@ class WalletLocator {
     );
     locator.registerFactory<WatchFinishedWalletSyncsUsecase>(
       () => WatchFinishedWalletSyncsUsecase(
+        walletRepository: locator<WalletRepository>(),
+      ),
+    );
+    locator.registerFactory<WatchElectrumSyncResultsUsecase>(
+      () => WatchElectrumSyncResultsUsecase(
         walletRepository: locator<WalletRepository>(),
       ),
     );
