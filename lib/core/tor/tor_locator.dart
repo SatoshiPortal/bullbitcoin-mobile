@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/core/tor/data/repository/tor_repository.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
@@ -30,7 +31,10 @@ class TorLocator {
     );
 
     locator.registerFactory<IsTorRequiredUsecase>(
-      () => IsTorRequiredUsecase(walletRepository: locator<WalletRepository>()),
+      () => IsTorRequiredUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
+      ),
     );
 
     locator.registerFactory<TorStatusUsecase>(
