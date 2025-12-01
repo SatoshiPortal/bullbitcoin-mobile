@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/background_tasks/locator.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
-import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
@@ -37,8 +36,6 @@ Future<bool> tasksHandler(String task) async {
     final syncWalletUsecase = locator<SyncWalletUsecase>();
     final getWalletsUsecase = locator<GetWalletsUsecase>();
     final restartSwapWatcherUsecase = locator<RestartSwapWatcherUsecase>();
-    final checkAllServiceStatusUsecase =
-        locator<CheckAllServiceStatusUsecase>();
 
     final backgroundTask = BackgroundTask.fromName(task);
 
@@ -64,15 +61,6 @@ Future<bool> tasksHandler(String task) async {
         }
       case BackgroundTask.logsPrune:
         await log.prune();
-      case BackgroundTask.servicesCheck:
-        final wallets = await getWalletsUsecase.execute();
-        if (wallets.isEmpty) {
-          log.warning('No wallets to check services status');
-        } else {
-          final defaultWallet = wallets.firstWhere((w) => w.isDefault);
-          final network = defaultWallet.network;
-          await checkAllServiceStatusUsecase.execute(network: network);
-        }
     }
 
     final elapsedTime = DateTime.now().difference(startTime).inSeconds;
