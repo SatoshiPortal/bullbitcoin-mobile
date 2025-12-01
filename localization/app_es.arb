@@ -8512,37 +8512,49 @@
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "importQrDevicePassportStep2": "Seleccione Administrar Cuenta",
+  "importQrDevicePassportStep2": "Ingrese su PIN",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
-  "importQrDevicePassportStep3": "Seleccione Conectar Billetera",
+  "importQrDevicePassportStep3": "Seleccione \"Administrar Cuenta\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
-  "importQrDevicePassportStep4": "Seleccione Sparrow",
+  "importQrDevicePassportStep4": "Seleccione \"Conectar Billetera\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
-  "importQrDevicePassportStep5": "Seleccione Firma Única",
+  "importQrDevicePassportStep5": "Seleccione la opción \"Sparrow\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
-  "importQrDevicePassportStep6": "Seleccione Código QR",
+  "importQrDevicePassportStep6": "Seleccione \"Firma Única\"",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
-  "importQrDevicePassportStep7": "Haga clic en el botón \"abrir cámara\"",
+  "importQrDevicePassportStep7": "Seleccione \"Código QR\"",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "importQrDevicePassportStep8": "Escanee el código QR que ve en su dispositivo.",
+  "importQrDevicePassportStep8": "En su dispositivo móvil, toque \"abrir cámara\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
-  "importQrDevicePassportStep9": "¡Eso es todo!",
+  "importQrDevicePassportStep9": "Escanee el código QR mostrado en su Passport",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
+  },
+  "importQrDevicePassportStep10": "En la aplicación BULL wallet, seleccione \"Segwit (BIP84)\" como opción de derivación",
+  "@importQrDevicePassportStep10": {
+    "description": "Passport instruction step 10"
+  },
+  "importQrDevicePassportStep11": "Ingrese una etiqueta para su billetera Passport y toque \"Importar\"",
+  "@importQrDevicePassportStep11": {
+    "description": "Passport instruction step 11"
+  },
+  "importQrDevicePassportStep12": "Configuración completada.",
+  "@importQrDevicePassportStep12": {
+    "description": "Passport instruction step 12"
   },
   "importQrDeviceSeedsignerName": "SeedSigner",
   "@importQrDeviceSeedsignerName": {
