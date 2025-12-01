@@ -5,12 +5,11 @@ import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/tor_settings/domain/ports/socket_port.dart';
 
-class CheckTorConnectionUsecase {
+class CheckTorProxyConnectionUsecase {
   final SocketPort _socketPort;
 
-  const CheckTorConnectionUsecase({
-    required SocketPort socketPort,
-  }) : _socketPort = socketPort;
+  const CheckTorProxyConnectionUsecase({required SocketPort socketPort})
+    : _socketPort = socketPort;
 
   /// Checks if a Tor SOCKS5 proxy is running and accessible on the given port
   ///
@@ -52,9 +51,7 @@ class CheckTorConnectionUsecase {
         } else {
           // Unexpected response - port is open but not a valid SOCKS5 proxy
           await socket.close();
-          log.warning(
-            'Port $port is open but not responding as SOCKS5 proxy',
-          );
+          log.warning('Port $port is open but not responding as SOCKS5 proxy');
           return TorStatus.unknown;
         }
       } catch (e) {
