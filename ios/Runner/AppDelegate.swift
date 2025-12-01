@@ -25,10 +25,6 @@ import workmanager
       withIdentifier: "com.bullbitcoin.mobile.logs-prune-id",
       frequency: NSNumber(value: 20 * 60)
     )
-    WorkmanagerPlugin.registerPeriodicTask(
-      withIdentifier: "com.bullbitcoin.mobile.services-check-id",
-      frequency: NSNumber(value: 20 * 60)
-    )
     
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
