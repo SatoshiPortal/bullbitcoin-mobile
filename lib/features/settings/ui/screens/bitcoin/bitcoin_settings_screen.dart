@@ -92,6 +92,15 @@ class BitcoinSettingsScreen extends StatelessWidget {
                     isSuperUser: true,
                     trailing: TestnetModeSwitch(),
                   ),
+                if (isSuperuser)
+                  SettingsEntryItem(
+                    icon: Icons.vpn_key,
+                    title: 'Seed Viewer',
+                    isSuperUser: true,
+                    onTap: () {
+                      context.pushNamed(SettingsRoute.allSeedView.name);
+                    },
+                  ),
                 if (isSuperuser && isDevModeEnabled)
                   SettingsEntryItem(
                     icon: Icons.science,

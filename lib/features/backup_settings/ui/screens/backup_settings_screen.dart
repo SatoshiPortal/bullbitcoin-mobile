@@ -164,8 +164,8 @@ class _StartBackupButton extends StatelessWidget {
             BackupSettingsSubroute.backupOptions.name,
             extra: BackupSettingsFlow.backup,
           ),
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onSecondary,
+      bgColor: context.colour.primary,
+      textColor: context.colour.onPrimary,
     );
   }
 }
