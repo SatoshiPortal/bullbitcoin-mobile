@@ -35,11 +35,11 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
         switch (widget.inputType) {
           case InputType.pin || InputType.password:
             context.read<RecoverBullBloc>().add(
-              OnVaultPasswordSet(password: widget.input, context: context),
+              OnVaultPasswordSet(password: widget.input),
             );
           case InputType.vaultKey:
             context.read<RecoverBullBloc>().add(
-              OnVaultDecryption(vaultKey: widget.input, context: context),
+              OnVaultDecryption(vaultKey: widget.input),
             );
         }
       }
@@ -82,7 +82,11 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
                     previous.vaultKey != current.vaultKey,
         listener: (context, state) {
           if (state.error != null) {
-            SnackBarUtils.showSnackBar(context, state.error!.message);
+            SnackBarUtils.showSnackBar(
+              context,
+              state.error!.toTranslated(context),
+            );
+            context.read<RecoverBullBloc>().add(const OnClearError());
             Navigator.of(context).pop();
           }
           if (state.decryptedVault != null && state.vaultKey != null) {
@@ -110,6 +114,8 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
                 );
               case RecoverBullFlow.secureVault:
                 break; // should not fetch anything
+              case RecoverBullFlow.settings:
+                throw UnimplementedError();
             }
           }
         },

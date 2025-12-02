@@ -5,29 +5,34 @@ import 'package:bb_mobile/core/electrum/application/dtos/responses/get_electrum_
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 
 class GetElectrumServersToUseUsecase {
   final ElectrumServerRepository _electrumServerRepository;
   final ElectrumSettingsRepository _electrumSettingsRepository;
+  final SettingsRepository _settingsRepository;
 
   const GetElectrumServersToUseUsecase({
     required ElectrumServerRepository electrumServerRepository,
     required ElectrumSettingsRepository electrumSettingsRepository,
+    required SettingsRepository settingsRepository,
   }) : _electrumServerRepository = electrumServerRepository,
-       _electrumSettingsRepository = electrumSettingsRepository;
+       _electrumSettingsRepository = electrumSettingsRepository,
+       _settingsRepository = settingsRepository;
 
   Future<GetElectrumServersToUseResponse> execute(
     GetElectrumServersToUseRequest request,
   ) async {
     final network = request.network;
-    // Fetch servers and settings in parallel
-    final (servers, settings) =
+    // Fetch servers, settings, and app settings in parallel
+    final (servers, settings, appSettings) =
         await (
           _electrumServerRepository.fetchAll(
             isTestnet: network.isTestnet,
             isLiquid: network.isLiquid,
           ),
           _electrumSettingsRepository.fetchByNetwork(network),
+          _settingsRepository.fetch(),
         ).wait;
 
     // If custom servers exist, we should use them only
@@ -42,6 +47,8 @@ class GetElectrumServersToUseUsecase {
       servers:
           serversToUse.map((e) => ElectrumServerDto.fromDomain(e)).toList(),
       settings: ElectrumSettingsDto.fromDomain(settings),
+      useTorProxy: appSettings.useTorProxy,
+      torProxyPort: appSettings.torProxyPort,
     );
   }
 }

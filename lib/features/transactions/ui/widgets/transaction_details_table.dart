@@ -118,7 +118,9 @@ class TransactionDetailsTable extends StatelessWidget {
         if (toAddress != null)
           DetailsTableItem(
             label:
-                swap?.receiveAddress != null && swap!.receiveAddress!.isNotEmpty
+                swap != null &&
+                        swap.receiveAddress != null &&
+                        swap.receiveAddress!.isNotEmpty
                     ? 'Recipient Address'
                     : 'Address',
             displayValue: StringFormatting.truncateMiddle(toAddress),

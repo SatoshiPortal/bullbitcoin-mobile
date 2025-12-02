@@ -18,6 +18,8 @@ import 'package:bb_mobile/core/electrum/domain/errors/electrum_settings_exceptio
     as advanced_options_domain_errors;
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/advanced_options_exception.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/electrum_servers_exception.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_advanced_options_view_model.dart';
@@ -140,9 +142,13 @@ class ElectrumSettingsBloc
     final priority = currentLastPriority == null ? 0 : currentLastPriority + 1;
 
     try {
+      // Parse the URL to extract the clean URL (without :s or :t suffix)
+      final parsedUrl = ElectrumUrlParser.tryParse(event.url);
+      final cleanUrl = parsedUrl?.cleanUrl ?? event.url;
+
       final request = AddCustomServerRequest(
         server: ElectrumServerDto(
-          url: event.url,
+          url: cleanUrl,
           network: network,
           isCustom: true,
           priority: priority,
@@ -154,7 +160,7 @@ class ElectrumSettingsBloc
       // Add the new server to the list in the state
       //  with the returned status so the UI can reflect it immediately
       final newServer = ElectrumServerViewModel(
-        url: event.enableSsl ? 'ssl://${event.url}' : 'tcp://${event.url}',
+        url: event.enableSsl ? 'ssl://$cleanUrl' : 'tcp://$cleanUrl',
         status: status,
         priority: priority,
       );

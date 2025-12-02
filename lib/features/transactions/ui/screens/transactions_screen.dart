@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_filter_row.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -55,7 +56,18 @@ class _Screen extends StatelessWidget {
             ),
           ),
         const Gap(16.0),
-        const Expanded(child: TxList()),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              final bloc = context.read<WalletBloc>();
+              bloc.add(const WalletRefreshed());
+              await bloc.stream.firstWhere((state) => !state.isSyncing);
+              if (!context.mounted) return;
+              await context.read<TransactionsCubit>().loadTxs();
+            },
+            child: const TxList(),
+          ),
+        ),
       ],
     );
   }

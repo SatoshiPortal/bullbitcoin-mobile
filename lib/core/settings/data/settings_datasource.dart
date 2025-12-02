@@ -59,4 +59,16 @@ class SettingsDatasource {
       (f) => f(id: const Value(1), isDevModeEnabled: Value(isEnabled)),
     );
   }
+
+  Future<void> setUseTorProxy(bool useTorProxy) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(id: const Value(1), useTorProxy: Value(useTorProxy)),
+    );
+  }
+
+  Future<void> setTorProxyPort(int port) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(id: const Value(1), torProxyPort: Value(port)),
+    );
+  }
 }

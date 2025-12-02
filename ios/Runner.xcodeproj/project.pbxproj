@@ -220,7 +220,7 @@
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
 					331C8080294A63A400263BE5 = {
-						CreatedOnToolsVersion = 14.0;
+						CreatedOnToolsVersion = 13.0;
 						TestTargetID = 97C146ED1CF9000F007C117D;
 					};
 					97C146ED1CF9000F007C117D = {
@@ -488,19 +488,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 128;
+				CURRENT_PROJECT_VERSION = 131;
 				DEVELOPMENT_TEAM = BX99T32YGS;
 				ENABLE_BITCODE = NO;
-				FLUTTER_BUILD_NAME = 6.3.8;
-				FLUTTER_BUILD_NUMBER = 128;
+				FLUTTER_BUILD_NAME = 6.4.0;
+				FLUTTER_BUILD_NUMBER = 131;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BULL;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 6.3.8;
+				MARKETING_VERSION = 6.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bullbitcoin.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -678,19 +679,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 128;
+				CURRENT_PROJECT_VERSION = 131;
 				DEVELOPMENT_TEAM = BX99T32YGS;
 				ENABLE_BITCODE = NO;
-				FLUTTER_BUILD_NAME = 6.3.8;
-				FLUTTER_BUILD_NUMBER = 128;
+				FLUTTER_BUILD_NAME = 6.4.0;
+				FLUTTER_BUILD_NUMBER = 131;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BULL;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 6.3.8;
+				MARKETING_VERSION = 6.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bullbitcoin.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -706,19 +708,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 128;
+				CURRENT_PROJECT_VERSION = 131;
 				DEVELOPMENT_TEAM = BX99T32YGS;
 				ENABLE_BITCODE = NO;
-				FLUTTER_BUILD_NAME = 6.3.8;
-				FLUTTER_BUILD_NUMBER = 128;
+				FLUTTER_BUILD_NAME = 6.4.0;
+				FLUTTER_BUILD_NUMBER = 131;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BULL;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 6.3.8;
+				MARKETING_VERSION = 6.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bullbitcoin.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";

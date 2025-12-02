@@ -146,20 +146,26 @@ class TxListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CurrencyText(
-                    isOrderType && !showOrderInFiat
-                        ? orderAmountAndCurrency!.$1.toInt()
-                        : tx.isSwap
+                    isOrderType &&
+                            !showOrderInFiat &&
+                            orderAmountAndCurrency != null
+                        ? orderAmountAndCurrency.$1.toInt()
+                        : tx.isSwap && tx.swap != null
                         ? (tx.swap!.amountSat)
                         : tx.amountSat,
                     showFiat: false,
                     style: context.font.bodyLarge,
                     fiatAmount:
-                        isOrderType && showOrderInFiat
-                            ? orderAmountAndCurrency!.$1.toDouble()
+                        isOrderType &&
+                                showOrderInFiat &&
+                                orderAmountAndCurrency != null
+                            ? orderAmountAndCurrency.$1.toDouble()
                             : null,
                     fiatCurrency:
-                        isOrderType && showOrderInFiat
-                            ? orderAmountAndCurrency!.$2
+                        isOrderType &&
+                                showOrderInFiat &&
+                                orderAmountAndCurrency != null
+                            ? orderAmountAndCurrency.$2
                             : null,
                   ),
 

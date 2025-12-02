@@ -76,6 +76,8 @@ abstract class SettingsEntity with _$SettingsEntity {
     bool? hideAmounts,
     bool? isSuperuser,
     bool? isDevModeEnabled,
+    @Default(false) bool useTorProxy,
+    @Default(9050) int torProxyPort,
   }) = _SettingsEntity;
   const SettingsEntity._();
 }

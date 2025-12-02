@@ -55,7 +55,11 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       const Gap(32),
-                      if (state.watchOnlyWallet == null) ...[
+                      if (state.watchOnlyWallet != null)
+                        WatchOnlyDetailsWidget(
+                          watchOnlyWallet: state.watchOnlyWallet!,
+                        )
+                      else ...[
                         PasteInput(
                           text: state.input,
                           hint: context.loc.importWatchOnlyPasteHint,
@@ -70,11 +74,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                           ),
                         const Gap(32),
                         const ImportMethodWidget(),
-                      ] else
-                        WatchOnlyDetailsWidget(
-                          watchOnlyWallet: state.watchOnlyWallet!,
-                          cubit: cubit,
-                        ),
+                      ],
                     ],
                   ),
                 ),

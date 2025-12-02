@@ -58,16 +58,17 @@ class _Screen extends StatelessWidget {
                   const Spacer(),
                   if (state.lastEncryptedBackup != null) ...[
                     const _ViewVaultKeyButton(),
-                    const Gap(5),
+                    const Gap(12),
                   ],
                   if (state.lastEncryptedBackup != null ||
                       state.lastPhysicalBackup != null) ...[
                     const _TestBackupButton(),
-                    const Gap(5),
+                    const Gap(12),
                   ],
                   const _StartBackupButton(),
-                  const Gap(5),
+                  const Gap(12),
                   const _Bip329LabelsButton(),
+                  const Gap(20),
                   if (state.error != null) ErrorWidget(error: state.error!),
                 ],
               ),

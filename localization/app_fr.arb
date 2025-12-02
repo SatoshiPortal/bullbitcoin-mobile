@@ -1,5 +1,32 @@
 {
   "@@locale": "fr",
+  "durationSeconds": "{seconds} secondes",
+  "@durationSeconds": {
+    "description": "Duration format for seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinute": "{minutes} minute",
+  "@durationMinute": {
+    "description": "Duration format for singular minute",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinutes": "{minutes} minutes",
+  "@durationMinutes": {
+    "description": "Duration format for plural minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingScreenTitle": "Bienvenue",
   "@onboardingScreenTitle": {
     "description": "Le titre de l'écran d'intégration"
@@ -1206,6 +1233,14 @@
   "sellMxnBalance": "Solde MXN",
   "@sellMxnBalance": {
     "description": "Texte d'affichage pour la méthode de paiement en solde MXN"
+  },
+  "sellArsBalance": "Solde ARS",
+  "@sellArsBalance": {
+    "description": "Texte d'affichage pour la méthode de paiement en solde ARS"
+  },
+  "sellCopBalance": "Solde COP",
+  "@sellCopBalance": {
+    "description": "Texte d'affichage pour la méthode de paiement en solde COP"
   },
   "sellPayinAmount": "Montant à payer",
   "@sellPayinAmount": {
@@ -4720,6 +4755,59 @@
   "@replaceByFeeActivatedLabel": {
     "description": "Label for RBF toggle switch"
   },
+  "replaceByFeeBroadcastButton": "Diffuser",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "replaceByFeeCustomFeeTitle": "Frais personnalisés",
+  "@replaceByFeeCustomFeeTitle": {
+    "description": "Title for custom fee input section"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "Vous devez augmenter le taux de frais d'au moins 1 sat/vbyte par rapport à la transaction originale",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "replaceByFeeErrorNoFeeRateSelected": "Veuillez sélectionner un taux de frais",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "replaceByFeeErrorTransactionConfirmed": "La transaction originale a été confirmée",
+  "@replaceByFeeErrorTransactionConfirmed": {
+    "description": "Error message when original transaction is already confirmed"
+  },
+  "replaceByFeeErrorGeneric": "Une erreur s'est produite lors de la tentative de remplacement de la transaction",
+  "@replaceByFeeErrorGeneric": {
+    "description": "Generic error message for replace-by-fee operation failures"
+  },
+  "replaceByFeeFastestDescription": "Livraison estimée ~ 10 minutes",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "replaceByFeeFastestTitle": "Le plus rapide",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeFeeRateDisplay": "Taux de frais : {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "replaceByFeeOriginalTransactionTitle": "Transaction originale",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "replaceByFeeSatsVbUnit": "sats/vB",
+  "@replaceByFeeSatsVbUnit": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "replaceByFeeScreenTitle": "Remplacement par frais",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
   "selectCoinsManuallyLabel": "Sélectionner les pièces manuellement",
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
@@ -5778,6 +5866,10 @@
   "sendSignWithLedger": "Signer avec Ledger",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSignWithBitBox": "Signer avec BitBox",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
   },
   "sendTransactionSignedLedger": "Transaction signée avec succès avec Ledger",
   "@sendTransactionSignedLedger": {
@@ -7017,6 +7109,10 @@
   "@recoverbullErrorFetchKeyFailed": {
     "description": "Error message when server key fetch fails"
   },
+  "recoverbullErrorInvalidCredentials": "Mot de passe incorrect pour ce fichier de sauvegarde",
+  "@recoverbullErrorInvalidCredentials": {
+    "description": "Error message when wrong password is entered for vault"
+  },
   "recoverbullErrorInvalidFlow": "Flux invalide",
   "@recoverbullErrorInvalidFlow": {
     "description": "Error message for invalid operation flow"
@@ -7032,6 +7128,27 @@
   "recoverbullErrorRecoveryFailed": "Échec de la récupération du coffre-fort",
   "@recoverbullErrorRecoveryFailed": {
     "description": "Error message when vault recovery fails"
+  },
+  "recoverbullTorNotStarted": "Tor n'est pas démarré",
+  "@recoverbullTorNotStarted": {
+    "description": "Error message when Tor is not started"
+  },
+  "recoverbullErrorRateLimited": "Limite de taux atteinte. Veuillez réessayer dans {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "description": "Error message when rate limited by the server",
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorUnexpected": "Erreur inattendue, voir les logs",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullUnexpectedError": "Erreur inattendue",
+  "@recoverbullUnexpectedError": {
+    "description": "Error message for unexpected errors"
   },
   "recoverbullErrorSelectVault": "Échec de la sélection du coffre-fort",
   "@recoverbullErrorSelectVault": {
@@ -8280,6 +8397,14 @@
   "@importWatchOnlyExtendedPublicKey": {
     "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
+  "importWatchOnlyDisclaimerTitle": "Avertissement sur le chemin de dérivation",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyDisclaimerDescription": "Assurez-vous que le chemin de dérivation que vous choisissez correspond à celui qui a produit la xpub donnée, car l'utilisation d'un mauvais chemin peut entraîner une perte de fonds",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
   "bip85Title": "Entropies déterministes BIP85",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
@@ -8613,37 +8738,49 @@
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "importQrDevicePassportStep2": "Sélectionnez Gérer le Compte",
+  "importQrDevicePassportStep2": "Entrez votre code PIN",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
-  "importQrDevicePassportStep3": "Sélectionnez Connecter un Portefeuille",
+  "importQrDevicePassportStep3": "Sélectionnez \"Gérer le Compte\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
-  "importQrDevicePassportStep4": "Sélectionnez Sparrow",
+  "importQrDevicePassportStep4": "Sélectionnez \"Connecter un Portefeuille\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
-  "importQrDevicePassportStep5": "Sélectionnez Signature Unique",
+  "importQrDevicePassportStep5": "Sélectionnez l'option \"Sparrow\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
-  "importQrDevicePassportStep6": "Sélectionnez Code QR",
+  "importQrDevicePassportStep6": "Sélectionnez \"Signature Unique\"",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
-  "importQrDevicePassportStep7": "Cliquez sur le bouton \"ouvrir la caméra\"",
+  "importQrDevicePassportStep7": "Sélectionnez \"Code QR\"",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "importQrDevicePassportStep8": "Scannez le code QR affiché sur votre appareil.",
+  "importQrDevicePassportStep8": "Sur votre appareil mobile, appuyez sur \"ouvrir la caméra\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
-  "importQrDevicePassportStep9": "C'est fait !",
+  "importQrDevicePassportStep9": "Scannez le code QR affiché sur votre Passport",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
+  },
+  "importQrDevicePassportStep10": "Dans l'application BULL wallet, sélectionnez \"Segwit (BIP84)\" comme option de dérivation",
+  "@importQrDevicePassportStep10": {
+    "description": "Passport instruction step 10"
+  },
+  "importQrDevicePassportStep11": "Entrez un libellé pour votre portefeuille Passport et appuyez sur \"Importer\"",
+  "@importQrDevicePassportStep11": {
+    "description": "Passport instruction step 11"
+  },
+  "importQrDevicePassportStep12": "Configuration terminée.",
+  "@importQrDevicePassportStep12": {
+    "description": "Passport instruction step 12"
   },
   "importQrDeviceSeedsignerName": "SeedSigner",
   "@importQrDeviceSeedsignerName": {
@@ -9685,7 +9822,7 @@
   "@electrumDeleteServerTitle": {
     "description": "Delete server dialog title"
   },
-  "electrumDeletePrivacyNotice": "Avis de confidentialité :\nL'utilisation de votre propre nœud garantit qu'aucun tiers ne peut lier votre adresse IP à vos transactions. En supprimant votre dernier serveur personnalisé, vous vous connecterez à un serveur BullBitcoin.\n\n",
+  "electrumDeletePrivacyNotice": "Avis de confidentialité :\n\nL'utilisation de votre propre nœud garantit qu'aucun tiers ne peut lier votre adresse IP à vos transactions. En supprimant votre dernier serveur personnalisé, vous vous connecterez à un serveur BullBitcoin.\n",
   "@electrumDeletePrivacyNotice": {
     "description": "Privacy notice shown when deleting last custom server"
   },

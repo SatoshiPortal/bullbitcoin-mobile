@@ -109,6 +109,8 @@ class SellSendPaymentScreen extends StatelessWidget {
                 OrderPaymentMethod.eurBalance => context.loc.sellEurBalance,
                 OrderPaymentMethod.usdBalance => context.loc.sellUsdBalance,
                 OrderPaymentMethod.mxnBalance => context.loc.sellMxnBalance,
+                OrderPaymentMethod.arsBalance => context.loc.sellArsBalance,
+                OrderPaymentMethod.copBalance => context.loc.sellCopBalance,
                 _ => order?.payoutMethod.name,
               },
             ),

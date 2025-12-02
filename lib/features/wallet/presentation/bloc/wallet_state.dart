@@ -18,7 +18,6 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool autoSwapExecuting,
     @Default(false) bool isDeletingWallet,
     WalletError? walletDeletionError,
-    @Default(null) AllServicesStatus? serviceStatus,
     @Default(false) bool isCheckingServiceStatus,
     @Default(null) ArkWalletEntity? arkWallet,
     @Default(0) int arkBalanceSat,

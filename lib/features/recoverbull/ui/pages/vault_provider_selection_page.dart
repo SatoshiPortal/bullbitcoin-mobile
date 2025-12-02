@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widg
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class VaultProviderSelectionPage extends StatelessWidget {
   const VaultProviderSelectionPage({super.key});
@@ -35,7 +36,11 @@ class VaultProviderSelectionPage extends StatelessWidget {
                 current.vault != null && previous.vault != current.vault,
         listener: (context, state) {
           if (state.error != null) {
-            SnackBarUtils.showSnackBar(context, state.error!.message);
+            SnackBarUtils.showSnackBar(
+              context,
+              state.error!.toTranslated(context),
+            );
+            context.read<RecoverBullBloc>().add(const OnClearError());
           }
 
           if (state.vault != null && state.vaultProvider != null) {
@@ -89,10 +94,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
                   child: RecoverbullVaultProviderSelector(
                     onProviderSelected: (provider) {
                       context.read<RecoverBullBloc>().add(
-                        OnVaultProviderSelection(
-                          provider: provider,
-                          context: context,
-                        ),
+                        OnVaultProviderSelection(provider: provider),
                       );
                     },
                   ),
@@ -157,7 +159,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                   ),
                   const Spacer(),
                   GestureDetector(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () => context.pop(),
                     child: Icon(Icons.close, color: context.colour.secondary),
                   ),
                 ],

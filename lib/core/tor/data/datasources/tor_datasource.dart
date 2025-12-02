@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/tor/domain/value_objects/tor_proxy_config.dart';
 import 'package:bb_mobile/core/tor/errors.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -30,8 +31,11 @@ class TorDatasource {
     status = TorStatus.connecting;
     final start = DateTime.now();
     await _tor.enable();
+    log.config('Tor enabled');
     await _tor.start();
+    log.config('Tor started');
     await _tor.isReady();
+    log.config('Tor ready');
     final end = DateTime.now();
     log.fine(
       'Tor started in ${end.difference(start).inSeconds}s on port ${_tor.port}',
@@ -47,12 +51,19 @@ class TorDatasource {
     }
   }
 
-  HttpClient get httpClient {
-    if (!isStarted) throw TorNotStartedError();
+  HttpClient httpClient({TorProxyConfig? externalProxy}) {
+    final int proxyPort;
+
+    if (externalProxy != null) {
+      proxyPort = externalProxy.port;
+    } else {
+      if (!isStarted) throw TorNotStartedError();
+      proxyPort = _tor.port;
+    }
 
     final client = HttpClient();
     SocksTCPClient.assignToHttpClient(client, [
-      ProxySettings(InternetAddress.loopbackIPv4, _tor.port, password: null),
+      ProxySettings(InternetAddress.loopbackIPv4, proxyPort, password: null),
     ]);
 
     return client;

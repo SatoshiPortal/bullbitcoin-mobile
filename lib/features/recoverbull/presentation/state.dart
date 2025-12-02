@@ -1,6 +1,12 @@
 part of 'bloc.dart';
 
-enum RecoverBullFlow { secureVault, recoverVault, testVault, viewVaultKey }
+enum RecoverBullFlow {
+  secureVault,
+  recoverVault,
+  testVault,
+  viewVaultKey,
+  settings,
+}
 
 enum KeyServerStatus { unknown, connecting, online, offline }
 
@@ -14,7 +20,7 @@ sealed class RecoverBullState with _$RecoverBullState {
     @Default(null) String? vaultPassword,
     @Default(null) DecryptedVault? decryptedVault,
     @Default(false) bool isLoading,
-    @Default(null) BullError? error,
+    @Default(null) RecoverBullError? error,
     @Default(KeyServerStatus.unknown) KeyServerStatus keyServerStatus,
     @Default(null) ({BigInt satoshis, int transactions})? bip84Status,
     @Default(null) ({BigInt satoshis, int transactions})? liquidStatus,

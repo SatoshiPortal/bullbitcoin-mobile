@@ -35,4 +35,16 @@ sealed class ElectrumSettingsState with _$ElectrumSettingsState {
     sortedServers.sort((a, b) => a.priority.compareTo(b.priority));
     return sortedServers;
   }
+
+  bool areAllServersOffline() {
+    final allServers = [...defaultServers, ...customServers];
+
+    if (allServers.isEmpty) {
+      return false;
+    }
+
+    return allServers.every(
+      (server) => server.status == ElectrumServerStatus.offline,
+    );
+  }
 }

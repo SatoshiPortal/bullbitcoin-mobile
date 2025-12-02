@@ -1,5 +1,32 @@
 {
   "@@locale": "en",
+  "durationSeconds": "{seconds} seconds",
+  "@durationSeconds": {
+    "description": "Duration format for seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinute": "{minutes} minute",
+  "@durationMinute": {
+    "description": "Duration format for singular minute",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinutes": "{minutes} minutes",
+  "@durationMinutes": {
+    "description": "Duration format for plural minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingScreenTitle": "Welcome",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
@@ -1206,6 +1233,14 @@
   "sellMxnBalance": "MXN Balance",
   "@sellMxnBalance": {
     "description": "Display text for MXN balance payout method"
+  },
+  "sellArsBalance": "ARS Balance",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellCopBalance": "COP Balance",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
   },
   "sellPayinAmount": "Payin amount",
   "@sellPayinAmount": {
@@ -4720,6 +4755,59 @@
   "@replaceByFeeActivatedLabel": {
     "description": "Label for RBF toggle switch"
   },
+  "replaceByFeeBroadcastButton": "Broadcast",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "replaceByFeeCustomFeeTitle": "Custom Fee",
+  "@replaceByFeeCustomFeeTitle": {
+    "description": "Title for custom fee input section"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "You need to increase the fee rate by at least 1 sat/vbyte compared to the original transaction",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "replaceByFeeErrorNoFeeRateSelected": "Please select a fee rate",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "replaceByFeeErrorTransactionConfirmed": "The original transaction has been confirmed",
+  "@replaceByFeeErrorTransactionConfirmed": {
+    "description": "Error message when original transaction is already confirmed"
+  },
+  "replaceByFeeErrorGeneric": "An error occurred while attempting to replace the transaction",
+  "@replaceByFeeErrorGeneric": {
+    "description": "Generic error message for replace-by-fee operation failures"
+  },
+  "replaceByFeeFastestDescription": "Estimated delivery ~ 10 minutes",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "replaceByFeeFastestTitle": "Fastest",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeFeeRateDisplay": "Fee Rate: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "replaceByFeeOriginalTransactionTitle": "Original transaction",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "replaceByFeeSatsVbUnit": "sats/vB",
+  "@replaceByFeeSatsVbUnit": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "replaceByFeeScreenTitle": "Replace by fee",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
   "selectCoinsManuallyLabel": "Select coins manually",
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
@@ -5031,10 +5119,6 @@
   "payDescription": "Description",
   "@payDescription": {
     "description": "Label for payment description/memo field"
-  },
-  "payRecipient": "Recipient",
-  "@payRecipient": {
-    "description": "Label for payment recipient field"
   },
   "payCancelPayment": "Cancel Payment",
   "@payCancelPayment": {
@@ -5778,6 +5862,10 @@
   "sendSignWithLedger": "Sign with Ledger",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSignWithBitBox": "Sign with BitBox",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
   },
   "sendTransactionSignedLedger": "Transaction signed successfully with Ledger",
   "@sendTransactionSignedLedger": {
@@ -7017,6 +7105,10 @@
   "@recoverbullErrorFetchKeyFailed": {
     "description": "Error message when server key fetch fails"
   },
+  "recoverbullErrorInvalidCredentials": "Wrong password for this backup file",
+  "@recoverbullErrorInvalidCredentials": {
+    "description": "Error message when wrong password is entered for vault"
+  },
   "recoverbullErrorInvalidFlow": "Invalid flow",
   "@recoverbullErrorInvalidFlow": {
     "description": "Error message for invalid operation flow"
@@ -7032,6 +7124,27 @@
   "recoverbullErrorRecoveryFailed": "Failed to recover the vault",
   "@recoverbullErrorRecoveryFailed": {
     "description": "Error message when vault recovery fails"
+  },
+  "recoverbullTorNotStarted": "Tor is not started",
+  "@recoverbullTorNotStarted": {
+    "description": "Error message when Tor is not started"
+  },
+  "recoverbullErrorRateLimited": "Rate limited. Please try again in {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "description": "Error message when rate limited by the server",
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorUnexpected": "Unexpected error, see logs",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullUnexpectedError": "Unexpected error",
+  "@recoverbullUnexpectedError": {
+    "description": "Error message for unexpected errors"
   },
   "recoverbullErrorSelectVault": "Failed to select vault",
   "@recoverbullErrorSelectVault": {
@@ -8280,6 +8393,14 @@
   "@importWatchOnlyExtendedPublicKey": {
     "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
+  "importWatchOnlyDisclaimerTitle": "Derivation Path Warning",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyDisclaimerDescription": "Make sure the derivation path you choose matches the one that produced the given xpub by verifying the first address derived from the wallet before use. Using the wrong path can lead to loss of funds",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description warning about derivation path verification"
+  },
   "bip85Title": "BIP85 Deterministic Entropies",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
@@ -8609,41 +8730,53 @@
   "@importQrDevicePassportInstructionsTitle": {
     "description": "Title for Passport setup instructions"
   },
-  "importQrDevicePassportStep1": "Turn on your Passport device",
+  "importQrDevicePassportStep1": "Power on your Passport device",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "importQrDevicePassportStep2": "Select Manage Account",
+  "importQrDevicePassportStep2": "Enter your PIN",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
-  "importQrDevicePassportStep3": "Select Connect Wallet",
+  "importQrDevicePassportStep3": "Select \"Manage Account\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
-  "importQrDevicePassportStep4": "Select Sparrow",
+  "importQrDevicePassportStep4": "Select \"Connect Wallet\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
-  "importQrDevicePassportStep5": "Select Single-sig",
+  "importQrDevicePassportStep5": "Select \"Sparrow\" option",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
-  "importQrDevicePassportStep6": "Select QR Code",
+  "importQrDevicePassportStep6": "Select \"Single-sig\"",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
-  "importQrDevicePassportStep7": "Click the \"open camera\" button",
+  "importQrDevicePassportStep7": "Select \"QR Code\"",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "importQrDevicePassportStep8": "Scan the QR code you see on your device.",
+  "importQrDevicePassportStep8": "On your mobile device, tap \"open camera\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
-  "importQrDevicePassportStep9": "That's it!",
+  "importQrDevicePassportStep9": "Scan the QR code displayed on your Passport",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
+  },
+  "importQrDevicePassportStep10": "In the BULL wallet app, select \"Segwit (BIP84)\" as the derivation option",
+  "@importQrDevicePassportStep10": {
+    "description": "Passport instruction step 10"
+  },
+  "importQrDevicePassportStep11": "Enter a label for your Passport wallet and tap \"Import\"",
+  "@importQrDevicePassportStep11": {
+    "description": "Passport instruction step 11"
+  },
+  "importQrDevicePassportStep12": "Setup complete.",
+  "@importQrDevicePassportStep12": {
+    "description": "Passport instruction step 12"
   },
   "importQrDeviceSeedsignerName": "SeedSigner",
   "@importQrDeviceSeedsignerName": {
@@ -9685,7 +9818,7 @@
   "@electrumDeleteServerTitle": {
     "description": "Delete server dialog title"
   },
-  "electrumDeletePrivacyNotice": "Privacy Notice:\nUsing your own node ensures that no third party can link your IP address with your transactions. By deleting your last custom server, you will be connecting to a BullBitcoin server.\n\n",
+  "electrumDeletePrivacyNotice": "Privacy Notice:\n\nUsing your own node ensures that no third party can link your IP address with your transactions. By deleting your last custom server, you will be connecting to a BullBitcoin server.\n",
   "@electrumDeletePrivacyNotice": {
     "description": "Privacy notice shown when deleting last custom server"
   },
