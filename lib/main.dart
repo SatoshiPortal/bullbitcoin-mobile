@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:ark_wallet/ark_wallet.dart';
 import 'package:bb_mobile/bloc_observer.dart';
+import 'package:bb_mobile/core/background_tasks/handler.dart';
+import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
@@ -15,32 +19,52 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
+import 'package:bitbox_flutter/bitbox_flutter.dart';
 import 'package:boltz/boltz.dart';
 import 'package:dart_bbqr/bbqr.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:lwk/lwk.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
+import 'package:workmanager/workmanager.dart';
 
 class Bull {
   static Future<void> init() async {
-    await Future.wait([
+    await initFlutterRustBridgeDependencies();
+    await initLogs();
+
+    // The Locator setup might depend on the initialization of the libraries above
+    //  so it's important to call it after the initialization
+    await initLocator();
+  }
+
+  static Future<void> initFlutterRustBridgeDependencies() async {
+    final initTasks = [
       LibLwk.init(),
       BoltzCore.init(),
       PConfig.initializeApp(),
       dotenv.load(isOptional: true),
       LibBbqr.init(),
       LibArk.init(),
-    ]);
+    ];
 
+    if (Platform.isAndroid) {
+      initTasks.add(BitBoxFlutterApi.initialize());
+    }
+
+    await Future.wait(initTasks);
+  }
+
+  static Future<void> initLogs() async {
     final logDirectory = await getApplicationDocumentsDirectory();
     log = Logger.init(directory: logDirectory);
     await log.ensureLogsExist();
+  }
 
-    // The Locator setup might depend on the initialization of the libraries above
-    //  so it's important to call it after the initialization
+  static Future<void> initLocator() async {
     await AppLocator.setup();
     Bloc.observer = AppBlocObserver();
   }
@@ -50,7 +74,33 @@ Future main() async {
   await runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+
+      // Initialize the background tasks before anything else
+      await Workmanager().initialize(
+        backgroundTasksHandler,
+        isInDebugMode: kDebugMode,
+      );
+      await Workmanager().cancelAll();
+
       await Bull.init();
+
+      int delay = 0;
+      for (final task in BackgroundTask.values) {
+        await Workmanager().registerPeriodicTask(
+          task.id,
+          task.name,
+          frequency: Duration(minutes: 15 + delay),
+          constraints: Constraints(
+            networkType: NetworkType.connected,
+            requiresBatteryNotLow: true,
+            requiresStorageNotLow: false,
+            requiresDeviceIdle: false,
+            requiresCharging: false,
+          ),
+        );
+        delay++;
+      }
+
       runApp(const BullBitcoinWalletApp());
     },
     (error, stack) {
@@ -121,6 +171,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   @override
   Widget build(BuildContext context) {
+    Device.init(context);
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => locator<SettingsCubit>()..init()),
@@ -137,11 +189,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
         BlocProvider(create: (_) => locator<WalletBloc>()),
         // Make the exchange cubit available to the whole app so redirects
-        // can use it to check if the user is authenticated and also to fetch
-        // the user summary when the environment changes from anywhere in the app.
-        BlocProvider(
-          create: (_) => locator<ExchangeCubit>()..fetchUserSummary(),
-        ),
+        // can use it to check if the user is authenticated
+        BlocProvider(create: (_) => locator<ExchangeCubit>()),
       ],
       child: MultiBlocListener(
         listeners: [
@@ -155,7 +204,6 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
               // If wallets exist and the app has started successfully,
               // we can start the wallet bloc to fetch the wallets.
               context.read<WalletBloc>().add(const WalletStarted());
-              context.read<WalletBloc>().add(const CheckAllWarnings());
             },
           ),
           BlocListener<SettingsCubit, SettingsState>(

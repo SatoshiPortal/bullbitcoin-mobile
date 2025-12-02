@@ -1,5 +1,32 @@
 {
   "@@locale": "en",
+  "durationSeconds": "{seconds} seconds",
+  "@durationSeconds": {
+    "description": "Duration format for seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinute": "{minutes} minute",
+  "@durationMinute": {
+    "description": "Duration format for singular minute",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinutes": "{minutes} minutes",
+  "@durationMinutes": {
+    "description": "Duration format for plural minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingScreenTitle": "Welcome",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
@@ -67,6 +94,79 @@
   "settingsSecurityPinTitle": "Security Pin",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
+  },
+  "pinCodeAuthentication": "Authentication",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeCreateTitle": "Create new pin",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeCreateDescription": "Your PIN protects access to your wallet and settings. Keep it memorable.",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeMinLengthError": "PIN must be at least {minLength} digits long",
+  "@pinCodeMinLengthError": {
+    "description": "Error message when PIN is too short",
+    "placeholders": {
+      "minLength": {
+        "type": "String"
+      }
+    }
+  },
+  "pinCodeConfirmTitle": "Confirm new pin",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeMismatchError": "PINs do not match",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "pinCodeSecurityPinTitle": "Security PIN",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeManageTitle": "Manage your security PIN",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "pinCodeChangeButton": "Change PIN",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCreateButton": "Create PIN",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeRemoveButton": "Remove Security PIN",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "pinCodeContinue": "Continue",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "pinCodeConfirm": "Confirm",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
+  "pinCodeLoading": "Loading",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "pinCodeCheckingStatus": "Checking PIN status",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeProcessing": "Processing",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeSettingUp": "Setting up your PIN code",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
   },
   "settingsCurrencyTitle": "Currency",
   "@settingsCurrencyTitle": {
@@ -800,6 +900,71 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
+  "receiveCopyAddressOnly": "Copy or scan address only",
+  "@receiveCopyAddressOnly": {
+    "description": "Option to copy or scan only the address without amount or other details"
+  },
+  "receiveError": "Error: {error}",
+  "@receiveError": {
+    "description": "Generic error message with error details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveFeeExplanation": "This fee will be deducted from the amount sent",
+  "@receiveFeeExplanation": {
+    "description": "Explanation that fees are deducted from the sent amount"
+  },
+  "receiveNotePlaceholder": "Note",
+  "@receiveNotePlaceholder": {
+    "description": "Placeholder text for note input field"
+  },
+  "receiveReceiveAmount": "Receive Amount",
+  "@receiveReceiveAmount": {
+    "description": "Label for the amount that will be received after fees"
+  },
+  "receiveSendNetworkFee": "Send Network Fee",
+  "@receiveSendNetworkFee": {
+    "description": "Label for the network fee on the sending network in a swap transaction"
+  },
+  "receiveServerNetworkFees": "Server Network Fees",
+  "@receiveServerNetworkFees": {
+    "description": "Label for network fees charged by the swap server"
+  },
+  "receiveSwapId": "Swap ID",
+  "@receiveSwapId": {
+    "description": "Label for the swap identifier in a receive transaction"
+  },
+  "receiveTransferFee": "Transfer Fee",
+  "@receiveTransferFee": {
+    "description": "Label for the transfer fee in a receive transaction"
+  },
+  "receiveVerifyAddressError": "Unable to verify address: Missing wallet or address information",
+  "@receiveVerifyAddressError": {
+    "description": "Error message when address verification is not possible"
+  },
+  "receiveVerifyAddressLedger": "Verify Address on Ledger",
+  "@receiveVerifyAddressLedger": {
+    "description": "Button label for verifying an address on a Ledger hardware wallet"
+  },
+  "receiveBitcoinConfirmationMessage": "Bitcoin transaction will take a while to confirm.",
+  "@receiveBitcoinConfirmationMessage": {
+    "description": "Information message about Bitcoin transaction confirmation time"
+  },
+  "receiveLiquidConfirmationMessage": "It will be confirmed in a few seconds",
+  "@receiveLiquidConfirmationMessage": {
+    "description": "Message indicating quick confirmation time for Liquid transactions"
+  },
+  "receiveWaitForPayjoin": "Wait for the sender to finish the payjoin transaction",
+  "@receiveWaitForPayjoin": {
+    "description": "Instructions to wait for the sender during a payjoin transaction"
+  },
+  "receivePayjoinFailQuestion": "No time to wait or did the payjoin fail on the sender's side?",
+  "@receivePayjoinFailQuestion": {
+    "description": "Question prompting user if they want to proceed without payjoin"
+  },
   "buyTitle": "Buy Bitcoin",
   "@buyTitle": {
     "description": "Screen title for buying Bitcoin"
@@ -1068,6 +1233,14 @@
   "sellMxnBalance": "MXN Balance",
   "@sellMxnBalance": {
     "description": "Display text for MXN balance payout method"
+  },
+  "sellArsBalance": "ARS Balance",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellCopBalance": "COP Balance",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
   },
   "sellPayinAmount": "Payin amount",
   "@sellPayinAmount": {
@@ -1641,6 +1814,238 @@
   "payOrderDetails": "Order Details",
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
+  },
+  "paySinpeMonto": "Amount",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "paySinpeNumeroOrden": "Order number",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "paySinpeNumeroComprobante": "Reference number",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySinpeBeneficiario": "Beneficiary",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "paySinpeOrigen": "Origin",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payContinue": "Continue",
+  "@payContinue": {
+    "description": "Button label to continue"
+  },
+  "paySelectNetwork": "Select Network",
+  "@paySelectNetwork": {
+    "description": "AppBar title for network selection screen"
+  },
+  "payHowToPayInvoice": "How do you want to pay this invoice?",
+  "@payHowToPayInvoice": {
+    "description": "Question prompt for selecting payment network"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "payLightningNetwork": "Lightning Network",
+  "@payLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "payLiquidNetwork": "Liquid Network",
+  "@payLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "payAboveMaxAmount": "You are trying to pay above the maximum amount that can be paid with this wallet.",
+  "@payAboveMaxAmount": {
+    "description": "Error message when payment amount exceeds maximum"
+  },
+  "payBelowMinAmount": "You are trying to pay below the minimum amount that can be paid with this wallet.",
+  "@payBelowMinAmount": {
+    "description": "Error message when payment amount is below minimum"
+  },
+  "payNotAuthenticated": "You are not authenticated. Please log in to continue.",
+  "@payNotAuthenticated": {
+    "description": "Error message when user is not authenticated"
+  },
+  "payOrderNotFound": "The pay order was not found. Please try again.",
+  "@payOrderNotFound": {
+    "description": "Error message when pay order is not found"
+  },
+  "payOrderAlreadyConfirmed": "This pay order has already been confirmed.",
+  "@payOrderAlreadyConfirmed": {
+    "description": "Error message when pay order is already confirmed"
+  },
+  "payPaymentInProgress": "Payment In Progress!",
+  "@payPaymentInProgress": {
+    "description": "Title for payment in progress screen"
+  },
+  "payPaymentInProgressDescription": "Your payment has been initiated and the recipient will receive the funds after your transaction receives 1 confirmation onchain.",
+  "@payPaymentInProgressDescription": {
+    "description": "Description for payment in progress"
+  },
+  "payInvalidState": "Invalid state",
+  "@payInvalidState": {
+    "description": "Error message for invalid state"
+  },
+  "payPleasePayInvoice": "Please pay this invoice",
+  "@payPleasePayInvoice": {
+    "description": "Instruction to pay invoice"
+  },
+  "payPriceRefreshIn": "Price will refresh in ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "payFor": "For",
+  "@payFor": {
+    "description": "Label for recipient information section"
+  },
+  "payRecipient": "Recipient",
+  "@payRecipient": {
+    "description": "Label for recipient"
+  },
+  "payAmount": "Amount",
+  "@payAmount": {
+    "description": "Label for amount"
+  },
+  "payFee": "Fee",
+  "@payFee": {
+    "description": "Label for fee"
+  },
+  "payNetwork": "Network",
+  "@payNetwork": {
+    "description": "Label for network"
+  },
+  "payViewRecipient": "View recipient",
+  "@payViewRecipient": {
+    "description": "Button to view recipient details"
+  },
+  "payOpenInvoice": "Open invoice",
+  "@payOpenInvoice": {
+    "description": "Button to open invoice"
+  },
+  "payCopied": "Copied!",
+  "@payCopied": {
+    "description": "Success message after copying"
+  },
+  "payPayee": "Payee",
+  "@payPayee": {
+    "description": "Label for payee in bill payment"
+  },
+  "payAccount": "Account",
+  "@payAccount": {
+    "description": "Label for account information"
+  },
+  "payAllCountries": "All countries",
+  "@payAllCountries": {
+    "description": "Filter option for all countries"
+  },
+  "payAllTypes": "All types",
+  "@payAllTypes": {
+    "description": "Filter option for all types"
+  },
+  "paySelectRecipient": "Select recipient",
+  "@paySelectRecipient": {
+    "description": "AppBar title for recipient selection screen"
+  },
+  "payWhoAreYouPaying": "Who are you paying?",
+  "@payWhoAreYouPaying": {
+    "description": "Question prompt for recipient selection"
+  },
+  "payNewRecipients": "New recipients",
+  "@payNewRecipients": {
+    "description": "Tab label for new recipients"
+  },
+  "payMyFiatRecipients": "My fiat recipients",
+  "@payMyFiatRecipients": {
+    "description": "Tab label for saved fiat recipients"
+  },
+  "payConfirmPayment": "Confirm payment",
+  "@payConfirmPayment": {
+    "description": "Title for payment confirmation screen"
+  },
+  "payRecipientDetails": "Recipient details",
+  "@payRecipientDetails": {
+    "description": "Label for recipient details section"
+  },
+  "payPayinAmount": "Payin amount",
+  "@payPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "payExchangeRate": "Exchange rate",
+  "@payExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "payPayFromWallet": "Pay from wallet",
+  "@payPayFromWallet": {
+    "description": "Label for wallet selection"
+  },
+  "payInstantPayments": "Instant payments",
+  "@payInstantPayments": {
+    "description": "Description for Lightning wallet"
+  },
+  "paySecureBitcoinWallet": "Secure Bitcoin wallet",
+  "@paySecureBitcoinWallet": {
+    "description": "Description for standard Bitcoin wallet"
+  },
+  "payFeePriority": "Fee Priority",
+  "@payFeePriority": {
+    "description": "Label for fee priority setting"
+  },
+  "payFastest": "Fastest",
+  "@payFastest": {
+    "description": "Fastest fee priority option"
+  },
+  "payNetworkFees": "Network fees",
+  "@payNetworkFees": {
+    "description": "Label for network fees"
+  },
+  "payCalculating": "Calculating...",
+  "@payCalculating": {
+    "description": "Status text while calculating fees"
+  },
+  "payAdvancedSettings": "Advanced Settings",
+  "@payAdvancedSettings": {
+    "description": "Button label for advanced settings"
+  },
+  "paySelectWallet": "Select Wallet",
+  "@paySelectWallet": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "payWhichWallet": "Which wallet do you want to pay from?",
+  "@payWhichWallet": {
+    "description": "Question prompt for wallet selection"
+  },
+  "payExternalWallet": "External wallet",
+  "@payExternalWallet": {
+    "description": "Option for external wallet payment"
+  },
+  "payExternalWalletDescription": "Pay from another Bitcoin wallet",
+  "@payExternalWalletDescription": {
+    "description": "Description for external wallet option"
+  },
+  "payInsufficientBalance": "Insufficient balance in the selected wallet to complete this pay order.",
+  "@payInsufficientBalance": {
+    "description": "Error message for insufficient balance"
+  },
+  "payAdvancedOptions": "Advanced options",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "payRbfActivated": "Replace-by-fee activated",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "paySelectCoinsManually": "Select coins manually",
+  "@paySelectCoinsManually": {
+    "description": "Label for manual coin selection"
   },
   "transactionTitle": "Transactions",
   "@transactionTitle": {
@@ -2853,6 +3258,10 @@
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
   },
+  "testBackupTitle": "Test your wallet backup",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
   "backupImportanceMessage": "Without a backup, you will eventually lose access to your money. It is critically important to do a backup.",
   "@backupImportanceMessage": {
     "description": "Critical warning message about the importance of backing up the wallet"
@@ -3119,24 +3528,24 @@
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
   },
-  "legacySeedsTitle": "Legacy Seeds",
-  "@legacySeedsTitle": {
+  "legacySeedViewScreenTitle": "Legacy Seeds",
+  "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "noLegacySeedsFound": "No legacy seeds found.",
-  "@noLegacySeedsFound": {
+  "legacySeedViewNoSeedsMessage": "No legacy seeds found.",
+  "@legacySeedViewNoSeedsMessage": {
     "description": "Message shown when no legacy seeds are found"
   },
-  "mnemonicLabel": "Mnemonic",
-  "@mnemonicLabel": {
-    "description": "Label for mnemonic words"
+  "legacySeedViewMnemonicLabel": "Mnemonic",
+  "@legacySeedViewMnemonicLabel": {
+    "description": "Label for mnemonic words display"
   },
-  "passphrasesLabel": "Passphrases:",
-  "@passphrasesLabel": {
+  "legacySeedViewPassphrasesLabel": "Passphrases:",
+  "@legacySeedViewPassphrasesLabel": {
     "description": "Label for passphrases section"
   },
-  "emptyPassphrase": "(empty)",
-  "@emptyPassphrase": {
+  "legacySeedViewEmptyPassphrase": "(empty)",
+  "@legacySeedViewEmptyPassphrase": {
     "description": "Text shown for empty passphrase"
   },
   "enterBackupKeyManuallyTitle": "Enter backup key manually",
@@ -4346,6 +4755,59 @@
   "@replaceByFeeActivatedLabel": {
     "description": "Label for RBF toggle switch"
   },
+  "replaceByFeeBroadcastButton": "Broadcast",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "replaceByFeeCustomFeeTitle": "Custom Fee",
+  "@replaceByFeeCustomFeeTitle": {
+    "description": "Title for custom fee input section"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "You need to increase the fee rate by at least 1 sat/vbyte compared to the original transaction",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "replaceByFeeErrorNoFeeRateSelected": "Please select a fee rate",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "replaceByFeeErrorTransactionConfirmed": "The original transaction has been confirmed",
+  "@replaceByFeeErrorTransactionConfirmed": {
+    "description": "Error message when original transaction is already confirmed"
+  },
+  "replaceByFeeErrorGeneric": "An error occurred while attempting to replace the transaction",
+  "@replaceByFeeErrorGeneric": {
+    "description": "Generic error message for replace-by-fee operation failures"
+  },
+  "replaceByFeeFastestDescription": "Estimated delivery ~ 10 minutes",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "replaceByFeeFastestTitle": "Fastest",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeFeeRateDisplay": "Fee Rate: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "replaceByFeeOriginalTransactionTitle": "Original transaction",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "replaceByFeeSatsVbUnit": "sats/vB",
+  "@replaceByFeeSatsVbUnit": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "replaceByFeeScreenTitle": "Replace by fee",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
   "selectCoinsManuallyLabel": "Select coins manually",
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
@@ -4657,10 +5119,6 @@
   "payDescription": "Description",
   "@payDescription": {
     "description": "Label for payment description/memo field"
-  },
-  "payRecipient": "Recipient",
-  "@payRecipient": {
-    "description": "Label for payment recipient field"
   },
   "payCancelPayment": "Cancel Payment",
   "@payCancelPayment": {
@@ -5816,6 +6274,10 @@
   "@backupSettingsLabelsButton": {
     "description": "Button text to manage transaction labels"
   },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
   "backupWalletImportanceWarning": "Without a backup, you will eventually lose access to your money. It is critically important to do a backup.",
   "@backupWalletImportanceWarning": {
     "description": "Warning message emphasizing the importance of creating a backup"
@@ -6306,6 +6768,277 @@
       }
     }
   },
+  "recoverbullBalance": "Balance: {balance}",
+  "@recoverbullBalance": {
+    "description": "Label showing wallet balance during vault recovery",
+    "placeholders": {
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullCheckingConnection": "Checking connection for RecoverBull",
+  "@recoverbullCheckingConnection": {
+    "description": "Screen title while checking connection status"
+  },
+  "recoverbullConfirm": "Confirm",
+  "@recoverbullConfirm": {
+    "description": "Button text to confirm an action"
+  },
+  "recoverbullConfirmInput": "Confirm {inputType}",
+  "@recoverbullConfirmInput": {
+    "description": "Label to confirm input (PIN or password)",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnected": "Connected",
+  "@recoverbullConnected": {
+    "description": "Status label indicating successful connection"
+  },
+  "recoverbullConnecting": "Connecting",
+  "@recoverbullConnecting": {
+    "description": "Status label indicating connection in progress"
+  },
+  "recoverbullConnectingTor": "Connecting to Key Server over Tor.\nThis can take up to a minute.",
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullConnectionFailed": "Connection failed",
+  "@recoverbullConnectionFailed": {
+    "description": "Status label indicating connection failure"
+  },
+  "recoverbullContinue": "Continue",
+  "@recoverbullContinue": {
+    "description": "Button text to proceed to next step"
+  },
+  "recoverbullCreatingVault": "Creating Encrypted Vault",
+  "@recoverbullCreatingVault": {
+    "description": "Screen title while vault is being created"
+  },
+  "recoverbullDecryptVault": "Decrypt vault",
+  "@recoverbullDecryptVault": {
+    "description": "Button text to decrypt the selected vault"
+  },
+  "recoverbullEncryptedVaultCreated": "Encrypted Vault created!",
+  "@recoverbullEncryptedVaultCreated": {
+    "description": "Success message title after vault creation"
+  },
+  "recoverbullEnterInput": "Enter your {inputType}",
+  "@recoverbullEnterInput": {
+    "description": "Input field label prompting for PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToDecrypt": "Please enter your {inputType} to decrypt your vault.",
+  "@recoverbullEnterToDecrypt": {
+    "description": "Instruction to enter PIN or password for vault decryption",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToTest": "Please enter your {inputType} to test your vault.",
+  "@recoverbullEnterToTest": {
+    "description": "Instruction to enter PIN or password to test vault recovery",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterToView": "Please enter your {inputType} to view your vault key.",
+  "@recoverbullEnterToView": {
+    "description": "Instruction to enter PIN or password to view vault key",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullEnterVaultKeyInstead": "Enter a vault key instead",
+  "@recoverbullEnterVaultKeyInstead": {
+    "description": "Button text to switch to manual vault key entry"
+  },
+  "recoverbullErrorCheckStatusFailed": "Failed to check the vault status",
+  "@recoverbullErrorCheckStatusFailed": {
+    "description": "Error message when vault status check fails"
+  },
+  "recoverbullErrorConnectionFailed": "Failed to connect to the target key server. Please try again later!",
+  "@recoverbullErrorConnectionFailed": {
+    "description": "Error message when server connection fails"
+  },
+  "recoverbullErrorDecryptedVaultNotSet": "Decrypted vault is not set",
+  "@recoverbullErrorDecryptedVaultNotSet": {
+    "description": "Error when attempting operation without decrypted vault"
+  },
+  "recoverbullErrorDecryptFailed": "Failed to decrypt the vault",
+  "@recoverbullErrorDecryptFailed": {
+    "description": "Error message when vault decryption fails"
+  },
+  "recoverbullErrorFetchKeyFailed": "Failed to fetch vault key from server",
+  "@recoverbullErrorFetchKeyFailed": {
+    "description": "Error message when server key fetch fails"
+  },
+  "recoverbullErrorInvalidCredentials": "Wrong password for this backup file",
+  "@recoverbullErrorInvalidCredentials": {
+    "description": "Error message when wrong password is entered for vault"
+  },
+  "recoverbullErrorInvalidFlow": "Invalid flow",
+  "@recoverbullErrorInvalidFlow": {
+    "description": "Error message for invalid operation flow"
+  },
+  "recoverbullErrorMissingBytes": "Missing bytes from the Tor response. Retry but if the issue persists, it is a known issue for some devices with Tor.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "recoverbullErrorPasswordNotSet": "Password is not set",
+  "@recoverbullErrorPasswordNotSet": {
+    "description": "Error when attempting operation without setting password"
+  },
+  "recoverbullErrorRecoveryFailed": "Failed to recover the vault",
+  "@recoverbullErrorRecoveryFailed": {
+    "description": "Error message when vault recovery fails"
+  },
+  "recoverbullTorNotStarted": "Tor is not started",
+  "@recoverbullTorNotStarted": {
+    "description": "Error message when Tor is not started"
+  },
+  "recoverbullErrorRateLimited": "Rate limited. Please try again in {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "description": "Error message when rate limited by the server",
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorUnexpected": "Unexpected error, see logs",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullUnexpectedError": "Unexpected error",
+  "recoverbullErrorSelectVault": "Failed to select vault",
+  "@recoverbullErrorSelectVault": {
+    "description": "Error message when vault selection fails"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "Failed: Vault file created but key not stored in server",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullErrorVaultCreationFailed": "Vault creation failed, it can be the file or the key",
+  "@recoverbullErrorVaultCreationFailed": {
+    "description": "Error message when overall vault creation fails"
+  },
+  "recoverbullErrorVaultNotSet": "Vault is not set",
+  "@recoverbullErrorVaultNotSet": {
+    "description": "Error when attempting operation without selected vault"
+  },
+  "recoverbullFailed": "Failed",
+  "@recoverbullFailed": {
+    "description": "Status label indicating operation failure"
+  },
+  "recoverbullFetchingVaultKey": "Fetching Vault Key",
+  "@recoverbullFetchingVaultKey": {
+    "description": "Screen title while fetching vault key from server"
+  },
+  "recoverbullFetchVaultKey": "Fetch Vault Key",
+  "@recoverbullFetchVaultKey": {
+    "description": "Screen title for vault key fetch screen"
+  },
+  "recoverbullGoBackEdit": "<< Go back and edit",
+  "@recoverbullGoBackEdit": {
+    "description": "Button text to return to previous screen for editing"
+  },
+  "recoverbullGotIt": "Got it",
+  "@recoverbullGotIt": {
+    "description": "Button text to acknowledge and dismiss message"
+  },
+  "recoverbullKeyServer": "Key Server ",
+  "@recoverbullKeyServer": {
+    "description": "Label for key server connection status"
+  },
+  "recoverbullLookingForBalance": "Looking for balance and transactions…",
+  "@recoverbullLookingForBalance": {
+    "description": "Loading message while scanning wallet"
+  },
+  "recoverbullMemorizeWarning": "You must memorize this {inputType} to recover access to your wallet. It must be at least 6 digits. If you lose this {inputType} you cannot recover your backup.",
+  "@recoverbullMemorizeWarning": {
+    "description": "Warning message about memorizing PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullPassword": "Password",
+  "@recoverbullPassword": {
+    "description": "Label for password input type"
+  },
+  "recoverbullPasswordMismatch": "Passwords do not match",
+  "@recoverbullPasswordMismatch": {
+    "description": "Validation error when passwords don't match"
+  },
+  "recoverbullPasswordRequired": "Password is required",
+  "@recoverbullPasswordRequired": {
+    "description": "Validation error when password field is empty"
+  },
+  "recoverbullPasswordTooCommon": "This password is too common. Please choose a different one",
+  "@recoverbullPasswordTooCommon": {
+    "description": "Validation error for commonly used passwords"
+  },
+  "recoverbullPasswordTooShort": "Password must be at least 6 characters long",
+  "@recoverbullPasswordTooShort": {
+    "description": "Validation error for passwords under minimum length"
+  },
+  "recoverbullPIN": "PIN",
+  "@recoverbullPIN": {
+    "description": "Label for PIN input type"
+  },
+  "recoverbullPleaseWait": "Please wait while we establish a secure connection...",
+  "@recoverbullPleaseWait": {
+    "description": "Message shown during connection establishment"
+  },
+  "recoverbullReenterConfirm": "Please re-enter your {inputType} to confirm.",
+  "@recoverbullReenterConfirm": {
+    "description": "Instruction to re-enter PIN or password for confirmation",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullReenterRequired": "Re-enter your {inputType}",
+  "@recoverbullReenterRequired": {
+    "description": "Label for confirmation input field",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullRecoverBullServer": "RecoverBull Server",
+  "@recoverbullRecoverBullServer": {
+    "description": "Label for RecoverBull server connection status"
+  },
+  "recoverbullRetry": "Retry",
+  "@recoverbullRetry": {
+    "description": "Button text to retry failed operation"
+  },
+  "recoverbullSecureBackup": "Secure your backup",
+  "@recoverbullSecureBackup": {
+    "description": "Screen title for backup security setup"
+  },
+  "recoverbullSeeMoreVaults": "See more vaults",
+  "@recoverbullSeeMoreVaults": {
+    "description": "Button text to view additional vault options"
+  },
   "recoverbullSelectRecoverWallet": "Recover Wallet",
   "@recoverbullSelectRecoverWallet": {
     "description": "AppBar title for initial provider selection screen"
@@ -6377,6 +7110,75 @@
   "recoverbullSelectBackupFileNotValidError": "Recoverbull backup file is not valid",
   "@recoverbullSelectBackupFileNotValidError": {
     "description": "Error when selected file is not a valid RecoverBull backup format"
+  },
+  "recoverbullSelectVaultProvider": "Select Vault Provider",
+  "@recoverbullSelectVaultProvider": {
+    "description": "Screen title for vault provider selection"
+  },
+  "recoverbullSwitchToPassword": "Pick a password instead",
+  "@recoverbullSwitchToPassword": {
+    "description": "Button text to switch from PIN to password input"
+  },
+  "recoverbullSwitchToPIN": "Pick a PIN instead",
+  "@recoverbullSwitchToPIN": {
+    "description": "Button text to switch from password to PIN input"
+  },
+  "recoverbullTestBackupDescription": "Now let's test your backup to make sure everything was done properly.",
+  "@recoverbullTestBackupDescription": {
+    "description": "Description message before testing backup"
+  },
+  "recoverbullTestCompletedTitle": "Test completed successfully!",
+  "@recoverbullTestCompletedTitle": {
+    "description": "Success title after completing backup test"
+  },
+  "recoverbullTestRecovery": "Test Recovery",
+  "@recoverbullTestRecovery": {
+    "description": "Button text to initiate recovery test"
+  },
+  "recoverbullTestSuccessDescription": "You are able to recover access to a lost Bitcoin wallet",
+  "@recoverbullTestSuccessDescription": {
+    "description": "Description shown after successful recovery test"
+  },
+  "recoverbullTorNetwork": "Tor Network",
+  "@recoverbullTorNetwork": {
+    "description": "Label for Tor network connection status"
+  },
+  "recoverbullTransactions": "Transactions: {count}",
+  "@recoverbullTransactions": {
+    "description": "Label showing transaction count during vault recovery",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullVaultCreatedSuccess": "Vault created successfully",
+  "@recoverbullVaultCreatedSuccess": {
+    "description": "Success message after vault creation"
+  },
+  "recoverbullVaultImportedSuccess": "Your vault was successfully imported",
+  "@recoverbullVaultImportedSuccess": {
+    "description": "Success message after vault import"
+  },
+  "recoverbullVaultKey": "Vault Key",
+  "@recoverbullVaultKey": {
+    "description": "Screen title and label for vault key"
+  },
+  "recoverbullVaultKeyInput": "Vault Key",
+  "@recoverbullVaultKeyInput": {
+    "description": "Input field label for vault key entry"
+  },
+  "recoverbullVaultRecovery": "Vault Recovery",
+  "@recoverbullVaultRecovery": {
+    "description": "Screen title for vault recovery process"
+  },
+  "recoverbullVaultSelected": "Vault Selected",
+  "@recoverbullVaultSelected": {
+    "description": "Screen title after vault has been selected"
+  },
+  "recoverbullWaiting": "Waiting",
+  "@recoverbullWaiting": {
+    "description": "Status label indicating waiting state"
   },
   "recoverbullRecoveryTitle": "Recoverbull vault recovery",
   "@recoverbullRecoveryTitle": {
@@ -6488,6 +7290,206 @@
   "psbtImDone": "I'm done",
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
+  },
+  "psbtFlowSignTransaction": "Sign transaction",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "psbtFlowInstructions": "Instructions",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "psbtFlowDone": "I'm done",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "psbtFlowError": "Error: {error}",
+  "@psbtFlowError": {
+    "description": "Error message in psbt flow",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowNoPartsToDisplay": "No parts to display",
+  "@psbtFlowNoPartsToDisplay": {
+    "description": "Message when there are no QR code parts to show"
+  },
+  "psbtFlowPartProgress": "Part {current} of {total}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowKruxTitle": "Krux Instructions",
+  "@psbtFlowKruxTitle": {
+    "description": "Title for Krux device signing instructions"
+  },
+  "psbtFlowKeystoneTitle": "Keystone Instructions",
+  "@psbtFlowKeystoneTitle": {
+    "description": "Title for Keystone device signing instructions"
+  },
+  "psbtFlowPassportTitle": "Foundation Passport Instructions",
+  "@psbtFlowPassportTitle": {
+    "description": "Title for Foundation Passport device signing instructions"
+  },
+  "psbtFlowSeedSignerTitle": "SeedSigner Instructions",
+  "@psbtFlowSeedSignerTitle": {
+    "description": "Title for SeedSigner device signing instructions"
+  },
+  "psbtFlowSpecterTitle": "Specter Instructions",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "psbtFlowColdcardTitle": "Coldcard Q Instructions",
+  "@psbtFlowColdcardTitle": {
+    "description": "Title for Coldcard Q device signing instructions"
+  },
+  "psbtFlowJadeTitle": "Blockstream Jade PSBT Instructions",
+  "@psbtFlowJadeTitle": {
+    "description": "Title for Blockstream Jade PSBT signing instructions"
+  },
+  "psbtFlowLoginToDevice": "Login to your {device} device",
+  "@psbtFlowLoginToDevice": {
+    "description": "Instruction to login to hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowTurnOnDevice": "Turn on your {device} device",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowAddPassphrase": "Add a passphrase if you have one (optional)",
+  "@psbtFlowAddPassphrase": {
+    "description": "Optional instruction to add BIP39 passphrase"
+  },
+  "psbtFlowClickScan": "Click Scan",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "psbtFlowClickSign": "Click Sign",
+  "@psbtFlowClickSign": {
+    "description": "Instruction to click sign button on device"
+  },
+  "psbtFlowClickPsbt": "Click PSBT",
+  "@psbtFlowClickPsbt": {
+    "description": "Instruction to click PSBT option on device"
+  },
+  "psbtFlowLoadFromCamera": "Click Load from camera",
+  "@psbtFlowLoadFromCamera": {
+    "description": "Instruction to select camera load option on device"
+  },
+  "psbtFlowScanQrOption": "Select \"Scan QR\" option",
+  "@psbtFlowScanQrOption": {
+    "description": "Instruction to select scan QR menu option"
+  },
+  "psbtFlowScanAnyQr": "Select \"Scan any QR code\" option",
+  "@psbtFlowScanAnyQr": {
+    "description": "Instruction to select scan any QR code option"
+  },
+  "psbtFlowSignWithQr": "Click Sign with QR Code",
+  "@psbtFlowSignWithQr": {
+    "description": "Instruction to select QR code signing method"
+  },
+  "psbtFlowScanQrShown": "Scan the QR code shown in the Bull wallet",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "psbtFlowTroubleScanningTitle": "If you have trouble scanning:",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "psbtFlowIncreaseBrightness": "Increase screen brightness on your device",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "psbtFlowMoveLaser": "Move the red laser up and down over QR code",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "psbtFlowMoveBack": "Try moving your device back a little bit",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "psbtFlowHoldSteady": "Hold the QR code steady and centered",
+  "@psbtFlowHoldSteady": {
+    "description": "Troubleshooting tip to hold QR code still"
+  },
+  "psbtFlowMoveCloserFurther": "Try moving your device closer or further away",
+  "@psbtFlowMoveCloserFurther": {
+    "description": "Troubleshooting tip to adjust distance"
+  },
+  "psbtFlowReviewTransaction": "Once the transaction is imported in your {device}, review the destination address and the amount.",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowSelectSeed": "Once the transaction is imported in your {device}, you should select the seed you wish to sign with.",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowSignTransactionOnDevice": "Click the buttons to sign the transaction on your {device}.",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowDeviceShowsQr": "The {device} will then show you its own QR code.",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowClickDone": "Click \"I'm done\" in the Bull Bitcoin wallet.",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "psbtFlowScanDeviceQr": "The Bull Bitcoin wallet will ask you to scan the QR code on the {device}. Scan it.",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowTransactionImported": "The transaction will be imported in the Bull Bitcoin wallet.",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "psbtFlowReadyToBroadcast": "It's now ready to broadcast! As soon as you click broadcast, the transaction will be published on the Bitcoin network and the funds will be sent.",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
   },
   "hwConnectTitle": "Connect Hardware Wallet",
   "@hwConnectTitle": {
@@ -7169,6 +8171,8 @@
   "@importWatchOnlyExtendedPublicKey": {
     "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
+  "importWatchOnlyDisclaimerTitle": "Derivation Path Warning",
+  "importWatchOnlyDisclaimerDescription": "Make sure the derivation path you choose matches the one that produced the given xpub by verifying the first address derived from the wallet before use. Using the wrong path can lead to loss of funds",
   "bip85Title": "BIP85 Deterministic Entropies",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
@@ -7239,18 +8243,6 @@
         "type": "int"
       }
     }
-  },
-  "legacySeedsNoSeeds": "No legacy seeds found.",
-  "@legacySeedsNoSeeds": {
-    "description": "Empty state message when no legacy seeds exist"
-  },
-  "legacySeedsMnemonic": "Mnemonic",
-  "@legacySeedsMnemonic": {
-    "description": "Label for mnemonic display in legacy seed card"
-  },
-  "legacySeedsLoading": "Loading legacy seeds...",
-  "@legacySeedsLoading": {
-    "description": "Loading message while fetching legacy seeds"
   },
   "broadcastSignedTxTitle": "Broadcast Transaction",
   "@broadcastSignedTxTitle": {
@@ -7510,41 +8502,53 @@
   "@importQrDevicePassportInstructionsTitle": {
     "description": "Title for Passport setup instructions"
   },
-  "importQrDevicePassportStep1": "Turn on your Passport device",
+  "importQrDevicePassportStep1": "Power on your Passport device",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "importQrDevicePassportStep2": "Select Manage Account",
+  "importQrDevicePassportStep2": "Enter your PIN",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
-  "importQrDevicePassportStep3": "Select Connect Wallet",
+  "importQrDevicePassportStep3": "Select \"Manage Account\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
-  "importQrDevicePassportStep4": "Select Sparrow",
+  "importQrDevicePassportStep4": "Select \"Connect Wallet\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
-  "importQrDevicePassportStep5": "Select Single-sig",
+  "importQrDevicePassportStep5": "Select \"Sparrow\" option",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
-  "importQrDevicePassportStep6": "Select QR Code",
+  "importQrDevicePassportStep6": "Select \"Single-sig\"",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
-  "importQrDevicePassportStep7": "Click the \"open camera\" button",
+  "importQrDevicePassportStep7": "Select \"QR Code\"",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "importQrDevicePassportStep8": "Scan the QR code you see on your device.",
+  "importQrDevicePassportStep8": "On your mobile device, tap \"open camera\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
-  "importQrDevicePassportStep9": "That's it!",
+  "importQrDevicePassportStep9": "Scan the QR code displayed on your Passport",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
+  },
+  "importQrDevicePassportStep10": "In the BULL wallet app, select \"Segwit (BIP84)\" as the derivation option",
+  "@importQrDevicePassportStep10": {
+    "description": "Passport instruction step 10"
+  },
+  "importQrDevicePassportStep11": "Enter a label for your Passport wallet and tap \"Import\"",
+  "@importQrDevicePassportStep11": {
+    "description": "Passport instruction step 11"
+  },
+  "importQrDevicePassportStep12": "Setup complete.",
+  "@importQrDevicePassportStep12": {
+    "description": "Passport instruction step 12"
   },
   "importQrDeviceSeedsignerName": "SeedSigner",
   "@importQrDeviceSeedsignerName": {
@@ -8586,7 +9590,7 @@
   "@electrumDeleteServerTitle": {
     "description": "Delete server dialog title"
   },
-  "electrumDeletePrivacyNotice": "Privacy Notice:\nUsing your own node ensures that no third party can link your IP address with your transactions. By deleting your last custom server, you will be connecting to a BullBitcoin server.\n\n",
+  "electrumDeletePrivacyNotice": "Privacy Notice:\n\nUsing your own node ensures that no third party can link your IP address with your transactions. By deleting your last custom server, you will be connecting to a BullBitcoin server.\n",
   "@electrumDeletePrivacyNotice": {
     "description": "Privacy notice shown when deleting last custom server"
   },
@@ -9427,5 +10431,135 @@
   "exchangeAmountInputValidationInsufficient": "Insufficient balance",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
+  },
+  "sellBitcoinPriceLabel": "Bitcoin Price",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "sellViewDetailsButton": "View details",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "sellKycPendingTitle": "KYC ID Verification Pending",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "sellKycPendingDescription": "You must complete ID verification first",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellErrorPrepareTransaction": "Failed to prepare transaction: {error}",
+  "@sellErrorPrepareTransaction": {
+    "description": "Error message when transaction preparation fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellErrorNoWalletSelected": "No wallet selected to send payment",
+  "@sellErrorNoWalletSelected": {
+    "description": "Error message when no wallet is selected for payment"
+  },
+  "sellErrorFeesNotCalculated": "Transaction fees not calculated. Please try again.",
+  "@sellErrorFeesNotCalculated": {
+    "description": "Error message when transaction fees calculation failed"
+  },
+  "sellErrorUnexpectedOrderType": "Expected SellOrder but received a different order type",
+  "@sellErrorUnexpectedOrderType": {
+    "description": "Error message when wrong order type is received"
+  },
+  "sellErrorLoadUtxos": "Failed to load UTXOs: {error}",
+  "@sellErrorLoadUtxos": {
+    "description": "Error message when loading UTXOs fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellErrorRecalculateFees": "Failed to recalculate fees: {error}",
+  "@sellErrorRecalculateFees": {
+    "description": "Error message when fee recalculation fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellLoadingGeneric": "Loading...",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
+  },
+  "allSeedViewTitle": "Seed Viewer",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "allSeedViewLoadingMessage": "This may take a while to load if you have a lot of seeds on this device.",
+  "@allSeedViewLoadingMessage": {
+    "description": "Loading message shown while fetching seeds"
+  },
+  "allSeedViewNoSeedsFound": "No seeds found.",
+  "@allSeedViewNoSeedsFound": {
+    "description": "Message shown when no seeds are found"
+  },
+  "allSeedViewShowSeedsButton": "Show Seeds",
+  "@allSeedViewShowSeedsButton": {
+    "description": "Button label to show seed phrases"
+  },
+  "allSeedViewExistingWallets": "Existing Wallets ({count})",
+  "@allSeedViewExistingWallets": {
+    "description": "Section header for existing wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewOldWallets": "Old Wallets ({count})",
+  "@allSeedViewOldWallets": {
+    "description": "Section header for old wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewSecurityWarningTitle": "Security Warning",
+  "@allSeedViewSecurityWarningTitle": {
+    "description": "Title for security warning dialog"
+  },
+  "allSeedViewSecurityWarningMessage": "Displaying seed phrases is a security risk. Anyone who sees your seed phrase can access your funds. Make sure you are in a private location and that no one can see your screen.",
+  "@allSeedViewSecurityWarningMessage": {
+    "description": "Security warning message about displaying seed phrases"
+  },
+  "allSeedViewIUnderstandButton": "I Understand",
+  "@allSeedViewIUnderstandButton": {
+    "description": "Button label to acknowledge security warning"
+  },
+  "allSeedViewDeleteWarningTitle": "WARNING!",
+  "@allSeedViewDeleteWarningTitle": {
+    "description": "Title for delete seed warning dialog"
+  },
+  "allSeedViewDeleteWarningMessage": "Deleting the seed is an irreversible action. Only do this if you have secure backups of this seed or the associated wallets have been fully drained.",
+  "@allSeedViewDeleteWarningMessage": {
+    "description": "Warning message about deleting a seed"
+  },
+  "allSeedViewPassphraseLabel": "Passphrase:",
+  "@allSeedViewPassphraseLabel": {
+    "description": "Label for passphrase display"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Generic delete button label"
   }
 }

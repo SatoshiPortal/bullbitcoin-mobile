@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
+import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +17,8 @@ class AppSettingsScreen extends StatelessWidget {
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
     );
     final currentLanguage = context.select(
-      (SettingsCubit cubit) => cubit.state.language ?? Language.unitedStatesEnglish,
+      (SettingsCubit cubit) =>
+          cubit.state.language ?? Language.unitedStatesEnglish,
     );
 
     return Scaffold(
@@ -34,6 +36,13 @@ class AppSettingsScreen extends StatelessWidget {
                     context.pushNamed(SettingsRoute.logs.name);
                   },
                 ),
+                SettingsEntryItem(
+                  icon: Icons.security,
+                  title: 'Tor Settings',
+                  onTap: () {
+                    context.pushNamed(TorSettingsRoute.torSettings.name);
+                  },
+                ),
                 if (isSuperuser)
                   SettingsEntryItem(
                     icon: Icons.language,
@@ -41,19 +50,22 @@ class AppSettingsScreen extends StatelessWidget {
                     trailing: DropdownButton<Language>(
                       value: currentLanguage,
                       underline: const SizedBox.shrink(),
-                      items: Language.values
-                          .map(
-                            (language) => DropdownMenuItem<Language>(
-                              value: language,
-                              child: Text(
-                                '${language.languageCode}${language.countryCode != null ? ' (${language.countryCode})' : ''}',
-                              ),
-                            ),
-                          )
-                          .toList(),
+                      items:
+                          Language.values
+                              .map(
+                                (language) => DropdownMenuItem<Language>(
+                                  value: language,
+                                  child: Text(
+                                    '${language.languageCode}${language.countryCode != null ? ' (${language.countryCode})' : ''}',
+                                  ),
+                                ),
+                              )
+                              .toList(),
                       onChanged: (Language? newLanguage) {
                         if (newLanguage != null) {
-                          context.read<SettingsCubit>().changeLanguage(newLanguage);
+                          context.read<SettingsCubit>().changeLanguage(
+                            newLanguage,
+                          );
                         }
                       },
                     ),

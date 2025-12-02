@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
@@ -67,7 +68,7 @@ class ConnectingPage extends StatelessWidget {
                     const SizedBox(height: 200),
                   const Gap(24),
                   BBText(
-                    'Checking connection for RecoverBull',
+                    context.loc.recoverbullCheckingConnection,
                     textAlign: TextAlign.center,
                     style: context.font.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -75,20 +76,21 @@ class ConnectingPage extends StatelessWidget {
                   ),
                   const Gap(24),
                   _StatusRow(
-                    label: 'Tor Network',
+                    label: context.loc.recoverbullTorNetwork,
                     status: state.torStatus,
                     isKeyServer: false,
                   ),
                   const Gap(12),
                   _StatusRow(
-                    label: 'RecoverBull Server',
+                    label: context.loc.recoverbullRecoverBullServer,
                     status: state.keyServerStatus,
                     isKeyServer: true,
                   ),
                   const Gap(40),
                   if (hasError) ...[
                     BBText(
-                      state.error?.message ?? 'Connection failed',
+                      state.error?.toTranslated(context) ??
+                          context.loc.recoverbullConnectionFailed,
                       textAlign: TextAlign.center,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.error,
@@ -97,7 +99,7 @@ class ConnectingPage extends StatelessWidget {
                     ),
                     const Gap(24),
                     BBButton.big(
-                      label: 'Retry',
+                      label: context.loc.recoverbullRetry,
                       textStyle: context.font.headlineLarge,
                       bgColor: context.colour.secondary,
                       textColor: context.colour.onSecondary,
@@ -109,7 +111,7 @@ class ConnectingPage extends StatelessWidget {
                     ),
                   ] else ...[
                     BBText(
-                      'Please wait while we establish a secure connection...',
+                      context.loc.recoverbullPleaseWait,
                       textAlign: TextAlign.center,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.outline,
@@ -140,7 +142,7 @@ class _StatusRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusText = _getStatusText();
+    final statusText = _getStatusText(context);
     final statusColor = _getStatusColor(context);
     final icon = _getIcon();
 
@@ -174,20 +176,20 @@ class _StatusRow extends StatelessWidget {
     );
   }
 
-  String _getStatusText() {
+  String _getStatusText(BuildContext context) {
     if (isKeyServer) {
       return switch (status as KeyServerStatus) {
-        KeyServerStatus.unknown => 'Waiting',
-        KeyServerStatus.connecting => 'Connecting',
-        KeyServerStatus.online => 'Connected',
-        KeyServerStatus.offline => 'Failed',
+        KeyServerStatus.unknown => context.loc.recoverbullWaiting,
+        KeyServerStatus.connecting => context.loc.recoverbullConnecting,
+        KeyServerStatus.online => context.loc.recoverbullConnected,
+        KeyServerStatus.offline => context.loc.recoverbullFailed,
       };
     } else {
       return switch (status as TorStatus) {
-        TorStatus.unknown => 'Waiting',
-        TorStatus.connecting => 'Connecting',
-        TorStatus.online => 'Connected',
-        TorStatus.offline => 'Failed',
+        TorStatus.unknown => context.loc.recoverbullWaiting,
+        TorStatus.connecting => context.loc.recoverbullConnecting,
+        TorStatus.online => context.loc.recoverbullConnected,
+        TorStatus.offline => context.loc.recoverbullFailed,
       };
     }
   }

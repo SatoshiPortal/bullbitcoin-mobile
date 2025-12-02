@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -67,7 +68,7 @@ class SellSendPaymentScreen extends StatelessWidget {
             ),
             const Gap(24.0),
             Text(
-              'Confirm payment',
+              context.loc.sellConfirmPayment,
               style: context.font.headlineMedium?.copyWith(
                 color: context.colour.secondary,
               ),
@@ -77,7 +78,7 @@ class SellSendPaymentScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Price will refresh in ',
+                  context.loc.sellPriceWillRefreshIn,
                   style: context.font.bodyMedium?.copyWith(
                     color: context.colour.outline,
                   ),
@@ -96,24 +97,26 @@ class SellSendPaymentScreen extends StatelessWidget {
 
             const Gap(8.0),
             _DetailRow(
-              title: 'Order number',
+              title: context.loc.sellOrderNumber,
               value: order?.orderNumber.toString(),
               copyValue: order?.orderNumber.toString(),
             ),
             _DetailRow(
-              title: 'Payout recipient',
+              title: context.loc.sellPayoutRecipient,
               value: switch (order?.payoutMethod) {
-                OrderPaymentMethod.cadBalance => 'CAD Balance',
-                OrderPaymentMethod.crcBalance => 'CRC Balance',
-                OrderPaymentMethod.eurBalance => 'EUR Balance',
-                OrderPaymentMethod.usdBalance => 'USD Balance',
-                OrderPaymentMethod.mxnBalance => 'MXN Balance',
+                OrderPaymentMethod.cadBalance => context.loc.sellCadBalance,
+                OrderPaymentMethod.crcBalance => context.loc.sellCrcBalance,
+                OrderPaymentMethod.eurBalance => context.loc.sellEurBalance,
+                OrderPaymentMethod.usdBalance => context.loc.sellUsdBalance,
+                OrderPaymentMethod.mxnBalance => context.loc.sellMxnBalance,
+                OrderPaymentMethod.arsBalance => context.loc.sellArsBalance,
+                OrderPaymentMethod.copBalance => context.loc.sellCopBalance,
                 _ => order?.payoutMethod.name,
               },
             ),
             const _Divider(),
             _DetailRow(
-              title: 'Payin amount',
+              title: context.loc.sellPayinAmount,
               value:
                   order == null
                       ? null
@@ -124,7 +127,7 @@ class SellSendPaymentScreen extends StatelessWidget {
                       ),
             ),
             _DetailRow(
-              title: 'Payout amount',
+              title: context.loc.sellPayoutAmount,
               value:
                   order == null
                       ? null
@@ -134,7 +137,7 @@ class SellSendPaymentScreen extends StatelessWidget {
                       ),
             ),
             _DetailRow(
-              title: 'Exchange rate',
+              title: context.loc.sellExchangeRate,
               value:
                   order == null
                       ? null
@@ -146,19 +149,19 @@ class SellSendPaymentScreen extends StatelessWidget {
             ),
             const _Divider(),
             _DetailRow(
-              title: 'Pay from wallet',
+              title: context.loc.sellPayFromWallet,
               value:
                   wallet?.label ??
                   (wallet?.isDefault == true
                       ? wallet?.isLiquid == true
-                          ? 'Instant payments'
-                          : 'Secure Bitcoin wallet'
+                          ? context.loc.sellInstantPayments
+                          : context.loc.sellSecureBitcoinWallet
                       : ''),
             ),
             if (wallet != null && !wallet.isLiquid) ...[
               _DetailRow(
-                title: 'Fee Priority',
-                value: 'Fastest',
+                title: context.loc.sellFeePriority,
+                value: context.loc.sellFastest,
                 onTap: () {
                   debugPrint('Tapped Fee Priority');
                 },
@@ -166,7 +169,7 @@ class SellSendPaymentScreen extends StatelessWidget {
             ],
             // TODO: Implement fee selection
             _DetailRow(
-              title: 'Network fees',
+              title: context.loc.sellSendPaymentNetworkFees,
               value: context.select((SellBloc bloc) {
                 final state = bloc.state;
                 if (state is SellPaymentState && state.absoluteFees != null) {
@@ -176,7 +179,7 @@ class SellSendPaymentScreen extends StatelessWidget {
                       )
                       : FormatAmount.sats(state.absoluteFees!);
                 }
-                return 'Calculating...';
+                return context.loc.sellCalculating;
               }),
             ),
             const Spacer(),
@@ -326,7 +329,7 @@ class _BottomButtons extends StatelessWidget {
         const _SellError(),
         if (wallet != null && !wallet.isLiquid) ...[
           BBButton.big(
-            label: 'Advanced Settings',
+            label: context.loc.sellAdvancedSettings,
             onPressed: () {
               showModalBottomSheet(
                 context: context,
@@ -349,7 +352,7 @@ class _BottomButtons extends StatelessWidget {
           const Gap(16),
         ],
         BBButton.big(
-          label: 'Continue',
+          label: context.loc.sellSendPaymentContinue,
           disabled: isConfirmingPayment,
           onPressed: onContinuePressed,
           bgColor: context.colour.secondary,
@@ -377,7 +380,7 @@ class _SellError extends StatelessWidget {
         AboveMaxAmountSellError _ => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
           child: Text(
-            'You are trying to sell above the maximum amount that can be sold with this wallet.',
+            context.loc.sellAboveMaxAmountError,
             style: context.font.bodyMedium?.copyWith(
               color: context.colour.error,
             ),
@@ -387,7 +390,7 @@ class _SellError extends StatelessWidget {
         BelowMinAmountSellError _ => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
           child: Text(
-            'You are trying to sell below the minimum amount that can be sold with this wallet.',
+            context.loc.sellBelowMinAmountError,
             style: context.font.bodyMedium?.copyWith(
               color: context.colour.error,
             ),
@@ -397,7 +400,7 @@ class _SellError extends StatelessWidget {
         InsufficientBalanceSellError _ => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
           child: Text(
-            'Insufficient balance in the selected wallet to complete this sell order.',
+            context.loc.sellInsufficientBalanceError,
             style: context.font.bodyMedium?.copyWith(
               color: context.colour.error,
             ),

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_entry.dart';
@@ -128,7 +129,7 @@ class ReceiveAmountContinueButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: BBButton.big(
-        label: 'Continue',
+        label: context.loc.receiveContinue,
         onPressed: () {
           final bloc = context.read<ReceiveBloc>();
           final inputAmountSat = bloc.state.inputAmountSat;

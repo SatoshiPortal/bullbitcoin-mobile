@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
@@ -31,7 +32,7 @@ class PaySuccessScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Pay'),
+          title: Text(context.loc.payTitle),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -54,12 +55,12 @@ class PaySuccessScreen extends StatelessWidget {
                   width: 100,
                 ),
                 const Gap(20),
-                Text('Payment Completed!', style: context.font.titleLarge),
+                Text(context.loc.payCompleted, style: context.font.titleLarge),
                 const Gap(10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: Text(
-                    'Your payment has been completed and the recipient has received the funds.',
+                    context.loc.payCompletedDescription,
                     style: context.font.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -76,7 +77,7 @@ class PaySuccessScreen extends StatelessWidget {
               children: [
                 if (order != null)
                   BBButton.big(
-                    label: 'View details',
+                    label: context.loc.payViewDetails,
                     onPressed: () {
                       context.pushNamed(
                         TransactionsRoute.orderTransactionDetails.name,

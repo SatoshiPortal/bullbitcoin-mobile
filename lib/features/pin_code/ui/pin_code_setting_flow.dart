@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/loading/status_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
@@ -42,9 +43,9 @@ class PinCodeSettingFlow extends StatelessWidget {
           builder: (context, status) {
             switch (status) {
               case PinCodeSettingStatus.initializing:
-                return const StatusScreen(
-                  title: 'Loading',
-                  description: 'Checking PIN status',
+                return StatusScreen(
+                  title: context.loc.pinCodeLoading,
+                  description: context.loc.pinCodeCheckingStatus,
                 );
               case PinCodeSettingStatus.unlock:
                 return PinCodeUnlockScreen(
@@ -63,9 +64,9 @@ class PinCodeSettingFlow extends StatelessWidget {
               case PinCodeSettingStatus.success:
               case PinCodeSettingStatus.deleted:
               case PinCodeSettingStatus.failure:
-                return const StatusScreen(
-                  title: 'Processing',
-                  description: 'Setting up your PIN code',
+                return StatusScreen(
+                  title: context.loc.pinCodeProcessing,
+                  description: context.loc.pinCodeSettingUp,
                 );
             }
           },

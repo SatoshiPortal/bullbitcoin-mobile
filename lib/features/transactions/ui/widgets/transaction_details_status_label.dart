@@ -34,8 +34,8 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
           ? swap.status == SwapStatus.failed
               ? (swap.isChainSwap ? 'Transfer Failed' : 'Swap Failed')
               : (swap.isChainSwap ? 'Transfer Expired' : 'Swap Expired')
-          : isOrder == true
-          ? order!.orderType.value
+          : isOrder == true && order != null
+          ? order.orderType.value
           : transaction?.isOngoingPayjoinSender == true
           ? 'Payjoin requested'
           : transaction?.isIncoming == true

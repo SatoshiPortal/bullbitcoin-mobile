@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_qr_device/device_instructions_bottom_sheet.dart';
@@ -29,10 +30,10 @@ class ImportQrDevicePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.importQrDeviceTitle(deviceName))),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: Device.screen.width * 0.05),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Gap(32),
             BBText(
               context.loc.importQrDeviceScanPrompt(deviceName),
               style: context.font.bodyLarge,
@@ -40,13 +41,13 @@ class ImportQrDevicePage extends StatelessWidget {
               maxLines: 2,
             ),
 
-            const Gap(48),
+            Gap(Device.screen.height * 0.05),
             Image.asset(
               Assets.misc.qRPlaceholder.path,
               height: 200,
               width: 200,
             ),
-            const Gap(48),
+            Gap(Device.screen.height * 0.05),
             Column(
               children: [
                 BBButton.small(
@@ -61,7 +62,7 @@ class ImportQrDevicePage extends StatelessWidget {
                   outlined: true,
                 ),
 
-                const Gap(16),
+                Gap(Device.screen.height * 0.02),
                 BBButton.small(
                   label: context.loc.importQrDeviceButtonInstructions,
                   onPressed:
@@ -74,10 +75,8 @@ class ImportQrDevicePage extends StatelessWidget {
                   textColor: context.colour.secondary,
                   outlined: true,
                 ),
-                const Gap(16),
               ],
             ),
-            const Gap(48),
           ],
         ),
       ),

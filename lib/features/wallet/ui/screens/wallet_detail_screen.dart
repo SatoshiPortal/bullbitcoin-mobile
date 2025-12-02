@@ -67,17 +67,24 @@ class WalletDetailScreen extends StatelessWidget {
               create:
                   (_) =>
                       locator<TransactionsCubit>(param1: walletId)..loadTxs(),
-              child: Column(
-                children: [
-                  WalletDetailBalanceCard(
-                    balanceSat: wallet.balanceSat.toInt(),
-                    isLiquid: wallet.isLiquid,
-                    signer: wallet.signer,
-                  ),
-                  const Gap(16.0),
-                  const WalletDetailTxsList(),
-                  const Gap(96),
-                ],
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  final bloc = context.read<WalletBloc>();
+                  bloc.add(const WalletRefreshed());
+                  await bloc.stream.firstWhere((state) => !state.isSyncing);
+                },
+                child: Column(
+                  children: [
+                    WalletDetailBalanceCard(
+                      balanceSat: wallet.balanceSat.toInt(),
+                      isLiquid: wallet.isLiquid,
+                      signer: wallet.signer,
+                    ),
+                    const Gap(16.0),
+                    const WalletDetailTxsList(),
+                    const Gap(96),
+                  ],
+                ),
               ),
             ),
           Padding(

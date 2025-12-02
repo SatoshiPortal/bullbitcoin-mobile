@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
@@ -29,16 +30,20 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
   @override
   void initState() {
     super.initState();
-    switch (widget.inputType) {
-      case InputType.pin || InputType.password:
-        context.read<RecoverBullBloc>().add(
-          OnVaultPasswordSet(password: widget.input),
-        );
-      case InputType.vaultKey:
-        context.read<RecoverBullBloc>().add(
-          OnVaultDecryption(vaultKey: widget.input),
-        );
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        switch (widget.inputType) {
+          case InputType.pin || InputType.password:
+            context.read<RecoverBullBloc>().add(
+              OnVaultPasswordSet(password: widget.input),
+            );
+          case InputType.vaultKey:
+            context.read<RecoverBullBloc>().add(
+              OnVaultDecryption(vaultKey: widget.input),
+            );
+        }
+      }
+    });
   }
 
   @override
@@ -59,7 +64,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fetch Vault Key'),
+        title: Text(context.loc.recoverbullFetchVaultKey),
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 20),
@@ -77,7 +82,11 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
                     previous.vaultKey != current.vaultKey,
         listener: (context, state) {
           if (state.error != null) {
-            SnackBarUtils.showSnackBar(context, state.error!.message);
+            SnackBarUtils.showSnackBar(
+              context,
+              state.error!.toTranslated(context),
+            );
+            context.read<RecoverBullBloc>().add(const OnClearError());
             Navigator.of(context).pop();
           }
           if (state.decryptedVault != null && state.vaultKey != null) {
@@ -105,6 +114,8 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
                 );
               case RecoverBullFlow.secureVault:
                 break; // should not fetch anything
+              case RecoverBullFlow.settings:
+                throw UnimplementedError();
             }
           }
         },
@@ -117,11 +128,10 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     if (state.isLoading)
-                      const ProgressScreen(
+                      ProgressScreen(
                         isLoading: true,
-                        title: 'Fetching Vault Key',
-                        description:
-                            'Connecting to Key Server over Tor.\nThis can take upto a minute.',
+                        title: context.loc.recoverbullFetchingVaultKey,
+                        description: context.loc.recoverbullConnectingTor,
                       ),
                   ],
                 ),

@@ -5,8 +5,9 @@ sealed class TestWalletBackupEvent {
 }
 
 class OnWordsSelected extends TestWalletBackupEvent {
-  const OnWordsSelected({required this.shuffledIdx});
-  final int shuffledIdx;
+  const OnWordsSelected({required this.word, required this.index});
+  final String word;
+  final int index;
 }
 
 class StartPhysicalBackupVerification extends TestWalletBackupEvent {
@@ -24,4 +25,8 @@ class LoadWallets extends TestWalletBackupEvent {
 class LoadMnemonicForWallet extends TestWalletBackupEvent {
   const LoadMnemonicForWallet({required this.wallet});
   final Wallet wallet;
+}
+
+class ClearError extends TestWalletBackupEvent {
+  const ClearError();
 }

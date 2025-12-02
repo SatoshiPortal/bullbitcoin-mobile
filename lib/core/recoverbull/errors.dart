@@ -30,7 +30,9 @@ class InvalidCredentialsError extends ServerError {
 }
 
 class RateLimitedError extends ServerError {
-  RateLimitedError({required Duration retryIn})
+  final Duration retryIn;
+
+  RateLimitedError({required this.retryIn})
     : super(
         'Rate-limited. Retry in ${retryIn.inMinutes == 0 ? "${retryIn.inSeconds} seconds" : "${retryIn.inMinutes} minutes"} ',
       );

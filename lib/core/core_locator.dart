@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/bip85/bip85_locator.dart';
+import 'package:bb_mobile/core/bitbox/bitbox_locator.dart';
 import 'package:bb_mobile/core/blockchain/blockchain_locator.dart';
 import 'package:bb_mobile/core/electrum/frameworks/di/electrum_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';
@@ -22,68 +23,71 @@ class CoreLocator {
   }
 
   static Future<void> registerDatasources() async {
-    await TorLocator.registerDatasources();
-    BlockchainLocator.registerDatasources();
-    await ElectrumLocator.registerDatasources();
-    ExchangeLocator.registerDatasources();
-    FeesLocator.registerDatasources();
-    await PayjoinLocator.registerDatasources();
-    await RecoverbullLocator.registerDatasources();
-    SeedLocator.registerDatasources();
-    await StorageLocator.registerDatasources();
-    await SwapsLocator.registerDatasources();
-    await WalletLocator.registerDatasourceres();
+    await TorLocator.registerDatasources(locator);
+    BlockchainLocator.registerDatasources(locator);
+    await ElectrumLocator.registerDatasources(locator);
+    ExchangeLocator.registerDatasources(locator);
+    FeesLocator.registerDatasources(locator);
+    PayjoinLocator.registerDatasources(locator);
+    await RecoverbullLocator.registerDatasources(locator);
+    SeedLocator.registerDatasources(locator);
+    await StorageLocator.registerDatasources(locator);
+    await SwapsLocator.registerDatasources(locator);
+    await WalletLocator.registerDatasources(locator);
     LabelsLocator.registerDatasources();
-    await SettingsLocator.registerDatasources();
-    await Bip85DerivationsLocator.registerDatasources();
+    await SettingsLocator.registerDatasources(locator);
+    Bip85DerivationsLocator.registerDatasources(locator);
     LedgerLocator.registerDatasources();
+    BitBoxCoreLocator.registerDatasources();
   }
 
   static void registerPorts() {
-    ElectrumLocator.registerPorts();
-    BlockchainLocator.registerPorts();
-    SwapsLocator.registerPorts();
-    WalletLocator.registerPorts();
+    ElectrumLocator.registerPorts(locator);
+    BlockchainLocator.registerPorts(locator);
+    SwapsLocator.registerPorts(locator);
+    WalletLocator.registerPorts(locator);
   }
 
   static Future<void> registerRepositories() async {
-    await TorLocator.registerRepositories();
-    BlockchainLocator.registerRepositories();
-    ElectrumLocator.registerRepositories();
-    ExchangeLocator.registerRepositories();
-    FeesLocator.registerRepositories();
+    await TorLocator.registerRepositories(locator);
+    BlockchainLocator.registerRepositories(locator);
+    ElectrumLocator.registerRepositories(locator);
+    ExchangeLocator.registerRepositories(locator);
+    FeesLocator.registerRepositories(locator);
     LabelsLocator.registerRepositories();
-    PayjoinLocator.registerRepositories();
-    await RecoverbullLocator.registerRepositories();
-    SeedLocator.registerRepositories();
-    StorageLocator.registerRepositories();
-    await SettingsLocator.registerRepositories();
-    SwapsLocator.registerRepositories();
-    WalletLocator.registerRepositories();
-    await Bip85DerivationsLocator.registerRepositories();
+    PayjoinLocator.registerRepositories(locator);
+    SeedLocator.registerRepositories(locator);
+    StorageLocator.registerRepositories(locator);
+    await SettingsLocator.registerRepositories(locator);
+    await RecoverbullLocator.registerRepositories(locator);
+    SwapsLocator.registerRepositories(locator);
+    WalletLocator.registerRepositories(locator);
+    Bip85DerivationsLocator.registerRepositories(locator);
     LedgerLocator.registerRepositories();
+    BitBoxCoreLocator.registerRepositories();
   }
 
   static void registerServices() {
-    SeedLocator.registerServices();
-    SwapsLocator.registerServices();
+    SeedLocator.registerServices(locator);
+    SwapsLocator.registerServices(locator);
   }
 
   static void registerUsecases() {
-    ElectrumLocator.registerUsecases();
-    BlockchainLocator.registerUsecases();
-    ExchangeLocator.registerUseCases();
-    FeesLocator.registerUseCases();
+    ElectrumLocator.registerUsecases(locator);
+    BlockchainLocator.registerUsecases(locator);
+    ExchangeLocator.registerUseCases(locator);
+    FeesLocator.registerUseCases(locator);
     LabelsLocator.registerUseCases();
-    PayjoinLocator.registerUsecases();
-    RecoverbullLocator.registerUsecases();
-    SeedLocator.registerUsecases();
-    StorageLocator.registerUsecases();
-    SettingsLocator.registerUsecases();
-    SwapsLocator.registerUsecases();
-    TorLocator.registerUsecases();
-    WalletLocator.registerUsecases();
-    Bip85DerivationsLocator.registerUsecases();
+    PayjoinLocator.registerUsecases(locator);
+    RecoverbullLocator.registerUsecases(locator);
+    SeedLocator.registerUsecases(locator);
+    StorageLocator.registerUsecases(locator);
+    SettingsLocator.registerUsecases(locator);
+    SwapsLocator.registerUsecases(locator);
+    TorLocator.registerUsecases(locator);
+    WalletLocator.registerUsecases(locator);
+    Bip85DerivationsLocator.registerUsecases(locator);
     LedgerLocator.registerUsecases();
+    BitBoxCoreLocator.registerUsecases();
   }
 }

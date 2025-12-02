@@ -20,10 +20,9 @@ class DriftElectrumSettingsRepository implements ElectrumSettingsRepository {
   }
 
   @override
-  Future<List<ElectrumSettings>> fetchAll() {
-    return _datasource.fetchAll().then(
-      (models) => models.map((m) => m.toEntity()).toList(),
-    );
+  Future<List<ElectrumSettings>> fetchAll() async {
+    final models = await _datasource.fetchAll();
+    return models.map((m) => m.toEntity()).toList();
   }
 
   @override
@@ -36,7 +35,7 @@ class DriftElectrumSettingsRepository implements ElectrumSettingsRepository {
   Future<List<ElectrumSettings>> fetchByEnvironment(
     ElectrumEnvironment environment,
   ) async {
-    final model = await _datasource.fetchByEnvironment(environment);
-    return model.map((m) => m.toEntity()).toList();
+    final models = await _datasource.fetchByEnvironment(environment);
+    return models.map((m) => m.toEntity()).toList();
   }
 }

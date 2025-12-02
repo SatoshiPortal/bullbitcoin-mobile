@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -32,7 +33,7 @@ class PayWalletSelectionScreen extends StatelessWidget {
     final currency = context.select((PayBloc bloc) => bloc.state.currency);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Wallet')),
+      appBar: AppBar(title: Text(context.loc.paySelectWallet)),
       body: SafeArea(
         child: Column(
           children: [
@@ -47,7 +48,7 @@ class PayWalletSelectionScreen extends StatelessWidget {
                 children: [
                   const Gap(24.0),
                   Text(
-                    'Which wallet do you want to pay from?',
+                    context.loc.payWhichWallet,
                     style: context.font.labelMedium?.copyWith(
                       color: Colors.black,
                     ),
@@ -68,8 +69,8 @@ class PayWalletSelectionScreen extends StatelessWidget {
                   ListTile(
                     tileColor: context.colour.onPrimary,
                     shape: const Border(),
-                    title: const Text('External wallet'),
-                    subtitle: const Text('Pay from another Bitcoin wallet'),
+                    title: Text(context.loc.payExternalWallet),
+                    subtitle: Text(context.loc.payExternalWalletDescription),
                     trailing: const Icon(Icons.chevron_right),
                     onTap:
                         isCreatingPayOrder
@@ -106,32 +107,32 @@ class _PayError extends StatelessWidget {
     return Center(
       child: switch (payError) {
         AboveMaxAmountPayError _ => Text(
-          'You are trying to pay above the maximum amount that can be paid with this wallet.',
+          context.loc.payAboveMaxAmount,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
         BelowMinAmountPayError _ => Text(
-          'You are trying to pay below the minimum amount that can be paid with this wallet.',
+          context.loc.payBelowMinAmount,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
         InsufficientBalancePayError _ => Text(
-          'Insufficient balance in the selected wallet to complete this pay order.',
+          context.loc.payInsufficientBalance,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
         UnauthenticatedPayError _ => Text(
-          'You are not authenticated. Please log in to continue.',
+          context.loc.payNotAuthenticated,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
         OrderNotFoundPayError _ => Text(
-          'The pay order was not found. Please try again.',
+          context.loc.payOrderNotFound,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
         OrderAlreadyConfirmedPayError _ => Text(
-          'This pay order has already been confirmed.',
+          context.loc.payOrderAlreadyConfirmed,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),

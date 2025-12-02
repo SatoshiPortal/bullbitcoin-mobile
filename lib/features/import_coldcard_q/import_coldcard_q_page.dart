@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_coldcard_q/instructions_bottom_sheet.dart';
@@ -19,10 +20,10 @@ class ImportColdcardQPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.importColdcardTitle)),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: Device.screen.width * 0.05),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Gap(32),
             BBText(
               context.loc.importColdcardDescription,
               style: context.font.bodyLarge,
@@ -30,13 +31,13 @@ class ImportColdcardQPage extends StatelessWidget {
               maxLines: 2,
             ),
 
-            const Gap(48),
+            Gap(Device.screen.height * 0.05),
             Image.asset(
               Assets.misc.qRPlaceholder.path,
               height: 200,
               width: 200,
             ),
-            const Gap(48),
+            Gap(Device.screen.height * 0.05),
             Column(
               children: [
                 BBButton.small(
@@ -51,7 +52,7 @@ class ImportColdcardQPage extends StatelessWidget {
                   outlined: true,
                 ),
 
-                const Gap(16),
+                Gap(Device.screen.height * 0.02),
                 BBButton.small(
                   label: context.loc.importColdcardButtonInstructions,
                   onPressed:
@@ -60,7 +61,7 @@ class ImportColdcardQPage extends StatelessWidget {
                   textColor: context.colour.secondary,
                   outlined: true,
                 ),
-                const Gap(16),
+                Gap(Device.screen.height * 0.02),
                 BBButton.small(
                   label: context.loc.importColdcardButtonPurchase,
                   onPressed:
@@ -75,7 +76,6 @@ class ImportColdcardQPage extends StatelessWidget {
                 ),
               ],
             ),
-            const Gap(48),
           ],
         ),
       ),

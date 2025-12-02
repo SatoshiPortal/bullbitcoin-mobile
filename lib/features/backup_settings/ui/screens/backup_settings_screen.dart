@@ -58,16 +58,19 @@ class _Screen extends StatelessWidget {
                   const Spacer(),
                   if (state.lastEncryptedBackup != null) ...[
                     const _ViewVaultKeyButton(),
-                    const Gap(5),
+                    const Gap(12),
                   ],
                   if (state.lastEncryptedBackup != null ||
                       state.lastPhysicalBackup != null) ...[
                     const _TestBackupButton(),
-                    const Gap(5),
+                    const Gap(12),
                   ],
                   const _StartBackupButton(),
-                  const Gap(5),
+                  const Gap(12),
                   const _Bip329LabelsButton(),
+                  const Gap(12),
+                  const _RecoverBullSettingsButton(),
+                  const Gap(20),
                   if (state.error != null) ErrorWidget(error: state.error!),
                 ],
               ),
@@ -118,7 +121,9 @@ class _StatusRow extends StatelessWidget {
         Text(label, style: context.font.bodyMedium),
         const Spacer(),
         Text(
-          isTested ? context.loc.backupSettingsTested : context.loc.backupSettingsNotTested,
+          isTested
+              ? context.loc.backupSettingsTested
+              : context.loc.backupSettingsNotTested,
           style: context.font.bodyMedium?.copyWith(
             color:
                 isTested ? context.colour.inverseSurface : context.colour.error,
@@ -138,8 +143,8 @@ class _TestBackupButton extends StatelessWidget {
       label: context.loc.backupSettingsTestBackup,
       onPressed:
           () => context.pushNamed(
-            BackupSettingsSubroute.testbackupOptions.name,
-            extra: false,
+            BackupSettingsSubroute.backupOptions.name,
+            extra: BackupSettingsFlow.test,
           ),
       borderColor: context.colour.secondary,
       outlined: true,
@@ -157,9 +162,12 @@ class _StartBackupButton extends StatelessWidget {
     return BBButton.big(
       label: context.loc.backupSettingsStartBackup,
       onPressed:
-          () => context.pushNamed(BackupSettingsSubroute.backupOptions.name),
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onSecondary,
+          () => context.pushNamed(
+            BackupSettingsSubroute.backupOptions.name,
+            extra: BackupSettingsFlow.backup,
+          ),
+      bgColor: context.colour.primary,
+      textColor: context.colour.onPrimary,
     );
   }
 }
@@ -245,6 +253,30 @@ class _Bip329LabelsButton extends StatelessWidget {
       onPressed: () => context.push(Bip329LabelsRouter.route.path),
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
+    );
+  }
+}
+
+class _RecoverBullSettingsButton extends StatelessWidget {
+  const _RecoverBullSettingsButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.big(
+      label: context.loc.backupSettingsRecoverBullSettings,
+      onPressed: () {
+        context.pushNamed(
+          RecoverBullRoute.recoverbullFlows.name,
+          extra: RecoverBullFlowsExtra(
+            flow: RecoverBullFlow.settings,
+            vault: null,
+          ),
+        );
+      },
+      borderColor: context.colour.secondary,
+      outlined: true,
+      bgColor: Colors.transparent,
+      textColor: context.colour.secondary,
     );
   }
 }

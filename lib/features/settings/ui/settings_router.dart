@@ -1,8 +1,9 @@
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
+import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
+import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
-import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -17,7 +18,6 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_sc
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
-
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/bitcoin_wallets_screen.dart';
@@ -32,7 +32,9 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/language/language_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
+import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -52,6 +54,7 @@ enum SettingsRoute {
   walletAddresses(':walletId/addresses'),
   logs('logs'),
   legacySeeds('legacy-seeds'),
+  allSeedView('seed-viewer'),
   experimental('experimental-settings'),
   exchangeAccount('exchange-account'),
   exchangeSettings('exchange-settings'),
@@ -77,7 +80,11 @@ class SettingsRouter {
   static final route = GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
-    builder: (context, state) => const AllSettingsScreen(),
+    builder:
+        (context, state) => BlocProvider(
+          create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
+          child: const AllSettingsScreen(),
+        ),
     routes: [
       GoRoute(
         name: SettingsRoute.exchangeAccount.name,
@@ -159,6 +166,7 @@ class SettingsRouter {
         name: SettingsRoute.appSettings.name,
         path: SettingsRoute.appSettings.path,
         builder: (context, state) => const AppSettingsScreen(),
+        routes: [TorSettingsRouter.route],
       ),
 
       GoRoute(
@@ -176,9 +184,8 @@ class SettingsRouter {
         name: SettingsRoute.backupSettings.name,
         builder: (context, state) => const BackupSettingsScreen(),
         routes: [
-          ...BackupSettingsSettingsRouter.routes,
-          ...BackupWalletRouter.routes,
-          ...TestWalletBackupRouter.routes,
+          BackupSettingsSettingsRouter.route,
+          TestWalletBackupRouter.route,
         ],
       ),
       GoRoute(
@@ -256,6 +263,15 @@ class SettingsRouter {
             (context, state) => BlocProvider(
               create: (_) => locator<LegacySeedViewCubit>(),
               child: const LegacySeedViewScreen(),
+            ),
+      ),
+      GoRoute(
+        path: SettingsRoute.allSeedView.path,
+        name: SettingsRoute.allSeedView.name,
+        builder:
+            (context, state) => BlocProvider(
+              create: (_) => locator<AllSeedViewCubit>(),
+              child: const AllSeedViewScreen(),
             ),
       ),
       GoRoute(

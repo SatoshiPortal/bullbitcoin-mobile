@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +18,9 @@ class LegacySeedViewScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const BBText(
-            'Legacy Seeds',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          title: BBText(
+            context.loc.legacySeedViewScreenTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
         ),
         body: BlocBuilder<LegacySeedViewCubit, LegacySeedViewState>(
@@ -38,7 +39,7 @@ class LegacySeedViewScreen extends StatelessWidget {
             if (state.seeds.isEmpty) {
               return Center(
                 child: BBText(
-                  'No legacy seeds found.',
+                  context.loc.legacySeedViewNoSeedsMessage,
                   style: context.font.bodyLarge,
                 ),
               );
@@ -66,7 +67,7 @@ class LegacySeedViewScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           BBText(
-                            'Mnemonic',
+                            context.loc.legacySeedViewMnemonicLabel,
                             style: context.font.bodyLarge,
                             color: context.colour.primary,
                           ),
@@ -87,14 +88,14 @@ class LegacySeedViewScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             BBText(
-                              'Passphrases:',
+                              context.loc.legacySeedViewPassphrasesLabel,
                               style: context.font.bodyLarge,
                             ),
                             ...seed.passphrases.map(
                               (p) => BBText(
                                 p.passphrase.isNotEmpty
                                     ? p.passphrase
-                                    : '(empty)',
+                                    : context.loc.legacySeedViewEmptyPassphrase,
                                 style: context.font.bodyMedium,
                               ),
                             ),

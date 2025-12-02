@@ -147,6 +147,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
+  bitbox_flutter:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "81fbfb07b7bed6321467419f161387e20bd39bd6"
+      resolved-ref: "81fbfb07b7bed6321467419f161387e20bd39bd6"
+      url: "https://github.com/ben-kaufman/bitbox-flutter"
+    source: git
+    version: "0.1.0"
   bitcoin_base:
     dependency: "direct main"
     description:
@@ -297,10 +306,10 @@ packages:
     dependency: transitive
     description:
       name: built_value
-      sha256: a30f0a0e38671e89a492c44d005b5545b830a961575bbd8336d42869ff71066d
+      sha256: "426cf75afdb23aa74bd4e471704de3f9393f3c7b04c1e2d9c6f1073ae0b8b139"
       url: "https://pub.dev"
     source: hosted
-    version: "8.12.0"
+    version: "8.12.1"
   camera:
     dependency: transitive
     description:
@@ -618,10 +627,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: f8f4ea435f791ab1f817b4e338ed958cb3d04ba43d6736ffc39958d950754967
+      sha256: f2d9f173c2c14635cc0e9b14c143c49ef30b4934e8d1d274d6206fcb0086a06f
       url: "https://pub.dev"
     source: hosted
-    version: "10.3.6"
+    version: "10.3.3"
   file_selector_linux:
     dependency: transitive
     description:
@@ -737,10 +746,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_nfc_kit
-      sha256: "3cc4059626fa672031261512299458dd274de4ccb57a7f0ee0951ddd70a048e5"
+      sha256: "3cf589592373f1d0b0bd9583532368bb85e7cd76ae014a2b67a5ab2d68ae9450"
       url: "https://pub.dev"
     source: hosted
-    version: "3.6.0"
+    version: "3.6.1"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -1300,7 +1309,7 @@ packages:
     source: hosted
     version: "0.11.1"
   meta:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: meta
       sha256: e3641ec5d63ebf0d9b41bd43201a66e3fc79a65db5f61fc181f04cd27aab950c
@@ -1335,10 +1344,10 @@ packages:
     dependency: transitive
     description:
       name: ndef
-      sha256: bdf82a56da97983c75375ec914b7068fba4e6e0defb616c66457c28360b9c38f
+      sha256: "198ba3798e80cea381648569d84059dbba64cd140079fb7b0d9c3f1e0f5973f3"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.5"
+    version: "0.4.0"
   nested:
     dependency: transitive
     description:
@@ -1388,7 +1397,7 @@ packages:
     source: hosted
     version: "3.2.1"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: "75cca69d1490965be98c73ceaea117e8a04dd21217b37b292c9ddbec0d955bc5"
@@ -1775,10 +1784,10 @@ packages:
     dependency: transitive
     description:
       name: sqlite3_flutter_libs
-      sha256: "69c80d812ef2500202ebd22002cbfc1b6565e9ff56b2f971e757fac5d42294df"
+      sha256: "1e800ebe7f85a80a66adacaa6febe4d5f4d8b75f244e9838a27cb2ffc7aec08d"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.40"
+    version: "0.5.41"
   sqlparser:
     dependency: transitive
     description:
@@ -1936,10 +1945,10 @@ packages:
     dependency: transitive
     description:
       name: universal_io
-      sha256: ba9dde5f7c6d8ec7ed856bef0eb01c425881acae7748f77dac4d5cc46f2edf04
+      sha256: f63cbc48103236abf48e345e07a03ce5757ea86285ed313a6a032596ed9301e2
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.3"
+    version: "2.3.1"
   universal_platform:
     dependency: transitive
     description:
@@ -2166,6 +2175,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.13.0"
+  workmanager:
+    dependency: "direct main"
+    description:
+      name: workmanager
+      sha256: "746a50c535af15b6dc225abbd9b52ab272bcd292c535a104c54b5bc02609c38a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   xdg_directories:
     dependency: transitive
     description:

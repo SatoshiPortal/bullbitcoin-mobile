@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_currency_dropdown.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_bottom_buttons.dart';
@@ -34,7 +35,7 @@ class _SellScreenState extends State<SellScreen> {
                   },
                 )
                 : null,
-        title: const Text('Sell Bitcoin'),
+        title: Text(context.loc.sellTitle),
       ),
       body: SafeArea(
         child: Form(
