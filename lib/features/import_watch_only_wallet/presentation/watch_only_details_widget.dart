@@ -73,7 +73,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                     Icons.keyboard_arrow_down,
                     color: context.appColors.text,
                   ),
-                  value: entity.signerDevice,
+                  initialValue: entity.signerDevice,
                   items:
                       [null, ...SignerDeviceEntity.values]
                           .map(
@@ -176,7 +176,7 @@ class _XpubDetailsWidget extends StatelessWidget {
                 Icons.keyboard_arrow_down,
                 color: context.appColors.text,
               ),
-              value: entity.extendedPubkey.derivation,
+              initialValue: entity.extendedPubkey.derivation,
               items:
                   [...satoshifier.Derivation.values]
                       .map(

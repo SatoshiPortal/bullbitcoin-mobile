@@ -90,7 +90,7 @@ class SettleBottomSheet extends StatelessWidget {
                         Switch(
                           value: state.withRecoverableVtxos,
                           onChanged: cubit.onChangedSelectRecoverableVtxos,
-                          activeColor: context.appColors.primary,
+                          activeThumbColor: context.appColors.primary,
                         ),
                       ],
                     ),

@@ -58,31 +58,32 @@ class AccountOwnershipWidget extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(
-                color:
-                    isSelected
-                        ? context.appColors.primary
-                        : context.appColors.surface,
+                color: isSelected
+                    ? context.appColors.primary
+                    : context.appColors.surface,
                 width: 1,
               ),
             ),
-            child: Row(
-              children: [
-                Radio<bool>(
-                  value: value,
-                  groupValue: (formData[key] as String?) == 'true',
-                  onChanged: (_) => onFormDataChanged(key, value.toString()),
-                  activeColor: context.appColors.primary,
-                ),
-                const Gap(8),
-                Expanded(
-                  child: BBText(
-                    label,
-                    style: context.font.headlineSmall?.copyWith(
-                      color: context.appColors.secondary,
+            child: RadioGroup<bool>(
+              groupValue: (formData[key] as String?) == 'true',
+              onChanged: (_) => onFormDataChanged(key, value.toString()),
+              child: Row(
+                children: [
+                  Radio<bool>(
+                    value: value,
+                    activeColor: context.appColors.primary,
+                  ),
+                  const Gap(8),
+                  Expanded(
+                    child: BBText(
+                      label,
+                      style: context.font.headlineSmall?.copyWith(
+                        color: context.appColors.secondary,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

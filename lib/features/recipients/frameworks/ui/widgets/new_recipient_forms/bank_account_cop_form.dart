@@ -96,7 +96,7 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
                   Icons.keyboard_arrow_down,
                   color: context.appColors.secondary,
                 ),
-                value: _institutionNumber,
+                initialValue: _institutionNumber,
                 onChanged: (value) {
                   setState(() {
                     _institutionNumber = value;

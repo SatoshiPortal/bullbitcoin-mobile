@@ -74,7 +74,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                   Icons.keyboard_arrow_down,
                   color: context.appColors.secondary,
                 ),
-                value: selectedWallet?.id,
+                initialValue: selectedWallet?.id,
                 items: [
                   ...wallets.map((w) {
                     final label =

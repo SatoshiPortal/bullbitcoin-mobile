@@ -47,7 +47,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
                   isLoading
                       ? const LoadingLineContent()
                       : DropdownButtonFormField<String>(
-                        value: selectedCurrency ?? initialCurrency?.code,
+                        initialValue: selectedCurrency ?? initialCurrency?.code,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(

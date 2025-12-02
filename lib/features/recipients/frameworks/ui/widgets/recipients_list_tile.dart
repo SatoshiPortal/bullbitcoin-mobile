@@ -28,10 +28,9 @@ class RecipientsListTile extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
-            color:
-                selected
-                    ? context.appColors.primary
-                    : context.appColors.surface,
+            color: selected
+                ? context.appColors.primary
+                : context.appColors.surface,
           ),
           color: context.appColors.onPrimary,
         ),
@@ -51,13 +50,15 @@ class RecipientsListTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                Radio<bool>(
-                  value: true,
+                RadioGroup<bool>(
                   groupValue: selected,
                   onChanged: (_) => onTap(),
-                  activeColor: context.appColors.primary,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  visualDensity: VisualDensity.compact,
+                  child: Radio<bool>(
+                    value: true,
+                    activeColor: context.appColors.primary,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                  ),
                 ),
               ],
             ),

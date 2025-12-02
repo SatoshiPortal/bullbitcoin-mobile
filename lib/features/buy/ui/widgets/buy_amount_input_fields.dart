@@ -212,7 +212,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
-                value: currency?.code,
+                initialValue: currency?.code,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.0),

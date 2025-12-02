@@ -198,33 +198,32 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
             ),
           ),
           const Gap(8.0),
-          RadioListTile<bool>(
-            title: const Text('This is my account'),
-            value: true,
+          RadioGroup<bool>(
             groupValue: _isMyAccount,
             onChanged: (value) {
-              setState(() {
-                _isMyAccount = value ?? true;
-              });
+              if (!_onlyOwnerPermitted) {
+                setState(() {
+                  _isMyAccount = value ?? false;
+                });
+              }
             },
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity.compact,
-          ),
-          const Gap(8.0),
-          RadioListTile<bool>(
-            title: const Text("This is someone else's account"),
-            value: false,
-            groupValue: _isMyAccount,
-            onChanged:
-                _onlyOwnerPermitted
-                    ? null
-                    : (value) {
-                      setState(() {
-                        _isMyAccount = value ?? false;
-                      });
-                    },
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity.compact,
+            child: const Column(
+              children: [
+                RadioListTile<bool>(
+                  title: Text('This is my account'),
+                  value: true,
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+                Gap(8.0),
+                RadioListTile<bool>(
+                  title: Text("This is someone else's account"),
+                  value: false,
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
+            ),
           ),
           const Gap(24.0),
           RecipientFormContinueButton(onPressed: _submitForm),

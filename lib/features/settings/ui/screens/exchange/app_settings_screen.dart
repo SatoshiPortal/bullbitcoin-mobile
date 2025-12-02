@@ -146,7 +146,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
-                value: selectedValue,
+                initialValue: selectedValue,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
