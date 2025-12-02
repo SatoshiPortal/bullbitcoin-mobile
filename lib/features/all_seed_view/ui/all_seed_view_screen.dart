@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -8,46 +9,151 @@ import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubi
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AllSeedViewScreen extends StatefulWidget {
+class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
   const AllSeedViewScreen({super.key});
 
   @override
-  State<AllSeedViewScreen> createState() => _AllSeedViewScreenState();
-}
-
-class _AllSeedViewScreenState extends State<AllSeedViewScreen>
-    with PrivacyScreen {
-  bool _hasStartedFetch = false;
-  AllSeedViewCubit? _cubit;
-
-  @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) {
     enableScreenPrivacy();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _cubit = context.read<AllSeedViewCubit>();
-    // Fetch seeds after the first frame is rendered to avoid blocking navigation
-    if (!_hasStartedFetch) {
-      _hasStartedFetch = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          _cubit?.fetchAllSeeds();
+    final cubit = context.read<AllSeedViewCubit>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (cubit.state.loading &&
+          cubit.state.existingWallets.isEmpty &&
+          cubit.state.oldWallets.isEmpty &&
+          cubit.state.error == null) {
+        cubit.fetchAllSeeds();
+      }
+    });
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          disableScreenPrivacy();
         }
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    // Clear state when navigating away
-    _cubit?.clearState();
-    _cubit?.hideSeeds();
-    disableScreenPrivacy();
-    super.dispose();
+      },
+      child: BlocBuilder<AllSeedViewCubit, AllSeedViewState>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: BBText(
+                context.loc.allSeedViewTitle,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(3),
+                child:
+                    state.loading
+                        ? FadingLinearProgress(
+                          height: 3,
+                          trigger: state.loading,
+                          backgroundColor: context.colour.surface,
+                          foregroundColor: context.colour.primary,
+                        )
+                        : const SizedBox(height: 3),
+              ),
+            ),
+            body: Builder(
+              builder: (context) {
+                if (state.loading) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: BBText(
+                        context.loc.allSeedViewLoadingMessage,
+                        style: context.font.bodyMedium,
+                        color: context.colour.onSurface.withValues(alpha: 0.7),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
+                if (state.error != null) {
+                  return Center(
+                    child: BBText(state.error!, style: context.font.bodyLarge),
+                  );
+                }
+                if (state.allSeeds.isEmpty) {
+                  return Center(
+                    child: BBText(
+                      context.loc.allSeedViewNoSeedsFound,
+                      style: context.font.bodyLarge,
+                    ),
+                  );
+                }
+                if (!state.seedsVisible) {
+                  return SafeArea(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: Icon(
+                              Icons.visibility_off,
+                              size: 120,
+                              color: context.colour.onSurface.withValues(
+                                alpha: 0.3,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: BBButton.big(
+                            label: context.loc.allSeedViewShowSeedsButton,
+                            onPressed: () => _showWarningDialog(context),
+                            bgColor: context.colour.secondary,
+                            textColor: context.colour.onSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    if (state.existingWallets.isNotEmpty) ...[
+                      BBText(
+                        context.loc.allSeedViewExistingWallets(
+                          state.existingWallets.length,
+                        ),
+                        style: context.font.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        color: context.colour.onSurface,
+                      ),
+                      const SizedBox(height: 8),
+                      ...state.existingWallets.map<Widget>(
+                        (seed) =>
+                            _buildSeedCard(context, seed, isOldWallet: false),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                    if (state.oldWallets.isNotEmpty) ...[
+                      BBText(
+                        context.loc.allSeedViewOldWallets(
+                          state.oldWallets.length,
+                        ),
+                        style: context.font.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        color: context.colour.onSurface,
+                      ),
+                      const SizedBox(height: 8),
+                      ...state.oldWallets.map<Widget>(
+                        (seed) =>
+                            _buildSeedCard(context, seed, isOldWallet: true),
+                      ),
+                    ],
+                  ],
+                );
+              },
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _showWarningDialog(BuildContext context) {
@@ -58,21 +164,21 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
         return AlertDialog(
           backgroundColor: context.colour.onPrimary,
           title: Text(
-            'Security Warning',
+            context.loc.allSeedViewSecurityWarningTitle,
             style: context.font.headlineSmall?.copyWith(
               color: context.colour.onSurface,
             ),
           ),
           content: SingleChildScrollView(
             child: Text(
-              'Displaying seed phrases is a security risk. Anyone who sees your seed phrase can access your funds. Make sure you are in a private location and that no one can see your screen.',
+              context.loc.allSeedViewSecurityWarningMessage,
               style: context.font.bodyMedium,
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text('Cancel', style: context.font.bodyMedium),
+              child: Text(context.loc.cancel, style: context.font.bodyMedium),
             ),
             TextButton(
               onPressed: () {
@@ -80,7 +186,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                 context.read<AllSeedViewCubit>().showSeeds();
               },
               child: Text(
-                'I Understand',
+                context.loc.allSeedViewIUnderstandButton,
                 style: context.font.bodyMedium?.copyWith(
                   color: context.colour.primary,
                   fontWeight: FontWeight.bold,
@@ -104,7 +210,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
         return AlertDialog(
           backgroundColor: context.colour.onPrimary,
           title: Text(
-            'WARNING!',
+            context.loc.allSeedViewDeleteWarningTitle,
             style: context.font.headlineSmall?.copyWith(
               color: context.colour.error,
               fontWeight: FontWeight.bold,
@@ -112,14 +218,14 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
           ),
           content: SingleChildScrollView(
             child: Text(
-              'Deleting the seed is an irreversible action. Only do this if you have secure backups of this seed or the associated wallets have been fully drained.',
+              context.loc.allSeedViewDeleteWarningMessage,
               style: context.font.bodyMedium,
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text('Cancel', style: context.font.bodyMedium),
+              child: Text(context.loc.cancel, style: context.font.bodyMedium),
             ),
             TextButton(
               onPressed: () {
@@ -129,7 +235,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                 );
               },
               child: Text(
-                'Delete',
+                context.loc.delete,
                 style: context.font.bodyMedium?.copyWith(
                   color: context.colour.error,
                   fontWeight: FontWeight.bold,
@@ -139,134 +245,6 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
           ],
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          context.read<AllSeedViewCubit>().hideSeeds();
-          context.read<AllSeedViewCubit>().clearState();
-        }
-      },
-      child: BlocBuilder<AllSeedViewCubit, AllSeedViewState>(
-        builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const BBText(
-                'Seed Viewer',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(3),
-                child:
-                    state.loading
-                        ? FadingLinearProgress(
-                          height: 3,
-                          trigger: state.loading,
-                          backgroundColor: context.colour.surface,
-                          foregroundColor: context.colour.primary,
-                        )
-                        : const SizedBox(height: 3),
-              ),
-            ),
-            body: Builder(
-              builder: (context) {
-                if (state.loading) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: BBText(
-                        'This may take a while to load if you have a lot of seeds on this device.',
-                        style: context.font.bodyMedium,
-                        color: context.colour.onSurface.withValues(alpha: 0.7),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                }
-                if (state.error != null) {
-                  return Center(
-                    child: BBText(state.error!, style: context.font.bodyLarge),
-                  );
-                }
-                if (state.allSeeds.isEmpty) {
-                  return Center(
-                    child: BBText(
-                      'No seeds found.',
-                      style: context.font.bodyLarge,
-                    ),
-                  );
-                }
-                if (!state.seedsVisible) {
-                  return SafeArea(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: Center(
-                            child: Icon(
-                              Icons.visibility_off,
-                              size: 120,
-                              color: context.colour.onSurface.withValues(
-                                alpha: 0.3,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: BBButton.big(
-                            label: 'Show Seeds',
-                            onPressed: () => _showWarningDialog(context),
-                            bgColor: context.colour.secondary,
-                            textColor: context.colour.onSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                return ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    if (state.existingWallets.isNotEmpty) ...[
-                      BBText(
-                        'Existing Wallets (${state.existingWallets.length})',
-                        style: context.font.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        color: context.colour.onSurface,
-                      ),
-                      const SizedBox(height: 8),
-                      ...state.existingWallets.map<Widget>(
-                        (seed) =>
-                            _buildSeedCard(context, seed, isOldWallet: false),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                    if (state.oldWallets.isNotEmpty) ...[
-                      BBText(
-                        'Old Wallets (${state.oldWallets.length})',
-                        style: context.font.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        color: context.colour.onSurface,
-                      ),
-                      const SizedBox(height: 8),
-                      ...state.oldWallets.map<Widget>(
-                        (seed) =>
-                            _buildSeedCard(context, seed, isOldWallet: true),
-                      ),
-                    ],
-                  ],
-                );
-              },
-            ),
-          );
-        },
-      ),
     );
   }
 
@@ -319,7 +297,10 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText('Passphrase:', style: context.font.bodyLarge),
+                  BBText(
+                    context.loc.allSeedViewPassphraseLabel,
+                    style: context.font.bodyLarge,
+                  ),
                   BBText(
                     seed.passphrase!,
                     style: context.font.bodyMedium,

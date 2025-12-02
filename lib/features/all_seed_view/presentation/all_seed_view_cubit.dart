@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_from_secure_storage_usecase.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/process_and_separate_seeds_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,20 +11,17 @@ part 'all_seed_view_state.dart';
 
 class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   AllSeedViewCubit({
-    required GetAllSeedsFromSecureStorageUsecase
-    getAllSeedsFromSecureStorageUsecase,
+    required GetAllSeedsUsecase getAllSeedsUsecase,
     required GetWalletsUsecase getWalletsUsecase,
     required DeleteSeedUsecase deleteSeedUsecase,
     required ProcessAndSeparateSeedsUsecase processAndSeparateSeedsUsecase,
-  }) : _getAllSeedsFromSecureStorageUsecase =
-           getAllSeedsFromSecureStorageUsecase,
+  }) : _getAllSeedsUsecase = getAllSeedsUsecase,
        _getWalletsUsecase = getWalletsUsecase,
        _deleteSeedUsecase = deleteSeedUsecase,
        _processAndSeparateSeedsUsecase = processAndSeparateSeedsUsecase,
        super(const AllSeedViewState());
 
-  final GetAllSeedsFromSecureStorageUsecase
-  _getAllSeedsFromSecureStorageUsecase;
+  final GetAllSeedsUsecase _getAllSeedsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final DeleteSeedUsecase _deleteSeedUsecase;
   final ProcessAndSeparateSeedsUsecase _processAndSeparateSeedsUsecase;
@@ -33,7 +30,7 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
     emit(state.copyWith(loading: true, error: null));
     try {
       // Fetch all seeds and wallets in parallel
-      final seeds = await _getAllSeedsFromSecureStorageUsecase.execute();
+      final seeds = await _getAllSeedsUsecase.execute();
       final wallets = await _getWalletsUsecase.execute();
 
       // Map wallets to their master fingerprints
@@ -48,19 +45,16 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
 
       emit(
         state.copyWith(
-          loading: false,
           existingWallets: result.existingWallets,
           oldWallets: result.oldWallets,
           error: null,
         ),
       );
     } catch (e) {
-      emit(state.copyWith(loading: false, error: e.toString()));
+      emit(state.copyWith(error: e.toString()));
+    } finally {
+      emit(state.copyWith(loading: false));
     }
-  }
-
-  void clearState() {
-    emit(const AllSeedViewState());
   }
 
   void showSeeds() {
@@ -94,5 +88,11 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
     } catch (e) {
       emit(state.copyWith(error: 'Failed to delete seed: $e'));
     }
+  }
+
+  @override
+  Future<void> close() {
+    emit(const AllSeedViewState());
+    return super.close();
   }
 }
