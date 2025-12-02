@@ -10,7 +10,6 @@ class DeleteSeedUsecase {
   Future<void> execute(String fingerprint) async {
     try {
       await _seedRepository.delete(fingerprint);
-      log.fine('Deleted seed with fingerprint: $fingerprint');
     } catch (e) {
       log.severe('Failed to delete seed with fingerprint $fingerprint: $e');
       rethrow;

@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_from_secure_storage_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/process_and_separate_seeds_usecase.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -13,35 +13,32 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   AllSeedViewCubit({
     required GetAllSeedsFromSecureStorageUsecase
     getAllSeedsFromSecureStorageUsecase,
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required GetWalletsUsecase getWalletsUsecase,
     required DeleteSeedUsecase deleteSeedUsecase,
     required ProcessAndSeparateSeedsUsecase processAndSeparateSeedsUsecase,
   }) : _getAllSeedsFromSecureStorageUsecase =
            getAllSeedsFromSecureStorageUsecase,
-       _walletMetadataDatasource = walletMetadataDatasource,
+       _getWalletsUsecase = getWalletsUsecase,
        _deleteSeedUsecase = deleteSeedUsecase,
        _processAndSeparateSeedsUsecase = processAndSeparateSeedsUsecase,
        super(const AllSeedViewState());
 
   final GetAllSeedsFromSecureStorageUsecase
   _getAllSeedsFromSecureStorageUsecase;
-  final WalletMetadataDatasource _walletMetadataDatasource;
+  final GetWalletsUsecase _getWalletsUsecase;
   final DeleteSeedUsecase _deleteSeedUsecase;
   final ProcessAndSeparateSeedsUsecase _processAndSeparateSeedsUsecase;
 
   Future<void> fetchAllSeeds() async {
     emit(state.copyWith(loading: true, error: null));
     try {
-      // Fetch all seeds and wallet metadata in parallel
-      final seedsFuture = _getAllSeedsFromSecureStorageUsecase.execute();
-      final walletMetadataFuture = _walletMetadataDatasource.fetchAll();
+      // Fetch all seeds and wallets in parallel
+      final seeds = await _getAllSeedsFromSecureStorageUsecase.execute();
+      final wallets = await _getWalletsUsecase.execute();
 
-      final seeds = await seedsFuture;
-      final walletMetadata = await walletMetadataFuture;
-
-      // Get set of fingerprints from existing wallets
+      // Map wallets to their master fingerprints
       final existingFingerprints =
-          walletMetadata.map((metadata) => metadata.masterFingerprint).toSet();
+          wallets.map((wallet) => wallet.masterFingerprint).toSet();
 
       // Process and separate seeds into existing and old wallets
       final result = _processAndSeparateSeedsUsecase.execute(

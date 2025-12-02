@@ -12,7 +12,6 @@ class GetAllSeedsFromSecureStorageUsecase {
   Future<List<MnemonicSeed>> execute() async {
     try {
       final seeds = await _seedRepository.getAllMnemonicSeeds();
-      log.fine('Found ${seeds.length} seeds in secure storage');
       return seeds;
     } catch (e) {
       log.severe('Failed to fetch all seeds from secure storage: $e');

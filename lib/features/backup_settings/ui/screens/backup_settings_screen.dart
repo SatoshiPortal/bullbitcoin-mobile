@@ -68,6 +68,8 @@ class _Screen extends StatelessWidget {
                   const _StartBackupButton(),
                   const Gap(12),
                   const _Bip329LabelsButton(),
+                  const Gap(12),
+                  const _RecoverBullSettingsButton(),
                   const Gap(20),
                   if (state.error != null) ErrorWidget(error: state.error!),
                 ],
@@ -251,6 +253,30 @@ class _Bip329LabelsButton extends StatelessWidget {
       onPressed: () => context.push(Bip329LabelsRouter.route.path),
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
+    );
+  }
+}
+
+class _RecoverBullSettingsButton extends StatelessWidget {
+  const _RecoverBullSettingsButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.big(
+      label: context.loc.backupSettingsRecoverBullSettings,
+      onPressed: () {
+        context.pushNamed(
+          RecoverBullRoute.recoverbullFlows.name,
+          extra: RecoverBullFlowsExtra(
+            flow: RecoverBullFlow.settings,
+            vault: null,
+          ),
+        );
+      },
+      borderColor: context.colour.secondary,
+      outlined: true,
+      bgColor: Colors.transparent,
+      textColor: context.colour.secondary,
     );
   }
 }

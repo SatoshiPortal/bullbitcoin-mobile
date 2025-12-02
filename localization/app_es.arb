@@ -6278,6 +6278,10 @@
   "@backupSettingsLabelsButton": {
     "description": "Button text to manage transaction labels"
   },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
   "backupWalletImportanceWarning": "Sin un respaldo, eventualmente perderá el acceso a su dinero. Es críticamente importante hacer un respaldo.",
   "@backupWalletImportanceWarning": {
     "description": "Warning message emphasizing the importance of creating a backup"
