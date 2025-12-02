@@ -18,21 +18,6 @@ import 'package:intl/intl.dart';
 class DriveVaultsListPage extends StatelessWidget {
   const DriveVaultsListPage({super.key});
 
-  String _getLocalizedError(BuildContext context, String errorKey) {
-    switch (errorKey) {
-      case 'recoverbullGoogleDriveErrorFetchFailed':
-        return context.loc.recoverbullGoogleDriveErrorFetchFailed;
-      case 'recoverbullGoogleDriveErrorSelectFailed':
-        return context.loc.recoverbullGoogleDriveErrorSelectFailed;
-      case 'recoverbullGoogleDriveErrorDeleteFailed':
-        return context.loc.recoverbullGoogleDriveErrorDeleteFailed;
-      case 'recoverbullGoogleDriveErrorExportFailed':
-        return context.loc.recoverbullGoogleDriveErrorExportFailed;
-      default:
-        return context.loc.recoverbullGoogleDriveErrorGeneric;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final state = context
@@ -40,7 +25,7 @@ class DriveVaultsListPage extends StatelessWidget {
           (bloc) => bloc.state,
         );
 
-    final errorKey = state.errorKey;
+    final error = state.error;
     final driveMetadata = state.driveMetadata;
 
     return Scaffold(
@@ -62,8 +47,8 @@ class DriveVaultsListPage extends StatelessWidget {
           ),
           Expanded(
             child:
-                errorKey != null
-                    ? Center(child: Text(_getLocalizedError(context, errorKey)))
+                error != null
+                    ? Center(child: Text(error.message))
                     : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: SingleChildScrollView(

@@ -6938,15 +6938,15 @@
       }
     }
   },
-  "recoverbullGoogleDriveErrorDeleteFailed": "Failed to delete vault backup",
+  "recoverbullGoogleDriveErrorDeleteFailed": "Failed to delete vault from Google Drive",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
   },
-  "recoverbullGoogleDriveErrorExportFailed": "Failed to export vault backup",
+  "recoverbullGoogleDriveErrorExportFailed": "Failed to export vault from Google Drive",
   "@recoverbullGoogleDriveErrorExportFailed": {
     "description": "Error message when exporting a drive backup fails"
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "Failed to fetch all drive backups",
+  "recoverbullGoogleDriveErrorFetchFailed": "Failed to fetch vaults from Google Drive",
   "@recoverbullGoogleDriveErrorFetchFailed": {
     "description": "Error message when fetching drive backups fails"
   },
@@ -6954,7 +6954,7 @@
   "@recoverbullGoogleDriveErrorGeneric": {
     "description": "Generic error message for unknown errors"
   },
-  "recoverbullGoogleDriveErrorSelectFailed": "Failed to load vault backup",
+  "recoverbullGoogleDriveErrorSelectFailed": "Failed to select vault from Google Drive",
   "@recoverbullGoogleDriveErrorSelectFailed": {
     "description": "Error message when selecting/loading a drive backup fails"
   },

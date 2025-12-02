@@ -6938,15 +6938,15 @@
       }
     }
   },
-  "recoverbullGoogleDriveErrorDeleteFailed": "Échec de la suppression de la sauvegarde du coffre-fort",
+  "recoverbullGoogleDriveErrorDeleteFailed": "Échec de la suppression du coffre-fort de Google Drive",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
   },
-  "recoverbullGoogleDriveErrorExportFailed": "Échec de l'exportation de la sauvegarde du coffre-fort",
+  "recoverbullGoogleDriveErrorExportFailed": "Échec de l'exportation du coffre-fort de Google Drive",
   "@recoverbullGoogleDriveErrorExportFailed": {
     "description": "Error message when exporting a drive backup fails"
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "Échec de la récupération de toutes les sauvegardes Drive",
+  "recoverbullGoogleDriveErrorFetchFailed": "Échec de la récupération des coffres-forts de Google Drive",
   "@recoverbullGoogleDriveErrorFetchFailed": {
     "description": "Error message when fetching drive backups fails"
   },
@@ -6954,7 +6954,7 @@
   "@recoverbullGoogleDriveErrorGeneric": {
     "description": "Generic error message for unknown errors"
   },
-  "recoverbullGoogleDriveErrorSelectFailed": "Échec du chargement de la sauvegarde du coffre-fort",
+  "recoverbullGoogleDriveErrorSelectFailed": "Échec de la sélection du coffre-fort de Google Drive",
   "@recoverbullGoogleDriveErrorSelectFailed": {
     "description": "Error message when selecting/loading a drive backup fails"
   },

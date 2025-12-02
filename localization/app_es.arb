@@ -6938,15 +6938,15 @@
       }
     }
   },
-  "recoverbullGoogleDriveErrorDeleteFailed": "Error al eliminar la copia de seguridad de la bóveda",
+  "recoverbullGoogleDriveErrorDeleteFailed": "Error al eliminar el cofre de Google Drive",
   "@recoverbullGoogleDriveErrorDeleteFailed": {
     "description": "Error message when deleting a drive backup fails"
   },
-  "recoverbullGoogleDriveErrorExportFailed": "Error al exportar la copia de seguridad de la bóveda",
+  "recoverbullGoogleDriveErrorExportFailed": "Error al exportar el cofre de Google Drive",
   "@recoverbullGoogleDriveErrorExportFailed": {
     "description": "Error message when exporting a drive backup fails"
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "Error al obtener todas las copias de seguridad de Drive",
+  "recoverbullGoogleDriveErrorFetchFailed": "Error al obtener los cofres de Google Drive",
   "@recoverbullGoogleDriveErrorFetchFailed": {
     "description": "Error message when fetching drive backups fails"
   },
@@ -6954,7 +6954,7 @@
   "@recoverbullGoogleDriveErrorGeneric": {
     "description": "Generic error message for unknown errors"
   },
-  "recoverbullGoogleDriveErrorSelectFailed": "Error al cargar la copia de seguridad de la bóveda",
+  "recoverbullGoogleDriveErrorSelectFailed": "Error al seleccionar el cofre de Google Drive",
   "@recoverbullGoogleDriveErrorSelectFailed": {
     "description": "Error message when selecting/loading a drive backup fails"
   },
