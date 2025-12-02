@@ -8498,41 +8498,53 @@
   "@importQrDevicePassportInstructionsTitle": {
     "description": "Title for Passport setup instructions"
   },
-  "importQrDevicePassportStep1": "Turn on your Passport device",
+  "importQrDevicePassportStep1": "Power on your Passport device",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "importQrDevicePassportStep2": "Select Manage Account",
+  "importQrDevicePassportStep2": "Enter your PIN",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
-  "importQrDevicePassportStep3": "Select Connect Wallet",
+  "importQrDevicePassportStep3": "Select \"Manage Account\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
-  "importQrDevicePassportStep4": "Select Sparrow",
+  "importQrDevicePassportStep4": "Select \"Connect Wallet\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
-  "importQrDevicePassportStep5": "Select Single-sig",
+  "importQrDevicePassportStep5": "Select \"Sparrow\" option",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
-  "importQrDevicePassportStep6": "Select QR Code",
+  "importQrDevicePassportStep6": "Select \"Single-sig\"",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
-  "importQrDevicePassportStep7": "Click the \"open camera\" button",
+  "importQrDevicePassportStep7": "Select \"QR Code\"",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "importQrDevicePassportStep8": "Scan the QR code you see on your device.",
+  "importQrDevicePassportStep8": "On your mobile device, tap \"open camera\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
-  "importQrDevicePassportStep9": "That's it!",
+  "importQrDevicePassportStep9": "Scan the QR code displayed on your Passport",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
+  },
+  "importQrDevicePassportStep10": "In the BULL wallet app, select \"Segwit (BIP84)\" as the derivation option",
+  "@importQrDevicePassportStep10": {
+    "description": "Passport instruction step 10"
+  },
+  "importQrDevicePassportStep11": "Enter a label for your Passport wallet and tap \"Import\"",
+  "@importQrDevicePassportStep11": {
+    "description": "Passport instruction step 11"
+  },
+  "importQrDevicePassportStep12": "Setup complete.",
+  "@importQrDevicePassportStep12": {
+    "description": "Passport instruction step 12"
   },
   "importQrDeviceSeedsignerName": "SeedSigner",
   "@importQrDeviceSeedsignerName": {
