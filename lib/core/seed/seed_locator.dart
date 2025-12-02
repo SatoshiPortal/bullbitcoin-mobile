@@ -53,7 +53,10 @@ class SeedLocator {
     );
 
     locator.registerFactory<DeleteSeedUsecase>(
-      () => DeleteSeedUsecase(seedRepository: locator<SeedRepository>()),
+      () => DeleteSeedUsecase(
+        seedRepository: locator<SeedRepository>(),
+        walletRepository: locator<WalletRepository>(),
+      ),
     );
 
     locator.registerFactory<ProcessAndSeparateSeedsUsecase>(
