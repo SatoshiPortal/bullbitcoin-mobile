@@ -20,16 +20,17 @@ class TransactionDetailsAmount extends StatelessWidget {
     final isExternalChainSwap =
         swap is ChainSwap && swap.receiveWalletId == null;
     final amountSat =
-        isSwap
+        isSwap && swap != null
             ? (isExternalChainSwap
                 ? swap.receieveAmount
                 : (tx?.isOutgoing == true
-                    ? swap!.amountSat
-                    : swap?.receieveAmount))
+                    ? swap.amountSat
+                    : swap.receieveAmount))
             : tx?.amountSat;
     final orderAmountAndCurrency = tx?.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =
         isOrder &&
+        tx?.order != null &&
         (tx!.order is FiatPaymentOrder ||
             tx.order is BalanceAdjustmentOrder ||
             tx.order is WithdrawOrder ||
