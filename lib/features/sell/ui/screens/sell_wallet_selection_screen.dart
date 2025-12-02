@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -31,7 +32,7 @@ class SellWalletSelectionScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Wallet')),
+      appBar: AppBar(title: Text(context.loc.sellSelectWallet)),
       body: SafeArea(
         child: Column(
           children: [
@@ -46,7 +47,7 @@ class SellWalletSelectionScreen extends StatelessWidget {
                 children: [
                   const Gap(24.0),
                   Text(
-                    'Which wallet do you want to sell from?',
+                    context.loc.sellWhichWalletQuestion,
                     style: context.font.labelMedium?.copyWith(
                       color: Colors.black,
                     ),
@@ -66,8 +67,8 @@ class SellWalletSelectionScreen extends StatelessWidget {
                   ListTile(
                     tileColor: context.colour.onPrimary,
                     shape: const Border(),
-                    title: const Text('External wallet'),
-                    subtitle: const Text('Sell from another Bitcoin wallet'),
+                    title: Text(context.loc.sellExternalWallet),
+                    subtitle: Text(context.loc.sellFromAnotherWallet),
                     trailing: const Icon(Icons.chevron_right),
                     onTap:
                         isCreatingSellOrder
@@ -103,32 +104,32 @@ class _SellError extends StatelessWidget {
     return Center(
       child: switch (sellError) {
         AboveMaxAmountSellError _ => Text(
-          'You are trying to sell above the maximum amount that can be sold with this wallet.',
+          context.loc.sellAboveMaxAmountError,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
         BelowMinAmountSellError _ => Text(
-          'You are trying to sell below the minimum amount that can be sold with this wallet.',
+          context.loc.sellBelowMinAmountError,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
         InsufficientBalanceSellError _ => Text(
-          'Insufficient balance in the selected wallet to complete this sell order.',
+          context.loc.sellInsufficientBalanceError,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
         UnauthenticatedSellError _ => Text(
-          'You are not authenticated. Please log in to continue.',
+          context.loc.sellUnauthenticatedError,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
         OrderNotFoundSellError _ => Text(
-          'The sell order was not found. Please try again.',
+          context.loc.sellOrderNotFoundError,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
         OrderAlreadyConfirmedSellError _ => Text(
-          'This sell order has already been confirmed.',
+          context.loc.sellOrderAlreadyConfirmedError,
           style: context.font.bodyMedium?.copyWith(color: context.colour.error),
           textAlign: TextAlign.center,
         ),
