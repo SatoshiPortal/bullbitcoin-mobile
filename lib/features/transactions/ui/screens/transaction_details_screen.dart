@@ -105,9 +105,9 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const LoadingLineContent(width: 150)
                 else
                   const TransactionDetailsStatusLabel(),
-                if (isOngoingSwap == true) ...[
+                if (isOngoingSwap == true && swap != null) ...[
                   const Gap(8),
-                  SwapProgressIndicator(swap: swap!),
+                  SwapProgressIndicator(swap: swap),
                 ],
                 if (isLoading)
                   const LoadingLineContent(
@@ -124,6 +124,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                 ],
                 if (isOrderType &&
                     tx?.isBuyOrder == true &&
+                    tx?.order != null &&
                     (tx!.order! as BuyOrder).bitcoinAddress != null &&
                     tx.order!.sentAt == null) ...[
                   AccelerateTransactionListTile(
@@ -170,11 +171,11 @@ class TransactionDetailsScreen extends StatelessWidget {
                   BBButton.big(
                     label: 'Add note',
                     disabled:
-                        !(walletTransaction?.labels.length != null &&
-                            walletTransaction!.labels.length < 10),
+                        !(walletTransaction != null &&
+                            walletTransaction.labels.length < 10),
                     onPressed: () async {
-                      if (walletTransaction?.labels.length != null &&
-                          walletTransaction!.labels.length < 10) {
+                      if (walletTransaction != null &&
+                          walletTransaction.labels.length < 10) {
                         await showTransactionLabelBottomSheet(context);
                       } else {
                         log.warning(
