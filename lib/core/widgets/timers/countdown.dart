@@ -91,7 +91,7 @@ class _CountdownState extends State<Countdown> {
           widget.textStyle ??
           context.font.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            color: context.colour.primary,
+            color: context.colorScheme.primary,
           ),
     );
   }

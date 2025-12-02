@@ -46,7 +46,10 @@ class SendConfirmPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.loc.arkSendConfirmTitle, style: context.font.headlineMedium),
+        title: Text(
+          context.loc.arkSendConfirmTitle,
+          style: context.font.headlineMedium,
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child:
@@ -54,8 +57,8 @@ class SendConfirmPage extends StatelessWidget {
                   ? FadingLinearProgress(
                     height: 3,
                     trigger: isLoading,
-                    backgroundColor: context.colour.surface,
-                    foregroundColor: context.colour.primary,
+                    backgroundColor: context.colorScheme.surface,
+                    foregroundColor: context.colorScheme.primary,
                   )
                   : const SizedBox(height: 3),
         ),
@@ -89,7 +92,7 @@ class SendConfirmPage extends StatelessWidget {
               Text(
                 error.message,
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.error,
+                  color: context.colorScheme.error,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -101,8 +104,8 @@ class SendConfirmPage extends StatelessWidget {
                 context.read<ArkCubit>().onSendConfirmed();
               },
               disabled: isLoading,
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
+              bgColor: context.colorScheme.secondary,
+              textColor: context.colorScheme.onSecondary,
             ),
           ],
         ),

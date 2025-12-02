@@ -24,7 +24,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: context.colorScheme.onPrimary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
@@ -63,7 +63,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                     BBText(
                       context.loc.backupSettingsKeyWarningBold,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.colorScheme.secondary,
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 4,
@@ -90,7 +90,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                             bgColor: Colors.transparent,
                             outlined: true,
                             textStyle: context.font.headlineLarge,
-                            textColor: context.colour.secondary,
+                            textColor: context.colorScheme.secondary,
                           ),
                         ),
                         const Gap(16),
@@ -98,9 +98,9 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                           child: BBButton.big(
                             label: context.loc.sendContinue,
                             onPressed: () => context.pop(true),
-                            bgColor: context.colour.secondary,
+                            bgColor: context.colorScheme.secondary,
                             textStyle: context.font.headlineLarge,
-                            textColor: context.colour.onPrimary,
+                            textColor: context.colorScheme.onPrimary,
                           ),
                         ),
                       ],

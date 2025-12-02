@@ -35,7 +35,7 @@ class TorConnectionStatusCard extends StatelessWidget {
                       Text(
                         _getStatusDescription(status),
                         style: context.font.bodySmall?.copyWith(
-                          color: context.colour.onSurface.withValues(
+                          color: context.colorScheme.onSurface.withValues(
                             alpha: 0.7,
                           ),
                         ),
@@ -119,7 +119,7 @@ class _StatusIndicator extends StatelessWidget {
       case TorStatus.offline:
         return Colors.red;
       case TorStatus.unknown:
-        return context.colour.onSurface.withValues(alpha: 0.5);
+        return context.colorScheme.onSurface.withValues(alpha: 0.5);
     }
   }
 

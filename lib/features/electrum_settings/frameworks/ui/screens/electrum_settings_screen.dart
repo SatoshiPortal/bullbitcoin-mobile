@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/electrum_settings/interface_adapters/presente
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+
 class ElectrumSettingsScreen extends StatelessWidget {
   const ElectrumSettingsScreen({super.key});
 
@@ -31,8 +32,8 @@ class ElectrumSettingsScreen extends StatelessWidget {
                   ? FadingLinearProgress(
                     height: 3,
                     trigger: isLoading,
-                    backgroundColor: context.colour.surface,
-                    foregroundColor: context.colour.primary,
+                    backgroundColor: context.colorScheme.surface,
+                    foregroundColor: context.colorScheme.primary,
                   )
                   : const SizedBox(height: 3),
         ),
@@ -61,13 +62,15 @@ class ElectrumSettingsScreen extends StatelessWidget {
                             context.loc.electrumNetworkBitcoin,
                             context.loc.electrumNetworkLiquid,
                           },
-                          initialValue: isLiquid
-                              ? context.loc.electrumNetworkLiquid
-                              : context.loc.electrumNetworkBitcoin,
+                          initialValue:
+                              isLiquid
+                                  ? context.loc.electrumNetworkLiquid
+                                  : context.loc.electrumNetworkBitcoin,
                           onSelected: (value) {
                             context.read<ElectrumSettingsBloc>().add(
                               ElectrumSettingsLoaded(
-                                isLiquid: value == context.loc.electrumNetworkLiquid,
+                                isLiquid:
+                                    value == context.loc.electrumNetworkLiquid,
                               ),
                             );
                           },
@@ -88,7 +91,7 @@ class ElectrumSettingsScreen extends StatelessWidget {
                 child: Text(
                   context.loc.electrumAdvancedOptions,
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.primary,
+                    color: context.colorScheme.primary,
                   ),
                 ),
               ),

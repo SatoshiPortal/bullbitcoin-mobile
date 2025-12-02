@@ -40,8 +40,8 @@ class PayWalletSelectionScreen extends StatelessWidget {
             FadingLinearProgress(
               height: 3,
               trigger: isCreatingPayOrder,
-              backgroundColor: context.colour.onPrimary,
-              foregroundColor: context.colour.primary,
+              backgroundColor: context.colorScheme.onPrimary,
+              foregroundColor: context.colorScheme.primary,
             ),
             Expanded(
               child: ScrollableColumn(
@@ -67,7 +67,7 @@ class PayWalletSelectionScreen extends StatelessWidget {
                   ),
                   const Gap(24.0),
                   ListTile(
-                    tileColor: context.colour.onPrimary,
+                    tileColor: context.colorScheme.onPrimary,
                     shape: const Border(),
                     title: Text(context.loc.payExternalWallet),
                     subtitle: Text(context.loc.payExternalWalletDescription),
@@ -108,37 +108,51 @@ class _PayError extends StatelessWidget {
       child: switch (payError) {
         AboveMaxAmountPayError _ => Text(
           context.loc.payAboveMaxAmount,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          style: context.font.bodyMedium?.copyWith(
+            color: context.colorScheme.error,
+          ),
           textAlign: TextAlign.center,
         ),
         BelowMinAmountPayError _ => Text(
           context.loc.payBelowMinAmount,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          style: context.font.bodyMedium?.copyWith(
+            color: context.colorScheme.error,
+          ),
           textAlign: TextAlign.center,
         ),
         InsufficientBalancePayError _ => Text(
           context.loc.payInsufficientBalance,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          style: context.font.bodyMedium?.copyWith(
+            color: context.colorScheme.error,
+          ),
           textAlign: TextAlign.center,
         ),
         UnauthenticatedPayError _ => Text(
           context.loc.payNotAuthenticated,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          style: context.font.bodyMedium?.copyWith(
+            color: context.colorScheme.error,
+          ),
           textAlign: TextAlign.center,
         ),
         OrderNotFoundPayError _ => Text(
           context.loc.payOrderNotFound,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          style: context.font.bodyMedium?.copyWith(
+            color: context.colorScheme.error,
+          ),
           textAlign: TextAlign.center,
         ),
         OrderAlreadyConfirmedPayError _ => Text(
           context.loc.payOrderAlreadyConfirmed,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          style: context.font.bodyMedium?.copyWith(
+            color: context.colorScheme.error,
+          ),
           textAlign: TextAlign.center,
         ),
         UnexpectedPayError _ => Text(
           payError.message,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+          style: context.font.bodyMedium?.copyWith(
+            color: context.colorScheme.error,
+          ),
           textAlign: TextAlign.center,
         ),
         _ => const SizedBox.shrink(),

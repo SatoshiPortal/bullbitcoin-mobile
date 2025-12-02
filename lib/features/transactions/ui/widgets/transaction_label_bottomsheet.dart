@@ -21,7 +21,7 @@ Future<void> showTransactionLabelBottomSheet(
   await showModalBottomSheet(
     context: context,
     useRootNavigator: true,
-    backgroundColor: context.colour.onPrimary,
+    backgroundColor: context.appColors.surface,
     isScrollControlled: true,
     constraints: const BoxConstraints(maxWidth: double.infinity),
     builder: (context) {
@@ -144,7 +144,7 @@ class _TransactionLabelBottomsheetState
                     onPressed: () {
                       context.pop();
                     },
-                    color: context.colour.secondary,
+                    color: context.appColors.onSurface,
                     icon: const Icon(Icons.close_sharp),
                   ),
                 ],
@@ -159,7 +159,7 @@ class _TransactionLabelBottomsheetState
                 controller: _controller,
                 hint: 'Note',
                 hintStyle: context.font.bodyLarge?.copyWith(
-                  color: context.colour.surfaceContainer,
+                  color: context.appColors.textMuted,
                 ),
                 maxLines: 2,
                 value: state.note ?? widget.initialNote ?? '',
@@ -192,8 +192,8 @@ class _TransactionLabelBottomsheetState
                     context.pop();
                   }
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.onSurface,
+                textColor: context.appColors.surface,
               ),
               Gap(Device.screen.height * 0.03),
             ],
@@ -222,8 +222,8 @@ class _LabelSuggestionChip extends StatelessWidget {
         height: Device.screen.height * 0.05,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          color: context.colour.onPrimary,
-          border: Border.all(color: context.colour.surface),
+          color: context.appColors.surface,
+          border: Border.all(color: context.appColors.border),
         ),
         child: Center(child: BBText(label, style: context.font.bodyLarge)),
       ),

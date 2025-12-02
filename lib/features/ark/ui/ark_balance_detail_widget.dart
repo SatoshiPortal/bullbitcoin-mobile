@@ -20,7 +20,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
       context: context,
       child: Container(
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: SafeArea(
@@ -38,7 +38,10 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.schedule, color: context.colour.primary),
+                          Icon(
+                            Icons.schedule,
+                            color: context.appColors.primary,
+                          ),
                           const Gap(8),
                           Text(
                             'Boarding Unconfirmed',
@@ -62,7 +65,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.check_circle,
-                            color: context.colour.inverseSurface,
+                            color: context.appColors.success,
                           ),
                           const Gap(8),
                           Text(
@@ -87,7 +90,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.hourglass_empty,
-                            color: context.colour.secondary,
+                            color: context.appColors.warning,
                           ),
                           const Gap(8),
                           Text('Preconfirmed', style: context.font.bodyLarge),
@@ -109,7 +112,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.done_all,
-                            color: context.colour.inverseSurface,
+                            color: context.appColors.success,
                           ),
                           const Gap(8),
                           Text('Settled', style: context.font.bodyLarge),
@@ -131,7 +134,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.account_balance_wallet,
-                            color: context.colour.primary,
+                            color: context.appColors.primary,
                           ),
                           const Gap(8),
                           Text('Available', style: context.font.bodyLarge),
@@ -145,7 +148,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                     ],
                   ),
                   const Gap(16),
-                  Divider(color: context.colour.outline),
+                  Divider(color: context.appColors.border),
                   const Gap(16),
                   // Total
                   Row(

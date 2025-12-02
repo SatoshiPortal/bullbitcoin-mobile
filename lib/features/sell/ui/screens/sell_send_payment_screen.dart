@@ -63,14 +63,14 @@ class SellSendPaymentScreen extends StatelessWidget {
             FadingLinearProgress(
               height: 3,
               trigger: isConfirmingPayment,
-              backgroundColor: context.colour.onPrimary,
-              foregroundColor: context.colour.primary,
+              backgroundColor: context.colorScheme.onPrimary,
+              foregroundColor: context.colorScheme.primary,
             ),
             const Gap(24.0),
             Text(
               context.loc.sellConfirmPayment,
               style: context.font.headlineMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.colorScheme.secondary,
               ),
             ),
             const Gap(4.0),
@@ -80,7 +80,7 @@ class SellSendPaymentScreen extends StatelessWidget {
                 Text(
                   context.loc.sellPriceWillRefreshIn,
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.outline,
+                    color: context.colorScheme.outline,
                   ),
                 ),
                 if (order != null)
@@ -216,7 +216,9 @@ class _DetailRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final valueColor =
-        onTap == null ? context.colour.outlineVariant : context.colour.primary;
+        onTap == null
+            ? context.colorScheme.outlineVariant
+            : context.colorScheme.primary;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -229,7 +231,7 @@ class _DetailRow extends StatelessWidget {
                   Text(
                     title,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.surfaceContainer,
+                      color: context.colorScheme.surfaceContainer,
                     ),
                   ),
                   Expanded(
@@ -259,7 +261,7 @@ class _DetailRow extends StatelessWidget {
                                     },
                                     child: Icon(
                                       Icons.copy,
-                                      color: context.colour.primary,
+                                      color: context.colorScheme.primary,
                                       size: 16,
                                     ),
                                   ),
@@ -302,7 +304,7 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Divider(color: context.colour.secondaryFixedDim, height: 1);
+    return Divider(color: context.colorScheme.secondaryFixedDim, height: 1);
   }
 }
 
@@ -334,7 +336,7 @@ class _BottomButtons extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                backgroundColor: context.colour.secondaryFixed,
+                backgroundColor: context.colorScheme.secondaryFixed,
                 constraints: const BoxConstraints(maxWidth: double.infinity),
                 useSafeArea: true,
                 builder:
@@ -345,9 +347,9 @@ class _BottomButtons extends StatelessWidget {
               );
             },
             bgColor: Colors.transparent,
-            textColor: context.colour.secondary,
+            textColor: context.colorScheme.secondary,
             outlined: true,
-            borderColor: context.colour.secondary,
+            borderColor: context.colorScheme.secondary,
           ),
           const Gap(16),
         ],
@@ -355,8 +357,8 @@ class _BottomButtons extends StatelessWidget {
           label: context.loc.sellSendPaymentContinue,
           disabled: isConfirmingPayment,
           onPressed: onContinuePressed,
-          bgColor: context.colour.secondary,
-          textColor: context.colour.onSecondary,
+          bgColor: context.colorScheme.secondary,
+          textColor: context.colorScheme.onSecondary,
         ),
       ],
     );
@@ -382,7 +384,7 @@ class _SellError extends StatelessWidget {
           child: Text(
             context.loc.sellAboveMaxAmountError,
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.error,
+              color: context.colorScheme.error,
             ),
             textAlign: TextAlign.center,
           ),
@@ -392,7 +394,7 @@ class _SellError extends StatelessWidget {
           child: Text(
             context.loc.sellBelowMinAmountError,
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.error,
+              color: context.colorScheme.error,
             ),
             textAlign: TextAlign.center,
           ),
@@ -402,7 +404,7 @@ class _SellError extends StatelessWidget {
           child: Text(
             context.loc.sellInsufficientBalanceError,
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.error,
+              color: context.colorScheme.error,
             ),
             textAlign: TextAlign.center,
           ),
@@ -412,7 +414,7 @@ class _SellError extends StatelessWidget {
           child: Text(
             message,
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.error,
+              color: context.colorScheme.error,
             ),
             textAlign: TextAlign.center,
           ),

@@ -25,16 +25,16 @@ class SwapStatusDescription extends StatelessWidget {
           decoration: BoxDecoration(
             color:
                 isFailedOrExpired
-                    ? context.colour.errorContainer.withValues(alpha: 0.15)
-                    : context.colour.surfaceContainerHighest.withValues(
+                    ? context.colorScheme.errorContainer.withValues(alpha: 0.15)
+                    : context.colorScheme.surfaceContainerHighest.withValues(
                       alpha: 0.5,
                     ),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color:
                   isFailedOrExpired
-                      ? context.colour.error.withValues(alpha: 0.5)
-                      : context.colour.outline.withValues(alpha: 0.3),
+                      ? context.colorScheme.error.withValues(alpha: 0.5)
+                      : context.colorScheme.outline.withValues(alpha: 0.3),
             ),
           ),
           child: Column(
@@ -51,8 +51,8 @@ class SwapStatusDescription extends StatelessWidget {
                     color:
                         swap.status == SwapStatus.failed ||
                                 swap.status == SwapStatus.expired
-                            ? context.colour.error
-                            : context.colour.secondary,
+                            ? context.colorScheme.error
+                            : context.colorScheme.secondary,
                   ),
                   const Gap(8),
                   BBText(
@@ -69,8 +69,8 @@ class SwapStatusDescription extends StatelessWidget {
                       color:
                           swap.status == SwapStatus.failed ||
                                   swap.status == SwapStatus.expired
-                              ? context.colour.error
-                              : context.colour.secondary,
+                              ? context.colorScheme.error
+                              : context.colorScheme.secondary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -83,8 +83,8 @@ class SwapStatusDescription extends StatelessWidget {
                   color:
                       swap.status == SwapStatus.failed ||
                               swap.status == SwapStatus.expired
-                          ? context.colour.error
-                          : context.colour.onSurfaceVariant,
+                          ? context.colorScheme.error
+                          : context.colorScheme.onSurfaceVariant,
                 ),
               ),
               if (_getAdditionalInfo().isNotEmpty) ...[
@@ -95,8 +95,8 @@ class SwapStatusDescription extends StatelessWidget {
                     color:
                         swap.status == SwapStatus.failed ||
                                 swap.status == SwapStatus.expired
-                            ? context.colour.error.withValues(alpha: 0.8)
-                            : context.colour.outline,
+                            ? context.colorScheme.error.withValues(alpha: 0.8)
+                            : context.colorScheme.outline,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -108,7 +108,7 @@ class SwapStatusDescription extends StatelessWidget {
           const Gap(16),
           InfoCard(
             description: 'Do not uninstall the app until the swap completes.',
-            tagColor: context.colour.tertiary,
+            tagColor: context.colorScheme.tertiary,
             bgColor: Colors.white,
             boldDescription: true,
           ),

@@ -25,7 +25,7 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: const TopBarBullLogo(enableSuperuserTapUnlocker: true),
       leadingWidth: 48,
       actionsIconTheme: IconThemeData(
-        color: context.colour.onPrimary,
+        color: context.colorScheme.onPrimary,
         size: 24,
       ),
       actionsPadding: const EdgeInsets.only(right: 16),
@@ -35,7 +35,7 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             context.pushNamed(TransactionsRoute.transactions.name);
           },
           visualDensity: VisualDensity.compact,
-          color: context.colour.onPrimary,
+          color: context.colorScheme.onPrimary,
           iconSize: 32,
           icon: const Icon(Icons.history),
         ),
@@ -46,7 +46,7 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             Assets.icons.settingsLine.path,
             width: 32,
             height: 32,
-            color: context.colour.onPrimary,
+            color: context.colorScheme.onPrimary,
           ),
         ),
       ],

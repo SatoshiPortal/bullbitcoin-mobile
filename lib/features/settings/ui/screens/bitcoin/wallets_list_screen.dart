@@ -33,7 +33,7 @@ class WalletsListScreen extends StatelessWidget {
                   child: BBText(
                     context.loc.walletsListNoWalletsMessage,
                     style: context.font.bodyLarge?.copyWith(
-                      color: context.colour.outlineVariant,
+                      color: context.appColors.textMuted,
                     ),
                   ),
                 )
@@ -62,13 +62,13 @@ class WalletsListScreen extends StatelessWidget {
                                 wallet.displayLabel,
                                 overflow: TextOverflow.ellipsis,
                                 style: context.font.bodyLarge?.copyWith(
-                                  color: context.colour.outlineVariant,
+                                  color: context.appColors.text,
                                 ),
                               ),
                             ),
-                            const Icon(
+                            Icon(
                               Icons.chevron_right,
-                              color: Colors.black,
+                              color: context.appColors.textMuted,
                             ),
                           ],
                         ),

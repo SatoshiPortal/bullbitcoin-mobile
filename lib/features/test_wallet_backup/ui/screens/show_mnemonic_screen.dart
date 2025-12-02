@@ -39,7 +39,7 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
                 'Test ${state.selectedWallet?.isDefault ?? false ? 'Default Wallets' : state.selectedWallet?.displayLabel ?? ''}';
 
             return Scaffold(
-              backgroundColor: context.colour.onSecondary,
+              backgroundColor: context.colorScheme.onSecondary,
               appBar: PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
                 child: AppBarWidget(title: title),
@@ -63,8 +63,8 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
                               ),
                             );
                           },
-                          bgColor: context.colour.secondary,
-                          textColor: context.colour.onSecondary,
+                          bgColor: context.colorScheme.secondary,
+                          textColor: context.colorScheme.onSecondary,
                         ),
                         Gap(Device.screen.height * 0.05),
                       ],
@@ -112,7 +112,7 @@ class _MnemonicDisplay extends StatelessWidget {
             textAlign: TextAlign.center,
             style: context.font.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: context.colour.surface,
+              color: context.colorScheme.surface,
               letterSpacing: 0,
               fontSize: 12,
             ),
@@ -123,7 +123,7 @@ class _MnemonicDisplay extends StatelessWidget {
               textAlign: TextAlign.center,
               style: context.font.labelMedium?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: context.colour.surface,
+                color: context.colorScheme.surface,
                 letterSpacing: 0,
                 fontSize: 12,
               ),
@@ -154,7 +154,7 @@ class _MnemonicDisplay extends StatelessWidget {
           ),
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: context.colour.surface),
+              border: Border.all(color: context.colorScheme.surface),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(11),
                 topRight: Radius.circular(11),
@@ -168,7 +168,7 @@ class _MnemonicDisplay extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: context.colour.secondaryFixedDim,
+                    color: context.colorScheme.secondaryFixedDim,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(11),
                       topRight: Radius.circular(11),
@@ -182,7 +182,7 @@ class _MnemonicDisplay extends StatelessWidget {
                     style: context.font.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
-                      color: context.colour.secondary,
+                      color: context.colorScheme.secondary,
                     ),
                   ),
                 ),
@@ -203,13 +203,13 @@ class _MnemonicDisplay extends StatelessWidget {
                       _buildWarningItem(
                         icon: CupertinoIcons.xmark,
                         text: 'Digital copy',
-                        iconColor: context.colour.error,
+                        iconColor: context.colorScheme.error,
                         context: context,
                       ),
                       _buildWarningItem(
                         icon: CupertinoIcons.xmark,
                         text: 'Screenshot',
-                        iconColor: context.colour.error,
+                        iconColor: context.colorScheme.error,
                         context: context,
                       ),
                     ],
@@ -238,7 +238,7 @@ class _MnemonicDisplay extends StatelessWidget {
           style: context.font.headlineMedium?.copyWith(
             fontWeight: FontWeight.w700,
             fontSize: 12,
-            color: context.colour.secondary,
+            color: context.colorScheme.secondary,
           ),
         ),
       ],
@@ -267,10 +267,10 @@ class _RecoveryPhraseWord extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(2.76),
-          border: Border.all(color: context.colour.surface, width: 0.69),
+          border: Border.all(color: context.colorScheme.surface, width: 0.69),
           boxShadow: [
             BoxShadow(
-              color: context.colour.surface,
+              color: context.colorScheme.surface,
               offset: const Offset(0, 2),
             ),
           ],
@@ -285,9 +285,9 @@ class _RecoveryPhraseWord extends StatelessWidget {
                 width: 34.48,
                 height: 34.48,
                 decoration: BoxDecoration(
-                  color: context.colour.secondary,
+                  color: context.colorScheme.secondary,
                   border: Border.all(
-                    color: context.colour.secondary,
+                    color: context.colorScheme.secondary,
                     width: 0.82,
                   ),
                   borderRadius: BorderRadius.circular(2.46),
@@ -299,7 +299,7 @@ class _RecoveryPhraseWord extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
                       letterSpacing: 0.15,
-                      color: context.colour.onPrimary,
+                      color: context.colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -315,7 +315,7 @@ class _RecoveryPhraseWord extends StatelessWidget {
                 style: context.font.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
-                  color: context.colour.secondary,
+                  color: context.colorScheme.secondary,
                 ),
               ),
             ),
@@ -343,9 +343,12 @@ class _PassphraseWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(2.76),
-        border: Border.all(color: context.colour.surface, width: 0.69),
+        border: Border.all(color: context.colorScheme.surface, width: 0.69),
         boxShadow: [
-          BoxShadow(color: context.colour.surface, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: context.colorScheme.surface,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Row(
@@ -355,7 +358,7 @@ class _PassphraseWidget extends StatelessWidget {
             'Passphrase',
             style: context.font.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: context.colour.surface,
+              color: context.colorScheme.surface,
               letterSpacing: 0,
               fontSize: 14,
             ),
@@ -366,7 +369,7 @@ class _PassphraseWidget extends StatelessWidget {
             style: context.font.bodyLarge?.copyWith(
               fontWeight: FontWeight.w700,
               fontSize: 14,
-              color: context.colour.secondary,
+              color: context.colorScheme.secondary,
             ),
           ),
         ],

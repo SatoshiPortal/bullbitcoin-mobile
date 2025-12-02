@@ -30,7 +30,7 @@ class DialPad extends StatelessWidget {
             child: BBText(
               num,
               style: context.font.headlineMedium?.copyWith(fontSize: 20),
-              color: context.colour.surfaceContainerLow,
+              color: context.colorScheme.onSurface,
             ),
           ),
         ),
@@ -49,7 +49,7 @@ class DialPad extends StatelessWidget {
           child: Center(
             child: Icon(
               Icons.backspace_outlined,
-              color: context.colour.surfaceContainerLow,
+              color: context.colorScheme.onSurface,
             ),
           ),
         ),

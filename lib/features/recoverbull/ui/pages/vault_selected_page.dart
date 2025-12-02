@@ -50,7 +50,7 @@ class VaultSelectedPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                border: Border.all(color: context.colour.onSurface),
+                border: Border.all(color: context.colorScheme.onSurface),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Column(
@@ -77,7 +77,7 @@ class VaultSelectedPage extends StatelessWidget {
                       extra: flow,
                     ),
                 bgColor: Colors.transparent,
-                textColor: context.colour.secondary,
+                textColor: context.colorScheme.onSurface,
                 outlined: true,
               ),
               const Gap(16),
@@ -93,8 +93,8 @@ class VaultSelectedPage extends StatelessWidget {
                       RecoverBullRoute.recoverbullFlows.name,
                       extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
                     ),
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.colorScheme.onSurface,
+                textColor: context.appColors.surface,
               ),
             ),
           ],

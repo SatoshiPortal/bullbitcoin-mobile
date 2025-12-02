@@ -96,7 +96,7 @@ class ReceiveQRDetails extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
             decoration: BoxDecoration(
-              color: context.colour.onPrimary,
+              color: context.colorScheme.onPrimary,
               borderRadius: BorderRadius.circular(12),
             ),
             child:
@@ -123,7 +123,9 @@ class ReceiveQRDetails extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               BBText(
-                isLightning ? context.loc.receiveLightningInvoice : context.loc.receiveAddress,
+                isLightning
+                    ? context.loc.receiveLightningInvoice
+                    : context.loc.receiveAddress,
                 style: context.font.bodyMedium,
               ),
               const Gap(6),
@@ -134,7 +136,10 @@ class ReceiveQRDetails extends StatelessWidget {
                 clipboardText: clipboardData,
                 overflow: TextOverflow.ellipsis,
                 canShowValueModal: true,
-                modalTitle: isLightning ? context.loc.receiveLightningInvoice : context.loc.receiveAddress,
+                modalTitle:
+                    isLightning
+                        ? context.loc.receiveLightningInvoice
+                        : context.loc.receiveAddress,
                 modalContent:
                     isLightning
                         ? addressOrInvoiceOnly
@@ -179,7 +184,7 @@ class ReceiveInfoDetails extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(2),
-          border: Border.all(color: context.colour.surface),
+          border: Border.all(color: context.colorScheme.surface),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -200,7 +205,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         BBText(
                           context.loc.receiveAmount,
                           style: context.font.labelSmall,
-                          color: context.colour.outline,
+                          color: context.colorScheme.outline,
                         ),
                         const Gap(4),
                         Row(
@@ -218,7 +223,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         BBText(
                           '~$amountEquivalent',
                           style: context.font.bodyLarge,
-                          color: context.colour.outline,
+                          color: context.colorScheme.outline,
                         ),
                       ],
                     ),
@@ -254,7 +259,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                 ],
               ),
             ),
-            Container(color: context.colour.surface, height: 1),
+            Container(color: context.colorScheme.surface, height: 1),
             Padding(
               padding: const EdgeInsets.only(
                 left: 8,
@@ -272,7 +277,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         BBText(
                           context.loc.receiveNote,
                           style: context.font.labelSmall,
-                          color: context.colour.outline,
+                          color: context.colorScheme.outline,
                         ),
                         const Gap(4),
                         BBText(
@@ -322,13 +327,13 @@ class ReceiveLnInfoDetails extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: context.colorScheme.onPrimary,
         borderRadius: BorderRadius.circular(2),
-        border: Border.all(color: context.colour.surface),
+        border: Border.all(color: context.colorScheme.surface),
         boxShadow: [
           BoxShadow(
             offset: const Offset(0, 2),
-            color: context.colour.surfaceContainer,
+            color: context.colorScheme.surfaceContainer,
           ),
         ],
       ),
@@ -339,7 +344,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
           const ReceiveLnSwapID(),
           const Gap(12),
 
-          Container(color: context.colour.surface, height: 1),
+          Container(color: context.colorScheme.surface, height: 1),
           Padding(
             padding: const EdgeInsets.only(top: 10, bottom: 12),
             child: Row(
@@ -348,7 +353,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                 BBText(
                   context.loc.receiveAmount,
                   style: context.font.bodySmall,
-                  color: context.colour.surfaceContainer,
+                  color: context.colorScheme.surfaceContainer,
                 ),
                 const Spacer(),
                 Column(
@@ -362,7 +367,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                     BBText(
                       '~$amountEquivalent',
                       style: context.font.labelSmall,
-                      color: context.colour.surfaceContainer,
+                      color: context.colorScheme.surfaceContainer,
                     ),
                   ],
                 ),
@@ -370,7 +375,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
             ),
           ),
           if (swap?.receieveAmount != null) ...[
-            Container(color: context.colour.surface, height: 1),
+            Container(color: context.colorScheme.surface, height: 1),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 12),
               child: Row(
@@ -379,7 +384,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                   BBText(
                     context.loc.receiveReceiveAmount,
                     style: context.font.bodySmall,
-                    color: context.colour.surfaceContainer,
+                    color: context.colorScheme.surfaceContainer,
                   ),
                   const Spacer(),
                   CurrencyText(
@@ -392,7 +397,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
             ),
           ],
           if (note.isNotEmpty) ...[
-            Container(color: context.colour.surface, height: 1),
+            Container(color: context.colorScheme.surface, height: 1),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 12),
               child: Row(
@@ -400,7 +405,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                   BBText(
                     context.loc.receiveNote,
                     style: context.font.labelSmall,
-                    color: context.colour.outline,
+                    color: context.colorScheme.outline,
                   ),
                   const Gap(24),
                   Expanded(
@@ -436,7 +441,7 @@ class ReceiveLnSwapID extends StatelessWidget {
           BBText(
             context.loc.receiveSwapId,
             style: context.font.bodySmall,
-            color: context.colour.surfaceContainer,
+            color: context.colorScheme.surfaceContainer,
           ),
           const Spacer(),
           BBText(
@@ -446,7 +451,11 @@ class ReceiveLnSwapID extends StatelessWidget {
           ),
           const Gap(4),
           InkWell(
-            child: Icon(Icons.copy, color: context.colour.primary, size: 16),
+            child: Icon(
+              Icons.copy,
+              color: context.colorScheme.primary,
+              size: 16,
+            ),
             onTap: () {
               Clipboard.setData(ClipboardData(text: swap.id));
             },
@@ -475,14 +484,14 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
           BBText(
             label,
             style: context.font.bodySmall,
-            color: context.colour.surfaceContainer,
+            color: context.colorScheme.surfaceContainer,
           ),
           const Spacer(),
           CurrencyText(
             amt,
             showFiat: false,
             style: context.font.bodySmall,
-            color: context.colour.surfaceContainer,
+            color: context.colorScheme.surfaceContainer,
           ),
         ],
       ),
@@ -496,7 +505,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
 
     return Column(
       children: [
-        Container(color: context.colour.surface, height: 1),
+        Container(color: context.colorScheme.surface, height: 1),
         const Gap(8),
         InkWell(
           splashColor: Colors.transparent,
@@ -512,45 +521,57 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
               BBText(
                 context.loc.receiveTotalFee,
                 style: context.font.bodySmall,
-                color: context.colour.surfaceContainer,
+                color: context.colorScheme.surfaceContainer,
               ),
               const Spacer(),
               CurrencyText(
                 swap.fees?.totalFees(null) ?? 0,
                 showFiat: false,
                 style: context.font.bodyLarge,
-                color: context.colour.outlineVariant,
+                color: context.colorScheme.outlineVariant,
               ),
               const Gap(4),
               Icon(
                 expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                color: context.colour.primary,
+                color: context.colorScheme.primary,
               ),
             ],
           ),
         ),
         const Gap(12),
         if (expanded && swap.fees != null) ...[
-          Container(color: context.colour.surface, height: 1),
+          Container(color: context.colorScheme.surface, height: 1),
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: BBText(
               context.loc.receiveFeeExplanation,
               style: context.font.labelSmall,
-              color: context.colour.surfaceContainer,
+              color: context.colorScheme.surfaceContainer,
             ),
           ),
           if (swap.fees!.lockupFee != null)
-            _feeRow(context, context.loc.receiveSendNetworkFee, swap.fees!.lockupFee!),
+            _feeRow(
+              context,
+              context.loc.receiveSendNetworkFee,
+              swap.fees!.lockupFee!,
+            ),
           if (swap.fees!.claimFee != null)
-            _feeRow(context, context.loc.receiveNetworkFee, swap.fees!.claimFee!),
+            _feeRow(
+              context,
+              context.loc.receiveNetworkFee,
+              swap.fees!.claimFee!,
+            ),
           if (swap.fees!.serverNetworkFees != null)
             _feeRow(
               context,
               context.loc.receiveServerNetworkFees,
               swap.fees!.serverNetworkFees!,
             ),
-          _feeRow(context, context.loc.receiveTransferFee, swap.fees?.boltzFee ?? 0),
+          _feeRow(
+            context,
+            context.loc.receiveTransferFee,
+            swap.fees?.boltzFee ?? 0,
+          ),
           const Gap(16),
         ],
       ],
@@ -603,8 +624,8 @@ class ReceiveNewAddressButton extends StatelessWidget {
             const ReceiveEvent.receiveNewAddressGenerated(),
           );
         },
-        bgColor: context.colour.secondary,
-        textColor: context.colour.onSecondary,
+        bgColor: context.colorScheme.secondary,
+        textColor: context.colorScheme.onSecondary,
       ),
     );
   }
@@ -646,8 +667,8 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
             ),
           );
         },
-        bgColor: context.colour.primary,
-        textColor: context.colour.onPrimary,
+        bgColor: context.colorScheme.primary,
+        textColor: context.colorScheme.onPrimary,
         outlined: true,
       ),
     );
@@ -690,8 +711,8 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
             ),
           );
         },
-        bgColor: context.colour.primary,
-        textColor: context.colour.onPrimary,
+        bgColor: context.colorScheme.primary,
+        textColor: context.colorScheme.onPrimary,
         outlined: true,
       ),
     );

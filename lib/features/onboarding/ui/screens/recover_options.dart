@@ -38,9 +38,7 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
             BackupOptionCard(
               icon: Image.asset(
                 Assets.misc.encryptedVault.path,
-                width: 36,
-                height: 45,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
               ),
               title: context.loc.onboardingEncryptedVault,
               description: context.loc.onboardingEncryptedVaultDescription,
@@ -59,9 +57,7 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
             BackupOptionCard(
               icon: Image.asset(
                 Assets.misc.physicalBackup.path,
-                width: 36,
-                height: 45,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
               ),
               title: context.loc.onboardingPhysicalBackup,
               description: context.loc.onboardingPhysicalBackupDescription,

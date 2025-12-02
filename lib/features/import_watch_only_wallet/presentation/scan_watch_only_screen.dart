@@ -95,7 +95,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
               child: BBButton.big(
                 iconData: Icons.copy,
                 textStyle: context.font.labelMedium,
-                textColor: context.colour.onPrimary,
+                textColor: context.appColors.onPrimary,
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: _scanned));
                   showCopiedSnackBar(context);
@@ -116,7 +116,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                 onPressed: () => context.pop(),
                 icon: Icon(
                   CupertinoIcons.xmark_circle,
-                  color: context.colour.onPrimary,
+                  color: context.appColors.onPrimary,
                   size: 64,
                 ),
               ),

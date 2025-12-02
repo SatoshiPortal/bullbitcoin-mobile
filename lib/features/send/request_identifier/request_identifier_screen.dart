@@ -18,13 +18,13 @@ class RequestIdentifierScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
+      backgroundColor: context.colorScheme.secondaryFixedDim,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: 'Send',
-          color: context.colour.secondaryFixedDim,
+          color: context.colorScheme.secondaryFixedDim,
           onBack: () => context.pop(),
         ),
       ),
@@ -58,7 +58,7 @@ class RequestIdentifierScreen extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: context.colour.onPrimary,
+                      color: context.colorScheme.onPrimary,
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(12),
                         topRight: Radius.circular(12),
@@ -111,12 +111,12 @@ class PasteRequestWidget extends StatelessWidget {
       value: address,
       hint: 'Paste a payment address or invoice',
       hintStyle: context.font.bodyLarge?.copyWith(
-        color: context.colour.surfaceContainer,
+        color: context.colorScheme.surfaceContainer,
       ),
       maxLines: 1,
       rightIcon: Icon(
         Icons.paste_sharp,
-        color: context.colour.secondary,
+        color: context.colorScheme.secondary,
         size: 20,
       ),
       onRightTap: () {
@@ -143,7 +143,7 @@ class RequestErrorWidget extends StatelessWidget {
       return BBText(
         error,
         style: context.font.bodyMedium,
-        color: context.colour.error,
+        color: context.colorScheme.error,
         textAlign: TextAlign.center,
         maxLines: 2,
       );
@@ -170,8 +170,8 @@ class ContinueButtonWidget extends StatelessWidget {
       label: 'Continue',
       onPressed: cubit.validatePaymentRequest,
       disabled: !hasRequest || hasError,
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onPrimary,
+      bgColor: context.colorScheme.secondary,
+      textColor: context.colorScheme.onPrimary,
     );
   }
 }

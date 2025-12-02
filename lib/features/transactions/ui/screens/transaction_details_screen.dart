@@ -82,8 +82,8 @@ class TransactionDetailsScreen extends StatelessWidget {
           preferredSize: const Size.fromHeight(3.0),
           child: FadingLinearProgress(
             trigger: isBroadcastingPayjoinOriginalTx,
-            backgroundColor: context.colour.onPrimary,
-            foregroundColor: context.colour.primary,
+            backgroundColor: context.colorScheme.onPrimary,
+            foregroundColor: context.colorScheme.primary,
           ),
         ),
       ),
@@ -184,9 +184,9 @@ class TransactionDetailsScreen extends StatelessWidget {
                       }
                     },
                     bgColor: Colors.transparent,
-                    textColor: theme.colorScheme.secondary,
+                    textColor: context.appColors.onSurface,
                     outlined: true,
-                    borderColor: theme.colorScheme.secondary,
+                    borderColor: context.appColors.onSurface,
                   ),
                 const Gap(16),
                 if (isOutgoing == true &&
@@ -204,8 +204,8 @@ class TransactionDetailsScreen extends StatelessWidget {
                         extra: walletTransaction,
                       );
                     },
-                    bgColor: theme.colorScheme.secondary,
-                    textColor: theme.colorScheme.onSecondary,
+                    bgColor: theme.colorScheme.onSurface,
+                    textColor: context.appColors.surface,
                   ),
               ],
             ),

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bip85_derivation_widget.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -27,17 +28,17 @@ class Bip85HomePage extends StatelessWidget {
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.orange.shade100,
+                    color: context.appColors.warning.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.warning, color: Colors.orange),
+                      Icon(Icons.warning, color: context.appColors.warning),
                       const Gap(8),
                       Expanded(
                         child: Text(
                           context.loc.bip85ExperimentalWarning,
-                          style: TextStyle(color: Colors.orange.shade800),
+                          style: TextStyle(color: context.appColors.warning),
                         ),
                       ),
                     ],
@@ -62,14 +63,14 @@ class Bip85HomePage extends StatelessWidget {
                     BBButton.small(
                       onPressed: () => cubit.deriveNextMnemonic(),
                       label: context.loc.bip85NextMnemonic,
-                      bgColor: Theme.of(context).colorScheme.secondary,
-                      textColor: Theme.of(context).colorScheme.onSecondary,
+                      bgColor: context.appColors.onSurface,
+                      textColor: context.appColors.surface,
                     ),
                     BBButton.small(
                       onPressed: () => cubit.deriveNextHex(),
                       label: context.loc.bip85NextHex,
-                      bgColor: Theme.of(context).colorScheme.secondary,
-                      textColor: Theme.of(context).colorScheme.onSecondary,
+                      bgColor: context.appColors.onSurface,
+                      textColor: context.appColors.surface,
                     ),
                   ],
                 ),

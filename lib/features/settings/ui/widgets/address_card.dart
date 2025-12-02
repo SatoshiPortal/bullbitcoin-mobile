@@ -34,7 +34,7 @@ class AddressCard extends StatelessWidget {
                   ? context.loc.addressCardUsedLabel
                   : context.loc.addressCardUnusedLabel,
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.onSurface,
               ),
             ),
             const Gap(8),
@@ -70,7 +70,7 @@ class AddressCard extends StatelessWidget {
               child: Text(
                 StringFormatting.truncateMiddle(address, head: 10, tail: 20),
                 style: context.font.headlineMedium?.copyWith(
-                  color: context.colour.primary,
+                  color: context.colorScheme.primary,
                 ),
               ),
             ),
@@ -78,7 +78,7 @@ class AddressCard extends StatelessWidget {
             Text(
               '${context.loc.addressCardIndexLabel}$index',
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.textMuted,
               ),
             ),
             const Gap(8),
@@ -87,13 +87,13 @@ class AddressCard extends StatelessWidget {
                 Text(
                   context.loc.addressCardBalanceLabel,
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.secondary,
+                    color: context.appColors.textMuted,
                   ),
                 ),
                 CurrencyText(
                   balanceSat,
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.secondary,
+                    color: context.appColors.textMuted,
                   ),
                   showFiat: false,
                 ),

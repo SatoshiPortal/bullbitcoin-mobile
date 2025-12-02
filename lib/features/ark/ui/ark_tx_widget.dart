@@ -71,7 +71,7 @@ class ArkTxWidget extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8.0),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.colorScheme.onPrimary,
           borderRadius: BorderRadius.circular(2.0),
           boxShadow: const [],
         ),
@@ -80,11 +80,11 @@ class ArkTxWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: context.colour.onPrimary,
+                color: context.colorScheme.onPrimary,
                 borderRadius: BorderRadius.circular(2.0),
-                border: Border.all(color: context.colour.surface),
+                border: Border.all(color: context.colorScheme.surface),
               ),
-              child: Icon(icon, color: context.colour.secondary),
+              child: Icon(icon, color: context.colorScheme.secondary),
             ),
             const Gap(16.0),
             Expanded(
@@ -110,7 +110,7 @@ class ArkTxWidget extends StatelessWidget {
                       child: Text(
                         StringFormatting.truncateMiddle(txid),
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.primary,
+                          color: context.colorScheme.primary,
                         ),
                       ),
                     ),
@@ -126,13 +126,13 @@ class ArkTxWidget extends StatelessWidget {
                     vertical: 2.0,
                   ),
                   decoration: BoxDecoration(
-                    color: context.colour.secondary,
+                    color: context.colorScheme.secondary,
                     borderRadius: BorderRadius.circular(2.0),
                   ),
                   child: BBText(
                     StringFormatting.capitalize(transactionType.name),
                     style: context.font.labelSmall?.copyWith(
-                      color: context.colour.onSecondary,
+                      color: context.colorScheme.onSecondary,
                     ),
                   ),
                 ),
@@ -143,14 +143,14 @@ class ArkTxWidget extends StatelessWidget {
                       BBText(
                         timeago.format(date),
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.outline,
+                          color: context.colorScheme.outline,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.check_circle,
                         size: 12.0,
-                        color: context.colour.inverseSurface,
+                        color: context.colorScheme.inverseSurface,
                       ),
                     ],
                   )
@@ -160,14 +160,14 @@ class ArkTxWidget extends StatelessWidget {
                       BBText(
                         'Pending',
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.primary,
+                          color: context.colorScheme.primary,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.schedule,
                         size: 12.0,
-                        color: context.colour.primary,
+                        color: context.colorScheme.primary,
                       ),
                     ],
                   ),

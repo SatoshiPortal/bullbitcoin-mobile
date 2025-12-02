@@ -14,7 +14,7 @@ class WalletDeletionConfirmationAlertDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: context.colour.onPrimary,
+      backgroundColor: context.colorScheme.onPrimary,
       title: const Text('Delete Wallet'),
       content: const Text('Are you sure you want to delete this wallet?'),
       actions: [

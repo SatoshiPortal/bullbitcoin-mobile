@@ -70,7 +70,7 @@ Future<String?> _showWalletPicker({
       height: MediaQuery.of(context).size.height * 0.4,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: context.colorScheme.onPrimary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
@@ -116,8 +116,8 @@ Future<String?> _showWalletPicker({
               );
               Navigator.of(context).pop();
             },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
+            bgColor: context.colorScheme.secondary,
+            textColor: context.colorScheme.onSecondary,
           ),
         ],
       ),

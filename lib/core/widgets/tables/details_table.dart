@@ -11,11 +11,11 @@ class DetailsTable extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.onPrimary,
-        border: Border.all(color: theme.colorScheme.surface),
+        color: theme.colorScheme.surface,
+        border: Border.all(color: theme.colorScheme.outline),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -27,7 +27,7 @@ class DetailsTable extends StatelessWidget {
           for (int i = 0; i < items.length; i++) ...[
             items[i],
             if (i != items.length - 1)
-              Divider(color: theme.colorScheme.secondaryFixedDim),
+              Divider(color: theme.colorScheme.outline),
           ],
         ],
       ),

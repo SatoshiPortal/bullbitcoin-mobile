@@ -34,12 +34,13 @@ class WalletCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(2),
         child: Material(
           elevation: 2,
-          color: context.colour.onPrimary,
+          shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),
+          color: context.appColors.surface,
           borderRadius: BorderRadius.circular(2),
           child: Container(
             height: 90,
             decoration: BoxDecoration(
-              color: context.colour.onPrimary,
+              color: context.appColors.surface,
               border: Border(left: BorderSide(color: tagColor, width: 4)),
               borderRadius: BorderRadius.circular(2),
             ),
@@ -64,14 +65,14 @@ class WalletCard extends StatelessWidget {
                                 BBText(
                                   title,
                                   style: context.font.bodyLarge,
-                                  color: context.colour.secondary,
+                                  color: context.colorScheme.onSurface,
                                 ),
                                 const Gap(4),
                                 CurrencyText(
                                   balanceSat,
                                   showFiat: false,
                                   style: context.font.bodyLarge,
-                                  color: context.colour.secondary,
+                                  color: context.colorScheme.onSurface,
                                 ),
                               ],
                             ),
@@ -82,7 +83,7 @@ class WalletCard extends StatelessWidget {
                                 BBText(
                                   description,
                                   style: context.font.labelMedium,
-                                  color: context.colour.outline,
+                                  color: context.appColors.textMuted,
                                 ),
                                 const Gap(4),
                                 CurrencyText(
@@ -90,7 +91,7 @@ class WalletCard extends StatelessWidget {
                                   showFiat: true,
                                   fiatCurrency: fiatCurrency,
                                   style: context.font.labelMedium,
-                                  color: context.colour.outline,
+                                  color: context.appColors.textMuted,
                                 ),
                               ],
                             ),
@@ -100,7 +101,7 @@ class WalletCard extends StatelessWidget {
                       const Gap(8),
                       Icon(
                         Icons.chevron_right,
-                        color: context.colour.outline,
+                        color: context.appColors.textMuted,
                         size: 24,
                       ),
                     ],
@@ -112,8 +113,8 @@ class WalletCard extends StatelessWidget {
                   right: 0,
                   child: FadingLinearProgress(
                     trigger: isSyncing,
-                    backgroundColor: context.colour.surface,
-                    foregroundColor: context.colour.onSecondaryFixed,
+                    backgroundColor: context.colorScheme.surface,
+                    foregroundColor: context.colorScheme.onSecondaryFixed,
                     height: 3.0,
                   ),
                 ),

@@ -70,8 +70,8 @@ class _SelectableRow extends StatelessWidget {
         elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
         clipBehavior: Clip.hardEdge,
-        color: context.colour.onSecondary,
-        shadowColor: context.colour.secondary,
+        color: context.appColors.surface,
+        shadowColor: context.appColors.border,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
@@ -97,8 +97,8 @@ class _SelectableRow extends StatelessWidget {
                 Icons.radio_button_checked_outlined,
                 color:
                     isSelected
-                        ? context.colour.primary
-                        : context.colour.surface,
+                        ? context.appColors.primary
+                        : context.appColors.textMuted,
               ),
             ],
           ),

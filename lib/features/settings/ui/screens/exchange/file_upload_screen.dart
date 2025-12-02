@@ -11,7 +11,7 @@ class ExchangeFileUploadScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.colorScheme.secondaryFixed,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
@@ -30,11 +30,11 @@ class ExchangeFileUploadScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: context.colour.onPrimary,
+                  color: context.colorScheme.onPrimary,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color: context.colour.surface.withValues(alpha: 0.1),
+                      color: context.colorScheme.surface.withValues(alpha: 0.1),
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: const Offset(0, 2),
@@ -48,14 +48,14 @@ class ExchangeFileUploadScreen extends StatelessWidget {
                     Text(
                       context.loc.exchangeFileUploadDocumentTitle,
                       style: context.font.bodyLarge?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.colorScheme.secondary,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       context.loc.exchangeFileUploadInstructions,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.outline,
+                        color: context.colorScheme.outline,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -66,8 +66,8 @@ class ExchangeFileUploadScreen extends StatelessWidget {
                         onPressed: () {
                           // TODO: Implement file upload functionality
                         },
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onPrimary,
+                        bgColor: context.colorScheme.secondary,
+                        textColor: context.colorScheme.onPrimary,
                         iconData: Icons.upload,
                       ),
                     ),

@@ -40,7 +40,7 @@ class SellInProgressScreen extends StatelessWidget {
                     Text(
                       context.loc.sellInProgress,
                       style: context.font.headlineLarge?.copyWith(
-                        color: context.colour.outlineVariant,
+                        color: context.colorScheme.outlineVariant,
                       ),
                     ),
                   ],
@@ -51,8 +51,8 @@ class SellInProgressScreen extends StatelessWidget {
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeHome.name);
                   },
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onSecondary,
+                  bgColor: context.colorScheme.secondary,
+                  textColor: context.colorScheme.onSecondary,
                 ),
               ],
             ),

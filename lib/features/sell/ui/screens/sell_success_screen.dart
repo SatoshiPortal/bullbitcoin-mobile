@@ -44,7 +44,10 @@ class SellSuccessScreen extends StatelessWidget {
               children: [
                 const Icon(Icons.check_circle, size: 100, color: Colors.green),
                 const SizedBox(height: 20),
-                Text(context.loc.sellOrderCompleted, style: context.font.titleLarge),
+                Text(
+                  context.loc.sellOrderCompleted,
+                  style: context.font.titleLarge,
+                ),
                 const SizedBox(height: 10),
                 Text(
                   context.loc.sellBalanceWillBeCredited,
@@ -70,8 +73,8 @@ class SellSuccessScreen extends StatelessWidget {
                         pathParameters: {'orderId': order.orderId},
                       );
                     },
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onPrimary,
+                    bgColor: context.colorScheme.secondary,
+                    textColor: context.colorScheme.onPrimary,
                   ),
               ],
             ),

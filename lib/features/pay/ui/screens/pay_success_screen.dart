@@ -84,8 +84,8 @@ class PaySuccessScreen extends StatelessWidget {
                         pathParameters: {'orderId': order.orderId},
                       );
                     },
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onPrimary,
+                    bgColor: context.colorScheme.secondary,
+                    textColor: context.colorScheme.onPrimary,
                   ),
               ],
             ),

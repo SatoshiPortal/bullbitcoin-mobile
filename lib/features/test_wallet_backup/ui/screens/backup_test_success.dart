@@ -50,8 +50,8 @@ class BackupTestSuccessScreen extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 24),
               child: BBButton.big(
                 label: 'Got it',
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onPrimary,
+                bgColor: context.colorScheme.secondary,
+                textColor: context.colorScheme.onPrimary,
                 onPressed: () {
                   context.goNamed(WalletRoute.walletHome.name);
                 },

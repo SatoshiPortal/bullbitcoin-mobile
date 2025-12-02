@@ -54,7 +54,7 @@ class ReplaceByFeeHomePage extends StatelessWidget {
                     BBText(
                       state.error!.toTranslated(context),
                       style: context.font.bodyMedium,
-                      color: context.colour.error,
+                      color: context.colorScheme.error,
                     ),
                     const Gap(16),
                   ],
@@ -62,8 +62,8 @@ class ReplaceByFeeHomePage extends StatelessWidget {
                   BBButton.big(
                     label: context.loc.replaceByFeeBroadcastButton,
                     onPressed: () => cubit.broadcast(),
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
+                    bgColor: context.colorScheme.secondary,
+                    textColor: context.colorScheme.onSecondary,
                   ),
                 ],
               ),
@@ -82,17 +82,22 @@ class ReplaceByFeeHomePage extends StatelessWidget {
       elevation: 1,
       borderRadius: BorderRadius.circular(2),
       clipBehavior: Clip.hardEdge,
-      color: context.colour.onSecondary,
-      shadowColor: context.colour.secondary,
+      color: context.colorScheme.onSecondary,
+      shadowColor: context.colorScheme.secondary,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            BBText(context.loc.replaceByFeeOriginalTransactionTitle, style: context.font.headlineLarge),
+            BBText(
+              context.loc.replaceByFeeOriginalTransactionTitle,
+              style: context.font.headlineLarge,
+            ),
             const Gap(16),
             BBText(
-              context.loc.replaceByFeeFeeRateDisplay(originalFeeRate.toStringAsFixed(1)),
+              context.loc.replaceByFeeFeeRateDisplay(
+                originalFeeRate.toStringAsFixed(1),
+              ),
               style: context.font.labelMedium,
             ),
           ],

@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_server_view_model.dart';
 import 'package:flutter/material.dart';
+
 class ServerListItem extends StatelessWidget {
   const ServerListItem({
     super.key,
@@ -24,13 +25,13 @@ class ServerListItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: context.colour.surface.withValues(alpha: 180),
+          color: context.appColors.cardBackground,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color:
                 disabled
-                    ? context.colour.outline.withValues(alpha: 128)
-                    : context.colour.outline,
+                    ? context.appColors.border.withValues(alpha: 0.5)
+                    : context.appColors.border,
             width: 1,
           ),
         ),
@@ -39,7 +40,7 @@ class ServerListItem extends StatelessWidget {
             if (isDraggable) ...[
               Icon(
                 Icons.drag_handle,
-                color: context.colour.onSurface.withValues(alpha: 128),
+                color: context.colorScheme.onSurface.withValues(alpha: 128),
                 size: 20,
               ),
               const SizedBox(width: 12),
@@ -57,7 +58,7 @@ class ServerListItem extends StatelessWidget {
                               child: Text(
                                 server.displayName,
                                 style: context.font.bodyMedium?.copyWith(
-                                  color: context.colour.onSurface,
+                                  color: context.colorScheme.onSurface,
                                   decoration:
                                       disabled
                                           ? TextDecoration.lineThrough
@@ -72,15 +73,13 @@ class ServerListItem extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: context.colour.tertiary.withValues(
-                                  alpha: 0.15,
-                                ),
+                                color: context.colorScheme.tertiaryContainer,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 server.protocol.toUpperCase(),
                                 style: context.font.bodySmall?.copyWith(
-                                  color: context.colour.onTertiary,
+                                  color: context.colorScheme.tertiary,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -94,7 +93,7 @@ class ServerListItem extends StatelessWidget {
                         Text(
                           context.loc.electrumServerNotUsed,
                           style: context.font.bodySmall?.copyWith(
-                            color: context.colour.onSurface.withValues(
+                            color: context.colorScheme.onSurface.withValues(
                               alpha: 153,
                             ),
                             fontStyle: FontStyle.italic,
@@ -113,7 +112,7 @@ class ServerListItem extends StatelessWidget {
               IconButton(
                 icon: Icon(
                   Icons.delete_outline,
-                  color: context.colour.error,
+                  color: context.colorScheme.error,
                   size: 20,
                 ),
                 padding: EdgeInsets.zero,
@@ -144,9 +143,11 @@ class ServerListItem extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Text(
-          isOnline ? context.loc.electrumServerOnline : context.loc.electrumServerOffline,
+          isOnline
+              ? context.loc.electrumServerOnline
+              : context.loc.electrumServerOffline,
           style: context.font.bodySmall?.copyWith(
-            color: context.colour.onSurface,
+            color: context.colorScheme.onSurface,
           ),
         ),
       ],

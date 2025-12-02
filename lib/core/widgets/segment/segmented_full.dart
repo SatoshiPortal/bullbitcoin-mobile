@@ -53,11 +53,11 @@ class _BBSegmentFullState extends State<BBSegmentFull> {
           isStretch: true,
           customSegmentSettings: CustomSegmentSettings(),
           decoration: BoxDecoration(
-            color: context.colour.outline.withValues(alpha: 0.1),
+            color: context.appColors.textMuted.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(2),
           ),
           thumbDecoration: BoxDecoration(
-            color: context.colour.onPrimary,
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(2),
           ),
           children: {
@@ -67,14 +67,16 @@ class _BBSegmentFullState extends State<BBSegmentFull> {
                 style:
                     item == selectedSegment
                         ? context.font.labelLarge?.copyWith(
-                          color: context.colour.primary,
+                          color: context.colorScheme.primary,
                         )
                         : widget.disabledItems.contains(item)
                         ? context.font.labelMedium?.copyWith(
-                          color: context.colour.outline.withValues(alpha: 0.5),
+                          color: context.colorScheme.outline.withValues(
+                            alpha: 0.5,
+                          ),
                         )
                         : context.font.labelMedium?.copyWith(
-                          color: context.colour.outline,
+                          color: context.colorScheme.outline,
                         ),
               ),
           },

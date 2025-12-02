@@ -81,7 +81,7 @@ class BuyInputScreen extends StatelessWidget {
                             ? context.loc.buyInputMinAmountError
                             : context.loc.buyInputMaxAmountError,
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.error,
+                          color: context.colorScheme.error,
                         ),
                       ),
                       const Gap(4),
@@ -91,7 +91,7 @@ class BuyInputScreen extends StatelessWidget {
                             : aboveMaxAmountError!.maxAmountSat,
                         showFiat: false,
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.error,
+                          color: context.colorScheme.error,
                         ),
                         overrideHideAmounts: true,
                       ),
@@ -104,8 +104,10 @@ class BuyInputScreen extends StatelessWidget {
                     InfoCard(
                       title: context.loc.buyInputKycPending,
                       description: context.loc.buyInputKycMessage,
-                      bgColor: context.colour.tertiary.withValues(alpha: 0.1),
-                      tagColor: context.colour.onTertiary,
+                      bgColor: context.colorScheme.tertiary.withValues(
+                        alpha: 0.1,
+                      ),
+                      tagColor: context.colorScheme.onTertiary,
                     ),
                     const Gap(16.0),
                     BBButton.big(
@@ -115,16 +117,18 @@ class BuyInputScreen extends StatelessWidget {
                           ExchangeRoute.exchangeKyc.name,
                         );
                       },
-                      bgColor: context.colour.primary,
-                      textColor: context.colour.onPrimary,
+                      bgColor: context.colorScheme.primary,
+                      textColor: context.colorScheme.onPrimary,
                     ),
                   ] else if (showInsufficientBalanceError) ...[
                     InfoCard(
                       title: context.loc.buyInputInsufficientBalance,
                       description:
                           context.loc.buyInputInsufficientBalanceMessage,
-                      bgColor: context.colour.tertiary.withValues(alpha: 0.1),
-                      tagColor: context.colour.onTertiary,
+                      bgColor: context.colorScheme.tertiary.withValues(
+                        alpha: 0.1,
+                      ),
+                      tagColor: context.colorScheme.onTertiary,
                     ),
                     const Gap(16.0),
                     BBButton.big(
@@ -134,8 +138,8 @@ class BuyInputScreen extends StatelessWidget {
                           FundExchangeRoute.fundExchangeAccount.name,
                         );
                       },
-                      bgColor: context.colour.primary,
-                      textColor: context.colour.onPrimary,
+                      bgColor: context.colorScheme.primary,
+                      textColor: context.colorScheme.onPrimary,
                     ),
                   ] else
                     BBButton.big(
@@ -146,8 +150,8 @@ class BuyInputScreen extends StatelessWidget {
                           const BuyEvent.createOrder(),
                         );
                       },
-                      bgColor: context.colour.secondary,
-                      textColor: context.colour.onSecondary,
+                      bgColor: context.colorScheme.secondary,
+                      textColor: context.colorScheme.onSecondary,
                     ),
                 ] else ...[
                   const LoadingLineContent(height: 56, width: double.infinity),

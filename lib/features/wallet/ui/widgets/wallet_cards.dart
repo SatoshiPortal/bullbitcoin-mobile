@@ -27,15 +27,15 @@ class WalletCards extends StatelessWidget {
     final isLiquid = wallet.isLiquid;
     final watchOrSignsRemotely = wallet.isWatchOnly || wallet.signsRemotely;
 
-    final watchonlyColor = context.colour.secondary;
+    final watchonlyColor = context.colorScheme.secondary;
 
     if (watchOrSignsRemotely && !isTestnet) return watchonlyColor;
     if (watchOrSignsRemotely && isTestnet) return watchonlyColor;
 
-    if (isLiquid) return context.colour.tertiary;
+    if (isLiquid) return context.colorScheme.tertiary;
 
-    if (isTestnet) return context.colour.onTertiary;
-    return context.colour.onTertiary;
+    if (isTestnet) return context.colorScheme.onTertiary;
+    return context.colorScheme.onTertiary;
   }
 
   @override
@@ -80,7 +80,7 @@ class WalletCards extends StatelessWidget {
           ],
           if (isArkWalletSetup) ...[
             WalletCard(
-              tagColor: context.colour.primary,
+              tagColor: context.colorScheme.tertiary,
               title: 'Ark Instant payments',
               description: 'Experimental',
               balanceSat: arkBalanceSat,

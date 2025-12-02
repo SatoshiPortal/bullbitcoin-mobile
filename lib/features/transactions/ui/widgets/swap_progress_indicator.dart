@@ -35,7 +35,7 @@ class SwapProgressIndicator extends StatelessWidget {
                       right: stepWidth / 2,
                       child: Container(
                         height: 5,
-                        color: context.colour.surfaceContainerHighest,
+                        color: context.colorScheme.surfaceContainerHighest,
                       ),
                     ),
 
@@ -47,7 +47,7 @@ class SwapProgressIndicator extends StatelessWidget {
                         width: stepWidth * currentStep,
                         child: Container(
                           height: 5,
-                          color: context.colour.primary,
+                          color: context.colorScheme.primary,
                         ),
                       ),
 
@@ -63,12 +63,12 @@ class SwapProgressIndicator extends StatelessWidget {
                         // Determine colors based on state
                         final Color indicatorColor;
                         if (isFailedOrExpired && index == 0) {
-                          indicatorColor = context.colour.error;
+                          indicatorColor = context.colorScheme.error;
                         } else if (isCompleted) {
-                          indicatorColor = context.colour.primary;
+                          indicatorColor = context.colorScheme.primary;
                         } else {
                           indicatorColor =
-                              context.colour.surfaceContainerHighest;
+                              context.colorScheme.surfaceContainerHighest;
                         }
 
                         // Create indicator content
@@ -77,19 +77,19 @@ class SwapProgressIndicator extends StatelessWidget {
                           indicatorChild = Icon(
                             Icons.error_outline,
                             size: 15,
-                            color: context.colour.onError,
+                            color: context.colorScheme.onError,
                           );
                         } else if (isCompleted) {
                           indicatorChild = Icon(
                             Icons.check,
                             size: 20,
-                            color: context.colour.onPrimary,
+                            color: context.colorScheme.onPrimary,
                           );
                         } else {
                           indicatorChild = Text(
                             '${index + 1}',
                             style: TextStyle(
-                              color: context.colour.onSurfaceVariant,
+                              color: context.colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                             ),
@@ -111,7 +111,10 @@ class SwapProgressIndicator extends StatelessWidget {
                                       border:
                                           isCurrent
                                               ? Border.all(
-                                                color: context.colour.secondary,
+                                                color:
+                                                    context
+                                                        .colorScheme
+                                                        .secondary,
                                                 width: 2,
                                               )
                                               : null,
@@ -192,13 +195,15 @@ class SwapProgressIndicator extends StatelessWidget {
         swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
 
     if (isFailedOrExpired) {
-      return index == 0 ? context.colour.error : context.colour.outline;
+      return index == 0
+          ? context.colorScheme.error
+          : context.colorScheme.outline;
     }
 
     if (index <= currentStep) {
-      return context.colour.primary;
+      return context.colorScheme.primary;
     }
 
-    return context.colour.outline;
+    return context.colorScheme.outline;
   }
 }

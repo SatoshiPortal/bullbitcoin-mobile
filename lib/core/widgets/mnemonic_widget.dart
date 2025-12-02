@@ -151,7 +151,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
             BBText(
               _error!.toString(),
               style: context.font.bodyMedium,
-              color: context.colour.onError,
+              color: context.appColors.error,
             ),
           ],
 
@@ -159,8 +159,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
           BBButton.big(
             label: widget.submitLabel,
             onPressed: onSubmit,
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.colorScheme.onSurface,
+            textColor: context.appColors.surface,
           ),
         ],
       ),
@@ -206,8 +206,8 @@ class MnemonicWordState extends State<MnemonicWord> {
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: context.colour.secondary),
-        color: context.colour.onPrimary,
+        border: Border.all(color: context.appColors.border),
+        color: context.appColors.surface,
       ),
       height: 41,
       child: Row(
@@ -219,7 +219,7 @@ class MnemonicWordState extends State<MnemonicWord> {
             decoration: BoxDecoration(
               color:
                   widget.word.isEmpty
-                      ? context.colour.secondary
+                      ? context.appColors.onSurface
                       : isValidWord
                       ? Colors.green
                       : Colors.red,
@@ -229,7 +229,7 @@ class MnemonicWordState extends State<MnemonicWord> {
             child: BBText(
               displayIndex,
               style: context.font.headlineMedium,
-              color: context.colour.onPrimary,
+              color: context.appColors.surface,
               textAlign: TextAlign.right,
             ),
           ),
@@ -467,9 +467,9 @@ class MnemonicLengthDropdown extends StatelessWidget {
       underline: const SizedBox(),
       style: context.font.bodyMedium?.copyWith(
         fontWeight: FontWeight.w600,
-        color: context.colour.secondary,
+        color: context.appColors.text,
       ),
-      dropdownColor: context.colour.onPrimary,
+      dropdownColor: context.appColors.surface,
       borderRadius: BorderRadius.circular(4),
       items:
           bip39.MnemonicLength.values
@@ -480,7 +480,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
                     '${length.words} words',
                     style: context.font.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: context.colour.secondary,
+                      color: context.appColors.text,
                     ),
                   ),
                 ),
@@ -506,8 +506,8 @@ class _HintChip extends StatelessWidget {
         height: 38,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          color: context.colour.onPrimary,
-          border: Border.all(color: context.colour.surface),
+          color: context.appColors.surface,
+          border: Border.all(color: context.appColors.border),
         ),
         child: Center(child: BBText(word, style: context.font.bodyLarge)),
       ),

@@ -14,7 +14,7 @@ class FailedWalletDeletionAlertDialog extends StatelessWidget {
       (WalletBloc bloc) => bloc.state.walletDeletionError,
     );
     return AlertDialog(
-      backgroundColor: context.colour.onPrimary,
+      backgroundColor: context.colorScheme.onPrimary,
       title: Text(context.loc.walletDeletionFailedTitle),
       content: Text(
         error is CannotDeleteDefaultWalletError
@@ -24,7 +24,9 @@ class FailedWalletDeletionAlertDialog extends StatelessWidget {
             : error is WalletNotFound
             ? context.loc.walletDeletionErrorWalletNotFound
             : context.loc.walletDeletionErrorGeneric,
-        style: context.font.bodyMedium?.copyWith(color: context.colour.error),
+        style: context.font.bodyMedium?.copyWith(
+          color: context.colorScheme.error,
+        ),
       ),
       actions: [
         TextButton(

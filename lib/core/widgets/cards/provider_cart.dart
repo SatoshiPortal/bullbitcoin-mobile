@@ -57,7 +57,7 @@ class _ProviderCardState extends State<ProviderCard>
           borderRadius: BorderRadius.circular(8),
           child: Ink(
             decoration: BoxDecoration(
-              color: context.colour.onPrimary,
+              color: context.appColors.surface,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Container(
@@ -87,7 +87,10 @@ class _ProviderCardState extends State<ProviderCard>
                     ),
                   ),
                   const Gap(8),
-                  Icon(Icons.arrow_forward, color: context.colour.secondary),
+                  Icon(
+                    Icons.arrow_forward,
+                    color: context.colorScheme.onSurface,
+                  ),
                 ],
               ),
             ),

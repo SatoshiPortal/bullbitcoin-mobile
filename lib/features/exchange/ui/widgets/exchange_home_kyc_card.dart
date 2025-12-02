@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+
 class ExchangeHomeKycCard extends StatelessWidget {
   const ExchangeHomeKycCard({super.key});
 
@@ -21,7 +22,7 @@ class ExchangeHomeKycCard extends StatelessWidget {
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      tileColor: context.colour.secondary,
+      tileColor: context.colorScheme.secondary,
       leading: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -46,7 +47,7 @@ class ExchangeHomeKycCard extends StatelessWidget {
       title: Text(
         context.loc.exchangeKycCardTitle,
         style: theme.textTheme.bodyMedium?.copyWith(
-          color: context.colour.onPrimary,
+          color: context.colorScheme.onPrimary,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -54,7 +55,7 @@ class ExchangeHomeKycCard extends StatelessWidget {
       subtitle: Text(
         context.loc.exchangeKycCardSubtitle,
         style: theme.textTheme.bodyMedium?.copyWith(
-          color: context.colour.surface,
+          color: context.colorScheme.surface,
           fontWeight: FontWeight.w500,
         ),
       ),

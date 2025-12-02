@@ -56,10 +56,10 @@ class LegacySeedViewScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: context.colour.surface,
+                        color: context.colorScheme.surface,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: context.colour.primary,
+                          color: context.colorScheme.primary,
                           width: 2,
                         ),
                       ),
@@ -69,13 +69,13 @@ class LegacySeedViewScreen extends StatelessWidget {
                           BBText(
                             context.loc.legacySeedViewMnemonicLabel,
                             style: context.font.bodyLarge,
-                            color: context.colour.primary,
+                            color: context.colorScheme.primary,
                           ),
                           const SizedBox(height: 8),
                           BBText(
                             seed.mnemonic,
                             style: context.font.bodyMedium,
-                            color: context.colour.secondary,
+                            color: context.colorScheme.secondary,
                             maxLines: 5,
                           ),
                         ],

@@ -35,7 +35,9 @@ class RecipientTypeSelector extends StatelessWidget {
                   RadioListTile(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(color: context.colour.onSecondaryFixed),
+                      side: BorderSide(
+                        color: context.colorScheme.onSecondaryFixed,
+                      ),
                     ),
                     title: RecipientTypeText(
                       recipientType: type,
@@ -57,7 +59,7 @@ class RecipientTypeSelector extends StatelessWidget {
     } else {
       return Material(
         elevation: 4,
-        color: context.colour.onPrimary,
+        color: context.colorScheme.onPrimary,
         borderRadius: BorderRadius.circular(4.0),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -68,7 +70,7 @@ class RecipientTypeSelector extends StatelessWidget {
             borderRadius: BorderRadius.circular(4.0),
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: context.colour.secondary,
+              color: context.colorScheme.secondary,
             ),
             items:
                 options

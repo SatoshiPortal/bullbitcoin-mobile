@@ -28,9 +28,12 @@ class RecipientsListTile extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
-            color: selected ? context.colour.primary : context.colour.surface,
+            color:
+                selected
+                    ? context.colorScheme.primary
+                    : context.colorScheme.surface,
           ),
-          color: context.colour.onPrimary,
+          color: context.colorScheme.onPrimary,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +47,7 @@ class RecipientsListTile extends StatelessWidget {
                   child: Text(
                     name ?? '-',
                     style: context.font.headlineLarge?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colorScheme.secondary,
                     ),
                   ),
                 ),
@@ -52,7 +55,7 @@ class RecipientsListTile extends StatelessWidget {
                   value: true,
                   groupValue: selected,
                   onChanged: (_) => onTap(),
-                  activeColor: context.colour.primary,
+                  activeColor: context.colorScheme.primary,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   visualDensity: VisualDensity.compact,
                 ),
@@ -61,7 +64,7 @@ class RecipientsListTile extends StatelessWidget {
             RecipientTypeText(
               recipientType: recipient.type,
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.colorScheme.secondary,
               ),
             ),
             switch (recipient.type) {
@@ -144,7 +147,7 @@ class _InfoRow extends StatelessWidget {
       child: Text(
         '$label: ${value != null && value!.isNotEmpty ? value : '-'}',
         style: context.font.bodyMedium?.copyWith(
-          color: context.colour.secondary,
+          color: context.colorScheme.secondary,
         ),
       ),
     );

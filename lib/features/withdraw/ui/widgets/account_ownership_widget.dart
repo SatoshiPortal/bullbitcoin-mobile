@@ -21,7 +21,7 @@ class AccountOwnershipWidget extends StatelessWidget {
         BBText(
           'Who does this account belong to?',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.colorScheme.secondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -53,15 +53,15 @@ class AccountOwnershipWidget extends StatelessWidget {
         height: 56,
         child: Material(
           elevation: 4,
-          color: context.colour.onPrimary,
+          color: context.colorScheme.onPrimary,
           borderRadius: BorderRadius.circular(4),
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(
                 color:
                     isSelected
-                        ? context.colour.primary
-                        : context.colour.surface,
+                        ? context.colorScheme.primary
+                        : context.colorScheme.surface,
                 width: 1,
               ),
             ),
@@ -71,14 +71,14 @@ class AccountOwnershipWidget extends StatelessWidget {
                   value: value,
                   groupValue: (formData[key] as String?) == 'true',
                   onChanged: (_) => onFormDataChanged(key, value.toString()),
-                  activeColor: context.colour.primary,
+                  activeColor: context.colorScheme.primary,
                 ),
                 const Gap(8),
                 Expanded(
                   child: BBText(
                     label,
                     style: context.font.headlineSmall?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.colorScheme.secondary,
                     ),
                   ),
                 ),

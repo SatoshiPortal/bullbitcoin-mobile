@@ -58,7 +58,7 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
           maxHeight: MediaQuery.of(context).size.height * 0.85,
         ),
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: Column(
@@ -154,15 +154,15 @@ class _EnabledToggle extends StatelessWidget {
             BBText(
               context.loc.autoswapEnableToggleLabel,
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.text,
               ),
             ),
             Switch(
               value: enabled,
-              activeColor: context.colour.onSecondary,
-              activeTrackColor: context.colour.secondary,
-              inactiveThumbColor: context.colour.onSecondary,
-              inactiveTrackColor: context.colour.surface,
+              activeColor: context.appColors.surface,
+              activeTrackColor: context.appColors.text,
+              inactiveThumbColor: context.appColors.surface,
+              inactiveTrackColor: context.appColors.textMuted,
               trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
                 (Set<WidgetState> states) => Colors.transparent,
               ),
@@ -197,7 +197,7 @@ class _AmountThresholdField extends StatelessWidget {
         BBText(
           context.loc.autoswapMaxBalanceLabel,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.appColors.text,
           ),
         ),
         const Gap(8),
@@ -213,9 +213,9 @@ class _AmountThresholdField extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: context.colour.surface,
+                    color: context.appColors.surface,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: context.colour.secondaryFixedDim),
+                    border: Border.all(color: context.appColors.border),
                   ),
                   child: BBText(
                     bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
@@ -236,7 +236,7 @@ class _AmountThresholdField extends StatelessWidget {
           BBText(
             amountThresholdError.displayMessage(),
             style: context.font.bodySmall?.copyWith(
-              color: context.colour.error,
+              color: context.colorScheme.error,
             ),
           ),
         ],
@@ -244,7 +244,7 @@ class _AmountThresholdField extends StatelessWidget {
         BBText(
           context.loc.autoswapMaxBalanceInfoText,
           style: context.font.labelSmall?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
       ],
@@ -268,7 +268,7 @@ class _FeeThresholdField extends StatelessWidget {
         BBText(
           context.loc.autoswapMaxFeeLabel,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.appColors.text,
           ),
         ),
         const Gap(8),
@@ -284,9 +284,9 @@ class _FeeThresholdField extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: context.colour.surface,
+                    color: context.appColors.surface,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: context.colour.secondaryFixedDim),
+                    border: Border.all(color: context.appColors.border),
                   ),
                   child: BBText('%', style: context.font.bodyMedium),
                 ),
@@ -304,7 +304,7 @@ class _FeeThresholdField extends StatelessWidget {
           BBText(
             feeThresholdError.displayMessage(),
             style: context.font.bodySmall?.copyWith(
-              color: context.colour.error,
+              color: context.colorScheme.error,
             ),
           ),
         ],
@@ -312,7 +312,7 @@ class _FeeThresholdField extends StatelessWidget {
         BBText(
           context.loc.autoswapMaxFeeInfoText,
           style: context.font.labelSmall?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
       ],
@@ -336,15 +336,15 @@ class _AlwaysBlockToggle extends StatelessWidget {
             BBText(
               context.loc.autoswapAlwaysBlockLabel,
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.text,
               ),
             ),
             Switch(
               value: alwaysBlock,
-              activeColor: context.colour.onSecondary,
-              activeTrackColor: context.colour.secondary,
-              inactiveThumbColor: context.colour.onSecondary,
-              inactiveTrackColor: context.colour.surface,
+              activeColor: context.appColors.surface,
+              activeTrackColor: context.appColors.text,
+              inactiveThumbColor: context.appColors.surface,
+              inactiveTrackColor: context.appColors.textMuted,
               trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
                 (Set<WidgetState> states) => Colors.transparent,
               ),
@@ -362,7 +362,7 @@ class _AlwaysBlockToggle extends StatelessWidget {
               ? context.loc.autoswapAlwaysBlockInfoEnabled
               : context.loc.autoswapAlwaysBlockInfoDisabled,
           style: context.font.labelSmall?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
       ],
@@ -391,7 +391,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
             BBText(
               context.loc.autoswapRecipientWalletLabel,
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.text,
               ),
             ),
             if (enabled) ...[
@@ -399,7 +399,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
               BBText(
                 context.loc.autoswapRecipientWalletRequired,
                 style: context.font.bodyLarge?.copyWith(
-                  color: context.colour.error,
+                  color: context.colorScheme.error,
                 ),
               ),
             ],
@@ -414,8 +414,8 @@ class _WalletSelectionDropdown extends StatelessWidget {
               borderSide: BorderSide(
                 color:
                     enabled && selectedWalletId == null
-                        ? context.colour.error
-                        : context.colour.surfaceContainer,
+                        ? context.appColors.error
+                        : context.appColors.border,
               ),
             ),
             enabledBorder: OutlineInputBorder(
@@ -423,8 +423,8 @@ class _WalletSelectionDropdown extends StatelessWidget {
               borderSide: BorderSide(
                 color:
                     enabled && selectedWalletId == null
-                        ? context.colour.error
-                        : context.colour.surfaceContainer,
+                        ? context.appColors.error
+                        : context.appColors.border,
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -432,8 +432,8 @@ class _WalletSelectionDropdown extends StatelessWidget {
               borderSide: BorderSide(
                 color:
                     enabled && selectedWalletId == null
-                        ? context.colour.error
-                        : context.colour.primary,
+                        ? context.appColors.error
+                        : context.appColors.primary,
               ),
             ),
             contentPadding: const EdgeInsets.symmetric(
@@ -442,12 +442,14 @@ class _WalletSelectionDropdown extends StatelessWidget {
             ),
           ),
           hint: BBText(
-            enabled ? context.loc.autoswapRecipientWalletPlaceholderRequired : context.loc.autoswapRecipientWalletPlaceholder,
+            enabled
+                ? context.loc.autoswapRecipientWalletPlaceholderRequired
+                : context.loc.autoswapRecipientWalletPlaceholder,
             style: context.font.bodyMedium?.copyWith(
               color:
                   enabled && selectedWalletId == null
-                      ? context.colour.error
-                      : context.colour.surfaceContainer,
+                      ? context.appColors.error
+                      : context.appColors.textMuted,
             ),
           ),
           items:
@@ -455,9 +457,10 @@ class _WalletSelectionDropdown extends StatelessWidget {
                 return DropdownMenuItem<String>(
                   value: wallet.id,
                   child: BBText(
-                    wallet.label ?? context.loc.autoswapRecipientWalletDefaultLabel,
+                    wallet.label ??
+                        context.loc.autoswapRecipientWalletDefaultLabel,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.appColors.text,
                     ),
                   ),
                 );
@@ -472,8 +475,8 @@ class _WalletSelectionDropdown extends StatelessWidget {
           style: context.font.labelSmall?.copyWith(
             color:
                 enabled && selectedWalletId == null
-                    ? context.colour.error
-                    : context.colour.surfaceContainer,
+                    ? context.appColors.error
+                    : context.appColors.textMuted,
           ),
         ),
       ],
@@ -512,7 +515,9 @@ class _SaveButton extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: BBText(
-                              context.loc.autoswapSaveErrorMessage(e.toString()),
+                              context.loc.autoswapSaveErrorMessage(
+                                e.toString(),
+                              ),
                               style: context.font.bodyMedium,
                             ),
                           ),
@@ -520,9 +525,9 @@ class _SaveButton extends StatelessWidget {
                       }
                     });
               },
-      bgColor: context.colour.secondary,
+      bgColor: context.colorScheme.onSurface,
       textStyle: context.font.headlineLarge,
-      textColor: context.colour.onSecondary,
+      textColor: context.appColors.surface,
     );
   }
 }

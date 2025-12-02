@@ -46,7 +46,7 @@ class InstructionsBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: context.appColors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
@@ -83,7 +83,7 @@ class InstructionsBottomSheet extends StatelessWidget {
                     child: BBText(
                       subtitle!,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.onSurface,
+                        color: context.appColors.text,
                       ),
                       textAlign: TextAlign.left,
                     ),

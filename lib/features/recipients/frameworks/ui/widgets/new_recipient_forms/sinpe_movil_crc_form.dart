@@ -124,7 +124,7 @@ class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
                           child: Center(
                             child: CircularProgressIndicator(
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                context.colour.primary,
+                                context.colorScheme.primary,
                               ),
                             ),
                           ),

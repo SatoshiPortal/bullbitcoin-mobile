@@ -29,7 +29,7 @@ class LabeledTextInput extends StatelessWidget {
           label,
           style: context.font.labelMedium?.copyWith(
             fontWeight: FontWeight.w700,
-            color: context.colour.secondary,
+            color: context.appColors.text,
             letterSpacing: 0,
             fontSize: 14,
           ),
@@ -37,12 +37,12 @@ class LabeledTextInput extends StatelessWidget {
         const Gap(8),
         Container(
           decoration: BoxDecoration(
-            color: context.colour.onPrimary,
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(2.76),
-            border: Border.all(color: context.colour.surface, width: 0.69),
+            border: Border.all(color: context.appColors.border, width: 0.69),
             boxShadow: [
               BoxShadow(
-                color: context.colour.surface,
+                color: context.appColors.border,
                 offset: const Offset(0, 2),
               ),
             ],
@@ -54,12 +54,12 @@ class LabeledTextInput extends StatelessWidget {
             style: context.font.bodySmall?.copyWith(
               fontWeight: FontWeight.w700,
               fontSize: 14,
-              color: context.colour.secondary,
+              color: context.appColors.text,
             ),
             hintStyle: context.font.bodySmall?.copyWith(
               fontWeight: FontWeight.w700,
               fontSize: 14,
-              color: context.colour.surface,
+              color: context.appColors.textMuted,
             ),
             hint: hint,
             hideBorder: true,

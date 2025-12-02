@@ -32,7 +32,7 @@ class CurrencySettingsScreen extends StatelessWidget {
         useRootNavigator: true,
         context: context,
         isScrollControlled: true,
-        backgroundColor: context.colour.secondaryFixedDim,
+        backgroundColor: context.colorScheme.secondaryFixedDim,
         constraints: const BoxConstraints(maxWidth: double.infinity),
         builder: (context) {
           return CurrencyBottomSheet(
@@ -51,7 +51,7 @@ class CurrencySettingsScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.settingsCurrencyTitle,
-          color: context.colour.secondaryFixed,
+          color: context.colorScheme.secondaryFixed,
           onBack: context.pop,
         ),
       ),

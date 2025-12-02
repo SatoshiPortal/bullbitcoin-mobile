@@ -66,7 +66,7 @@ class ServiceStatusPage extends StatelessWidget {
                               BBText(
                                 'Last checked: ${_formatDateTime(serviceStatus.lastChecked!)}',
                                 style: context.font.bodySmall,
-                                color: context.colour.onSurfaceVariant,
+                                color: context.colorScheme.onSurfaceVariant,
                               ),
                           ],
                         ),
@@ -108,13 +108,13 @@ class _ServiceStatusItem extends StatelessWidget {
         BBText(
           service.name,
           style: context.font.bodyMedium,
-          color: context.colour.onSurface,
+          color: context.colorScheme.onSurface,
         ),
         const Spacer(),
         BBText(
           _getStatusText(),
           style: context.font.bodySmall,
-          color: context.colour.onSurfaceVariant,
+          color: context.colorScheme.onSurfaceVariant,
         ),
       ],
     );
@@ -123,11 +123,11 @@ class _ServiceStatusItem extends StatelessWidget {
   Color _getStatusColor(BuildContext context) {
     switch (service.status) {
       case ServiceStatus.online:
-        return context.colour.inverseSurface;
+        return context.colorScheme.inverseSurface;
       case ServiceStatus.offline:
-        return context.colour.error;
+        return context.colorScheme.error;
       case ServiceStatus.unknown:
-        return context.colour.surfaceContainerHighest;
+        return context.colorScheme.surfaceContainerHighest;
     }
   }
 

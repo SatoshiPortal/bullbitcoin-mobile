@@ -39,12 +39,12 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: context.colour.outline.withValues(alpha: 0.3),
+                  color: context.colorScheme.outline.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(height: 24),
-              Icon(Icons.logout, size: 48, color: context.colour.primary),
+              Icon(Icons.logout, size: 48, color: context.colorScheme.primary),
               const SizedBox(height: 16),
               BBText(
                 'Confirm Logout',
@@ -57,7 +57,7 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
               BBText(
                 'Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access exchange features.',
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.secondary.withValues(alpha: 0.7),
+                  color: context.colorScheme.secondary.withValues(alpha: 0.7),
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 4,
@@ -70,8 +70,8 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                     child: BBButton.small(
                       label: 'Cancel',
                       onPressed: () => Navigator.of(context).pop(),
-                      bgColor: context.colour.secondaryFixed,
-                      textColor: context.colour.secondary,
+                      bgColor: context.colorScheme.secondaryFixed,
+                      textColor: context.colorScheme.secondary,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -83,7 +83,7 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                         await onConfirm();
                       },
                       bgColor: Colors.black,
-                      textColor: context.colour.onPrimary,
+                      textColor: context.colorScheme.onPrimary,
                     ),
                   ),
                 ],

@@ -68,7 +68,10 @@ class PaymentReceivedPage extends StatelessWidget {
             width: 100,
           ),
           const Gap(20),
-          BBText(context.loc.receivePaymentReceived, style: context.font.headlineLarge),
+          BBText(
+            context.loc.receivePaymentReceived,
+            style: context.font.headlineLarge,
+          ),
           const Gap(24),
           CurrencyText(
             finalAmount,
@@ -79,7 +82,7 @@ class PaymentReceivedPage extends StatelessWidget {
           BBText(
             '~$amountFiat',
             style: context.font.bodyLarge,
-            color: context.colour.surface,
+            color: context.colorScheme.surface,
           ),
           const Spacer(),
           const ReceiveDetailsButton(),
@@ -122,8 +125,8 @@ class ReceiveDetailsButton extends StatelessWidget {
             );
           }
         },
-        bgColor: context.colour.secondary,
-        textColor: context.colour.onSecondary,
+        bgColor: context.colorScheme.secondary,
+        textColor: context.colorScheme.onSecondary,
       ),
     );
   }

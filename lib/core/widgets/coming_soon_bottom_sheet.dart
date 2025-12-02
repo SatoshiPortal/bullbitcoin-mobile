@@ -24,7 +24,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: theme.colorScheme.onPrimary,
+      backgroundColor: theme.colorScheme.surface,
       constraints: const BoxConstraints(maxWidth: double.infinity),
       useRootNavigator: true,
       builder:
@@ -93,8 +93,8 @@ class ComingSoonBottomSheet extends StatelessWidget {
                   Navigator.of(context).pop();
                   onDismissed?.call();
                 },
-                bgColor: theme.colorScheme.secondary,
-                textColor: theme.colorScheme.onPrimary,
+                bgColor: theme.colorScheme.onSurface,
+                textColor: theme.colorScheme.surface,
               ),
             ],
           ),

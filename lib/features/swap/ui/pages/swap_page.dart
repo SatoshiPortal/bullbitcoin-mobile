@@ -85,8 +85,8 @@ class _SwapPageState extends State<SwapPage> {
                   (context, isLoading) => FadingLinearProgress(
                     height: 3,
                     trigger: isLoading,
-                    backgroundColor: context.colour.onPrimary,
-                    foregroundColor: context.colour.primary,
+                    backgroundColor: context.colorScheme.onPrimary,
+                    foregroundColor: context.colorScheme.primary,
                   ),
             ),
           ),
@@ -103,8 +103,8 @@ class _SwapPageState extends State<SwapPage> {
                   InfoCard(
                     description:
                         'Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.',
-                    tagColor: context.colour.inverseSurface,
-                    bgColor: context.colour.inverseSurface.withValues(
+                    tagColor: context.colorScheme.inverseSurface,
+                    bgColor: context.colorScheme.inverseSurface.withValues(
                       alpha: 0.1,
                     ),
                   ),
@@ -128,10 +128,10 @@ class _SwapPageState extends State<SwapPage> {
                         builder: (context, sendToExternal) {
                           return Switch(
                             value: sendToExternal,
-                            activeColor: context.colour.onSecondary,
-                            activeTrackColor: context.colour.secondary,
-                            inactiveThumbColor: context.colour.onSecondary,
-                            inactiveTrackColor: context.colour.surface,
+                            activeColor: context.colorScheme.onSecondary,
+                            activeTrackColor: context.colorScheme.secondary,
+                            inactiveThumbColor: context.colorScheme.onSecondary,
+                            inactiveTrackColor: context.colorScheme.surface,
                             trackOutlineColor: WidgetStateProperty.resolveWith<
                               Color?
                             >((Set<WidgetState> states) => Colors.transparent),
@@ -179,7 +179,7 @@ class _SwapPageState extends State<SwapPage> {
                       return Text(
                         swapCreationError.message,
                         style: context.font.labelLarge?.copyWith(
-                          color: context.colour.error,
+                          color: context.colorScheme.error,
                         ),
                         maxLines: 4,
                       );
@@ -205,10 +205,10 @@ class _SwapPageState extends State<SwapPage> {
                         builder: (context, receiveExactAmount) {
                           return Switch(
                             value: receiveExactAmount,
-                            activeColor: context.colour.onSecondary,
-                            activeTrackColor: context.colour.secondary,
-                            inactiveThumbColor: context.colour.onSecondary,
-                            inactiveTrackColor: context.colour.surface,
+                            activeColor: context.colorScheme.onSecondary,
+                            activeTrackColor: context.colorScheme.secondary,
+                            inactiveThumbColor: context.colorScheme.onSecondary,
+                            inactiveTrackColor: context.colorScheme.surface,
                             trackOutlineColor: WidgetStateProperty.resolveWith<
                               Color?
                             >((Set<WidgetState> states) => Colors.transparent),
@@ -232,8 +232,8 @@ class _SwapPageState extends State<SwapPage> {
                     builder: (context, isLoading) {
                       return BBButton.big(
                         label: 'Continue',
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onSecondary,
+                        bgColor: context.colorScheme.secondary,
+                        textColor: context.colorScheme.onSecondary,
                         disabled: isLoading,
                         onPressed: () {
                           if (!_formKey.currentState!.validate()) {

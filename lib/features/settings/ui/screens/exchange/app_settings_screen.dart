@@ -46,7 +46,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
         );
       },
       child: Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.colorScheme.secondaryFixed,
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
@@ -89,7 +89,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                   BBText(
                     context.loc.exchangeAppSettingsValidationWarning,
                     style: context.font.bodySmall?.copyWith(
-                      color: context.colour.error,
+                      color: context.colorScheme.error,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -103,8 +103,10 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                     },
                     disabled: state.isSaving || hasUnsetValues,
                     bgColor:
-                        hasUnsetValues ? context.colour.outline : Colors.black,
-                    textColor: context.colour.onPrimary,
+                        hasUnsetValues
+                            ? context.colorScheme.outline
+                            : Colors.black,
+                    textColor: context.colorScheme.onPrimary,
                   ),
                 ),
               ],
@@ -129,7 +131,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
         BBText(
           label,
           style: context.font.labelMedium?.copyWith(
-            color: context.colour.secondary,
+            color: context.colorScheme.secondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -138,7 +140,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
           height: 56,
           child: Material(
             elevation: 4,
-            color: context.colour.onPrimary,
+            color: context.colorScheme.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
@@ -149,7 +151,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                 ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.colorScheme.secondary,
                 ),
                 items:
                     values

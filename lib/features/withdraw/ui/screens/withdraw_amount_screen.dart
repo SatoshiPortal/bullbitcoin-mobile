@@ -74,8 +74,8 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                     );
                   }
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.colorScheme.onSurface,
+                textColor: context.appColors.surface,
               ),
               const Gap(16.0),
             ],

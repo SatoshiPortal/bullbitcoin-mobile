@@ -168,12 +168,12 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
             children: [
               if (appVersion != null)
                 ListTile(
-                  tileColor: theme.colorScheme.secondaryFixedDim,
+                  tileColor: theme.colorScheme.surfaceContainerHighest,
                   title: Center(
                     child: Text(
                       '${context.loc.settingsAppVersionLabel}$appVersion',
                       style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.secondary,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -201,7 +201,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           Text(
                             context.loc.settingsTelegramLabel,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.secondary,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -222,7 +222,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           Text(
                             context.loc.settingsGithubLabel,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.secondary,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                         ],

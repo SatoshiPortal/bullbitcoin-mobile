@@ -143,24 +143,20 @@ class _AddCustomServerBottomSheetState
                     ],
                     style: context.font.bodyLarge,
                     decoration: InputDecoration(
-                      fillColor: context.colour.onPrimary,
+                      fillColor: context.appColors.surface,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim,
-                        ),
+                        borderSide: BorderSide(color: context.appColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim,
-                        ),
+                        borderSide: BorderSide(color: context.appColors.border),
                       ),
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim.withValues(
+                          color: context.appColors.border.withValues(
                             alpha: 0.5,
                           ),
                         ),
@@ -175,7 +171,7 @@ class _AddCustomServerBottomSheetState
                         environment,
                       ),
                       hintStyle: context.font.bodyMedium?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                     onFieldSubmitted: (_) => _submit(),
@@ -213,9 +209,8 @@ class _AddCustomServerBottomSheetState
                                 Text(
                                   '(Auto-detected)',
                                   style: context.font.bodySmall?.copyWith(
-                                    color: context.colour.onSurface.withValues(
-                                      alpha: 0.6,
-                                    ),
+                                    color: context.colorScheme.onSurface
+                                        .withValues(alpha: 0.6),
                                   ),
                                 ),
                               ],
@@ -242,7 +237,9 @@ class _AddCustomServerBottomSheetState
                           ? context.loc.electrumLiquidSslInfo
                           : context.loc.electrumBitcoinServerInfo,
                       style: context.font.bodySmall?.copyWith(
-                        color: context.colour.onSurface.withValues(alpha: 0.6),
+                        color: context.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
                       textAlign: TextAlign.start,
                     ),
@@ -251,8 +248,8 @@ class _AddCustomServerBottomSheetState
                   BBButton.big(
                     label: context.loc.electrumAddServer,
                     onPressed: _submit,
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
+                    bgColor: context.colorScheme.onSurface,
+                    textColor: context.appColors.surface,
                   ),
                 ],
               ),

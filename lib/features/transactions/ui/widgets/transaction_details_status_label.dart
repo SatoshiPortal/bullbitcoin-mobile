@@ -47,8 +47,8 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
                     (swap.status == SwapStatus.failed ||
                         swap.status == SwapStatus.expired)
                 ? swap.status == SwapStatus.failed
-                    ? context.colour.error
-                    : context.colour.error.withValues(alpha: 0.7)
+                    ? context.colorScheme.error
+                    : context.colorScheme.error.withValues(alpha: 0.7)
                 : null,
       ),
     );

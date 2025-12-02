@@ -46,7 +46,7 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                 child: Text(
                   widget.label,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.surfaceContainer,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -66,7 +66,7 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                                 textAlign: TextAlign.end,
                                 overflow: TextOverflow.clip,
                                 style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: theme.colorScheme.outlineVariant,
+                                  color: theme.colorScheme.onSurface,
                                   decoration:
                                       widget.isUnderline
                                           ? TextDecoration.underline

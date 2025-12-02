@@ -74,7 +74,7 @@ class BuyConfirmScreen extends StatelessWidget {
                     width: 72,
                     height: 72,
                     decoration: BoxDecoration(
-                      color: context.colour.secondaryFixedDim,
+                      color: context.colorScheme.secondaryFixedDim,
                       shape: BoxShape.circle,
                     ),
                     child: Image.asset(Assets.icons.btc.path),
@@ -85,7 +85,7 @@ class BuyConfirmScreen extends StatelessWidget {
                   child: BBText(
                     formattedPayInAmount,
                     style: context.font.displaySmall,
-                    color: context.colour.outlineVariant,
+                    color: context.colorScheme.outlineVariant,
                   ),
                 ),
                 const Gap(32),
@@ -127,7 +127,7 @@ class BuyConfirmScreen extends StatelessWidget {
                       context.loc.buyConfirmAwaitingConfirmation,
                       style: context.font.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color: context.colour.outline,
+                        color: context.colorScheme.outline,
                       ),
                     ),
                     const Gap(4),
@@ -148,8 +148,8 @@ class BuyConfirmScreen extends StatelessWidget {
                 onPressed: () {
                   context.read<BuyBloc>().add(const BuyEvent.confirmOrder());
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onPrimary,
+                bgColor: context.colorScheme.secondary,
+                textColor: context.colorScheme.onPrimary,
               ),
             ],
           ),

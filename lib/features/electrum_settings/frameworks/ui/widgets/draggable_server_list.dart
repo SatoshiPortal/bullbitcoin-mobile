@@ -9,20 +9,26 @@ import 'package:bb_mobile/features/electrum_settings/interface_adapters/presente
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+
 class DraggableServerList extends StatelessWidget {
   const DraggableServerList({super.key});
 
-  String _getErrorMessage(BuildContext context, ElectrumServersException error) {
+  String _getErrorMessage(
+    BuildContext context,
+    ElectrumServersException error,
+  ) {
     return switch (error) {
-      LoadFailedException(reason: final r) =>
-        context.loc.electrumLoadFailedError(r != null ? ': $r' : ''),
-      SavePriorityFailedException(reason: final r) =>
-        context.loc.electrumSavePriorityFailedError(r != null ? ': $r' : ''),
-      AddFailedException(reason: final r) =>
-        context.loc.electrumAddFailedError(r != null ? ': $r' : ''),
-      DeleteFailedException(reason: final r) =>
-        context.loc.electrumDeleteFailedError(r != null ? ': $r' : ''),
-      ElectrumServerAlreadyExistsException() => context.loc.electrumServerAlreadyExists,
+      LoadFailedException(reason: final r) => context.loc
+          .electrumLoadFailedError(r != null ? ': $r' : ''),
+      SavePriorityFailedException(reason: final r) => context.loc
+          .electrumSavePriorityFailedError(r != null ? ': $r' : ''),
+      AddFailedException(reason: final r) => context.loc.electrumAddFailedError(
+        r != null ? ': $r' : '',
+      ),
+      DeleteFailedException(reason: final r) => context.loc
+          .electrumDeleteFailedError(r != null ? ': $r' : ''),
+      ElectrumServerAlreadyExistsException() =>
+        context.loc.electrumServerAlreadyExists,
     };
   }
 
@@ -45,15 +51,15 @@ class DraggableServerList extends StatelessWidget {
         Text(
           context.loc.electrumDefaultServers,
           style: context.font.titleSmall?.copyWith(
-            color: context.colour.onSurface.withValues(alpha: 0.7),
+            color: context.colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(height: 8),
         if (customServers.isNotEmpty) ...[
           InfoCard(
             description: context.loc.electrumDefaultServersInfo,
-            tagColor: context.colour.onTertiary,
-            bgColor: context.colour.tertiary.withValues(alpha: 0.1),
+            tagColor: context.colorScheme.tertiary,
+            bgColor: context.colorScheme.tertiaryContainer,
           ),
           const SizedBox(height: 8),
         ],
@@ -71,14 +77,14 @@ class DraggableServerList extends StatelessWidget {
           Text(
             context.loc.electrumCustomServers,
             style: context.font.titleSmall?.copyWith(
-              color: context.colour.onSurface.withValues(alpha: 0.7),
+              color: context.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             context.loc.electrumDragToReorder,
             style: context.font.bodySmall?.copyWith(
-              color: context.colour.onSurface.withValues(alpha: 0.5),
+              color: context.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 8),
@@ -122,8 +128,8 @@ class DraggableServerList extends StatelessWidget {
         if (electrumServersError != null) ...[
           InfoCard(
             description: _getErrorMessage(context, electrumServersError),
-            tagColor: context.colour.error,
-            bgColor: context.colour.error.withValues(alpha: 0.1),
+            tagColor: context.colorScheme.error,
+            bgColor: context.colorScheme.errorContainer,
           ),
           const Gap(16),
         ],
@@ -139,11 +145,14 @@ class DraggableServerList extends StatelessWidget {
               );
             }
           },
-          icon: Icon(Icons.add_circle_outline, color: context.colour.primary),
+          icon: Icon(
+            Icons.add_circle_outline,
+            color: context.colorScheme.primary,
+          ),
           label: Text(
             context.loc.electrumAddCustomServer,
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.primary,
+              color: context.colorScheme.primary,
             ),
           ),
         ),

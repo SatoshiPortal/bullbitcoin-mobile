@@ -103,7 +103,7 @@ class _BtcTotalAmt extends StatelessWidget {
       btcTotal,
       showFiat: false,
       style: context.font.displaySmall,
-      color: context.colour.onPrimary,
+      color: context.colorScheme.onPrimary,
     );
   }
 }
@@ -130,7 +130,7 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
       (WalletBloc bloc) => bloc.state.unconfirmedIncomingBalance,
     );
     if (unconfirmed == 0) return const SizedBox.shrink();
-    final color = context.colour.onPrimary;
+    final color = context.colorScheme.onPrimary;
     return GestureDetector(
       onTap: () {
         context.pushNamed(TransactionsRoute.transactions.name);

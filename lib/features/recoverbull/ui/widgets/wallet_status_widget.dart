@@ -22,28 +22,30 @@ class WalletStatusWidget extends StatelessWidget {
           BBText(
             context.loc.recoverbullLookingForBalance,
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.secondary,
+              color: context.colorScheme.onSurface,
             ),
           ),
         ],
       );
     } else {
-      final totalBalance = (bip84Status!.satoshis + liquidStatus!.satoshis).toString();
-      final totalTransactions = bip84Status!.transactions + liquidStatus!.transactions;
+      final totalBalance =
+          (bip84Status!.satoshis + liquidStatus!.satoshis).toString();
+      final totalTransactions =
+          bip84Status!.transactions + liquidStatus!.transactions;
 
       return Column(
         children: [
           BBText(
             context.loc.recoverbullBalance(totalBalance),
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.secondary,
+              color: context.colorScheme.onSurface,
             ),
           ),
           const Gap(4),
           BBText(
             context.loc.recoverbullTransactions(totalTransactions),
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.secondary,
+              color: context.colorScheme.onSurface,
             ),
           ),
         ],

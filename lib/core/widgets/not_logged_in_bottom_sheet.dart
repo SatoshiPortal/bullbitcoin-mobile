@@ -36,7 +36,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: context.colour.outline.withValues(alpha: 0.3),
+                  color: context.colorScheme.outline.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -44,7 +44,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
               Icon(
                 Icons.account_circle_outlined,
                 size: 48,
-                color: context.colour.primary,
+                color: context.colorScheme.primary,
               ),
               const SizedBox(height: 16),
               BBText(
@@ -58,7 +58,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
               BBText(
                 'Please log in to your Bull Bitcoin account to access exchange settings.',
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.secondary.withValues(alpha: 0.7),
+                  color: context.colorScheme.secondary.withValues(alpha: 0.7),
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 3,
@@ -71,8 +71,8 @@ class NotLoggedInBottomSheet extends StatelessWidget {
                   Navigator.of(context).pop();
                   context.goNamed(ExchangeRoute.exchangeHome.name);
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onPrimary,
+                bgColor: context.colorScheme.secondary,
+                textColor: context.colorScheme.onPrimary,
               ),
             ],
           ),

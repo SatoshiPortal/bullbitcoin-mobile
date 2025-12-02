@@ -76,7 +76,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
         title: BBText(
           'Vault Recovery Server',
           style: context.font.headlineMedium,
-          color: context.colour.secondary,
+          color: context.colorScheme.onSurface,
         ),
       ),
       body:
@@ -95,8 +95,8 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                       size: 64,
                       color:
                           _isUsingDefaultServer
-                              ? context.colour.primary
-                              : context.colour.tertiary,
+                              ? context.colorScheme.primary
+                              : context.colorScheme.tertiary,
                     ),
                     const Gap(32),
                     BBText(
@@ -110,10 +110,10 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: context.colour.surfaceContainerHighest,
+                        color: context.appColors.cardBackground,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: context.colour.outline,
+                          color: context.appColors.border,
                           width: 1,
                         ),
                       ),
@@ -123,7 +123,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           BBText(
                             'Server URL:',
                             style: context.font.labelSmall?.copyWith(
-                              color: context.colour.onSurfaceVariant,
+                              color: context.appColors.textMuted,
                             ),
                           ),
                           const Gap(8),
@@ -141,15 +141,15 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                       InfoCard(
                         description:
                             'You are using a custom Recoverbull server. Make sure you trust this server.',
-                        tagColor: context.colour.error,
-                        bgColor: context.colour.error.withValues(alpha: 0.1),
+                        tagColor: context.colorScheme.error,
+                        bgColor: context.colorScheme.errorContainer,
                       ),
                       const Gap(24),
                     ],
                     BBText(
                       'We will connect to this server through Tor',
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.onSurfaceVariant,
+                        color: context.appColors.textMuted,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -168,8 +168,8 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           ),
                         );
                       },
-                      bgColor: context.colour.secondary,
-                      textColor: context.colour.onPrimary,
+                      bgColor: context.colorScheme.onSurface,
+                      textColor: context.appColors.surface,
                     ),
                     const Gap(16),
                     GestureDetector(
@@ -180,13 +180,13 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           Icon(
                             Icons.info_outline,
                             size: 20,
-                            color: context.colour.primary,
+                            color: context.colorScheme.primary,
                           ),
                           const Gap(8),
                           BBText(
                             'Learn more about Recoverbull',
                             style: context.font.bodyMedium,
-                            color: context.colour.primary,
+                            color: context.colorScheme.primary,
                           ),
                         ],
                       ),

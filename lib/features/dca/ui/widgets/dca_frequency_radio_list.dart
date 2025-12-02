@@ -20,13 +20,18 @@ class DcaFrequencyRadioList extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasError = errorText != null && errorText!.isNotEmpty;
     final borderColor =
-        hasError ? context.colour.error : context.colour.onSecondaryFixed;
+        hasError
+            ? context.colorScheme.error
+            : context.colorScheme.onSecondaryFixed;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(context.loc.dcaSelectFrequencyLabel, style: context.font.bodyMedium),
+        Text(
+          context.loc.dcaSelectFrequencyLabel,
+          style: context.font.bodyMedium,
+        ),
         const Gap(4),
         ...DcaBuyFrequency.values.map((frequency) {
           return Column(
@@ -37,10 +42,13 @@ class DcaFrequencyRadioList extends StatelessWidget {
                   side: BorderSide(color: borderColor),
                 ),
                 title: Text(switch (frequency) {
-                  DcaBuyFrequency.hourly => context.loc.dcaConfirmFrequencyHourly,
+                  DcaBuyFrequency.hourly =>
+                    context.loc.dcaConfirmFrequencyHourly,
                   DcaBuyFrequency.daily => context.loc.dcaConfirmFrequencyDaily,
-                  DcaBuyFrequency.weekly => context.loc.dcaConfirmFrequencyWeekly,
-                  DcaBuyFrequency.monthly => context.loc.dcaConfirmFrequencyMonthly,
+                  DcaBuyFrequency.weekly =>
+                    context.loc.dcaConfirmFrequencyWeekly,
+                  DcaBuyFrequency.monthly =>
+                    context.loc.dcaConfirmFrequencyMonthly,
                 }, style: context.font.headlineSmall),
                 value: frequency,
                 groupValue: selectedFrequency,

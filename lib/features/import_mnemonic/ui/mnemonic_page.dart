@@ -16,13 +16,13 @@ class MnemonicPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.importMnemonicTitle,
-          color: context.colour.secondaryFixedDim,
+          color: context.appColors.background,
           onBack: () => context.pop(),
         ),
       ),
@@ -33,8 +33,8 @@ class MnemonicPage extends StatelessWidget {
               SnackBar(
                 content: BBText(
                   state.error!.toString(),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  color: Theme.of(context).colorScheme.onError,
+                  style: context.font.bodyMedium,
+                  color: context.appColors.error,
                 ),
               ),
             );

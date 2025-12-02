@@ -105,12 +105,12 @@ class CommonCoinSelectionBottomSheet extends StatelessWidget {
             disabled: selectedUtxoTotalSat < amountToSendSat,
             bgColor:
                 selectedUtxoTotalSat >= amountToSendSat
-                    ? context.colour.secondary
-                    : context.colour.outlineVariant,
+                    ? context.colorScheme.secondary
+                    : context.colorScheme.outlineVariant,
             textColor:
                 selectedUtxoTotalSat >= amountToSendSat
-                    ? context.colour.onSecondary
-                    : context.colour.outline,
+                    ? context.colorScheme.onSecondary
+                    : context.colorScheme.outline,
           ),
           const Gap(24),
         ],
@@ -163,7 +163,7 @@ class CommonCoinSelectTile extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: context.colour.outlineVariant),
+          border: Border.all(color: context.colorScheme.outlineVariant),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,7 +183,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                         BBText(
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
-                            color: context.colour.outlineVariant,
+                            color: context.colorScheme.outlineVariant,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -192,52 +192,52 @@ class CommonCoinSelectTile extends StatelessWidget {
                     subtitle: BBText(
                       label,
                       style: context.font.labelMedium?.copyWith(
-                        color: context.colour.outline,
+                        color: context.colorScheme.outline,
                       ),
                     ),
                     trailing: Radio<bool>(
                       value: true,
                       groupValue: selected,
                       onChanged: (_) => onTap(),
-                      activeColor: context.colour.secondary,
+                      activeColor: context.colorScheme.secondary,
                     ),
                   ),
                   BBText(
                     '~$fiatEquivalent',
                     style: context.font.labelSmall?.copyWith(
-                      color: context.colour.outlineVariant,
+                      color: context.colorScheme.outlineVariant,
                     ),
                   ),
                   const SizedBox(height: 12),
 
-                  Divider(color: context.colour.secondaryFixedDim),
+                  Divider(color: context.colorScheme.secondaryFixedDim),
                   const SizedBox(height: 8),
                   Row(
                     children: [
                       BBText(
                         'Address: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.colour.surfaceContainer,
+                          color: context.colorScheme.surfaceContainer,
                         ),
                       ),
                       Expanded(
                         child: BBText(
                           StringFormatting.truncateMiddle(address),
                           style: context.font.labelLarge?.copyWith(
-                            color: context.colour.secondary,
+                            color: context.colorScheme.secondary,
                           ),
                         ),
                       ),
                       BBText(
                         'Type: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.colour.surfaceContainer,
+                          color: context.colorScheme.surfaceContainer,
                         ),
                       ),
                       BBText(
                         addressType,
                         style: context.font.labelLarge?.copyWith(
-                          color: context.colour.secondary,
+                          color: context.colorScheme.secondary,
                         ),
                       ),
                     ],

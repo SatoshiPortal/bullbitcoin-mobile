@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/colours.dart';
+import 'package:bb_mobile/core/themes/colors.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,17 +7,18 @@ enum AppThemeType { light, dark }
 
 class AppTheme {
   static ThemeData themeData(AppThemeType themeType) {
-    final colours =
-        themeType == AppThemeType.dark
-            ? AppColours.darkColourScheme
-            : AppColours.lightColourScheme;
+    final colors =
+        themeType == AppThemeType.dark ? AppColors.dark : AppColors.light;
+    final brightness =
+        themeType == AppThemeType.dark ? Brightness.dark : Brightness.light;
+    final colorScheme = colors.toColorScheme(brightness);
     final fonts = AppFonts.textTheme;
 
     return ThemeData(
       useMaterial3: true,
-      colorScheme: colours,
-      canvasColor: colours.surface,
-      scaffoldBackgroundColor: colours.secondaryFixed,
+      colorScheme: colorScheme,
+      canvasColor: colors.cardBackground,
+      scaffoldBackgroundColor: colors.background,
       fontFamily: fonts.fontFamily,
       textTheme: fonts.textTheme,
       /* TODO: Add theme for inputs like TextField here and remove BBInputText
@@ -56,7 +57,7 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         titleTextStyle: fonts.textTheme.headlineMedium!.copyWith(
-          color: colours.secondary,
+          color: colors.text,
         ),
         centerTitle: true,
       ),
@@ -64,72 +65,76 @@ class AppTheme {
         backButtonIconBuilder: (context) => const Icon(Icons.arrow_back),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: colours.onPrimary,
-        selectedIconTheme: IconThemeData(color: colours.primary),
-        unselectedIconTheme: IconThemeData(color: colours.outline),
+        backgroundColor: colors.surface,
+        selectedIconTheme: IconThemeData(color: colors.primary),
+        unselectedIconTheme: IconThemeData(color: colors.textMuted),
+        selectedLabelStyle: TextStyle(color: colors.primary),
+        unselectedLabelStyle: TextStyle(color: colors.textMuted),
+        selectedItemColor: colors.primary,
+        unselectedItemColor: colors.textMuted,
       ),
       cardTheme: CardThemeData(
-        color: colours.onPrimary,
+        color: colors.cardBackground,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(2),
-          side: BorderSide(color: colours.surface),
+          side: BorderSide(color: colors.border),
         ),
         elevation: 0,
-        shadowColor: colours.surface,
+        shadowColor: colors.border,
         margin: EdgeInsets.zero,
       ),
       switchTheme: SwitchThemeData(
         trackColor: WidgetStateProperty.resolveWith<Color>((states) {
           if (states.contains(WidgetState.selected)) {
-            return colours.secondary; // Active background
+            return colors.text;
           }
-          return colours.surfaceContainer; // Inactive background
+          return colors.textMuted;
         }),
-        trackOutlineWidth: const WidgetStatePropertyAll(0), // no border
+        trackOutlineWidth: const WidgetStatePropertyAll(0),
         thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
-          return colours.onPrimary; // Thumb is always white
+          return colors.surface;
         }),
         padding: EdgeInsets.zero,
         overlayColor: WidgetStateProperty.all(Colors.transparent),
-        trackOutlineColor: WidgetStateProperty.all(
-          Colors.transparent,
-        ), // no border
+        trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         thumbIcon: WidgetStateProperty.all(
-          Icon(Icons.circle, color: colours.onPrimary),
+          Icon(Icons.circle, color: colors.surface),
         ),
         splashRadius: 0,
       ),
       listTileTheme: ListTileThemeData(
-        tileColor: colours.onPrimary,
+        tileColor: colors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(2),
-          side: BorderSide(color: colours.surface),
+          side: BorderSide(color: colors.border),
         ),
-        textColor: colours.secondary,
+        textColor: colors.text,
         titleTextStyle: fonts.textTheme.headlineSmall!.copyWith(
           fontWeight: FontWeight.w400,
         ),
         subtitleTextStyle: fonts.textTheme.labelMedium!.copyWith(
-          color: colours.outline,
+          color: colors.textMuted,
           fontWeight: FontWeight.w400,
         ),
         leadingAndTrailingTextStyle: fonts.textTheme.labelLarge!.copyWith(
-          color: colours.secondary,
+          color: colors.text,
           fontWeight: FontWeight.w500,
         ),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        refreshBackgroundColor: colours.secondary,
+        refreshBackgroundColor: colors.text,
       ),
     );
   }
 }
 
-extension FontEx on BuildContext {
+extension ThemeEx on BuildContext {
   ThemeData get theme => Theme.of(this);
   TextTheme get font => theme.textTheme;
-  ColorScheme get colour => theme.colorScheme;
+  ColorScheme get colorScheme => theme.colorScheme;
+  AppColors get appColors =>
+      theme.brightness == Brightness.dark ? AppColors.dark : AppColors.light;
 }
 
 class WidgetStyles {
@@ -138,27 +143,24 @@ class WidgetStyles {
     String hintText,
   ) {
     return InputDecoration(
-      fillColor: context.colour.onPrimary,
+      fillColor: context.appColors.surface,
       filled: true,
       hintText: hintText,
       hintStyle: context.font.bodyMedium!.copyWith(
-        color: context.colour.surfaceContainer,
+        color: context.appColors.textMuted,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(4),
-        borderSide: BorderSide(color: context.colour.secondaryFixedDim),
+        borderSide: BorderSide(color: context.appColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(4),
-        borderSide: BorderSide(color: context.colour.secondaryFixedDim),
+        borderSide: BorderSide(color: context.appColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(
-          color: context.colour.secondaryFixedDim,
-          width: 2.0,
-        ),
+        borderSide: BorderSide(color: context.appColors.border, width: 2.0),
       ),
     );
   }

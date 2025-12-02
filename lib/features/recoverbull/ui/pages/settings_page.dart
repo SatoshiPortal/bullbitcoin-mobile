@@ -102,7 +102,7 @@ class _SettingsPageState extends State<SettingsPage> {
         title: BBText(
           'Recoverbull Settings',
           style: context.font.headlineMedium,
-          color: context.colour.secondary,
+          color: context.colorScheme.onSurface,
         ),
       ),
       body:
@@ -122,7 +122,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           BBText(
                             'Key Server URL',
                             style: context.font.titleMedium,
-                            color: context.colour.onSurface,
+                            color: context.colorScheme.onSurface,
                           ),
                           if (!_isEditing)
                             TextButton.icon(
@@ -155,18 +155,14 @@ class _SettingsPageState extends State<SettingsPage> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: context.colour.surfaceContainerHighest,
+                            color: context.appColors.cardBackground,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: context.colour.outline.withValues(
-                                alpha: 0.2,
-                              ),
-                            ),
+                            border: Border.all(color: context.appColors.border),
                           ),
                           child: BBText(
                             _originalUrl,
                             style: context.font.bodyMedium,
-                            color: context.colour.onSurface,
+                            color: context.colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -178,8 +174,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               child: BBButton.big(
                                 label: 'Cancel',
                                 onPressed: _cancelEdit,
-                                bgColor: context.colour.surface,
-                                textColor: context.colour.onSurface,
+                                bgColor: context.appColors.cardBackground,
+                                textColor: context.colorScheme.onSurface,
                               ),
                             ),
                             const Gap(8),
@@ -187,8 +183,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               child: BBButton.big(
                                 label: 'Save',
                                 onPressed: _saveUrl,
-                                bgColor: context.colour.secondary,
-                                textColor: context.colour.onPrimary,
+                                bgColor: context.colorScheme.onSurface,
+                                textColor: context.appColors.surface,
                                 disabled: _isSaving,
                               ),
                             ),
@@ -204,13 +200,13 @@ class _SettingsPageState extends State<SettingsPage> {
                             Icon(
                               Icons.info_outline,
                               size: 20,
-                              color: context.colour.primary,
+                              color: context.colorScheme.primary,
                             ),
                             const Gap(8),
                             BBText(
                               'Learn more about Recoverbull',
                               style: context.font.bodyMedium,
-                              color: context.colour.primary,
+                              color: context.colorScheme.primary,
                             ),
                           ],
                         ),

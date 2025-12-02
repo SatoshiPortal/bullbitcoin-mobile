@@ -27,7 +27,7 @@ class RecipientFormContinueButton extends StatelessWidget {
             color:
                 failedToHandleSelectedRecipient == null
                     ? Colors.transparent
-                    : context.colour.error,
+                    : context.colorScheme.error,
           ),
         ),
         const Gap(16.0),
@@ -35,8 +35,8 @@ class RecipientFormContinueButton extends StatelessWidget {
           label: 'Continue',
           disabled: isLoading,
           onPressed: onPressed,
-          bgColor: context.colour.secondary,
-          textColor: context.colour.onSecondary,
+          bgColor: context.colorScheme.secondary,
+          textColor: context.colorScheme.onSecondary,
         ),
       ],
     );

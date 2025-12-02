@@ -74,7 +74,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                backgroundColor: context.colour.secondaryFixed,
+                backgroundColor: context.colorScheme.secondaryFixed,
                 constraints: const BoxConstraints(maxWidth: double.infinity),
                 useSafeArea: true,
                 builder:
@@ -89,8 +89,8 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           BBButton.big(
             label: "Done",
             onPressed: context.pop,
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
+            bgColor: context.colorScheme.secondary,
+            textColor: context.colorScheme.onSecondary,
           ),
           const Gap(24),
         ],

@@ -13,7 +13,7 @@ class RecoverWalletButton extends StatelessWidget {
     return BBButton.big(
       label: context.loc.onboardingRecoverWalletButton,
       bgColor: Colors.transparent,
-      textColor: context.colour.onPrimary,
+      textColor: context.colorScheme.onPrimaryFixed,
       iconData: Icons.history_edu,
       outlined: true,
       onPressed: () {

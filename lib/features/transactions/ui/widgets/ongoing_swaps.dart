@@ -25,12 +25,12 @@ class OngoingSwapsWidget extends StatelessWidget {
 
           child: Row(
             children: [
-              Icon(Icons.swap_horiz, color: context.colour.secondary),
+              Icon(Icons.swap_horiz, color: context.colorScheme.secondary),
               const Gap(8),
               BBText(
                 'Ongoing Transfers',
                 style: context.font.titleMedium?.copyWith(
-                  color: context.colour.secondary,
+                  color: context.colorScheme.secondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -38,13 +38,13 @@ class OngoingSwapsWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: context.colour.secondary,
+                  color: context.colorScheme.secondary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: BBText(
                   ongoingSwaps.length.toString(),
                   style: context.font.labelSmall?.copyWith(
-                    color: context.colour.onSecondary,
+                    color: context.colorScheme.onSecondary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -58,7 +58,7 @@ class OngoingSwapsWidget extends StatelessWidget {
           child: BBText(
             'These transfers are currently in progress. Your funds are secure and will be available when the transfer completes.',
             style: context.font.bodySmall?.copyWith(
-              color: context.colour.outline,
+              color: context.colorScheme.outline,
               fontStyle: FontStyle.italic,
             ),
           ),
