@@ -12,7 +12,7 @@ dependencies:
   bdk_flutter:
     git:
       url: https://github.com/SatoshiPortal/bdk-flutter
-      ref: be3c7faf86e8cc734d749ce6cead9365eb7607ee
+      ref: frb-2.11.1
   cupertino_icons: ^1.0.2
   flutter_bloc: ^8.1.6
   freezed: ^3.0.0
@@ -27,7 +27,7 @@ dependencies:
   payjoin_flutter:
     git:
       url: https://github.com/SatoshiPortal/payjoin-flutter
-      ref: outdated-branch-with-android-patch
+      ref: frb-2.11.1
   qr_flutter: ^4.1.0
   dio: ^5.2.1+1
   timeago: ^3.3.0
@@ -40,8 +40,8 @@ dependencies:
       ref: afbcbfae4addb833f46bf8b3c3899085e66941e0
   bitbox_flutter:
     git:
-      url: https://github.com/ben-kaufman/bitbox-flutter
-      ref: 81fbfb07b7bed6321467419f161387e20bd39bd6
+      url: https://github.com/SatoshiPortal/bitbox-dart
+      ref: frb-2.11.1
   flutter_dotenv: ^5.2.1
   hex: ^0.2.0
   auto_size_text: ^3.0.0
@@ -57,11 +57,11 @@ dependencies:
   boltz:
     git:
       url: https://github.com/SatoshiPortal/boltz-dart
-      ref: 9bd530462e9638d6088bc6998bebc0dd76dde1ca
+      ref: frb-2.11.1
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart
-      ref: bca8468df1b02fcd56539b3a414395010445602b
+      ref: frb-2.11.1
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter
@@ -100,14 +100,14 @@ dependencies:
   dart_bbqr:
     git:
       url: https://github.com/SatoshiPortal/bbqr-dart
-      ref: e587b1882d4345050507357d795d26a48a160226
+      ref: frb-2.11.1
   sliver_tools: ^0.2.12
   logging_colorful: ^1.3.0
   timelines_plus: ^1.0.7
   satoshifier:
     git:
-      url: https://github.com/SatoshiPortal/dart-satoshifier
-      ref: 7d7e67afa24d0ec70928831564f5d9d083ed6053
+      url: https://github.com/SatoshiPortal/satoshifier-dart
+      ref: frb-2.11.1
   flutter_nfc_kit: ^3.6.0
   ledger_bitcoin:
     git:
@@ -123,13 +123,13 @@ dependencies:
   bitcoin_base: ^6.9.0
   ark_wallet:
     git:
-      url: https://github.com/SatoshiPortal/dart-ark-wallet
-      ref: 6d804430eaea8415de601356c580974d018072f6
+      url: https://github.com/SatoshiPortal/ark-wallet-dart
+      ref: frb-2.11.1
   socks5_proxy: ^2.1.1
   tor:
     git:
       url: https://github.com/Foundation-Devices/tor
-      ref: 440a2d2  
+      ref: b92e2bc  
   meta: ^1.16.0
   workmanager: ^0.7.0
   path: ^1.9.1
