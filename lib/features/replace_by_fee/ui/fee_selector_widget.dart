@@ -82,8 +82,8 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
         elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
         clipBehavior: Clip.hardEdge,
-        color: context.colour.onSecondary,
-        shadowColor: context.colour.secondary,
+        color: context.appColors.onSecondary,
+        shadowColor: context.appColors.secondary,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
@@ -94,7 +94,10 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    BBText(context.loc.replaceByFeeFastestTitle, style: context.font.headlineLarge),
+                    BBText(
+                      context.loc.replaceByFeeFastestTitle,
+                      style: context.font.headlineLarge,
+                    ),
                     const Gap(4),
                     BBText(
                       context.loc.replaceByFeeFastestDescription,
@@ -102,7 +105,9 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                     ),
                     const Gap(2),
                     BBText(
-                      context.loc.replaceByFeeFeeRateDisplay(widget.fastestFeeRate.feeRate.toStringAsFixed(1)),
+                      context.loc.replaceByFeeFeeRateDisplay(
+                        widget.fastestFeeRate.feeRate.toStringAsFixed(1),
+                      ),
                       style: context.font.labelMedium,
                     ),
                   ],
@@ -112,8 +117,8 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                 Icons.radio_button_checked_outlined,
                 color:
                     isSelected
-                        ? context.colour.primary
-                        : context.colour.surface,
+                        ? context.appColors.primary
+                        : context.appColors.surface,
               ),
             ],
           ),
@@ -133,8 +138,8 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
         elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
         clipBehavior: Clip.hardEdge,
-        color: context.colour.onSecondary,
-        shadowColor: context.colour.secondary,
+        color: context.appColors.onSecondary,
+        shadowColor: context.appColors.secondary,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -144,13 +149,16 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText(context.loc.replaceByFeeCustomFeeTitle, style: context.font.headlineLarge),
+                  BBText(
+                    context.loc.replaceByFeeCustomFeeTitle,
+                    style: context.font.headlineLarge,
+                  ),
                   Icon(
                     Icons.radio_button_checked_outlined,
                     color:
                         isSelected
-                            ? context.colour.primary
-                            : context.colour.surface,
+                            ? context.appColors.primary
+                            : context.appColors.surface,
                   ),
                 ],
               ),
@@ -160,7 +168,10 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                 value: _controller.text,
                 onChanged: _onCustomChanged,
                 onlyNumbers: true,
-                rightIcon: Text(context.loc.replaceByFeeSatsVbUnit, style: context.font.bodySmall),
+                rightIcon: Text(
+                  context.loc.replaceByFeeSatsVbUnit,
+                  style: context.font.bodySmall,
+                ),
               ),
             ],
           ),

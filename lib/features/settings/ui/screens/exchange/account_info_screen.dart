@@ -17,7 +17,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
 
     if (state.isFetchingUserSummary) {
       return Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.appColors.background,
         appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -25,7 +25,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
 
     if (userSummary == null) {
       return Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.appColors.background,
         appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
 
         body: Center(
@@ -38,7 +38,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
       body: SafeArea(
         child: Padding(
@@ -112,7 +112,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
             BBText(
               label,
               style: context.font.headlineMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -124,7 +124,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                   BBText(
                     value,
                     style: context.font.bodyLarge?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.appColors.onSurface,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -132,19 +132,18 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: value));
-                      final theme = Theme.of(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: BBText(
                             copiedMessage ?? '',
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
-                              color: Colors.white,
+                              color: context.appColors.surfaceFixed,
                             ),
                           ),
                           duration: const Duration(seconds: 2),
-                          backgroundColor: theme.colorScheme.onSurface
+                          backgroundColor: context.appColors.onSurface
                               .withAlpha(204),
                           behavior: SnackBarBehavior.floating,
                           elevation: 4,
@@ -165,7 +164,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                     child: Icon(
                       Icons.copy,
                       size: 18,
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                     ),
                   ),
                 ],
@@ -174,7 +173,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
               BBText(
                 value,
                 style: context.font.bodyLarge?.copyWith(
-                  color: context.colour.secondary,
+                  color: context.appColors.onSurface,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -184,7 +183,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
         Container(
           width: double.infinity,
           height: 1,
-          color: context.colour.secondaryFixedDim,
+          color: context.appColors.border,
         ),
       ],
     );

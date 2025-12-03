@@ -48,7 +48,7 @@ class _SwapQrScannerPageState extends State<SwapQrScannerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
+      backgroundColor: context.appColors.secondaryFixedDim,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -61,13 +61,13 @@ class _SwapQrScannerPageState extends State<SwapQrScannerPage> {
               child: BBButton.big(
                 iconData: Icons.check_circle,
                 textStyle: context.font.labelMedium,
-                textColor: context.colour.onPrimary,
+                textColor: context.appColors.onPrimary,
                 onPressed: () {},
                 label:
                     data.$1.length > 30
                         ? '${data.$1.substring(0, 10)}…${data.$1.substring(data.$1.length - 10)}'
                         : data.$1,
-                bgColor: Colors.transparent,
+                bgColor: context.appColors.transparent,
               ),
             ),
           Positioned(
@@ -79,7 +79,7 @@ class _SwapQrScannerPageState extends State<SwapQrScannerPage> {
                 onPressed: context.mounted ? () => context.pop() : null,
                 icon: Icon(
                   CupertinoIcons.xmark_circle,
-                  color: context.colour.onPrimary,
+                  color: context.appColors.onPrimary,
                   size: 64,
                 ),
               ),

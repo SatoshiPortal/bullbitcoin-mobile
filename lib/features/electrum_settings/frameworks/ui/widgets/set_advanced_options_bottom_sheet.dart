@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/electrum_settings/interface_adapters/presente
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/advanced_options_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 class SetAdvancedOptionsBottomSheet extends StatefulWidget {
   const SetAdvancedOptionsBottomSheet({super.key});
 
@@ -78,14 +79,17 @@ class _SetAdvancedOptionsBottomSheetState
     }
   }
 
-  String _getErrorMessage(BuildContext context, AdvancedOptionsException error) {
+  String _getErrorMessage(
+    BuildContext context,
+    AdvancedOptionsException error,
+  ) {
     return switch (error) {
-      InvalidStopGapException(value: final v) =>
-        context.loc.electrumInvalidStopGapError(v),
-      InvalidTimeoutException(value: final v) =>
-        context.loc.electrumInvalidTimeoutError(v),
-      InvalidRetryException(value: final v) =>
-        context.loc.electrumInvalidRetryError(v),
+      InvalidStopGapException(value: final v) => context.loc
+          .electrumInvalidStopGapError(v),
+      InvalidTimeoutException(value: final v) => context.loc
+          .electrumInvalidTimeoutError(v),
+      InvalidRetryException(value: final v) => context.loc
+          .electrumInvalidRetryError(v),
       SaveFailedException(reason: final r) =>
         r != null
             ? '${context.loc.electrumSaveFailedError}: $r'
@@ -170,8 +174,7 @@ class _SetAdvancedOptionsBottomSheetState
                         children: [
                           Text(
                             context.loc.electrumStopGap,
-                            style:
-                                context.font.bodyMedium?.copyWith(
+                            style: context.font.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -184,29 +187,29 @@ class _SetAdvancedOptionsBottomSheetState
                             style: context.font.bodyLarge,
                             decoration: InputDecoration(
                               hintText: context.loc.electrumStopGap,
-                              hintStyle:
-                                  context.font.bodyMedium?.copyWith(
-                                color: context.colour.outline,
+                              hintStyle: context.font.bodyMedium?.copyWith(
+                                color: context.appColors.textMuted,
                               ),
-                              fillColor: context.colour.onPrimary,
+                              fillColor: context.appColors.surface,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: context.appColors.border,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: context.appColors.border,
                                 ),
                               ),
                               disabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim
-                                      .withValues(alpha: 0.5),
+                                  color: context.appColors.border.withValues(
+                                    alpha: 0.5,
+                                  ),
                                 ),
                               ),
                               contentPadding: const EdgeInsets.symmetric(
@@ -251,27 +254,28 @@ class _SetAdvancedOptionsBottomSheetState
                             decoration: InputDecoration(
                               hintText: context.loc.electrumTimeout,
                               hintStyle: context.font.bodyMedium?.copyWith(
-                                color: context.colour.outline,
+                                color: context.appColors.textMuted,
                               ),
-                              fillColor: context.colour.onPrimary,
+                              fillColor: context.appColors.surface,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: context.appColors.border,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: context.appColors.border,
                                 ),
                               ),
                               disabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim
-                                      .withValues(alpha: 0.5),
+                                  color: context.appColors.border.withValues(
+                                    alpha: 0.5,
+                                  ),
                                 ),
                               ),
                               contentPadding: const EdgeInsets.symmetric(
@@ -319,13 +323,14 @@ class _SetAdvancedOptionsBottomSheetState
                                     children: [
                                       const SizedBox(height: 8),
                                       InfoCard(
-                                        description: context.loc.electrumTimeoutWarning(
-                                          timeoutValue.toString(),
-                                          recommended.toString(),
-                                        ),
-                                        tagColor: context.colour.primary,
-                                        bgColor: context.colour.primary
-                                            .withValues(alpha: 0.1),
+                                        description: context.loc
+                                            .electrumTimeoutWarning(
+                                              timeoutValue.toString(),
+                                              recommended.toString(),
+                                            ),
+                                        tagColor: context.appColors.tertiary,
+                                        bgColor:
+                                            context.appColors.tertiaryContainer,
                                       ),
                                     ],
                                   );
@@ -351,27 +356,28 @@ class _SetAdvancedOptionsBottomSheetState
                             decoration: InputDecoration(
                               hintText: context.loc.electrumRetryCount,
                               hintStyle: context.font.bodyMedium?.copyWith(
-                                color: context.colour.outline,
+                                color: context.appColors.textMuted,
                               ),
-                              fillColor: context.colour.onPrimary,
+                              fillColor: context.appColors.surface,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: context.appColors.border,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim,
+                                  color: context.appColors.border,
                                 ),
                               ),
                               disabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide(
-                                  color: context.colour.secondaryFixedDim
-                                      .withValues(alpha: 0.5),
+                                  color: context.appColors.border.withValues(
+                                    alpha: 0.5,
+                                  ),
                                 ),
                               ),
                               contentPadding: const EdgeInsets.symmetric(
@@ -388,7 +394,9 @@ class _SetAdvancedOptionsBottomSheetState
                                 return context.loc.electrumInvalidNumberError;
                               }
                               if (n < 0) {
-                                return context.loc.electrumRetryCountNegativeError;
+                                return context
+                                    .loc
+                                    .electrumRetryCountNegativeError;
                               }
                               return null;
                             },
@@ -399,7 +407,7 @@ class _SetAdvancedOptionsBottomSheetState
                             shape: const RoundedRectangleBorder(
                               side: BorderSide.none,
                             ),
-                            tileColor: Colors.transparent,
+                            tileColor: context.appColors.transparent,
                             title: Text(context.loc.electrumValidateDomain),
                             contentPadding: EdgeInsets.zero,
                             value: _validateDomain,
@@ -422,7 +430,7 @@ class _SetAdvancedOptionsBottomSheetState
                                   state.advancedOptionsError!,
                                 ),
                                 style: TextStyle(
-                                  color: context.colour.error,
+                                  color: context.appColors.error,
                                   fontSize: 14,
                                 ),
                               ),
@@ -455,10 +463,10 @@ class _SetAdvancedOptionsBottomSheetState
                                       );
                                       FocusScope.of(context).unfocus();
                                     },
-                                    bgColor: Colors.transparent,
+                                    bgColor: context.appColors.transparent,
                                     outlined: true,
                                     textStyle: context.font.headlineLarge,
-                                    textColor: context.colour.secondary,
+                                    textColor: context.appColors.onSurface,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -467,9 +475,9 @@ class _SetAdvancedOptionsBottomSheetState
                                     label: context.loc.electrumConfirm,
                                     disabled: state.isSavingAdvancedOptions,
                                     onPressed: _confirm,
-                                    bgColor: context.colour.secondary,
+                                    bgColor: context.appColors.onSurface,
                                     textStyle: context.font.headlineLarge,
-                                    textColor: context.colour.onSecondary,
+                                    textColor: context.appColors.surface,
                                   ),
                                 ),
                               ],

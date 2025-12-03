@@ -24,7 +24,7 @@ class SelectScriptTypePage extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.importMnemonicSelectScriptType,
-          color: context.colour.secondaryFixed,
+          color: context.appColors.background,
           onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
@@ -59,7 +59,7 @@ class SelectScriptTypePage extends StatelessWidget {
                   BBText(
                     context.loc.importMnemonicSyncMessage,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.onSurfaceVariant,
+                      color: context.appColors.textMuted,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -93,8 +93,8 @@ class SelectScriptTypePage extends StatelessWidget {
                   BBButton.big(
                     label: context.loc.importMnemonicContinue,
                     onPressed: cubit.import,
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onPrimary,
+                    bgColor: context.appColors.onSurface,
+                    textColor: context.appColors.surface,
                     disabled: state.isLoading,
                   ),
                 ],
@@ -127,11 +127,11 @@ class _WalletTypeCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: context.colour.secondaryFixed,
-          border: Border.all(color: context.colour.outline, width: 1),
+          color: context.appColors.surface,
+          border: Border.all(color: context.appColors.border, width: 1),
           boxShadow: [
             BoxShadow(
-              color: context.colour.shadow,
+              color: context.appColors.border,
               offset: isSelected ? const Offset(0, 6) : const Offset(0, 2),
             ),
           ],
@@ -146,23 +146,27 @@ class _WalletTypeCard extends StatelessWidget {
                     title,
                     style: context.font.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: context.colour.secondary,
+                      color: context.appColors.text,
                     ),
                   ),
 
                   if (status != null) ...[
                     const Gap(8),
                     BBText(
-                      context.loc.importMnemonicBalanceLabel(status!.satoshis.toString()),
+                      context.loc.importMnemonicBalanceLabel(
+                        status!.satoshis.toString(),
+                      ),
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.onSurfaceVariant,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                     const Gap(4),
                     BBText(
-                      context.loc.importMnemonicTransactionsLabel(status!.transactions.toString()),
+                      context.loc.importMnemonicTransactionsLabel(
+                        status!.transactions.toString(),
+                      ),
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.onSurfaceVariant,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                   ],
@@ -184,21 +188,21 @@ class _WalletTypeCard extends StatelessWidget {
                 border: Border.all(
                   color:
                       isSelected
-                          ? context.colour.primary
-                          : context.colour.surface,
+                          ? context.appColors.primary
+                          : context.appColors.border,
                   width: 2,
                 ),
                 color:
                     isSelected
-                        ? context.colour.primary
-                        : context.colour.surface,
+                        ? context.appColors.primary
+                        : context.appColors.transparent,
               ),
               child:
                   isSelected
                       ? Icon(
                         Icons.circle,
                         size: 12,
-                        color: context.colour.onPrimary,
+                        color: context.appColors.onPrimary,
                       )
                       : null,
             ),

@@ -21,7 +21,10 @@ class ArkAboutPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        flexibleSpace: TopBar(title: context.loc.arkAboutTitle, onBack: () => context.pop()),
+        flexibleSpace: TopBar(
+          title: context.loc.arkAboutTitle,
+          onBack: () => context.pop(),
+        ),
       ),
       body: SafeArea(
         child: ListView(
@@ -29,9 +32,15 @@ class ArkAboutPage extends StatelessWidget {
           children: [
             _CopyField(label: context.loc.arkAboutServerUrl, value: Ark.server),
             const SizedBox(height: 18),
-            _SecretKeyField(label: context.loc.arkAboutSecretKey, value: wallet.secretHex),
+            _SecretKeyField(
+              label: context.loc.arkAboutSecretKey,
+              value: wallet.secretHex,
+            ),
             const SizedBox(height: 18),
-            _CopyField(label: context.loc.arkAboutServerPubkey, value: serverInfo.signerPubkey),
+            _CopyField(
+              label: context.loc.arkAboutServerPubkey,
+              value: serverInfo.signerPubkey,
+            ),
             const SizedBox(height: 18),
             _CopyField(
               label: context.loc.arkAboutForfeitAddress,
@@ -40,7 +49,10 @@ class ArkAboutPage extends StatelessWidget {
             const SizedBox(height: 18),
             _InfoField(label: context.loc.arkAboutNetwork, value: Ark.network),
             const SizedBox(height: 18),
-            _InfoField(label: context.loc.arkAboutDust, value: context.loc.arkAboutDustValue(serverInfo.dust)),
+            _InfoField(
+              label: context.loc.arkAboutDust,
+              value: context.loc.arkAboutDustValue(serverInfo.dust),
+            ),
             const SizedBox(height: 18),
             _InfoField(
               label: context.loc.arkAboutSessionDuration,
@@ -57,7 +69,10 @@ class ArkAboutPage extends StatelessWidget {
               value: _formatDuration(context, serverInfo.unilateralExitDelay),
             ),
             const SizedBox(height: 18),
-            _CopyField(label: context.loc.arkAboutEsploraUrl, value: Ark.esplora),
+            _CopyField(
+              label: context.loc.arkAboutEsploraUrl,
+              value: Ark.esplora,
+            ),
           ],
         ),
       ),
@@ -72,13 +87,19 @@ class ArkAboutPage extends StatelessWidget {
       return context.loc.arkAboutDurationSeconds(secs);
     } else if (secs < 3600) {
       final minutes = (secs / 60).round();
-      return minutes == 1 ? context.loc.arkAboutDurationMinute(minutes) : context.loc.arkAboutDurationMinutes(minutes);
+      return minutes == 1
+          ? context.loc.arkAboutDurationMinute(minutes)
+          : context.loc.arkAboutDurationMinutes(minutes);
     } else if (secs < 86400) {
       final hours = (secs / 3600).round();
-      return hours == 1 ? context.loc.arkAboutDurationHour(hours) : context.loc.arkAboutDurationHours(hours);
+      return hours == 1
+          ? context.loc.arkAboutDurationHour(hours)
+          : context.loc.arkAboutDurationHours(hours);
     } else {
       final days = (secs / 86400).round();
-      return days == 1 ? context.loc.arkAboutDurationDay(days) : context.loc.arkAboutDurationDays(days);
+      return days == 1
+          ? context.loc.arkAboutDurationDay(days)
+          : context.loc.arkAboutDurationDays(days);
     }
   }
 }
@@ -96,14 +117,14 @@ class _InfoField extends StatelessWidget {
         BBText(
           label,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
         const Gap(4),
         BBText(
           value,
           style: context.font.bodyMedium?.copyWith(
-            color: context.colour.outline,
+            color: context.appColors.onSurface,
           ),
         ),
       ],
@@ -121,7 +142,6 @@ class _CopyField extends StatefulWidget {
 }
 
 class _CopyFieldState extends State<_CopyField> {
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -130,7 +150,7 @@ class _CopyFieldState extends State<_CopyField> {
         BBText(
           widget.label,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
         const Gap(4),
@@ -141,7 +161,7 @@ class _CopyFieldState extends State<_CopyField> {
             BBText(
               widget.value,
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.outline,
+                color: context.appColors.onSurface,
               ),
             ),
 
@@ -150,7 +170,9 @@ class _CopyFieldState extends State<_CopyField> {
                 Clipboard.setData(ClipboardData(text: widget.value));
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(context.loc.arkAboutCopiedMessage(widget.label)),
+                    content: Text(
+                      context.loc.arkAboutCopiedMessage(widget.label),
+                    ),
                     duration: const Duration(seconds: 2),
                   ),
                 );
@@ -161,12 +183,12 @@ class _CopyFieldState extends State<_CopyField> {
                   BBText(
                     context.loc.arkAboutCopy,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                       fontSize: 14,
                     ),
                   ),
                   const Gap(4),
-                  Icon(Icons.copy, size: 16, color: context.colour.primary),
+                  Icon(Icons.copy, size: 16, color: context.appColors.primary),
                 ],
               ),
             ),
@@ -197,7 +219,7 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
         BBText(
           widget.label,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
         const Gap(4),
@@ -208,7 +230,7 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
             BBText(
               _isVisible ? widget.value : '••••••••••••••••••••••••••••••••',
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.outline,
+                color: context.appColors.onSurface,
                 fontFamily: _isVisible ? null : 'monospace',
               ),
             ),
@@ -222,9 +244,11 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   BBText(
-                    _isVisible ? context.loc.arkAboutHide : context.loc.arkAboutShow,
+                    _isVisible
+                        ? context.loc.arkAboutHide
+                        : context.loc.arkAboutShow,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                       fontSize: 14,
                     ),
                   ),
@@ -232,7 +256,7 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
                   Icon(
                     _isVisible ? Icons.visibility_off : Icons.visibility,
                     size: 16,
-                    color: context.colour.primary,
+                    color: context.appColors.primary,
                   ),
                 ],
               ),
@@ -242,7 +266,9 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
                 Clipboard.setData(ClipboardData(text: widget.value));
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(context.loc.arkAboutCopiedMessage(widget.label)),
+                    content: Text(
+                      context.loc.arkAboutCopiedMessage(widget.label),
+                    ),
                     duration: const Duration(seconds: 2),
                   ),
                 );
@@ -253,12 +279,12 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
                   BBText(
                     context.loc.arkAboutCopy,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                       fontSize: 14,
                     ),
                   ),
                   const Gap(4),
-                  Icon(Icons.copy, size: 16, color: context.colour.primary),
+                  Icon(Icons.copy, size: 16, color: context.appColors.primary),
                 ],
               ),
             ),

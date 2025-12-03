@@ -29,7 +29,10 @@ class _ReceivePageState extends State<ReceivePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.loc.arkReceiveTitle, style: context.font.headlineMedium),
+        title: Text(
+          context.loc.arkReceiveTitle,
+          style: context.font.headlineMedium,
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -39,7 +42,10 @@ class _ReceivePageState extends State<ReceivePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: BBSegmentFull(
-                items: {context.loc.arkReceiveSegmentArk, context.loc.arkReceiveSegmentBoarding},
+                items: {
+                  context.loc.arkReceiveSegmentArk,
+                  context.loc.arkReceiveSegmentBoarding,
+                },
                 initialValue: _selectedOption,
                 onSelected: (value) {
                   setState(() {
@@ -50,7 +56,10 @@ class _ReceivePageState extends State<ReceivePage> {
             ),
             const Gap(16),
             ReceiveQR(
-              qrData: _selectedOption! == context.loc.arkReceiveSegmentBoarding ? btcAddress : arkAddress,
+              qrData:
+                  _selectedOption! == context.loc.arkReceiveSegmentBoarding
+                      ? btcAddress
+                      : arkAddress,
             ),
             const Gap(16),
             ArkCopyAddressSection(
@@ -78,7 +87,7 @@ class ReceiveQR extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: BorderRadius.circular(12),
         ),
         child:

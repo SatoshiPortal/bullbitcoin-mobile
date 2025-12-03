@@ -40,7 +40,7 @@ class SwapBalanceRow extends StatelessWidget {
         Text(
           'Available balance',
           style: context.font.labelLarge?.copyWith(
-            color: context.colour.surface,
+            color: context.appColors.surface,
           ),
         ),
         const Gap(4),
@@ -50,8 +50,8 @@ class SwapBalanceRow extends StatelessWidget {
           label: 'MAX',
           height: 30,
           width: 51,
-          bgColor: context.colour.secondaryFixedDim,
-          textColor: context.colour.secondary,
+          bgColor: context.appColors.secondaryFixedDim,
+          textColor: context.appColors.secondary,
           textStyle: context.font.labelLarge,
           disabled: maxAmountSat == null || maxAmountSat <= 0,
           onPressed: () {

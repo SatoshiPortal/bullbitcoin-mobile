@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
@@ -116,6 +117,13 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   },
                 ),
                 SettingsEntryItem(
+                  icon: Icons.palette,
+                  title: 'Theme',
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.theme.name);
+                  },
+                ),
+                SettingsEntryItem(
                   icon: Icons.settings,
                   title: context.loc.settingsAppSettingsTitle,
                   onTap: () {
@@ -137,10 +145,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   icon: Icons.monitor_heart,
                   iconColor:
                       serviceStatusLoading
-                          ? Colors.grey
+                          ? context.appColors.textMuted
                           : serviceStatus.allServicesOnline
-                          ? Colors.green
-                          : Colors.red,
+                          ? context.appColors.success
+                          : context.appColors.error,
                   title: context.loc.settingsServicesStatusTitle,
                   onTap: () {
                     context.pushNamed(StatusCheckRoute.serviceStatus.name);
@@ -154,19 +162,19 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       bottomNavigationBar: BottomAppBar(
         height: 150,
         padding: EdgeInsets.zero,
-        color: Colors.transparent,
+        color: context.appColors.transparent,
         child: SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (appVersion != null)
                 ListTile(
-                  tileColor: theme.colorScheme.secondaryFixedDim,
+                  tileColor: context.appColors.surfaceContainerHighest,
                   title: Center(
                     child: Text(
                       '${context.loc.settingsAppVersionLabel}$appVersion',
                       style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.secondary,
+                        color: context.appColors.onSurface,
                       ),
                     ),
                   ),
@@ -194,7 +202,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           Text(
                             context.loc.settingsTelegramLabel,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.secondary,
+                              color: context.appColors.onSurface,
                             ),
                           ),
                         ],
@@ -215,7 +223,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           Text(
                             context.loc.settingsGithubLabel,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.secondary,
+                              color: context.appColors.onSurface,
                             ),
                           ),
                         ],

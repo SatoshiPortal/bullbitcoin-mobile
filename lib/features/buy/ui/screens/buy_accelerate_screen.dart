@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -72,7 +73,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                     context.loc.buyNetworkFeeExplanation,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.black,
+                      color: context.appColors.text,
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -112,8 +113,8 @@ class BuyAccelerateScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context, rootNavigator: true).pop();
                     },
-                    bgColor: Colors.white,
-                    textColor: theme.colorScheme.secondary,
+                    bgColor: context.appColors.surface,
+                    textColor: context.appColors.secondary,
                   ),
                 const Gap(16),
                 BBButton.big(
@@ -124,8 +125,8 @@ class BuyAccelerateScreen extends StatelessWidget {
                       const BuyEvent.accelerateTransactionConfirmed(),
                     );
                   },
-                  bgColor: theme.colorScheme.secondary,
-                  textColor: theme.colorScheme.onPrimary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onPrimary,
                 ),
               ],
             ),

@@ -85,8 +85,8 @@ class _SwapPageState extends State<SwapPage> {
                   (context, isLoading) => FadingLinearProgress(
                     height: 3,
                     trigger: isLoading,
-                    backgroundColor: context.colour.onPrimary,
-                    foregroundColor: context.colour.primary,
+                    backgroundColor: context.appColors.onPrimary,
+                    foregroundColor: context.appColors.primary,
                   ),
             ),
           ),
@@ -103,8 +103,8 @@ class _SwapPageState extends State<SwapPage> {
                   InfoCard(
                     description:
                         'Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.',
-                    tagColor: context.colour.inverseSurface,
-                    bgColor: context.colour.inverseSurface.withValues(
+                    tagColor: context.appColors.inverseSurface,
+                    bgColor: context.appColors.inverseSurface.withValues(
                       alpha: 0.1,
                     ),
                   ),
@@ -128,13 +128,15 @@ class _SwapPageState extends State<SwapPage> {
                         builder: (context, sendToExternal) {
                           return Switch(
                             value: sendToExternal,
-                            activeColor: context.colour.onSecondary,
-                            activeTrackColor: context.colour.secondary,
-                            inactiveThumbColor: context.colour.onSecondary,
-                            inactiveTrackColor: context.colour.surface,
-                            trackOutlineColor: WidgetStateProperty.resolveWith<
-                              Color?
-                            >((Set<WidgetState> states) => Colors.transparent),
+                            activeColor: context.appColors.onSecondary,
+                            activeTrackColor: context.appColors.secondary,
+                            inactiveThumbColor: context.appColors.onSecondary,
+                            inactiveTrackColor: context.appColors.surface,
+                            trackOutlineColor:
+                                WidgetStateProperty.resolveWith<Color?>(
+                                  (Set<WidgetState> states) =>
+                                      context.appColors.transparent,
+                                ),
                             onChanged: (value) {
                               context.read<TransferBloc>().add(
                                 TransferEvent.sendToExternalToggled(value),
@@ -179,7 +181,7 @@ class _SwapPageState extends State<SwapPage> {
                       return Text(
                         swapCreationError.message,
                         style: context.font.labelLarge?.copyWith(
-                          color: context.colour.error,
+                          color: context.appColors.error,
                         ),
                         maxLines: 4,
                       );
@@ -205,13 +207,15 @@ class _SwapPageState extends State<SwapPage> {
                         builder: (context, receiveExactAmount) {
                           return Switch(
                             value: receiveExactAmount,
-                            activeColor: context.colour.onSecondary,
-                            activeTrackColor: context.colour.secondary,
-                            inactiveThumbColor: context.colour.onSecondary,
-                            inactiveTrackColor: context.colour.surface,
-                            trackOutlineColor: WidgetStateProperty.resolveWith<
-                              Color?
-                            >((Set<WidgetState> states) => Colors.transparent),
+                            activeColor: context.appColors.onSecondary,
+                            activeTrackColor: context.appColors.secondary,
+                            inactiveThumbColor: context.appColors.onSecondary,
+                            inactiveTrackColor: context.appColors.surface,
+                            trackOutlineColor:
+                                WidgetStateProperty.resolveWith<Color?>(
+                                  (Set<WidgetState> states) =>
+                                      context.appColors.transparent,
+                                ),
                             onChanged: (value) {
                               context.read<TransferBloc>().add(
                                 TransferEvent.receiveExactAmountToggled(value),
@@ -232,8 +236,8 @@ class _SwapPageState extends State<SwapPage> {
                     builder: (context, isLoading) {
                       return BBButton.big(
                         label: 'Continue',
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onSecondary,
+                        bgColor: context.appColors.secondary,
+                        textColor: context.appColors.onSecondary,
                         disabled: isLoading,
                         onPressed: () {
                           if (!_formKey.currentState!.validate()) {

@@ -30,7 +30,6 @@ class TransactionDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final isLoading = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.isLoading,
     );
@@ -82,8 +81,8 @@ class TransactionDetailsScreen extends StatelessWidget {
           preferredSize: const Size.fromHeight(3.0),
           child: FadingLinearProgress(
             trigger: isBroadcastingPayjoinOriginalTx,
-            backgroundColor: context.colour.onPrimary,
-            foregroundColor: context.colour.primary,
+            backgroundColor: context.appColors.onPrimary,
+            foregroundColor: context.appColors.primary,
           ),
         ),
       ),
@@ -155,8 +154,8 @@ class TransactionDetailsScreen extends StatelessWidget {
                         swap,
                       );
                     },
-                    bgColor: theme.colorScheme.primary,
-                    textColor: theme.colorScheme.onPrimary,
+                    bgColor: context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
                   ),
                 ],
                 const Gap(32),
@@ -183,10 +182,10 @@ class TransactionDetailsScreen extends StatelessWidget {
                         );
                       }
                     },
-                    bgColor: Colors.transparent,
-                    textColor: theme.colorScheme.secondary,
+                    bgColor: context.appColors.transparent,
+                    textColor: context.appColors.onSurface,
                     outlined: true,
-                    borderColor: theme.colorScheme.secondary,
+                    borderColor: context.appColors.onSurface,
                   ),
                 const Gap(16),
                 if (isOutgoing == true &&
@@ -204,8 +203,8 @@ class TransactionDetailsScreen extends StatelessWidget {
                         extra: walletTransaction,
                       );
                     },
-                    bgColor: theme.colorScheme.secondary,
-                    textColor: theme.colorScheme.onSecondary,
+                    bgColor: context.appColors.onSurface,
+                    textColor: context.appColors.surface,
                   ),
               ],
             ),

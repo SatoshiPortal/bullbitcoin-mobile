@@ -14,7 +14,7 @@ class DeleteCustomServerDialog {
       context: context,
       builder:
           (BuildContext dialogContext) => AlertDialog(
-            backgroundColor: context.colour.onPrimary,
+            backgroundColor: context.appColors.onPrimary,
             title: Text(context.loc.electrumDeleteServerTitle),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -37,10 +37,10 @@ class DeleteCustomServerDialog {
                     child: BBButton.small(
                       label: context.loc.electrumCancel,
                       onPressed: () => Navigator.of(dialogContext).pop(false),
-                      bgColor: Colors.transparent,
+                      bgColor: context.appColors.transparent,
                       outlined: true,
                       textStyle: context.font.headlineLarge,
-                      textColor: context.colour.secondary,
+                      textColor: context.appColors.secondary,
                     ),
                   ),
                   const Gap(12),
@@ -48,9 +48,9 @@ class DeleteCustomServerDialog {
                     child: BBButton.small(
                       label: context.loc.electrumDelete,
                       onPressed: () => Navigator.of(dialogContext).pop(true),
-                      bgColor: context.colour.error,
+                      bgColor: context.appColors.error,
                       textStyle: context.font.headlineLarge,
-                      textColor: context.colour.onPrimary,
+                      textColor: context.appColors.onPrimary,
                     ),
                   ),
                 ],

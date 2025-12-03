@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ class ViewVaultKeyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.appColors.surface,
       appBar: AppBar(title: Text(context.loc.recoverbullVaultKey)),
       body: SafeArea(
         child: Column(

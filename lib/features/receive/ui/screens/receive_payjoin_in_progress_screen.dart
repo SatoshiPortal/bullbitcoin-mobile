@@ -45,8 +45,8 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
             preferredSize: const Size.fromHeight(3.0),
             child: FadingLinearProgress(
               trigger: isBroadcasting,
-              backgroundColor: context.colour.onPrimary,
-              foregroundColor: context.colour.primary,
+              backgroundColor: context.appColors.onPrimary,
+              foregroundColor: context.appColors.primary,
             ),
           ),
         ),
@@ -80,13 +80,19 @@ class PayjoinInProgressPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (isBroadcasted) ...[
-            Text(context.loc.receivePaymentInProgress, style: context.font.headlineLarge),
+            Text(
+              context.loc.receivePaymentInProgress,
+              style: context.font.headlineLarge,
+            ),
             Text(
               context.loc.receiveBitcoinConfirmationMessage,
               style: context.font.headlineMedium,
             ),
           ] else ...[
-            Text(context.loc.receivePayjoinInProgress, style: context.font.headlineLarge),
+            Text(
+              context.loc.receivePayjoinInProgress,
+              style: context.font.headlineLarge,
+            ),
             Text(
               context.loc.receiveWaitForPayjoin,
               style: context.font.bodyMedium,
@@ -103,7 +109,7 @@ class PayjoinInProgressPage extends StatelessWidget {
             Text(
               '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.surface,
+                color: context.appColors.surface,
               ),
             ),
           ],
@@ -151,15 +157,17 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
                 const ReceivePayjoinOriginalTxBroadcasted(),
               );
             },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
           const Gap(16),
           if (broadcastOriginalTransactionException != null) ...[
             Text(
-              context.loc.receiveError(broadcastOriginalTransactionException.message),
+              context.loc.receiveError(
+                broadcastOriginalTransactionException.message,
+              ),
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.error,
+                color: context.appColors.error,
               ),
               textAlign: TextAlign.center,
             ),

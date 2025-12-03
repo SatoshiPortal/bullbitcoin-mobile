@@ -83,7 +83,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                 BBText(
                   statusLabel,
                   style: context.font.titleMedium?.copyWith(
-                    color: context.colour.outline,
+                    color: context.appColors.textMuted,
                   ),
                 ),
                 const Gap(8),
@@ -91,7 +91,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                   sats,
                   showFiat: false,
                   style: context.font.displaySmall?.copyWith(
-                    color: context.colour.outlineVariant,
+                    color: context.appColors.onSurface,
                     fontWeight: FontWeight.w500,
                   ),
                   fiatAmount: null,
@@ -113,7 +113,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                                 child: Text(
                                   StringFormatting.truncateMiddle(txid),
                                   style: TextStyle(
-                                    color: context.colour.primary,
+                                    color: context.appColors.primary,
                                   ),
                                   textAlign: TextAlign.end,
                                 ),

@@ -20,13 +20,18 @@ class DcaWalletRadioList extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasError = errorText != null && errorText!.isNotEmpty;
     final borderColor =
-        hasError ? context.colour.error : context.colour.onSecondaryFixed;
+        hasError
+            ? context.appColors.error
+            : context.appColors.onSecondaryFixed;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(context.loc.dcaSelectWalletTypeLabel, style: context.font.bodyMedium),
+        Text(
+          context.loc.dcaSelectWalletTypeLabel,
+          style: context.font.bodyMedium,
+        ),
         const Gap(4),
         ...DcaNetwork.values.map((walletType) {
           return Column(

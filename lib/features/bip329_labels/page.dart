@@ -87,8 +87,8 @@ class Bip329LabelsPage extends StatelessWidget {
                     BBButton.big(
                       label: context.loc.bip329LabelsImportButton,
                       onPressed: isLoading ? () {} : () => cubit.importLabels(),
-                      bgColor: Theme.of(context).colorScheme.primary,
-                      textColor: Theme.of(context).colorScheme.onPrimary,
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
                       iconData: Icons.file_upload,
                       iconFirst: true,
                       disabled: isLoading,
@@ -97,8 +97,8 @@ class Bip329LabelsPage extends StatelessWidget {
                     BBButton.big(
                       label: context.loc.bip329LabelsExportButton,
                       onPressed: isLoading ? () {} : () => cubit.exportLabels(),
-                      bgColor: Theme.of(context).colorScheme.secondary,
-                      textColor: Theme.of(context).colorScheme.onSecondary,
+                      bgColor: context.appColors.onSurface,
+                      textColor: context.appColors.surface,
                       iconData: Icons.file_download,
                       iconFirst: true,
                       disabled: isLoading,

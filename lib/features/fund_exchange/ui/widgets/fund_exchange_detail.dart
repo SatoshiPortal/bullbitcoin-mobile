@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +29,7 @@ class FundExchangeDetail extends StatelessWidget {
           Text(
             helpText!,
             style: theme.textTheme.labelMedium?.copyWith(
-              color: theme.colorScheme.outline,
+              color: context.appColors.outline,
             ),
           ),
         ],

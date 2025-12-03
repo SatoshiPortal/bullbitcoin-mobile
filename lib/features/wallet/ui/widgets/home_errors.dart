@@ -44,8 +44,8 @@ class HomeWarnings extends StatelessWidget {
                 InfoCard(
                   title: warning.title,
                   description: warning.description,
-                  tagColor: context.colour.error,
-                  bgColor: context.colour.secondaryFixedDim,
+                  tagColor: context.appColors.error,
+                  bgColor: context.appColors.errorContainer,
                   onTap: () => context.pushNamed(warning.actionRoute),
                 ),
               ],

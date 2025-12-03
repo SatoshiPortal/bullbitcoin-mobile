@@ -48,7 +48,7 @@ class DcaSuccessScreen extends StatelessWidget {
               Icon(
                 Icons.check_circle,
                 size: 72,
-                color: context.colour.inverseSurface,
+                color: context.appColors.inverseSurface,
               ),
               const Gap(24),
               Text(
@@ -59,10 +59,17 @@ class DcaSuccessScreen extends StatelessWidget {
               const Gap(16),
               Text(
                 switch (frequency) {
-                  DcaBuyFrequency.hourly => context.loc.dcaSuccessMessageHourly(amount),
-                  DcaBuyFrequency.daily => context.loc.dcaSuccessMessageDaily(amount),
-                  DcaBuyFrequency.weekly => context.loc.dcaSuccessMessageWeekly(amount),
-                  DcaBuyFrequency.monthly => context.loc.dcaSuccessMessageMonthly(amount),
+                  DcaBuyFrequency.hourly => context.loc.dcaSuccessMessageHourly(
+                    amount,
+                  ),
+                  DcaBuyFrequency.daily => context.loc.dcaSuccessMessageDaily(
+                    amount,
+                  ),
+                  DcaBuyFrequency.weekly => context.loc.dcaSuccessMessageWeekly(
+                    amount,
+                  ),
+                  DcaBuyFrequency.monthly => context.loc
+                      .dcaSuccessMessageMonthly(amount),
                 },
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
@@ -73,8 +80,8 @@ class DcaSuccessScreen extends StatelessWidget {
                 onPressed: () {
                   context.goNamed(ExchangeRoute.exchangeHome.name);
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
               ),
               const Gap(16.0),
             ],

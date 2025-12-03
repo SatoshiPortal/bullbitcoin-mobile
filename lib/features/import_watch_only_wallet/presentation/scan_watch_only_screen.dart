@@ -30,7 +30,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: context.appColors.overlay,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -95,7 +95,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
               child: BBButton.big(
                 iconData: Icons.copy,
                 textStyle: context.font.labelMedium,
-                textColor: context.colour.onPrimary,
+                textColor: context.appColors.onPrimary,
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: _scanned));
                   showCopiedSnackBar(context);
@@ -104,7 +104,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                     _scanned.length > 30
                         ? '${_scanned.substring(0, 10)}…${_scanned.substring(_scanned.length - 10)}'
                         : _scanned,
-                bgColor: Colors.transparent,
+                bgColor: context.appColors.transparent,
               ),
             ),
           Positioned(
@@ -116,7 +116,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                 onPressed: () => context.pop(),
                 icon: Icon(
                   CupertinoIcons.xmark_circle,
-                  color: context.colour.onPrimary,
+                  color: context.appColors.onPrimary,
                   size: 64,
                 ),
               ),
@@ -134,7 +134,7 @@ void showCopiedSnackBar(BuildContext context) {
       content: Text(
         context.loc.importWatchOnlyCopiedToClipboard,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 14, color: Colors.white),
+        style: TextStyle(fontSize: 14, color: context.appColors.onPrimary),
       ),
       duration: const Duration(seconds: 2),
       backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(204),

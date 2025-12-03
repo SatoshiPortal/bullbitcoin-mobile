@@ -13,7 +13,7 @@ class OpenTheCameraWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: context.colour.secondaryFixedDim,
+      color: context.appColors.secondaryFixedDim,
       child: Column(
         children: [
           const Gap(30),
@@ -24,7 +24,7 @@ class OpenTheCameraWidget extends StatelessWidget {
             child: Text(
               'Scan any Bitcoin or Lightning QR code to pay with bitcoin.',
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.outlineVariant,
+                color: context.appColors.outlineVariant,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -49,9 +49,9 @@ class OpenTheCameraWidget extends StatelessWidget {
                 );
               },
               label: 'Open the Camera',
-              bgColor: Colors.transparent,
-              borderColor: context.colour.surfaceContainer,
-              textColor: context.colour.secondary,
+              bgColor: context.appColors.transparent,
+              borderColor: context.appColors.surfaceContainer,
+              textColor: context.appColors.secondary,
             ),
           ),
           const Gap(24),

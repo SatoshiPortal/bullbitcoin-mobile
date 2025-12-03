@@ -27,7 +27,6 @@ class WalletDetailsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(context.loc.walletOptionsWalletDetailsTitle),
         actions: [
@@ -60,7 +59,7 @@ class WalletDetailsScreen extends StatelessWidget {
                       BBText(
                         context.loc.walletDetailsDeletingMessage,
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.outline,
+                          color: context.appColors.textMuted,
                         ),
                       ),
                     ],
@@ -136,14 +135,14 @@ class _InfoField extends StatelessWidget {
         BBText(
           label,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
         const Gap(4),
         BBText(
           value,
           style: context.font.bodyMedium?.copyWith(
-            color: context.colour.outline,
+            color: context.appColors.onSurface,
           ),
         ),
       ],
@@ -169,7 +168,7 @@ class _CopyField extends StatelessWidget {
         BBText(
           label,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
         const Gap(4),
@@ -180,7 +179,7 @@ class _CopyField extends StatelessWidget {
             BBText(
               value,
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.outline,
+                color: context.appColors.onSurface,
               ),
             ),
 
@@ -195,12 +194,12 @@ class _CopyField extends StatelessWidget {
                   BBText(
                     copyLabel,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                       fontSize: 14,
                     ),
                   ),
                   const Gap(4),
-                  Icon(Icons.copy, size: 16, color: context.colour.primary),
+                  Icon(Icons.copy, size: 16, color: context.appColors.primary),
                 ],
               ),
             ),

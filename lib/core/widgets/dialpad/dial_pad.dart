@@ -23,14 +23,14 @@ class DialPad extends StatelessWidget {
       child: InkWell(
         onTap: () => onNumberPressed(num),
         splashFactory: disableFeedback ? NoSplash.splashFactory : null,
-        highlightColor: disableFeedback ? Colors.transparent : null,
+        highlightColor: disableFeedback ? context.appColors.transparent : null,
         child: SizedBox(
           height: 64,
           child: Center(
             child: BBText(
               num,
               style: context.font.headlineMedium?.copyWith(fontSize: 20),
-              color: context.colour.surfaceContainerLow,
+              color: context.appColors.onSurface,
             ),
           ),
         ),
@@ -43,13 +43,13 @@ class DialPad extends StatelessWidget {
       child: InkWell(
         onTap: onBackspacePressed,
         splashFactory: disableFeedback ? NoSplash.splashFactory : null,
-        highlightColor: disableFeedback ? Colors.transparent : null,
+        highlightColor: disableFeedback ? context.appColors.transparent : null,
         child: SizedBox(
           height: 64,
           child: Center(
             child: Icon(
               Icons.backspace_outlined,
-              color: context.colour.surfaceContainerLow,
+              color: context.appColors.onSurface,
             ),
           ),
         ),

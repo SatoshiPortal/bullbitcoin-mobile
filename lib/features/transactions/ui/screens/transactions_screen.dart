@@ -27,7 +27,7 @@ class TransactionsScreen extends StatelessWidget {
             context.pop();
           },
         ),
-        backgroundColor: context.colour.onPrimary,
+        backgroundColor: context.appColors.onPrimary,
         elevation: 0,
       ),
       body: const _Screen(),
@@ -52,7 +52,7 @@ class _Screen extends StatelessWidget {
             child: BBText(
               'Error - $err',
               style: context.font.bodyLarge,
-              color: context.colour.error,
+              color: context.appColors.error,
             ),
           ),
         const Gap(16.0),

@@ -22,7 +22,7 @@ class TransactionNotesTableItem extends StatelessWidget {
             child: BBText(
               'Transaction notes',
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.surfaceContainer,
+                color: context.appColors.surfaceContainer,
               ),
             ),
           ),
@@ -88,8 +88,8 @@ class NoteChip extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
-        border: Border.all(color: context.colour.surface),
+        color: context.appColors.onPrimary,
+        border: Border.all(color: context.appColors.surface),
         borderRadius: BorderRadius.circular(3),
       ),
       constraints: BoxConstraints(maxWidth: maxWidth),
@@ -105,7 +105,7 @@ class NoteChip extends StatelessWidget {
                 child: BBText(
                   note,
                   style: context.font.bodySmall?.copyWith(
-                    color: context.colour.outlineVariant,
+                    color: context.appColors.outlineVariant,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -115,7 +115,11 @@ class NoteChip extends StatelessWidget {
             const SizedBox(width: 4),
             GestureDetector(
               onTap: onDelete,
-              child: Icon(Icons.close, size: 16, color: context.colour.primary),
+              child: Icon(
+                Icons.close,
+                size: 16,
+                color: context.appColors.primary,
+              ),
             ),
           ],
         ),

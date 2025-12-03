@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class DetailsTable extends StatelessWidget {
@@ -7,15 +8,14 @@ class DetailsTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.onPrimary,
-        border: Border.all(color: theme.colorScheme.surface),
+        color: context.appColors.surface,
+        border: Border.all(color: context.appColors.outline),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow,
+            color: context.appColors.onSurface.withValues(alpha: 0.3),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -27,7 +27,7 @@ class DetailsTable extends StatelessWidget {
           for (int i = 0; i < items.length; i++) ...[
             items[i],
             if (i != items.length - 1)
-              Divider(color: theme.colorScheme.secondaryFixedDim),
+              Divider(color: context.appColors.outline),
           ],
         ],
       ),

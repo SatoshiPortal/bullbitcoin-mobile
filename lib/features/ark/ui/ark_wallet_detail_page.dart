@@ -26,7 +26,10 @@ class ArkWalletDetailPage extends StatelessWidget {
         leading: BackButton(
           onPressed: () => context.goNamed(WalletRoute.walletHome.name),
         ),
-        title: Text(context.loc.arkInstantPayments, style: context.font.headlineMedium),
+        title: Text(
+          context.loc.arkInstantPayments,
+          style: context.font.headlineMedium,
+        ),
         actions: [
           IconButton(
             icon: const Icon(CupertinoIcons.settings),
@@ -50,8 +53,8 @@ class ArkWalletDetailPage extends StatelessWidget {
                       ArkBalanceDetailWidget(arkBalance: state.arkBalance),
                       if (state.isLoading)
                         LinearProgressIndicator(
-                          backgroundColor: context.colour.surface,
-                          color: context.colour.primary,
+                          backgroundColor: context.appColors.surface,
+                          color: context.appColors.primary,
                         ),
                       const Gap(16.0),
                       TransactionHistoryWidget(
@@ -88,8 +91,8 @@ class ArkWalletDetailPage extends StatelessWidget {
                           label: context.loc.arkSettleTransactions,
                           onPressed:
                               () => SettleBottomSheet.show(context, cubit),
-                          bgColor: context.colour.primary,
-                          textColor: context.colour.onPrimary,
+                          bgColor: context.appColors.primary,
+                          textColor: context.appColors.onPrimary,
                         ),
                       );
                     },
@@ -127,8 +130,8 @@ class ArkWalletBottomButtons extends StatelessWidget {
             onPressed: () {
               context.pushNamed(ArkRoute.arkReceive.name);
             },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.appColors.onSurface,
+            textColor: context.appColors.surface,
           ),
         ),
         const Gap(4),
@@ -140,8 +143,8 @@ class ArkWalletBottomButtons extends StatelessWidget {
             onPressed: () {
               context.pushNamed(ArkRoute.arkSendRecipient.name);
             },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.appColors.onSurface,
+            textColor: context.appColors.surface,
             disabled: false,
           ),
         ),

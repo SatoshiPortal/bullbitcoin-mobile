@@ -47,7 +47,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                         child: Text(
                           'Configure advanced settings before creating or recovering your wallet',
                           style: context.font.bodyMedium?.copyWith(
-                            color: context.colour.onSurface.withValues(
+                            color: context.appColors.onSurface.withValues(
                               alpha: 0.7,
                             ),
                           ),
@@ -81,7 +81,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                         child: Text(
                           'You can change these settings later in App Settings',
                           style: context.font.bodySmall?.copyWith(
-                            color: context.colour.onSurface.withValues(
+                            color: context.appColors.onSurface.withValues(
                               alpha: 0.6,
                             ),
                           ),
@@ -96,8 +96,8 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                 child: BBButton.big(
                   label: 'Done',
                   onPressed: () => Navigator.of(context).pop(),
-                  bgColor: context.colour.primary,
-                  textColor: context.colour.onPrimary,
+                  bgColor: context.appColors.onSurface,
+                  textColor: context.appColors.surface,
                 ),
               ),
             ],

@@ -34,8 +34,8 @@ class WalletBottomButtons extends StatelessWidget {
                 );
               }
             },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.appColors.onSurface,
+            textColor: context.appColors.surface,
           ),
         ),
         const Gap(4),
@@ -47,8 +47,8 @@ class WalletBottomButtons extends StatelessWidget {
             onPressed: () {
               context.pushNamed(SendRoute.send.name, extra: wallet);
             },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.appColors.onSurface,
+            textColor: context.appColors.surface,
             disabled: wallet?.isWatchOnly ?? false,
           ),
         ),

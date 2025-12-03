@@ -53,8 +53,6 @@ class TransactionHistoryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     if (!isLoading && transactions.isEmpty) {
       return Center(
         child: Column(
@@ -65,7 +63,7 @@ class TransactionHistoryWidget extends StatelessWidget {
               maxLines: 2,
               textAlign: TextAlign.center,
               style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
+                color: context.appColors.onSurface,
               ),
             ),
           ],
@@ -100,7 +98,7 @@ class TransactionHistoryWidget extends StatelessWidget {
                   ? DateFormat.MMMMd().format(date)
                   : DateFormat.yMMMMd().format(date),
               style: context.font.titleSmall?.copyWith(
-                color: theme.colorScheme.onSurface,
+                color: context.appColors.onSurface,
               ),
             ),
             const Gap(16),

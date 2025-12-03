@@ -15,7 +15,7 @@ class TorPortInputBottomSheet extends StatefulWidget {
     return showModalBottomSheet<int>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.appColors.surface,
       useSafeArea: true,
       builder: (context) => TorPortInputBottomSheet(currentPort: currentPort),
     );
@@ -117,8 +117,8 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
             BBButton.big(
               label: 'Save',
               onPressed: _submit,
-              bgColor: context.colour.primary,
-              textColor: context.colour.onPrimary,
+              bgColor: context.appColors.primary,
+              textColor: context.appColors.onPrimary,
             ),
           ],
         ),

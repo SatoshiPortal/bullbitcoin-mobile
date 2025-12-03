@@ -71,7 +71,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                   ),
                   icon: Icon(
                     Icons.keyboard_arrow_down,
-                    color: context.colour.secondary,
+                    color: context.appColors.text,
                   ),
                   value: entity.signerDevice,
                   items:
@@ -110,8 +110,8 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         BBButton.big(
           onPressed: cubit.import,
           label: context.loc.importWatchOnlyImport,
-          bgColor: context.colour.secondary,
-          textColor: context.colour.onSecondary,
+          bgColor: context.appColors.onSurface,
+          textColor: context.appColors.surface,
         ),
         const Gap(24),
       ],
@@ -161,8 +161,8 @@ class _XpubDetailsWidget extends StatelessWidget {
           InfoCard(
             title: context.loc.importWatchOnlyDisclaimerTitle,
             description: context.loc.importWatchOnlyDisclaimerDescription,
-            bgColor: context.colour.tertiary.withValues(alpha: 0.1),
-            tagColor: context.colour.onTertiary,
+            bgColor: context.appColors.warning.withValues(alpha: 0.1),
+            tagColor: context.appColors.warning,
           ),
           SizedBox(
             width: 260,
@@ -174,7 +174,7 @@ class _XpubDetailsWidget extends StatelessWidget {
               ),
               icon: Icon(
                 Icons.keyboard_arrow_down,
-                color: context.colour.secondary,
+                color: context.appColors.text,
               ),
               value: entity.extendedPubkey.derivation,
               items:
@@ -205,8 +205,8 @@ class _XpubDetailsWidget extends StatelessWidget {
         BBButton.big(
           onPressed: cubit.import,
           label: context.loc.importWatchOnlyImport,
-          bgColor: context.colour.primary,
-          textColor: context.colour.onPrimary,
+          bgColor: context.appColors.primary,
+          textColor: context.appColors.onPrimary,
         ),
         const Gap(24),
       ],

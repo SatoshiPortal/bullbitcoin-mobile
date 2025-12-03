@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+
 class ExchangeAmountCurrencyDropdown extends StatelessWidget {
   const ExchangeAmountCurrencyDropdown({
     super.key,
@@ -29,13 +30,17 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(context.loc.exchangeCurrencyDropdownTitle, style: context.font.bodyMedium),
+        Text(
+          context.loc.exchangeCurrencyDropdownTitle,
+          style: context.font.bodyMedium,
+        ),
         const Gap(4.0),
         SizedBox(
           height: 56,
           child: Material(
             elevation: 4,
-            color: context.colour.onPrimary,
+            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child:
@@ -49,9 +54,10 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
                             horizontal: 16.0,
                           ),
                         ),
+                        dropdownColor: context.appColors.surface,
                         icon: Icon(
                           Icons.keyboard_arrow_down,
-                          color: context.colour.secondary,
+                          color: context.appColors.onSurface,
                         ),
                         items:
                             currencies.map((currency) {
@@ -76,7 +82,9 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return context.loc.exchangeCurrencyDropdownValidation;
+                            return context
+                                .loc
+                                .exchangeCurrencyDropdownValidation;
                           }
                           return null;
                         },

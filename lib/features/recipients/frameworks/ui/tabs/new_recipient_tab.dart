@@ -67,7 +67,7 @@ class _NewRecipientTabState extends State<NewRecipientTab> {
         Text(
           'Payout method',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.appColors.secondary,
             fontWeight: FontWeight.w500,
           ),
         ),
