@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -15,7 +16,7 @@ class TorConnectionStatusCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Connection Status', style: context.font.titleMedium),
+            Text(context.loc.torSettingsConnectionStatus, style: context.font.titleMedium),
             const Gap(16),
             Row(
               children: [
@@ -26,14 +27,14 @@ class TorConnectionStatusCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _getStatusTitle(status),
+                        _getStatusTitle(context, status),
                         style: context.font.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const Gap(4),
                       Text(
-                        _getStatusDescription(status),
+                        _getStatusDescription(context, status),
                         style: context.font.bodySmall?.copyWith(
                           color: context.appColors.onSurface.withValues(
                             alpha: 0.7,
@@ -51,29 +52,29 @@ class TorConnectionStatusCard extends StatelessWidget {
     );
   }
 
-  String _getStatusTitle(TorStatus status) {
+  String _getStatusTitle(BuildContext context, TorStatus status) {
     switch (status) {
       case TorStatus.online:
-        return 'Connected';
+        return context.loc.torSettingsStatusConnected;
       case TorStatus.connecting:
-        return 'Connecting...';
+        return context.loc.torSettingsStatusConnecting;
       case TorStatus.offline:
-        return 'Disconnected';
+        return context.loc.torSettingsStatusDisconnected;
       case TorStatus.unknown:
-        return 'Status Unknown';
+        return context.loc.torSettingsStatusUnknown;
     }
   }
 
-  String _getStatusDescription(TorStatus status) {
+  String _getStatusDescription(BuildContext context, TorStatus status) {
     switch (status) {
       case TorStatus.online:
-        return 'Tor proxy is running and ready';
+        return context.loc.torSettingsDescConnected;
       case TorStatus.connecting:
-        return 'Establishing Tor connection';
+        return context.loc.torSettingsDescConnecting;
       case TorStatus.offline:
-        return 'Tor proxy is not running';
+        return context.loc.torSettingsDescDisconnected;
       case TorStatus.unknown:
-        return 'Unable to determine Tor status. Ensure Orbot is installed and running.';
+        return context.loc.torSettingsDescUnknown;
     }
   }
 }
