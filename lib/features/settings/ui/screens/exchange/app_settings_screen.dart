@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -27,10 +28,10 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
         final theme = Theme.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
-              'Settings saved successfully',
+            content: Text(
+              context.loc.exchangeAppSettingsSaveSuccessMessage,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.white),
+              style: const TextStyle(fontSize: 14, color: Colors.white),
             ),
             duration: const Duration(seconds: 2),
             backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
@@ -50,7 +51,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
           flexibleSpace: TopBar(
-            title: 'App Settings',
+            title: context.loc.settingsAppSettingsTitle,
             onBack: () => context.pop(),
           ),
         ),
@@ -62,7 +63,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
               children: [
                 _buildDropdownField(
                   context,
-                  'Preferred Language',
+                  context.loc.exchangeAppSettingsPreferredLanguageLabel,
                   selectedLanguage,
                   ExchangeLanguage.values.map((lang) => lang.code).toList(),
                   ExchangeLanguage.values
@@ -75,7 +76,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 _buildDropdownField(
                   context,
-                  'Default Currency',
+                  context.loc.exchangeAppSettingsDefaultCurrencyLabel,
                   selectedCurrency,
                   FiatCurrency.values.map((currency) => currency.code).toList(),
                   FiatCurrency.values.map((currency) => currency.code).toList(),
@@ -86,7 +87,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                 const Spacer(),
                 if (hasUnsetValues) ...[
                   BBText(
-                    'Please set both language and currency preferences before saving.',
+                    context.loc.exchangeAppSettingsValidationWarning,
                     style: context.font.bodySmall?.copyWith(
                       color: context.colour.error,
                     ),
@@ -96,7 +97,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: BBButton.big(
-                    label: 'Save',
+                    label: context.loc.exchangeAppSettingsSaveButton,
                     onPressed: () async {
                       await context.read<ExchangeCubit>().savePreferences();
                     },

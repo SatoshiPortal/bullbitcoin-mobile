@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -41,7 +42,7 @@ class ExchangeSecurityScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Security Settings',
+          title: context.loc.exchangeSettingsSecuritySettingsTitle,
           onBack: () => context.pop(),
         ),
       ),
@@ -71,7 +72,7 @@ class ExchangeSecurityScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     BBText(
-                      'Manage 2FA and password',
+                      context.loc.exchangeSecurityManage2FAPasswordLabel,
                       style: context.font.bodyLarge?.copyWith(
                         color: context.colour.outline,
                       ),
@@ -80,7 +81,7 @@ class ExchangeSecurityScreen extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: BBButton.big(
-                        label: 'Access Settings',
+                        label: context.loc.exchangeSecurityAccessSettingsButton,
                         onPressed: () {
                           _openSecurityWebView(context);
                         },
@@ -153,7 +154,7 @@ class _SecurityWebViewScreenState extends State<_SecurityWebViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Security Settings'),
+        title: Text(context.loc.exchangeSettingsSecuritySettingsTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),

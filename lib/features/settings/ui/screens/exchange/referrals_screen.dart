@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -15,7 +16,7 @@ class ExchangeReferralsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Referral Codes',
+          title: context.loc.exchangeReferralsTitle,
           onBack: () => context.pop(),
         ),
       ),
@@ -45,21 +46,21 @@ class ExchangeReferralsScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Join the mission',
+                      context.loc.exchangeReferralsJoinMissionTitle,
                       style: context.font.bodyLarge?.copyWith(
                         color: context.colour.secondary,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Contact support to learn about our referral program',
+                      context.loc.exchangeReferralsContactSupportMessage,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.outline,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Apply to join the program here',
+                      context.loc.exchangeReferralsApplyToJoinMessage,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.outline,
                       ),
@@ -75,7 +76,7 @@ class ExchangeReferralsScreen extends StatelessWidget {
                         }
                       },
                       child: Text(
-                        'bullbitcoin.com/mission',
+                        context.loc.exchangeReferralsMissionLink,
                         style: context.font.bodyLarge?.copyWith(
                           color: context.colour.primary,
                           decoration: TextDecoration.underline,

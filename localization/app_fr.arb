@@ -192,6 +192,46 @@
   "@settingsGithubLabel": {
     "description": "Libellé du lien Github dans les paramètres"
   },
+  "settingsServicesStatusTitle": "État des services",
+  "@settingsServicesStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsTorSettingsTitle": "Paramètres Tor",
+  "@settingsTorSettingsTitle": {
+    "description": "Title for the Tor settings section in app settings"
+  },
+  "settingsRecoverbullTitle": "Recoverbull",
+  "@settingsRecoverbullTitle": {
+    "description": "Title for the Recoverbull backup section in app settings"
+  },
+  "settingsLanguageTitle": "Langue",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "settingsArkTitle": "Ark",
+  "@settingsArkTitle": {
+    "description": "Title for the Ark protocol section in Bitcoin settings"
+  },
+  "settingsDevModeWarningTitle": "Mode développeur",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsDevModeWarningMessage": "Ce mode est risqué. En l'activant, vous reconnaissez que vous pourriez perdre de l'argent",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "settingsDevModeUnderstandButton": "Je comprends",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsSuperuserModeDisabledMessage": "Mode superutilisateur désactivé.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Mode superutilisateur déverrouillé !",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
   "walletOptionsUnnamedWalletFallback": "Portefeuille sans nom",
   "@walletOptionsUnnamedWalletFallback": {
     "description": "Nom de secours affiché pour les portefeuilles sans nom spécifié"
@@ -6926,6 +6966,10 @@
   "recoverbullErrorUnexpected": "Erreur inattendue, voir les logs",
   "@recoverbullErrorUnexpected": {
     "description": "Error message for unexpected errors"
+  },
+  "recoverbullUnexpectedError": "Erreur inattendue",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
   },
   "recoverbullErrorSelectVault": "Échec de la sélection du coffre-fort",
   "@recoverbullErrorSelectVault": {

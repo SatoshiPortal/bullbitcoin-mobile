@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
 // import 'package:bb_mobile/features/ark_setup/router.dart';
@@ -29,7 +30,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Bitcoin Settings')),
+      appBar: AppBar(title: Text(context.loc.settingsBitcoinSettingsTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -38,7 +39,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
               children: [
                 SettingsEntryItem(
                   icon: Icons.account_balance_wallet,
-                  title: 'Wallets',
+                  title: context.loc.bitcoinSettingsWalletsTitle,
                   onTap: () {
                     context.pushNamed(
                       SettingsRoute.walletDetailsWalletList.name,
@@ -47,7 +48,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
                 ),
                 SettingsEntryItem(
                   icon: Icons.settings_input_component,
-                  title: 'Electrum Server Settings',
+                  title: context.loc.bitcoinSettingsElectrumServerTitle,
                   onTap: () {
                     context.pushNamed(
                       ElectrumSettingsRoute.electrumSettings.name,
@@ -56,7 +57,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
                 ),
                 SettingsEntryItem(
                   icon: Icons.swap_horiz,
-                  title: 'Auto Transfer Settings',
+                  title: context.loc.bitcoinSettingsAutoTransferTitle,
                   onTap: () {
                     AutoSwapSettingsRouter.showAutoSwapSettings(context);
                   },
@@ -64,14 +65,14 @@ class BitcoinSettingsScreen extends StatelessWidget {
                 if (hasLegacySeeds)
                   SettingsEntryItem(
                     icon: Icons.vpn_key,
-                    title: 'Legacy Seeds',
+                    title: context.loc.bitcoinSettingsLegacySeedsTitle,
                     onTap: () {
                       context.pushNamed(SettingsRoute.legacySeeds.name);
                     },
                   ),
                 SettingsEntryItem(
                   icon: Icons.download,
-                  title: 'Import Wallet',
+                  title: context.loc.bitcoinSettingsImportWalletTitle,
                   onTap:
                       () => context.pushNamed(
                         ImportWalletRoute.importWalletHome.name,
@@ -79,18 +80,18 @@ class BitcoinSettingsScreen extends StatelessWidget {
                 ),
                 SettingsEntryItem(
                   icon: Icons.satellite_alt,
-                  title: 'Broadcast Transaction',
+                  title: context.loc.bitcoinSettingsBroadcastTransactionTitle,
                   onTap:
                       () => context.pushNamed(
                         BroadcastSignedTxRoute.broadcastHome.name,
                       ),
                 ),
                 if (isSuperuser)
-                  const SettingsEntryItem(
+                  SettingsEntryItem(
                     icon: Icons.science,
-                    title: 'Testnet Mode',
+                    title: context.loc.bitcoinSettingsTestnetModeTitle,
                     isSuperUser: true,
-                    trailing: TestnetModeSwitch(),
+                    trailing: const TestnetModeSwitch(),
                   ),
                 if (isSuperuser)
                   SettingsEntryItem(
@@ -104,7 +105,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
                 if (isSuperuser && isDevModeEnabled)
                   SettingsEntryItem(
                     icon: Icons.science,
-                    title: 'BIP85 Deterministic Entropies',
+                    title: context.loc.bitcoinSettingsBip85EntropiesTitle,
                     isSuperUser: isSuperuser && isDevModeEnabled,
                     onTap:
                         () =>
@@ -113,7 +114,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
                 if (isSuperuser && isDevModeEnabled)
                   SettingsEntryItem(
                     icon: Icons.science,
-                    title: 'Ark',
+                    title: context.loc.settingsArkTitle,
                     isSuperUser: isSuperuser && isDevModeEnabled,
                     onTap: () => context.pushNamed(ArkSetupRoute.arkSetup.name),
                   ),
