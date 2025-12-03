@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -18,7 +19,7 @@ class WalletsListScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Wallet details')),
+      appBar: AppBar(title: Text(context.loc.walletsListTitle)),
       body: SafeArea(
         child:
             isLoading
@@ -30,7 +31,7 @@ class WalletsListScreen extends StatelessWidget {
                 : wallets.isEmpty
                 ? Center(
                   child: BBText(
-                    'No wallets found',
+                    context.loc.walletsListNoWalletsMessage,
                     style: context.font.bodyLarge?.copyWith(
                       color: context.colour.outlineVariant,
                     ),

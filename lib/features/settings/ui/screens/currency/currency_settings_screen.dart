@@ -50,7 +50,7 @@ class CurrencySettingsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Currency',
+          title: context.loc.settingsCurrencyTitle,
           color: context.colour.secondaryFixed,
           onBack: context.pop,
         ),
@@ -81,7 +81,7 @@ class CurrencySettingsScreen extends StatelessWidget {
                   ),
                   tileColor: Colors.transparent,
                   title: BBText(
-                    'Default fiat currency',
+                    context.loc.currencySettingsDefaultFiatCurrencyLabel,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: theme.colorScheme.outlineVariant,
                     ),

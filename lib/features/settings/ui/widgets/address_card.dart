@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,9 @@ class AddressCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              isUsed ? 'Used' : 'Unused',
+              isUsed
+                  ? context.loc.addressCardUsedLabel
+                  : context.loc.addressCardUnusedLabel,
               style: context.font.bodyMedium?.copyWith(
                 color: context.colour.secondary,
               ),
@@ -41,10 +44,10 @@ class AddressCard extends StatelessWidget {
                 final theme = Theme.of(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text(
-                      'Address copied to clipboard',
+                    content: Text(
+                      context.loc.addressCardCopiedMessage,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14, color: Colors.white),
+                      style: const TextStyle(fontSize: 14, color: Colors.white),
                     ),
                     duration: const Duration(seconds: 2),
                     backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
@@ -73,7 +76,7 @@ class AddressCard extends StatelessWidget {
             ),
             const Gap(8),
             Text(
-              'Index: $index',
+              '${context.loc.addressCardIndexLabel}$index',
               style: context.font.bodyMedium?.copyWith(
                 color: context.colour.secondary,
               ),
@@ -82,7 +85,7 @@ class AddressCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Balance: ',
+                  context.loc.addressCardBalanceLabel,
                   style: context.font.bodyMedium?.copyWith(
                     color: context.colour.secondary,
                   ),

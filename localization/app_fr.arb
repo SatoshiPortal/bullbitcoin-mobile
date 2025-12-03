@@ -224,6 +224,14 @@
   "@settingsDevModeUnderstandButton": {
     "description": "Button label to acknowledge developer mode warning"
   },
+  "settingsSuperuserModeDisabledMessage": "Mode superutilisateur désactivé.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Mode superutilisateur déverrouillé !",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
   "walletOptionsUnnamedWalletFallback": "Portefeuille sans nom",
   "@walletOptionsUnnamedWalletFallback": {
     "description": "Nom de secours affiché pour les portefeuilles sans nom spécifié"
