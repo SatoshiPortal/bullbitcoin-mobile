@@ -192,6 +192,38 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsServicesStatusTitle": "Estado de los servicios",
+  "@settingsServicesStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsTorSettingsTitle": "Configuración de Tor",
+  "@settingsTorSettingsTitle": {
+    "description": "Title for the Tor settings section in app settings"
+  },
+  "settingsRecoverbullTitle": "Recoverbull",
+  "@settingsRecoverbullTitle": {
+    "description": "Title for the Recoverbull backup section in app settings"
+  },
+  "settingsLanguageTitle": "Idioma",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "settingsArkTitle": "Ark",
+  "@settingsArkTitle": {
+    "description": "Title for the Ark protocol section in Bitcoin settings"
+  },
+  "settingsDevModeWarningTitle": "Modo desarrollador",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsDevModeWarningMessage": "Este modo es arriesgado. Al activarlo, reconoces que podrías perder dinero",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "settingsDevModeUnderstandButton": "Entiendo",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
   "walletOptionsUnnamedWalletFallback": "Billetera sin nombre",
   "@walletOptionsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
@@ -6924,6 +6956,9 @@
     "description": "Error message for unexpected errors"
   },
   "recoverbullUnexpectedError": "Error inesperado",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
   "recoverbullErrorSelectVault": "Error al seleccionar la bóveda",
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"

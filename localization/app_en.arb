@@ -192,6 +192,38 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsServicesStatusTitle": "Services Status",
+  "@settingsServicesStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsTorSettingsTitle": "Tor Settings",
+  "@settingsTorSettingsTitle": {
+    "description": "Title for the Tor settings section in app settings"
+  },
+  "settingsRecoverbullTitle": "Recoverbull",
+  "@settingsRecoverbullTitle": {
+    "description": "Title for the Recoverbull backup section in app settings"
+  },
+  "settingsLanguageTitle": "Language",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "settingsArkTitle": "Ark",
+  "@settingsArkTitle": {
+    "description": "Title for the Ark protocol section in Bitcoin settings"
+  },
+  "settingsDevModeWarningTitle": "Dev Mode",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsDevModeWarningMessage": "This mode is risky. By enabling it, you acknowledge that you may lose money",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "settingsDevModeUnderstandButton": "I understand",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
   "walletOptionsUnnamedWalletFallback": "Unnamed Wallet",
   "@walletOptionsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
@@ -6920,6 +6952,9 @@
     "description": "Error message for unexpected errors"
   },
   "recoverbullUnexpectedError": "Unexpected error",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
   "recoverbullErrorSelectVault": "Failed to select vault",
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
@@ -8168,7 +8203,13 @@
     "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
   "importWatchOnlyDisclaimerTitle": "Derivation Path Warning",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
   "importWatchOnlyDisclaimerDescription": "Make sure the derivation path you choose matches the one that produced the given xpub by verifying the first address derived from the wallet before use. Using the wrong path can lead to loss of funds",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
   "bip85Title": "BIP85 Deterministic Entropies",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"

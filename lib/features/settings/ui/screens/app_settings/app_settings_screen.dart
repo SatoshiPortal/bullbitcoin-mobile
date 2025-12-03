@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
@@ -24,7 +25,7 @@ class AppSettingsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('App Settings')),
+      appBar: AppBar(title: Text(context.loc.settingsAppSettingsTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -33,14 +34,14 @@ class AppSettingsScreen extends StatelessWidget {
               children: [
                 SettingsEntryItem(
                   icon: Icons.article,
-                  title: 'Logs',
+                  title: context.loc.logSettingsLogsTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.logs.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.security,
-                  title: 'Tor Settings',
+                  title: context.loc.settingsTorSettingsTitle,
                   onTap: () {
                     context.pushNamed(
                       TorSettingsRoute.torSettings.name,
@@ -49,7 +50,7 @@ class AppSettingsScreen extends StatelessWidget {
                 ),
                 SettingsEntryItem(
                   icon: Icons.backup_table,
-                  title: 'Recoverbull',
+                  title: context.loc.settingsRecoverbullTitle,
                   onTap: () {
                     context.pushNamed(
                       RecoverBullRoute.recoverbullFlows.name,
@@ -63,7 +64,7 @@ class AppSettingsScreen extends StatelessWidget {
                 if (isSuperuser)
                   SettingsEntryItem(
                     icon: Icons.language,
-                    title: 'Language',
+                    title: context.loc.settingsLanguageTitle,
                     trailing: DropdownButton<Language>(
                       value: currentLanguage,
                       underline: const SizedBox.shrink(),
@@ -88,10 +89,10 @@ class AppSettingsScreen extends StatelessWidget {
                     ),
                   ),
                 if (isSuperuser)
-                  const SettingsEntryItem(
+                  SettingsEntryItem(
                     icon: Icons.developer_mode,
-                    title: 'Dev Mode',
-                    trailing: DevModeSwitch(),
+                    title: context.loc.appSettingsDevModeTitle,
+                    trailing: const DevModeSwitch(),
                   ),
               ],
             ),

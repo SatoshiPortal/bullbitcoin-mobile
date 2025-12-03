@@ -57,7 +57,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
               children: [
                 SettingsEntryItem(
                   icon: Icons.account_balance_wallet,
-                  title: 'Exchange Settings',
+                  title: context.loc.settingsExchangeSettingsTitle,
                   onTap: () {
                     if (Platform.isIOS) {
                       final isSuperuser =
@@ -89,35 +89,35 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 ),
                 SettingsEntryItem(
                   icon: Icons.save_alt,
-                  title: 'Wallet Backup',
+                  title: context.loc.settingsWalletBackupTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.backupSettings.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.currency_bitcoin,
-                  title: 'Bitcoin Settings',
+                  title: context.loc.settingsBitcoinSettingsTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.bitcoinSettings.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.security,
-                  title: 'Security Pin',
+                  title: context.loc.settingsSecurityPinTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.pinCode.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.attach_money,
-                  title: 'Currency',
+                  title: context.loc.settingsCurrencyTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.currency.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.settings,
-                  title: 'App Settings',
+                  title: context.loc.settingsAppSettingsTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.appSettings.name);
                   },
@@ -125,7 +125,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
 
                 SettingsEntryItem(
                   icon: Icons.description,
-                  title: 'Terms of Service',
+                  title: context.loc.settingsTermsOfServiceTitle,
                   onTap: () {
                     final url = Uri.parse(
                       SettingsConstants.termsAndConditionsLink,
@@ -141,7 +141,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           : serviceStatus.allServicesOnline
                           ? Colors.green
                           : Colors.red,
-                  title: 'Services Status',
+                  title: context.loc.settingsServicesStatusTitle,
                   onTap: () {
                     context.pushNamed(StatusCheckRoute.serviceStatus.name);
                   },
@@ -164,7 +164,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   tileColor: theme.colorScheme.secondaryFixedDim,
                   title: Center(
                     child: Text(
-                      'App version: $appVersion',
+                      '${context.loc.settingsAppVersionLabel}$appVersion',
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: theme.colorScheme.secondary,
                       ),
@@ -192,7 +192,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           const Icon(FontAwesomeIcons.telegram),
                           const Gap(8),
                           Text(
-                            'Telegram',
+                            context.loc.settingsTelegramLabel,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.secondary,
                             ),
@@ -213,7 +213,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           const Icon(FontAwesomeIcons.github),
                           const Gap(8),
                           Text(
-                            'Github',
+                            context.loc.settingsGithubLabel,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.secondary,
                             ),
