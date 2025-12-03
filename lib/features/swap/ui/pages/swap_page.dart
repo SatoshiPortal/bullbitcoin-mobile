@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -76,7 +77,7 @@ class _SwapPageState extends State<SwapPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Transfer'),
+          title: Text(context.loc.swapTransferTitle),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3),
             child: BlocSelector<TransferBloc, TransferState, bool>(
@@ -101,8 +102,7 @@ class _SwapPageState extends State<SwapPage> {
                 children: [
                   const Gap(12),
                   InfoCard(
-                    description:
-                        'Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.',
+                    description: context.loc.swapInfoDescription,
                     tagColor: context.colour.inverseSurface,
                     bgColor: context.colour.inverseSurface.withValues(
                       alpha: 0.1,
@@ -117,8 +117,8 @@ class _SwapPageState extends State<SwapPage> {
                         builder: (context, sendToExternal) {
                           return Text(
                             sendToExternal
-                                ? 'External Transfer'
-                                : 'Internal Transfer',
+                                ? context.loc.swapExternalTransferLabel
+                                : context.loc.swapInternalTransferTitle,
                             style: context.font.bodyLarge,
                           );
                         },
@@ -194,8 +194,8 @@ class _SwapPageState extends State<SwapPage> {
                         builder: (context, receiveExactAmount) {
                           return Text(
                             receiveExactAmount
-                                ? 'Receive exact amount'
-                                : 'Subtract fees from amount',
+                                ? context.loc.swapReceiveExactAmountLabel
+                                : context.loc.swapSubtractFeesLabel,
                             style: context.font.bodyLarge,
                           );
                         },
@@ -231,7 +231,7 @@ class _SwapPageState extends State<SwapPage> {
                             state.continueClicked,
                     builder: (context, isLoading) {
                       return BBButton.big(
-                        label: 'Continue',
+                        label: context.loc.swapContinueButton,
                         bgColor: context.colour.secondary,
                         textColor: context.colour.onSecondary,
                         disabled: isLoading,
