@@ -16,7 +16,7 @@ class SwapToWalletDropdown extends StatelessWidget {
     final wallets = context.select((TransferBloc bloc) => bloc.state.wallets);
     final selected = context.select((TransferBloc bloc) => bloc.state.toWallet);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(context.loc.swapToLabel, style: context.font.bodyLarge),
         const Gap(4),

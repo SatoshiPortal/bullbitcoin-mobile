@@ -135,7 +135,7 @@ class _SetAdvancedOptionsBottomSheetState
         Navigator.of(context).pop();
       },
       child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+        behavior: .opaque,
         onTap: () => FocusScope.of(context).unfocus(), // tap bg to hide kb
         child: SafeArea(
           child: Padding(
@@ -146,7 +146,7 @@ class _SetAdvancedOptionsBottomSheetState
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: .min,
                   children: [
                     // Header
                     Row(
@@ -170,19 +170,19 @@ class _SetAdvancedOptionsBottomSheetState
                     SingleChildScrollView(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Text(
                             context.loc.electrumStopGap,
                             style: context.font.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: .w600,
                             ),
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
                             controller: _stopGap,
                             focusNode: _stopGapNode,
-                            textInputAction: TextInputAction.next,
+                            textInputAction: .next,
                             keyboardType: TextInputType.number,
                             style: context.font.bodyLarge,
                             decoration: InputDecoration(
@@ -241,7 +241,7 @@ class _SetAdvancedOptionsBottomSheetState
                           Text(
                             context.loc.electrumTimeout,
                             style: context.font.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: .w600,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -249,7 +249,7 @@ class _SetAdvancedOptionsBottomSheetState
                             controller: _timeout,
                             focusNode: _timeoutNode,
                             keyboardType: TextInputType.number,
-                            textInputAction: TextInputAction.next,
+                            textInputAction: .next,
                             style: context.font.bodyLarge,
                             decoration: InputDecoration(
                               hintText: context.loc.electrumTimeout,
@@ -343,7 +343,7 @@ class _SetAdvancedOptionsBottomSheetState
                           Text(
                             context.loc.electrumRetryCount,
                             style: context.font.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: .w600,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -351,7 +351,7 @@ class _SetAdvancedOptionsBottomSheetState
                             controller: _retry,
                             focusNode: _retryNode,
                             keyboardType: TextInputType.number,
-                            textInputAction: TextInputAction.done,
+                            textInputAction: .done,
                             style: context.font.bodyLarge,
                             decoration: InputDecoration(
                               hintText: context.loc.electrumRetryCount,

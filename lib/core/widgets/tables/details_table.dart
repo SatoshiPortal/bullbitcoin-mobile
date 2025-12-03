@@ -22,7 +22,7 @@ class DetailsTable extends StatelessWidget {
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           for (int i = 0; i < items.length; i++) ...[
             items[i],

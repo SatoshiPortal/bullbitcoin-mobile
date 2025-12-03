@@ -98,10 +98,10 @@ class _DriveFileMetadataItem extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   BBButton.small(
                     label: 'Export',
@@ -147,18 +147,18 @@ class _DriveFileMetadataItem extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               BBText('Delete Vault', style: context.font.headlineMedium),
               const Gap(16),
               BBText(
                 'Are you sure you want to delete this vault backup? This action cannot be undone.',
                 style: context.font.bodyMedium,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const Gap(24),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   BBButton.small(
                     label: 'Cancel',
@@ -198,7 +198,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
       title: Text(
         '${DateFormat('MMM dd, yyyy • HH:mm').format(driveFileMetadata.createdTime.toLocal())} • ${driveFileMetadata.name}',
         maxLines: 2,
-        overflow: TextOverflow.ellipsis,
+        overflow: .ellipsis,
       ),
       onTap:
           () => bloc.add(

@@ -35,7 +35,7 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
     final theme = Theme.of(context);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -56,7 +56,7 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
               Expanded(
                 flex: 3,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: .end,
                   children: [
                     Flexible(
                       child:
@@ -64,8 +64,8 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                           (widget.displayValue != null
                               ? Text(
                                 widget.displayValue!,
-                                textAlign: TextAlign.end,
-                                overflow: TextOverflow.clip,
+                                textAlign: .end,
+                                overflow: .clip,
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                   color: context.appColors.onSurface,
                                   decoration:

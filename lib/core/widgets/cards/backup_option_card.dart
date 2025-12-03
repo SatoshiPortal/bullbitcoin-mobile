@@ -42,13 +42,13 @@ class BackupOptionCard extends StatelessWidget {
             Expanded(
               flex: 6,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   SizedBox(width: 45, height: 45, child: icon),
                   const Gap(12),
                   Expanded(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         BBText(title, style: context.font.headlineMedium),
                         const Gap(10),

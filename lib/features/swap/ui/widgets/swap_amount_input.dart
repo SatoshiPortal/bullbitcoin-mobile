@@ -38,7 +38,7 @@ class SwapAmountInput extends StatelessWidget {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(context.loc.swapAmountLabel, style: context.font.bodyLarge),
         const Gap(8),
@@ -53,8 +53,8 @@ class SwapAmountInput extends StatelessWidget {
               vertical: 16.0,
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: .min,
+              crossAxisAlignment: .start,
               children: [
                 if (isLoading)
                   const LoadingLineContent(
@@ -62,8 +62,8 @@ class SwapAmountInput extends StatelessWidget {
                   )
                 else
                   Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: .min,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Expanded(
                         child: TextFormField(

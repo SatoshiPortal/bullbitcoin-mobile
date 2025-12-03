@@ -47,7 +47,7 @@ class ServerListItem extends StatelessWidget {
             ],
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Row(
                     children: [
@@ -81,7 +81,7 @@ class ServerListItem extends StatelessWidget {
                                 style: context.font.bodySmall?.copyWith(
                                   color: context.appColors.tertiary,
                                   fontSize: 10,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: .w600,
                                 ),
                               ),
                             ),
@@ -96,7 +96,7 @@ class ServerListItem extends StatelessWidget {
                             color: context.appColors.onSurface.withValues(
                               alpha: 153,
                             ),
-                            fontStyle: FontStyle.italic,
+                            fontStyle: .italic,
                           ),
                         ),
                       ],
@@ -137,7 +137,7 @@ class ServerListItem extends StatelessWidget {
           width: 8,
           height: 8,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            shape: .circle,
             color: isOnline ? context.appColors.success : context.appColors.warning,
           ),
         ),

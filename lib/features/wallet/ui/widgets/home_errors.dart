@@ -29,7 +29,7 @@ class HomeWarnings extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(left: 13.0, right: 13, top: 13),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               if (showBackupWarning)
                 BackupCard(

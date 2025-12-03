@@ -56,7 +56,7 @@ class PaymentInProgressPage extends StatelessWidget {
 
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           BBText(
             context.loc.receivePaymentInProgress,

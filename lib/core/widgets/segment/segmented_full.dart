@@ -34,7 +34,7 @@ class _BBSegmentFullState extends State<BBSegmentFull> {
     return Center(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(2),
-        clipBehavior: Clip.antiAliasWithSaveLayer,
+        clipBehavior: .antiAliasWithSaveLayer,
         child: CustomSlidingSegmentedControl<String>(
           initialValue: widget.initialValue ?? widget.items.first,
           onValueChanged: (v) {

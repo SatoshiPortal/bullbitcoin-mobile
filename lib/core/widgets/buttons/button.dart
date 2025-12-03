@@ -86,7 +86,7 @@ class BBButton extends StatelessWidget {
               borderRadius: radius,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
                 if (iconData == null && icon == null) ...[
                   BBText(

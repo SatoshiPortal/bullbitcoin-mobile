@@ -24,7 +24,7 @@ class DevModeSwitch extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 Text(
                   context.loc.settingsDevModeWarningTitle,

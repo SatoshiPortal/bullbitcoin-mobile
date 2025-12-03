@@ -13,7 +13,7 @@ class ExchangeAccountScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
               Icon(
                 Icons.account_balance_wallet,
@@ -25,14 +25,14 @@ class ExchangeAccountScreen extends StatelessWidget {
                 context.loc.exchangeAccountSettingsTitle,
                 style: const TextStyle(
                   fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 context.loc.exchangeAccountComingSoon,
                 style: TextStyle(fontSize: 16, color: context.appColors.textMuted),
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
             ],
           ),

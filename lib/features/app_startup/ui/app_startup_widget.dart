@@ -100,8 +100,8 @@ class AppStartupFailureScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: .center,
+            mainAxisSize: .min,
             children: [
               ListTile(
                 contentPadding: const EdgeInsets.symmetric(

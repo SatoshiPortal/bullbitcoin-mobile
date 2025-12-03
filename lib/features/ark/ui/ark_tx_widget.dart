@@ -89,7 +89,7 @@ class ArkTxWidget extends StatelessWidget {
             const Gap(16.0),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   CurrencyText(
                     sats,
@@ -118,7 +118,7 @@ class ArkTxWidget extends StatelessWidget {
               ),
             ),
             Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: .end,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(

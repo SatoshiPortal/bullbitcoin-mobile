@@ -72,8 +72,8 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           Autocomplete<CadBillerViewModel>(
             optionsBuilder: (TextEditingValue textEditingValue) async {
@@ -112,7 +112,7 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
                         : _selectedBiller == null
                         ? "Please select a biller from the list"
                         : null,
-                    textInputAction: TextInputAction.next,
+                    textInputAction: .next,
                   );
                 },
           ),
@@ -121,7 +121,7 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
             labelText: 'Payee Account Number',
             hintText: 'Enter account number',
             focusNode: _accountNumberFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -137,7 +137,7 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {

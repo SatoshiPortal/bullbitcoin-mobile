@@ -29,7 +29,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
           SnackBar(
             content: Text(
               context.loc.exchangeAppSettingsSaveSuccessMessage,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: TextStyle(
                 fontSize: 14,
                 color: context.appColors.surfaceFixed,
@@ -37,7 +37,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
             ),
             duration: const Duration(seconds: 2),
             backgroundColor: context.appColors.onSurface.withAlpha(204),
-            behavior: SnackBarBehavior.floating,
+            behavior: .floating,
             elevation: 4,
             margin: const EdgeInsets.only(bottom: 100, left: 40, right: 40),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -61,7 +61,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 _buildDropdownField(
                   context,
@@ -128,13 +128,13 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
     Function(String?) onChanged,
   ) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           label,
           style: context.font.labelMedium?.copyWith(
             color: context.appColors.secondary,
-            fontWeight: FontWeight.w500,
+            fontWeight: .w500,
           ),
         ),
         const SizedBox(height: 8),

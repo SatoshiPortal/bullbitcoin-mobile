@@ -50,8 +50,8 @@ class FundExchangeAccountScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: .center,
+              crossAxisAlignment: .center,
               children: [
                 const Gap(24.0),
                 CircleAvatar(

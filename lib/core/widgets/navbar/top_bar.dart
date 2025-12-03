@@ -28,7 +28,7 @@ class TopBar extends StatelessWidget {
       color: color,
       padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: .end,
         children: [
           if (onBack != null) ...[
             IconButton(

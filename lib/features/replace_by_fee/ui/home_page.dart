@@ -81,13 +81,13 @@ class ReplaceByFeeHomePage extends StatelessWidget {
     return Material(
       elevation: 1,
       borderRadius: BorderRadius.circular(2),
-      clipBehavior: Clip.hardEdge,
+      clipBehavior: .hardEdge,
       color: context.appColors.onSecondary,
       shadowColor: context.appColors.secondary,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             BBText(
               context.loc.replaceByFeeOriginalTransactionTitle,

@@ -67,7 +67,7 @@ class BuyConfirmScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Center(
                   child: Container(
@@ -75,7 +75,7 @@ class BuyConfirmScreen extends StatelessWidget {
                     height: 72,
                     decoration: BoxDecoration(
                       color: context.appColors.secondaryFixedDim,
-                      shape: BoxShape.circle,
+                      shape: .circle,
                     ),
                     child: Image.asset(Assets.icons.btc.path),
                   ),
@@ -115,18 +115,18 @@ class BuyConfirmScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               if (isConfirmingOrder || isRefreshingOrder)
                 const Center(child: CircularProgressIndicator())
               else
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
                     Text(
                       context.loc.buyConfirmAwaitingConfirmation,
                       style: context.font.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
+                        fontWeight: .w500,
                         color: context.appColors.outline,
                       ),
                     ),

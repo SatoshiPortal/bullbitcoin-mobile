@@ -78,14 +78,14 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    crossAxisAlignment: .stretch,
                     children: [
                       BBText(
                         context.loc.testBackupTapWordsInOrder,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                         maxLines: 2,
                         style: context.font.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
+                          fontWeight: .w600,
                           fontSize: 16,
                           letterSpacing: 0,
                         ),
@@ -96,9 +96,9 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                           children: [
                             BBText(
                               context.loc.testBackupWhatIsWordNumber(nextWordNumber),
-                              textAlign: TextAlign.center,
+                              textAlign: .center,
                               style: context.font.labelMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
+                                fontWeight: .w700,
                                 color: context.appColors.outline,
                                 letterSpacing: 0,
                                 fontSize: 12,
@@ -109,9 +109,9 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                       else
                         BBText(
                           context.loc.testBackupAllWordsSelected,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                           style: context.font.labelMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
+                            fontWeight: .w700,
                             color: context.appColors.surface,
                             letterSpacing: 0,
                             fontSize: 14,
@@ -207,7 +207,7 @@ class _ShuffledMnemonicWord extends StatelessWidget {
         ),
         height: 41,
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
@@ -239,7 +239,7 @@ class _ShuffledMnemonicWord extends StatelessWidget {
                   child: BBText(
                     isSelected ? '$selectedWordNumber' : '00',
                     style: context.font.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: .w700,
                       fontSize: 16,
                       letterSpacing: 0.15,
                       color: context.appColors.onPrimary,
@@ -251,10 +251,10 @@ class _ShuffledMnemonicWord extends StatelessWidget {
             const Gap(12),
             BBText(
               word,
-              textAlign: TextAlign.start,
+              textAlign: .start,
               maxLines: 2,
               style: context.font.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w700,
+                fontWeight: .w700,
                 fontSize: 14,
                 color: context.appColors.secondary,
               ),

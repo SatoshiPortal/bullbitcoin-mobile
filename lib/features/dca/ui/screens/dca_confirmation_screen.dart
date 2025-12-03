@@ -28,7 +28,7 @@ class DcaConfirmationScreen extends StatelessWidget {
       body: SafeArea(
         child: ScrollableColumn(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             FadingLinearProgress(
               height: 3,
@@ -42,7 +42,7 @@ class DcaConfirmationScreen extends StatelessWidget {
               child: Text(
                 context.loc.dcaConfirmAutoMessage,
                 style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
             ),
             const Gap(24),

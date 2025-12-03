@@ -28,7 +28,7 @@ class BBSegmentedButton extends StatelessWidget {
       child: Center(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(2),
-          clipBehavior: Clip.antiAliasWithSaveLayer,
+          clipBehavior: .antiAliasWithSaveLayer,
           child: CustomSlidingSegmentedControl<String>(
             controller: CustomSegmentedController(value: selected),
             initialValue: selected,

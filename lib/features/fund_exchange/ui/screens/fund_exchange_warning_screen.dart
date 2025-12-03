@@ -31,7 +31,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // or start, end, etc.
+            mainAxisAlignment: .center, // or start, end, etc.
             children: [
               const Gap(24.0),
               CircleAvatar(
@@ -52,14 +52,14 @@ class FundExchangeWarningScreen extends StatelessWidget {
               BBText(
                 context.loc.fundExchangeWarningDescription,
                 style: theme.textTheme.headlineSmall,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const Gap(24.0),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       BBText(
                         context.loc.fundExchangeWarningTacticsTitle,
@@ -70,7 +70,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
                         (tactic) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               const Text('• ', style: TextStyle(fontSize: 14)),
                               Expanded(
@@ -104,7 +104,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
                   context.loc.fundExchangeWarningConfirmation,
                   style: theme.textTheme.bodyLarge,
                 ),
-                controlAffinity: ListTileControlAffinity.leading,
+                controlAffinity: .leading,
               ),
             ],
           ),

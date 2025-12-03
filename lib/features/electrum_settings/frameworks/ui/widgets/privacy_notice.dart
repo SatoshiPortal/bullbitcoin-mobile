@@ -26,8 +26,8 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: .min,
+        crossAxisAlignment: .start,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
@@ -35,7 +35,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
               children: [
                 const Gap(20),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
                     const Gap(24),
                     Text(
@@ -56,7 +56,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(
                       context.loc.electrumPrivacyNoticeContent1,

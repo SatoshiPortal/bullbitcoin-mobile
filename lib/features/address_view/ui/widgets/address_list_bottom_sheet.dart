@@ -54,7 +54,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
         controller: _scrollController,
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             const Gap(8),
             Stack(

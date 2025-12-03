@@ -43,7 +43,7 @@ class VaultSelectedPage extends StatelessWidget {
           children: [
             BBText(
               context.loc.recoverbullVaultImportedSuccess,
-              textAlign: TextAlign.left,
+              textAlign: .left,
               style: context.font.bodySmall,
             ),
             const Gap(16),
@@ -54,7 +54,7 @@ class VaultSelectedPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   BBText(vault.id, style: context.font.headlineMedium),
                   const Gap(16),

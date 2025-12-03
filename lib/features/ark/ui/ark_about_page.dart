@@ -112,7 +112,7 @@ class _InfoField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           label,
@@ -145,7 +145,7 @@ class _CopyFieldState extends State<_CopyField> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           widget.label,
@@ -178,7 +178,7 @@ class _CopyFieldState extends State<_CopyField> {
                 );
               },
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   BBText(
                     context.loc.arkAboutCopy,
@@ -214,7 +214,7 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           widget.label,
@@ -241,7 +241,7 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
                 });
               },
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   BBText(
                     _isVisible
@@ -274,7 +274,7 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
                 );
               },
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   BBText(
                     context.loc.arkAboutCopy,

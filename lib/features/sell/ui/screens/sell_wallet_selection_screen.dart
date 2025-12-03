@@ -108,49 +108,49 @@ class _SellError extends StatelessWidget {
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         BelowMinAmountSellError _ => Text(
           context.loc.sellBelowMinAmountError,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         InsufficientBalanceSellError _ => Text(
           context.loc.sellInsufficientBalanceError,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         UnauthenticatedSellError _ => Text(
           context.loc.sellUnauthenticatedError,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         OrderNotFoundSellError _ => Text(
           context.loc.sellOrderNotFoundError,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         OrderAlreadyConfirmedSellError _ => Text(
           context.loc.sellOrderAlreadyConfirmedError,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         UnexpectedSellError _ => Text(
           sellError.message,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         _ => const SizedBox.shrink(),
       },

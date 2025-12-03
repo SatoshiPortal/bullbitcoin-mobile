@@ -23,12 +23,12 @@ class LabeledTextInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           label,
           style: context.font.labelMedium?.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: .w700,
             color: context.appColors.text,
             letterSpacing: 0,
             fontSize: 14,
@@ -52,12 +52,12 @@ class LabeledTextInput extends StatelessWidget {
             onChanged: onChanged ?? (_) {},
             disabled: onChanged == null,
             style: context.font.bodySmall?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: .w700,
               fontSize: 14,
               color: context.appColors.text,
             ),
             hintStyle: context.font.bodySmall?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: .w700,
               fontSize: 14,
               color: context.appColors.textMuted,
             ),

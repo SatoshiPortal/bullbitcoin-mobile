@@ -58,7 +58,7 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
   Widget build(BuildContext context) {
     return GestureDetector(
       // tap outside input to close keyboard
-      behavior: HitTestBehavior.opaque,
+      behavior: .opaque,
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
@@ -108,8 +108,8 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: .start,
+                      mainAxisSize: .min,
                       children: [
                         const Gap(32),
                         Text(
@@ -120,7 +120,7 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                         TextFormField(
                           controller: _controller,
                           focusNode: _focusNode,
-                          textInputAction: TextInputAction.done,
+                          textInputAction: .done,
                           decoration: InputDecoration(
                             fillColor: context.appColors.onPrimary,
                             filled: true,
@@ -185,7 +185,7 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                                 style: context.font.bodyMedium?.copyWith(
                                   color: context.appColors.error,
                                 ),
-                                textAlign: TextAlign.center,
+                                textAlign: .center,
                               ),
                             );
                           },

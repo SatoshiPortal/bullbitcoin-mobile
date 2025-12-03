@@ -42,7 +42,7 @@ class DcaSuccessScreen extends StatelessWidget {
         body: SafeArea(
           child: ScrollableColumn(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: .center,
             children: [
               const Spacer(),
               Icon(
@@ -54,7 +54,7 @@ class DcaSuccessScreen extends StatelessWidget {
               Text(
                 context.loc.dcaSuccessTitle,
                 style: Theme.of(context).textTheme.displaySmall,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const Gap(16),
               Text(
@@ -72,7 +72,7 @@ class DcaSuccessScreen extends StatelessWidget {
                       .dcaSuccessMessageMonthly(amount),
                 },
                 style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const Spacer(),
               BBButton.big(

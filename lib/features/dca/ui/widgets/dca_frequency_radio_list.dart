@@ -24,8 +24,8 @@ class DcaFrequencyRadioList extends StatelessWidget {
         : context.appColors.onSecondaryFixed;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: .start,
+      mainAxisSize: .min,
       children: [
         Text(
           context.loc.dcaSelectFrequencyLabel,

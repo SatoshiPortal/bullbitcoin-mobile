@@ -75,7 +75,7 @@ class ExchangeLandingScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     BBText(
                       context.loc.exchangeFeatureSelfCustody,

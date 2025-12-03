@@ -32,12 +32,12 @@ class ImportQrDevicePage extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: Device.screen.width * 0.05),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             BBText(
               context.loc.importQrDeviceScanPrompt(deviceName),
               style: context.font.bodyLarge,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               maxLines: 2,
             ),
 

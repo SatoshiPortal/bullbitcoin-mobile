@@ -47,8 +47,8 @@ class BBTextFormField extends StatelessWidget {
     final isDisabled = disabled ?? false;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: .start,
+      mainAxisSize: .min,
       children: [
         if (labelText != null)
           Text(
@@ -60,9 +60,9 @@ class BBTextFormField extends StatelessWidget {
                       isDisabled
                           ? context.appColors.outline
                           : context.appColors.secondary,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: .w500,
                 ),
-            textAlign: TextAlign.left,
+            textAlign: .left,
           ),
         const SizedBox(height: 8),
         TextFormField(

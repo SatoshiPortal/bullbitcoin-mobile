@@ -18,7 +18,7 @@ class KeyServerStatusWidget extends StatelessWidget {
         context.read<RecoverBullBloc>().add(const OnServerCheck());
       },
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           if (status == KeyServerStatus.connecting)
             Gif(

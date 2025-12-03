@@ -74,15 +74,15 @@ class SepaEurFormState extends State<SepaEurForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'IBAN',
             hintText: 'Enter IBAN',
             focusNode: _ibanFocusNode,
             autofocus: true,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) {
               if (_isCorporate) {
                 _corporateNameFocusNode.requestFocus();
@@ -116,7 +116,7 @@ class SepaEurFormState extends State<SepaEurForm> {
               });
             },
             contentPadding: EdgeInsets.zero,
-            controlAffinity: ListTileControlAffinity.leading,
+            controlAffinity: .leading,
           ),
           const Gap(12.0),
           if (!_isCorporate) ...[
@@ -124,7 +124,7 @@ class SepaEurFormState extends State<SepaEurForm> {
               labelText: 'First Name',
               hintText: 'Enter first name',
               focusNode: _firstnameFocusNode,
-              textInputAction: TextInputAction.next,
+              textInputAction: .next,
               onFieldSubmitted: (_) => _lastnameFocusNode.requestFocus(),
               validator: (v) => (v == null || v.trim().isEmpty)
                   ? "This field can't be empty"
@@ -140,7 +140,7 @@ class SepaEurFormState extends State<SepaEurForm> {
               labelText: 'Last Name',
               hintText: 'Enter last name',
               focusNode: _lastnameFocusNode,
-              textInputAction: TextInputAction.next,
+              textInputAction: .next,
               onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
               validator: (v) => (v == null || v.trim().isEmpty)
                   ? "This field can't be empty"
@@ -158,7 +158,7 @@ class SepaEurFormState extends State<SepaEurForm> {
               labelText: 'Corporate Name',
               hintText: 'Enter corporate name',
               focusNode: _corporateNameFocusNode,
-              textInputAction: TextInputAction.next,
+              textInputAction: .next,
               onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
               validator: (v) => (v == null || v.trim().isEmpty)
                   ? "This field can't be empty"
@@ -175,7 +175,7 @@ class SepaEurFormState extends State<SepaEurForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {
@@ -189,7 +189,7 @@ class SepaEurFormState extends State<SepaEurForm> {
             'Who does this account belong to?',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
+              fontWeight: .w500,
               color: context.appColors.onSurface,
             ),
           ),

@@ -24,7 +24,7 @@ class ExchangeBitcoinWalletsScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               const SizedBox(height: 12),
               _buildAddressField(
@@ -53,7 +53,7 @@ class ExchangeBitcoinWalletsScreen extends StatelessWidget {
 
   Widget _buildAddressField(BuildContext context, String label, String value) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           label,
@@ -83,7 +83,7 @@ class ExchangeBitcoinWalletsScreen extends StatelessWidget {
           },
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.secondary,
-            fontWeight: FontWeight.w500,
+            fontWeight: .w500,
           ),
         ),
       ],

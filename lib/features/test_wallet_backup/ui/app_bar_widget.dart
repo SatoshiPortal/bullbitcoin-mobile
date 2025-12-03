@@ -75,7 +75,7 @@ Future<String?> _showWalletPicker({
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Row(
             children: [
@@ -100,7 +100,7 @@ Future<String?> _showWalletPicker({
                           ? context.loc.testBackupDefaultWallets
                           : wallet.displayLabel,
                       style: context.font.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: .w600,
                         fontSize: 18,
                       ),
                     ),

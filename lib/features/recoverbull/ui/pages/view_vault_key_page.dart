@@ -15,7 +15,7 @@ class ViewVaultKeyPage extends StatelessWidget {
       appBar: AppBar(title: Text(context.loc.recoverbullVaultKey)),
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             Padding(
               padding: const EdgeInsets.all(24),
@@ -28,7 +28,7 @@ class ViewVaultKeyPage extends StatelessWidget {
                 maxLines: 1,
 
                 clipboardText: vaultKey,
-                overflow: TextOverflow.clip,
+                overflow: .clip,
                 modalContent:
                     vaultKey
                         .replaceAllMapped(

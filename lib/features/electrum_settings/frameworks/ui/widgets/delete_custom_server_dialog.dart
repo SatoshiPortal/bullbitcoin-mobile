@@ -17,7 +17,7 @@ class DeleteCustomServerDialog {
             backgroundColor: context.appColors.onPrimary,
             title: Text(context.loc.electrumDeleteServerTitle),
             content: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 if (isLastCustomServer)
                   Text(

@@ -33,8 +33,8 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .start,
             children: [
               BBText(
                 context.loc.fundExchangeCrIbanUsdTitle,
@@ -51,7 +51,7 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
                     TextSpan(
                       text: context.loc.fundExchangeCrIbanUsdDescriptionBold,
                       style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                       ),
                     ),
                     TextSpan(

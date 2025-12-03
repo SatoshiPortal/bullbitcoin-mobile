@@ -19,7 +19,7 @@ class OngoingSwapsWidget extends StatelessWidget {
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -32,7 +32,7 @@ class OngoingSwapsWidget extends StatelessWidget {
                 context.loc.transactionListOngoingTransfersTitle,
                 style: context.font.titleMedium?.copyWith(
                   color: context.appColors.secondary,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: .w600,
                 ),
               ),
               const Spacer(),
@@ -46,7 +46,7 @@ class OngoingSwapsWidget extends StatelessWidget {
                   ongoingSwaps.length.toString(),
                   style: context.font.labelSmall?.copyWith(
                     color: context.appColors.onSecondary,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: .w600,
                   ),
                 ),
               ),
@@ -60,14 +60,14 @@ class OngoingSwapsWidget extends StatelessWidget {
             context.loc.transactionListOngoingTransfersDescription,
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.outline,
-              fontStyle: FontStyle.italic,
+              fontStyle: .italic,
             ),
           ),
         ),
         const Gap(8),
         ...ongoingSwaps.map((tx) {
           return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [TxListItem(tx: tx), const Gap(8)],
           );
         }),

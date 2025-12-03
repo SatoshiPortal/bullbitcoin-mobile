@@ -69,13 +69,13 @@ class _ProviderCardState extends State<ProviderCard>
                     height: 48,
                     child: Image.asset(
                       widget.provider.iconPath,
-                      fit: BoxFit.cover,
+                      fit: .cover,
                     ),
                   ),
                   const Gap(12),
                   Expanded(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         BBText(
                           widget.provider.name,

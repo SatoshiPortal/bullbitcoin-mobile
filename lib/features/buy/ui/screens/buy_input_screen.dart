@@ -60,7 +60,7 @@ class BuyInputScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: ScrollableColumn(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             const Gap(24),
             const BuyAmountInputFields(),
@@ -68,13 +68,13 @@ class BuyInputScreen extends StatelessWidget {
             const BuyDestinationInputFields(),
             const Spacer(),
             Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 if (isCreatingOrder)
                   const Center(child: CircularProgressIndicator()),
                 if (belowMinAmountError != null || aboveMaxAmountError != null)
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       Text(
                         belowMinAmountError != null

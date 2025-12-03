@@ -117,42 +117,42 @@ class _PayError extends StatelessWidget {
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         BelowMinAmountPayError _ => Text(
           context.loc.payBelowMinAmount,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         UnauthenticatedPayError _ => Text(
           context.loc.payNotAuthenticated,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         OrderNotFoundPayError _ => Text(
           context.loc.payOrderNotFound,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         OrderAlreadyConfirmedPayError _ => Text(
           context.loc.payOrderAlreadyConfirmed,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         UnexpectedPayError _ => Text(
           payError.message,
           style: context.font.bodyMedium?.copyWith(
             color: context.appColors.error,
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
         _ => const SizedBox.shrink(),
       },

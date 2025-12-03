@@ -45,7 +45,7 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
     return Scaffold(
       backgroundColor: context.appColors.secondaryFixedDim,
       body: Stack(
-        fit: StackFit.expand,
+        fit: .expand,
         children: [
           QrScannerWidget(onScanned: _onScanned),
           if (data.$1.isNotEmpty)

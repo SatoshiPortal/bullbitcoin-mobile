@@ -53,7 +53,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
     final instantPaymentWalletLabel = context.loc.buyConfirmInstantWallet;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(context.loc.buySelectWallet, style: context.font.bodyMedium),
         const Gap(4.0),

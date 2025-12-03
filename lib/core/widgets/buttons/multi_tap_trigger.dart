@@ -62,7 +62,7 @@ class _MultiTapTriggerState extends State<MultiTapTrigger> {
       SnackBar(
         content: BBText(
           message,
-          textAlign: TextAlign.center,
+          textAlign: .center,
           style: TextStyle(
             fontSize: 14,
             color:
@@ -74,7 +74,7 @@ class _MultiTapTriggerState extends State<MultiTapTrigger> {
         backgroundColor:
             widget.tapsReachedMessageBackgroundColor?.withAlpha(204) ??
             context.appColors.onSurface.withAlpha(204),
-        behavior: SnackBarBehavior.floating,
+        behavior: .floating,
         elevation: 4,
         margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -93,7 +93,7 @@ class _MultiTapTriggerState extends State<MultiTapTrigger> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: _onTap,
-      behavior: HitTestBehavior.opaque,
+      behavior: .opaque,
       child: widget.child,
     );
   }

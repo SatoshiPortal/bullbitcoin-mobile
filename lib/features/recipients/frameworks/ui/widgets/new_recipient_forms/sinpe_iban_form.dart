@@ -62,15 +62,15 @@ class SinpeIbanFormState extends State<SinpeIbanForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'IBAN',
             hintText: 'Enter IBAN',
             focusNode: _ibanFocusNode,
             autofocus: true,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _ownerNameFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -86,7 +86,7 @@ class SinpeIbanFormState extends State<SinpeIbanForm> {
             labelText: 'Owner Name',
             hintText: 'Enter owner name',
             focusNode: _ownerNameFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -102,7 +102,7 @@ class SinpeIbanFormState extends State<SinpeIbanForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {

@@ -18,7 +18,7 @@ class SwapFromWalletDropdown extends StatelessWidget {
       (TransferBloc bloc) => bloc.state.fromWallet,
     );
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(context.loc.swapFromLabel, style: context.font.bodyLarge),
         const Gap(4),

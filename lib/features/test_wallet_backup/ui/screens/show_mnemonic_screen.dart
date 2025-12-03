@@ -99,22 +99,22 @@ class _MnemonicDisplay extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           BBText(
             context.loc.testBackupWriteDownPhrase,
-            textAlign: TextAlign.center,
+            textAlign: .center,
             style: context.font.headlineLarge?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: .w600,
             ),
             maxLines: 2,
           ),
           const Gap(20),
           BBText(
             context.loc.testBackupStoreItSafe,
-            textAlign: TextAlign.center,
+            textAlign: .center,
             style: context.font.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: .w700,
               color: context.appColors.surface,
               letterSpacing: 0,
               fontSize: 12,
@@ -123,9 +123,9 @@ class _MnemonicDisplay extends StatelessWidget {
           if (lastPhysicalBackup != null) ...[
             BBText(
               context.loc.testBackupLastBackupTest(lastPhysicalBackup.toString().substring(0, 19)),
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: context.font.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
+                fontWeight: .w700,
                 color: context.appColors.surface,
                 letterSpacing: 0,
                 fontSize: 12,
@@ -181,9 +181,9 @@ class _MnemonicDisplay extends StatelessWidget {
                   ),
                   child: BBText(
                     context.loc.testBackupDoNotShare,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     style: context.font.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: .w500,
                       fontSize: 16,
                       color: context.appColors.secondary,
                     ),
@@ -195,7 +195,7 @@ class _MnemonicDisplay extends StatelessWidget {
                     vertical: 16,
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: .spaceEvenly,
                     children: [
                       _buildWarningItem(
                         icon: CupertinoIcons.check_mark,
@@ -239,7 +239,7 @@ class _MnemonicDisplay extends StatelessWidget {
         Text(
           text,
           style: context.font.headlineMedium?.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: .w700,
             fontSize: 12,
             color: context.appColors.secondary,
           ),
@@ -280,7 +280,7 @@ class _RecoveryPhraseWord extends StatelessWidget {
         ),
         height: 41,
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Expanded(
               flex: 2,
@@ -299,7 +299,7 @@ class _RecoveryPhraseWord extends StatelessWidget {
                   child: BBText(
                     number < 10 ? '0$number' : '$number',
                     style: context.font.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: .w700,
                       fontSize: 16,
                       letterSpacing: 0.15,
                       color: context.appColors.onPrimary,
@@ -313,10 +313,10 @@ class _RecoveryPhraseWord extends StatelessWidget {
               flex: 6,
               child: BBText(
                 word,
-                textAlign: TextAlign.start,
+                textAlign: .start,
                 maxLines: 2,
                 style: context.font.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: .w700,
                   fontSize: 14,
                   color: context.appColors.secondary,
                 ),
@@ -355,12 +355,12 @@ class _PassphraseWidget extends StatelessWidget {
         ],
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           BBText(
             context.loc.testBackupPassphrase,
             style: context.font.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: .w700,
               color: context.appColors.surface,
               letterSpacing: 0,
               fontSize: 14,
@@ -370,7 +370,7 @@ class _PassphraseWidget extends StatelessWidget {
           BBText(
             passphrase,
             style: context.font.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: .w700,
               fontSize: 14,
               color: context.appColors.secondary,
             ),

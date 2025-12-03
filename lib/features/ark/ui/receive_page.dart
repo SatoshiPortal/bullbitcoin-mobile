@@ -36,7 +36,7 @@ class _ReceivePageState extends State<ReceivePage> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             const Gap(16),
             Padding(
@@ -130,14 +130,14 @@ class _ArkCopyAddressSectionState extends State<ArkCopyAddressSection> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           Text(addressLabel, style: context.font.bodyMedium),
           const Gap(6),
           CopyInput(
             text: currentAddress,
             clipboardText: currentAddress,
-            overflow: TextOverflow.ellipsis,
+            overflow: .ellipsis,
             canShowValueModal: true,
             modalTitle: addressLabel,
             modalContent:

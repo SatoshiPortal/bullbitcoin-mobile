@@ -78,7 +78,7 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
       child: Form(
         key: _formKey,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Stack(
               alignment: Alignment.center,

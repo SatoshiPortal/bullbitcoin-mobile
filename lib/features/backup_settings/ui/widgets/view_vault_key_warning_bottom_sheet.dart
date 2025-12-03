@@ -28,8 +28,8 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: .min,
+        crossAxisAlignment: .start,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
@@ -37,7 +37,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
               children: [
                 const Gap(20),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
                     const Gap(24),
                     BBText(
@@ -58,13 +58,13 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     BBText(
                       context.loc.backupSettingsKeyWarningBold,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.appColors.secondary,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                       ),
                       maxLines: 4,
                     ),

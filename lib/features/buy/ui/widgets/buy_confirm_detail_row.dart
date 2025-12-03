@@ -15,7 +15,7 @@ class BuyConfirmDetailRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: .spaceBetween,
         children: [
           Text(
             label,
@@ -30,7 +30,7 @@ class BuyConfirmDetailRow extends StatelessWidget {
                     ? const LoadingLineContent()
                     : Text(
                       value!,
-                      textAlign: TextAlign.end,
+                      textAlign: .end,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: context.appColors.outlineVariant,
                       ),

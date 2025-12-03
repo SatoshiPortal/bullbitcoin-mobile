@@ -85,7 +85,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
               : Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     const Gap(24),
                     Icon(
@@ -104,7 +104,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           ? 'Using Default Server'
                           : 'Using Custom Server',
                       style: context.font.headlineMedium,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                     const Gap(16),
                     Container(
@@ -118,7 +118,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                         ),
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           BBText(
                             'Server URL:',
@@ -151,7 +151,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                       style: context.font.bodyMedium?.copyWith(
                         color: context.appColors.textMuted,
                       ),
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                     const Spacer(),
                     BBButton.big(
@@ -175,7 +175,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     GestureDetector(
                       onTap: _openRecoverBullWebsite,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         children: [
                           Icon(
                             Icons.info_outline,

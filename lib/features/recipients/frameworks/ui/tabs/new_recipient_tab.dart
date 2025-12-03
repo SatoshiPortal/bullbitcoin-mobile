@@ -48,7 +48,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
     return ScrollableColumn(
       // Padding is already handled by the parent widget
       padding: EdgeInsets.zero,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         JurisdictionsDropdown(
           selectedJurisdiction: _selectedJurisdiction,
@@ -67,7 +67,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           'Payout method',
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.secondary,
-            fontWeight: FontWeight.w500,
+            fontWeight: .w500,
           ),
         ),
         const Gap(12),

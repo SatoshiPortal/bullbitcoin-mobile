@@ -35,12 +35,12 @@ class RecipientsListTile extends StatelessWidget {
           color: context.appColors.onPrimary,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: .start,
+          mainAxisSize: .min,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: .spaceBetween,
+              crossAxisAlignment: .center,
               children: [
                 Expanded(
                   child: Text(
@@ -56,7 +56,7 @@ class RecipientsListTile extends StatelessWidget {
                   child: Radio<bool>(
                     value: true,
                     activeColor: context.appColors.primary,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    materialTapTargetSize: .shrinkWrap,
                     visualDensity: VisualDensity.compact,
                   ),
                 ),

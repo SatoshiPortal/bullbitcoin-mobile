@@ -54,8 +54,8 @@ class _DcaListTileState extends State<DcaListTile> {
         children: [
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: .start,
+              mainAxisSize: .min,
               children: [
                 Text(
                   widget.hasDcaActive
@@ -172,7 +172,7 @@ class DcaSettingsContent extends StatelessWidget {
     };
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           context.loc.exchangeDcaSummaryMessage(

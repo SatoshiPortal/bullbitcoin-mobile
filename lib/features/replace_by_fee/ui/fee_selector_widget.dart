@@ -62,7 +62,7 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
     return SafeArea(
       child: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             const Gap(16),
             _buildFastestSection(widget.selected.type == FeeType.fastest),
@@ -81,18 +81,18 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
       child: Material(
         elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
-        clipBehavior: Clip.hardEdge,
+        clipBehavior: .hardEdge,
         color: context.appColors.onSecondary,
         shadowColor: context.appColors.secondary,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: .spaceBetween,
+            crossAxisAlignment: .start,
             children: [
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     BBText(
                       context.loc.replaceByFeeFastestTitle,
@@ -137,17 +137,17 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
       child: Material(
         elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
-        clipBehavior: Clip.hardEdge,
+        clipBehavior: .hardEdge,
         color: context.appColors.onSecondary,
         shadowColor: context.appColors.secondary,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: .spaceBetween,
+                crossAxisAlignment: .start,
                 children: [
                   BBText(
                     context.loc.replaceByFeeCustomFeeTitle,

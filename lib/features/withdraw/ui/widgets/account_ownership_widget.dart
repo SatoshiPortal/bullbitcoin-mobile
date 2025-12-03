@@ -16,13 +16,13 @@ class AccountOwnershipWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           'Who does this account belong to?',
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.secondary,
-            fontWeight: FontWeight.w500,
+            fontWeight: .w500,
           ),
         ),
         const Gap(8),

@@ -54,14 +54,14 @@ class SelectScriptTypePage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   BBText(
                     context.loc.importMnemonicSyncMessage,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.appColors.textMuted,
                     ),
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                   ),
                   const Gap(24),
                   Column(
@@ -140,12 +140,12 @@ class _WalletTypeCard extends StatelessWidget {
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   BBText(
                     title,
                     style: context.font.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: .w600,
                       color: context.appColors.text,
                     ),
                   ),
@@ -184,7 +184,7 @@ class _WalletTypeCard extends StatelessWidget {
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
+                shape: .circle,
                 border: Border.all(
                   color:
                       isSelected

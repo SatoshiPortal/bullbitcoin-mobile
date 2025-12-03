@@ -24,7 +24,7 @@ class ExchangeFileUploadScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Container(
                 width: double.infinity,
@@ -42,8 +42,8 @@ class ExchangeFileUploadScreen extends StatelessWidget {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: .start,
+                  mainAxisSize: .min,
                   children: [
                     Text(
                       context.loc.exchangeFileUploadDocumentTitle,

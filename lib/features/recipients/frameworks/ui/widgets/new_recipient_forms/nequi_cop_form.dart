@@ -57,8 +57,8 @@ class NequiCopFormState extends State<NequiCopForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           // Phone Number
           BBTextFormField(
@@ -66,7 +66,7 @@ class NequiCopFormState extends State<NequiCopForm> {
             hintText: 'Enter phone number',
             autofocus: true,
             prefixText: '+57',
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
                 : null,
@@ -81,10 +81,10 @@ class NequiCopFormState extends State<NequiCopForm> {
             'ID Document Type',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
+              fontWeight: .w500,
               color: context.appColors.onSurface,
             ),
-            textAlign: TextAlign.left,
+            textAlign: .left,
           ),
           const Gap(8.0),
           Material(
@@ -141,7 +141,7 @@ class NequiCopFormState extends State<NequiCopForm> {
               CopDocumentTypeViewModel.registroCivil => 'Registro Civil',
             },
             hintText: 'Enter document number',
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -157,7 +157,7 @@ class NequiCopFormState extends State<NequiCopForm> {
             labelText: 'Name of the recipient',
             hintText: "Enter recipient name",
             focusNode: _nameFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -173,7 +173,7 @@ class NequiCopFormState extends State<NequiCopForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {

@@ -121,7 +121,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
           body: SafeArea(
             child: Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   Gif(
                     image: AssetImage(Assets.animations.cubesLoading.path),
@@ -140,7 +140,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                     child: Text(
                       context.loc.payPaymentInProgressDescription,
                       style: context.font.bodyMedium,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                   ),
                 ],
@@ -151,7 +151,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   if (order != null)
                     BBButton.big(

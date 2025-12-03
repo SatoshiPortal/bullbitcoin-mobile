@@ -101,7 +101,7 @@ class SwapPageState extends State<SwapPage> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   const Gap(12),
                   InfoCard(
@@ -113,7 +113,7 @@ class SwapPageState extends State<SwapPage> {
                   ),
                   const Gap(12),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       BlocSelector<TransferBloc, TransferState, bool>(
                         selector: (state) => state.sendToExternal,
@@ -192,7 +192,7 @@ class SwapPageState extends State<SwapPage> {
                   ),
                   const Gap(24),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       BlocSelector<TransferBloc, TransferState, bool>(
                         selector: (state) => state.receiveExactAmount,

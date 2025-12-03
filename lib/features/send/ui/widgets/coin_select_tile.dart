@@ -53,11 +53,11 @@ class CoinSelectTile extends StatelessWidget {
           border: Border.all(color: context.appColors.outlineVariant),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   ListTile(
                     shape: RoundedRectangleBorder(
@@ -71,7 +71,7 @@ class CoinSelectTile extends StatelessWidget {
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
                             color: context.appColors.outlineVariant,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: .w500,
                           ),
                         ),
                       ],

@@ -28,7 +28,7 @@ class CommonSendConfirmTopArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      // crossAxisAlignment: CrossAxisAlignment.stretch,
+      // crossAxisAlignment: .stretch,
       children: [
         Container(
           alignment: Alignment.center,
@@ -36,7 +36,7 @@ class CommonSendConfirmTopArea extends StatelessWidget {
           width: 72,
           decoration: BoxDecoration(
             color: context.appColors.secondaryFixedDim,
-            shape: BoxShape.circle,
+            shape: .circle,
           ),
           child:
               _sendType == SendType.send
@@ -121,29 +121,29 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           CommonInfoRow(
             title: 'From',
             details: BBText(
               _sendWalletLabel,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           _divider(context),
           CommonInfoRow(
             title: 'To',
             details: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: .end,
+              mainAxisSize: .min,
               children: [
                 Expanded(
                   child: BBText(
                     _paymentRequestAddress,
                     maxLines: 5,
                     style: context.font.bodyLarge,
-                    textAlign: TextAlign.end,
+                    textAlign: .end,
                   ),
                 ),
                 const Gap(8),
@@ -166,7 +166,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
           CommonInfoRow(
             title: 'Amount',
             details: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: .end,
               children: [
                 BBText(_formattedBitcoinAmount, style: context.font.bodyLarge),
                 BBText(
@@ -183,7 +183,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
             details: BBText(
               "$_absoluteFees sats",
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           _divider(context),
@@ -191,13 +191,13 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
             title: 'Fee Priority',
             details: InkWell(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: .end,
                 children: [
                   BBText(
                     _selectedFeeOptionTitle,
                     style: context.font.bodyLarge,
                     color: context.appColors.primary,
-                    textAlign: TextAlign.end,
+                    textAlign: .end,
                   ),
                   const Gap(4),
                   Icon(
@@ -246,27 +246,27 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           CommonInfoRow(
             title: 'From',
             details: BBText(
               _sendWalletLabel,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           _divider(context),
           CommonInfoRow(
             title: 'To',
             details: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: .end,
+              mainAxisSize: .min,
               children: [
                 BBText(
                   StringFormatting.truncateMiddle(_paymentRequestAddress),
                   style: context.font.bodyLarge,
-                  textAlign: TextAlign.end,
+                  textAlign: .end,
                 ),
                 const Gap(4),
                 InkWell(
@@ -298,14 +298,14 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
             details: BBText(
               _swapId,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           _divider(context),
           CommonInfoRow(
             title: 'Amount',
             details: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: .end,
               children: [
                 BBText(_formattedBitcoinAmount, style: context.font.bodyLarge),
                 BBText(
@@ -322,7 +322,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
             details: BBText(
               "$_totalSwapFees sats",
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           _divider(context),
@@ -465,29 +465,29 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           CommonInfoRow(
             title: 'From',
             details: BBText(
               sendWalletLabel,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           _divider(context),
           CommonInfoRow(
             title: 'To',
             details: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: .end,
+              mainAxisSize: .min,
               children: [
                 if (swap.isChainSwap &&
                     (swap as ChainSwap).receiveWalletId != null)
                   BBText(
                     receiveWalletLabel ?? receiveAddress ?? '',
                     style: context.font.bodyLarge,
-                    textAlign: TextAlign.end,
+                    textAlign: .end,
                   )
                 else if (swap.isChainSwap &&
                     (swap as ChainSwap).receiveAddress != null) ...[
@@ -496,7 +496,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
                       (swap as ChainSwap).receiveAddress!,
                     ),
                     style: context.font.bodyLarge,
-                    textAlign: TextAlign.end,
+                    textAlign: .end,
                   ),
                   const Gap(4),
                   InkWell(
@@ -521,13 +521,13 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           CommonInfoRow(
             title: 'Transfer ID',
             details: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: .end,
+              mainAxisSize: .min,
               children: [
                 BBText(
                   swap.id,
                   style: context.font.bodyLarge,
-                  textAlign: TextAlign.end,
+                  textAlign: .end,
                 ),
                 const Gap(4),
                 InkWell(
@@ -547,7 +547,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           CommonInfoRow(
             title: 'Send Amount',
             details: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: .end,
               children: [
                 if (swap.isChainSwap)
                   CurrencyText(
@@ -571,7 +571,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
             CommonInfoRow(
               title: 'Receive Amount',
               details: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: .end,
                 children: [
                   CurrencyText(
                     swap.receieveAmount!,
@@ -586,7 +586,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
             CommonInfoRow(
               title: 'Send Network Fee',
               details: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: .end,
                 children: [
                   CurrencyText(
                     swap.fees!.lockupFee!,
@@ -629,7 +629,7 @@ class CommonSendBottomButtons extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           // if (_isBitcoinWallet) ...[
           //   BBButton.big(
@@ -709,7 +709,7 @@ class CommonConfirmSendErrorSection extends StatelessWidget {
               style: context.font.bodyLarge,
               color: context.appColors.error,
               maxLines: 5,
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
             const Gap(8),
             BBText(
@@ -717,7 +717,7 @@ class CommonConfirmSendErrorSection extends StatelessWidget {
               style: context.font.bodyMedium,
               color: context.appColors.error,
               maxLines: 5,
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
           ],
         ),
@@ -733,7 +733,7 @@ class CommonConfirmSendErrorSection extends StatelessWidget {
               style: context.font.bodyLarge,
               color: context.appColors.error,
               maxLines: 5,
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
             const Gap(8),
             BBText(
@@ -741,7 +741,7 @@ class CommonConfirmSendErrorSection extends StatelessWidget {
               style: context.font.bodyMedium,
               color: context.appColors.error,
               maxLines: 5,
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
           ],
         ),

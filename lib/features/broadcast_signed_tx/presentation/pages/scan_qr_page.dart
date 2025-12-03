@@ -20,7 +20,7 @@ class ScanQrPage extends StatelessWidget {
           final cubit = context.read<BroadcastSignedTxCubit>();
 
           return Stack(
-            fit: StackFit.expand,
+            fit: .expand,
             children: [
               QrScannerWidget(
                 onScanned: cubit.onQrScanned,

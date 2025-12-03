@@ -230,7 +230,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                   case AppThemeMode.dark:
                     appThemeType = AppThemeType.dark;
                   case AppThemeMode.system:
-                    appThemeType = systemBrightness == Brightness.dark
+                    appThemeType = systemBrightness == .dark
                         ? AppThemeType.dark
                         : AppThemeType.light;
                 }

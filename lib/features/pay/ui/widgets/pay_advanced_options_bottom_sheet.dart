@@ -24,7 +24,7 @@ class PayAdvancedOptionsBottomSheet extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Stack(
             alignment: Alignment.center,
@@ -47,7 +47,7 @@ class PayAdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(32),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               BBText(
                 context.loc.payRbfActivated,
@@ -68,7 +68,7 @@ class PayAdvancedOptionsBottomSheet extends StatelessWidget {
             title: BBText(
               context.loc.paySelectCoinsManually,
               style: context.font.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w500,
+                fontWeight: .w500,
               ),
             ),
             trailing: const Icon(Icons.arrow_forward),

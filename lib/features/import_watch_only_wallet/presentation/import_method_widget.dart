@@ -13,10 +13,10 @@ class ImportMethodWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: .spaceBetween,
       children: [
         Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: .spaceEvenly,
           children: [
             const Gap(12),
             BBButton.small(
@@ -37,7 +37,7 @@ class ImportMethodWidget extends StatelessWidget {
 
         Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: .spaceEvenly,
             children: [
               BBButton.small(
                 label: context.loc.importWatchOnlyBuyDevice,

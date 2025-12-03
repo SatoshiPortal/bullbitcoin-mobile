@@ -22,7 +22,7 @@ class WalletHomeTopSection extends StatelessWidget {
       child: Stack(
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               SizedBox(
                 height: 264 + 78,
@@ -59,13 +59,13 @@ class _UIState extends State<_UI> {
 
   @override
   void initState() {
-    image = Image.asset(Assets.backgrounds.bgRed.path, fit: BoxFit.fill);
+    image = Image.asset(Assets.backgrounds.bgRed.path, fit: .fill);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(fit: StackFit.expand, children: [image, const _Amounts()]);
+    return Stack(fit: .expand, children: [image, const _Amounts()]);
   }
 }
 
@@ -75,11 +75,11 @@ class _Amounts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: .center,
       children: [
         Gap(32),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [Spacer(), _BtcTotalAmt(), Gap(16), EyeToggle(), Spacer()],
         ),
         Gap(12),
@@ -138,10 +138,10 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
       },
       child: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 Icon(Icons.arrow_downward, color: color, size: 20),
                 CurrencyText(

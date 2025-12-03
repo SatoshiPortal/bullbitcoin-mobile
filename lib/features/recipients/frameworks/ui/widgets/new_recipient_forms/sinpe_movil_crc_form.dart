@@ -77,8 +77,8 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'Phone Number',
@@ -86,7 +86,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
             focusNode: _phoneNumberFocusNode,
             autofocus: true,
             prefixText: '+506',
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: _validatePhoneNumberInput,
             onChanged: (value) {
@@ -146,7 +146,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {

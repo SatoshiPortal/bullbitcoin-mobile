@@ -43,7 +43,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
           child: Form(
             key: _formKey,
             child: ScrollableColumn(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 const Gap(24),
                 Padding(
@@ -51,7 +51,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                   child: Text(
                     context.loc.dcaWalletSelectionDescription,
                     style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                   ),
                 ),
                 const Gap(24),

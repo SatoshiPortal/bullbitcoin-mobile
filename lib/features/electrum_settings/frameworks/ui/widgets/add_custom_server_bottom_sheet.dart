@@ -100,7 +100,7 @@ class _AddCustomServerBottomSheetState
 
     return GestureDetector(
       // tap outside input to close keyboard
-      behavior: HitTestBehavior.opaque,
+      behavior: .opaque,
       onTap: () => FocusScope.of(context).unfocus(),
       child: SafeArea(
         child: Padding(
@@ -111,8 +111,8 @@ class _AddCustomServerBottomSheetState
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: .start,
+                mainAxisSize: .min,
                 children: [
                   Row(
                     children: [
@@ -134,7 +134,7 @@ class _AddCustomServerBottomSheetState
                     controller: _controller,
                     focusNode: _focusNode,
                     autofocus: true,
-                    textInputAction: TextInputAction.done,
+                    textInputAction: .done,
                     inputFormatters: [
                       // No whitespace allowed
                       FilteringTextInputFormatter.deny(RegExp(r'\s')),
@@ -198,7 +198,7 @@ class _AddCustomServerBottomSheetState
                       children: [
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               Text(
                                 context.loc.electrumEnableSsl,
@@ -241,7 +241,7 @@ class _AddCustomServerBottomSheetState
                           alpha: 0.6,
                         ),
                       ),
-                      textAlign: TextAlign.start,
+                      textAlign: .start,
                     ),
                   ),
                   const Gap(24),

@@ -18,7 +18,7 @@ class _TxsFilterRowState extends State<TxsFilterRow> {
       (TransactionsCubit cubit) => cubit.state.filter,
     );
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+      scrollDirection: .horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
         children:

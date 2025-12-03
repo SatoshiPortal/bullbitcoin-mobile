@@ -61,8 +61,8 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: .min,
+          crossAxisAlignment: .stretch,
           children: [
             _Header(),
 
@@ -73,11 +73,11 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
                 ),
                 child: SingleChildScrollView(
                   keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
+                      .onDrag,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         if (!loading) ...[
                           const Gap(16),
@@ -145,10 +145,10 @@ class _EnabledToggle extends StatelessWidget {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             BBText(
               context.loc.autoswapEnableToggleLabel,
@@ -191,7 +191,7 @@ class _AmountThresholdField extends StatelessWidget {
       (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdError,
     );
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           context.loc.autoswapMaxBalanceLabel,
@@ -262,7 +262,7 @@ class _FeeThresholdField extends StatelessWidget {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           context.loc.autoswapMaxFeeLabel,
@@ -327,10 +327,10 @@ class _AlwaysBlockToggle extends StatelessWidget {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             BBText(
               context.loc.autoswapAlwaysBlockLabel,
@@ -383,7 +383,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
           children: [

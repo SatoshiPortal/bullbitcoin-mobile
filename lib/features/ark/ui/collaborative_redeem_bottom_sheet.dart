@@ -52,7 +52,7 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                   children: [
                     const Gap(20),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         const Gap(24),
                         BBText(
@@ -72,7 +72,7 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       SwitchListTile(
                         value: state.withRecoverableVtxos,

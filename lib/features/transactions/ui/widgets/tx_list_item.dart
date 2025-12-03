@@ -136,7 +136,7 @@ class TxListItem extends StatelessWidget {
             const Gap(16.0),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   CurrencyText(
                     isOrderType &&
@@ -173,7 +173,7 @@ class TxListItem extends StatelessWidget {
               ),
             ),
             Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: .end,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(

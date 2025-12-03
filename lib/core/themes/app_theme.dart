@@ -7,10 +7,12 @@ enum AppThemeType { light, dark }
 
 class AppTheme {
   static ThemeData themeData(AppThemeType themeType) {
-    final colors =
-        themeType == AppThemeType.dark ? AppColors.dark : AppColors.light;
-    final brightness =
-        themeType == AppThemeType.dark ? Brightness.dark : Brightness.light;
+    final colors = themeType == AppThemeType.dark
+        ? AppColors.dark
+        : AppColors.light;
+    final brightness = themeType == AppThemeType.dark
+        ? Brightness.dark
+        : Brightness.light;
     final fonts = AppFonts.textTheme;
 
     return ThemeData(
@@ -49,10 +51,9 @@ class AppTheme {
        */
       appBarTheme: AppBarTheme(
         backgroundColor: colors.transparent,
-        systemOverlayStyle:
-            themeType == AppThemeType.dark
-                ? SystemUiOverlayStyle.light
-                : SystemUiOverlayStyle.dark,
+        systemOverlayStyle: themeType == AppThemeType.dark
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark,
         elevation: 0,
         scrolledUnderElevation: 0,
         titleTextStyle: fonts.textTheme.headlineMedium!.copyWith(
@@ -96,7 +97,7 @@ class AppTheme {
         padding: EdgeInsets.zero,
         overlayColor: WidgetStateProperty.all(colors.transparent),
         trackOutlineColor: WidgetStateProperty.all(colors.transparent),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        materialTapTargetSize: .shrinkWrap,
         thumbIcon: WidgetStateProperty.all(
           Icon(Icons.circle, color: colors.surface),
         ),
@@ -110,15 +111,15 @@ class AppTheme {
         ),
         textColor: colors.text,
         titleTextStyle: fonts.textTheme.headlineSmall!.copyWith(
-          fontWeight: FontWeight.w400,
+          fontWeight: .w400,
         ),
         subtitleTextStyle: fonts.textTheme.labelMedium!.copyWith(
           color: colors.textMuted,
-          fontWeight: FontWeight.w400,
+          fontWeight: .w400,
         ),
         leadingAndTrailingTextStyle: fonts.textTheme.labelLarge!.copyWith(
           color: colors.text,
-          fontWeight: FontWeight.w500,
+          fontWeight: .w500,
         ),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
@@ -132,7 +133,7 @@ extension ThemeEx on BuildContext {
   ThemeData get theme => Theme.of(this);
   TextTheme get font => theme.textTheme;
   AppColors get appColors =>
-      theme.brightness == Brightness.dark ? AppColors.dark : AppColors.light;
+      theme.brightness == .dark ? AppColors.dark : AppColors.light;
 }
 
 class WidgetStyles {

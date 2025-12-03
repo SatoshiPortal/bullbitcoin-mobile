@@ -46,14 +46,14 @@ class PriceInput extends StatelessWidget {
         ),
         const Gap(8),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             const Gap(24),
             Flexible(
               child: FittedBox(
-                fit: BoxFit.scaleDown,
+                fit: .scaleDown,
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: .min,
                   children: [
                     IntrinsicWidth(
                       child:
@@ -81,7 +81,7 @@ class PriceInput extends StatelessWidget {
                                   fontSize: 36,
                                   color: context.appColors.outlineVariant,
                                 ),
-                                textAlign: TextAlign.center,
+                                textAlign: .center,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.zero,
@@ -144,7 +144,7 @@ class PriceInput extends StatelessWidget {
               child: TextField(
                 onChanged: onNoteChanged,
                 textAlignVertical: TextAlignVertical.center,
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(2),
@@ -195,7 +195,7 @@ class CurrencyBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: .min,
       children: [
         const Gap(16),
         Row(
@@ -237,7 +237,7 @@ class CurrencyBottomSheet extends StatelessWidget {
                               ? context.appColors.primary
                               : context.appColors.secondary,
                     ),
-                    textAlign: TextAlign.start,
+                    textAlign: .start,
                   ),
                 ],
               ),

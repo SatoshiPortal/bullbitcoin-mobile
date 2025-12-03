@@ -29,8 +29,8 @@ class ServiceStatusPage extends StatelessWidget {
                   vertical: 24,
                 ),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: .min,
+                  crossAxisAlignment: .start,
                   children: [
                     Column(
                       children: [
@@ -61,7 +61,7 @@ class ServiceStatusPage extends StatelessWidget {
                         _ServiceStatusItem(service: serviceStatus.ark),
                         const SizedBox(height: 16),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: .center,
                           children: [
                             if (serviceStatus.lastChecked != null)
                               BBText(
@@ -103,7 +103,7 @@ class _ServiceStatusItem extends StatelessWidget {
           width: 8,
           height: 8,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            shape: .circle,
             color: _getStatusColor(context),
           ),
         ),

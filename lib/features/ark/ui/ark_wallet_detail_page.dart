@@ -71,7 +71,7 @@ class ArkWalletDetailPage extends StatelessWidget {
               left: 0,
               right: 0,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   Builder(
                     builder: (context) {

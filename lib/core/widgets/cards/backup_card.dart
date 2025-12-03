@@ -26,7 +26,7 @@ class BackupCard extends StatelessWidget {
             Image.asset(Assets.misc.passwordbook.path, height: 32, width: 32),
             const Gap(16),
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 BBText(
                   'Protect your bitcoin.',

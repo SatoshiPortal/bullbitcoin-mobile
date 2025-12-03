@@ -46,7 +46,7 @@ class DraggableServerList extends StatelessWidget {
       (ElectrumSettingsBloc bloc) => bloc.state.electrumServersError,
     );
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           context.loc.electrumDefaultServers,

@@ -43,7 +43,7 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         const TxsFilterRow(),
         const TxsSyncingIndicator(),

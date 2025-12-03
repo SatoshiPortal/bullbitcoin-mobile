@@ -33,7 +33,7 @@ class SelectableList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [
         for (final item in items) ...[
           _SelectableRow(
@@ -69,20 +69,20 @@ class _SelectableRow extends StatelessWidget {
       child: Material(
         elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
-        clipBehavior: Clip.hardEdge,
+        clipBehavior: .hardEdge,
         color: context.appColors.surface,
         shadowColor: context.appColors.border,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: .spaceBetween,
+            crossAxisAlignment: .start,
             children: [
               if (item.iconPath != null)
                 Image.asset(item.iconPath!, width: 24, height: 24),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     BBText(item.title, style: context.font.headlineLarge),
                     const Gap(4),

@@ -39,7 +39,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
             Positioned.fill(
               child: Image.asset(
                 Assets.backgrounds.bgLong.path,
-                fit: BoxFit.cover,
+                fit: .cover,
               ),
             ),
             SingleChildScrollView(
@@ -85,7 +85,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         BBText(
                           context.loc.exchangeFeatureSelfCustody,
@@ -140,7 +140,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Icon(
                           Icons.info_outline,
@@ -150,7 +150,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                         const Gap(8),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               BBText(
                                 context

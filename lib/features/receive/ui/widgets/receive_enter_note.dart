@@ -44,8 +44,8 @@ class ReceiveEnterNote extends StatelessWidget {
         MediaQuery.of(context).viewInsets.bottom,
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: .min,
+        crossAxisAlignment: .stretch,
         children: [
           const Gap(22),
           Row(

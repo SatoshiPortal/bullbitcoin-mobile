@@ -76,15 +76,15 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'Institution Number',
             hintText: 'Enter institution number',
             focusNode: _institutionNumberFocusNode,
             autofocus: true,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _transitNumberFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -100,7 +100,7 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
             labelText: 'Transit Number',
             hintText: 'Enter transit number',
             focusNode: _transitNumberFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _accountNumberFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -116,7 +116,7 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
             labelText: 'Account Number',
             hintText: 'Enter account number',
             focusNode: _accountNumberFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -132,7 +132,7 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
             labelText: 'Name',
             hintText: 'Enter recipient name',
             focusNode: _nameFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _defaultCommentFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -148,7 +148,7 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
             labelText: 'Default Comment (optional)',
             hintText: 'Enter default comment',
             focusNode: _defaultCommentFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: null,
             onChanged: (value) {
@@ -162,7 +162,7 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {
@@ -176,7 +176,7 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
             'Who does this account belong to?',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
+              fontWeight: .w500,
               color: context.appColors.onSurface,
             ),
           ),

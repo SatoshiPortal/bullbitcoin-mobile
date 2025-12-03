@@ -51,7 +51,7 @@ class _Screen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   const Gap(20),
                   const _BackupTestStatusWidget(),
@@ -90,7 +90,7 @@ class _BackupTestStatusWidget extends StatelessWidget {
     return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
       builder: (context, state) {
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             _StatusRow(
               label: context.loc.backupSettingsPhysicalBackup,
@@ -215,7 +215,7 @@ class ErrorWidget extends StatelessWidget {
         border: Border.all(color: context.appColors.error),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
             children: [
@@ -229,7 +229,7 @@ class ErrorWidget extends StatelessWidget {
                 context.loc.backupSettingsError,
                 style: context.font.titleSmall?.copyWith(
                   color: context.appColors.error,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
               ),
             ],

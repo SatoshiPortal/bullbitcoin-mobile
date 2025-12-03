@@ -50,7 +50,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               Container(
                 width: 40,
@@ -72,9 +72,9 @@ class ComingSoonBottomSheet extends StatelessWidget {
               Text(
                 'Feature Coming Soon',
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const SizedBox(height: 8),
               Text(
@@ -82,9 +82,9 @@ class ComingSoonBottomSheet extends StatelessWidget {
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: context.appColors.onSurface.withValues(alpha: 0.7),
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
               ),
               const SizedBox(height: 24),
               BBButton.big(

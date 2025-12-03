@@ -43,7 +43,7 @@ class WithdrawSuccessScreen extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       Icon(
                         Icons.check_circle,

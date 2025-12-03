@@ -61,7 +61,7 @@ class SwapConfirmPage extends StatelessWidget {
                     vertical: 24,
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    crossAxisAlignment: .stretch,
                     children: [
                       const Gap(8),
                       CommonSendConfirmTopArea(

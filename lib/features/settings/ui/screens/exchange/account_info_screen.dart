@@ -44,7 +44,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               const SizedBox(height: 12),
               _buildInfoField(
@@ -105,7 +105,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     String? copiedMessage,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
           children: [
@@ -113,19 +113,19 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
               label,
               style: context.font.headlineMedium?.copyWith(
                 color: context.appColors.onSurface,
-                fontWeight: FontWeight.w500,
+                fontWeight: .w500,
               ),
             ),
             const Spacer(),
             if (isCopyable)
               Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   BBText(
                     value,
                     style: context.font.bodyLarge?.copyWith(
                       color: context.appColors.onSurface,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: .w700,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -136,7 +136,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                         SnackBar(
                           content: BBText(
                             copiedMessage ?? '',
-                            textAlign: TextAlign.center,
+                            textAlign: .center,
                             style: TextStyle(
                               fontSize: 14,
                               color: context.appColors.surfaceFixed,
@@ -145,7 +145,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                           duration: const Duration(seconds: 2),
                           backgroundColor: context.appColors.onSurface
                               .withAlpha(204),
-                          behavior: SnackBarBehavior.floating,
+                          behavior: .floating,
                           elevation: 4,
                           margin: const EdgeInsets.symmetric(
                             horizontal: 40,
@@ -174,7 +174,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                 value,
                 style: context.font.bodyLarge?.copyWith(
                   color: context.appColors.onSurface,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: .w700,
                 ),
               ),
           ],

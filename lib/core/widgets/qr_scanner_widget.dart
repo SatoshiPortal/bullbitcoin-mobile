@@ -69,7 +69,7 @@ class _ScannerState extends State<QrScannerWidget> {
                   color: context.appColors.onSecondary,
                   fontSize: 14,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
             ),
           ),

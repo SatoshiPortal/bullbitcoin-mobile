@@ -54,7 +54,7 @@ class SwapProgressIndicator extends StatelessWidget {
 
                     // Step indicators and labels
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: .spaceEvenly,
                       children: List.generate(steps.length, (index) {
                         final isCompleted =
                             index <= currentStep && !isFailedOrExpired;
@@ -91,7 +91,7 @@ class SwapProgressIndicator extends StatelessWidget {
                             '${index + 1}',
                             style: TextStyle(
                               color: context.appColors.onSurfaceVariant,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: .bold,
                               fontSize: 15,
                             ),
                           );
@@ -108,7 +108,7 @@ class SwapProgressIndicator extends StatelessWidget {
                                     height: 40,
                                     decoration: BoxDecoration(
                                       color: indicatorColor,
-                                      shape: BoxShape.circle,
+                                      shape: .circle,
                                       border:
                                           isCurrent
                                               ? Border.all(
@@ -136,10 +136,10 @@ class SwapProgressIndicator extends StatelessWidget {
                                   fontSize: 11,
                                   fontWeight:
                                       isCompleted
-                                          ? FontWeight.w600
-                                          : FontWeight.normal,
+                                          ? .w600
+                                          : .normal,
                                 ),
-                                textAlign: TextAlign.center,
+                                textAlign: .center,
                                 maxLines: 2,
                               ),
                             ],

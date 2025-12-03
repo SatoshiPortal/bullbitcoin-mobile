@@ -43,11 +43,11 @@ class PayQrBottomSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: .min,
+        crossAxisAlignment: .stretch,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               BBText(context.loc.payQrCode, style: context.font.headlineSmall),
               IconButton(

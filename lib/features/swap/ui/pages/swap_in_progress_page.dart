@@ -61,7 +61,7 @@ class SwapInProgressPage extends StatelessWidget {
                           context.loc.swapTransferPendingMessage,
                           style: context.font.bodyMedium,
                           maxLines: 4,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                         ),
                       ],
                       if (swap?.status == SwapStatus.completed &&
@@ -75,7 +75,7 @@ class SwapInProgressPage extends StatelessWidget {
                           context.loc.swapTransferCompletedMessage,
                           style: context.font.bodyMedium,
                           maxLines: 4,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                         ),
                       ],
                       if (swap?.status == SwapStatus.refundable) ...[
@@ -88,7 +88,7 @@ class SwapInProgressPage extends StatelessWidget {
                           context.loc.swapTransferRefundInProgressMessage,
                           style: context.font.bodyMedium,
                           maxLines: 4,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                         ),
                       ],
                       if (swap?.status == SwapStatus.completed &&
@@ -102,7 +102,7 @@ class SwapInProgressPage extends StatelessWidget {
                           context.loc.swapTransferRefundedMessage,
                           style: context.font.bodyMedium,
                           maxLines: 4,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                         ),
                       ],
                     ],

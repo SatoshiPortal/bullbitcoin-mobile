@@ -139,13 +139,13 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         const Gap(24),
         BBText(
           _getMainTextForState(context, state),
-          textAlign: TextAlign.center,
+          textAlign: .center,
           style: context.font.bodyLarge,
         ),
         const Gap(16),
         BBText(
           _getSubTextForState(context, state),
-          textAlign: TextAlign.center,
+          textAlign: .center,
           color: context.appColors.textMuted,
           style: context.font.bodyMedium,
         ),
@@ -169,7 +169,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
   ) {
     if (state.status == LedgerOperationStatus.initial) {
       return Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           if (widget.parameters?.requestedDeviceType == null ||
               widget.parameters!.requestedDeviceType!.supportsBluetooth)
@@ -312,13 +312,13 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
                   vertical: 12,
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
                     Expanded(
                       child: BBText(
                         _getScriptTypeDisplayName(context, _selectedScriptType),
                         style: context.font.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w500,
+                          fontWeight: .w500,
                         ),
                       ),
                     ),
@@ -385,7 +385,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
             child: SafeArea(
               child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     const Gap(16),
                     BBText(

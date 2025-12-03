@@ -66,12 +66,12 @@ class BuyAccelerateScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   const SizedBox(height: 16),
                   Text(
                     context.loc.buyNetworkFeeExplanation,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: context.appColors.text,
                     ),
@@ -103,7 +103,7 @@ class BuyAccelerateScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 if (isAcceleratingOrder)
                   const Center(child: CircularProgressIndicator())

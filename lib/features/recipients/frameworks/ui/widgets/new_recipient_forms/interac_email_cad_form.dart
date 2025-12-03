@@ -74,8 +74,8 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'Email Address',
@@ -88,7 +88,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
               // Force lowercase
               LowerCaseTextFormatter(),
             ],
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -104,7 +104,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             labelText: 'Name',
             hintText: 'Enter recipient name',
             focusNode: _nameFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _securityQuestionFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -120,7 +120,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             labelText: 'Security Question',
             hintText: 'Enter security question (10-40 characters)',
             focusNode: _securityQuestionFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _securityAnswerFocusNode.requestFocus(),
             inputFormatters: [LengthLimitingTextInputFormatter(40)],
             validator: (v) {
@@ -156,7 +156,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             labelText: 'Security Answer',
             hintText: 'Enter security answer',
             focusNode: _securityAnswerFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? "This field can't be empty"
@@ -172,7 +172,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {
@@ -186,7 +186,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             'Who does this account belong to?',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
+              fontWeight: .w500,
               color: context.appColors.onSurface,
             ),
           ),

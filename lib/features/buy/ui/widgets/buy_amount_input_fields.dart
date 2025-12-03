@@ -56,7 +56,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
         isFiatCurrencyInput ? currency?.decimals ?? 2 : bitcoinUnit.decimals;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(context.loc.buyEnterAmount, style: context.font.bodyMedium),
         const Gap(4.0),
@@ -71,8 +71,8 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
               vertical: 16.0,
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: .min,
+              crossAxisAlignment: .start,
               children: [
                 if (currency == null)
                   const LoadingLineContent(
@@ -80,8 +80,8 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                   )
                 else
                   Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: .min,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Expanded(
                         child: TextFormField(
@@ -176,7 +176,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            tapTargetSize: .shrinkWrap,
                           ),
                           onPressed: () {
                             if (!isFiatCurrencyInput) {

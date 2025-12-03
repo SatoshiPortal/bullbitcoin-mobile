@@ -68,20 +68,20 @@ class Bip329LabelsPage extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     const Gap(20),
                     Center(child: FadingLinearProgress(trigger: isLoading)),
                     BBText(
                       context.loc.bip329LabelsHeading,
                       style: context.font.headlineLarge,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                     const Gap(16),
                     BBText(
                       context.loc.bip329LabelsDescription,
                       style: context.font.bodyLarge,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                     const Spacer(),
                     BBButton.big(

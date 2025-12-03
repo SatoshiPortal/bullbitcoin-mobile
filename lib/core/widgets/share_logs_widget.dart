@@ -75,7 +75,7 @@ class _ShareLogsWidgetState extends State<ShareLogsWidget> {
       context,
       Text(
         'Error sharing logs: $error',
-        textAlign: TextAlign.center,
+        textAlign: .center,
         style: TextStyle(fontSize: 14, color: context.appColors.onPrimary),
       ),
     );
@@ -87,7 +87,7 @@ class _ShareLogsWidgetState extends State<ShareLogsWidget> {
         content: content,
         duration: const Duration(seconds: 2),
         backgroundColor: context.appColors.onSurface.withAlpha(204),
-        behavior: SnackBarBehavior.floating,
+        behavior: .floating,
         elevation: 4,
         margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

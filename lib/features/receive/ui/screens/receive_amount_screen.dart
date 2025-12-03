@@ -96,10 +96,10 @@ class _AmountPageState extends State<AmountPage> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        behavior: HitTestBehavior.translucent,
+        behavior: .translucent,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: .spaceEvenly,
+          crossAxisAlignment: .stretch,
           children: [
             ReceiveAmountEntry(
               amountController: _amountController,
