@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -35,8 +36,10 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
       builder: (context, snapshot) {
         return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
           builder: (context, state) {
-            final title =
-                'Test ${state.selectedWallet?.isDefault ?? false ? 'Default Wallets' : state.selectedWallet?.displayLabel ?? ''}';
+            final walletName = state.selectedWallet?.isDefault ?? false
+                ? context.loc.testBackupDefaultWallets
+                : state.selectedWallet?.displayLabel ?? '';
+            final title = context.loc.testBackupWalletTitle(walletName);
 
             return Scaffold(
               backgroundColor: context.appColors.onSecondary,
@@ -54,7 +57,7 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
                     child: Column(
                       children: [
                         BBButton.big(
-                          label: "Next",
+                          label: context.loc.testBackupNext,
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -99,7 +102,7 @@ class _MnemonicDisplay extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           BBText(
-            'Write down your recovery phrase\nin the correct order',
+            context.loc.testBackupWriteDownPhrase,
             textAlign: TextAlign.center,
             style: context.font.headlineLarge?.copyWith(
               fontWeight: FontWeight.w600,
@@ -108,7 +111,7 @@ class _MnemonicDisplay extends StatelessWidget {
           ),
           const Gap(20),
           BBText(
-            'Store it somewhere safe.',
+            context.loc.testBackupStoreItSafe,
             textAlign: TextAlign.center,
             style: context.font.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
@@ -119,7 +122,7 @@ class _MnemonicDisplay extends StatelessWidget {
           ),
           if (lastPhysicalBackup != null) ...[
             BBText(
-              'Last backup test: ${lastPhysicalBackup.toString().substring(0, 19)}',
+              context.loc.testBackupLastBackupTest(lastPhysicalBackup.toString().substring(0, 19)),
               textAlign: TextAlign.center,
               style: context.font.labelMedium?.copyWith(
                 fontWeight: FontWeight.w700,
@@ -177,7 +180,7 @@ class _MnemonicDisplay extends StatelessWidget {
                     ),
                   ),
                   child: BBText(
-                    'DO NOT SHARE WITH ANYONE',
+                    context.loc.testBackupDoNotShare,
                     textAlign: TextAlign.center,
                     style: context.font.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w500,
@@ -196,19 +199,19 @@ class _MnemonicDisplay extends StatelessWidget {
                     children: [
                       _buildWarningItem(
                         icon: CupertinoIcons.check_mark,
-                        text: 'Transcribe',
+                        text: context.loc.testBackupTranscribe,
                         iconColor: const Color(0xFF34C759),
                         context: context,
                       ),
                       _buildWarningItem(
                         icon: CupertinoIcons.xmark,
-                        text: 'Digital copy',
+                        text: context.loc.testBackupDigitalCopy,
                         iconColor: context.appColors.error,
                         context: context,
                       ),
                       _buildWarningItem(
                         icon: CupertinoIcons.xmark,
-                        text: 'Screenshot',
+                        text: context.loc.testBackupScreenshot,
                         iconColor: context.appColors.error,
                         context: context,
                       ),
@@ -355,7 +358,7 @@ class _PassphraseWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BBText(
-            'Passphrase',
+            context.loc.testBackupPassphrase,
             style: context.font.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: context.appColors.surface,
