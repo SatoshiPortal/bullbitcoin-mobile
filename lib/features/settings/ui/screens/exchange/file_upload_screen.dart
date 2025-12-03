@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ class ExchangeFileUploadScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Secure File Upload',
+          title: context.loc.exchangeFileUploadTitle,
           onBack: () => context.pop(),
         ),
       ),
@@ -45,14 +46,14 @@ class ExchangeFileUploadScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Upload any document',
+                      context.loc.exchangeFileUploadDocumentTitle,
                       style: context.font.bodyLarge?.copyWith(
                         color: context.colour.secondary,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'If you need to send any other documents, upload them here.',
+                      context.loc.exchangeFileUploadInstructions,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.colour.outline,
                       ),
@@ -61,7 +62,7 @@ class ExchangeFileUploadScreen extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: BBButton.big(
-                        label: 'Upload',
+                        label: context.loc.exchangeFileUploadButton,
                         onPressed: () {
                           // TODO: Implement file upload functionality
                         },

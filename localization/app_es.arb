@@ -192,6 +192,46 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsServicesStatusTitle": "Estado de los servicios",
+  "@settingsServicesStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsTorSettingsTitle": "Configuración de Tor",
+  "@settingsTorSettingsTitle": {
+    "description": "Title for the Tor settings section in app settings"
+  },
+  "settingsRecoverbullTitle": "Recoverbull",
+  "@settingsRecoverbullTitle": {
+    "description": "Title for the Recoverbull backup section in app settings"
+  },
+  "settingsLanguageTitle": "Idioma",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "settingsArkTitle": "Ark",
+  "@settingsArkTitle": {
+    "description": "Title for the Ark protocol section in Bitcoin settings"
+  },
+  "settingsDevModeWarningTitle": "Modo desarrollador",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsDevModeWarningMessage": "Este modo es arriesgado. Al activarlo, reconoces que podrías perder dinero",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "settingsDevModeUnderstandButton": "Entiendo",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsSuperuserModeDisabledMessage": "Modo superusuario desactivado.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsSuperuserModeUnlockedMessage": "¡Modo superusuario desbloqueado!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
   "walletOptionsUnnamedWalletFallback": "Billetera sin nombre",
   "@walletOptionsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
@@ -6501,6 +6541,10 @@
   "@backupSettingsLabelsButton": {
     "description": "Button text to manage transaction labels"
   },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
   "backupWalletImportanceWarning": "Sin un respaldo, eventualmente perderá el acceso a su dinero. Es críticamente importante hacer un respaldo.",
   "@backupWalletImportanceWarning": {
     "description": "Warning message emphasizing the importance of creating a backup"
@@ -7148,7 +7192,7 @@
   },
   "recoverbullUnexpectedError": "Error inesperado",
   "@recoverbullUnexpectedError": {
-    "description": "Error message for unexpected errors"
+    "description": "Short unexpected error message"
   },
   "recoverbullErrorSelectVault": "Error al seleccionar la bóveda",
   "@recoverbullErrorSelectVault": {
@@ -10725,5 +10769,73 @@
   "sellLoadingGeneric": "Cargando...",
   "@sellLoadingGeneric": {
     "description": "Generic loading message"
+  },
+  "allSeedViewTitle": "Visualizador de Semillas",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "allSeedViewLoadingMessage": "Esto puede tardar un tiempo en cargar si tiene muchas semillas en este dispositivo.",
+  "@allSeedViewLoadingMessage": {
+    "description": "Loading message shown while fetching seeds"
+  },
+  "allSeedViewNoSeedsFound": "No se encontraron semillas.",
+  "@allSeedViewNoSeedsFound": {
+    "description": "Message shown when no seeds are found"
+  },
+  "allSeedViewShowSeedsButton": "Mostrar Semillas",
+  "@allSeedViewShowSeedsButton": {
+    "description": "Button label to show seed phrases"
+  },
+  "allSeedViewExistingWallets": "Billeteras Existentes ({count})",
+  "@allSeedViewExistingWallets": {
+    "description": "Section header for existing wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewOldWallets": "Billeteras Antiguas ({count})",
+  "@allSeedViewOldWallets": {
+    "description": "Section header for old wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewSecurityWarningTitle": "Advertencia de Seguridad",
+  "@allSeedViewSecurityWarningTitle": {
+    "description": "Title for security warning dialog"
+  },
+  "allSeedViewSecurityWarningMessage": "Mostrar frases de recuperación es un riesgo de seguridad. Cualquiera que vea su frase de recuperación puede acceder a sus fondos. Asegúrese de estar en un lugar privado y de que nadie pueda ver su pantalla.",
+  "@allSeedViewSecurityWarningMessage": {
+    "description": "Security warning message about displaying seed phrases"
+  },
+  "allSeedViewIUnderstandButton": "Entiendo",
+  "@allSeedViewIUnderstandButton": {
+    "description": "Button label to acknowledge security warning"
+  },
+  "allSeedViewDeleteWarningTitle": "¡ADVERTENCIA!",
+  "@allSeedViewDeleteWarningTitle": {
+    "description": "Title for delete seed warning dialog"
+  },
+  "allSeedViewDeleteWarningMessage": "Eliminar la semilla es una acción irreversible. Solo haga esto si tiene copias de seguridad seguras de esta semilla o si las billeteras asociadas han sido completamente vaciadas.",
+  "@allSeedViewDeleteWarningMessage": {
+    "description": "Warning message about deleting a seed"
+  },
+  "allSeedViewPassphraseLabel": "Frase de contraseña:",
+  "@allSeedViewPassphraseLabel": {
+    "description": "Label for passphrase display"
+  },
+  "cancel": "Cancelar",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "delete": "Eliminar",
+  "@delete": {
+    "description": "Generic delete button label"
   }
 }

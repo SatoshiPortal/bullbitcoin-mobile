@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     if (state.isFetchingUserSummary) {
       return Scaffold(
         backgroundColor: context.colour.secondaryFixed,
-        appBar: AppBar(title: const Text('Account information')),
+        appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -25,11 +26,11 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     if (userSummary == null) {
       return Scaffold(
         backgroundColor: context.colour.secondaryFixed,
-        appBar: AppBar(title: const Text('Account information')),
+        appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
 
         body: Center(
           child: BBText(
-            'Unable to load account information',
+            context.loc.exchangeAccountInfoLoadErrorMessage,
             style: context.font.bodyMedium,
           ),
         ),
@@ -38,7 +39,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: context.colour.secondaryFixed,
-      appBar: AppBar(title: const Text('Account information')),
+      appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -48,28 +49,33 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _buildInfoField(
                 context,
-                'User number',
+                context.loc.exchangeAccountInfoUserNumberLabel,
                 userSummary.userNumber.toString(),
                 isCopyable: true,
+                copiedMessage: context.loc.exchangeAccountInfoUserNumberCopiedMessage,
               ),
               const SizedBox(height: 32),
               _buildInfoField(
                 context,
-                'Verification level',
-                _getVerificationLevel(userSummary),
+                context.loc.exchangeAccountInfoVerificationLevelLabel,
+                _getVerificationLevel(context, userSummary),
               ),
-              const SizedBox(height: 32),
-              _buildInfoField(context, 'Email', userSummary.email),
               const SizedBox(height: 32),
               _buildInfoField(
                 context,
-                'First name',
+                context.loc.exchangeAccountInfoEmailLabel,
+                userSummary.email,
+              ),
+              const SizedBox(height: 32),
+              _buildInfoField(
+                context,
+                context.loc.exchangeAccountInfoFirstNameLabel,
                 userSummary.profile.firstName,
               ),
               const SizedBox(height: 32),
               _buildInfoField(
                 context,
-                'Last name',
+                context.loc.exchangeAccountInfoLastNameLabel,
                 userSummary.profile.lastName,
               ),
             ],
@@ -79,15 +85,15 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     );
   }
 
-  String _getVerificationLevel(UserSummary userSummary) {
+  String _getVerificationLevel(BuildContext context, UserSummary userSummary) {
     if (userSummary.isFullyVerifiedKycLevel) {
-      return 'Identity verified';
+      return context.loc.exchangeAccountInfoVerificationIdentityVerified;
     } else if (userSummary.isLightKycLevel) {
-      return 'Light verification';
+      return context.loc.exchangeAccountInfoVerificationLightVerification;
     } else if (userSummary.isLimitedKycLevel) {
-      return 'Limited verification';
+      return context.loc.exchangeAccountInfoVerificationLimitedVerification;
     } else {
-      return 'Not verified';
+      return context.loc.exchangeAccountInfoVerificationNotVerified;
     }
   }
 
@@ -96,6 +102,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     String label,
     String value, {
     bool isCopyable = false,
+    String? copiedMessage,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,10 +135,13 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                       final theme = Theme.of(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const BBText(
-                            'User number copied to clipboard',
+                          content: BBText(
+                            copiedMessage ?? '',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
                           ),
                           duration: const Duration(seconds: 2),
                           backgroundColor: theme.colorScheme.onSurface

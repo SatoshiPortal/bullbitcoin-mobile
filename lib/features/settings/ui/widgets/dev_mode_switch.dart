@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -25,15 +26,18 @@ class DevModeSwitch extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Dev Mode', style: context.font.headlineMedium),
+                Text(
+                  context.loc.settingsDevModeWarningTitle,
+                  style: context.font.headlineMedium,
+                ),
                 const Gap(16),
                 Text(
-                  'This mode is risky. By enabling it, you acknowledge that you may lose money',
+                  context.loc.settingsDevModeWarningMessage,
                   style: context.font.bodyMedium,
                 ),
                 const Gap(16),
                 BBButton.big(
-                  label: 'I understand',
+                  label: context.loc.settingsDevModeUnderstandButton,
                   onPressed: () {
                     context.read<SettingsCubit>().toggleDevMode(
                       true,
