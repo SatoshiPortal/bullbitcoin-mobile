@@ -8,6 +8,7 @@ class SettingsEntryItem extends StatelessWidget {
   final Color? textColor;
   final bool isSuperUser;
   final Widget? trailing;
+  final EdgeInsetsGeometry? contentPadding;
 
   const SettingsEntryItem({
     super.key,
@@ -18,6 +19,7 @@ class SettingsEntryItem extends StatelessWidget {
     this.textColor,
     this.isSuperUser = false,
     this.trailing,
+    this.contentPadding,
   });
 
   @override
@@ -32,6 +34,7 @@ class SettingsEntryItem extends StatelessWidget {
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
       tileColor: Colors.transparent,
+      contentPadding: contentPadding,
       leading: Icon(effectiveIcon, color: effectiveIconColor),
       title: Text(
         title,

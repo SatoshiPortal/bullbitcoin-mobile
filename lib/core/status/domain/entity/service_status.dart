@@ -22,13 +22,62 @@ sealed class ServiceStatusInfo with _$ServiceStatusInfo {
 @freezed
 sealed class AllServicesStatus with _$AllServicesStatus {
   const factory AllServicesStatus({
-    required ServiceStatusInfo internetConnection,
-    required ServiceStatusInfo bitcoinElectrum,
-    required ServiceStatusInfo liquidElectrum,
-    required ServiceStatusInfo boltz,
-    required ServiceStatusInfo payjoin,
-    required ServiceStatusInfo pricer,
-    required ServiceStatusInfo mempool,
+    @Default(
+      ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Internet Connection',
+        lastChecked: null,
+      ),
+    )
+    ServiceStatusInfo internetConnection,
+    @Default(
+      ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Bitcoin Electrum',
+        lastChecked: null,
+      ),
+    )
+    ServiceStatusInfo bitcoinElectrum,
+    @Default(
+      ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Liquid Electrum',
+        lastChecked: null,
+      ),
+    )
+    ServiceStatusInfo liquidElectrum,
+    @Default(
+      ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Boltz',
+        lastChecked: null,
+      ),
+    )
+    ServiceStatusInfo boltz,
+    @Default(
+      ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Payjoin',
+        lastChecked: null,
+      ),
+    )
+    ServiceStatusInfo payjoin,
+    @Default(
+      ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Pricer',
+        lastChecked: null,
+      ),
+    )
+    ServiceStatusInfo pricer,
+    @Default(
+      ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Mempool',
+        lastChecked: null,
+      ),
+    )
+    ServiceStatusInfo mempool,
     @Default(
       ServiceStatusInfo(
         status: ServiceStatus.unknown,
@@ -53,8 +102,7 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       ),
     )
     ServiceStatusInfo ark,
-
-    required DateTime lastChecked,
+    @Default(null) DateTime? lastChecked,
   }) = _AllServicesStatus;
 
   const AllServicesStatus._();
@@ -67,6 +115,7 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       payjoin.isOnline &&
       pricer.isOnline &&
       mempool.isOnline &&
+      (tor.isOnline || tor.isUnknown) &&
       (recoverbull.isOnline || recoverbull.isUnknown) &&
       (ark.isOnline || ark.isUnknown);
 

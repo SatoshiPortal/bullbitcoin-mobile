@@ -1,5 +1,32 @@
 {
   "@@locale": "fr",
+  "durationSeconds": "{seconds} secondes",
+  "@durationSeconds": {
+    "description": "Duration format for seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinute": "{minutes} minute",
+  "@durationMinute": {
+    "description": "Duration format for singular minute",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinutes": "{minutes} minutes",
+  "@durationMinutes": {
+    "description": "Duration format for plural minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingScreenTitle": "Bienvenue",
   "@onboardingScreenTitle": {
     "description": "Le titre de l'écran d'intégration"
@@ -164,6 +191,46 @@
   "settingsGithubLabel": "Github",
   "@settingsGithubLabel": {
     "description": "Libellé du lien Github dans les paramètres"
+  },
+  "settingsServicesStatusTitle": "État des services",
+  "@settingsServicesStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsTorSettingsTitle": "Paramètres Tor",
+  "@settingsTorSettingsTitle": {
+    "description": "Title for the Tor settings section in app settings"
+  },
+  "settingsRecoverbullTitle": "Recoverbull",
+  "@settingsRecoverbullTitle": {
+    "description": "Title for the Recoverbull backup section in app settings"
+  },
+  "settingsLanguageTitle": "Langue",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "settingsArkTitle": "Ark",
+  "@settingsArkTitle": {
+    "description": "Title for the Ark protocol section in Bitcoin settings"
+  },
+  "settingsDevModeWarningTitle": "Mode développeur",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsDevModeWarningMessage": "Ce mode est risqué. En l'activant, vous reconnaissez que vous pourriez perdre de l'argent",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "settingsDevModeUnderstandButton": "Je comprends",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsSuperuserModeDisabledMessage": "Mode superutilisateur désactivé.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Mode superutilisateur déverrouillé !",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
   },
   "walletOptionsUnnamedWalletFallback": "Portefeuille sans nom",
   "@walletOptionsUnnamedWalletFallback": {
@@ -1206,6 +1273,14 @@
   "sellMxnBalance": "Solde MXN",
   "@sellMxnBalance": {
     "description": "Texte d'affichage pour la méthode de paiement en solde MXN"
+  },
+  "sellArsBalance": "Solde ARS",
+  "@sellArsBalance": {
+    "description": "Texte d'affichage pour la méthode de paiement en solde ARS"
+  },
+  "sellCopBalance": "Solde COP",
+  "@sellCopBalance": {
+    "description": "Texte d'affichage pour la méthode de paiement en solde COP"
   },
   "sellPayinAmount": "Montant à payer",
   "@sellPayinAmount": {
@@ -4720,6 +4795,59 @@
   "@replaceByFeeActivatedLabel": {
     "description": "Label for RBF toggle switch"
   },
+  "replaceByFeeBroadcastButton": "Diffuser",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "replaceByFeeCustomFeeTitle": "Frais personnalisés",
+  "@replaceByFeeCustomFeeTitle": {
+    "description": "Title for custom fee input section"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "Vous devez augmenter le taux de frais d'au moins 1 sat/vbyte par rapport à la transaction originale",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "replaceByFeeErrorNoFeeRateSelected": "Veuillez sélectionner un taux de frais",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "replaceByFeeErrorTransactionConfirmed": "La transaction originale a été confirmée",
+  "@replaceByFeeErrorTransactionConfirmed": {
+    "description": "Error message when original transaction is already confirmed"
+  },
+  "replaceByFeeErrorGeneric": "Une erreur s'est produite lors de la tentative de remplacement de la transaction",
+  "@replaceByFeeErrorGeneric": {
+    "description": "Generic error message for replace-by-fee operation failures"
+  },
+  "replaceByFeeFastestDescription": "Livraison estimée ~ 10 minutes",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "replaceByFeeFastestTitle": "Le plus rapide",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeFeeRateDisplay": "Taux de frais : {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "replaceByFeeOriginalTransactionTitle": "Transaction originale",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "replaceByFeeSatsVbUnit": "sats/vB",
+  "@replaceByFeeSatsVbUnit": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "replaceByFeeScreenTitle": "Remplacement par frais",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
   "selectCoinsManuallyLabel": "Sélectionner les pièces manuellement",
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
@@ -6190,6 +6318,10 @@
   "@backupSettingsLabelsButton": {
     "description": "Button text to manage transaction labels"
   },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
   "backupWalletImportanceWarning": "Sans sauvegarde, vous finirez par perdre l'accès à votre argent. Il est absolument essentiel d'effectuer une sauvegarde.",
   "@backupWalletImportanceWarning": {
     "description": "Warning message emphasizing the importance of creating a backup"
@@ -6823,6 +6955,10 @@
   "@recoverbullErrorFetchKeyFailed": {
     "description": "Error message when server key fetch fails"
   },
+  "recoverbullErrorInvalidCredentials": "Mot de passe incorrect pour ce fichier de sauvegarde",
+  "@recoverbullErrorInvalidCredentials": {
+    "description": "Error message when wrong password is entered for vault"
+  },
   "recoverbullErrorInvalidFlow": "Flux invalide",
   "@recoverbullErrorInvalidFlow": {
     "description": "Error message for invalid operation flow"
@@ -6838,6 +6974,27 @@
   "recoverbullErrorRecoveryFailed": "Échec de la récupération du coffre-fort",
   "@recoverbullErrorRecoveryFailed": {
     "description": "Error message when vault recovery fails"
+  },
+  "recoverbullTorNotStarted": "Tor n'est pas démarré",
+  "@recoverbullTorNotStarted": {
+    "description": "Error message when Tor is not started"
+  },
+  "recoverbullErrorRateLimited": "Limite de taux atteinte. Veuillez réessayer dans {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "description": "Error message when rate limited by the server",
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorUnexpected": "Erreur inattendue, voir les logs",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullUnexpectedError": "Erreur inattendue",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
   },
   "recoverbullErrorSelectVault": "Échec de la sélection du coffre-fort",
   "@recoverbullErrorSelectVault": {
@@ -8118,6 +8275,14 @@
   "@importWatchOnlyExtendedPublicKey": {
     "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
+  "importWatchOnlyDisclaimerTitle": "Avertissement sur le chemin de dérivation",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyDisclaimerDescription": "Assurez-vous que le chemin de dérivation que vous choisissez correspond à celui qui a produit la xpub donnée, car l'utilisation d'un mauvais chemin peut entraîner une perte de fonds",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
   "bip85Title": "Entropies déterministes BIP85",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
@@ -8451,37 +8616,49 @@
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "importQrDevicePassportStep2": "Sélectionnez Gérer le Compte",
+  "importQrDevicePassportStep2": "Entrez votre code PIN",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
-  "importQrDevicePassportStep3": "Sélectionnez Connecter un Portefeuille",
+  "importQrDevicePassportStep3": "Sélectionnez \"Gérer le Compte\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
-  "importQrDevicePassportStep4": "Sélectionnez Sparrow",
+  "importQrDevicePassportStep4": "Sélectionnez \"Connecter un Portefeuille\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
-  "importQrDevicePassportStep5": "Sélectionnez Signature Unique",
+  "importQrDevicePassportStep5": "Sélectionnez l'option \"Sparrow\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
-  "importQrDevicePassportStep6": "Sélectionnez Code QR",
+  "importQrDevicePassportStep6": "Sélectionnez \"Signature Unique\"",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
-  "importQrDevicePassportStep7": "Cliquez sur le bouton \"ouvrir la caméra\"",
+  "importQrDevicePassportStep7": "Sélectionnez \"Code QR\"",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "importQrDevicePassportStep8": "Scannez le code QR affiché sur votre appareil.",
+  "importQrDevicePassportStep8": "Sur votre appareil mobile, appuyez sur \"ouvrir la caméra\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
-  "importQrDevicePassportStep9": "C'est fait !",
+  "importQrDevicePassportStep9": "Scannez le code QR affiché sur votre Passport",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
+  },
+  "importQrDevicePassportStep10": "Dans l'application BULL wallet, sélectionnez \"Segwit (BIP84)\" comme option de dérivation",
+  "@importQrDevicePassportStep10": {
+    "description": "Passport instruction step 10"
+  },
+  "importQrDevicePassportStep11": "Entrez un libellé pour votre portefeuille Passport et appuyez sur \"Importer\"",
+  "@importQrDevicePassportStep11": {
+    "description": "Passport instruction step 11"
+  },
+  "importQrDevicePassportStep12": "Configuration terminée.",
+  "@importQrDevicePassportStep12": {
+    "description": "Passport instruction step 12"
   },
   "importQrDeviceSeedsignerName": "SeedSigner",
   "@importQrDeviceSeedsignerName": {
@@ -9523,7 +9700,7 @@
   "@electrumDeleteServerTitle": {
     "description": "Delete server dialog title"
   },
-  "electrumDeletePrivacyNotice": "Avis de confidentialité :\nL'utilisation de votre propre nœud garantit qu'aucun tiers ne peut lier votre adresse IP à vos transactions. En supprimant votre dernier serveur personnalisé, vous vous connecterez à un serveur BullBitcoin.\n\n",
+  "electrumDeletePrivacyNotice": "Avis de confidentialité :\n\nL'utilisation de votre propre nœud garantit qu'aucun tiers ne peut lier votre adresse IP à vos transactions. En supprimant votre dernier serveur personnalisé, vous vous connecterez à un serveur BullBitcoin.\n",
   "@electrumDeletePrivacyNotice": {
     "description": "Privacy notice shown when deleting last custom server"
   },
@@ -10364,5 +10541,135 @@
   "exchangeAmountInputValidationInsufficient": "Solde insuffisant",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
+  },
+  "sellBitcoinPriceLabel": "Prix Bitcoin",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "sellViewDetailsButton": "Voir les détails",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "sellKycPendingTitle": "Vérification KYC en attente",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "sellKycPendingDescription": "Vous devez d'abord compléter la vérification d'identité",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellErrorPrepareTransaction": "Échec de préparation de la transaction : {error}",
+  "@sellErrorPrepareTransaction": {
+    "description": "Error message when transaction preparation fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellErrorNoWalletSelected": "Aucun portefeuille sélectionné pour envoyer le paiement",
+  "@sellErrorNoWalletSelected": {
+    "description": "Error message when no wallet is selected for payment"
+  },
+  "sellErrorFeesNotCalculated": "Frais de transaction non calculés. Veuillez réessayer.",
+  "@sellErrorFeesNotCalculated": {
+    "description": "Error message when transaction fees calculation failed"
+  },
+  "sellErrorUnexpectedOrderType": "SellOrder attendu mais un type de commande différent reçu",
+  "@sellErrorUnexpectedOrderType": {
+    "description": "Error message when wrong order type is received"
+  },
+  "sellErrorLoadUtxos": "Échec du chargement des UTXOs : {error}",
+  "@sellErrorLoadUtxos": {
+    "description": "Error message when loading UTXOs fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellErrorRecalculateFees": "Échec du recalcul des frais : {error}",
+  "@sellErrorRecalculateFees": {
+    "description": "Error message when fee recalculation fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "sellLoadingGeneric": "Chargement...",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
+  },
+  "allSeedViewTitle": "Visualiseur de Graines",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "allSeedViewLoadingMessage": "Cela peut prendre un certain temps à charger si vous avez beaucoup de graines sur cet appareil.",
+  "@allSeedViewLoadingMessage": {
+    "description": "Loading message shown while fetching seeds"
+  },
+  "allSeedViewNoSeedsFound": "Aucune graine trouvée.",
+  "@allSeedViewNoSeedsFound": {
+    "description": "Message shown when no seeds are found"
+  },
+  "allSeedViewShowSeedsButton": "Afficher les Graines",
+  "@allSeedViewShowSeedsButton": {
+    "description": "Button label to show seed phrases"
+  },
+  "allSeedViewExistingWallets": "Portefeuilles Existants ({count})",
+  "@allSeedViewExistingWallets": {
+    "description": "Section header for existing wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewOldWallets": "Anciens Portefeuilles ({count})",
+  "@allSeedViewOldWallets": {
+    "description": "Section header for old wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewSecurityWarningTitle": "Avertissement de Sécurité",
+  "@allSeedViewSecurityWarningTitle": {
+    "description": "Title for security warning dialog"
+  },
+  "allSeedViewSecurityWarningMessage": "Afficher les phrases de récupération est un risque de sécurité. Toute personne qui voit votre phrase de récupération peut accéder à vos fonds. Assurez-vous d'être dans un endroit privé et que personne ne puisse voir votre écran.",
+  "@allSeedViewSecurityWarningMessage": {
+    "description": "Security warning message about displaying seed phrases"
+  },
+  "allSeedViewIUnderstandButton": "Je Comprends",
+  "@allSeedViewIUnderstandButton": {
+    "description": "Button label to acknowledge security warning"
+  },
+  "allSeedViewDeleteWarningTitle": "ATTENTION !",
+  "@allSeedViewDeleteWarningTitle": {
+    "description": "Title for delete seed warning dialog"
+  },
+  "allSeedViewDeleteWarningMessage": "Supprimer la graine est une action irréversible. Ne faites cela que si vous avez des sauvegardes sécurisées de cette graine ou si les portefeuilles associés ont été complètement vidés.",
+  "@allSeedViewDeleteWarningMessage": {
+    "description": "Warning message about deleting a seed"
+  },
+  "allSeedViewPassphraseLabel": "Phrase secrète :",
+  "@allSeedViewPassphraseLabel": {
+    "description": "Label for passphrase display"
+  },
+  "cancel": "Annuler",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "delete": "Supprimer",
+  "@delete": {
+    "description": "Generic delete button label"
   }
 }

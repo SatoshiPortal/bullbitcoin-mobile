@@ -2,11 +2,15 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/features/onboarding/ui/screens/advanced_options.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/create_wallet_button.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/recover_backup_button.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/superuser_tap_unlocker.dart';
+import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -108,6 +112,45 @@ class _Actions extends StatelessWidget {
           const CreateWalletButton(),
           const Gap(10),
           const RecoverWalletButton(),
+          const Gap(16),
+          Center(
+            child: TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder:
+                        (context) => MultiBlocProvider(
+                          providers: [
+                            BlocProvider(
+                              create:
+                                  (_) =>
+                                      locator<ElectrumSettingsBloc>()..add(
+                                        const ElectrumSettingsLoaded(
+                                          isLiquid: false,
+                                        ),
+                                      ),
+                            ),
+                            BlocProvider(
+                              create: (_) => locator<TorSettingsCubit>(),
+                            ),
+                          ],
+                          child: const AdvancedOptions(),
+                        ),
+                  ),
+                );
+              },
+              child: Text(
+                'Advanced Options',
+                style: context.font.bodyMedium?.copyWith(
+                  color: context.colour.onPrimary.withValues(alpha: 0.9),
+                  decoration: TextDecoration.underline,
+                  decorationColor: context.colour.onPrimary.withValues(
+                    alpha: 0.9,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
@@ -13,10 +14,10 @@ import 'package:bb_mobile/core/storage/secure_storage.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class StorageLocator {
-  static Future<void> registerDatasources() async {
+  static Future<void> registerDatasources(GetIt locator) async {
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
       () => SecureStorageDatasourceImpl(SecureStorage.init()),
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
@@ -30,7 +31,7 @@ class StorageLocator {
     );
   }
 
-  static void registerRepositories() {
+  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<OldSeedRepository>(
       () => OldSeedRepository(locator<MigrationSecureStorageDatasource>()),
     );
@@ -39,7 +40,7 @@ class StorageLocator {
     );
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<MigrateToV5HiveToSqliteToUsecase>(
       () => MigrateToV5HiveToSqliteToUsecase(
         newSeedRepository: locator<SeedRepository>(),
@@ -58,6 +59,9 @@ class StorageLocator {
         oldSeedRepository: locator<OldSeedRepository>(),
         oldWalletRepository: locator<OldWalletRepository>(),
       ),
+    );
+    locator.registerFactory<GetAllSeedsUsecase>(
+      () => GetAllSeedsUsecase(seedRepository: locator<SeedRepository>()),
     );
     locator.registerFactory<MigrateToV4LegacyUsecase>(
       () => MigrateToV4LegacyUsecase(MigrationSecureStorageDatasource()),

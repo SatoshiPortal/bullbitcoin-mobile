@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
@@ -93,15 +94,15 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    BBText('Fastest', style: context.font.headlineLarge),
+                    BBText(context.loc.replaceByFeeFastestTitle, style: context.font.headlineLarge),
                     const Gap(4),
                     BBText(
-                      'Estimated delivery ~ 10 minutes',
+                      context.loc.replaceByFeeFastestDescription,
                       style: context.font.labelMedium,
                     ),
                     const Gap(2),
                     BBText(
-                      'Fee Rate: ${widget.fastestFeeRate.feeRate.toStringAsFixed(1)} sat/vbyte',
+                      context.loc.replaceByFeeFeeRateDisplay(widget.fastestFeeRate.feeRate.toStringAsFixed(1)),
                       style: context.font.labelMedium,
                     ),
                   ],
@@ -143,7 +144,7 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText('Custom Fee', style: context.font.headlineLarge),
+                  BBText(context.loc.replaceByFeeCustomFeeTitle, style: context.font.headlineLarge),
                   Icon(
                     Icons.radio_button_checked_outlined,
                     color:
@@ -159,7 +160,7 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                 value: _controller.text,
                 onChanged: _onCustomChanged,
                 onlyNumbers: true,
-                rightIcon: Text('sats/vB', style: context.font.bodySmall),
+                rightIcon: Text(context.loc.replaceByFeeSatsVbUnit, style: context.font.bodySmall),
               ),
             ],
           ),

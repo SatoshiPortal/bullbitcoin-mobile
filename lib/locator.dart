@@ -2,11 +2,13 @@ import 'package:bb_mobile/core/ark/locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
+import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
+import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/buy_locator.dart';
@@ -22,12 +24,15 @@ import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
+import 'package:bb_mobile/features/recipients/recipients_locator.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
+import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
+import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
@@ -54,11 +59,13 @@ class AppLocator {
 
     // Register feature-specific dependencies
     ElectrumSettingsLocator.setup();
+    TorSettingsLocator.setup();
     PinCodeLocator.setup();
     AppStartupLocator.setup();
     AppUnlockLocator.setup();
     OnboardingLocator.setup();
     LegacySeedViewLocator.setup();
+    AllSeedViewLocator.setup();
     SettingsLocator.setup();
     BitcoinPriceLocator.setup();
     WalletLocator.setup();
@@ -72,12 +79,13 @@ class AppLocator {
     BroadcastSignedTxLocator.setup();
     SwapLocator.setup();
 
-    ExchangeLocator.setup();
+    ExchangeLocator.setup(locator);
     BuyLocator.setup();
     SellLocator.setup();
     WithdrawLocator.setup();
     PayLocator.setup();
-    StatusLocator.setup();
+    StatusLocator.setup(locator);
+    StatusCheckLocator.setup();
 
     FundExchangeLocator.setup();
     AutoSwapLocator.setup();
@@ -87,6 +95,8 @@ class AppLocator {
     ReplaceByFeeLocator.setup();
     Bip85EntropyLocator.setup();
     LedgerLocator.setup();
-    ArkCoreLocator.setup();
+    RecipientsLocator.setup();
+    BitBoxLocator.setup();
+    ArkCoreLocator.setup(locator);
   }
 }

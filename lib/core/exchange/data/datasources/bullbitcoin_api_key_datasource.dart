@@ -35,7 +35,7 @@ class BullbitcoinApiKeyDatasource {
       final jsonString = await _secureStorage.getValue(key);
 
       if (jsonString == null || jsonString.isEmpty) {
-        log.info('No API key found in storage');
+        log.warning('No API key found in storage');
         return null;
       }
 

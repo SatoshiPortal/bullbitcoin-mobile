@@ -14,11 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-enum InputType {
-  pin,
-  password,
-  vaultKey;
-}
+enum InputType { pin, password, vaultKey }
 
 class PasswordInputPage extends StatefulWidget {
   const PasswordInputPage({super.key});
@@ -69,9 +65,16 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
 
         final title = switch (state.flow) {
           RecoverBullFlow.secureVault => context.loc.recoverbullSecureBackup,
-          RecoverBullFlow.recoverVault => context.loc.recoverbullEnterInput(inputTypeString),
-          RecoverBullFlow.testVault => context.loc.recoverbullEnterInput(inputTypeString),
-          RecoverBullFlow.viewVaultKey => context.loc.recoverbullEnterInput(inputTypeString),
+          RecoverBullFlow.recoverVault => context.loc.recoverbullEnterInput(
+            inputTypeString,
+          ),
+          RecoverBullFlow.testVault => context.loc.recoverbullEnterInput(
+            inputTypeString,
+          ),
+          RecoverBullFlow.viewVaultKey => context.loc.recoverbullEnterInput(
+            inputTypeString,
+          ),
+          RecoverBullFlow.settings => throw UnimplementedError(),
         };
 
         final description = switch (state.flow) {
@@ -79,12 +82,16 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
             needPasswordConfirmation && validatedPassword.isNotEmpty
                 ? context.loc.recoverbullReenterConfirm(inputTypeString)
                 : context.loc.recoverbullMemorizeWarning(inputTypeString),
-          RecoverBullFlow.recoverVault =>
-            context.loc.recoverbullEnterToDecrypt(inputTypeString),
-          RecoverBullFlow.testVault =>
-            context.loc.recoverbullEnterToTest(inputTypeString),
-          RecoverBullFlow.viewVaultKey =>
-            context.loc.recoverbullEnterToView(inputTypeString),
+          RecoverBullFlow.recoverVault => context.loc.recoverbullEnterToDecrypt(
+            inputTypeString,
+          ),
+          RecoverBullFlow.testVault => context.loc.recoverbullEnterToTest(
+            inputTypeString,
+          ),
+          RecoverBullFlow.viewVaultKey => context.loc.recoverbullEnterToView(
+            inputTypeString,
+          ),
+          RecoverBullFlow.settings => throw UnimplementedError(),
         };
 
         return Scaffold(
@@ -105,13 +112,18 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  BBText(
-                    description,
-                    textAlign: TextAlign.center,
-                    style: context.font.labelMedium?.copyWith(
-                      color: context.colour.outline,
+                  SizedBox(
+                    height: 60,
+                    child: Center(
+                      child: BBText(
+                        description,
+                        textAlign: TextAlign.center,
+                        style: context.font.labelMedium?.copyWith(
+                          color: context.colour.outline,
+                        ),
+                        maxLines: 3,
+                      ),
                     ),
-                    maxLines: 3,
                   ),
                   const Gap(16),
                   BBText(
@@ -138,10 +150,15 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                       if (needPasswordConfirmation &&
                           validatedPassword.isNotEmpty) {
                         if (value == null || value.isEmpty) {
-                          return context.loc.recoverbullReenterRequired(inputTypeString);
+                          return context.loc.recoverbullReenterRequired(
+                            inputTypeString,
+                          );
                         }
 
-                        final error = PasswordValidator.validate(value, context);
+                        final error = PasswordValidator.validate(
+                          value,
+                          context,
+                        );
                         if (error != null) return error;
 
                         return PasswordValidator.validateMatching(
@@ -222,22 +239,25 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                           ),
                       ],
                     ),
-                  if (inputType == InputType.pin)
-                    DialPad(
-                      disableFeedback: true,
-                      onlyDigits: true,
-                      onNumberPressed: (e) => inputController.text += e,
-                      onBackspacePressed: () {
-                        if (inputController.text.isNotEmpty) {
-                          inputController.text = inputController.text.substring(
-                            0,
-                            inputController.text.length - 1,
-                          );
-                        }
-                      },
-                    ),
                   const Spacer(),
-
+                  if (inputType == InputType.pin)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: DialPad(
+                        disableFeedback: true,
+                        onlyDigits: true,
+                        onNumberPressed: (e) => inputController.text += e,
+                        onBackspacePressed: () {
+                          if (inputController.text.isNotEmpty) {
+                            inputController.text = inputController.text.substring(
+                              0,
+                              inputController.text.length - 1,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  if (inputType == InputType.pin) const Gap(16),
                   Padding(
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).size.height * 0.05,
@@ -265,7 +285,6 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                                 context.read<RecoverBullBloc>().add(
                                   OnVaultPasswordSet(
                                     password: validatedPassword,
-                                    context: context,
                                   ),
                                 );
                                 Navigator.of(context).push(

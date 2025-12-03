@@ -19,6 +19,8 @@ class DatabaseSeeds {
             hideAmounts: false,
             isSuperuser: false,
             isDevModeEnabled: false,
+            useTorProxy: false,
+            torProxyPort: 9050,
           ),
         );
   }
@@ -91,6 +93,19 @@ class DatabaseSeeds {
             feeThresholdPercent: 3.0,
             blockTillNextExecution: false,
             alwaysBlock: false,
+          ),
+        );
+  }
+
+  static Future<void> seedDefaultRecoverbull(SqliteDatabase db) async {
+    log.info('[SqliteDatabase] seeding default recoverbull...');
+    await db
+        .into(db.recoverbull)
+        .insert(
+          const RecoverbullRow(
+            id: 1,
+            url: SettingsConstants.recoverbullUrl,
+            isPermissionGranted: false,
           ),
         );
   }

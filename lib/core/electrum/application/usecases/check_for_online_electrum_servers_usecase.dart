@@ -2,31 +2,38 @@ import 'package:bb_mobile/core/electrum/application/dtos/requests/check_for_onli
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 
 class CheckForOnlineElectrumServersUsecase {
   final ElectrumServerRepository _electrumServerRepository;
   final EnvironmentPort _environmentPort;
   final ServerStatusPort _serverStatusPort;
+  final SettingsRepository _settingsRepository;
 
   const CheckForOnlineElectrumServersUsecase({
     required ElectrumServerRepository electrumServerRepository,
     required EnvironmentPort environmentPort,
     required ServerStatusPort serverStatusPort,
+    required SettingsRepository settingsRepository,
   }) : _electrumServerRepository = electrumServerRepository,
        _environmentPort = environmentPort,
-       _serverStatusPort = serverStatusPort;
+       _serverStatusPort = serverStatusPort,
+       _settingsRepository = settingsRepository;
 
   Future<bool> execute(CheckForOnlineElectrumServersRequest request) async {
     final isLiquid = request.isLiquid;
     final environment = await _environmentPort.getEnvironment();
 
-    // Fetch servers in parallel
-    final servers = await _electrumServerRepository.fetchAll(
-      isTestnet: environment.isTestnet,
-    );
+    // Fetch servers and app settings in parallel
+    final (servers, appSettings) =
+        await (
+          _electrumServerRepository.fetchAll(isTestnet: environment.isTestnet),
+          _settingsRepository.fetch(),
+        ).wait;
 
     if (isLiquid != null) {
       // Filter servers by network
@@ -46,11 +53,14 @@ class CheckForOnlineElectrumServersUsecase {
               ? customFilteredServers
               : filteredServers;
 
-      // Check server statuses
+      // Check server statuses (use Tor for Bitcoin, not Liquid)
+      final useTorProxy = !isLiquid && appSettings.useTorProxy;
       final filteredServersStatusses = await Future.wait(
         filteredServersToUse.map((server) async {
           final status = await _serverStatusPort.checkServerStatus(
             url: server.url,
+            useTorProxy: useTorProxy,
+            torProxyPort: appSettings.torProxyPort,
           );
           return status;
         }),
@@ -78,11 +88,13 @@ class CheckForOnlineElectrumServersUsecase {
               ? customBitcoinServers
               : bitcoinServers;
 
-      // Check server statuses
+      // Check server statuses (use Tor for Bitcoin, not Liquid)
       final liquidServersStatusses = await Future.wait(
         liquidServersToUse.map((server) async {
           final status = await _serverStatusPort.checkServerStatus(
             url: server.url,
+            useTorProxy: false,
+            torProxyPort: appSettings.torProxyPort,
           );
           return status;
         }),
@@ -91,6 +103,8 @@ class CheckForOnlineElectrumServersUsecase {
         bitcoinServersToUse.map((server) async {
           final status = await _serverStatusPort.checkServerStatus(
             url: server.url,
+            useTorProxy: appSettings.useTorProxy,
+            torProxyPort: appSettings.torProxyPort,
           );
           return status;
         }),

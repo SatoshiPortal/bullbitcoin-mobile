@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:bb_mobile/features/replace_by_fee/errors.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
+import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
@@ -46,7 +47,12 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
 
   Future<void> broadcast() async {
     try {
-      if (state.newFeeRate == null) throw NoFeeRateSelectedError();
+      emit(state.copyWith(error: null));
+
+      if (state.newFeeRate == null) {
+        emit(state.copyWith(error: NoFeeRateSelectedError()));
+        return;
+      }
 
       final psbt = await bumpFeeUsecase.execute(
         walletId: originalTransaction.walletId,
@@ -60,12 +66,12 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
       );
 
       emit(state.copyWith(txid: txid));
+    } on TransactionConfirmedException catch (_) {
+      emit(state.copyWith(error: TransactionConfirmedError()));
+    } on FeeRateTooLowException catch (_) {
+      emit(state.copyWith(error: FeeRateTooLowError()));
     } catch (e) {
-      if (e is ReplaceByFeeError) {
-        emit(state.copyWith(error: e));
-      } else {
-        emit(state.copyWith(error: ReplaceByFeeError(e.toString())));
-      }
+      emit(state.copyWith(error: GenericError()));
     }
   }
 

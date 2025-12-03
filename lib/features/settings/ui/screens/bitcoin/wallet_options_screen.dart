@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -19,11 +20,15 @@ class WalletOptionsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(wallet?.displayLabel ?? 'Unnamed Wallet')),
+      appBar: AppBar(
+        title: Text(
+          wallet?.displayLabel ?? context.loc.walletOptionsUnnamedWalletFallback,
+        ),
+      ),
       body: SafeArea(
         child:
             wallet == null
-                ? const Center(child: Text('Wallet not found'))
+                ? Center(child: Text(context.loc.walletDeletionErrorWalletNotFound))
                 : Column(
                   children: [
                     Expanded(
@@ -32,7 +37,7 @@ class WalletOptionsScreen extends StatelessWidget {
                         children: [
                           SettingsEntryItem(
                             icon: Icons.account_balance_wallet,
-                            title: 'Wallet Details',
+                            title: context.loc.walletOptionsWalletDetailsTitle,
                             onTap: () {
                               context.pushNamed(
                                 SettingsRoute.walletDetailsSelectedWallet.name,
@@ -42,7 +47,7 @@ class WalletOptionsScreen extends StatelessWidget {
                           ),
                           SettingsEntryItem(
                             icon: Icons.currency_bitcoin,
-                            title: 'Addresses',
+                            title: context.loc.addressViewAddressesTitle,
                             onTap: () {
                               context.pushNamed(
                                 SettingsRoute.walletAddresses.name,

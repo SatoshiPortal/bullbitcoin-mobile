@@ -1,8 +1,6 @@
 import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
@@ -14,6 +12,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
@@ -49,19 +48,18 @@ class WalletLocator {
             locator<WatchStartedWalletSyncsUsecase>(),
         watchFinishedWalletSyncsUsecase:
             locator<WatchFinishedWalletSyncsUsecase>(),
+        watchElectrumSyncResultsUsecase:
+            locator<WatchElectrumSyncResultsUsecase>(),
         restartSwapWatcherUsecase: locator<RestartSwapWatcherUsecase>(),
         initializeTorUsecase: locator<InitTorUsecase>(),
         checkForTorInitializationOnStartupUsecase:
             locator<IsTorRequiredUsecase>(),
-        checkForOnlineElectrumServersUsecase:
-            locator<CheckForOnlineElectrumServersUsecase>(),
         getUnconfirmedIncomingBalanceUsecase:
             locator<GetUnconfirmedIncomingBalanceUsecase>(),
         getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),
         saveAutoSwapSettingsUsecase: locator<SaveAutoSwapSettingsUsecase>(),
         autoSwapExecutionUsecase: locator<AutoSwapExecutionUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
-        checkAllServiceStatusUsecase: locator<CheckAllServiceStatusUsecase>(),
       ),
     );
   }

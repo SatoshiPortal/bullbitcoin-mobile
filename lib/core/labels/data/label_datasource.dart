@@ -61,6 +61,13 @@ class LabelDatasource {
     return labelModels.map((row) => LabelModel.fromSqlite(row)).toList();
   }
 
+  Future<List<String>> fetchDistinct() async {
+    final rows =
+        await (_sqlite.selectOnly(_sqlite.labels, distinct: true)
+          ..addColumns([_sqlite.labels.label])).get();
+    return rows.map((row) => row.read<String>(_sqlite.labels.label)!).toList();
+  }
+
   Future<void> trashAll() async {
     await _sqlite.delete(_sqlite.labels).go();
   }

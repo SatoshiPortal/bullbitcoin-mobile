@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update drift-migrations docker-build docker-run test unit-test integration-test fvm-check
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations docker-build docker-run test unit-test integration-test fvm-check
 
 fvm-check: 
 	@echo "🔍 Checking FVM"
@@ -12,7 +12,7 @@ fvm-check:
 all: setup
 	@echo "✨ All tasks completed!"
 
-setup: fvm-check clean deps build-runner l10n hooks ios-pod-update
+setup: fvm-check clean deps build-runner translations hooks ios-pod-update
 	@echo "🚀 Setup complete!"
 
 clean:
@@ -31,9 +31,9 @@ build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
 	@fvm dart run build_runner watch --delete-conflicting-outputs
 	
-l10n:
+translations:
 	@echo "🌐 Generating translations files"
-	@fvm flutter gen-l10n
+	@fvm flutter pub get
 
 hooks:
 	@CURRENT_HOOKS_PATH=$$(git config --local core.hooksPath); \

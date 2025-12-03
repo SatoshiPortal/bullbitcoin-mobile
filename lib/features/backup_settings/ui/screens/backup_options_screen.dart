@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_option_card.dart';
@@ -30,6 +28,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
       BackupSettingsFlow.backup => context.loc.backupWalletTitle,
       BackupSettingsFlow.test => context.loc.testBackupTitle,
     };
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -61,15 +60,17 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                 description: context.loc.backupWalletEncryptedVaultDescription,
                 tag: context.loc.backupWalletEncryptedVaultTag,
                 onTap:
-                    () => {
-                      context.pushNamed(
-                        RecoverBullRoute.recoverbullFlows.name,
-                        extra: RecoverBullFlowsExtra(
-                          flow: RecoverBullFlow.secureVault,
-                          vault: null,
-                        ),
+                    () => context.pushNamed(
+                      RecoverBullRoute.recoverbullFlows.name,
+                      extra: RecoverBullFlowsExtra(
+                        flow: switch (widget.flow) {
+                          BackupSettingsFlow.backup =>
+                            RecoverBullFlow.secureVault,
+                          BackupSettingsFlow.test => RecoverBullFlow.testVault,
+                        },
+                        vault: null,
                       ),
-                    },
+                    ),
               ),
               const Gap(16),
 
@@ -100,40 +101,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                   showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
-                    constraints: const BoxConstraints(
-                      maxWidth: double.infinity,
-                    ),
-                    backgroundColor: Colors.transparent,
-                    builder: (context) {
-                      return Stack(
-                        children: [
-                          // Blurred Background ONLY on the Top
-                          Positioned.fill(
-                            child: Align(
-                              alignment: Alignment.topCenter,
-                              child: BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                                child: Container(
-                                  width: double.infinity,
-                                  height:
-                                      MediaQuery.of(context).size.height *
-                                      0.25, // Blur only 40% of the screen
-                                  color: context.colour.secondary.withAlpha(
-                                    25,
-                                  ), // 0.10 opacity ≈ alpha 25
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          // Bottom Sheet Content (Covers only 60% of the screen)
-                          const Align(
-                            alignment: Alignment.bottomCenter,
-                            child: HowToDecideBackupOption(),
-                          ),
-                        ],
-                      );
-                    },
+                    builder: (_) => const HowToDecideBackupOption(),
                   );
                 },
                 child: BBText(

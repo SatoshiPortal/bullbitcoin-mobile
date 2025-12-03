@@ -18,11 +18,11 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 
 class PayjoinLocator {
-  static Future<void> registerDatasources() async {
+  static void registerDatasources(GetIt locator) {
     locator.registerLazySingleton<LocalPayjoinDatasource>(
       () => LocalPayjoinDatasource(db: locator<SqliteDatabase>()),
     );
@@ -32,7 +32,7 @@ class PayjoinLocator {
     );
   }
 
-  static void registerRepositories() {
+  static void registerRepositories(GetIt locator) {
     // Not a lazy singleton, because it should resume payjoins from the
     // moment the app starts.
     locator.registerSingleton<PayjoinRepository>(
@@ -51,7 +51,7 @@ class PayjoinLocator {
     );
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<CheckPayjoinRelayHealthUsecase>(
       () => CheckPayjoinRelayHealthUsecase(
         payjoinRepository: locator<PayjoinRepository>(),

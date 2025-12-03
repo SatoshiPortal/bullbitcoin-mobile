@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ class ExchangeBitcoinWalletsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Default Bitcoin Wallets',
+          title: context.loc.exchangeBitcoinWalletsTitle,
           onBack: () => context.pop(),
         ),
       ),
@@ -28,15 +29,19 @@ class ExchangeBitcoinWalletsScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _buildAddressField(
                 context,
-                'Bitcoin Address',
+                context.loc.exchangeBitcoinWalletsBitcoinAddressLabel,
                 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
               ),
               const SizedBox(height: 24),
-              _buildAddressField(context, 'Lightning (LN address)', ''),
+              _buildAddressField(
+                context,
+                context.loc.exchangeBitcoinWalletsLightningAddressLabel,
+                '',
+              ),
               const SizedBox(height: 24),
               _buildAddressField(
                 context,
-                'Liquid address',
+                context.loc.exchangeBitcoinWalletsLiquidAddressLabel,
                 'lq1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
               ),
             ],
@@ -62,7 +67,9 @@ class ExchangeBitcoinWalletsScreen extends StatelessWidget {
           onChanged: (newValue) {
             // TODO: Implement address update functionality
           },
-          hint: value.isEmpty ? 'Enter address' : null,
+          hint: value.isEmpty
+              ? context.loc.exchangeBitcoinWalletsEnterAddressHint
+              : null,
           hintStyle: context.font.bodyMedium?.copyWith(
             color: context.colour.surfaceContainer,
           ),

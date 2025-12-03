@@ -14,10 +14,8 @@ class SettingsConstants {
   static const githubSupportLink =
       'https://github.com/SatoshiPortal/bullbitcoin-mobile';
   static const termsAndConditionsLink = 'https://wallet.bullbitcoin.com/terms';
-  // The following are constants that in the future potentially can become
-  //  a configurable setting, in which case they should be added to the Settings
-  //  table in sqlite and not be defined here as constants anymore.
-  static const autoSyncIntervalSeconds = 5;
+  static const recoverbullUrl =
+      'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion';
 }
 
 class ConversionConstants {
@@ -90,9 +88,6 @@ class ApiServiceConstants {
   static const boltzReferralId = 'BULL';
 
   // BullBitcoin API
-  static final bullBitcoinKeyServerApiUrlPath =
-      dotenv.env['KEY_SERVER'] ??
-      'http://o7rwmpnfkzdcay2gotla6sbrviu27wcgck7nsjrq77nqhtwbjvwcraad.onion';
   static String bbApiUrl =
       dotenv.env['BB_API_URL'] ?? 'https://api.bullbitcoin.com';
   static String bbApiTestUrl =
@@ -133,11 +128,16 @@ class LabelConstants {
 }
 
 class CountryConstants {
+  // Better to make this a map to fetch by code directly instead of needing a where
+  // clause each time. But for now keeping it as is since best would be to get
+  // this from an external API or package anyway in the future.
   static const List<Map<String, String>> countries = [
+    {'code': 'US', 'name': 'United States', 'flag': '🇺🇸'},
     {'code': 'CA', 'name': 'Canada', 'flag': '🇨🇦'},
     {'code': 'EU', 'name': 'Europe', 'flag': '🇪🇺'},
     {'code': 'MX', 'name': 'Mexico', 'flag': '🇲🇽'},
     {'code': 'CR', 'name': 'Costa Rica', 'flag': '🇨🇷'},
     {'code': 'AR', 'name': 'Argentina', 'flag': '🇦🇷'},
+    {'code': 'CO', 'name': 'Colombia', 'flag': '🇨🇴'},
   ];
 }

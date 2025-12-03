@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -13,14 +14,16 @@ class ExchangeLegacyTransactionsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Legacy Transactions',
+          title: context.loc.exchangeLegacyTransactionsTitle,
           onBack: () => context.pop(),
         ),
       ),
-      body: const SafeArea(
+      body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Center(child: Text('Legacy Transactions - Coming Soon')),
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Text(context.loc.exchangeLegacyTransactionsComingSoon),
+          ),
         ),
       ),
     );

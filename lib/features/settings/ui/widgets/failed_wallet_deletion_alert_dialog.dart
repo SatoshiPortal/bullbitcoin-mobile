@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
@@ -14,21 +15,21 @@ class FailedWalletDeletionAlertDialog extends StatelessWidget {
     );
     return AlertDialog(
       backgroundColor: context.colour.onPrimary,
-      title: const Text('Delete Failed'),
+      title: Text(context.loc.walletDeletionFailedTitle),
       content: Text(
         error is CannotDeleteDefaultWalletError
-            ? 'You cannot delete a default wallet.'
+            ? context.loc.walletDeletionErrorDefaultWallet
             : error is CannotDeleteWalletWithOngoingSwapsError
-            ? 'You cannot delete a wallet with ongoing swaps.'
+            ? context.loc.walletDeletionErrorOngoingSwaps
             : error is WalletNotFound
-            ? 'The wallet you are trying to delete does not exist.'
-            : 'Failed to delete wallet, please try again.',
+            ? context.loc.walletDeletionErrorWalletNotFound
+            : context.loc.walletDeletionErrorGeneric,
         style: context.font.bodyMedium?.copyWith(color: context.colour.error),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('OK'),
+          child: Text(context.loc.walletDeletionFailedOkButton),
         ),
       ],
     );

@@ -16,6 +16,5 @@ class RestartSwapWatcherUsecase {
         log.severe('Error restarting swap watcher: $e');
       }
     }
-    log.info('Restarted swap watcher');
   }
 }

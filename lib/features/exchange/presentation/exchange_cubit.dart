@@ -43,7 +43,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
       startPolling();
     } catch (e) {
-      log.severe('Error during init: $e');
+      log.severe('$ExchangeCubit init: $e');
       if (e is ApiKeyException) {
         emit(state.copyWith(apiKeyException: e));
         // Stop polling if API key is invalid

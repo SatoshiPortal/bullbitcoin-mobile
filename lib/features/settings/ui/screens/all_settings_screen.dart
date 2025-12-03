@@ -7,6 +7,8 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
+import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,8 +17,19 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AllSettingsScreen extends StatelessWidget {
+class AllSettingsScreen extends StatefulWidget {
   const AllSettingsScreen({super.key});
+
+  @override
+  State<AllSettingsScreen> createState() => _AllSettingsScreenState();
+}
+
+class _AllSettingsScreenState extends State<AllSettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ServiceStatusCubit>().checkStatus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +37,14 @@ class AllSettingsScreen extends StatelessWidget {
 
     final appVersion = context.select(
       (SettingsCubit cubit) => cubit.state.appVersion,
+    );
+
+    final serviceStatusLoading = context.select(
+      (ServiceStatusCubit cubit) => cubit.state.isLoading,
+    );
+
+    final serviceStatus = context.select(
+      (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
     return Scaffold(
@@ -36,7 +57,7 @@ class AllSettingsScreen extends StatelessWidget {
               children: [
                 SettingsEntryItem(
                   icon: Icons.account_balance_wallet,
-                  title: 'Exchange Settings',
+                  title: context.loc.settingsExchangeSettingsTitle,
                   onTap: () {
                     if (Platform.isIOS) {
                       final isSuperuser =
@@ -68,35 +89,35 @@ class AllSettingsScreen extends StatelessWidget {
                 ),
                 SettingsEntryItem(
                   icon: Icons.save_alt,
-                  title: 'Wallet Backup',
+                  title: context.loc.settingsWalletBackupTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.backupSettings.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.currency_bitcoin,
-                  title: 'Bitcoin Settings',
+                  title: context.loc.settingsBitcoinSettingsTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.bitcoinSettings.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.security,
-                  title: 'Security Pin',
+                  title: context.loc.settingsSecurityPinTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.pinCode.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.attach_money,
-                  title: 'Currency',
+                  title: context.loc.settingsCurrencyTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.currency.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.settings,
-                  title: 'App Settings',
+                  title: context.loc.settingsAppSettingsTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.appSettings.name);
                   },
@@ -104,12 +125,25 @@ class AllSettingsScreen extends StatelessWidget {
 
                 SettingsEntryItem(
                   icon: Icons.description,
-                  title: 'Terms of Service',
+                  title: context.loc.settingsTermsOfServiceTitle,
                   onTap: () {
                     final url = Uri.parse(
                       SettingsConstants.termsAndConditionsLink,
                     );
                     launchUrl(url, mode: LaunchMode.inAppBrowserView);
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.monitor_heart,
+                  iconColor:
+                      serviceStatusLoading
+                          ? Colors.grey
+                          : serviceStatus.allServicesOnline
+                          ? Colors.green
+                          : Colors.red,
+                  title: context.loc.settingsServicesStatusTitle,
+                  onTap: () {
+                    context.pushNamed(StatusCheckRoute.serviceStatus.name);
                   },
                 ),
               ],
@@ -130,7 +164,7 @@ class AllSettingsScreen extends StatelessWidget {
                   tileColor: theme.colorScheme.secondaryFixedDim,
                   title: Center(
                     child: Text(
-                      'App version: $appVersion',
+                      '${context.loc.settingsAppVersionLabel}$appVersion',
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: theme.colorScheme.secondary,
                       ),
@@ -158,7 +192,7 @@ class AllSettingsScreen extends StatelessWidget {
                           const Icon(FontAwesomeIcons.telegram),
                           const Gap(8),
                           Text(
-                            'Telegram',
+                            context.loc.settingsTelegramLabel,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.secondary,
                             ),
@@ -179,7 +213,7 @@ class AllSettingsScreen extends StatelessWidget {
                           const Icon(FontAwesomeIcons.github),
                           const Gap(8),
                           Text(
-                            'Github',
+                            context.loc.settingsGithubLabel,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.secondary,
                             ),

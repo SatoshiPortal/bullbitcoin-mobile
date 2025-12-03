@@ -93,6 +93,7 @@ class BuyInputScreen extends StatelessWidget {
                         style: context.font.bodyMedium?.copyWith(
                           color: context.colour.error,
                         ),
+                        overrideHideAmounts: true,
                       ),
                     ],
                   ),
@@ -120,7 +121,8 @@ class BuyInputScreen extends StatelessWidget {
                   ] else if (showInsufficientBalanceError) ...[
                     InfoCard(
                       title: context.loc.buyInputInsufficientBalance,
-                      description: context.loc.buyInputInsufficientBalanceMessage,
+                      description:
+                          context.loc.buyInputInsufficientBalanceMessage,
                       bgColor: context.colour.tertiary.withValues(alpha: 0.1),
                       tagColor: context.colour.onTertiary,
                     ),
