@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
@@ -58,6 +59,9 @@ class StorageLocator {
         oldSeedRepository: locator<OldSeedRepository>(),
         oldWalletRepository: locator<OldWalletRepository>(),
       ),
+    );
+    locator.registerFactory<GetAllSeedsUsecase>(
+      () => GetAllSeedsUsecase(seedRepository: locator<SeedRepository>()),
     );
     locator.registerFactory<MigrateToV4LegacyUsecase>(
       () => MigrateToV4LegacyUsecase(MigrationSecureStorageDatasource()),

@@ -1,8 +1,8 @@
-import 'dart:typed_data';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:flutter/foundation.dart';
 
 class SeedRepository {
   final SeedDatasource _source;
@@ -73,4 +73,37 @@ class SeedRepository {
   }
 
   Future<void> delete(String fingerprint) => _source.delete(fingerprint);
+
+  Future<List<MnemonicSeed>> getAllMnemonicSeeds() async {
+    try {
+      final models = await _source.getAll();
+      // Top-level function for isolate processing
+      @pragma('vm:entry-point')
+      List<MnemonicSeed> convertToMnemonicSeedsInIsolate(
+        List<SeedModel> models,
+      ) {
+        final mnemonicSeeds = <MnemonicSeed>[];
+
+        for (final model in models) {
+          if (model is MnemonicSeedModel) {
+            final seed = model.toEntity() as MnemonicSeed;
+            mnemonicSeeds.add(seed);
+          }
+        }
+
+        return mnemonicSeeds;
+      }
+
+      // Convert models to entities in isolate to avoid blocking UI
+      // (toEntity() triggers expensive fingerprint computation)
+      return await compute(convertToMnemonicSeedsInIsolate, models);
+    } catch (e, stackTrace) {
+      log.info(
+        'Failed to get all mnemonic seeds: $e',
+        error: e,
+        trace: stackTrace,
+      );
+      rethrow;
+    }
+  }
 }
