@@ -10614,5 +10614,30 @@
   "delete": "Eliminar",
   "@delete": {
     "description": "Generic delete button label"
+  },
+  "statusCheckTitle": "Estado de Servicios",
+  "@statusCheckTitle": {
+    "description": "Title for the service status screen"
+  },
+  "statusCheckLastChecked": "Última verificación: {time}",
+  "@statusCheckLastChecked": {
+    "description": "Label showing when services were last checked",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "statusCheckOnline": "En línea",
+  "@statusCheckOnline": {
+    "description": "Status text when a service is online"
+  },
+  "statusCheckOffline": "Fuera de línea",
+  "@statusCheckOffline": {
+    "description": "Status text when a service is offline"
+  },
+  "statusCheckUnknown": "Desconocido",
+  "@statusCheckUnknown": {
+    "description": "Status text when service status is unknown"
   }
 }
