@@ -11013,6 +11013,30 @@
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
   },
+  "withdrawSuccessTitle": "Withdrawal Initiated",
+  "@withdrawSuccessTitle": {
+    "description": "Title shown when withdrawal is successfully initiated"
+  },
+  "withdrawSuccessOrderDetails": "Order details",
+  "@withdrawSuccessOrderDetails": {
+    "description": "Button label to view order details after withdrawal"
+  },
+  "withdrawConfirmBankAccount": "Bank account",
+  "@withdrawConfirmBankAccount": {
+    "description": "Default label for bank account in confirmation screen"
+  },
+  "withdrawOwnershipQuestion": "Who does this account belong to?",
+  "@withdrawOwnershipQuestion": {
+    "description": "Question asking about account ownership"
+  },
+  "withdrawOwnershipMyAccount": "This is my account",
+  "@withdrawOwnershipMyAccount": {
+    "description": "Option indicating the account belongs to the user"
+  },
+  "withdrawOwnershipOtherAccount": "This is someone else's account",
+  "@withdrawOwnershipOtherAccount": {
+    "description": "Option indicating the account belongs to someone else"
+  },
   "walletAutoTransferBlockedTitle": "Auto Transfer Blocked",
   "@walletAutoTransferBlockedTitle": {
     "description": "Title for auto-swap fee warning when fees exceed threshold"
