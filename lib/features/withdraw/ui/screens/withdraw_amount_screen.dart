@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
@@ -43,7 +44,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                   },
                 )
                 : null,
-        title: const Text('Withdraw fiat'),
+        title: Text(context.loc.withdrawAmountTitle),
       ),
       body: SafeArea(
         child: Form(
@@ -63,7 +64,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
               ),
               const Spacer(),
               BBButton.big(
-                label: 'Continue',
+                label: context.loc.withdrawAmountContinue,
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     context.read<WithdrawBloc>().add(

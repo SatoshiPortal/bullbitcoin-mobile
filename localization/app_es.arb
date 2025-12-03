@@ -10812,5 +10812,29 @@
   "torSettingsInfoDescription": "• El proxy Tor solo aplica a Bitcoin (no Liquid)\n• El puerto Orbot predeterminado es 9050\n• Asegúrese de que Orbot esté ejecutándose antes de habilitar\n• La conexión puede ser más lenta a través de Tor",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
+  },
+  "withdrawSuccessTitle": "Retiro iniciado",
+  "@withdrawSuccessTitle": {
+    "description": "Title shown when withdrawal is successfully initiated"
+  },
+  "withdrawSuccessOrderDetails": "Detalles del pedido",
+  "@withdrawSuccessOrderDetails": {
+    "description": "Button label to view order details after withdrawal"
+  },
+  "withdrawConfirmBankAccount": "Cuenta bancaria",
+  "@withdrawConfirmBankAccount": {
+    "description": "Default label for bank account in confirmation screen"
+  },
+  "withdrawOwnershipQuestion": "¿A quién pertenece esta cuenta?",
+  "@withdrawOwnershipQuestion": {
+    "description": "Question asking about account ownership"
+  },
+  "withdrawOwnershipMyAccount": "Es mi cuenta",
+  "@withdrawOwnershipMyAccount": {
+    "description": "Option indicating the account belongs to the user"
+  },
+  "withdrawOwnershipOtherAccount": "Es la cuenta de otra persona",
+  "@withdrawOwnershipOtherAccount": {
+    "description": "Option indicating the account belongs to someone else"
   }
 }

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart' show BBText;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -19,18 +20,23 @@ class AccountOwnershipWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          'Who does this account belong to?',
+          context.loc.withdrawOwnershipQuestion,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.secondary,
             fontWeight: FontWeight.w500,
           ),
         ),
         const Gap(8),
-        _buildRadioOption(context, 'This is my account', 'isOwner', true),
+        _buildRadioOption(
+          context,
+          context.loc.withdrawOwnershipMyAccount,
+          'isOwner',
+          true,
+        ),
         const Gap(8),
         _buildRadioOption(
           context,
-          "This is someone else's account",
+          context.loc.withdrawOwnershipOtherAccount,
           'isOwner',
           false,
         ),

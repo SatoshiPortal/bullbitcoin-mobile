@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -26,7 +27,7 @@ class WithdrawSuccessScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Withdraw fiat'),
+          title: Text(context.loc.withdrawAmountTitle),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -52,7 +53,7 @@ class WithdrawSuccessScreen extends StatelessWidget {
                       ),
                       const Gap(16),
                       Text(
-                        'Withdrawal Initiated',
+                        context.loc.withdrawSuccessTitle,
                         style: context.font.headlineLarge?.copyWith(
                           color: context.appColors.secondary,
                         ),
@@ -65,7 +66,7 @@ class WithdrawSuccessScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: BBButton.big(
-                    label: 'Order details',
+                    label: context.loc.withdrawSuccessOrderDetails,
                     onPressed: () {
                       context.pushNamed(
                         TransactionsRoute.orderTransactionDetails.name,

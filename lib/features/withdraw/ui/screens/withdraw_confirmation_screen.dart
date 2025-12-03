@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -59,7 +60,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                 children: [
                   const Gap(24.0),
                   Text(
-                    'Confirm withdrawal',
+                    context.loc.withdrawConfirmTitle,
                     style: context.font.headlineMedium?.copyWith(
                       color: context.appColors.secondary,
                     ),
@@ -67,17 +68,17 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                   const Gap(4.0),
                   const Gap(8.0),
                   _DetailRow(
-                    title: 'Recipient name',
+                    title: context.loc.withdrawConfirmRecipientName,
                     value: recipient?.displayName,
                   ),
                   const _Divider(),
                   _DetailRow(
-                    title: _getRecipientInfoLabel(recipient),
+                    title: _getRecipientInfoLabel(context, recipient),
                     value: _getRecipientInfoValue(recipient),
                   ),
                   const _Divider(),
                   _DetailRow(
-                    title: 'Amount',
+                    title: context.loc.withdrawConfirmAmount,
                     value:
                         order == null
                             ? null
@@ -104,36 +105,39 @@ class WithdrawConfirmationScreen extends StatelessWidget {
     );
   }
 
-  String _getRecipientInfoLabel(RecipientViewModel? recipient) {
-    if (recipient == null) return 'Bank account';
+  String _getRecipientInfoLabel(
+    BuildContext context,
+    RecipientViewModel? recipient,
+  ) {
+    if (recipient == null) return context.loc.withdrawConfirmBankAccount;
 
     switch (recipient.type) {
       case RecipientType.interacEmailCad:
-        return 'Email';
+        return context.loc.withdrawConfirmEmail;
       case RecipientType.billPaymentCad:
-        return 'Payee';
+        return context.loc.withdrawConfirmPayee;
       case RecipientType.bankTransferCad:
-        return 'Account';
+        return context.loc.withdrawConfirmAccount;
       case RecipientType.sepaEur:
-        return 'IBAN';
+        return context.loc.withdrawConfirmIban;
       case RecipientType.speiClabeMxn:
-        return 'CLABE';
+        return context.loc.withdrawConfirmClabe;
       case RecipientType.speiSmsMxn:
-        return 'Phone';
+        return context.loc.withdrawConfirmPhone;
       case RecipientType.speiCardMxn:
-        return 'Card';
+        return context.loc.withdrawConfirmCard;
       case RecipientType.sinpeIbanUsd:
-        return 'IBAN';
+        return context.loc.withdrawConfirmIban;
       case RecipientType.sinpeIbanCrc:
-        return 'IBAN';
+        return context.loc.withdrawConfirmIban;
       case RecipientType.sinpeMovilCrc:
-        return 'Phone';
+        return context.loc.withdrawConfirmPhone;
       case RecipientType.cbuCvuArgentina:
-        return 'Account'; // TODO: Update when implemented
+        return context.loc.withdrawConfirmAccount;
       case RecipientType.pseColombia:
-        return 'Bank Account';
+        return context.loc.withdrawConfirmBankAccount;
       case RecipientType.nequiColombia:
-        return 'Phone';
+        return context.loc.withdrawConfirmPhone;
     }
   }
 
@@ -243,7 +247,7 @@ class _ConfirmButton extends StatelessWidget {
       children: [
         if (withdrawError != null) ...[
           Text(
-            'Error: $withdrawError',
+            context.loc.withdrawConfirmError(withdrawError),
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
             ),
@@ -252,7 +256,7 @@ class _ConfirmButton extends StatelessWidget {
         ],
         const Gap(16),
         BBButton.big(
-          label: 'Confirm withdrawal',
+          label: context.loc.withdrawConfirmButton,
           disabled: isConfirmingWithdrawal,
           onPressed: onConfirmPressed,
           bgColor: context.appColors.onSurface,
