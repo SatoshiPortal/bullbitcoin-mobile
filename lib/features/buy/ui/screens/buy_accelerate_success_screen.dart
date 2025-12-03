@@ -40,16 +40,19 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
         body: SafeArea(
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
-                const Icon(Icons.check_circle, size: 100, color: Colors.green),
+                Icon(Icons.check_circle, size: 100, color: context.appColors.success),
                 const SizedBox(height: 20),
-                Text(context.loc.buyBitcoinSent, style: context.font.titleLarge),
+                Text(
+                  context.loc.buyBitcoinSent,
+                  style: context.font.titleLarge,
+                ),
                 const SizedBox(height: 10),
                 Text(
                   context.loc.buyThatWasFast,
                   style: context.font.bodyMedium,
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                 ),
               ],
             ),
@@ -59,7 +62,7 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 if (buyOrder != null)
                   BBButton.big(
@@ -70,8 +73,8 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
                         pathParameters: {'orderId': buyOrder.orderId},
                       );
                     },
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onPrimary,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onPrimary,
                   ),
               ],
             ),

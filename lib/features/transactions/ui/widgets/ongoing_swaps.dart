@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
@@ -18,34 +19,34 @@ class OngoingSwapsWidget extends StatelessWidget {
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
 
           child: Row(
             children: [
-              Icon(Icons.swap_horiz, color: context.colour.secondary),
+              Icon(Icons.swap_horiz, color: context.appColors.secondary),
               const Gap(8),
               BBText(
-                'Ongoing Transfers',
+                context.loc.transactionListOngoingTransfersTitle,
                 style: context.font.titleMedium?.copyWith(
-                  color: context.colour.secondary,
-                  fontWeight: FontWeight.w600,
+                  color: context.appColors.secondary,
+                  fontWeight: .w600,
                 ),
               ),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: context.colour.secondary,
+                  color: context.appColors.secondary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: BBText(
                   ongoingSwaps.length.toString(),
                   style: context.font.labelSmall?.copyWith(
-                    color: context.colour.onSecondary,
-                    fontWeight: FontWeight.w600,
+                    color: context.appColors.onSecondary,
+                    fontWeight: .w600,
                   ),
                 ),
               ),
@@ -56,17 +57,17 @@ class OngoingSwapsWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: BBText(
-            'These transfers are currently in progress. Your funds are secure and will be available when the transfer completes.',
+            context.loc.transactionListOngoingTransfersDescription,
             style: context.font.bodySmall?.copyWith(
-              color: context.colour.outline,
-              fontStyle: FontStyle.italic,
+              color: context.appColors.outline,
+              fontStyle: .italic,
             ),
           ),
         ),
         const Gap(8),
         ...ongoingSwaps.map((tx) {
           return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [TxListItem(tx: tx), const Gap(8)],
           );
         }),

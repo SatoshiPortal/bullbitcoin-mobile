@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -31,10 +32,13 @@ class FundExchangeSinpeScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .start,
             children: [
-              BBText(context.loc.fundExchangeSinpeTitle, style: theme.textTheme.displaySmall),
+              BBText(
+                context.loc.fundExchangeSinpeTitle,
+                style: theme.textTheme.displaySmall,
+              ),
               const Gap(16.0),
               RichText(
                 text: TextSpan(
@@ -44,7 +48,7 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                     TextSpan(
                       text: context.loc.fundExchangeSinpeDescriptionBold,
                       style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                       ),
                     ),
                   ],
@@ -57,51 +61,57 @@ class FundExchangeSinpeScreen extends StatelessWidget {
               ),
               const Gap(24.0),
               Container(
-                clipBehavior: Clip.hardEdge,
+                clipBehavior: .hardEdge,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.inverseSurface.withValues(
+                  color: context.appColors.inverseSurface.withValues(
                     alpha: 0.1,
                   ),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: IntrinsicHeight(
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: .stretch,
+                    mainAxisAlignment: .center,
                     children: [
                       Container(
                         width: 4,
-                        color: theme.colorScheme.inverseSurface,
+                        color: context.appColors.inverseSurface,
                       ),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(8),
                           child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: .start,
+                            mainAxisAlignment: .center,
                             children: [
                               Icon(
                                 Icons.info_outline_rounded,
                                 size: 24,
-                                color: theme.colorScheme.inverseSurface,
+                                color: context.appColors.inverseSurface,
                               ),
                               const Gap(12),
                               Expanded(
                                 child: RichText(
                                   text: TextSpan(
-                                    text: context.loc.fundExchangeSinpeWarningNoBitcoin,
+                                    text:
+                                        context
+                                            .loc
+                                            .fundExchangeSinpeWarningNoBitcoin,
                                     style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: theme.colorScheme.secondary,
-                                      fontWeight: FontWeight.bold,
+                                      color: context.appColors.secondary,
+                                      fontWeight: .bold,
                                     ),
                                     children: [
                                       TextSpan(
-                                        text: context.loc.fundExchangeSinpeWarningNoBitcoinDescription,
+                                        text:
+                                            context
+                                                .loc
+                                                .fundExchangeSinpeWarningNoBitcoinDescription,
                                         style: theme.textTheme.bodyMedium
                                             ?.copyWith(
                                               color:
-                                                  theme.colorScheme.secondary,
-                                              fontWeight: FontWeight.normal,
+                                                  context.appColors.secondary,
+                                              fontWeight: .normal,
                                             ),
                                       ),
                                     ],

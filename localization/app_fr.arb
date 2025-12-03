@@ -2598,6 +2598,210 @@
   "@transactionListYesterday": {
     "description": "Libellé de date pour les transactions d'hier"
   },
+  "transactionSwapDoNotUninstall": "Ne désinstallez pas l'application tant que l'échange n'est pas terminé.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Message d'avertissement pour ne pas désinstaller l'app pendant un échange"
+  },
+  "transactionFeesDeductedFrom": "Ces frais seront déduits du montant envoyé",
+  "@transactionFeesDeductedFrom": {
+    "description": "Explication des frais déduits pour les échanges entrants"
+  },
+  "transactionFeesTotalDeducted": "Ceci est le total des frais déduits du montant envoyé",
+  "@transactionFeesTotalDeducted": {
+    "description": "Explication des frais déduits pour les échanges sortants"
+  },
+  "transactionLabelSendAmount": "Montant envoyé",
+  "@transactionLabelSendAmount": {
+    "description": "Libellé pour le montant envoyé dans les détails d'échange"
+  },
+  "transactionLabelReceiveAmount": "Montant reçu",
+  "@transactionLabelReceiveAmount": {
+    "description": "Libellé pour le montant reçu dans les détails d'échange"
+  },
+  "transactionLabelSendNetworkFees": "Frais réseau d'envoi",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Libellé pour les frais réseau d'envoi dans les détails d'échange"
+  },
+  "transactionLabelReceiveNetworkFee": "Frais réseau de réception",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Libellé pour les frais réseau de réception dans les détails d'échange"
+  },
+  "transactionLabelServerNetworkFees": "Frais réseau serveur",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Libellé pour les frais réseau serveur dans les détails d'échange"
+  },
+  "transactionLabelPreimage": "Préimage",
+  "@transactionLabelPreimage": {
+    "description": "Libellé pour la préimage dans les détails d'échange Lightning"
+  },
+  "transactionOrderLabelReferenceNumber": "Numéro de référence",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Libellé pour le numéro de référence dans les détails de commande"
+  },
+  "transactionOrderLabelOriginName": "Nom d'origine",
+  "@transactionOrderLabelOriginName": {
+    "description": "Libellé pour le nom d'origine dans la commande de paiement fiat"
+  },
+  "transactionOrderLabelOriginCedula": "Cédula d'origine",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Libellé pour la cédula d'origine dans la commande de paiement fiat"
+  },
+  "transactionDetailAccelerate": "Accélérer",
+  "@transactionDetailAccelerate": {
+    "description": "Libellé du bouton pour accélérer (RBF) une transaction non confirmée"
+  },
+  "transactionDetailLabelTransactionId": "ID de transaction",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Libellé pour l'ID de transaction"
+  },
+  "transactionDetailLabelToWallet": "Vers le portefeuille",
+  "@transactionDetailLabelToWallet": {
+    "description": "Libellé pour le portefeuille de destination"
+  },
+  "transactionDetailLabelFromWallet": "Du portefeuille",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Libellé pour le portefeuille source"
+  },
+  "transactionDetailLabelRecipientAddress": "Adresse du destinataire",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Libellé pour l'adresse du destinataire"
+  },
+  "transactionDetailLabelAddress": "Adresse",
+  "@transactionDetailLabelAddress": {
+    "description": "Libellé pour l'adresse"
+  },
+  "transactionDetailLabelAddressNotes": "Notes d'adresse",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Libellé pour les notes d'adresse"
+  },
+  "transactionDetailLabelAmountReceived": "Montant reçu",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Libellé pour le montant reçu"
+  },
+  "transactionDetailLabelAmountSent": "Montant envoyé",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Libellé pour le montant envoyé"
+  },
+  "transactionDetailLabelTransactionFee": "Frais de transaction",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Libellé pour les frais de transaction"
+  },
+  "transactionDetailLabelStatus": "Statut",
+  "@transactionDetailLabelStatus": {
+    "description": "Libellé pour le statut"
+  },
+  "transactionDetailLabelConfirmationTime": "Heure de confirmation",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Libellé pour l'heure de confirmation"
+  },
+  "transactionDetailLabelOrderType": "Type de commande",
+  "@transactionDetailLabelOrderType": {
+    "description": "Libellé pour le type de commande"
+  },
+  "transactionDetailLabelOrderNumber": "Numéro de commande",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Libellé pour le numéro de commande"
+  },
+  "transactionDetailLabelPayinAmount": "Montant payé",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Libellé pour le montant payé"
+  },
+  "transactionDetailLabelPayoutAmount": "Montant reçu",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Libellé pour le montant reçu"
+  },
+  "transactionDetailLabelExchangeRate": "Taux de change",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Libellé pour le taux de change"
+  },
+  "transactionDetailLabelPayinMethod": "Méthode de paiement",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Libellé pour la méthode de paiement"
+  },
+  "transactionDetailLabelPayoutMethod": "Méthode de réception",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Libellé pour la méthode de réception"
+  },
+  "transactionDetailLabelPayinStatus": "Statut du paiement",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Libellé pour le statut du paiement"
+  },
+  "transactionDetailLabelOrderStatus": "Statut de la commande",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Libellé pour le statut de la commande"
+  },
+  "transactionDetailLabelPayoutStatus": "Statut du versement",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Libellé pour le statut du versement"
+  },
+  "transactionDetailLabelCreatedAt": "Créé le",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Libellé pour la date de création"
+  },
+  "transactionDetailLabelCompletedAt": "Terminé le",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Libellé pour la date de fin"
+  },
+  "transactionDetailLabelTransferId": "ID du transfert",
+  "@transactionDetailLabelTransferId": {
+    "description": "Libellé pour l'ID du transfert"
+  },
+  "transactionDetailLabelSwapId": "ID de l'échange",
+  "@transactionDetailLabelSwapId": {
+    "description": "Libellé pour l'ID de l'échange"
+  },
+  "transactionDetailLabelTransferStatus": "Statut du transfert",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Libellé pour le statut du transfert"
+  },
+  "transactionDetailLabelSwapStatus": "Statut de l'échange",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Libellé pour le statut de l'échange"
+  },
+  "transactionDetailLabelRefunded": "Remboursé",
+  "@transactionDetailLabelRefunded": {
+    "description": "Libellé pour le statut remboursé"
+  },
+  "transactionDetailLabelLiquidTxId": "ID de transaction Liquid",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Libellé pour l'ID de transaction Liquid"
+  },
+  "transactionDetailLabelBitcoinTxId": "ID de transaction Bitcoin",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Libellé pour l'ID de transaction Bitcoin"
+  },
+  "transactionDetailLabelTransferFees": "Frais de transfert",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Libellé pour les frais de transfert"
+  },
+  "transactionDetailLabelSwapFees": "Frais d'échange",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Libellé pour les frais d'échange"
+  },
+  "transactionDetailLabelSendNetworkFee": "Frais réseau d'envoi",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Libellé pour les frais réseau d'envoi"
+  },
+  "transactionDetailLabelTransferFee": "Frais de transfert",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Libellé pour les frais de transfert (frais Boltz)"
+  },
+  "transactionDetailLabelPayjoinStatus": "Statut Payjoin",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Libellé pour le statut Payjoin"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Terminé",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Statut Payjoin terminé"
+  },
+  "transactionDetailLabelPayjoinExpired": "Expiré",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Statut Payjoin expiré"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Heure de création Payjoin",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Libellé pour l'heure de création Payjoin"
+  },
   "walletNameInstantPayments": "Paiements instantanés",
   "@walletNameInstantPayments": {
     "description": "Nom par défaut pour le portefeuille Liquid/paiements instantanés"
@@ -4257,6 +4461,86 @@
   "swapErrorInsufficientFunds": "Impossible de construire la transaction. Probablement dû à des fonds insuffisants pour couvrir les frais et le montant.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
+  },
+  "swapTransferTitle": "Transfert",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapExternalTransferLabel": "Transfert externe",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "De",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapToLabel": "Vers",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapAmountLabel": "Montant",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapReceiveExactAmountLabel": "Recevoir le montant exact",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapSubtractFeesLabel": "Soustraire les frais du montant",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapExternalAddressHint": "Entrez l'adresse du portefeuille externe",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapValidationEnterAmount": "Veuillez entrer un montant",
+  "@swapValidationEnterAmount": {
+    "description": "Validation error when amount is empty"
+  },
+  "swapValidationPositiveAmount": "Entrez un montant positif",
+  "@swapValidationPositiveAmount": {
+    "description": "Validation error when amount is not positive"
+  },
+  "swapValidationInsufficientBalance": "Solde insuffisant",
+  "@swapValidationInsufficientBalance": {
+    "description": "Validation error when amount exceeds wallet balance"
+  },
+  "swapValidationMinimumAmount": "Le montant minimum est {amount} {currency}",
+  "@swapValidationMinimumAmount": {
+    "description": "Validation error when amount is below minimum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "swapValidationMaximumAmount": "Le montant maximum est {amount} {currency}",
+  "@swapValidationMaximumAmount": {
+    "description": "Validation error when amount exceeds maximum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "swapValidationSelectFromWallet": "Veuillez sélectionner un portefeuille source",
+  "@swapValidationSelectFromWallet": {
+    "description": "Validation error when no source wallet selected"
+  },
+  "swapValidationSelectToWallet": "Veuillez sélectionner un portefeuille de destination",
+  "@swapValidationSelectToWallet": {
+    "description": "Validation error when no destination wallet selected"
+  },
+  "swapDoNotUninstallWarning": "Ne désinstallez pas l'application avant que le transfert ne soit terminé !",
+  "@swapDoNotUninstallWarning": {
+    "description": "Warning message during pending transfer"
   },
   "pinSecurityTitle": "Code PIN de sécurité",
   "@pinSecurityTitle": {
@@ -10837,5 +11121,174 @@
   "delete": "Supprimer",
   "@delete": {
     "description": "Generic delete button label"
+  },
+  "statusCheckTitle": "État des Services",
+  "@statusCheckTitle": {
+    "description": "Title for the service status screen"
+  },
+  "statusCheckLastChecked": "Dernière vérification : {time}",
+  "@statusCheckLastChecked": {
+    "description": "Label showing when services were last checked",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "statusCheckOnline": "En ligne",
+  "@statusCheckOnline": {
+    "description": "Status text when a service is online"
+  },
+  "statusCheckOffline": "Hors ligne",
+  "@statusCheckOffline": {
+    "description": "Status text when a service is offline"
+  },
+  "statusCheckUnknown": "Inconnu",
+  "@statusCheckUnknown": {
+    "description": "Status text when service status is unknown"
+  },
+  "torSettingsTitle": "Paramètres Tor",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "torSettingsEnableProxy": "Activer le proxy Tor",
+  "@torSettingsEnableProxy": {
+    "description": "Label for the toggle to enable/disable Tor proxy"
+  },
+  "torSettingsProxyPort": "Port du proxy Tor",
+  "@torSettingsProxyPort": {
+    "description": "Title for Tor proxy port settings"
+  },
+  "torSettingsPortDisplay": "Port : {port}",
+  "@torSettingsPortDisplay": {
+    "description": "Display text showing current port number",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Numéro de port",
+  "@torSettingsPortNumber": {
+    "description": "Label for port number input field"
+  },
+  "torSettingsPortHint": "9050",
+  "@torSettingsPortHint": {
+    "description": "Hint text for port input showing default value"
+  },
+  "torSettingsPortHelper": "Port Orbot par défaut : 9050",
+  "@torSettingsPortHelper": {
+    "description": "Helper text explaining default Orbot port"
+  },
+  "torSettingsPortValidationEmpty": "Veuillez entrer un numéro de port",
+  "@torSettingsPortValidationEmpty": {
+    "description": "Validation error when port is empty"
+  },
+  "torSettingsPortValidationInvalid": "Veuillez entrer un nombre valide",
+  "@torSettingsPortValidationInvalid": {
+    "description": "Validation error when port is not a valid number"
+  },
+  "torSettingsPortValidationRange": "Le port doit être entre 1 et 65535",
+  "@torSettingsPortValidationRange": {
+    "description": "Validation error when port is out of valid range"
+  },
+  "torSettingsSaveButton": "Enregistrer",
+  "@torSettingsSaveButton": {
+    "description": "Save button label for Tor port settings"
+  },
+  "torSettingsConnectionStatus": "État de connexion",
+  "@torSettingsConnectionStatus": {
+    "description": "Title for connection status card"
+  },
+  "torSettingsStatusConnected": "Connecté",
+  "@torSettingsStatusConnected": {
+    "description": "Status title when Tor is connected"
+  },
+  "torSettingsStatusConnecting": "Connexion en cours...",
+  "@torSettingsStatusConnecting": {
+    "description": "Status title when Tor is connecting"
+  },
+  "torSettingsStatusDisconnected": "Déconnecté",
+  "@torSettingsStatusDisconnected": {
+    "description": "Status title when Tor is disconnected"
+  },
+  "torSettingsStatusUnknown": "État inconnu",
+  "@torSettingsStatusUnknown": {
+    "description": "Status title when Tor status is unknown"
+  },
+  "torSettingsDescConnected": "Le proxy Tor est actif et prêt",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsDescConnecting": "Établissement de la connexion Tor",
+  "@torSettingsDescConnecting": {
+    "description": "Description when Tor is connecting"
+  },
+  "torSettingsDescDisconnected": "Le proxy Tor n'est pas actif",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "torSettingsDescUnknown": "Impossible de déterminer l'état de Tor. Assurez-vous qu'Orbot est installé et en cours d'exécution.",
+  "@torSettingsDescUnknown": {
+    "description": "Description when Tor status is unknown"
+  },
+  "torSettingsInfoTitle": "Informations importantes",
+  "@torSettingsInfoTitle": {
+    "description": "Title for the Tor information card"
+  },
+  "torSettingsInfoDescription": "• Le proxy Tor s'applique uniquement à Bitcoin (pas Liquid)\n• Le port Orbot par défaut est 9050\n• Assurez-vous qu'Orbot est en cours d'exécution avant d'activer\n• La connexion peut être plus lente via Tor",
+  "@torSettingsInfoDescription": {
+    "description": "Information about Tor proxy usage"
+  },
+  "withdrawSuccessTitle": "Retrait initié",
+  "@withdrawSuccessTitle": {
+    "description": "Title shown when withdrawal is successfully initiated"
+  },
+  "withdrawSuccessOrderDetails": "Détails de la commande",
+  "@withdrawSuccessOrderDetails": {
+    "description": "Button label to view order details after withdrawal"
+  },
+  "withdrawConfirmBankAccount": "Compte bancaire",
+  "@withdrawConfirmBankAccount": {
+    "description": "Default label for bank account in confirmation screen"
+  },
+  "withdrawOwnershipQuestion": "À qui appartient ce compte ?",
+  "@withdrawOwnershipQuestion": {
+    "description": "Question asking about account ownership"
+  },
+  "withdrawOwnershipMyAccount": "C'est mon compte",
+  "@withdrawOwnershipMyAccount": {
+    "description": "Option indicating the account belongs to the user"
+  },
+  "withdrawOwnershipOtherAccount": "C'est le compte de quelqu'un d'autre",
+  "@withdrawOwnershipOtherAccount": {
+    "description": "Option indicating the account belongs to someone else"
+  },
+  "walletAutoTransferBlockedTitle": "Transfert automatique bloqué",
+  "@walletAutoTransferBlockedTitle": {
+    "description": "Title for auto-swap fee warning when fees exceed threshold"
+  },
+  "walletAutoTransferBlockedMessage": "Tentative de transfert de {amount} BTC. Les frais actuels sont de {currentFee}% du montant du transfert et le seuil de frais est fixé à {thresholdFee}%",
+  "@walletAutoTransferBlockedMessage": {
+    "description": "Message explaining why auto-transfer was blocked",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currentFee": {
+        "type": "String"
+      },
+      "thresholdFee": {
+        "type": "String"
+      }
+    }
+  },
+  "walletAutoTransferBlockButton": "Bloquer",
+  "@walletAutoTransferBlockButton": {
+    "description": "Button to block auto-transfer until next execution"
+  },
+  "walletAutoTransferAllowButton": "Autoriser",
+  "@walletAutoTransferAllowButton": {
+    "description": "Button to allow auto-transfer despite high fees"
   }
 }

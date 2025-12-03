@@ -31,6 +31,7 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/language/language_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
@@ -69,7 +70,8 @@ enum SettingsRoute {
   exchangeReferrals('exchange-referrals'),
   exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
-  appSettings('app-settings');
+  appSettings('app-settings'),
+  theme('theme');
 
   final String path;
 
@@ -167,6 +169,11 @@ class SettingsRouter {
         path: SettingsRoute.appSettings.path,
         builder: (context, state) => const AppSettingsScreen(),
         routes: [TorSettingsRouter.route],
+      ),
+      GoRoute(
+        name: SettingsRoute.theme.name,
+        path: SettingsRoute.theme.path,
+        builder: (context, state) => const ThemeSettingsScreen(),
       ),
 
       GoRoute(

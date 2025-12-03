@@ -27,13 +27,13 @@ class ActionCard extends StatelessWidget {
     return Stack(
       children: [
         Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             const Gap(2),
             Container(
               // padding: const EdgeInsets.all(20),
               height: 70,
-              color: context.colour.secondaryFixed,
+              color: context.appColors.cardBackground,
               // color: Colors.red,
             ),
             // const Gap(2),
@@ -52,7 +52,8 @@ class _ActionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       elevation: 2,
-      color: Colors.transparent,
+      shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),
+      color: context.appColors.transparent,
       child: SizedBox(
         height: 80,
         child: Row(
@@ -201,14 +202,19 @@ class _ActionButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: radius,
-            color: context.colour.onPrimary,
-            backgroundBlendMode: disabled ? BlendMode.darken : null,
+            color: context.appColors.surface,
+            backgroundBlendMode: disabled ? .darken : null,
           ),
           child: Column(
             spacing: 8,
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
-              Image.asset(icon, height: 24, width: 24),
+              Image.asset(
+                icon,
+                height: 24,
+                width: 24,
+                color: context.appColors.onSurface,
+              ),
               BBText(label, style: context.font.bodyLarge),
             ],
           ),

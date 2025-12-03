@@ -98,15 +98,15 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
         context.goNamed(ExchangeRoute.exchangeHome.name);
       },
       child: Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.appColors.secondaryFixed,
         appBar: AppBar(
           title: Text(
             context.loc.payOrderDetails,
             style: context.font.headlineMedium?.copyWith(
-              color: context.colour.outline,
+              color: context.appColors.outline,
             ),
           ),
-          backgroundColor: Colors.transparent,
+          backgroundColor: context.appColors.transparent,
           elevation: 0,
           automaticallyImplyLeading: false,
           actions: [
@@ -126,7 +126,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: .min,
                     children: [
                       Gif(
                         image: AssetImage(Assets.animations.successTick.path),
@@ -137,28 +137,34 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                       Text(
                         context.loc.paySinpeEnviado,
                         style: context.font.headlineLarge?.copyWith(
-                          color: context.colour.secondary,
-                          fontWeight: FontWeight.bold,
+                          color: context.appColors.secondary,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(16),
-                      Text(context.loc.paySinpeMonto, style: context.font.bodyMedium),
+                      Text(
+                        context.loc.paySinpeMonto,
+                        style: context.font.bodyMedium,
+                      ),
                       const Gap(4),
                       Text(
                         '${order.payoutAmount.toStringAsFixed(2)} ${order.payoutCurrency}',
                         style: context.font.headlineSmall?.copyWith(
-                          color: context.colour.secondary,
-                          fontWeight: FontWeight.bold,
+                          color: context.appColors.secondary,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(8),
-                      Text(context.loc.paySinpeNumeroOrden, style: context.font.bodyMedium),
+                      Text(
+                        context.loc.paySinpeNumeroOrden,
+                        style: context.font.bodyMedium,
+                      ),
                       const Gap(4),
                       Text(
                         order.orderNumber.toString(),
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.secondary,
-                          fontWeight: FontWeight.bold,
+                          color: context.appColors.secondary,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(8),
@@ -170,44 +176,50 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                       Text(
                         order.referenceNumber ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
-                          color: context.colour.secondary,
-                          fontWeight: FontWeight.bold,
+                          color: context.appColors.secondary,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(8),
-                      Text(context.loc.paySinpeBeneficiario, style: context.font.bodyMedium),
+                      Text(
+                        context.loc.paySinpeBeneficiario,
+                        style: context.font.bodyMedium,
+                      ),
                       const Gap(4),
                       Text(
                         order.beneficiaryName ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
-                          color: context.colour.secondary,
-                          fontWeight: FontWeight.bold,
+                          color: context.appColors.secondary,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(4),
                       Text(
                         _formatSinpePhoneNumber(order.beneficiaryAccountNumber),
                         style: context.font.headlineSmall?.copyWith(
-                          color: context.colour.secondary,
-                          fontWeight: FontWeight.bold,
+                          color: context.appColors.secondary,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(8),
-                      Text(context.loc.paySinpeOrigen, style: context.font.bodyMedium),
+                      Text(
+                        context.loc.paySinpeOrigen,
+                        style: context.font.bodyMedium,
+                      ),
                       const Gap(4),
                       Text(
                         order.originName ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
-                          color: context.colour.secondary,
-                          fontWeight: FontWeight.bold,
+                          color: context.appColors.secondary,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(4),
                       Text(
                         order.originCedula ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
-                          color: context.colour.secondary,
-                          fontWeight: FontWeight.bold,
+                          color: context.appColors.secondary,
+                          fontWeight: .bold,
                         ),
                       ),
                     ],
@@ -223,8 +235,8 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeHome.name);
                   },
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onPrimary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onPrimary,
                 ),
               ),
               const Gap(24),

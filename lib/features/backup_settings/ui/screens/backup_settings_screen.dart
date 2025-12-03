@@ -51,7 +51,7 @@ class _Screen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   const Gap(20),
                   const _BackupTestStatusWidget(),
@@ -90,7 +90,7 @@ class _BackupTestStatusWidget extends StatelessWidget {
     return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
       builder: (context, state) {
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             _StatusRow(
               label: context.loc.backupSettingsPhysicalBackup,
@@ -126,7 +126,7 @@ class _StatusRow extends StatelessWidget {
               : context.loc.backupSettingsNotTested,
           style: context.font.bodyMedium?.copyWith(
             color:
-                isTested ? context.colour.inverseSurface : context.colour.error,
+                isTested ? context.appColors.success : context.appColors.error,
           ),
         ),
       ],
@@ -146,10 +146,10 @@ class _TestBackupButton extends StatelessWidget {
             BackupSettingsSubroute.backupOptions.name,
             extra: BackupSettingsFlow.test,
           ),
-      borderColor: context.colour.secondary,
+      borderColor: context.appColors.onSurface,
       outlined: true,
-      bgColor: Colors.transparent,
-      textColor: context.colour.secondary,
+      bgColor: context.appColors.transparent,
+      textColor: context.appColors.onSurface,
     );
   }
 }
@@ -166,8 +166,8 @@ class _StartBackupButton extends StatelessWidget {
             BackupSettingsSubroute.backupOptions.name,
             extra: BackupSettingsFlow.backup,
           ),
-      bgColor: context.colour.primary,
-      textColor: context.colour.onPrimary,
+      bgColor: context.appColors.onSurface,
+      textColor: context.appColors.surface,
     );
   }
 }
@@ -192,10 +192,10 @@ class _ViewVaultKeyButton extends StatelessWidget {
           );
         }
       },
-      borderColor: context.colour.secondary,
+      borderColor: context.appColors.onSurface,
       outlined: true,
-      bgColor: Colors.transparent,
-      textColor: context.colour.secondary,
+      bgColor: context.appColors.transparent,
+      textColor: context.appColors.onSurface,
     );
   }
 }
@@ -212,20 +212,24 @@ class ErrorWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: context.colour.error),
+        border: Border.all(color: context.appColors.error),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
             children: [
-              Icon(Icons.error_outline, color: context.colour.error, size: 20),
+              Icon(
+                Icons.error_outline,
+                color: context.appColors.error,
+                size: 20,
+              ),
               const Gap(8),
               Text(
                 context.loc.backupSettingsError,
                 style: context.font.titleSmall?.copyWith(
-                  color: context.colour.error,
-                  fontWeight: FontWeight.bold,
+                  color: context.appColors.error,
+                  fontWeight: .bold,
                 ),
               ),
             ],
@@ -234,7 +238,7 @@ class ErrorWidget extends StatelessWidget {
           Text(
             error.toString(),
             style: context.font.bodySmall?.copyWith(
-              color: context.colour.error,
+              color: context.appColors.error,
             ),
           ),
         ],
@@ -251,8 +255,8 @@ class _Bip329LabelsButton extends StatelessWidget {
     return BBButton.big(
       label: context.loc.backupSettingsLabelsButton,
       onPressed: () => context.push(Bip329LabelsRouter.route.path),
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onSecondary,
+      bgColor: context.appColors.onSurface,
+      textColor: context.appColors.surface,
     );
   }
 }
@@ -273,10 +277,10 @@ class _RecoverBullSettingsButton extends StatelessWidget {
           ),
         );
       },
-      borderColor: context.colour.secondary,
+      borderColor: context.appColors.secondary,
       outlined: true,
       bgColor: Colors.transparent,
-      textColor: context.colour.secondary,
+      textColor: context.appColors.secondary,
     );
   }
 }

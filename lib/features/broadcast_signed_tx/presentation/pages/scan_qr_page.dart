@@ -20,7 +20,7 @@ class ScanQrPage extends StatelessWidget {
           final cubit = context.read<BroadcastSignedTxCubit>();
 
           return Stack(
-            fit: StackFit.expand,
+            fit: .expand,
             children: [
               QrScannerWidget(
                 onScanned: cubit.onQrScanned,
@@ -43,7 +43,7 @@ class ScanQrPage extends StatelessWidget {
                     onPressed: () => context.pop(),
                     icon: Icon(
                       CupertinoIcons.xmark_circle,
-                      color: context.colour.onPrimary,
+                      color: context.appColors.onPrimary,
                       size: 64,
                     ),
                   ),
@@ -59,7 +59,7 @@ class ScanQrPage extends StatelessWidget {
                     child: BBText(
                       '${state.bbqr.parts.length} / ${state.bbqr.options!.total}',
                       style: context.font.labelMedium,
-                      color: context.colour.onPrimary,
+                      color: context.appColors.onPrimary,
                     ),
                   ),
                 ),

@@ -121,7 +121,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
           body: SafeArea(
             child: Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   Gif(
                     image: AssetImage(Assets.animations.cubesLoading.path),
@@ -130,14 +130,17 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                     width: 100,
                   ),
                   const Gap(20),
-                  Text(context.loc.payPaymentInProgress, style: context.font.titleLarge),
+                  Text(
+                    context.loc.payPaymentInProgress,
+                    style: context.font.titleLarge,
+                  ),
                   const Gap(10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32.0),
                     child: Text(
                       context.loc.payPaymentInProgressDescription,
                       style: context.font.bodyMedium,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                   ),
                 ],
@@ -148,7 +151,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   if (order != null)
                     BBButton.big(
@@ -159,8 +162,8 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                           pathParameters: {'orderId': order.orderId},
                         );
                       },
-                      bgColor: context.colour.secondary,
-                      textColor: context.colour.onPrimary,
+                      bgColor: context.appColors.secondary,
+                      textColor: context.appColors.onPrimary,
                     ),
                 ],
               ),

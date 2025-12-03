@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:flutter/material.dart';
 
@@ -30,20 +30,32 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        border: Border.all(color: context.theme.colorScheme.outline),
+        border: Border.all(color: context.appColors.border),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
-              Text(widget.derivation.path),
-              Text(widget.derivation.application.name),
-              Text(widget.derivation.status.name),
+              Text(
+                widget.derivation.path,
+                style: TextStyle(color: context.appColors.text),
+              ),
+              Text(
+                widget.derivation.application.name,
+                style: TextStyle(color: context.appColors.text),
+              ),
+              Text(
+                widget.derivation.status.name,
+                style: TextStyle(color: context.appColors.text),
+              ),
             ],
           ),
-          Text(widget.derivation.alias ?? ''),
+          Text(
+            widget.derivation.alias ?? '',
+            style: TextStyle(color: context.appColors.text),
+          ),
           Row(
             children: [
               Expanded(
@@ -57,6 +69,7 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
               IconButton(
                 icon: Icon(
                   _isObscured ? Icons.visibility : Icons.visibility_off,
+                  color: context.appColors.onSurface,
                 ),
                 onPressed: () => setState(() => _isObscured = !_isObscured),
               ),

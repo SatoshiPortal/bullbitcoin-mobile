@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:rxdart/rxdart.dart';
 
 class WatchWalletTransactionByAddressUsecase {
   final WalletTransactionRepository _walletTransactionRepository;
@@ -40,6 +39,7 @@ class WatchWalletTransactionByAddressUsecase {
             return null;
           }
         })
-        .whereType<WalletTransaction>();
+        .where((event) => event != null)
+        .map((event) => event!);
   }
 }

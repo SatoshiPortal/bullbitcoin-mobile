@@ -30,7 +30,7 @@ class WalletHomeScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     const HomeWarnings(),
                     const AutoSwapFeeWarning(),

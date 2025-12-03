@@ -26,8 +26,8 @@ class SellInProgressScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: .center,
+              crossAxisAlignment: .center,
               children: [
                 const Spacer(),
                 Column(
@@ -40,7 +40,7 @@ class SellInProgressScreen extends StatelessWidget {
                     Text(
                       context.loc.sellInProgress,
                       style: context.font.headlineLarge?.copyWith(
-                        color: context.colour.outlineVariant,
+                        color: context.appColors.outlineVariant,
                       ),
                     ),
                   ],
@@ -51,8 +51,8 @@ class SellInProgressScreen extends StatelessWidget {
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeHome.name);
                   },
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onSecondary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ),

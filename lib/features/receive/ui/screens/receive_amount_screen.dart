@@ -96,10 +96,10 @@ class _AmountPageState extends State<AmountPage> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        behavior: HitTestBehavior.translucent,
+        behavior: .translucent,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: .spaceEvenly,
+          crossAxisAlignment: .stretch,
           children: [
             ReceiveAmountEntry(
               amountController: _amountController,
@@ -144,8 +144,8 @@ class ReceiveAmountContinueButton extends StatelessWidget {
           }
         },
         disabled: creatingSwap || amountException != null,
-        bgColor: context.colour.secondary,
-        textColor: context.colour.onSecondary,
+        bgColor: context.appColors.secondary,
+        textColor: context.appColors.onSecondary,
       ),
     );
   }

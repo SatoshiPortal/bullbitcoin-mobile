@@ -26,32 +26,34 @@ class AddressCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: .start,
+          mainAxisSize: .min,
           children: [
             Text(
               isUsed
                   ? context.loc.addressCardUsedLabel
                   : context.loc.addressCardUnusedLabel,
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.onSurface,
               ),
             ),
             const Gap(8),
             GestureDetector(
               onTap: () {
                 Clipboard.setData(ClipboardData(text: address));
-                final theme = Theme.of(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
                       context.loc.addressCardCopiedMessage,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 14, color: Colors.white),
+                      textAlign: .center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: context.appColors.surfaceFixed,
+                      ),
                     ),
                     duration: const Duration(seconds: 2),
-                    backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
-                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: context.appColors.onSurface.withAlpha(204),
+                    behavior: .floating,
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(
                       horizontal: 40,
@@ -70,7 +72,7 @@ class AddressCard extends StatelessWidget {
               child: Text(
                 StringFormatting.truncateMiddle(address, head: 10, tail: 20),
                 style: context.font.headlineMedium?.copyWith(
-                  color: context.colour.primary,
+                  color: context.appColors.primary,
                 ),
               ),
             ),
@@ -78,7 +80,7 @@ class AddressCard extends StatelessWidget {
             Text(
               '${context.loc.addressCardIndexLabel}$index',
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.textMuted,
               ),
             ),
             const Gap(8),
@@ -87,13 +89,13 @@ class AddressCard extends StatelessWidget {
                 Text(
                   context.loc.addressCardBalanceLabel,
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.secondary,
+                    color: context.appColors.textMuted,
                   ),
                 ),
                 CurrencyText(
                   balanceSat,
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.secondary,
+                    color: context.appColors.textMuted,
                   ),
                   showFiat: false,
                 ),

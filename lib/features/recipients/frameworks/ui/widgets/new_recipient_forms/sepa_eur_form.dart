@@ -11,10 +11,10 @@ class SepaEurForm extends StatefulWidget {
   const SepaEurForm({super.key});
 
   @override
-  _SepaEurFormState createState() => _SepaEurFormState();
+  SepaEurFormState createState() => SepaEurFormState();
 }
 
-class _SepaEurFormState extends State<SepaEurForm> {
+class SepaEurFormState extends State<SepaEurForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _ibanFocusNode = FocusNode();
   final FocusNode _firstnameFocusNode = FocusNode();
@@ -33,8 +33,10 @@ class _SepaEurFormState extends State<SepaEurForm> {
   @override
   void initState() {
     super.initState();
-    _onlyOwnerPermitted =
-        context.read<RecipientsBloc>().state.onlyOwnerRecipients;
+    _onlyOwnerPermitted = context
+        .read<RecipientsBloc>()
+        .state
+        .onlyOwnerRecipients;
     if (_onlyOwnerPermitted) {
       _isMyAccount = true;
     }
@@ -72,15 +74,15 @@ class _SepaEurFormState extends State<SepaEurForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'IBAN',
             hintText: 'Enter IBAN',
             focusNode: _ibanFocusNode,
             autofocus: true,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) {
               if (_isCorporate) {
                 _corporateNameFocusNode.requestFocus();
@@ -88,11 +90,9 @@ class _SepaEurFormState extends State<SepaEurForm> {
                 _firstnameFocusNode.requestFocus();
               }
             },
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _iban = value;
@@ -116,7 +116,7 @@ class _SepaEurFormState extends State<SepaEurForm> {
               });
             },
             contentPadding: EdgeInsets.zero,
-            controlAffinity: ListTileControlAffinity.leading,
+            controlAffinity: .leading,
           ),
           const Gap(12.0),
           if (!_isCorporate) ...[
@@ -124,13 +124,11 @@ class _SepaEurFormState extends State<SepaEurForm> {
               labelText: 'First Name',
               hintText: 'Enter first name',
               focusNode: _firstnameFocusNode,
-              textInputAction: TextInputAction.next,
+              textInputAction: .next,
               onFieldSubmitted: (_) => _lastnameFocusNode.requestFocus(),
-              validator:
-                  (v) =>
-                      (v == null || v.trim().isEmpty)
-                          ? "This field can't be empty"
-                          : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? "This field can't be empty"
+                  : null,
               onChanged: (value) {
                 setState(() {
                   _firstname = value;
@@ -142,13 +140,11 @@ class _SepaEurFormState extends State<SepaEurForm> {
               labelText: 'Last Name',
               hintText: 'Enter last name',
               focusNode: _lastnameFocusNode,
-              textInputAction: TextInputAction.next,
+              textInputAction: .next,
               onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-              validator:
-                  (v) =>
-                      (v == null || v.trim().isEmpty)
-                          ? "This field can't be empty"
-                          : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? "This field can't be empty"
+                  : null,
               onChanged: (value) {
                 setState(() {
                   _lastname = value;
@@ -162,13 +158,11 @@ class _SepaEurFormState extends State<SepaEurForm> {
               labelText: 'Corporate Name',
               hintText: 'Enter corporate name',
               focusNode: _corporateNameFocusNode,
-              textInputAction: TextInputAction.next,
+              textInputAction: .next,
               onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-              validator:
-                  (v) =>
-                      (v == null || v.trim().isEmpty)
-                          ? "This field can't be empty"
-                          : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? "This field can't be empty"
+                  : null,
               onChanged: (value) {
                 setState(() {
                   _corporateName = value;
@@ -181,7 +175,7 @@ class _SepaEurFormState extends State<SepaEurForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {
@@ -195,38 +189,37 @@ class _SepaEurFormState extends State<SepaEurForm> {
             'Who does this account belong to?',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: context.colour.onSurface,
+              fontWeight: .w500,
+              color: context.appColors.onSurface,
             ),
           ),
           const Gap(8.0),
-          RadioListTile<bool>(
-            title: const Text('This is my account'),
-            value: true,
+          RadioGroup<bool>(
             groupValue: _isMyAccount,
             onChanged: (value) {
-              setState(() {
-                _isMyAccount = value ?? true;
-              });
+              if (!_onlyOwnerPermitted) {
+                setState(() {
+                  _isMyAccount = value ?? false;
+                });
+              }
             },
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity.compact,
-          ),
-          const Gap(8.0),
-          RadioListTile<bool>(
-            title: const Text("This is someone else's account"),
-            value: false,
-            groupValue: _isMyAccount,
-            onChanged:
-                _onlyOwnerPermitted
-                    ? null
-                    : (value) {
-                      setState(() {
-                        _isMyAccount = value ?? false;
-                      });
-                    },
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity.compact,
+            child: const Column(
+              children: [
+                RadioListTile<bool>(
+                  title: Text('This is my account'),
+                  value: true,
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+                Gap(8.0),
+                RadioListTile<bool>(
+                  title: Text("This is someone else's account"),
+                  value: false,
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
+            ),
           ),
           const Gap(24.0),
           RecipientFormContinueButton(onPressed: _submitForm),

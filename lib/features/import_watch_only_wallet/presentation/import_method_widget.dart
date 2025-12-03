@@ -13,10 +13,10 @@ class ImportMethodWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: .spaceBetween,
       children: [
         Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: .spaceEvenly,
           children: [
             const Gap(12),
             BBButton.small(
@@ -26,8 +26,8 @@ class ImportMethodWidget extends StatelessWidget {
                     ImportWatchOnlyWalletRoutes.scan.name,
                   ),
               iconData: Icons.qr_code_scanner,
-              bgColor: context.colour.onSecondary,
-              textColor: context.colour.secondary,
+              bgColor: context.appColors.surface,
+              textColor: context.appColors.text,
               outlined: true,
             ),
 
@@ -37,7 +37,7 @@ class ImportMethodWidget extends StatelessWidget {
 
         Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: .spaceEvenly,
             children: [
               BBButton.small(
                 label: context.loc.importWatchOnlyBuyDevice,
@@ -46,8 +46,8 @@ class ImportMethodWidget extends StatelessWidget {
                       Uri.parse('https://store.coinkite.com/promo/BULLBITCOIN'),
                     ),
                 iconData: Icons.shopping_cart,
-                bgColor: context.colour.onSecondary,
-                textColor: context.colour.secondary,
+                bgColor: context.appColors.surface,
+                textColor: context.appColors.text,
                 outlined: true,
               ),
               const Gap(12),
@@ -58,8 +58,8 @@ class ImportMethodWidget extends StatelessWidget {
                       Uri.parse('https://docs.bull.ethicnology.com'),
                     ),
                 iconData: Icons.lightbulb_outline,
-                bgColor: context.colour.onSecondary,
-                textColor: context.colour.secondary,
+                bgColor: context.appColors.surface,
+                textColor: context.appColors.text,
                 outlined: true,
               ),
             ],

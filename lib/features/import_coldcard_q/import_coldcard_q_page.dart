@@ -22,12 +22,12 @@ class ImportColdcardQPage extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: Device.screen.width * 0.05),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             BBText(
               context.loc.importColdcardDescription,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               maxLines: 2,
             ),
 
@@ -36,6 +36,7 @@ class ImportColdcardQPage extends StatelessWidget {
               Assets.misc.qRPlaceholder.path,
               height: 200,
               width: 200,
+              color: context.appColors.text,
             ),
             Gap(Device.screen.height * 0.05),
             Column(
@@ -47,8 +48,8 @@ class ImportColdcardQPage extends StatelessWidget {
                         ImportWatchOnlyWalletRoutes.scan.name,
                         extra: SignerDeviceEntity.coldcardQ,
                       ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  bgColor: context.appColors.surface,
+                  textColor: context.appColors.text,
                   outlined: true,
                 ),
 
@@ -57,8 +58,8 @@ class ImportColdcardQPage extends StatelessWidget {
                   label: context.loc.importColdcardButtonInstructions,
                   onPressed:
                       () => ColdcardQInstructionsBottomSheet.show(context),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  bgColor: context.appColors.surface,
+                  textColor: context.appColors.text,
                   outlined: true,
                 ),
                 Gap(Device.screen.height * 0.02),
@@ -70,8 +71,8 @@ class ImportColdcardQPage extends StatelessWidget {
                           'https://store.coinkite.com/promo/BULLBITCOIN',
                         ),
                       ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  bgColor: context.appColors.surface,
+                  textColor: context.appColors.text,
                   outlined: true,
                 ),
               ],

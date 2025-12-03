@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
@@ -55,8 +56,10 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
             }
           },
           builder: (context, state) {
-            final title =
-                'Test ${state.selectedWallet?.isDefault ?? false ? 'Default Wallets' : state.selectedWallet?.displayLabel ?? ''}';
+            final walletName = state.selectedWallet?.isDefault ?? false
+                ? context.loc.testBackupDefaultWallets
+                : state.selectedWallet?.displayLabel ?? '';
+            final title = context.loc.testBackupWalletTitle(walletName);
             final reorderedMnemonic =
                 context.watch<TestWalletBackupBloc>().state.reorderedMnemonic;
             final mnemonic =
@@ -66,7 +69,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                 reorderedMnemonic.isEmpty ? 1 : reorderedMnemonic.length + 1;
             final showPrompt = reorderedMnemonic.length < mnemonic.length;
             return Scaffold(
-              backgroundColor: context.colour.onSecondary,
+              backgroundColor: context.appColors.onSecondary,
               appBar: PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
                 child: AppBarWidget(title: title),
@@ -75,14 +78,14 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    crossAxisAlignment: .stretch,
                     children: [
                       BBText(
-                        'Tap the recovery words in the \nright order',
-                        textAlign: TextAlign.center,
+                        context.loc.testBackupTapWordsInOrder,
+                        textAlign: .center,
                         maxLines: 2,
                         style: context.font.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
+                          fontWeight: .w600,
                           fontSize: 16,
                           letterSpacing: 0,
                         ),
@@ -92,11 +95,11 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                         Column(
                           children: [
                             BBText(
-                              'What is word number $nextWordNumber?',
-                              textAlign: TextAlign.center,
+                              context.loc.testBackupWhatIsWordNumber(nextWordNumber),
+                              textAlign: .center,
                               style: context.font.labelMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: context.colour.outline,
+                                fontWeight: .w700,
+                                color: context.appColors.outline,
                                 letterSpacing: 0,
                                 fontSize: 12,
                               ),
@@ -105,11 +108,11 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                         )
                       else
                         BBText(
-                          'You have selected all words',
-                          textAlign: TextAlign.center,
+                          context.loc.testBackupAllWordsSelected,
+                          textAlign: .center,
                           style: context.font.labelMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: context.colour.surface,
+                            fontWeight: .w700,
+                            color: context.appColors.surface,
                             letterSpacing: 0,
                             fontSize: 14,
                           ),
@@ -188,23 +191,23 @@ class _ShuffledMnemonicWord extends StatelessWidget {
                   OnWordsSelected(word: word, index: index),
                 );
               },
-      splashColor: Colors.transparent,
+      splashColor: context.appColors.transparent,
       child: Container(
         margin: const EdgeInsets.fromLTRB(8, 0, 8, 20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.appColors.surface,
           borderRadius: BorderRadius.circular(2.76),
-          border: Border.all(color: context.colour.surface, width: 0.69),
+          border: Border.all(color: context.appColors.surface, width: 0.69),
           boxShadow: [
             BoxShadow(
-              color: context.colour.surface,
+              color: context.appColors.surface,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         height: 41,
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
@@ -236,10 +239,10 @@ class _ShuffledMnemonicWord extends StatelessWidget {
                   child: BBText(
                     isSelected ? '$selectedWordNumber' : '00',
                     style: context.font.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: .w700,
                       fontSize: 16,
                       letterSpacing: 0.15,
-                      color: Colors.white,
+                      color: context.appColors.onPrimary,
                     ),
                   ),
                 ),
@@ -248,12 +251,12 @@ class _ShuffledMnemonicWord extends StatelessWidget {
             const Gap(12),
             BBText(
               word,
-              textAlign: TextAlign.start,
+              textAlign: .start,
               maxLines: 2,
               style: context.font.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w700,
+                fontWeight: .w700,
                 fontSize: 14,
-                color: context.colour.secondary,
+                color: context.appColors.secondary,
               ),
             ),
           ],

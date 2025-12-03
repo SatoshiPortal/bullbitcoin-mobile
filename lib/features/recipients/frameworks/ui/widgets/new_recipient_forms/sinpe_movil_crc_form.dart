@@ -13,10 +13,10 @@ class SinpeMovilCrcForm extends StatefulWidget {
   const SinpeMovilCrcForm({super.key});
 
   @override
-  _SinpeMovilCrcFormState createState() => _SinpeMovilCrcFormState();
+  SinpeMovilCrcFormState createState() => SinpeMovilCrcFormState();
 }
 
-class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
+class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _phoneNumberFocusNode = FocusNode();
   final FocusNode _labelFocusNode = FocusNode();
@@ -77,8 +77,8 @@ class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'Phone Number',
@@ -86,7 +86,7 @@ class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
             focusNode: _phoneNumberFocusNode,
             autofocus: true,
             prefixText: '+506',
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: _validatePhoneNumberInput,
             onChanged: (value) {
@@ -114,25 +114,24 @@ class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
                 hintText: 'Owner name will appear here',
                 controller: _ownerNameController,
                 disabled: true,
-                suffix:
-                    _ownerNameController.text.isNotEmpty
-                        ? const Icon(Icons.check_circle, color: Colors.green)
-                        : isChecking
-                        ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                context.colour.primary,
-                              ),
+                suffix: _ownerNameController.text.isNotEmpty
+                    ? const Icon(Icons.check_circle, color: Colors.green)
+                    : isChecking
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              context.appColors.primary,
                             ),
                           ),
-                        )
-                        : const Icon(
-                          Icons.check_circle_outline,
-                          color: Colors.grey,
                         ),
+                      )
+                    : const Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.grey,
+                      ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
                     return "Please validate the phone number";
@@ -147,7 +146,7 @@ class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {

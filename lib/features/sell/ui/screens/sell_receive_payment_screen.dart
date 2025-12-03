@@ -56,7 +56,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Center(
               child: BBText(
@@ -66,12 +66,12 @@ class SellReceivePaymentScreen extends StatelessWidget {
             ),
             Center(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   BBText(
                     context.loc.sellPriceWillRefreshIn,
                     style: context.font.bodyMedium,
-                    color: context.colour.outline,
+                    color: context.appColors.outline,
                   ),
                   if (order != null)
                     Countdown(
@@ -106,7 +106,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
             Container(
               height: 1,
               width: double.infinity,
-              color: context.colour.secondaryFixedDim,
+              color: context.appColors.secondaryFixedDim,
             ),
             const Gap(16),
             _buildDetailRow(
@@ -178,20 +178,20 @@ class SellReceivePaymentScreen extends StatelessWidget {
                         SnackBarUtils.showCopiedSnackBar(context);
                       }
                     },
-                    bgColor: Colors.transparent,
-                    textColor: context.colour.secondary,
+                    bgColor: context.appColors.transparent,
+                    textColor: context.appColors.secondary,
                     outlined: true,
-                    borderColor: context.colour.secondary,
+                    borderColor: context.appColors.secondary,
                   ),
                 ),
                 const Gap(16),
                 Expanded(
                   child: BBButton.big(
                     label: context.loc.sellShowQrCode,
-                    bgColor: Colors.transparent,
-                    textColor: context.colour.secondary,
+                    bgColor: context.appColors.transparent,
+                    textColor: context.appColors.secondary,
                     outlined: true,
-                    borderColor: context.colour.secondary,
+                    borderColor: context.appColors.secondary,
                     onPressed: () {
                       SellQrBottomSheet.show(context, bip21InvoiceData);
                     },
@@ -216,26 +216,26 @@ class SellReceivePaymentScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           BBText(
             label,
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.surfaceContainer,
+              color: context.appColors.surfaceContainer,
             ),
           ),
           const Spacer(),
           Expanded(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: .end,
               children: [
                 Flexible(
                   child: BBText(
                     value,
-                    textAlign: TextAlign.end,
+                    textAlign: .end,
                     maxLines: 2,
                     style: context.font.bodyMedium?.copyWith(
-                      color: isError ? context.colour.error : null,
+                      color: isError ? context.appColors.error : null,
                     ),
                   ),
                 ),
@@ -248,7 +248,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                     },
                     child: Icon(
                       Icons.copy,
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                       size: 16,
                     ),
                   ),

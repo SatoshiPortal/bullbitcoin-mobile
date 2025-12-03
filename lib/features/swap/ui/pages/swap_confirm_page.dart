@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/screens/send_confirm_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:flutter/material.dart';
@@ -38,14 +39,14 @@ class SwapConfirmPage extends StatelessWidget {
     );
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Confirm Transfer'),
+        title: Text(context.loc.swapConfirmTransferTitle),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child: FadingLinearProgress(
             height: 3,
             trigger: isConfirming,
-            backgroundColor: context.colour.onPrimary,
-            foregroundColor: context.colour.primary,
+            backgroundColor: context.appColors.onPrimary,
+            foregroundColor: context.appColors.primary,
           ),
         ),
       ),
@@ -60,7 +61,7 @@ class SwapConfirmPage extends StatelessWidget {
                     vertical: 24,
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    crossAxisAlignment: .stretch,
                     children: [
                       const Gap(8),
                       CommonSendConfirmTopArea(

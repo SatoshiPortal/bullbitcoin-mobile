@@ -68,18 +68,18 @@ class SendAddressScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
+      backgroundColor: context.appColors.secondaryFixedDim,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.sendTitle,
-          color: context.colour.secondaryFixedDim,
+          color: context.appColors.secondaryFixedDim,
           onBack: () => context.pop(),
         ),
       ),
       body: Stack(
-        fit: StackFit.expand,
+        fit: .expand,
         children: [
           Column(
             children: [
@@ -89,20 +89,19 @@ class SendAddressScreen extends StatelessWidget {
                   (SendCubit cubit) =>
                       cubit.state.loadingBestWallet || cubit.state.creatingSwap,
                 ),
-                backgroundColor: context.colour.onPrimary,
-                foregroundColor: context.colour.primary,
+                backgroundColor: context.appColors.onPrimary,
+                foregroundColor: context.appColors.primary,
               ),
               Expanded(
                 child: Stack(
-                  fit: StackFit.expand,
+                  fit: .expand,
                   children: [
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.5,
                       child: OpenTheCameraWidget(
-                        onScannedPaymentRequest:
-                            (data) => context
-                                .read<SendCubit>()
-                                .onScannedPaymentRequest(data.$1, data.$2),
+                        onScannedPaymentRequest: (data) => context
+                            .read<SendCubit>()
+                            .onScannedPaymentRequest(data.$1, data.$2),
                       ),
                     ),
                     Positioned(
@@ -112,7 +111,7 @@ class SendAddressScreen extends StatelessWidget {
                       child: SingleChildScrollView(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: context.colour.onPrimary,
+                            color: context.appColors.onPrimary,
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(12),
                               topRight: Radius.circular(12),
@@ -120,8 +119,8 @@ class SendAddressScreen extends StatelessWidget {
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: .stretch,
+                            mainAxisSize: .min,
                             children: [
                               const Gap(32),
                               BBText(
@@ -172,8 +171,8 @@ class SendContinueWithAddressButton extends StatelessWidget {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
       disabled: !isValidPaymentRequest || loadingBestWallet || creatingSwap,
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onPrimary,
+      bgColor: context.appColors.secondary,
+      textColor: context.appColors.onPrimary,
     );
   }
 }
@@ -192,12 +191,12 @@ class AddressField extends StatelessWidget {
       value: address,
       hint: context.loc.sendPasteAddressOrInvoice,
       hintStyle: context.font.bodyLarge?.copyWith(
-        color: context.colour.surfaceContainer,
+        color: context.appColors.surfaceContainer,
       ),
       maxLines: 1,
       rightIcon: Icon(
         Icons.paste_sharp,
-        color: context.colour.secondary,
+        color: context.appColors.secondary,
         size: 20,
       ),
       onRightTap: () {
@@ -233,8 +232,8 @@ class AddressErrorSection extends StatelessWidget {
         child: BBText(
           context.loc.sendErrorInsufficientBalanceForPayment,
           style: context.font.bodyMedium,
-          color: context.colour.error,
-          textAlign: TextAlign.center,
+          color: context.appColors.error,
+          textAlign: .center,
           maxLines: 2,
         ),
       );
@@ -243,8 +242,8 @@ class AddressErrorSection extends StatelessWidget {
       return BBText(
         context.loc.sendErrorSwapCreationFailed,
         style: context.font.bodyMedium,
-        color: context.colour.error,
-        textAlign: TextAlign.center,
+        color: context.appColors.error,
+        textAlign: .center,
         maxLines: 2,
       );
     }
@@ -252,8 +251,8 @@ class AddressErrorSection extends StatelessWidget {
       return BBText(
         context.loc.sendErrorInvalidAddressOrInvoice,
         style: context.font.bodyMedium,
-        color: context.colour.error,
-        textAlign: TextAlign.center,
+        color: context.appColors.error,
+        textAlign: .center,
         maxLines: 2,
       );
     }
@@ -302,7 +301,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.onPrimary,
+      backgroundColor: context.appColors.onPrimary,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
@@ -318,22 +317,20 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             trigger: context.select(
               (SendCubit cubit) => cubit.state.creatingSwap,
             ),
-            backgroundColor: context.colour.onPrimary,
-            foregroundColor: context.colour.primary,
+            backgroundColor: context.appColors.onPrimary,
+            foregroundColor: context.appColors.primary,
           ),
           Expanded(
             child: BlocListener<SendCubit, SendState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous.amount != current.amount &&
-                      _amountController.text != current.amount,
+              listenWhen: (previous, current) =>
+                  previous.amount != current.amount &&
+                  _amountController.text != current.amount,
               listener: (context, state) {
                 final amount = state.amount;
                 final currentCursor = _amountController.selection.baseOffset;
-                final safePosition =
-                    _isMax
-                        ? amount.length
-                        : math.min(currentCursor, amount.length);
+                final safePosition = _isMax
+                    ? amount.length
+                    : math.min(currentCursor, amount.length);
 
                 _amountController.value = TextEditingValue(
                   text: amount,
@@ -382,7 +379,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: SingleChildScrollView(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          crossAxisAlignment: .stretch,
                           children: [
                             const Gap(10),
                             const NetworkDisplay(),
@@ -417,22 +414,21 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                             const Gap(48),
                             Divider(
                               height: 1,
-                              color: context.colour.secondaryFixedDim,
+                              color: context.appColors.secondaryFixedDim,
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               child: BalanceRow(
                                 balance: state.formattedWalletBalance(),
                                 currencyCode: '',
-                                onMaxPressed:
-                                    !isLightning && !isChainSwap
-                                        ? () {
-                                          _setIsMax(true);
-                                          context
-                                              .read<SendCubit>()
-                                              .amountChanged(isMax: true);
-                                        }
-                                        : null,
+                                onMaxPressed: !isLightning && !isChainSwap
+                                    ? () {
+                                        _setIsMax(true);
+                                        context.read<SendCubit>().amountChanged(
+                                          isMax: true,
+                                        );
+                                      }
+                                    : null,
                                 walletLabel: selectedWalletLabel,
                               ),
                             ),
@@ -508,8 +504,8 @@ class SendAmountConfirmButton extends StatelessWidget {
           creatingSwap ||
           loadingBestWallet ||
           inputAmountSat <= 0,
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onPrimary,
+      bgColor: context.appColors.secondary,
+      textColor: context.appColors.onPrimary,
     );
   }
 }
@@ -566,15 +562,15 @@ class SendConfirmScreen extends StatelessWidget {
                   cubit.state.buildingTransaction ||
                   cubit.state.signingTransaction,
             ),
-            backgroundColor: context.colour.onPrimary,
-            foregroundColor: context.colour.primary,
+            backgroundColor: context.appColors.onPrimary,
+            foregroundColor: context.appColors.primary,
           ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
               child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     // const Gap(24),
                     const SendConfirmTopArea(),
@@ -620,17 +616,17 @@ class _SendError extends StatelessWidget {
             BBText(
               context.loc.sendErrorBuildFailed,
               style: context.font.bodyLarge,
-              color: context.colour.error,
+              color: context.appColors.error,
               maxLines: 5,
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
             const Gap(8),
             BBText(
               buildError.message,
               style: context.font.bodyMedium,
-              color: context.colour.error,
+              color: context.appColors.error,
               maxLines: 5,
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
           ],
         ),
@@ -644,17 +640,17 @@ class _SendError extends StatelessWidget {
             BBText(
               context.loc.sendErrorConfirmationFailed,
               style: context.font.bodyLarge,
-              color: context.colour.error,
+              color: context.appColors.error,
               maxLines: 5,
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
             const Gap(8),
             BBText(
               confirmError.message,
               style: context.font.bodyMedium,
-              color: context.colour.error,
+              color: context.appColors.error,
               maxLines: 5,
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
           ],
         ),
@@ -676,8 +672,8 @@ class _HighFeeWarning extends StatelessWidget {
       title: context.loc.sendHighFeeWarning,
       description:
           context.loc.sendHighFeeWarningDescription(feePercent.toStringAsFixed(2)),
-      tagColor: context.colour.onError,
-      bgColor: context.colour.secondaryFixed,
+      tagColor: context.appColors.onError,
+      bgColor: context.appColors.secondaryFixed,
     );
   }
 }
@@ -690,8 +686,8 @@ class _SlowPaymentWarning extends StatelessWidget {
     return InfoCard(
       title: context.loc.sendSlowPaymentWarning,
       description: context.loc.sendSlowPaymentWarningDescription,
-      tagColor: context.colour.onError,
-      bgColor: context.colour.secondaryFixed,
+      tagColor: context.appColors.onError,
+      bgColor: context.appColors.secondaryFixed,
     );
   }
 }
@@ -714,7 +710,7 @@ class _BottomButtons extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           if (isBitcoinWallet && !hasFinalizedTx) ...[
             BBButton.big(
@@ -723,19 +719,18 @@ class _BottomButtons extends StatelessWidget {
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
-                  backgroundColor: context.colour.secondaryFixed,
+                  backgroundColor: context.appColors.secondaryFixed,
                   constraints: const BoxConstraints(maxWidth: double.infinity),
-                  builder:
-                      (BuildContext buildContext) => BlocProvider.value(
-                        value: context.read<SendCubit>(),
-                        child: const AdvancedOptionsBottomSheet(),
-                      ),
+                  builder: (BuildContext buildContext) => BlocProvider.value(
+                    value: context.read<SendCubit>(),
+                    child: const AdvancedOptionsBottomSheet(),
+                  ),
                 );
               },
-              borderColor: context.colour.secondary,
+              borderColor: context.appColors.secondary,
               outlined: true,
-              bgColor: Colors.transparent,
-              textColor: context.colour.secondary,
+              bgColor: context.appColors.transparent,
+              textColor: context.appColors.secondary,
             ),
             const Gap(12),
           ],
@@ -743,8 +738,8 @@ class _BottomButtons extends StatelessWidget {
             (wallet.signerDevice != null && wallet.signerDevice!.isLedger)
                 ? const SignLedgerButton()
                 : (wallet.signerDevice != null && wallet.signerDevice!.isBitBox)
-                    ? const SignBitBoxButton()
-                    : const ShowPsbtButton()
+                ? const SignBitBoxButton()
+                : const ShowPsbtButton()
           else
             const ConfirmSendButton(),
         ],
@@ -769,8 +764,8 @@ class ConfirmSendButton extends StatelessWidget {
       onPressed: () {
         context.read<SendCubit>().onConfirmTransactionClicked();
       },
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onSecondary,
+      bgColor: context.appColors.secondary,
+      textColor: context.appColors.onSecondary,
       disabled: disableSendButton,
     );
   }
@@ -779,7 +774,7 @@ class ConfirmSendButton extends StatelessWidget {
 class _OnchainSendInfoSection extends StatelessWidget {
   const _OnchainSendInfoSection();
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.colour.secondaryFixedDim);
+    return Container(height: 1, color: context.appColors.secondaryFixedDim);
   }
 
   @override
@@ -818,36 +813,36 @@ class _OnchainSendInfoSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           InfoRow(
             title: context.loc.sendFrom,
             details: BBText(
               selectedWallet!.displayLabel,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           _divider(context),
           InfoRow(
             title: context.loc.sendTo,
             details: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: .end,
+              mainAxisSize: .min,
               children: [
                 Expanded(
                   child: BBText(
                     paymentRequestAddress,
                     maxLines: 5,
                     style: context.font.bodyLarge,
-                    textAlign: TextAlign.end,
+                    textAlign: .end,
                   ),
                 ),
                 const Gap(8),
                 InkWell(
                   child: Icon(
                     Icons.copy,
-                    color: context.colour.primary,
+                    color: context.appColors.primary,
                     size: 16,
                   ),
                   onTap: () {
@@ -871,13 +866,13 @@ class _OnchainSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendAmount,
             details: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: .end,
               children: [
                 BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
                 BBText(
                   '~$formattedFiatEquivalent',
                   style: context.font.labelSmall,
-                  color: context.colour.surfaceContainer,
+                  color: context.appColors.surfaceContainer,
                 ),
               ],
             ),
@@ -889,7 +884,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
             details: BBText(
               formattedAbsoluteFees,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           if (!selectedWallet.isLiquid) ...[
@@ -897,33 +892,32 @@ class _OnchainSendInfoSection extends StatelessWidget {
             InfoRow(
               title: context.loc.sendFeePriority,
               details: InkWell(
-                onTap:
-                    hasFinalizedTx
-                        ? null
-                        : () async {
-                          final selected = await _showFeeOptions(context);
+                onTap: hasFinalizedTx
+                    ? null
+                    : () async {
+                        final selected = await _showFeeOptions(context);
 
-                          if (selected != null) {
-                            final fee = FeeSelectionName.fromString(selected);
-                            // ignore: use_build_context_synchronously
-                            await context.read<SendCubit>().feeOptionSelected(
-                              fee,
-                            );
-                          }
-                        },
+                        if (selected != null) {
+                          final fee = FeeSelectionName.fromString(selected);
+                          // ignore: use_build_context_synchronously
+                          await context.read<SendCubit>().feeOptionSelected(
+                            fee,
+                          );
+                        }
+                      },
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: .end,
                   children: [
                     BBText(
                       selectedFeeOption.title(),
                       style: context.font.bodyLarge,
-                      color: context.colour.primary,
-                      textAlign: TextAlign.end,
+                      color: context.appColors.primary,
+                      textAlign: .end,
                     ),
                     const Gap(4),
                     Icon(
                       Icons.arrow_forward_ios_sharp,
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                       weight: 100,
                       size: 12,
                     ),
@@ -948,11 +942,10 @@ class _OnchainSendInfoSection extends StatelessWidget {
       useRootNavigator: true,
       context: context,
       isScrollControlled: true,
-      backgroundColor: context.colour.onSecondary,
+      backgroundColor: context.appColors.onSecondary,
       constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder:
-          (BuildContext buildContext) =>
-              BlocProvider.value(value: sendCubit, child: FeeOptionsModal()),
+      builder: (BuildContext buildContext) =>
+          BlocProvider.value(value: sendCubit, child: FeeOptionsModal()),
     );
 
     return selected;
@@ -962,7 +955,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
 class _LnSwapSendInfoSection extends StatelessWidget {
   const _LnSwapSendInfoSection();
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.colour.secondaryFixedDim);
+    return Container(height: 1, color: context.appColors.secondaryFixedDim);
   }
 
   @override
@@ -989,14 +982,14 @@ class _LnSwapSendInfoSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           InfoRow(
             title: context.loc.sendFrom,
             details: BBText(
               selectedWallet!.displayLabel,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           _divider(context),
@@ -1005,25 +998,25 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             details: BBText(
               swap!.id,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           _divider(context),
           InfoRow(
             title: context.loc.sendTo,
             details: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: .end,
+              mainAxisSize: .min,
               children: [
                 Expanded(
                   child: BBText(
                     paymentRequest!.isLnAddress
                         ? paymentRequestAddress
                         : StringFormatting.truncateMiddle(
-                          paymentRequestAddress,
-                        ),
+                            paymentRequestAddress,
+                          ),
                     style: context.font.bodyLarge,
-                    textAlign: TextAlign.end,
+                    textAlign: .end,
                     maxLines: 10,
                   ),
                 ),
@@ -1031,7 +1024,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                 InkWell(
                   child: Icon(
                     Icons.copy,
-                    color: context.colour.primary,
+                    color: context.appColors.primary,
                     size: 16,
                   ),
                   onTap: () {
@@ -1049,7 +1042,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             InfoRow(
               title: context.loc.sendSendAmount,
               details: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: .end,
                 children: [
                   CurrencyText(
                     swap.paymentAmount,
@@ -1064,7 +1057,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             InfoRow(
               title: context.loc.sendReceiveAmount,
               details: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: .end,
                 children: [
                   CurrencyText(
                     swap.receieveAmount!,
@@ -1079,7 +1072,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             InfoRow(
               title: context.loc.sendNetworkFeesLabel,
               details: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: .end,
                 children: [
                   CurrencyText(
                     swap.fees!.lockupFee!,
@@ -1124,14 +1117,14 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
           BBText(
             label,
             style: context.font.bodySmall,
-            color: context.colour.surfaceContainer,
+            color: context.appColors.surfaceContainer,
           ),
           const Spacer(),
           CurrencyText(
             amt,
             showFiat: false,
             style: context.font.bodySmall,
-            color: context.colour.surfaceContainer,
+            color: context.appColors.surfaceContainer,
           ),
         ],
       ),
@@ -1149,9 +1142,9 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: InkWell(
-              splashColor: Colors.transparent,
+              splashColor: context.appColors.transparent,
               splashFactory: NoSplash.splashFactory,
-              highlightColor: Colors.transparent,
+              highlightColor: context.appColors.transparent,
               onTap: () {
                 setState(() {
                   expanded = !expanded;
@@ -1162,19 +1155,19 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                   BBText(
                     context.loc.sendTransferFee,
                     style: context.font.bodySmall,
-                    color: context.colour.surfaceContainer,
+                    color: context.appColors.surfaceContainer,
                   ),
                   const Spacer(),
                   CurrencyText(
                     total,
                     showFiat: false,
                     style: context.font.bodyLarge,
-                    color: context.colour.outlineVariant,
+                    color: context.appColors.outlineVariant,
                   ),
                   const Gap(4),
                   Icon(
                     expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                    color: context.colour.primary,
+                    color: context.appColors.primary,
                   ),
                 ],
               ),
@@ -1182,7 +1175,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
           ),
           const Gap(12),
           if (expanded && fees != null) ...[
-            Container(color: context.colour.surface, height: 1),
+            Container(color: context.appColors.surface, height: 1),
             Column(
               children: [
                 const Gap(4),
@@ -1191,7 +1184,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                   child: BBText(
                     context.loc.sendTransferFeeDescription,
                     style: context.font.labelSmall,
-                    color: context.colour.surfaceContainer,
+                    color: context.appColors.surfaceContainer,
                   ),
                 ),
                 if (fees.claimFee != null)
@@ -1216,7 +1209,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
 class _ChainSwapSendInfoSection extends StatelessWidget {
   const _ChainSwapSendInfoSection();
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.colour.secondaryFixedDim);
+    return Container(height: 1, color: context.appColors.secondaryFixedDim);
   }
 
   @override
@@ -1240,14 +1233,14 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           InfoRow(
             title: context.loc.sendFrom,
             details: BBText(
               selectedWallet!.displayLabel,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           _divider(context),
@@ -1256,21 +1249,21 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             details: BBText(
               swap!.id,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+              textAlign: .end,
             ),
           ),
           _divider(context),
           InfoRow(
             title: context.loc.sendTo,
             details: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: .end,
+              mainAxisSize: .min,
               children: [
                 Expanded(
                   child: BBText(
                     paymentRequestAddress,
                     style: context.font.bodyLarge,
-                    textAlign: TextAlign.end,
+                    textAlign: .end,
                     maxLines: 10,
                   ),
                 ),
@@ -1278,7 +1271,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                 InkWell(
                   child: Icon(
                     Icons.copy,
-                    color: context.colour.primary,
+                    color: context.appColors.primary,
                     size: 16,
                   ),
                   onTap: () {
@@ -1302,7 +1295,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendSendAmount,
             details: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: .end,
               children: [
                 CurrencyText(
                   swap.sendAmount!,
@@ -1317,7 +1310,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             InfoRow(
               title: context.loc.sendReceiveAmount,
               details: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: .end,
                 children: [
                   CurrencyText(
                     swap.receieveAmount!,
@@ -1332,7 +1325,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             InfoRow(
               title: context.loc.sendSendNetworkFee,
               details: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: .end,
                 children: [
                   CurrencyText(
                     absoluteFees,
@@ -1374,7 +1367,7 @@ class InfoRow extends StatelessWidget {
           BBText(
             title,
             style: context.font.bodySmall,
-            color: context.colour.surfaceContainer,
+            color: context.appColors.surfaceContainer,
           ),
           const Gap(24),
           Expanded(child: details),
@@ -1394,15 +1387,15 @@ class SendConfirmTopArea extends StatelessWidget {
     );
 
     return Column(
-      // crossAxisAlignment: CrossAxisAlignment.stretch,
+      // crossAxisAlignment: .stretch,
       children: [
         Container(
           alignment: Alignment.center,
           height: 72,
           width: 72,
           decoration: BoxDecoration(
-            color: context.colour.secondaryFixedDim,
-            shape: BoxShape.circle,
+            color: context.appColors.secondaryFixedDim,
+            shape: .circle,
           ),
           child: Image.asset(
             Assets.icons.rightArrow.path,
@@ -1416,7 +1409,7 @@ class SendConfirmTopArea extends StatelessWidget {
         BBText(
           amountBitcoin,
           style: context.font.displaySmall,
-          color: context.colour.outlineVariant,
+          color: context.appColors.outlineVariant,
         ),
       ],
     );
@@ -1463,7 +1456,7 @@ class SendSendingScreen extends StatelessWidget {
                   context.loc.sendBroadcastingTransaction,
                   style: context.font.bodyMedium,
                   maxLines: 4,
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                 ),
               ],
               if (isLnSwap && !isLnPaid) ...[
@@ -1475,14 +1468,14 @@ class SendSendingScreen extends StatelessWidget {
                     context.loc.sendSwapInProgressInvoice,
                     style: context.font.bodyMedium,
                     maxLines: 4,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                   )
                 else
                   BBText(
                     context.loc.sendSwapInProgressBitcoin,
                     style: context.font.bodyMedium,
                     maxLines: 4,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                   ),
               ],
             ],
@@ -1546,8 +1539,8 @@ class SendSucessScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: .stretch,
+          mainAxisAlignment: .center,
           children: [
             const Spacer(),
             Padding(
@@ -1564,12 +1557,12 @@ class SendSucessScreen extends StatelessWidget {
                     BBText(
                       context.loc.sendSwapRefundInProgress,
                       style: context.font.headlineLarge,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                     BBText(
                       context.loc.sendSwapFailed,
                       style: context.font.headlineLarge,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                   ] else if ((isLnSwap &&
                           lnSwap.status == SwapStatus.completed &&
@@ -1580,12 +1573,12 @@ class SendSucessScreen extends StatelessWidget {
                     BBText(
                       context.loc.sendSwapRefundCompleted,
                       style: context.font.headlineLarge,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                     BBText(
                       context.loc.sendRefundProcessed,
                       style: context.font.headlineLarge,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                   ] else if (isLnSwap && lnSwap.status == SwapStatus.canCoop ||
                       lnSwap?.status == SwapStatus.completed) ...[
@@ -1604,7 +1597,7 @@ class SendSucessScreen extends StatelessWidget {
                     BBText(
                       context.loc.sendPaymentProcessing,
                       style: context.font.headlineLarge,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     )
                   else if (isLnSwap && isBitcoin)
                     BBText(
@@ -1624,15 +1617,15 @@ class SendSucessScreen extends StatelessWidget {
                     amount,
                     style: context.font.displaySmall,
                     maxLines: 4,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                   ),
                   const Gap(4),
                   BBText(
                     '~$fiatEquivalent',
                     style: context.font.bodyLarge,
-                    color: context.colour.surfaceContainer,
+                    color: context.appColors.surfaceContainer,
                     maxLines: 4,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                   ),
                 ],
               ),
@@ -1667,8 +1660,8 @@ class SendSucessScreen extends StatelessWidget {
                     );
                   }
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
               ),
             const Gap(32),
           ],
@@ -1699,8 +1692,8 @@ class ShowPsbtButton extends StatelessWidget {
           extra: (psbt: unsignedPsbt, signerDevice: signerDevice),
         );
       },
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onSecondary,
+      bgColor: context.appColors.secondary,
+      textColor: context.appColors.onSecondary,
     );
   }
 }
@@ -1750,8 +1743,8 @@ class SignLedgerButton extends StatelessWidget {
           await context.read<SendCubit>().updateSignedBitcoinTx(result);
         }
       },
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onSecondary,
+      bgColor: context.appColors.secondary,
+      textColor: context.appColors.onSecondary,
     );
   }
 }
@@ -1799,8 +1792,8 @@ class SignBitBoxButton extends StatelessWidget {
           }
         }
       },
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onSecondary,
+      bgColor: context.appColors.secondary,
+      textColor: context.appColors.onSecondary,
     );
   }
 

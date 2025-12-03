@@ -37,7 +37,7 @@ class ExchangeSecurityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
@@ -50,17 +50,17 @@ class ExchangeSecurityScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: context.colour.onPrimary,
+                  color: context.appColors.surface,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color: context.colour.surface.withValues(alpha: 0.1),
+                      color: context.appColors.overlay.withValues(alpha: 0.05),
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: const Offset(0, 2),
@@ -68,13 +68,13 @@ class ExchangeSecurityScreen extends StatelessWidget {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: .start,
+                  mainAxisSize: .min,
                   children: [
                     BBText(
                       context.loc.exchangeSecurityManage2FAPasswordLabel,
                       style: context.font.bodyLarge?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -85,8 +85,8 @@ class ExchangeSecurityScreen extends StatelessWidget {
                         onPressed: () {
                           _openSecurityWebView(context);
                         },
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onPrimary,
+                        bgColor: context.appColors.onSurface,
+                        textColor: context.appColors.surface,
                         iconData: Icons.arrow_forward,
                       ),
                     ),

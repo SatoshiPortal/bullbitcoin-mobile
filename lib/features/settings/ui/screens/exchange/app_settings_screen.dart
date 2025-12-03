@@ -25,17 +25,19 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
     return BlocListener<ExchangeCubit, ExchangeState>(
       listenWhen: (previous, current) => previous.isSaving && !current.isSaving,
       listener: (context, state) {
-        final theme = Theme.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               context.loc.exchangeAppSettingsSaveSuccessMessage,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: Colors.white),
+              textAlign: .center,
+              style: TextStyle(
+                fontSize: 14,
+                color: context.appColors.surfaceFixed,
+              ),
             ),
             duration: const Duration(seconds: 2),
-            backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
-            behavior: SnackBarBehavior.floating,
+            backgroundColor: context.appColors.onSurface.withAlpha(204),
+            behavior: .floating,
             elevation: 4,
             margin: const EdgeInsets.only(bottom: 100, left: 40, right: 40),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -46,7 +48,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
         );
       },
       child: Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.appColors.secondaryFixed,
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
@@ -59,7 +61,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 _buildDropdownField(
                   context,
@@ -89,7 +91,7 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                   BBText(
                     context.loc.exchangeAppSettingsValidationWarning,
                     style: context.font.bodySmall?.copyWith(
-                      color: context.colour.error,
+                      color: context.appColors.error,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -103,8 +105,10 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                     },
                     disabled: state.isSaving || hasUnsetValues,
                     bgColor:
-                        hasUnsetValues ? context.colour.outline : Colors.black,
-                    textColor: context.colour.onPrimary,
+                        hasUnsetValues
+                            ? context.appColors.outline
+                            : context.appColors.text,
+                    textColor: context.appColors.onPrimary,
                   ),
                 ),
               ],
@@ -124,13 +128,13 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
     Function(String?) onChanged,
   ) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           label,
           style: context.font.labelMedium?.copyWith(
-            color: context.colour.secondary,
-            fontWeight: FontWeight.w500,
+            color: context.appColors.secondary,
+            fontWeight: .w500,
           ),
         ),
         const SizedBox(height: 8),
@@ -138,18 +142,18 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
           height: 56,
           child: Material(
             elevation: 4,
-            color: context.colour.onPrimary,
+            color: context.appColors.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
-                value: selectedValue,
+                initialValue: selectedValue,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
                 ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.appColors.secondary,
                 ),
                 items:
                     values

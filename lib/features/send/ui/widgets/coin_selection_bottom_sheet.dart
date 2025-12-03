@@ -49,7 +49,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Stack(
             alignment: Alignment.center,
@@ -101,8 +101,8 @@ class CoinSelectionBottomSheet extends StatelessWidget {
           BBButton.big(
             label: context.loc.sendDone,
             onPressed: context.pop,
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
           const Gap(24),
         ],

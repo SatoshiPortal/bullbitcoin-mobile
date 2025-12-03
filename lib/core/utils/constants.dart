@@ -96,6 +96,8 @@ class ApiServiceConstants {
   static String bbAuthTestUrl = 'https://${dotenv.env['BB_AUTH_TEST_URL']}';
   static String bbKycUrl = 'https://app.bullbitcoin.com/kyc';
   static String bbKycTestUrl = 'https://bbx05.bullbitcoin.dev/kyc';
+  static String googleDriveClientId =
+      dotenv.env['GOOGLE_DRIVE_CLIENT_ID'] ?? '';
 }
 
 class LocatorInstanceNameConstants {

@@ -28,14 +28,14 @@ class TopBar extends StatelessWidget {
       color: color,
       padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: .end,
         children: [
           if (onBack != null) ...[
             IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () => onBack!(),
               iconSize: 24,
-              color: context.colour.secondary,
+              color: context.appColors.onSurface,
               visualDensity: VisualDensity.compact,
             ),
           ] else if (onAction != null)
@@ -54,7 +54,7 @@ class TopBar extends StatelessWidget {
                       : BBText(
                         title,
                         style: context.font.headlineMedium,
-                        color: context.colour.secondary,
+                        color: context.appColors.onSurface,
                       ),
             ),
           ),
@@ -63,7 +63,7 @@ class TopBar extends StatelessWidget {
               icon: Icon(actionIcon ?? Icons.close),
               onPressed: () => onAction!(),
               iconSize: 24,
-              color: context.colour.secondary,
+              color: context.appColors.onSurface,
               visualDensity: VisualDensity.compact,
             ),
           ] else if (onBack != null)
