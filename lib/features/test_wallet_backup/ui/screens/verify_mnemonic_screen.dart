@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
@@ -55,8 +56,10 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
             }
           },
           builder: (context, state) {
-            final title =
-                'Test ${state.selectedWallet?.isDefault ?? false ? 'Default Wallets' : state.selectedWallet?.displayLabel ?? ''}';
+            final walletName = state.selectedWallet?.isDefault ?? false
+                ? context.loc.testBackupDefaultWallets
+                : state.selectedWallet?.displayLabel ?? '';
+            final title = context.loc.testBackupWalletTitle(walletName);
             final reorderedMnemonic =
                 context.watch<TestWalletBackupBloc>().state.reorderedMnemonic;
             final mnemonic =
@@ -78,7 +81,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       BBText(
-                        'Tap the recovery words in the \nright order',
+                        context.loc.testBackupTapWordsInOrder,
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         style: context.font.headlineLarge?.copyWith(
@@ -92,7 +95,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                         Column(
                           children: [
                             BBText(
-                              'What is word number $nextWordNumber?',
+                              context.loc.testBackupWhatIsWordNumber(nextWordNumber),
                               textAlign: TextAlign.center,
                               style: context.font.labelMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
@@ -105,7 +108,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                         )
                       else
                         BBText(
-                          'You have selected all words',
+                          context.loc.testBackupAllWordsSelected,
                           textAlign: TextAlign.center,
                           style: context.font.labelMedium?.copyWith(
                             fontWeight: FontWeight.w700,
