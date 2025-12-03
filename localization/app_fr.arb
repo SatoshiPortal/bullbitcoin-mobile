@@ -4258,6 +4258,86 @@
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
   },
+  "swapTransferTitle": "Transfert",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapExternalTransferLabel": "Transfert externe",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "De",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapToLabel": "Vers",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapAmountLabel": "Montant",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapReceiveExactAmountLabel": "Recevoir le montant exact",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapSubtractFeesLabel": "Soustraire les frais du montant",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapExternalAddressHint": "Entrez l'adresse du portefeuille externe",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapValidationEnterAmount": "Veuillez entrer un montant",
+  "@swapValidationEnterAmount": {
+    "description": "Validation error when amount is empty"
+  },
+  "swapValidationPositiveAmount": "Entrez un montant positif",
+  "@swapValidationPositiveAmount": {
+    "description": "Validation error when amount is not positive"
+  },
+  "swapValidationInsufficientBalance": "Solde insuffisant",
+  "@swapValidationInsufficientBalance": {
+    "description": "Validation error when amount exceeds wallet balance"
+  },
+  "swapValidationMinimumAmount": "Le montant minimum est {amount} {currency}",
+  "@swapValidationMinimumAmount": {
+    "description": "Validation error when amount is below minimum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "swapValidationMaximumAmount": "Le montant maximum est {amount} {currency}",
+  "@swapValidationMaximumAmount": {
+    "description": "Validation error when amount exceeds maximum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "swapValidationSelectFromWallet": "Veuillez sélectionner un portefeuille source",
+  "@swapValidationSelectFromWallet": {
+    "description": "Validation error when no source wallet selected"
+  },
+  "swapValidationSelectToWallet": "Veuillez sélectionner un portefeuille de destination",
+  "@swapValidationSelectToWallet": {
+    "description": "Validation error when no destination wallet selected"
+  },
+  "swapDoNotUninstallWarning": "Ne désinstallez pas l'application avant que le transfert ne soit terminé !",
+  "@swapDoNotUninstallWarning": {
+    "description": "Warning message during pending transfer"
+  },
   "pinSecurityTitle": "Code PIN de sécurité",
   "@pinSecurityTitle": {
     "description": "AppBar title for PIN settings screen"

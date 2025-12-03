@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +29,7 @@ class SwapFeesRow extends StatelessWidget {
     return Row(
       children: [
         Text(
-          'Total Fees ',
+          context.loc.swapTotalFees,
           style: context.font.labelLarge?.copyWith(
             color: context.appColors.surface,
           ),

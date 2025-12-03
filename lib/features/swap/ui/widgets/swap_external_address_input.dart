@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
@@ -25,7 +26,7 @@ class SwapExternalAddressInput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('To', style: context.font.bodyLarge),
+        Text(context.loc.swapToLabel, style: context.font.bodyLarge),
         const Gap(4),
         BBInputText(
           onChanged: (value) {
@@ -34,7 +35,7 @@ class SwapExternalAddressInput extends StatelessWidget {
             );
           },
           value: state.address,
-          hint: 'Enter external wallet address',
+          hint: context.loc.swapExternalAddressHint,
           hintStyle: context.font.bodyMedium?.copyWith(
             color: context.appColors.surfaceContainer,
           ),
