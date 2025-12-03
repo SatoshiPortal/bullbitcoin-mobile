@@ -10808,5 +10808,32 @@
   "torSettingsInfoDescription": "• Tor proxy only applies to Bitcoin (not Liquid)\n• Default Orbot port is 9050\n• Ensure Orbot is running before enabling\n• Connection may be slower through Tor",
   "@torSettingsInfoDescription": {
     "description": "Information about Tor proxy usage"
+  },
+  "walletAutoTransferBlockedTitle": "Auto Transfer Blocked",
+  "@walletAutoTransferBlockedTitle": {
+    "description": "Title for auto-swap fee warning when fees exceed threshold"
+  },
+  "walletAutoTransferBlockedMessage": "Attempting to transfer {amount} BTC. Current fee is {currentFee}% of the transfer amount and the fee threshold is set to {thresholdFee}%",
+  "@walletAutoTransferBlockedMessage": {
+    "description": "Message explaining why auto-transfer was blocked",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currentFee": {
+        "type": "String"
+      },
+      "thresholdFee": {
+        "type": "String"
+      }
+    }
+  },
+  "walletAutoTransferBlockButton": "Block",
+  "@walletAutoTransferBlockButton": {
+    "description": "Button to block auto-transfer until next execution"
+  },
+  "walletAutoTransferAllowButton": "Allow",
+  "@walletAutoTransferAllowButton": {
+    "description": "Button to allow auto-transfer despite high fees"
   }
 }

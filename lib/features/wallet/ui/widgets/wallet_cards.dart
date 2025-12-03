@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_card.dart';
 import 'package:bb_mobile/features/ark/router.dart';
@@ -81,8 +82,8 @@ class WalletCards extends StatelessWidget {
           if (isArkWalletSetup) ...[
             WalletCard(
               tagColor: context.appColors.tertiary,
-              title: 'Ark Instant payments',
-              description: 'Experimental',
+              title: context.loc.walletArkInstantPayments,
+              description: context.loc.walletArkExperimental,
               balanceSat: arkBalanceSat,
               isSyncing: isArkWalletLoading,
               onTap: () {

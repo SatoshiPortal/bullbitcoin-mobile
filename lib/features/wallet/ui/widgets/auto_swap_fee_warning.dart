@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -54,13 +55,17 @@ class AutoSwapFeeWarning extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BBText(
-            'Auto Transfer Blocked',
+            context.loc.walletAutoTransferBlockedTitle,
             style: context.font.titleMedium,
             color: context.appColors.error,
           ),
           const Gap(12),
           BBText(
-            'Attempting to transfer $swapAmountBtc BTC. Current fee is $currentSwapFeePercent% of the transfer amount and the fee threshold is set to ${autoSwapSettings.feeThresholdPercent}%',
+            context.loc.walletAutoTransferBlockedMessage(
+              swapAmountBtc,
+              currentSwapFeePercent.toString(),
+              autoSwapSettings.feeThresholdPercent.toString(),
+            ),
             style: context.font.bodyMedium,
           ),
           const Gap(12),
@@ -68,7 +73,7 @@ class AutoSwapFeeWarning extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               BBButton.small(
-                label: 'Block',
+                label: context.loc.walletAutoTransferBlockButton,
                 onPressed: () {
                   context.read<WalletBloc>().add(
                     const BlockAutoSwapUntilNextExecution(),
@@ -82,7 +87,7 @@ class AutoSwapFeeWarning extends StatelessWidget {
               ),
               const Gap(16),
               BBButton.small(
-                label: 'Allow',
+                label: context.loc.walletAutoTransferAllowButton,
                 onPressed: () {
                   context.read<WalletBloc>().add(
                     const ExecuteAutoSwapFeeOverride(),
