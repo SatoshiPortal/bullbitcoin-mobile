@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sliver_tools/sliver_tools.dart';
+
 class ExchangeHomeScreen extends StatelessWidget {
   const ExchangeHomeScreen({super.key});
 
@@ -81,43 +83,74 @@ class ExchangeHomeScreen extends StatelessWidget {
                       ), // Bottom-aligned button
                     ]),
                   ),
-                  SliverAppBar(
-                    backgroundColor: Colors.transparent,
-                    floating: true,
-                    pinned: true,
-                    elevation: 0,
-                    centerTitle: true,
-                    title: const TopBarBullLogo(),
-                    actionsIconTheme: IconThemeData(
-                      color: context.colour.onPrimary,
-                      size: 24,
-                    ),
-                    actionsPadding: const EdgeInsets.only(right: 16),
-                    actions: [
-                      IconButton(
-                        onPressed: () {
-                          context.pushNamed(
-                            TransactionsRoute.transactions.name,
-                          );
-                        },
-                        visualDensity: VisualDensity.compact,
-                        color: context.colour.onPrimary,
-                        iconSize: 32,
-                        icon: const Icon(Icons.history),
-                      ),
-                      const Gap(16),
-                      InkWell(
-                        onTap:
-                            () =>
-                                context.pushNamed(SettingsRoute.settings.name),
-                        child: Image.asset(
-                          Assets.icons.settingsLine.path,
-                          width: 32,
-                          height: 32,
-                          color: context.colour.onPrimary,
+                  BlocBuilder<PriceChartCubit, PriceChartState>(
+                    builder: (context, priceChartState) {
+                      final showChart = priceChartState.showChart;
+                      final currency = priceChartState.currency ?? 'CAD';
+
+                      return SliverAppBar(
+                        backgroundColor: Colors.transparent,
+                        floating: true,
+                        pinned: true,
+                        elevation: 0,
+                        centerTitle: true,
+                        title: showChart ? null : const TopBarBullLogo(),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: IconButton(
+                            icon: Icon(
+                              showChart ? Icons.arrow_back : Icons.show_chart,
+                              color: context.colour.onPrimary,
+                              size: 24,
+                            ),
+                            onPressed: () {
+                              if (showChart) {
+                                context.read<PriceChartCubit>().hideChart();
+                              } else {
+                                context.read<PriceChartCubit>().showChart(
+                                  currency,
+                                );
+                              }
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                        leadingWidth: 56,
+                        actionsIconTheme: IconThemeData(
+                          color: context.colour.onPrimary,
+                          size: 24,
+                        ),
+                        actionsPadding: const EdgeInsets.only(right: 16),
+                        actions:
+                            showChart
+                                ? null
+                                : [
+                                  IconButton(
+                                    onPressed: () {
+                                      context.pushNamed(
+                                        TransactionsRoute.transactions.name,
+                                      );
+                                    },
+                                    visualDensity: VisualDensity.compact,
+                                    color: context.colour.onPrimary,
+                                    iconSize: 32,
+                                    icon: const Icon(Icons.history),
+                                  ),
+                                  const Gap(16),
+                                  InkWell(
+                                    onTap:
+                                        () => context.pushNamed(
+                                          SettingsRoute.settings.name,
+                                        ),
+                                    child: Image.asset(
+                                      Assets.icons.settingsLine.path,
+                                      width: 32,
+                                      height: 32,
+                                      color: context.colour.onPrimary,
+                                    ),
+                                  ),
+                                ],
+                      );
+                    },
                   ),
                 ],
               ),
