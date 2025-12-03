@@ -2598,6 +2598,210 @@
   "@transactionListYesterday": {
     "description": "Etiqueta de fecha para las transacciones de ayer"
   },
+  "transactionSwapDoNotUninstall": "No desinstale la aplicación hasta que se complete el intercambio.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Mensaje de advertencia para no desinstalar la app durante un intercambio"
+  },
+  "transactionFeesDeductedFrom": "Estas tarifas se deducirán del monto enviado",
+  "@transactionFeesDeductedFrom": {
+    "description": "Explicación de deducción de tarifas para intercambios entrantes"
+  },
+  "transactionFeesTotalDeducted": "Esta es la tarifa total deducida del monto enviado",
+  "@transactionFeesTotalDeducted": {
+    "description": "Explicación de deducción de tarifas para intercambios salientes"
+  },
+  "transactionLabelSendAmount": "Monto enviado",
+  "@transactionLabelSendAmount": {
+    "description": "Etiqueta para el monto enviado en los detalles del intercambio"
+  },
+  "transactionLabelReceiveAmount": "Monto recibido",
+  "@transactionLabelReceiveAmount": {
+    "description": "Etiqueta para el monto recibido en los detalles del intercambio"
+  },
+  "transactionLabelSendNetworkFees": "Tarifas de red de envío",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Etiqueta para las tarifas de red de envío en los detalles del intercambio"
+  },
+  "transactionLabelReceiveNetworkFee": "Tarifa de red de recepción",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Etiqueta para la tarifa de red de recepción en los detalles del intercambio"
+  },
+  "transactionLabelServerNetworkFees": "Tarifas de red del servidor",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Etiqueta para las tarifas de red del servidor en los detalles del intercambio"
+  },
+  "transactionLabelPreimage": "Preimagen",
+  "@transactionLabelPreimage": {
+    "description": "Etiqueta para la preimagen en los detalles del intercambio Lightning"
+  },
+  "transactionOrderLabelReferenceNumber": "Número de referencia",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Etiqueta para el número de referencia en los detalles del pedido"
+  },
+  "transactionOrderLabelOriginName": "Nombre de origen",
+  "@transactionOrderLabelOriginName": {
+    "description": "Etiqueta para el nombre de origen en el pedido de pago fiat"
+  },
+  "transactionOrderLabelOriginCedula": "Cédula de origen",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Etiqueta para la cédula de origen en el pedido de pago fiat"
+  },
+  "transactionDetailAccelerate": "Acelerar",
+  "@transactionDetailAccelerate": {
+    "description": "Etiqueta del botón para acelerar (RBF) una transacción no confirmada"
+  },
+  "transactionDetailLabelTransactionId": "ID de transacción",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Etiqueta para el ID de transacción"
+  },
+  "transactionDetailLabelToWallet": "A billetera",
+  "@transactionDetailLabelToWallet": {
+    "description": "Etiqueta para la billetera de destino"
+  },
+  "transactionDetailLabelFromWallet": "Desde billetera",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Etiqueta para la billetera de origen"
+  },
+  "transactionDetailLabelRecipientAddress": "Dirección del destinatario",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Etiqueta para la dirección del destinatario"
+  },
+  "transactionDetailLabelAddress": "Dirección",
+  "@transactionDetailLabelAddress": {
+    "description": "Etiqueta para la dirección"
+  },
+  "transactionDetailLabelAddressNotes": "Notas de dirección",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Etiqueta para las notas de dirección"
+  },
+  "transactionDetailLabelAmountReceived": "Monto recibido",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Etiqueta para el monto recibido"
+  },
+  "transactionDetailLabelAmountSent": "Monto enviado",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Etiqueta para el monto enviado"
+  },
+  "transactionDetailLabelTransactionFee": "Comisión de transacción",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Etiqueta para la comisión de transacción"
+  },
+  "transactionDetailLabelStatus": "Estado",
+  "@transactionDetailLabelStatus": {
+    "description": "Etiqueta para el estado"
+  },
+  "transactionDetailLabelConfirmationTime": "Tiempo de confirmación",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Etiqueta para el tiempo de confirmación"
+  },
+  "transactionDetailLabelOrderType": "Tipo de orden",
+  "@transactionDetailLabelOrderType": {
+    "description": "Etiqueta para el tipo de orden"
+  },
+  "transactionDetailLabelOrderNumber": "Número de orden",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Etiqueta para el número de orden"
+  },
+  "transactionDetailLabelPayinAmount": "Monto de entrada",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Etiqueta para el monto de entrada"
+  },
+  "transactionDetailLabelPayoutAmount": "Monto de salida",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Etiqueta para el monto de salida"
+  },
+  "transactionDetailLabelExchangeRate": "Tasa de cambio",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Etiqueta para la tasa de cambio"
+  },
+  "transactionDetailLabelPayinMethod": "Método de entrada",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Etiqueta para el método de entrada"
+  },
+  "transactionDetailLabelPayoutMethod": "Método de salida",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Etiqueta para el método de salida"
+  },
+  "transactionDetailLabelPayinStatus": "Estado de entrada",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Etiqueta para el estado de entrada"
+  },
+  "transactionDetailLabelOrderStatus": "Estado de orden",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Etiqueta para el estado de orden"
+  },
+  "transactionDetailLabelPayoutStatus": "Estado de salida",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Etiqueta para el estado de salida"
+  },
+  "transactionDetailLabelCreatedAt": "Creado el",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Etiqueta para la fecha de creación"
+  },
+  "transactionDetailLabelCompletedAt": "Completado el",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Etiqueta para la fecha de finalización"
+  },
+  "transactionDetailLabelTransferId": "ID de transferencia",
+  "@transactionDetailLabelTransferId": {
+    "description": "Etiqueta para el ID de transferencia"
+  },
+  "transactionDetailLabelSwapId": "ID de swap",
+  "@transactionDetailLabelSwapId": {
+    "description": "Etiqueta para el ID de swap"
+  },
+  "transactionDetailLabelTransferStatus": "Estado de transferencia",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Etiqueta para el estado de transferencia"
+  },
+  "transactionDetailLabelSwapStatus": "Estado de swap",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Etiqueta para el estado de swap"
+  },
+  "transactionDetailLabelRefunded": "Reembolsado",
+  "@transactionDetailLabelRefunded": {
+    "description": "Etiqueta para el estado de reembolso"
+  },
+  "transactionDetailLabelLiquidTxId": "ID de transacción Liquid",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Etiqueta para el ID de transacción Liquid"
+  },
+  "transactionDetailLabelBitcoinTxId": "ID de transacción Bitcoin",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Etiqueta para el ID de transacción Bitcoin"
+  },
+  "transactionDetailLabelTransferFees": "Comisiones de transferencia",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Etiqueta para las comisiones de transferencia"
+  },
+  "transactionDetailLabelSwapFees": "Comisiones de swap",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Etiqueta para las comisiones de swap"
+  },
+  "transactionDetailLabelSendNetworkFee": "Comisión de red de envío",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Etiqueta para la comisión de red de envío"
+  },
+  "transactionDetailLabelTransferFee": "Comisión de transferencia",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Etiqueta para la comisión de transferencia (Boltz)"
+  },
+  "transactionDetailLabelPayjoinStatus": "Estado de Payjoin",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Etiqueta para el estado de payjoin"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Completado",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Estado de payjoin completado"
+  },
+  "transactionDetailLabelPayjoinExpired": "Expirado",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Estado de payjoin expirado"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Fecha de creación de Payjoin",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Etiqueta para la fecha de creación de payjoin"
+  },
   "walletNameInstantPayments": "Pagos instantáneos",
   "@walletNameInstantPayments": {
     "description": "Nombre predeterminado para la billetera Liquid/pagos instantáneos"

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 
 class SwapProgressIndicator extends StatelessWidget {
@@ -9,7 +10,7 @@ class SwapProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final steps = _getProgressSteps();
+    final steps = _getProgressSteps(context);
     final currentStep = _getCurrentStep();
     final isFailedOrExpired =
         swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
@@ -156,22 +157,39 @@ class SwapProgressIndicator extends StatelessWidget {
     );
   }
 
-  List<String> _getProgressSteps() {
+  List<String> _getProgressSteps(BuildContext context) {
     if (swap is LnReceiveSwap) {
-      return ['Initiated', 'Payment\nMade', 'Funds\nClaimed'];
+      return [
+        context.loc.transactionSwapProgressInitiated,
+        context.loc.transactionSwapProgressPaymentMade,
+        context.loc.transactionSwapProgressFundsClaimed,
+      ];
     } else if (swap is LnSendSwap) {
       // For Bitcoin/Liquid to Lightning swaps
       // pending -> paid -> completed
       // Initiated: Transaction created but not confirmed
       // Transaction Confirmed: Transaction confirmed, funds are secured (paid status)
       // Payment Sent: Lightning payment sent, swap completed (completed status)
-      return ['Initiated', 'Broadcasted', 'Invoice\nPaid'];
+      return [
+        context.loc.transactionSwapProgressInitiated,
+        context.loc.transactionSwapProgressBroadcasted,
+        context.loc.transactionSwapProgressInvoicePaid,
+      ];
     } else if (swap is ChainSwap) {
       // For Bitcoin to Liquid or Liquid to Bitcoin swaps
       // pending -> paid -> claimable -> completed
-      return ['Initiated', 'Confirmed', 'Claim', 'Completed'];
+      return [
+        context.loc.transactionSwapProgressInitiated,
+        context.loc.transactionSwapProgressConfirmed,
+        context.loc.transactionSwapProgressClaim,
+        context.loc.transactionSwapProgressCompleted,
+      ];
     }
-    return ['Initiated', 'In Progress', 'Completed'];
+    return [
+      context.loc.transactionSwapProgressInitiated,
+      context.loc.transactionSwapProgressInProgress,
+      context.loc.transactionSwapProgressCompleted,
+    ];
   }
 
   int _getCurrentStep() {

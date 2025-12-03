@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -25,14 +26,14 @@ class SenderBroadcastPayjoinOriginalTxButton extends StatelessWidget {
     return Column(
       children: [
         Text(
-          "Not receiving a payjoin proposal from the receiver?",
+          context.loc.transactionPayjoinNoProposal,
           style: context.font.titleSmall,
           textAlign: TextAlign.center,
           maxLines: 2,
         ),
         const Gap(16),
         BBButton.big(
-          label: 'Send without payjoin',
+          label: context.loc.transactionPayjoinSendWithout,
           disabled: isBroadcastingPayjoinOriginalTx,
           onPressed: () {
             log.info('Send without payjoin');

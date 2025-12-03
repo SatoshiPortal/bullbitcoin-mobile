@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
@@ -57,14 +58,16 @@ class SwapStatusDescription extends StatelessWidget {
                   const Gap(8),
                   BBText(
                     swap.status == SwapStatus.failed
-                        ? (swap.isChainSwap ? 'Transfer Failed' : 'Swap Failed')
+                        ? (swap.isChainSwap
+                            ? context.loc.transactionStatusTransferFailed
+                            : context.loc.transactionStatusSwapFailed)
                         : swap.status == SwapStatus.expired
                         ? (swap.isChainSwap
-                            ? 'Transfer Expired'
-                            : 'Swap Expired')
+                            ? context.loc.transactionStatusTransferExpired
+                            : context.loc.transactionStatusSwapExpired)
                         : (swap.isChainSwap
-                            ? 'Transfer Status'
-                            : 'Swap Status'),
+                            ? context.loc.transactionSwapStatusTransferStatus
+                            : context.loc.transactionSwapStatusSwapStatus),
                     style: context.font.titleSmall?.copyWith(
                       color:
                           swap.status == SwapStatus.failed ||
@@ -78,7 +81,7 @@ class SwapStatusDescription extends StatelessWidget {
               ),
               const Gap(8),
               BBText(
-                _getSwapStatusDescription(),
+                _getSwapStatusDescription(context),
                 style: context.font.bodySmall?.copyWith(
                   color:
                       swap.status == SwapStatus.failed ||
@@ -87,10 +90,10 @@ class SwapStatusDescription extends StatelessWidget {
                           : context.appColors.onSurfaceVariant,
                 ),
               ),
-              if (_getAdditionalInfo().isNotEmpty) ...[
+              if (_getAdditionalInfo(context).isNotEmpty) ...[
                 const Gap(12),
                 BBText(
-                  _getAdditionalInfo(),
+                  _getAdditionalInfo(context),
                   style: context.font.bodySmall?.copyWith(
                     color:
                         swap.status == SwapStatus.failed ||
@@ -107,7 +110,7 @@ class SwapStatusDescription extends StatelessWidget {
         if (shouldShowWarning) ...[
           const Gap(16),
           InfoCard(
-            description: 'Do not uninstall the app until the swap completes.',
+            description: context.loc.transactionSwapDoNotUninstall,
             tagColor: context.appColors.tertiary,
             bgColor: context.appColors.surfaceFixed,
             boldDescription: true,
@@ -117,83 +120,81 @@ class SwapStatusDescription extends StatelessWidget {
     );
   }
 
-  String _getSwapStatusDescription() {
+  String _getSwapStatusDescription(BuildContext context) {
     if (swap is LnReceiveSwap) {
       switch (swap.status) {
         case SwapStatus.pending:
-          return 'Your swap has been initiated. We are waiting for a payment to be received on the Lightning Network.';
+          return context.loc.transactionSwapDescLnReceivePending;
         case SwapStatus.paid:
-          return 'Payment has been received! We are now broadcasting the on-chain transaction to your wallet.';
+          return context.loc.transactionSwapDescLnReceivePaid;
         case SwapStatus.claimable:
-          return 'The on-chain transaction has been confirmed. We are now claiming the funds to complete your swap.';
+          return context.loc.transactionSwapDescLnReceiveClaimable;
         case SwapStatus.completed:
-          return 'Your swap has been completed successfully! The funds should now be available in your wallet.';
+          return context.loc.transactionSwapDescLnReceiveCompleted;
         case SwapStatus.failed:
-          return 'There was an issue with your swap. Please contact support if funds have not been returned within 24 hours.';
+          return context.loc.transactionSwapDescLnReceiveFailed;
         case SwapStatus.expired:
-          return 'This swap has expired. Any funds sent will be automatically returned to the sender.';
+          return context.loc.transactionSwapDescLnReceiveExpired;
         default:
-          return 'Your swap is in progress. This process is automated and may take some time to complete.';
+          return context.loc.transactionSwapDescLnReceiveDefault;
       }
     } else if (swap is LnSendSwap) {
       switch (swap.status) {
         case SwapStatus.pending:
-          return 'Your swap has been initiated. We are broadcasting the on-chain transaction to lock your funds.';
+          return context.loc.transactionSwapDescLnSendPending;
         case SwapStatus.paid:
-          return 'Your on-chain transaction has been broadcasted. After 1 confirmation, the Lightning payment will be sent.';
+          return context.loc.transactionSwapDescLnSendPaid;
         case SwapStatus.completed:
-          return 'The Lightning payment has been sent successfully! Your swap is now complete.';
+          return context.loc.transactionSwapDescLnSendCompleted;
         case SwapStatus.failed:
-          return 'There was an issue with your swap. Your funds will be returned to your wallet automatically.';
+          return context.loc.transactionSwapDescLnSendFailed;
         case SwapStatus.expired:
-          return 'This swap has expired. Your funds will be automatically returned to your wallet.';
+          return context.loc.transactionSwapDescLnSendExpired;
         default:
-          return 'Your swap is in progress. This process is automated and may take some time to complete.';
+          return context.loc.transactionSwapDescLnSendDefault;
       }
     } else if (swap is ChainSwap) {
       switch (swap.status) {
         case SwapStatus.pending:
-          return swap.type == SwapType.bitcoinToLiquid
-              ? 'Your transfer has been created but not initiated yet.'
-              : 'Your transfer has been created but not initiated yet.';
+          return context.loc.transactionSwapDescChainPending;
         case SwapStatus.paid:
-          return 'Your transaction has been broadcasted. We are now waiting for the lockup transaction to be confirmed.';
+          return context.loc.transactionSwapDescChainPaid;
         case SwapStatus.claimable:
-          return 'The lockup transaction has been confirmed. You are now claiming the funds to complete your transfer.';
+          return context.loc.transactionSwapDescChainClaimable;
         case SwapStatus.refundable:
-          return 'The transfer will be refunded. Your funds will be returned to your wallet automatically.';
+          return context.loc.transactionSwapDescChainRefundable;
         case SwapStatus.completed:
-          return 'Your transfer has been completed successfully! The funds should now be available in your wallet.';
+          return context.loc.transactionSwapDescChainCompleted;
         case SwapStatus.failed:
-          return 'There was an issue with your transfer. Please contact support if funds have not been returned within 24 hours.';
+          return context.loc.transactionSwapDescChainFailed;
         case SwapStatus.expired:
-          return 'This transfer has expired. Your funds will be automatically returned to your wallet.';
+          return context.loc.transactionSwapDescChainExpired;
         default:
-          return 'Your transfer is in progress. This process is automated and may take some time to complete.';
+          return context.loc.transactionSwapDescChainDefault;
       }
     }
-    return 'Your transfer is in progress. This process is automated and may take some time to complete.';
+    return context.loc.transactionSwapDescChainDefault;
   }
 
-  String _getAdditionalInfo() {
+  String _getAdditionalInfo(BuildContext context) {
     if (swap.status == SwapStatus.failed || swap.status == SwapStatus.expired) {
-      return 'If you have any questions or concerns, please contact support for assistance.';
+      return context.loc.transactionSwapInfoFailedExpired;
     }
 
     if (swap is ChainSwap &&
         (swap.status == SwapStatus.pending || swap.status == SwapStatus.paid)) {
-      return 'On-chain transfers may take some time to complete due to blockchain confirmation times.';
+      return context.loc.transactionSwapInfoChainDelay;
     }
 
     if (swap.status == SwapStatus.claimable) {
       return swap.isChainSwap
-          ? 'The transfer will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the "Retry Transfer Claim" button.'
-          : 'The swap will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the "Retry Swap Claim" button.';
+          ? context.loc.transactionSwapInfoClaimableTransfer
+          : context.loc.transactionSwapInfoClaimableSwap;
     }
     if (swap.status == SwapStatus.refundable) {
       return swap.isChainSwap
-          ? 'This transfer will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the "Retry Transfer Refund" button.'
-          : 'This swap will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the "Retry Swap Refund" button.';
+          ? context.loc.transactionSwapInfoRefundableTransfer
+          : context.loc.transactionSwapInfoRefundableSwap;
     }
 
     return '';
