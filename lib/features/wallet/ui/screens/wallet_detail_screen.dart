@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -33,9 +34,8 @@ class WalletDetailScreen extends StatelessWidget {
         wallet != null
             ? wallet.isDefault
                 ? wallet.isLiquid
-                    ? // TODO: use labels from translations for hardcoded names here
-                    "Instant Payments"
-                    : "Secure Bitcoin"
+                    ? context.loc.walletNameInstantPayments
+                    : context.loc.walletNameSecureBitcoin
                 : wallet.displayLabel
             : '';
 
