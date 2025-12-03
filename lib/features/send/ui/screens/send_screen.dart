@@ -98,10 +98,9 @@ class SendAddressScreen extends StatelessWidget {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.5,
                       child: OpenTheCameraWidget(
-                        onScannedPaymentRequest:
-                            (data) => context
-                                .read<SendCubit>()
-                                .onScannedPaymentRequest(data.$1, data.$2),
+                        onScannedPaymentRequest: (data) => context
+                            .read<SendCubit>()
+                            .onScannedPaymentRequest(data.$1, data.$2),
                       ),
                     ),
                     Positioned(
@@ -322,17 +321,15 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
           ),
           Expanded(
             child: BlocListener<SendCubit, SendState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous.amount != current.amount &&
-                      _amountController.text != current.amount,
+              listenWhen: (previous, current) =>
+                  previous.amount != current.amount &&
+                  _amountController.text != current.amount,
               listener: (context, state) {
                 final amount = state.amount;
                 final currentCursor = _amountController.selection.baseOffset;
-                final safePosition =
-                    _isMax
-                        ? amount.length
-                        : math.min(currentCursor, amount.length);
+                final safePosition = _isMax
+                    ? amount.length
+                    : math.min(currentCursor, amount.length);
 
                 _amountController.value = TextEditingValue(
                   text: amount,
@@ -399,14 +396,13 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   currencyCode,
                                 );
                               },
-                              error:
-                                  balanceError != null
-                                      ? balanceError.toString()
-                                      : !walletHasBalance
-                                      ? 'Insufficient balance'
-                                      : swapLimitsError != null
-                                      ? swapLimitsError.toString()
-                                      : swapCreationError?.toString(),
+                              error: balanceError != null
+                                  ? balanceError.toString()
+                                  : !walletHasBalance
+                                  ? 'Insufficient balance'
+                                  : swapLimitsError != null
+                                  ? swapLimitsError.toString()
+                                  : swapCreationError?.toString(),
                               focusNode: _amountFocusNode,
                               readOnly: _isMax,
                               isMax: _isMax,
@@ -421,15 +417,14 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               child: BalanceRow(
                                 balance: state.formattedWalletBalance(),
                                 currencyCode: '',
-                                onMaxPressed:
-                                    !isLightning && !isChainSwap
-                                        ? () {
-                                          _setIsMax(true);
-                                          context
-                                              .read<SendCubit>()
-                                              .amountChanged(isMax: true);
-                                        }
-                                        : null,
+                                onMaxPressed: !isLightning && !isChainSwap
+                                    ? () {
+                                        _setIsMax(true);
+                                        context.read<SendCubit>().amountChanged(
+                                          isMax: true,
+                                        );
+                                      }
+                                    : null,
                                 walletLabel: selectedWalletLabel,
                               ),
                             ),
@@ -722,11 +717,10 @@ class _BottomButtons extends StatelessWidget {
                   isScrollControlled: true,
                   backgroundColor: context.appColors.secondaryFixed,
                   constraints: const BoxConstraints(maxWidth: double.infinity),
-                  builder:
-                      (BuildContext buildContext) => BlocProvider.value(
-                        value: context.read<SendCubit>(),
-                        child: const AdvancedOptionsBottomSheet(),
-                      ),
+                  builder: (BuildContext buildContext) => BlocProvider.value(
+                    value: context.read<SendCubit>(),
+                    child: const AdvancedOptionsBottomSheet(),
+                  ),
                 );
               },
               borderColor: context.appColors.secondary,
@@ -894,20 +888,19 @@ class _OnchainSendInfoSection extends StatelessWidget {
             InfoRow(
               title: 'Fee Priority',
               details: InkWell(
-                onTap:
-                    hasFinalizedTx
-                        ? null
-                        : () async {
-                          final selected = await _showFeeOptions(context);
+                onTap: hasFinalizedTx
+                    ? null
+                    : () async {
+                        final selected = await _showFeeOptions(context);
 
-                          if (selected != null) {
-                            final fee = FeeSelectionName.fromString(selected);
-                            // ignore: use_build_context_synchronously
-                            await context.read<SendCubit>().feeOptionSelected(
-                              fee,
-                            );
-                          }
-                        },
+                        if (selected != null) {
+                          final fee = FeeSelectionName.fromString(selected);
+                          // ignore: use_build_context_synchronously
+                          await context.read<SendCubit>().feeOptionSelected(
+                            fee,
+                          );
+                        }
+                      },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -947,9 +940,8 @@ class _OnchainSendInfoSection extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: context.appColors.onSecondary,
       constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder:
-          (BuildContext buildContext) =>
-              BlocProvider.value(value: sendCubit, child: FeeOptionsModal()),
+      builder: (BuildContext buildContext) =>
+          BlocProvider.value(value: sendCubit, child: FeeOptionsModal()),
     );
 
     return selected;
@@ -1017,8 +1009,8 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                     paymentRequest!.isLnAddress
                         ? paymentRequestAddress
                         : StringFormatting.truncateMiddle(
-                          paymentRequestAddress,
-                        ),
+                            paymentRequestAddress,
+                          ),
                     style: context.font.bodyLarge,
                     textAlign: TextAlign.end,
                     maxLines: 10,

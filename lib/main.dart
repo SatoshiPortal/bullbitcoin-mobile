@@ -22,7 +22,6 @@ import 'package:bb_mobile/router.dart';
 import 'package:bitbox_flutter/bitbox_flutter.dart';
 import 'package:boltz/boltz.dart';
 import 'package:dart_bbqr/bbqr.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
@@ -73,10 +72,7 @@ Future main() async {
       WidgetsFlutterBinding.ensureInitialized();
 
       // Initialize the background tasks before anything else
-      await Workmanager().initialize(
-        backgroundTasksHandler,
-        isInDebugMode: kDebugMode,
-      );
+      await Workmanager().initialize(backgroundTasksHandler);
       await Workmanager().cancelAll();
 
       await Bull.init();

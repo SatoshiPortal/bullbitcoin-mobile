@@ -65,8 +65,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           context.read<SettingsCubit>().state.isSuperuser ??
                           false;
                       if (isSuperuser) {
-                        final notLoggedIn =
-                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        final notLoggedIn = context
+                            .read<ExchangeCubit>()
+                            .state
+                            .notLoggedIn;
                         if (notLoggedIn) {
                           context.goNamed(ExchangeRoute.exchangeLanding.name);
                         } else {
@@ -78,8 +80,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         context.goNamed(ExchangeRoute.exchangeLanding.name);
                       }
                     } else {
-                      final notLoggedIn =
-                          context.read<ExchangeCubit>().state.notLoggedIn;
+                      final notLoggedIn = context
+                          .read<ExchangeCubit>()
+                          .state
+                          .notLoggedIn;
                       if (notLoggedIn) {
                         context.goNamed(ExchangeRoute.exchangeLanding.name);
                       } else {
@@ -143,12 +147,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 ),
                 SettingsEntryItem(
                   icon: Icons.monitor_heart,
-                  iconColor:
-                      serviceStatusLoading
-                          ? context.appColors.textMuted
-                          : serviceStatus.allServicesOnline
-                          ? context.appColors.success
-                          : context.appColors.error,
+                  iconColor: serviceStatusLoading
+                      ? context.appColors.textMuted
+                      : serviceStatus.allServicesOnline
+                      ? context.appColors.success
+                      : context.appColors.error,
                   title: context.loc.settingsServicesStatusTitle,
                   onTap: () {
                     context.pushNamed(StatusCheckRoute.serviceStatus.name);

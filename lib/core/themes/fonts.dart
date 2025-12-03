@@ -3,14 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppFonts {
   static const _textTheme = TextTheme(
-    displayLarge: TextStyle(
-      fontSize: 46,
-      fontWeight: FontWeight.w500,
-    ),
-    displayMedium: TextStyle(
-      fontSize: 43,
-      fontWeight: FontWeight.w500,
-    ),
+    displayLarge: TextStyle(fontSize: 46, fontWeight: FontWeight.w500),
+    displayMedium: TextStyle(fontSize: 43, fontWeight: FontWeight.w500),
     displaySmall: TextStyle(
       fontSize: 28,
       fontWeight: FontWeight.w500,
@@ -55,16 +49,12 @@ class AppFonts {
       fontSize: 12,
       // height: 18,
     ),
-    labelSmall: TextStyle(
-      fontSize: 10,
-    ),
+    labelSmall: TextStyle(fontSize: 10),
   );
 
   static ({String fontFamily, TextTheme textTheme}) textTheme = (
     fontFamily: 'Golos',
-    textTheme: GoogleFonts.golosTextTextTheme(
-      _textTheme,
-    ),
+    textTheme: GoogleFonts.golosTextTextTheme(_textTheme),
   );
 
   static ({String fontFamily, TextStyle textStyle}) textTitleTheme = (
