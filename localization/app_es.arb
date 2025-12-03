@@ -10639,5 +10639,98 @@
   "statusCheckUnknown": "Desconocido",
   "@statusCheckUnknown": {
     "description": "Status text when service status is unknown"
+  },
+  "torSettingsTitle": "Configuración de Tor",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "torSettingsEnableProxy": "Habilitar proxy Tor",
+  "@torSettingsEnableProxy": {
+    "description": "Label for the toggle to enable/disable Tor proxy"
+  },
+  "torSettingsProxyPort": "Puerto del proxy Tor",
+  "@torSettingsProxyPort": {
+    "description": "Title for Tor proxy port settings"
+  },
+  "torSettingsPortDisplay": "Puerto: {port}",
+  "@torSettingsPortDisplay": {
+    "description": "Display text showing current port number",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Número de puerto",
+  "@torSettingsPortNumber": {
+    "description": "Label for port number input field"
+  },
+  "torSettingsPortHint": "9050",
+  "@torSettingsPortHint": {
+    "description": "Hint text for port input showing default value"
+  },
+  "torSettingsPortHelper": "Puerto Orbot predeterminado: 9050",
+  "@torSettingsPortHelper": {
+    "description": "Helper text explaining default Orbot port"
+  },
+  "torSettingsPortValidationEmpty": "Por favor ingrese un número de puerto",
+  "@torSettingsPortValidationEmpty": {
+    "description": "Validation error when port is empty"
+  },
+  "torSettingsPortValidationInvalid": "Por favor ingrese un número válido",
+  "@torSettingsPortValidationInvalid": {
+    "description": "Validation error when port is not a valid number"
+  },
+  "torSettingsPortValidationRange": "El puerto debe estar entre 1 y 65535",
+  "@torSettingsPortValidationRange": {
+    "description": "Validation error when port is out of valid range"
+  },
+  "torSettingsSaveButton": "Guardar",
+  "@torSettingsSaveButton": {
+    "description": "Save button label for Tor port settings"
+  },
+  "torSettingsConnectionStatus": "Estado de conexión",
+  "@torSettingsConnectionStatus": {
+    "description": "Title for connection status card"
+  },
+  "torSettingsStatusConnected": "Conectado",
+  "@torSettingsStatusConnected": {
+    "description": "Status title when Tor is connected"
+  },
+  "torSettingsStatusConnecting": "Conectando...",
+  "@torSettingsStatusConnecting": {
+    "description": "Status title when Tor is connecting"
+  },
+  "torSettingsStatusDisconnected": "Desconectado",
+  "@torSettingsStatusDisconnected": {
+    "description": "Status title when Tor is disconnected"
+  },
+  "torSettingsStatusUnknown": "Estado desconocido",
+  "@torSettingsStatusUnknown": {
+    "description": "Status title when Tor status is unknown"
+  },
+  "torSettingsDescConnected": "El proxy Tor está activo y listo",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsDescConnecting": "Estableciendo conexión Tor",
+  "@torSettingsDescConnecting": {
+    "description": "Description when Tor is connecting"
+  },
+  "torSettingsDescDisconnected": "El proxy Tor no está activo",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "torSettingsDescUnknown": "No se puede determinar el estado de Tor. Asegúrese de que Orbot esté instalado y en ejecución.",
+  "@torSettingsDescUnknown": {
+    "description": "Description when Tor status is unknown"
+  },
+  "torSettingsInfoTitle": "Información importante",
+  "@torSettingsInfoTitle": {
+    "description": "Title for the Tor information card"
+  },
+  "torSettingsInfoDescription": "• El proxy Tor solo aplica a Bitcoin (no Liquid)\n• El puerto Orbot predeterminado es 9050\n• Asegúrese de que Orbot esté ejecutándose antes de habilitar\n• La conexión puede ser más lenta a través de Tor",
+  "@torSettingsInfoDescription": {
+    "description": "Information about Tor proxy usage"
   }
 }

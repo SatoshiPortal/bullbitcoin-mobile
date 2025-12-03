@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_proxy_widget.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class _TorSettingsScreenState extends State<TorSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tor Settings')),
+      appBar: AppBar(title: Text(context.loc.torSettingsTitle)),
       body: const SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16),

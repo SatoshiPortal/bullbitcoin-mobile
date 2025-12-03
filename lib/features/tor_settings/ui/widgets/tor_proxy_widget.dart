@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
@@ -21,7 +22,7 @@ class TorProxyWidget extends StatelessWidget {
       children: [
         SettingsEntryItem(
           icon: Icons.security,
-          title: 'Enable Tor Proxy',
+          title: context.loc.torSettingsEnableProxy,
           trailing: Switch(
             value: useTorProxy,
             onChanged: (value) {
@@ -43,9 +44,9 @@ class TorProxyWidget extends StatelessWidget {
           Card(
             child: SettingsEntryItem(
               icon: Icons.settings_ethernet,
-              title: 'Tor Proxy Port',
+              title: context.loc.torSettingsProxyPort,
               trailing: Text(
-                'Port: $torProxyPort',
+                context.loc.torSettingsPortDisplay(torProxyPort),
                 style: context.font.bodySmall,
               ),
               onTap: () async {
@@ -67,12 +68,8 @@ class TorProxyWidget extends StatelessWidget {
           ),
           const Gap(16),
           InfoCard(
-            title: 'Important Information',
-            description:
-                '• Tor proxy only applies to Bitcoin (not Liquid)\n'
-                '• Default Orbot port is 9050\n'
-                '• Ensure Orbot is running before enabling\n'
-                '• Connection may be slower through Tor',
+            title: context.loc.torSettingsInfoTitle,
+            description: context.loc.torSettingsInfoDescription,
             bgColor: context.appColors.tertiaryContainer,
             tagColor: context.appColors.tertiary,
           ),
