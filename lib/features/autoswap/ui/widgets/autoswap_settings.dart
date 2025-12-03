@@ -441,9 +441,6 @@ class _WalletSelectionDropdown extends StatelessWidget {
             enabled
                 ? context.loc.autoswapRecipientWalletPlaceholderRequired
                 : context.loc.autoswapRecipientWalletPlaceholder,
-            enabled
-                ? context.loc.autoswapRecipientWalletPlaceholderRequired
-                : context.loc.autoswapRecipientWalletPlaceholder,
             style: context.font.bodyMedium?.copyWith(
               color: enabled && selectedWalletId == null
                   ? context.appColors.error
@@ -454,7 +451,6 @@ class _WalletSelectionDropdown extends StatelessWidget {
             return DropdownMenuItem<String>(
               value: wallet.id,
               child: BBText(
-                wallet.label ?? context.loc.autoswapRecipientWalletDefaultLabel,
                 wallet.label ?? context.loc.autoswapRecipientWalletDefaultLabel,
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.text,
@@ -508,7 +504,6 @@ class _SaveButton extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: BBText(
-                          context.loc.autoswapSaveErrorMessage(e.toString()),
                           context.loc.autoswapSaveErrorMessage(e.toString()),
                           style: context.font.bodyMedium,
                         ),

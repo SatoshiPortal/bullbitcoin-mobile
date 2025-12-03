@@ -235,10 +235,6 @@ class SwapPageState extends State<SwapPage> {
                         state.isStarting ||
                         state.isCreatingSwap ||
                         state.continueClicked,
-                    selector: (state) =>
-                        state.isStarting ||
-                        state.isCreatingSwap ||
-                        state.continueClicked,
                     builder: (context, isLoading) {
                       return BBButton.big(
                         label: context.loc.swapContinueButton,
