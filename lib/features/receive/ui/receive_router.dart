@@ -317,7 +317,7 @@ class TabAScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Tab A')),
       body: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Text('Counter A: $count', style: const TextStyle(fontSize: 24)),
             ElevatedButton(
@@ -359,7 +359,7 @@ class TabBScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Tab B')),
       body: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Text('Counter B: $count', style: const TextStyle(fontSize: 24)),
             ElevatedButton(

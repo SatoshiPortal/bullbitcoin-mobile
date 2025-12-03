@@ -17,14 +17,14 @@ class DevModeSwitch extends StatelessWidget {
       context: context,
       child: Container(
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 Text(
                   context.loc.settingsDevModeWarningTitle,
@@ -45,8 +45,8 @@ class DevModeSwitch extends StatelessWidget {
                     );
                     context.pop();
                   },
-                  bgColor: context.colour.primary,
-                  textColor: context.colour.onPrimary,
+                  bgColor: context.appColors.primary,
+                  textColor: context.appColors.onPrimary,
                 ),
               ],
             ),

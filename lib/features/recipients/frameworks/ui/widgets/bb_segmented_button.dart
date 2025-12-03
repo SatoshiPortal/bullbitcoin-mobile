@@ -28,7 +28,7 @@ class BBSegmentedButton extends StatelessWidget {
       child: Center(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(2),
-          clipBehavior: Clip.antiAliasWithSaveLayer,
+          clipBehavior: .antiAliasWithSaveLayer,
           child: CustomSlidingSegmentedControl<String>(
             controller: CustomSegmentedController(value: selected),
             initialValue: selected,
@@ -45,11 +45,11 @@ class BBSegmentedButton extends StatelessWidget {
             // fromMax: true,
             isStretch: true,
             decoration: BoxDecoration(
-              color: context.colour.outline.withValues(alpha: 0.1),
+              color: context.appColors.outline.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(2),
             ),
             thumbDecoration: BoxDecoration(
-              color: context.colour.onPrimary,
+              color: context.appColors.onPrimary,
               borderRadius: BorderRadius.circular(2),
             ),
             children: {
@@ -59,16 +59,16 @@ class BBSegmentedButton extends StatelessWidget {
                   style:
                       item == selected
                           ? context.font.labelLarge?.copyWith(
-                            color: context.colour.primary,
+                            color: context.appColors.primary,
                           )
                           : disabledItems.contains(item)
                           ? context.font.labelMedium?.copyWith(
-                            color: context.colour.outline.withValues(
+                            color: context.appColors.outline.withValues(
                               alpha: 0.5,
                             ),
                           )
                           : context.font.labelMedium?.copyWith(
-                            color: context.colour.outline,
+                            color: context.appColors.outline,
                           ),
                 ),
             },

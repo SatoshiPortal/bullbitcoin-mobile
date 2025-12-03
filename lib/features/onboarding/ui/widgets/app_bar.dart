@@ -12,7 +12,7 @@ class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: context.colour.primary,
+      backgroundColor: context.appColors.primary,
       flexibleSpace: TopBar(
         title: context.loc.onboardingRecoverWallet,
         onBack: () {

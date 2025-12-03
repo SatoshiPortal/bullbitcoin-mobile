@@ -29,25 +29,25 @@ class ExchangeHomeTopSection extends StatelessWidget {
       child: Stack(
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               Container(
-                color: Colors.black,
+                color: context.appColors.overlay,
                 height: 264 + 78,
                 // color: Colors.red,
                 child: Stack(
-                  fit: StackFit.expand,
+                  fit: .expand,
                   children: [
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: .center,
                       children: [
                         Gap(topGap),
                         ...balances.map(
                           (b) => BBText(
                             '${b.amount} ${b.currencyCode}',
                             style: balanceTextStyle?.copyWith(
-                              color: theme.colorScheme.onPrimary,
-                              fontWeight: FontWeight.w500,
+                              color: context.appColors.onPrimary,
+                              fontWeight: .w500,
                             ),
                           ),
                         ),

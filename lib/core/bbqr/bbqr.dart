@@ -96,7 +96,7 @@ class Bbqr {
       if (minSplitNumber < BigInt.from(1)) minSplitNumber = BigInt.from(1);
 
       final defaultOptions = await bbqr.SplitOptions.default_();
-      final bbqrOptions = bbqr.SplitOptions.new(
+      final bbqrOptions = bbqr.SplitOptions(
         minVersion: defaultOptions.minVersion,
         maxVersion: defaultOptions.maxVersion,
         encoding: defaultOptions.encoding,

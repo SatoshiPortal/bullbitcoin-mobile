@@ -41,7 +41,7 @@ class _SellScreenState extends State<SellScreen> {
         child: Form(
           key: _formKey,
           child: ScrollableColumn(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               const Gap(24.0),
               SellAmountInputField(

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_label_bottomsheet.dart';
@@ -15,21 +16,21 @@ class TransactionNotesTableItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Expanded(
             flex: 2,
             child: BBText(
-              'Transaction notes',
+              context.loc.transactionNotesLabel,
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.surfaceContainer,
+                color: context.appColors.surfaceContainer,
               ),
             ),
           ),
           Expanded(
             flex: 3,
             child: Wrap(
-              alignment: WrapAlignment.end,
+              alignment: .end,
               spacing: 8,
               runSpacing: 8,
               children:
@@ -88,15 +89,15 @@ class NoteChip extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
-        border: Border.all(color: context.colour.surface),
+        color: context.appColors.onPrimary,
+        border: Border.all(color: context.appColors.surface),
         borderRadius: BorderRadius.circular(3),
       ),
       constraints: BoxConstraints(maxWidth: maxWidth),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
 
           children: [
             Flexible(
@@ -105,17 +106,21 @@ class NoteChip extends StatelessWidget {
                 child: BBText(
                   note,
                   style: context.font.bodySmall?.copyWith(
-                    color: context.colour.outlineVariant,
+                    color: context.appColors.outlineVariant,
                   ),
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: .ellipsis,
                 ),
               ),
             ),
             const SizedBox(width: 4),
             GestureDetector(
               onTap: onDelete,
-              child: Icon(Icons.close, size: 16, color: context.colour.primary),
+              child: Icon(
+                Icons.close,
+                size: 16,
+                color: context.appColors.primary,
+              ),
             ),
           ],
         ),

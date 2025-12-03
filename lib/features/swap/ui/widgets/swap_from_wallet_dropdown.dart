@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -17,9 +18,9 @@ class SwapFromWalletDropdown extends StatelessWidget {
       (TransferBloc bloc) => bloc.state.fromWallet,
     );
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
-        Text('From', style: context.font.bodyLarge),
+        Text(context.loc.swapFromLabel, style: context.font.bodyLarge),
         const Gap(4),
         if (wallets.isEmpty)
           const LoadingLineContent()
@@ -50,7 +51,7 @@ class SwapFromWalletDropdown extends StatelessWidget {
             value: selected,
             validator: (value) {
               if (value == null) {
-                return 'Please select a wallet to transfer from';
+                return context.loc.swapValidationSelectFromWallet;
               }
               return null;
             },

@@ -10,7 +10,7 @@ class FundExchangeCostaRicaMethods extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         FundExchangeMethodListTile(
           method: FundingMethod.sinpe,

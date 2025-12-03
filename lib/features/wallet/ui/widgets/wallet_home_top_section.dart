@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/action_card.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -21,7 +22,7 @@ class WalletHomeTopSection extends StatelessWidget {
       child: Stack(
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               SizedBox(
                 height: 264 + 78,
@@ -58,13 +59,13 @@ class _UIState extends State<_UI> {
 
   @override
   void initState() {
-    image = Image.asset(Assets.backgrounds.bgRed.path, fit: BoxFit.fill);
+    image = Image.asset(Assets.backgrounds.bgRed.path, fit: .fill);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(fit: StackFit.expand, children: [image, const _Amounts()]);
+    return Stack(fit: .expand, children: [image, const _Amounts()]);
   }
 }
 
@@ -74,11 +75,11 @@ class _Amounts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: .center,
       children: [
         Gap(32),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [Spacer(), _BtcTotalAmt(), Gap(16), EyeToggle(), Spacer()],
         ),
         Gap(12),
@@ -103,7 +104,7 @@ class _BtcTotalAmt extends StatelessWidget {
       btcTotal,
       showFiat: false,
       style: context.font.displaySmall,
-      color: context.colour.onPrimary,
+      color: context.appColors.onPrimary,
     );
   }
 }
@@ -130,17 +131,17 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
       (WalletBloc bloc) => bloc.state.unconfirmedIncomingBalance,
     );
     if (unconfirmed == 0) return const SizedBox.shrink();
-    final color = context.colour.onPrimary;
+    final color = context.appColors.onPrimary;
     return GestureDetector(
       onTap: () {
         context.pushNamed(TransactionsRoute.transactions.name);
       },
       child: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 Icon(Icons.arrow_downward, color: color, size: 20),
                 CurrencyText(
@@ -153,7 +154,7 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
             ),
             Align(
               child: Text(
-                'In Progress',
+                context.loc.walletBalanceUnconfirmedIncoming,
                 style: context.font.bodyLarge?.copyWith(color: color),
               ),
             ),

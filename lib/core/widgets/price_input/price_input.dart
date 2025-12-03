@@ -37,20 +37,23 @@ class PriceInput extends StatelessWidget {
         Text(
           error ?? '',
           style: context.font.bodyLarge?.copyWith(
-            color: error != null ? context.colour.error : Colors.transparent,
+            color:
+                error != null
+                    ? context.appColors.error
+                    : context.appColors.transparent,
           ),
           maxLines: 2,
         ),
         const Gap(8),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             const Gap(24),
             Flexible(
               child: FittedBox(
-                fit: BoxFit.scaleDown,
+                fit: .scaleDown,
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: .min,
                   children: [
                     IntrinsicWidth(
                       child:
@@ -59,7 +62,7 @@ class PriceInput extends StatelessWidget {
                                 'MAX',
                                 style: context.font.displaySmall!.copyWith(
                                   fontSize: 36,
-                                  color: context.colour.outlineVariant,
+                                  color: context.appColors.outlineVariant,
                                 ),
                               )
                               : TextField(
@@ -71,14 +74,14 @@ class PriceInput extends StatelessWidget {
                                 ],
                                 showCursor: !readOnly,
                                 readOnly: readOnly,
-                                cursorColor: context.colour.outline,
+                                cursorColor: context.appColors.outline,
                                 cursorOpacityAnimates: true,
                                 cursorHeight: 30,
                                 style: context.font.displaySmall!.copyWith(
                                   fontSize: 36,
-                                  color: context.colour.outlineVariant,
+                                  color: context.appColors.outlineVariant,
                                 ),
-                                textAlign: TextAlign.center,
+                                textAlign: .center,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.zero,
@@ -90,7 +93,7 @@ class PriceInput extends StatelessWidget {
                                   hintStyle: context.font.displaySmall!
                                       .copyWith(
                                         fontSize: 36,
-                                        color: context.colour.outlineVariant,
+                                        color: context.appColors.outlineVariant,
                                       ),
                                 ),
                               ),
@@ -99,7 +102,7 @@ class PriceInput extends StatelessWidget {
                     Text(
                       currency,
                       style: context.font.displaySmall?.copyWith(
-                        color: context.colour.outlineVariant,
+                        color: context.appColors.outlineVariant,
                       ),
                       maxLines: 1,
                     ),
@@ -118,7 +121,7 @@ class PriceInput extends StatelessWidget {
                 },
                 child: Icon(
                   Icons.arrow_drop_down,
-                  color: context.colour.secondary,
+                  color: context.appColors.secondary,
                   size: 40,
                 ),
               ),
@@ -128,7 +131,7 @@ class PriceInput extends StatelessWidget {
         Text(
           '~$amountEquivalent',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.surfaceContainer,
           ),
         ),
         const Gap(14),
@@ -141,17 +144,17 @@ class PriceInput extends StatelessWidget {
               child: TextField(
                 onChanged: onNoteChanged,
                 textAlignVertical: TextAlignVertical.center,
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(2),
                     borderSide: BorderSide.none,
                   ),
-                  fillColor: context.colour.secondaryFixedDim,
+                  fillColor: context.appColors.secondaryFixedDim,
                   filled: true,
                   hintText: 'Add note',
                   hintStyle: context.font.labelSmall!.copyWith(
-                    color: context.colour.surfaceContainer,
+                    color: context.appColors.surfaceContainer,
                   ),
                 ),
               ),
@@ -166,7 +169,7 @@ class PriceInput extends StatelessWidget {
       useRootNavigator: true,
       context: context,
       isScrollControlled: true,
-      backgroundColor: context.colour.secondaryFixedDim,
+      backgroundColor: context.appColors.secondaryFixedDim,
       constraints: const BoxConstraints(maxWidth: double.infinity),
       builder: (context) {
         return CurrencyBottomSheet(
@@ -192,7 +195,7 @@ class CurrencyBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: .min,
       children: [
         const Gap(16),
         Row(
@@ -204,7 +207,7 @@ class CurrencyBottomSheet extends StatelessWidget {
             IconButton(
               iconSize: 20,
               onPressed: () => Navigator.pop(context),
-              color: context.colour.secondary,
+              color: context.appColors.secondary,
               icon: const Icon(Icons.close),
             ),
             const Gap(16),
@@ -231,10 +234,10 @@ class CurrencyBottomSheet extends StatelessWidget {
                     style: context.font.headlineSmall?.copyWith(
                       color:
                           selectedValue == curr
-                              ? context.colour.primary
-                              : context.colour.secondary,
+                              ? context.appColors.primary
+                              : context.appColors.secondary,
                     ),
-                    textAlign: TextAlign.start,
+                    textAlign: .start,
                   ),
                 ],
               ),

@@ -17,7 +17,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
 
     if (state.isFetchingUserSummary) {
       return Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.appColors.background,
         appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -25,7 +25,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
 
     if (userSummary == null) {
       return Scaffold(
-        backgroundColor: context.colour.secondaryFixed,
+        backgroundColor: context.appColors.background,
         appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
 
         body: Center(
@@ -38,13 +38,13 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               const SizedBox(height: 12),
               _buildInfoField(
@@ -105,48 +105,47 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     String? copiedMessage,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
           children: [
             BBText(
               label,
               style: context.font.headlineMedium?.copyWith(
-                color: context.colour.secondary,
-                fontWeight: FontWeight.w500,
+                color: context.appColors.onSurface,
+                fontWeight: .w500,
               ),
             ),
             const Spacer(),
             if (isCopyable)
               Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   BBText(
                     value,
                     style: context.font.bodyLarge?.copyWith(
-                      color: context.colour.secondary,
-                      fontWeight: FontWeight.w700,
+                      color: context.appColors.onSurface,
+                      fontWeight: .w700,
                     ),
                   ),
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: value));
-                      final theme = Theme.of(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: BBText(
                             copiedMessage ?? '',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            textAlign: .center,
+                            style: TextStyle(
                               fontSize: 14,
-                              color: Colors.white,
+                              color: context.appColors.surfaceFixed,
                             ),
                           ),
                           duration: const Duration(seconds: 2),
-                          backgroundColor: theme.colorScheme.onSurface
+                          backgroundColor: context.appColors.onSurface
                               .withAlpha(204),
-                          behavior: SnackBarBehavior.floating,
+                          behavior: .floating,
                           elevation: 4,
                           margin: const EdgeInsets.symmetric(
                             horizontal: 40,
@@ -165,7 +164,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                     child: Icon(
                       Icons.copy,
                       size: 18,
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                     ),
                   ),
                 ],
@@ -174,8 +173,8 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
               BBText(
                 value,
                 style: context.font.bodyLarge?.copyWith(
-                  color: context.colour.secondary,
-                  fontWeight: FontWeight.w700,
+                  color: context.appColors.onSurface,
+                  fontWeight: .w700,
                 ),
               ),
           ],
@@ -184,7 +183,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
         Container(
           width: double.infinity,
           height: 1,
-          color: context.colour.secondaryFixedDim,
+          color: context.appColors.border,
         ),
       ],
     );

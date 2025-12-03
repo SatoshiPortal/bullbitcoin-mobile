@@ -1,18 +1,17 @@
-include: package:lint/analysis_options.yaml
+include: package:lints/recommended.yaml
 
 linter:
   rules:
     avoid_classes_with_only_static_members: false
-    avoid_dynamic_calls: false
-    no_wildcard_variable_uses: false
-    unawaited_futures: true
     avoid_redundant_argument_values: false
+    avoid_dynamic_calls: false    
     
 
 analyzer:
+  errors:
+    todo: ignore
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
-    - maintainance/**
     - pubspec.yaml
   

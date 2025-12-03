@@ -41,8 +41,8 @@ class DriveVaultsListPage extends StatelessWidget {
         children: [
           FadingLinearProgress(
             trigger: state.isLoading,
-            backgroundColor: context.colour.surface,
-            foregroundColor: context.colour.primary,
+            backgroundColor: context.appColors.surface,
+            foregroundColor: context.appColors.primary,
             height: 2.0,
           ),
           Expanded(
@@ -93,16 +93,16 @@ class _DriveFileMetadataItem extends StatelessWidget {
           maxHeight: MediaQuery.of(context).size.height * 0.4,
         ),
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   BBButton.small(
                     label: context.loc.recoverbullGoogleDriveExportButton,
@@ -112,8 +112,8 @@ class _DriveFileMetadataItem extends StatelessWidget {
                         OnExportDriveFile(fileMetadata: driveFileMetadata),
                       );
                     },
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
                   ),
                   BBButton.small(
                     label: context.loc.recoverbullGoogleDriveDeleteButton,
@@ -121,8 +121,8 @@ class _DriveFileMetadataItem extends StatelessWidget {
                       context.pop();
                       _showDeleteConfirmationBottomSheet(context);
                     },
-                    bgColor: context.colour.primary,
-                    textColor: context.colour.onPrimary,
+                    bgColor: context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
                   ),
                 ],
               ),
@@ -142,30 +142,30 @@ class _DriveFileMetadataItem extends StatelessWidget {
           maxHeight: MediaQuery.of(context).size.height * 0.5,
         ),
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               BBText(context.loc.recoverbullGoogleDriveDeleteVaultTitle, style: context.font.headlineMedium),
               const Gap(16),
               BBText(
                 context.loc.recoverbullGoogleDriveDeleteConfirmation,
                 style: context.font.bodyMedium,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const Gap(24),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   BBButton.small(
                     label: context.loc.recoverbullGoogleDriveCancelButton,
                     onPressed: () => context.pop(),
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
                   ),
                   BBButton.small(
                     label: context.loc.recoverbullGoogleDriveDeleteButton,
@@ -175,8 +175,8 @@ class _DriveFileMetadataItem extends StatelessWidget {
                         OnDeleteDriveFile(fileMetadata: driveFileMetadata),
                       );
                     },
-                    bgColor: context.colour.primary,
-                    textColor: context.colour.onPrimary,
+                    bgColor: context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
                   ),
                 ],
               ),
@@ -199,7 +199,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
       title: Text(
         '${DateFormat('MMM dd, yyyy • HH:mm').format(driveFileMetadata.createdTime.toLocal())} • ${driveFileMetadata.name}',
         maxLines: 2,
-        overflow: TextOverflow.ellipsis,
+        overflow: .ellipsis,
       ),
       onTap:
           () => bloc.add(

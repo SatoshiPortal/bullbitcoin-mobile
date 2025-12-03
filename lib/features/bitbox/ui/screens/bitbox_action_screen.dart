@@ -94,13 +94,13 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: widget.action.title,
-          color: context.colour.secondaryFixed,
+          color: context.appColors.background,
           onBack: () => Navigator.of(context).pop(),
         ),
       ),
@@ -152,14 +152,14 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         const Gap(24),
         BBText(
           _getMainTextForState(state),
-          textAlign: TextAlign.center,
+          textAlign: .center,
           style: context.font.bodyLarge,
         ),
         const Gap(16),
         BBText(
           _getSubTextForState(state),
-          textAlign: TextAlign.center,
-          color: context.colour.onSurfaceVariant,
+          textAlign: .center,
+          color: context.appColors.textMuted,
           style: context.font.bodyMedium,
         ),
         if (widget.action == const BitBoxAction.importWallet() &&
@@ -203,7 +203,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         icon = Icons.error;
     }
 
-    return Icon(icon, size: 80, color: context.colour.primary);
+    return Icon(icon, size: 80, color: context.appColors.primary);
   }
 
   Widget _buildPairingCodeDisplay(
@@ -215,15 +215,15 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: context.colour.surface,
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: context.colour.primary.withValues(alpha: 0.3),
+              color: context.appColors.primary.withValues(alpha: 0.3),
               width: 2,
             ),
             boxShadow: [
               BoxShadow(
-                color: context.colour.primary.withValues(alpha: 0.1),
+                color: context.appColors.primary.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -231,11 +231,11 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           ),
           child: BBText(
             state.result?.toString() ?? '',
-            textAlign: TextAlign.center,
+            textAlign: .center,
             style: context.font.headlineMedium?.copyWith(
               fontFamily: 'monospace',
-              fontWeight: FontWeight.bold,
-              color: context.colour.primary,
+              fontWeight: .bold,
+              color: context.appColors.primary,
               letterSpacing: 2,
             ),
           ),
@@ -243,8 +243,8 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         const Gap(20),
         BBText(
           'Waiting for confirmation on BitBox02...',
-          textAlign: TextAlign.center,
-          color: context.colour.onSurfaceVariant.withValues(alpha: 0.7),
+          textAlign: .center,
+          color: context.appColors.textMuted.withValues(alpha: 0.7),
           style: context.font.bodyMedium,
         ),
       ],
@@ -297,22 +297,22 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         BBText(
           'Address to verify:',
           style: context.font.bodyMedium,
-          color: context.colour.onSurfaceVariant.withValues(alpha: 0.8),
+          color: context.appColors.textMuted.withValues(alpha: 0.8),
         ),
         const Gap(12),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: context.colour.surface,
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: context.colour.outline.withValues(alpha: 0.3),
+              color: context.appColors.border.withValues(alpha: 0.3),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: context.colour.shadow.withValues(alpha: 0.1),
+                color: context.appColors.border.withValues(alpha: 0.1),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -328,18 +328,18 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
             style: context.font.bodyLarge?.copyWith(
               fontSize: 18,
               fontFamily: 'monospace',
-              color: context.colour.onSurface,
+              color: context.appColors.text,
               letterSpacing: 1,
             ),
-            textAlign: TextAlign.center,
+            textAlign: .center,
           ),
         ),
         const Gap(12),
         BBText(
           'Please verify this address on your BitBox device',
           style: context.font.bodySmall,
-          color: context.colour.onSurfaceVariant.withValues(alpha: 0.6),
-          textAlign: TextAlign.center,
+          color: context.appColors.textMuted.withValues(alpha: 0.6),
+          textAlign: .center,
         ),
       ],
     );
@@ -466,18 +466,18 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
             BBText(
               'Wallet Type:',
               style: context.font.bodyMedium,
-              color: context.colour.onSurfaceVariant,
+              color: context.appColors.textMuted,
             ),
             const Gap(12),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: context.colour.onSecondary,
+                color: context.appColors.surface,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: context.colour.outline, width: 1),
+                border: Border.all(color: context.appColors.border, width: 1),
               ),
               child: Material(
-                color: Colors.transparent,
+                color: context.appColors.transparent,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(8),
                   onTap: () => _showScriptTypeSelection(context),
@@ -487,19 +487,19 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
                       vertical: 12,
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         Expanded(
                           child: BBText(
                             _getScriptTypeDisplayName(_selectedScriptType),
                             style: context.font.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: .w500,
                             ),
                           ),
                         ),
                         Icon(
                           Icons.arrow_drop_down,
-                          color: context.colour.onSurfaceVariant,
+                          color: context.appColors.textMuted,
                           size: 20,
                         ),
                       ],
@@ -545,7 +545,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       useRootNavigator: true,
       context: context,
       isScrollControlled: true,
-      backgroundColor: context.colour.onSecondary,
+      backgroundColor: context.appColors.surface,
       constraints: const BoxConstraints(maxWidth: double.infinity),
       builder:
           (BuildContext buildContext) => Padding(
@@ -553,7 +553,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
             child: SafeArea(
               child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     const Gap(16),
                     BBText(
@@ -610,15 +610,15 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           BBButton.big(
             onPressed: () => _executeAction(context),
             label: widget.action.buttonText,
-            bgColor: context.colour.primary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.appColors.primary,
+            textColor: context.appColors.onPrimary,
           ),
         if (state.isError) ...[
           BBButton.big(
             onPressed: () => context.read<BitBoxOperationCubit>().reset(),
             label: 'Try Again',
-            bgColor: context.colour.primary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.appColors.primary,
+            textColor: context.appColors.onPrimary,
           ),
           if (state.errorMessage ==
               const BitBoxError.permissionDenied().message) ...[
@@ -626,8 +626,8 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
             BBButton.big(
               onPressed: () => _openAppSettings(),
               label: 'Manage App Permissions',
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
+              bgColor: context.appColors.onSurface,
+              textColor: context.appColors.surface,
             ),
           ],
         ],
@@ -636,8 +636,8 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           BBButton.small(
             label: 'Need Help?',
             onPressed: () => _showInstructions(context),
-            bgColor: context.colour.onSecondary,
-            textColor: context.colour.secondary,
+            bgColor: context.appColors.surface,
+            textColor: context.appColors.text,
             outlined: true,
           ),
       ],

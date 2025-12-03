@@ -18,13 +18,13 @@ class RequestIdentifierScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
+      backgroundColor: context.appColors.secondaryFixedDim,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: 'Send',
-          color: context.colour.secondaryFixedDim,
+          color: context.appColors.secondaryFixedDim,
           onBack: () => context.pop(),
         ),
       ),
@@ -45,7 +45,7 @@ class RequestIdentifierScreen extends StatelessWidget {
           final cubit = context.read<RequestIdentifierCubit>();
 
           return Stack(
-            fit: StackFit.expand,
+            fit: .expand,
             children: [
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
@@ -58,7 +58,7 @@ class RequestIdentifierScreen extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: context.colour.onPrimary,
+                      color: context.appColors.onPrimary,
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(12),
                         topRight: Radius.circular(12),
@@ -66,8 +66,8 @@ class RequestIdentifierScreen extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: .stretch,
+                      mainAxisSize: .min,
                       children: [
                         const Gap(32),
                         BBText(
@@ -111,12 +111,12 @@ class PasteRequestWidget extends StatelessWidget {
       value: address,
       hint: 'Paste a payment address or invoice',
       hintStyle: context.font.bodyLarge?.copyWith(
-        color: context.colour.surfaceContainer,
+        color: context.appColors.surfaceContainer,
       ),
       maxLines: 1,
       rightIcon: Icon(
         Icons.paste_sharp,
-        color: context.colour.secondary,
+        color: context.appColors.secondary,
         size: 20,
       ),
       onRightTap: () {
@@ -143,8 +143,8 @@ class RequestErrorWidget extends StatelessWidget {
       return BBText(
         error,
         style: context.font.bodyMedium,
-        color: context.colour.error,
-        textAlign: TextAlign.center,
+        color: context.appColors.error,
+        textAlign: .center,
         maxLines: 2,
       );
     }
@@ -170,8 +170,8 @@ class ContinueButtonWidget extends StatelessWidget {
       label: 'Continue',
       onPressed: cubit.validatePaymentRequest,
       disabled: !hasRequest || hasError,
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onPrimary,
+      bgColor: context.appColors.secondary,
+      textColor: context.appColors.onPrimary,
     );
   }
 }

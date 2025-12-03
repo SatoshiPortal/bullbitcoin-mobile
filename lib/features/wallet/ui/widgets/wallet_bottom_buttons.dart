@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
@@ -19,7 +20,7 @@ class WalletBottomButtons extends StatelessWidget {
         Expanded(
           child: BBButton.big(
             iconData: Icons.arrow_downward,
-            label: 'Receive',
+            label: context.loc.walletButtonReceive,
             iconFirst: true,
             onPressed: () {
               // Bitcoin is the default receive method if no specific wallet is selected
@@ -34,21 +35,21 @@ class WalletBottomButtons extends StatelessWidget {
                 );
               }
             },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.appColors.onSurface,
+            textColor: context.appColors.surface,
           ),
         ),
         const Gap(4),
         Expanded(
           child: BBButton.big(
             iconData: Icons.crop_free,
-            label: 'Send',
+            label: context.loc.walletButtonSend,
             iconFirst: true,
             onPressed: () {
               context.pushNamed(SendRoute.send.name, extra: wallet);
             },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.appColors.onSurface,
+            textColor: context.appColors.surface,
             disabled: wallet?.isWatchOnly ?? false,
           ),
         ),

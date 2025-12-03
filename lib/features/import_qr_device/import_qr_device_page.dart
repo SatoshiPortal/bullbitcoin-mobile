@@ -32,12 +32,12 @@ class ImportQrDevicePage extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: Device.screen.width * 0.05),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             BBText(
               context.loc.importQrDeviceScanPrompt(deviceName),
               style: context.font.bodyLarge,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               maxLines: 2,
             ),
 
@@ -46,6 +46,7 @@ class ImportQrDevicePage extends StatelessWidget {
               Assets.misc.qRPlaceholder.path,
               height: 200,
               width: 200,
+              color: context.appColors.text,
             ),
             Gap(Device.screen.height * 0.05),
             Column(
@@ -57,8 +58,8 @@ class ImportQrDevicePage extends StatelessWidget {
                         ImportWatchOnlyWalletRoutes.scan.name,
                         extra: device,
                       ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  bgColor: context.appColors.surface,
+                  textColor: context.appColors.text,
                   outlined: true,
                 ),
 
@@ -71,8 +72,8 @@ class ImportQrDevicePage extends StatelessWidget {
                         title: instructionsTitle,
                         instructions: instructions,
                       ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  bgColor: context.appColors.surface,
+                  textColor: context.appColors.text,
                   outlined: true,
                 ),
               ],

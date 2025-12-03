@@ -28,40 +28,44 @@ class RecipientsListTile extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
-            color: selected ? context.colour.primary : context.colour.surface,
+            color: selected
+                ? context.appColors.primary
+                : context.appColors.surface,
           ),
-          color: context.colour.onPrimary,
+          color: context.appColors.onPrimary,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: .start,
+          mainAxisSize: .min,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: .spaceBetween,
+              crossAxisAlignment: .center,
               children: [
                 Expanded(
                   child: Text(
                     name ?? '-',
                     style: context.font.headlineLarge?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.appColors.secondary,
                     ),
                   ),
                 ),
-                Radio<bool>(
-                  value: true,
+                RadioGroup<bool>(
                   groupValue: selected,
                   onChanged: (_) => onTap(),
-                  activeColor: context.colour.primary,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  visualDensity: VisualDensity.compact,
+                  child: Radio<bool>(
+                    value: true,
+                    activeColor: context.appColors.primary,
+                    materialTapTargetSize: .shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                  ),
                 ),
               ],
             ),
             RecipientTypeText(
               recipientType: recipient.type,
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.secondary,
               ),
             ),
             switch (recipient.type) {
@@ -144,7 +148,7 @@ class _InfoRow extends StatelessWidget {
       child: Text(
         '$label: ${value != null && value!.isNotEmpty ? value : '-'}',
         style: context.font.bodyMedium?.copyWith(
-          color: context.colour.secondary,
+          color: context.appColors.secondary,
         ),
       ),
     );

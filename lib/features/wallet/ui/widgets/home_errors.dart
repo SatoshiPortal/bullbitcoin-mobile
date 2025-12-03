@@ -29,7 +29,7 @@ class HomeWarnings extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(left: 13.0, right: 13, top: 13),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               if (showBackupWarning)
                 BackupCard(
@@ -44,8 +44,8 @@ class HomeWarnings extends StatelessWidget {
                 InfoCard(
                   title: warning.title,
                   description: warning.description,
-                  tagColor: context.colour.error,
-                  bgColor: context.colour.secondaryFixedDim,
+                  tagColor: context.appColors.error,
+                  bgColor: context.appColors.errorContainer,
                   onTap: () => context.pushNamed(warning.actionRoute),
                 ),
               ],

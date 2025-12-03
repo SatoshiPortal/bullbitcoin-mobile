@@ -18,7 +18,6 @@ import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:rxdart/transformers.dart';
 
 class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -43,15 +42,15 @@ class WalletRepository {
     // Start auto syncing wallets
   }
 
-  Stream<Wallet> get walletSyncStartedStream =>
-      _walletSyncStartedStream
-          .asyncMap((walletId) async => await getWallet(walletId))
-          .whereType<Wallet>();
+  Stream<Wallet> get walletSyncStartedStream => _walletSyncStartedStream
+      .asyncMap((walletId) async => await getWallet(walletId))
+      .where((event) => event != null)
+      .map((event) => event!);
 
-  Stream<Wallet> get walletSyncFinishedStream =>
-      _walletSyncFinishedStream
-          .asyncMap((walletId) async => await getWallet(walletId))
-          .whereType<Wallet>();
+  Stream<Wallet> get walletSyncFinishedStream => _walletSyncFinishedStream
+      .asyncMap((walletId) async => await getWallet(walletId))
+      .where((event) => event != null)
+      .map((event) => event!);
 
   Stream<ElectrumSyncResult> get electrumSyncResultStream =>
       _electrumSyncResultController.stream;
@@ -72,14 +71,14 @@ class WalletRepository {
     // Derive and store the wallet metadata
     final walletLabel =
         isDefault &&
-                (network == Network.bitcoinMainnet ||
-                    network == Network.bitcoinTestnet)
-            ? 'Secure Bitcoin'
-            : isDefault &&
-                (network == Network.liquidMainnet ||
-                    network == Network.liquidTestnet)
-            ? 'Instant Payments'
-            : label;
+            (network == Network.bitcoinMainnet ||
+                network == Network.bitcoinTestnet)
+        ? 'Secure Bitcoin'
+        : isDefault &&
+              (network == Network.liquidMainnet ||
+                  network == Network.liquidTestnet)
+        ? 'Instant Payments'
+        : label;
 
     final metadata = await WalletMetadataService.deriveFromSeed(
       seed: seed,
@@ -232,18 +231,12 @@ class WalletRepository {
       balanceSat: balance.totalSat,
       isEncryptedVaultTested: metadata.isEncryptedVaultTested,
       isPhysicalBackupTested: metadata.isPhysicalBackupTested,
-      latestEncryptedBackup:
-          metadata.latestEncryptedBackup != null
-              ? DateTime.fromMillisecondsSinceEpoch(
-                metadata.latestEncryptedBackup!,
-              )
-              : null,
-      latestPhysicalBackup:
-          metadata.latestPhysicalBackup != null
-              ? DateTime.fromMillisecondsSinceEpoch(
-                metadata.latestPhysicalBackup!,
-              )
-              : null,
+      latestEncryptedBackup: metadata.latestEncryptedBackup != null
+          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestEncryptedBackup!)
+          : null,
+      latestPhysicalBackup: metadata.latestPhysicalBackup != null
+          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestPhysicalBackup!)
+          : null,
     );
   }
 
@@ -257,23 +250,20 @@ class WalletRepository {
     final metadatas = await _walletMetadataDatasource.fetchAll();
     if (metadatas.isEmpty) return [];
 
-    final filteredWallets =
-        metadatas
-            .where(
-              (wallet) =>
-                  (environment == null ||
-                      wallet.isMainnet == environment.isMainnet) &&
-                  (onlyDefaults == null ||
-                      onlyDefaults == false ||
-                      wallet.isDefault) &&
-                  (onlyBitcoin == null ||
-                      onlyBitcoin == false ||
-                      wallet.isBitcoin) &&
-                  (onlyLiquid == null ||
-                      onlyLiquid == false ||
-                      wallet.isLiquid),
-            )
-            .toList();
+    final filteredWallets = metadatas
+        .where(
+          (wallet) =>
+              (environment == null ||
+                  wallet.isMainnet == environment.isMainnet) &&
+              (onlyDefaults == null ||
+                  onlyDefaults == false ||
+                  wallet.isDefault) &&
+              (onlyBitcoin == null ||
+                  onlyBitcoin == false ||
+                  wallet.isBitcoin) &&
+              (onlyLiquid == null || onlyLiquid == false || wallet.isLiquid),
+        )
+        .toList();
 
     final balances = await Future.wait(
       filteredWallets.map((wallet) => _getBalance(wallet, sync: sync)),
@@ -302,18 +292,16 @@ class WalletRepository {
             balanceSat: balances[entry.key].totalSat,
             isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
             isPhysicalBackupTested: entry.value.isPhysicalBackupTested,
-            latestEncryptedBackup:
-                entry.value.latestEncryptedBackup != null
-                    ? DateTime.fromMillisecondsSinceEpoch(
-                      entry.value.latestEncryptedBackup!,
-                    )
-                    : null,
-            latestPhysicalBackup:
-                entry.value.latestPhysicalBackup != null
-                    ? DateTime.fromMillisecondsSinceEpoch(
-                      entry.value.latestPhysicalBackup!,
-                    )
-                    : null,
+            latestEncryptedBackup: entry.value.latestEncryptedBackup != null
+                ? DateTime.fromMillisecondsSinceEpoch(
+                    entry.value.latestEncryptedBackup!,
+                  )
+                : null,
+            latestPhysicalBackup: entry.value.latestPhysicalBackup != null
+                ? DateTime.fromMillisecondsSinceEpoch(
+                    entry.value.latestPhysicalBackup!,
+                  )
+                : null,
           ),
         )
         .toList();

@@ -37,7 +37,7 @@ class FeeOptionsModal extends StatelessWidget {
       child: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               const Gap(16),
               BBText('Select network fee', style: context.font.headlineMedium),

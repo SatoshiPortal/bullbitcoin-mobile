@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_card.dart';
 import 'package:bb_mobile/features/ark/router.dart';
@@ -27,15 +28,15 @@ class WalletCards extends StatelessWidget {
     final isLiquid = wallet.isLiquid;
     final watchOrSignsRemotely = wallet.isWatchOnly || wallet.signsRemotely;
 
-    final watchonlyColor = context.colour.secondary;
+    final watchonlyColor = context.appColors.secondary;
 
     if (watchOrSignsRemotely && !isTestnet) return watchonlyColor;
     if (watchOrSignsRemotely && isTestnet) return watchonlyColor;
 
-    if (isLiquid) return context.colour.tertiary;
+    if (isLiquid) return context.appColors.tertiary;
 
-    if (isTestnet) return context.colour.onTertiary;
-    return context.colour.onTertiary;
+    if (isTestnet) return context.appColors.onTertiary;
+    return context.appColors.onTertiary;
   }
 
   @override
@@ -64,7 +65,7 @@ class WalletCards extends StatelessWidget {
     return Padding(
       padding: padding ?? const EdgeInsets.all(13.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           for (final w in wallets) ...[
             WalletCard(
@@ -80,9 +81,9 @@ class WalletCards extends StatelessWidget {
           ],
           if (isArkWalletSetup) ...[
             WalletCard(
-              tagColor: context.colour.primary,
-              title: 'Ark Instant payments',
-              description: 'Experimental',
+              tagColor: context.appColors.tertiary,
+              title: context.loc.walletArkInstantPayments,
+              description: context.loc.walletArkExperimental,
               balanceSat: arkBalanceSat,
               isSyncing: isArkWalletLoading,
               onTap: () {

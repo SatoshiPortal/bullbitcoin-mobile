@@ -23,7 +23,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Stack(
             alignment: Alignment.center,
@@ -46,7 +46,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(32),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               BBText(
                 "Replace-by-fee activated",
@@ -66,7 +66,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             title: BBText(
               "Select coins manually",
               style: context.font.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w500,
+                fontWeight: .w500,
               ),
             ),
             trailing: const Icon(Icons.arrow_forward),
@@ -74,7 +74,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                backgroundColor: context.colour.secondaryFixed,
+                backgroundColor: context.appColors.secondaryFixed,
                 constraints: const BoxConstraints(maxWidth: double.infinity),
                 useSafeArea: true,
                 builder:
@@ -89,8 +89,8 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           BBButton.big(
             label: "Done",
             onPressed: context.pop,
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
           const Gap(24),
         ],

@@ -158,11 +158,14 @@ class _SendAmountPageState extends State<SendAmountPage> {
   Widget build(BuildContext context) {
     return GestureDetector(
       // tap outside input to close keyboard
-      behavior: HitTestBehavior.opaque,
+      behavior: .opaque,
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(context.loc.arkSendAmountTitle, style: context.font.headlineMedium),
+          title: Text(
+            context.loc.arkSendAmountTitle,
+            style: context.font.headlineMedium,
+          ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3),
             child:
@@ -170,8 +173,8 @@ class _SendAmountPageState extends State<SendAmountPage> {
                     ? FadingLinearProgress(
                       height: 3,
                       trigger: _isLoading,
-                      backgroundColor: context.colour.surface,
-                      foregroundColor: context.colour.primary,
+                      backgroundColor: context.appColors.surface,
+                      foregroundColor: context.appColors.primary,
                     )
                     : const SizedBox(height: 3),
           ),
@@ -179,7 +182,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
         body: SafeArea(
           child: Form(
             child: ScrollableColumn(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: .spaceBetween,
               children: [
                 PriceInput(
                   currency: _currencyCode,
@@ -192,9 +195,12 @@ class _SendAmountPageState extends State<SendAmountPage> {
                   error: _error,
                 ),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
-                    Divider(height: 1, color: context.colour.secondaryFixedDim),
+                    Divider(
+                      height: 1,
+                      color: context.appColors.secondaryFixedDim,
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: BalanceRow(
@@ -229,8 +235,8 @@ class _SendAmountPageState extends State<SendAmountPage> {
                   label: context.loc.arkContinueButton,
                   onPressed: _submit,
                   disabled: _controller.text.isEmpty || _isLoading,
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onSecondary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ),
