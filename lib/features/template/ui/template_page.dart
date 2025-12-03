@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/template/domain/ip_address_entity.dart';
 import 'package:bb_mobile/features/template/presentation/template_cubit.dart';
@@ -15,7 +16,7 @@ class TemplatePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: BBText(
-          'IP Address Info',
+          context.loc.templatePageTitle,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -51,7 +52,7 @@ class TemplatePage extends StatelessWidget {
                   onPressed: state.isLoading ? null : cubit.collectIp,
                   icon: const Icon(Icons.download),
                   label: BBText(
-                    'Collect and cache my IP info',
+                    context.loc.templateCollectIpButton,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
@@ -59,7 +60,7 @@ class TemplatePage extends StatelessWidget {
                   onPressed: state.isLoading ? null : cubit.getCachedIp,
                   icon: const Icon(Icons.remove_red_eye),
                   label: BBText(
-                    'Get cached IP info',
+                    context.loc.templateGetCachedIpButton,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
@@ -81,7 +82,7 @@ class TemplatePage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: cubit.reset,
                   child: BBText(
-                    'Reset',
+                    context.loc.templateResetButton,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -123,16 +124,16 @@ class TemplatePage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            _infoRow(context, 'User Agent', ip.userAgent),
+            _infoRow(context, context.loc.templateUserAgentLabel, ip.userAgent),
             _infoRow(
               context,
-              'Compression',
-              ip.isCompressionSupported ? 'Yes' : 'No',
+              context.loc.templateCompressionLabel,
+              ip.isCompressionSupported ? context.loc.commonYes : context.loc.commonNo,
             ),
-            _infoRow(context, 'Timestamp', ip.timestamp.toString()),
+            _infoRow(context, context.loc.templateTimestampLabel, ip.timestamp.toString()),
             const SizedBox(height: 8),
             BBText(
-              'Supported Encodings:',
+              context.loc.templateSupportedEncodingsLabel,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Wrap(
@@ -151,7 +152,7 @@ class TemplatePage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             BBText(
-              'Accepted MIME Types:',
+              context.loc.templateAcceptedMimeTypesLabel,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Wrap(

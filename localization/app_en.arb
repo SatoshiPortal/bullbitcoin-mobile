@@ -10635,5 +10635,74 @@
   "statusCheckUnknown": "Unknown",
   "@statusCheckUnknown": {
     "description": "Status text when service status is unknown"
+  },
+  "templatePageTitle": "IP Address Info",
+  "@templatePageTitle": {
+    "description": "AppBar title for the template page"
+  },
+  "templateCollectIpButton": "Collect and cache my IP info",
+  "@templateCollectIpButton": {
+    "description": "Button to collect and cache IP information"
+  },
+  "templateGetCachedIpButton": "Get cached IP info",
+  "@templateGetCachedIpButton": {
+    "description": "Button to retrieve cached IP information"
+  },
+  "templateResetButton": "Reset",
+  "@templateResetButton": {
+    "description": "Button to reset the template state"
+  },
+  "templateUserAgentLabel": "User Agent",
+  "@templateUserAgentLabel": {
+    "description": "Label for user agent info row"
+  },
+  "templateCompressionLabel": "Compression",
+  "@templateCompressionLabel": {
+    "description": "Label for compression support info row"
+  },
+  "templateTimestampLabel": "Timestamp",
+  "@templateTimestampLabel": {
+    "description": "Label for timestamp info row"
+  },
+  "templateSupportedEncodingsLabel": "Supported Encodings:",
+  "@templateSupportedEncodingsLabel": {
+    "description": "Label for supported encodings section"
+  },
+  "templateAcceptedMimeTypesLabel": "Accepted MIME Types:",
+  "@templateAcceptedMimeTypesLabel": {
+    "description": "Label for accepted MIME types section"
+  },
+  "templateConnectionLabel": "Connection: {info}",
+  "@templateConnectionLabel": {
+    "description": "Connection info display with IP details",
+    "placeholders": {
+      "info": {
+        "type": "String"
+      }
+    }
+  },
+  "templateSecure": "Secure",
+  "@templateSecure": {
+    "description": "Label for secure connection status"
+  },
+  "templateInsecure": "Insecure",
+  "@templateInsecure": {
+    "description": "Label for insecure connection status"
+  },
+  "templateMobile": "Mobile",
+  "@templateMobile": {
+    "description": "Label for mobile device type"
+  },
+  "templateDesktop": "Desktop",
+  "@templateDesktop": {
+    "description": "Label for desktop device type"
+  },
+  "commonYes": "Yes",
+  "@commonYes": {
+    "description": "Common affirmative response"
+  },
+  "commonNo": "No",
+  "@commonNo": {
+    "description": "Common negative response"
   }
 }

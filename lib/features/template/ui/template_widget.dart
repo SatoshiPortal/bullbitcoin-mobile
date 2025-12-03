@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/template/domain/ip_address_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -66,7 +67,7 @@ class TemplateWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Connection: ${ipAddressData!.displayInfo}',
+                              context.loc.templateConnectionLabel(ipAddressData!.displayInfo),
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -88,8 +89,8 @@ class TemplateWidget extends StatelessWidget {
                                 const SizedBox(width: 4),
                                 Text(
                                   ipAddressData!.isSecureConnection
-                                      ? 'Secure'
-                                      : 'Insecure',
+                                      ? context.loc.templateSecure
+                                      : context.loc.templateInsecure,
                                   style: TextStyle(
                                     fontSize: 10,
                                     color:
@@ -109,8 +110,8 @@ class TemplateWidget extends StatelessWidget {
                                 const SizedBox(width: 4),
                                 Text(
                                   ipAddressData!.isMobileUserAgent
-                                      ? 'Mobile'
-                                      : 'Desktop',
+                                      ? context.loc.templateMobile
+                                      : context.loc.templateDesktop,
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: context.appColors.textMuted,
