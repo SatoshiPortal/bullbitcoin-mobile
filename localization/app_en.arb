@@ -2598,6 +2598,210 @@
   "@transactionListYesterday": {
     "description": "Date label for yesterday's transactions"
   },
+  "transactionSwapDoNotUninstall": "Do not uninstall the app until the swap completes.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Warning message to not uninstall app during swap"
+  },
+  "transactionFeesDeductedFrom": "This fees will be deducted from the amount sent",
+  "@transactionFeesDeductedFrom": {
+    "description": "Fee deduction explanation for receiving swaps"
+  },
+  "transactionFeesTotalDeducted": "This is the total fee deducted from the amount sent",
+  "@transactionFeesTotalDeducted": {
+    "description": "Fee deduction explanation for sending swaps"
+  },
+  "transactionLabelSendAmount": "Send Amount",
+  "@transactionLabelSendAmount": {
+    "description": "Label for send amount in swap details"
+  },
+  "transactionLabelReceiveAmount": "Receive Amount",
+  "@transactionLabelReceiveAmount": {
+    "description": "Label for receive amount in swap details"
+  },
+  "transactionLabelSendNetworkFees": "Send Network fees",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Label for send network fees in swap details"
+  },
+  "transactionLabelReceiveNetworkFee": "Receive Network Fee",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Label for receive network fee in swap details"
+  },
+  "transactionLabelServerNetworkFees": "Server Network Fees",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Label for server network fees in swap details"
+  },
+  "transactionLabelPreimage": "Preimage",
+  "@transactionLabelPreimage": {
+    "description": "Label for preimage in Lightning swap details"
+  },
+  "transactionOrderLabelReferenceNumber": "Reference Number",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Label for reference number in order details"
+  },
+  "transactionOrderLabelOriginName": "Origin Name",
+  "@transactionOrderLabelOriginName": {
+    "description": "Label for origin name in fiat payment order"
+  },
+  "transactionOrderLabelOriginCedula": "Origin Cedula",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Label for origin cedula in fiat payment order"
+  },
+  "transactionDetailAccelerate": "Accelerate",
+  "@transactionDetailAccelerate": {
+    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionDetailLabelTransactionId": "Transaction ID",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Label for transaction ID in details"
+  },
+  "transactionDetailLabelToWallet": "To wallet",
+  "@transactionDetailLabelToWallet": {
+    "description": "Label for destination wallet"
+  },
+  "transactionDetailLabelFromWallet": "From wallet",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Label for source wallet"
+  },
+  "transactionDetailLabelRecipientAddress": "Recipient Address",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Label for recipient address"
+  },
+  "transactionDetailLabelAddress": "Address",
+  "@transactionDetailLabelAddress": {
+    "description": "Label for address"
+  },
+  "transactionDetailLabelAddressNotes": "Address notes",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Label for address notes"
+  },
+  "transactionDetailLabelAmountReceived": "Amount received",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Label for amount received"
+  },
+  "transactionDetailLabelAmountSent": "Amount sent",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Label for amount sent"
+  },
+  "transactionDetailLabelTransactionFee": "Transaction Fee",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Label for transaction fee"
+  },
+  "transactionDetailLabelStatus": "Status",
+  "@transactionDetailLabelStatus": {
+    "description": "Label for status"
+  },
+  "transactionDetailLabelConfirmationTime": "Confirmation time",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Label for confirmation time"
+  },
+  "transactionDetailLabelOrderType": "Order Type",
+  "@transactionDetailLabelOrderType": {
+    "description": "Label for order type"
+  },
+  "transactionDetailLabelOrderNumber": "Order Number",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Label for order number"
+  },
+  "transactionDetailLabelPayinAmount": "Payin amount",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "transactionDetailLabelPayoutAmount": "Payout amount",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Label for payout amount"
+  },
+  "transactionDetailLabelExchangeRate": "Exchange rate",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "transactionDetailLabelPayinMethod": "Payin method",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Label for payin method"
+  },
+  "transactionDetailLabelPayoutMethod": "Payout method",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Label for payout method"
+  },
+  "transactionDetailLabelPayinStatus": "Payin Status",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Label for payin status"
+  },
+  "transactionDetailLabelOrderStatus": "Order Status",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Label for order status"
+  },
+  "transactionDetailLabelPayoutStatus": "Payout Status",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Label for payout status"
+  },
+  "transactionDetailLabelCreatedAt": "Created at",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Label for creation time"
+  },
+  "transactionDetailLabelCompletedAt": "Completed at",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionDetailLabelTransferId": "Transfer ID",
+  "@transactionDetailLabelTransferId": {
+    "description": "Label for transfer ID"
+  },
+  "transactionDetailLabelSwapId": "Swap ID",
+  "@transactionDetailLabelSwapId": {
+    "description": "Label for swap ID"
+  },
+  "transactionDetailLabelTransferStatus": "Transfer status",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "transactionDetailLabelSwapStatus": "Swap status",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionDetailLabelRefunded": "Refunded",
+  "@transactionDetailLabelRefunded": {
+    "description": "Label for refunded status"
+  },
+  "transactionDetailLabelLiquidTxId": "Liquid transaction ID",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Label for Liquid transaction ID"
+  },
+  "transactionDetailLabelBitcoinTxId": "Bitcoin transaction ID",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Label for Bitcoin transaction ID"
+  },
+  "transactionDetailLabelTransferFees": "Transfer fees",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Label for transfer fees"
+  },
+  "transactionDetailLabelSwapFees": "Swap fees",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Label for swap fees"
+  },
+  "transactionDetailLabelSendNetworkFee": "Send Network Fee",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Label for send network fee"
+  },
+  "transactionDetailLabelTransferFee": "Transfer Fee",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Label for transfer fee (Boltz fee)"
+  },
+  "transactionDetailLabelPayjoinStatus": "Payjoin status",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Label for payjoin status"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Completed",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "transactionDetailLabelPayjoinExpired": "Expired",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Payjoin expired status"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Payjoin creation time",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Label for payjoin creation time"
+  },
   "walletNameInstantPayments": "Instant Payments",
   "@walletNameInstantPayments": {
     "description": "Default name for Liquid/instant payments wallet"
@@ -10832,5 +11036,32 @@
   "withdrawOwnershipOtherAccount": "This is someone else's account",
   "@withdrawOwnershipOtherAccount": {
     "description": "Option indicating the account belongs to someone else"
+  },
+  "walletAutoTransferBlockedTitle": "Auto Transfer Blocked",
+  "@walletAutoTransferBlockedTitle": {
+    "description": "Title for auto-swap fee warning when fees exceed threshold"
+  },
+  "walletAutoTransferBlockedMessage": "Attempting to transfer {amount} BTC. Current fee is {currentFee}% of the transfer amount and the fee threshold is set to {thresholdFee}%",
+  "@walletAutoTransferBlockedMessage": {
+    "description": "Message explaining why auto-transfer was blocked",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currentFee": {
+        "type": "String"
+      },
+      "thresholdFee": {
+        "type": "String"
+      }
+    }
+  },
+  "walletAutoTransferBlockButton": "Block",
+  "@walletAutoTransferBlockButton": {
+    "description": "Button to block auto-transfer until next execution"
+  },
+  "walletAutoTransferAllowButton": "Allow",
+  "@walletAutoTransferAllowButton": {
+    "description": "Button to allow auto-transfer despite high fees"
   }
 }

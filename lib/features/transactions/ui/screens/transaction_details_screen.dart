@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -66,8 +67,10 @@ class TransactionDetailsScreen extends StatelessWidget {
         flexibleSpace: TopBar(
           title:
               isOngoingSwap == true
-                  ? (isChainSwap ? 'Transfer Progress' : 'Swap Progress')
-                  : 'Transaction details',
+                  ? (isChainSwap
+                      ? context.loc.transactionDetailTransferProgress
+                      : context.loc.transactionDetailSwapProgress)
+                  : context.loc.transactionDetailTitle,
           actionIcon: Icons.close,
           onAction: () {
             if (context.canPop()) {
@@ -147,8 +150,10 @@ class TransactionDetailsScreen extends StatelessWidget {
                     disabled: retryingSwap,
                     label:
                         isChainSwap
-                            ? 'Retry Transfer $swapAction'
-                            : 'Retry Swap $swapAction',
+                            ? context.loc.transactionDetailRetryTransfer(
+                              swapAction,
+                            )
+                            : context.loc.transactionDetailRetrySwap(swapAction),
                     onPressed: () async {
                       await context.read<TransactionDetailsCubit>().processSwap(
                         swap,
@@ -168,7 +173,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const LoadingLineContent(height: 40)
                 else
                   BBButton.big(
-                    label: 'Add note',
+                    label: context.loc.transactionDetailAddNote,
                     disabled:
                         !(walletTransaction != null &&
                             walletTransaction.labels.length < 10),
@@ -196,7 +201,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                     tx?.txId != null &&
                     swap == null)
                   BBButton.big(
-                    label: 'Accelerate',
+                    label: context.loc.transactionDetailAccelerate,
                     onPressed: () {
                       context.pushNamed(
                         ReplaceByFeeRoute.replaceByFeeFlow.name,
