@@ -10561,5 +10561,9 @@
   "delete": "Delete",
   "@delete": {
     "description": "Generic delete button label"
+  },
+  "priceChartFetchingHistory": "Fetching Price History...",
+  "@priceChartFetchingHistory": {
+    "description": "Message shown while fetching price history when no local data is available"
   }
 }

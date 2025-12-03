@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/cards/action_card.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
@@ -64,12 +66,44 @@ class _UIState extends State<_UI> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(fit: StackFit.expand, children: [image, const _Amounts()]);
+    final showChart = context.select(
+      (PriceChartCubit cubit) => cubit.state.showChart,
+    );
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          color: Colors.transparent,
+          child: image,
+        ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (child, animation) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+              ),
+              child: child,
+            );
+          },
+          child:
+              showChart
+                  ? const _ChartView(key: ValueKey('chart'))
+                  : const _Amounts(key: ValueKey('amounts')),
+        ),
+      ],
+    );
   }
 }
 
 class _Amounts extends StatelessWidget {
-  const _Amounts();
+  const _Amounts({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +152,15 @@ class _FiatAmt extends StatelessWidget {
     );
 
     return HomeFiatBalance(balanceSat: totalBal);
+  }
+}
+
+class _ChartView extends StatelessWidget {
+  const _ChartView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const PriceChartWidget();
   }
 }
 

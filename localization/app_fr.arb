@@ -10570,5 +10570,9 @@
   "delete": "Supprimer",
   "@delete": {
     "description": "Generic delete button label"
+  },
+  "priceChartFetchingHistory": "Récupération de l'historique des prix...",
+  "@priceChartFetchingHistory": {
+    "description": "Message affiché lors de la récupération de l'historique des prix lorsqu'aucune donnée locale n'est disponible"
   }
 }
