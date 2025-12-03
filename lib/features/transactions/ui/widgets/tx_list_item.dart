@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -42,14 +43,14 @@ class TxListItem extends StatelessWidget {
         isOrderType
             ? tx.order!.orderType.value
             : isLnSwap
-            ? 'Lightning'
+            ? context.loc.transactionNetworkLightning
             : isChainSwap
             ? tx.swap!.type == SwapType.liquidToBitcoin
-                ? 'L-BTC → BTC'
-                : 'BTC → L-BTC'
+                ? context.loc.transactionSwapLiquidToBitcoin
+                : context.loc.transactionSwapBitcoinToLiquid
             : tx.isBitcoin
-            ? 'Bitcoin'
-            : 'Liquid';
+            ? context.loc.transactionNetworkBitcoin
+            : context.loc.transactionNetworkLiquid;
     final label =
         tx.walletTransaction != null && tx.walletTransaction!.labels.isNotEmpty
             ? tx.walletTransaction!.labels.first
@@ -294,7 +295,9 @@ class TxListItem extends StatelessWidget {
                   Row(
                     children: [
                       BBText(
-                        tx.isOngoingSwap ? 'In Progress' : 'Pending',
+                        tx.isOngoingSwap
+                            ? context.loc.transactionStatusInProgress
+                            : context.loc.transactionStatusPending,
                         style: context.font.labelSmall?.copyWith(
                           color: context.appColors.textMuted,
                         ),

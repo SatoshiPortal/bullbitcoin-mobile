@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -136,7 +137,9 @@ class _TransactionLabelBottomsheetState
                 children: [
                   const Spacer(),
                   BBText(
-                    isEditing ? 'Edit note' : 'Add note',
+                    isEditing
+                        ? context.loc.transactionNoteEditTitle
+                        : context.loc.transactionNoteAddTitle,
                     style: context.font.headlineMedium,
                   ),
                   const Spacer(),
@@ -157,7 +160,7 @@ class _TransactionLabelBottomsheetState
               Gap(Device.screen.height * 0.01),
               BBInputText(
                 controller: _controller,
-                hint: 'Note',
+                hint: context.loc.transactionNoteHint,
                 hintStyle: context.font.bodyLarge?.copyWith(
                   color: context.appColors.textMuted,
                 ),
@@ -177,7 +180,10 @@ class _TransactionLabelBottomsheetState
               ],
               Gap(Device.screen.height * 0.03),
               BBButton.big(
-                label: isEditing ? 'Update' : 'Save',
+                label:
+                    isEditing
+                        ? context.loc.transactionNoteUpdateButton
+                        : context.loc.transactionNoteSaveButton,
                 disabled: state.err != null || _controller.text.trim().isEmpty,
                 onPressed: () {
                   final validation = NoteValidator.validate(_controller.text);

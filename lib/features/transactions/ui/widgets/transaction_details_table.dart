@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/mempool_url.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table.dart';
@@ -47,7 +48,9 @@ class TransactionDetailsTable extends StatelessWidget {
     final walletLabel =
         wallet != null
             ? wallet.label ??
-                (wallet.isLiquid ? 'Instant Payments' : 'Secure Bitcoin')
+                (wallet.isLiquid
+                    ? context.loc.walletNameInstantPayments
+                    : context.loc.walletNameSecureBitcoin)
             : '';
 
     final counterpartWallet = context.select(
@@ -57,8 +60,8 @@ class TransactionDetailsTable extends StatelessWidget {
         counterpartWallet != null
             ? counterpartWallet.label ??
                 (counterpartWallet.isLiquid == true
-                    ? 'Instant Payments'
-                    : 'Secure Bitcoin')
+                    ? context.loc.walletNameInstantPayments
+                    : context.loc.walletNameSecureBitcoin)
             : '';
     final addressLabels =
         transaction?.walletTransaction?.toAddressLabels?.join(', ') ?? '';
@@ -87,7 +90,7 @@ class TransactionDetailsTable extends StatelessWidget {
       items: [
         if (txId != null)
           DetailsTableItem(
-            label: 'Transaction ID',
+            label: context.loc.transactionDetailLabelTransactionId,
             displayValue: StringFormatting.truncateMiddle(txId),
             copyValue: txId,
             displayWidget: GestureDetector(
@@ -106,13 +109,17 @@ class TransactionDetailsTable extends StatelessWidget {
         if (walletLabel.isNotEmpty)
           DetailsTableItem(
             label:
-                transaction?.isIncoming == true ? 'To wallet' : 'From wallet',
+                transaction?.isIncoming == true
+                    ? context.loc.transactionDetailLabelToWallet
+                    : context.loc.transactionDetailLabelFromWallet,
             displayValue: walletLabel,
           ),
         if (counterpartWalletLabel.isNotEmpty)
           DetailsTableItem(
             label:
-                transaction?.isOutgoing == true ? 'To wallet' : 'From wallet',
+                transaction?.isOutgoing == true
+                    ? context.loc.transactionDetailLabelToWallet
+                    : context.loc.transactionDetailLabelFromWallet,
             displayValue: counterpartWalletLabel,
           ),
         if (toAddress != null)
@@ -121,21 +128,24 @@ class TransactionDetailsTable extends StatelessWidget {
                 swap != null &&
                         swap.receiveAddress != null &&
                         swap.receiveAddress!.isNotEmpty
-                    ? 'Recipient Address'
-                    : 'Address',
+                    ? context.loc.transactionDetailLabelRecipientAddress
+                    : context.loc.transactionDetailLabelAddress,
             displayValue: StringFormatting.truncateMiddle(toAddress),
             copyValue: toAddress,
           ),
         if (addressLabels.isNotEmpty)
-          DetailsTableItem(label: 'Address notes', displayValue: addressLabels),
+          DetailsTableItem(
+            label: context.loc.transactionDetailLabelAddressNotes,
+            displayValue: addressLabels,
+          ),
         // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
         // to be able to use the CurrencyText widget instead of having to format the amount here.
         if (!isOrder)
           DetailsTableItem(
             label:
                 transaction?.isIncoming == true
-                    ? 'Amount received'
-                    : 'Amount sent',
+                    ? context.loc.transactionDetailLabelAmountReceived
+                    : context.loc.transactionDetailLabelAmountSent,
             displayValue:
                 bitcoinUnit == BitcoinUnit.sats
                     ? FormatAmount.sats(
@@ -154,7 +164,7 @@ class TransactionDetailsTable extends StatelessWidget {
         if (walletTransaction != null) ...[
           if (walletTransaction.isToSelf == true)
             DetailsTableItem(
-              label: 'Amount received',
+              label: context.loc.transactionDetailLabelAmountReceived,
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
                       ? FormatAmount.sats(amountReceived).toUpperCase()
@@ -164,7 +174,7 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           if (transaction?.isOutgoing == true && swap == null)
             DetailsTableItem(
-              label: 'Transaction Fee',
+              label: context.loc.transactionDetailLabelTransactionFee,
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
                       ? FormatAmount.sats(txFee ?? 0).toUpperCase()
@@ -173,12 +183,12 @@ class TransactionDetailsTable extends StatelessWidget {
                       ).toUpperCase(),
             ),
           DetailsTableItem(
-            label: 'Status',
+            label: context.loc.transactionDetailLabelStatus,
             displayValue: walletTransaction.status.displayName,
           ),
           if (walletTransaction.confirmationTime != null)
             DetailsTableItem(
-              label: 'Confirmation time',
+              label: context.loc.transactionDetailLabelConfirmationTime,
               displayValue: DateFormat(
                 'MMM d, y, h:mm a',
               ).format(walletTransaction.confirmationTime!),
@@ -190,16 +200,16 @@ class TransactionDetailsTable extends StatelessWidget {
             if (order is BuyOrder) {
               return [
                 DetailsTableItem(
-                  label: 'Order Type',
+                  label: context.loc.transactionDetailLabelOrderType,
                   displayValue: order.orderType.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Number',
+                  label: context.loc.transactionDetailLabelOrderNumber,
                   displayValue: order.orderNumber.toString(),
                   copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
-                  label: 'Payin amount',
+                  label: context.loc.transactionDetailLabelPayinAmount,
                   displayValue:
                       order.payinCurrency == 'LBTC' ||
                               order.payinCurrency == 'BTC'
@@ -211,7 +221,7 @@ class TransactionDetailsTable extends StatelessWidget {
                           : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
                 ),
                 DetailsTableItem(
-                  label: 'Payout amount',
+                  label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue:
                       order.payoutCurrency == 'LBTC' ||
                               order.payoutCurrency == 'BTC'
@@ -225,40 +235,40 @@ class TransactionDetailsTable extends StatelessWidget {
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   DetailsTableItem(
-                    label: 'Exchange rate',
+                    label: context.loc.transactionDetailLabelExchangeRate,
                     displayValue:
                         '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
                   ),
                 DetailsTableItem(
-                  label: 'Payin method',
+                  label: context.loc.transactionDetailLabelPayinMethod,
                   displayValue: order.payinMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout method',
+                  label: context.loc.transactionDetailLabelPayoutMethod,
                   displayValue: order.payoutMethod.value,
                 ),
 
                 DetailsTableItem(
-                  label: 'Payin Status',
+                  label: context.loc.transactionDetailLabelPayinStatus,
                   displayValue: order.payinStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Status',
+                  label: context.loc.transactionDetailLabelOrderStatus,
                   displayValue: order.orderStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout Status',
+                  label: context.loc.transactionDetailLabelPayoutStatus,
                   displayValue: order.payoutStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Created at',
+                  label: context.loc.transactionDetailLabelCreatedAt,
                   displayValue: DateFormat(
                     'MMM d, y, h:mm a',
                   ).format(order.createdAt),
                 ),
                 if (order.completedAt != null)
                   DetailsTableItem(
-                    label: 'Completed at',
+                    label: context.loc.transactionDetailLabelCompletedAt,
                     displayValue: DateFormat(
                       'MMM d, y, h:mm a',
                     ).format(order.completedAt!),
@@ -268,16 +278,16 @@ class TransactionDetailsTable extends StatelessWidget {
               final payinAmountSat = ConvertAmount.btcToSats(order.payinAmount);
               return [
                 DetailsTableItem(
-                  label: 'Order Type',
+                  label: context.loc.transactionDetailLabelOrderType,
                   displayValue: order.orderType.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Number',
+                  label: context.loc.transactionDetailLabelOrderNumber,
                   displayValue: order.orderNumber.toString(),
                   copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
-                  label: 'Payin amount',
+                  label: context.loc.transactionDetailLabelPayinAmount,
                   displayValue:
                       bitcoinUnit == BitcoinUnit.sats
                           ? FormatAmount.sats(payinAmountSat).toUpperCase()
@@ -286,45 +296,45 @@ class TransactionDetailsTable extends StatelessWidget {
                           ).toUpperCase(),
                 ),
                 DetailsTableItem(
-                  label: 'Payout amount',
+                  label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   DetailsTableItem(
-                    label: 'Exchange rate',
+                    label: context.loc.transactionDetailLabelExchangeRate,
                     displayValue:
                         '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
                   ),
                 DetailsTableItem(
-                  label: 'Payin method',
+                  label: context.loc.transactionDetailLabelPayinMethod,
                   displayValue: order.payinMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout method',
+                  label: context.loc.transactionDetailLabelPayoutMethod,
                   displayValue: order.payoutMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payin Status',
+                  label: context.loc.transactionDetailLabelPayinStatus,
                   displayValue: order.payinStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Status',
+                  label: context.loc.transactionDetailLabelOrderStatus,
                   displayValue: order.orderStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout Status',
+                  label: context.loc.transactionDetailLabelPayoutStatus,
                   displayValue: order.payoutStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Created at',
+                  label: context.loc.transactionDetailLabelCreatedAt,
                   displayValue: DateFormat(
                     'MMM d, y, h:mm a',
                   ).format(order.createdAt),
                 ),
                 if (order.completedAt != null)
                   DetailsTableItem(
-                    label: 'Completed at',
+                    label: context.loc.transactionDetailLabelCompletedAt,
                     displayValue: DateFormat(
                       'MMM d, y, h:mm a',
                     ).format(order.completedAt!),
@@ -333,70 +343,70 @@ class TransactionDetailsTable extends StatelessWidget {
             } else if (order is FiatPaymentOrder) {
               return [
                 DetailsTableItem(
-                  label: 'Order Type',
+                  label: context.loc.transactionDetailLabelOrderType,
                   displayValue: order.orderType.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Number',
+                  label: context.loc.transactionDetailLabelOrderNumber,
                   displayValue: order.orderNumber.toString(),
                   copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
-                  label: 'Payout amount',
+                  label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   DetailsTableItem(
-                    label: 'Exchange rate',
+                    label: context.loc.transactionDetailLabelExchangeRate,
                     displayValue:
                         '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
                   ),
                 DetailsTableItem(
-                  label: 'Payin method',
+                  label: context.loc.transactionDetailLabelPayinMethod,
                   displayValue: order.payinMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout method',
+                  label: context.loc.transactionDetailLabelPayoutMethod,
                   displayValue: order.payoutMethod.value,
                 ),
                 if (order.referenceNumber != null)
                   DetailsTableItem(
-                    label: 'Reference Number',
+                    label: context.loc.transactionOrderLabelReferenceNumber,
                     displayValue: order.referenceNumber,
                     copyValue: order.referenceNumber,
                   ),
                 if (order.originName != null)
                   DetailsTableItem(
-                    label: 'Origin Name',
+                    label: context.loc.transactionOrderLabelOriginName,
                     displayValue: order.originName,
                   ),
                 if (order.originCedula != null)
                   DetailsTableItem(
-                    label: 'Origin Cedula',
+                    label: context.loc.transactionOrderLabelOriginCedula,
                     displayValue: order.originCedula,
                   ),
                 DetailsTableItem(
-                  label: 'Payin Status',
+                  label: context.loc.transactionDetailLabelPayinStatus,
                   displayValue: order.payinStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Status',
+                  label: context.loc.transactionDetailLabelOrderStatus,
                   displayValue: order.orderStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout Status',
+                  label: context.loc.transactionDetailLabelPayoutStatus,
                   displayValue: order.payoutStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Created at',
+                  label: context.loc.transactionDetailLabelCreatedAt,
                   displayValue: DateFormat(
                     'MMM d, y, h:mm a',
                   ).format(order.createdAt),
                 ),
                 if (order.completedAt != null)
                   DetailsTableItem(
-                    label: 'Completed at',
+                    label: context.loc.transactionDetailLabelCompletedAt,
                     displayValue: DateFormat(
                       'MMM d, y, h:mm a',
                     ).format(order.completedAt!),
@@ -405,52 +415,52 @@ class TransactionDetailsTable extends StatelessWidget {
             } else if (order is FundingOrder) {
               return [
                 DetailsTableItem(
-                  label: 'Order Type',
+                  label: context.loc.transactionDetailLabelOrderType,
                   displayValue: order.orderType.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Number',
+                  label: context.loc.transactionDetailLabelOrderNumber,
                   displayValue: order.orderNumber.toString(),
                   copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
-                  label: 'Payin amount',
+                  label: context.loc.transactionDetailLabelPayinAmount,
                   displayValue:
                       '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
                 ),
                 DetailsTableItem(
-                  label: 'Payout amount',
+                  label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
                 ),
                 DetailsTableItem(
-                  label: 'Payin method',
+                  label: context.loc.transactionDetailLabelPayinMethod,
                   displayValue: order.payinMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout method',
+                  label: context.loc.transactionDetailLabelPayoutMethod,
                   displayValue: order.payoutMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payin Status',
+                  label: context.loc.transactionDetailLabelPayinStatus,
                   displayValue: order.payinStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Status',
+                  label: context.loc.transactionDetailLabelOrderStatus,
                   displayValue: order.orderStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout Status',
+                  label: context.loc.transactionDetailLabelPayoutStatus,
                   displayValue: order.payoutStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Created at',
+                  label: context.loc.transactionDetailLabelCreatedAt,
                   displayValue: DateFormat(
                     'MMM d, y, h:mm a',
                   ).format(order.createdAt),
                 ),
                 if (order.completedAt != null)
                   DetailsTableItem(
-                    label: 'Completed at',
+                    label: context.loc.transactionDetailLabelCompletedAt,
                     displayValue: DateFormat(
                       'MMM d, y, h:mm a',
                     ).format(order.completedAt!),
@@ -459,59 +469,59 @@ class TransactionDetailsTable extends StatelessWidget {
             } else if (order is WithdrawOrder) {
               return [
                 DetailsTableItem(
-                  label: 'Order Type',
+                  label: context.loc.transactionDetailLabelOrderType,
                   displayValue: order.orderType.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Number',
+                  label: context.loc.transactionDetailLabelOrderNumber,
                   displayValue: order.orderNumber.toString(),
                   copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
-                  label: 'Payin amount',
+                  label: context.loc.transactionDetailLabelPayinAmount,
                   displayValue:
                       '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
                 ),
                 DetailsTableItem(
-                  label: 'Payout amount',
+                  label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   DetailsTableItem(
-                    label: 'Exchange rate',
+                    label: context.loc.transactionDetailLabelExchangeRate,
                     displayValue:
                         '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
                   ),
                 DetailsTableItem(
-                  label: 'Payin method',
+                  label: context.loc.transactionDetailLabelPayinMethod,
                   displayValue: order.payinMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout method',
+                  label: context.loc.transactionDetailLabelPayoutMethod,
                   displayValue: order.payoutMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payin Status',
+                  label: context.loc.transactionDetailLabelPayinStatus,
                   displayValue: order.payinStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Status',
+                  label: context.loc.transactionDetailLabelOrderStatus,
                   displayValue: order.orderStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout Status',
+                  label: context.loc.transactionDetailLabelPayoutStatus,
                   displayValue: order.payoutStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Created at',
+                  label: context.loc.transactionDetailLabelCreatedAt,
                   displayValue: DateFormat(
                     'MMM d, y, h:mm a',
                   ).format(order.createdAt),
                 ),
                 if (order.completedAt != null)
                   DetailsTableItem(
-                    label: 'Completed at',
+                    label: context.loc.transactionDetailLabelCompletedAt,
                     displayValue: DateFormat(
                       'MMM d, y, h:mm a',
                     ).format(order.completedAt!),
@@ -520,59 +530,59 @@ class TransactionDetailsTable extends StatelessWidget {
             } else if (order is RewardOrder) {
               return [
                 DetailsTableItem(
-                  label: 'Order Type',
+                  label: context.loc.transactionDetailLabelOrderType,
                   displayValue: order.orderType.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Number',
+                  label: context.loc.transactionDetailLabelOrderNumber,
                   displayValue: order.orderNumber.toString(),
                   copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
-                  label: 'Payin amount',
+                  label: context.loc.transactionDetailLabelPayinAmount,
                   displayValue:
                       '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
                 ),
                 DetailsTableItem(
-                  label: 'Payout amount',
+                  label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   DetailsTableItem(
-                    label: 'Exchange rate',
+                    label: context.loc.transactionDetailLabelExchangeRate,
                     displayValue:
                         '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
                   ),
                 DetailsTableItem(
-                  label: 'Payin method',
+                  label: context.loc.transactionDetailLabelPayinMethod,
                   displayValue: order.payinMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout method',
+                  label: context.loc.transactionDetailLabelPayoutMethod,
                   displayValue: order.payoutMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payin Status',
+                  label: context.loc.transactionDetailLabelPayinStatus,
                   displayValue: order.payinStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Status',
+                  label: context.loc.transactionDetailLabelOrderStatus,
                   displayValue: order.orderStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout Status',
+                  label: context.loc.transactionDetailLabelPayoutStatus,
                   displayValue: order.payoutStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Created at',
+                  label: context.loc.transactionDetailLabelCreatedAt,
                   displayValue: DateFormat(
                     'MMM d, y, h:mm a',
                   ).format(order.createdAt),
                 ),
                 if (order.completedAt != null)
                   DetailsTableItem(
-                    label: 'Completed at',
+                    label: context.loc.transactionDetailLabelCompletedAt,
                     displayValue: DateFormat(
                       'MMM d, y, h:mm a',
                     ).format(order.completedAt!),
@@ -581,59 +591,59 @@ class TransactionDetailsTable extends StatelessWidget {
             } else if (order is RefundOrder) {
               return [
                 DetailsTableItem(
-                  label: 'Order Type',
+                  label: context.loc.transactionDetailLabelOrderType,
                   displayValue: order.orderType.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Number',
+                  label: context.loc.transactionDetailLabelOrderNumber,
                   displayValue: order.orderNumber.toString(),
                   copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
-                  label: 'Payin amount',
+                  label: context.loc.transactionDetailLabelPayinAmount,
                   displayValue:
                       '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
                 ),
                 DetailsTableItem(
-                  label: 'Payout amount',
+                  label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   DetailsTableItem(
-                    label: 'Exchange rate',
+                    label: context.loc.transactionDetailLabelExchangeRate,
                     displayValue:
                         '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
                   ),
                 DetailsTableItem(
-                  label: 'Payin method',
+                  label: context.loc.transactionDetailLabelPayinMethod,
                   displayValue: order.payinMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout method',
+                  label: context.loc.transactionDetailLabelPayoutMethod,
                   displayValue: order.payoutMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payin Status',
+                  label: context.loc.transactionDetailLabelPayinStatus,
                   displayValue: order.payinStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Status',
+                  label: context.loc.transactionDetailLabelOrderStatus,
                   displayValue: order.orderStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout Status',
+                  label: context.loc.transactionDetailLabelPayoutStatus,
                   displayValue: order.payoutStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Created at',
+                  label: context.loc.transactionDetailLabelCreatedAt,
                   displayValue: DateFormat(
                     'MMM d, y, h:mm a',
                   ).format(order.createdAt),
                 ),
                 if (order.completedAt != null)
                   DetailsTableItem(
-                    label: 'Completed at',
+                    label: context.loc.transactionDetailLabelCompletedAt,
                     displayValue: DateFormat(
                       'MMM d, y, h:mm a',
                     ).format(order.completedAt!),
@@ -642,59 +652,59 @@ class TransactionDetailsTable extends StatelessWidget {
             } else if (order is BalanceAdjustmentOrder) {
               return [
                 DetailsTableItem(
-                  label: 'Order Type',
+                  label: context.loc.transactionDetailLabelOrderType,
                   displayValue: order.orderType.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Number',
+                  label: context.loc.transactionDetailLabelOrderNumber,
                   displayValue: order.orderNumber.toString(),
                   copyValue: order.orderNumber.toString(),
                 ),
                 DetailsTableItem(
-                  label: 'Payin amount',
+                  label: context.loc.transactionDetailLabelPayinAmount,
                   displayValue:
                       '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
                 ),
                 DetailsTableItem(
-                  label: 'Payout amount',
+                  label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
                   DetailsTableItem(
-                    label: 'Exchange rate',
+                    label: context.loc.transactionDetailLabelExchangeRate,
                     displayValue:
                         '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
                   ),
                 DetailsTableItem(
-                  label: 'Payin method',
+                  label: context.loc.transactionDetailLabelPayinMethod,
                   displayValue: order.payinMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout method',
+                  label: context.loc.transactionDetailLabelPayoutMethod,
                   displayValue: order.payoutMethod.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payin Status',
+                  label: context.loc.transactionDetailLabelPayinStatus,
                   displayValue: order.payinStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Order Status',
+                  label: context.loc.transactionDetailLabelOrderStatus,
                   displayValue: order.orderStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Payout Status',
+                  label: context.loc.transactionDetailLabelPayoutStatus,
                   displayValue: order.payoutStatus.value,
                 ),
                 DetailsTableItem(
-                  label: 'Created at',
+                  label: context.loc.transactionDetailLabelCreatedAt,
                   displayValue: DateFormat(
                     'MMM d, y, h:mm a',
                   ).format(order.createdAt),
                 ),
                 if (order.completedAt != null)
                   DetailsTableItem(
-                    label: 'Completed at',
+                    label: context.loc.transactionDetailLabelCompletedAt,
                     displayValue: DateFormat(
                       'MMM d, y, h:mm a',
                     ).format(order.completedAt!),
@@ -703,7 +713,7 @@ class TransactionDetailsTable extends StatelessWidget {
             } else {
               return [
                 DetailsTableItem(
-                  label: 'Order Type',
+                  label: context.loc.transactionDetailLabelOrderType,
                   displayValue: order?.orderType.value,
                 ),
               ];
@@ -713,17 +723,23 @@ class TransactionDetailsTable extends StatelessWidget {
         // Transfer info
         if (swap != null) ...[
           DetailsTableItem(
-            label: swap.isChainSwap ? 'Transfer ID' : 'Swap ID',
+            label:
+                swap.isChainSwap
+                    ? context.loc.transactionDetailLabelTransferId
+                    : context.loc.transactionDetailLabelSwapId,
             displayValue: swap.id,
             copyValue: swap.id,
           ),
           DetailsTableItem(
-            label: swap.isChainSwap ? 'Transfer status' : 'Swap status',
+            label:
+                swap.isChainSwap
+                    ? context.loc.transactionDetailLabelTransferStatus
+                    : context.loc.transactionDetailLabelSwapStatus,
             displayValue:
                 (swap.isChainSwap && (swap as ChainSwap).refundTxid != null ||
                         swap.isLnSendSwap &&
                             (swap as LnSendSwap).refundTxid != null)
-                    ? 'Refunded'
+                    ? context.loc.transactionDetailLabelRefunded
                     : swap.status.displayName,
             expandableChild: BBText(
               swap.getDisplayMessage(),
@@ -737,7 +753,7 @@ class TransactionDetailsTable extends StatelessWidget {
               swap.preimage != null &&
               swap.preimage!.isNotEmpty)
             DetailsTableItem(
-              label: 'Preimage',
+              label: context.loc.transactionLabelPreimage,
               displayValue: StringFormatting.truncateMiddle(
                 swap.preimage!,
                 head: 6,
@@ -749,8 +765,8 @@ class TransactionDetailsTable extends StatelessWidget {
             DetailsTableItem(
               label:
                   counterpartWallet?.isLiquid == true
-                      ? 'Liquid transaction ID'
-                      : 'Bitcoin transaction ID',
+                      ? context.loc.transactionDetailLabelLiquidTxId
+                      : context.loc.transactionDetailLabelBitcoinTxId,
               displayValue: StringFormatting.truncateMiddle(
                 swapCounterpartTxId,
               ),
@@ -759,7 +775,7 @@ class TransactionDetailsTable extends StatelessWidget {
           if (swap.fees != null) ...[
             if (swap.isChainSwap) ...[
               DetailsTableItem(
-                label: 'Send Amount',
+                label: context.loc.transactionLabelSendAmount,
                 displayValue:
                     bitcoinUnit == BitcoinUnit.sats
                         ? FormatAmount.sats(
@@ -773,7 +789,7 @@ class TransactionDetailsTable extends StatelessWidget {
               ),
               if (swap.receieveAmount != null)
                 DetailsTableItem(
-                  label: 'Receive Amount',
+                  label: context.loc.transactionLabelReceiveAmount,
                   displayValue:
                       bitcoinUnit == BitcoinUnit.sats
                           ? FormatAmount.sats(
@@ -785,7 +801,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
               if (swap.fees!.lockupFee != null)
                 DetailsTableItem(
-                  label: 'Send Network fees',
+                  label: context.loc.transactionLabelSendNetworkFees,
                   displayValue:
                       bitcoinUnit == BitcoinUnit.sats
                           ? FormatAmount.sats(
@@ -797,7 +813,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
             ] else if (swap.isLnSendSwap) ...[
               DetailsTableItem(
-                label: 'Send Amount',
+                label: context.loc.transactionLabelSendAmount,
                 displayValue:
                     bitcoinUnit == BitcoinUnit.sats
                         ? FormatAmount.sats(
@@ -811,7 +827,7 @@ class TransactionDetailsTable extends StatelessWidget {
               ),
               if (swap.receieveAmount != null)
                 DetailsTableItem(
-                  label: 'Receive Amount',
+                  label: context.loc.transactionLabelReceiveAmount,
                   displayValue:
                       bitcoinUnit == BitcoinUnit.sats
                           ? FormatAmount.sats(
@@ -823,7 +839,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
               if (swap.fees!.lockupFee != null)
                 DetailsTableItem(
-                  label: 'Send Network fees',
+                  label: context.loc.transactionLabelSendNetworkFees,
                   displayValue:
                       bitcoinUnit == BitcoinUnit.sats
                           ? FormatAmount.sats(
@@ -836,7 +852,7 @@ class TransactionDetailsTable extends StatelessWidget {
             ] else if (swap.isLnReceiveSwap) ...[
               if (swap.sendAmount != null)
                 DetailsTableItem(
-                  label: 'Send Amount',
+                  label: context.loc.transactionLabelSendAmount,
                   displayValue:
                       bitcoinUnit == BitcoinUnit.sats
                           ? FormatAmount.sats(swap.sendAmount!).toUpperCase()
@@ -846,7 +862,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
               if (swap.receieveAmount != null)
                 DetailsTableItem(
-                  label: 'Receive Amount',
+                  label: context.loc.transactionLabelReceiveAmount,
                   displayValue:
                       bitcoinUnit == BitcoinUnit.sats
                           ? FormatAmount.sats(
@@ -860,7 +876,10 @@ class TransactionDetailsTable extends StatelessWidget {
           ],
           if (swap.fees != null)
             DetailsTableItem(
-              label: swap.type.isChain ? 'Transfer fees' : 'Swap fees',
+              label:
+                  swap.type.isChain
+                      ? context.loc.transactionDetailLabelTransferFees
+                      : context.loc.transactionDetailLabelSwapFees,
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
                       ? FormatAmount.sats(
@@ -882,40 +901,48 @@ class TransactionDetailsTable extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: BBText(
                       swap.isLnReceiveSwap
-                          ? 'This fees will be deducted from the amount sent'
-                          : 'This is the total fee deducted from the amount sent',
+                          ? context.loc.transactionFeesDeductedFrom
+                          : context.loc.transactionFeesTotalDeducted,
                       style: context.font.labelSmall,
                       color: context.appColors.surfaceContainer,
                     ),
                   ),
                   if (swap.isLnReceiveSwap && swap.fees!.lockupFee != null)
-                    _feeRow(context, 'Send Network Fee', swap.fees!.lockupFee!),
+                    _feeRow(
+                      context,
+                      context.loc.transactionDetailLabelSendNetworkFee,
+                      swap.fees!.lockupFee!,
+                    ),
                   if (swap.fees!.claimFee != null)
                     _feeRow(
                       context,
-                      'Receive Network Fee',
+                      context.loc.transactionLabelReceiveNetworkFee,
                       swap.fees!.claimFee!,
                     ),
                   if (swap.fees!.serverNetworkFees != null)
                     _feeRow(
                       context,
-                      'Server Network Fees',
+                      context.loc.transactionLabelServerNetworkFees,
                       swap.fees!.serverNetworkFees!,
                     ),
-                  _feeRow(context, 'Transfer Fee', swap.fees?.boltzFee ?? 0),
+                  _feeRow(
+                    context,
+                    context.loc.transactionDetailLabelTransferFee,
+                    swap.fees?.boltzFee ?? 0,
+                  ),
                   const Gap(4),
                 ],
               ),
             ),
           DetailsTableItem(
-            label: 'Created at',
+            label: context.loc.transactionDetailLabelCreatedAt,
             displayValue: DateFormat(
               'MMM d, y, h:mm a',
             ).format(swap.creationTime),
           ),
           if (swap.completionTime != null)
             DetailsTableItem(
-              label: 'Completed at',
+              label: context.loc.transactionDetailLabelCompletedAt,
               displayValue: DateFormat(
                 'MMM d, y, h:mm a',
               ).format(swap.completionTime!),
@@ -923,18 +950,18 @@ class TransactionDetailsTable extends StatelessWidget {
         ],
         if (payjoin != null) ...[
           DetailsTableItem(
-            label: 'Payjoin status',
+            label: context.loc.transactionDetailLabelPayjoinStatus,
             displayValue:
                 payjoin.isCompleted ||
                         (payjoin.status == PayjoinStatus.proposed &&
                             walletTransaction != null)
-                    ? 'Completed'
+                    ? context.loc.transactionDetailLabelPayjoinCompleted
                     : payjoin.isExpired
-                    ? 'Expired'
+                    ? context.loc.transactionDetailLabelPayjoinExpired
                     : payjoin.status.name,
           ),
           DetailsTableItem(
-            label: 'Payjoin creation time',
+            label: context.loc.transactionDetailLabelPayjoinCreationTime,
             displayValue: DateFormat(
               'MMM d, y, h:mm a',
             ).format(payjoin.createdAt),

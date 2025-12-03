@@ -2598,6 +2598,210 @@
   "@transactionListYesterday": {
     "description": "Libellé de date pour les transactions d'hier"
   },
+  "transactionSwapDoNotUninstall": "Ne désinstallez pas l'application tant que l'échange n'est pas terminé.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Message d'avertissement pour ne pas désinstaller l'app pendant un échange"
+  },
+  "transactionFeesDeductedFrom": "Ces frais seront déduits du montant envoyé",
+  "@transactionFeesDeductedFrom": {
+    "description": "Explication des frais déduits pour les échanges entrants"
+  },
+  "transactionFeesTotalDeducted": "Ceci est le total des frais déduits du montant envoyé",
+  "@transactionFeesTotalDeducted": {
+    "description": "Explication des frais déduits pour les échanges sortants"
+  },
+  "transactionLabelSendAmount": "Montant envoyé",
+  "@transactionLabelSendAmount": {
+    "description": "Libellé pour le montant envoyé dans les détails d'échange"
+  },
+  "transactionLabelReceiveAmount": "Montant reçu",
+  "@transactionLabelReceiveAmount": {
+    "description": "Libellé pour le montant reçu dans les détails d'échange"
+  },
+  "transactionLabelSendNetworkFees": "Frais réseau d'envoi",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Libellé pour les frais réseau d'envoi dans les détails d'échange"
+  },
+  "transactionLabelReceiveNetworkFee": "Frais réseau de réception",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Libellé pour les frais réseau de réception dans les détails d'échange"
+  },
+  "transactionLabelServerNetworkFees": "Frais réseau serveur",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Libellé pour les frais réseau serveur dans les détails d'échange"
+  },
+  "transactionLabelPreimage": "Préimage",
+  "@transactionLabelPreimage": {
+    "description": "Libellé pour la préimage dans les détails d'échange Lightning"
+  },
+  "transactionOrderLabelReferenceNumber": "Numéro de référence",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Libellé pour le numéro de référence dans les détails de commande"
+  },
+  "transactionOrderLabelOriginName": "Nom d'origine",
+  "@transactionOrderLabelOriginName": {
+    "description": "Libellé pour le nom d'origine dans la commande de paiement fiat"
+  },
+  "transactionOrderLabelOriginCedula": "Cédula d'origine",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Libellé pour la cédula d'origine dans la commande de paiement fiat"
+  },
+  "transactionDetailAccelerate": "Accélérer",
+  "@transactionDetailAccelerate": {
+    "description": "Libellé du bouton pour accélérer (RBF) une transaction non confirmée"
+  },
+  "transactionDetailLabelTransactionId": "ID de transaction",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Libellé pour l'ID de transaction"
+  },
+  "transactionDetailLabelToWallet": "Vers le portefeuille",
+  "@transactionDetailLabelToWallet": {
+    "description": "Libellé pour le portefeuille de destination"
+  },
+  "transactionDetailLabelFromWallet": "Du portefeuille",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Libellé pour le portefeuille source"
+  },
+  "transactionDetailLabelRecipientAddress": "Adresse du destinataire",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Libellé pour l'adresse du destinataire"
+  },
+  "transactionDetailLabelAddress": "Adresse",
+  "@transactionDetailLabelAddress": {
+    "description": "Libellé pour l'adresse"
+  },
+  "transactionDetailLabelAddressNotes": "Notes d'adresse",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Libellé pour les notes d'adresse"
+  },
+  "transactionDetailLabelAmountReceived": "Montant reçu",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Libellé pour le montant reçu"
+  },
+  "transactionDetailLabelAmountSent": "Montant envoyé",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Libellé pour le montant envoyé"
+  },
+  "transactionDetailLabelTransactionFee": "Frais de transaction",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Libellé pour les frais de transaction"
+  },
+  "transactionDetailLabelStatus": "Statut",
+  "@transactionDetailLabelStatus": {
+    "description": "Libellé pour le statut"
+  },
+  "transactionDetailLabelConfirmationTime": "Heure de confirmation",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Libellé pour l'heure de confirmation"
+  },
+  "transactionDetailLabelOrderType": "Type de commande",
+  "@transactionDetailLabelOrderType": {
+    "description": "Libellé pour le type de commande"
+  },
+  "transactionDetailLabelOrderNumber": "Numéro de commande",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Libellé pour le numéro de commande"
+  },
+  "transactionDetailLabelPayinAmount": "Montant payé",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Libellé pour le montant payé"
+  },
+  "transactionDetailLabelPayoutAmount": "Montant reçu",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Libellé pour le montant reçu"
+  },
+  "transactionDetailLabelExchangeRate": "Taux de change",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Libellé pour le taux de change"
+  },
+  "transactionDetailLabelPayinMethod": "Méthode de paiement",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Libellé pour la méthode de paiement"
+  },
+  "transactionDetailLabelPayoutMethod": "Méthode de réception",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Libellé pour la méthode de réception"
+  },
+  "transactionDetailLabelPayinStatus": "Statut du paiement",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Libellé pour le statut du paiement"
+  },
+  "transactionDetailLabelOrderStatus": "Statut de la commande",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Libellé pour le statut de la commande"
+  },
+  "transactionDetailLabelPayoutStatus": "Statut du versement",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Libellé pour le statut du versement"
+  },
+  "transactionDetailLabelCreatedAt": "Créé le",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Libellé pour la date de création"
+  },
+  "transactionDetailLabelCompletedAt": "Terminé le",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Libellé pour la date de fin"
+  },
+  "transactionDetailLabelTransferId": "ID du transfert",
+  "@transactionDetailLabelTransferId": {
+    "description": "Libellé pour l'ID du transfert"
+  },
+  "transactionDetailLabelSwapId": "ID de l'échange",
+  "@transactionDetailLabelSwapId": {
+    "description": "Libellé pour l'ID de l'échange"
+  },
+  "transactionDetailLabelTransferStatus": "Statut du transfert",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Libellé pour le statut du transfert"
+  },
+  "transactionDetailLabelSwapStatus": "Statut de l'échange",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Libellé pour le statut de l'échange"
+  },
+  "transactionDetailLabelRefunded": "Remboursé",
+  "@transactionDetailLabelRefunded": {
+    "description": "Libellé pour le statut remboursé"
+  },
+  "transactionDetailLabelLiquidTxId": "ID de transaction Liquid",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Libellé pour l'ID de transaction Liquid"
+  },
+  "transactionDetailLabelBitcoinTxId": "ID de transaction Bitcoin",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Libellé pour l'ID de transaction Bitcoin"
+  },
+  "transactionDetailLabelTransferFees": "Frais de transfert",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Libellé pour les frais de transfert"
+  },
+  "transactionDetailLabelSwapFees": "Frais d'échange",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Libellé pour les frais d'échange"
+  },
+  "transactionDetailLabelSendNetworkFee": "Frais réseau d'envoi",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Libellé pour les frais réseau d'envoi"
+  },
+  "transactionDetailLabelTransferFee": "Frais de transfert",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Libellé pour les frais de transfert (frais Boltz)"
+  },
+  "transactionDetailLabelPayjoinStatus": "Statut Payjoin",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Libellé pour le statut Payjoin"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Terminé",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Statut Payjoin terminé"
+  },
+  "transactionDetailLabelPayjoinExpired": "Expiré",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Statut Payjoin expiré"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Heure de création Payjoin",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Libellé pour l'heure de création Payjoin"
+  },
   "walletNameInstantPayments": "Paiements instantanés",
   "@walletNameInstantPayments": {
     "description": "Nom par défaut pour le portefeuille Liquid/paiements instantanés"

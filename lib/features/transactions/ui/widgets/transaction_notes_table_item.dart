@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_label_bottomsheet.dart';
@@ -20,7 +21,7 @@ class TransactionNotesTableItem extends StatelessWidget {
           Expanded(
             flex: 2,
             child: BBText(
-              'Transaction notes',
+              context.loc.transactionNotesLabel,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.surfaceContainer,
               ),

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
@@ -28,7 +29,7 @@ class OngoingSwapsWidget extends StatelessWidget {
               Icon(Icons.swap_horiz, color: context.appColors.secondary),
               const Gap(8),
               BBText(
-                'Ongoing Transfers',
+                context.loc.transactionListOngoingTransfersTitle,
                 style: context.font.titleMedium?.copyWith(
                   color: context.appColors.secondary,
                   fontWeight: FontWeight.w600,
@@ -56,7 +57,7 @@ class OngoingSwapsWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: BBText(
-            'These transfers are currently in progress. Your funds are secure and will be available when the transfer completes.',
+            context.loc.transactionListOngoingTransfersDescription,
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.outline,
               fontStyle: FontStyle.italic,
