@@ -32,8 +32,8 @@ class FundExchangeSinpeScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .start,
             children: [
               BBText(
                 context.loc.fundExchangeSinpeTitle,
@@ -48,7 +48,7 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                     TextSpan(
                       text: context.loc.fundExchangeSinpeDescriptionBold,
                       style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                       ),
                     ),
                   ],
@@ -61,7 +61,7 @@ class FundExchangeSinpeScreen extends StatelessWidget {
               ),
               const Gap(24.0),
               Container(
-                clipBehavior: Clip.hardEdge,
+                clipBehavior: .hardEdge,
                 decoration: BoxDecoration(
                   color: context.appColors.inverseSurface.withValues(
                     alpha: 0.1,
@@ -70,8 +70,8 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                 ),
                 child: IntrinsicHeight(
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: .stretch,
+                    mainAxisAlignment: .center,
                     children: [
                       Container(
                         width: 4,
@@ -81,8 +81,8 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(8),
                           child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: .start,
+                            mainAxisAlignment: .center,
                             children: [
                               Icon(
                                 Icons.info_outline_rounded,
@@ -99,7 +99,7 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                                             .fundExchangeSinpeWarningNoBitcoin,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color: context.appColors.secondary,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: .bold,
                                     ),
                                     children: [
                                       TextSpan(
@@ -111,7 +111,7 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                                             ?.copyWith(
                                               color:
                                                   context.appColors.secondary,
-                                              fontWeight: FontWeight.normal,
+                                              fontWeight: .normal,
                                             ),
                                       ),
                                     ],

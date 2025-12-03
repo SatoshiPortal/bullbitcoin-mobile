@@ -44,7 +44,7 @@ class MnemonicPage extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: .stretch,
               children: [
                 MnemonicWidget(
                   initialLength: bip39.MnemonicLength.words12,

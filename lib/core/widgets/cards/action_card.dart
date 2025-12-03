@@ -27,7 +27,7 @@ class ActionCard extends StatelessWidget {
     return Stack(
       children: [
         Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             const Gap(2),
             Container(
@@ -203,11 +203,11 @@ class _ActionButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: radius,
             color: context.appColors.surface,
-            backgroundBlendMode: disabled ? BlendMode.darken : null,
+            backgroundBlendMode: disabled ? .darken : null,
           ),
           child: Column(
             spacing: 8,
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
               Image.asset(
                 icon,

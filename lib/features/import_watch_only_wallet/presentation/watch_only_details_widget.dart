@@ -37,7 +37,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
     final entity = watchOnlyWallet! as WatchOnlyDescriptorEntity;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         LabeledTextInput(
           label: context.loc.importWatchOnlyDescriptor,
@@ -73,7 +73,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                     Icons.keyboard_arrow_down,
                     color: context.appColors.text,
                   ),
-                  value: entity.signerDevice,
+                  initialValue: entity.signerDevice,
                   items:
                       [null, ...SignerDeviceEntity.values]
                           .map(
@@ -131,7 +131,7 @@ class _XpubDetailsWidget extends StatelessWidget {
     final isXpub = entity.pubkey.startsWith('xpub');
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           context.loc.importWatchOnlyExtendedPublicKey,
@@ -176,7 +176,7 @@ class _XpubDetailsWidget extends StatelessWidget {
                 Icons.keyboard_arrow_down,
                 color: context.appColors.text,
               ),
-              value: entity.extendedPubkey.derivation,
+              initialValue: entity.extendedPubkey.derivation,
               items:
                   [...satoshifier.Derivation.values]
                       .map(

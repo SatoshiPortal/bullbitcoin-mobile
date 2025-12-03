@@ -28,7 +28,7 @@ class SenderBroadcastPayjoinOriginalTxButton extends StatelessWidget {
         Text(
           context.loc.transactionPayjoinNoProposal,
           style: context.font.titleSmall,
-          textAlign: TextAlign.center,
+          textAlign: .center,
           maxLines: 2,
         ),
         const Gap(16),
@@ -51,7 +51,7 @@ class SenderBroadcastPayjoinOriginalTxButton extends StatelessWidget {
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
             ),
-            textAlign: TextAlign.center,
+            textAlign: .center,
           ),
           const Gap(16),
         ],

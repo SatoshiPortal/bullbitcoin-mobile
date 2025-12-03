@@ -99,7 +99,7 @@ class _TransactionLabelBottomsheetState
     return SizedBox(
       height: height,
       child: ListView.separated(
-        scrollDirection: Axis.horizontal,
+        scrollDirection: .horizontal,
         itemCount: suggestions.length,
         separatorBuilder: (_, _) => SizedBox(width: Device.screen.width * 0.01),
         itemBuilder: (context, index) {
@@ -129,8 +129,8 @@ class _TransactionLabelBottomsheetState
             MediaQuery.of(context).viewInsets.bottom,
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: .min,
+            crossAxisAlignment: .stretch,
             children: [
               Gap(Device.screen.height * 0.01),
               Row(

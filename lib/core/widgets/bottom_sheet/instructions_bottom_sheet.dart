@@ -50,8 +50,8 @@ class InstructionsBottomSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: .min,
+        crossAxisAlignment: .start,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
@@ -60,14 +60,14 @@ class InstructionsBottomSheet extends StatelessWidget {
                 const Gap(20),
                 // Title row with close button
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
                     const Gap(24),
                     Expanded(
                       child: BBText(
                         title,
                         style: context.font.headlineMedium,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                       ),
                     ),
                     GestureDetector(
@@ -85,7 +85,7 @@ class InstructionsBottomSheet extends StatelessWidget {
                       style: context.font.bodyMedium?.copyWith(
                         color: context.appColors.text,
                       ),
-                      textAlign: TextAlign.left,
+                      textAlign: .left,
                     ),
                   ),
                 ],
@@ -97,7 +97,7 @@ class InstructionsBottomSheet extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children:
                       instructions
                           .asMap()

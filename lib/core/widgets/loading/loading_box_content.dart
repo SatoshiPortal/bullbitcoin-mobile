@@ -22,8 +22,8 @@ class LoadingBoxContent extends StatelessWidget {
       child: Padding(
         padding: padding ?? const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: .min,
+          crossAxisAlignment: .start,
           children: [
             Container(
               width: width ?? double.infinity,

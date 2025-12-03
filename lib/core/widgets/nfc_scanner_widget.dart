@@ -49,7 +49,7 @@ class _NfcPageState extends State<NfcScannerWidget> {
         );
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: .center,
       children: [
         if (_tag == null) loadingWidget,
 

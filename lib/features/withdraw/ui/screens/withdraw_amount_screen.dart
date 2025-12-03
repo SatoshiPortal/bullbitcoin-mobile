@@ -50,7 +50,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
         child: Form(
           key: _formKey,
           child: ScrollableColumn(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               const Gap(40.0),
               WithdrawAmountInputFields(

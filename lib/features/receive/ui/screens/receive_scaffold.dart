@@ -19,7 +19,7 @@ class ReceiveScaffold extends StatelessWidget {
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      behavior: HitTestBehavior.translucent,
+      behavior: .translucent,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -37,7 +37,7 @@ class ReceiveScaffold extends StatelessWidget {
           ),
         ),
         body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             const Gap(10),
             ReceiveNetworkSelection(wallet: wallet),

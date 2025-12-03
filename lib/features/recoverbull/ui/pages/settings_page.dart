@@ -113,11 +113,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    crossAxisAlignment: .stretch,
                     children: [
                       const Gap(16),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: .spaceBetween,
                         children: [
                           BBText(
                             'Key Server URL',
@@ -195,7 +195,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       GestureDetector(
                         onTap: _openRecoverBullWebsite,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: .center,
                           children: [
                             Icon(
                               Icons.info_outline,

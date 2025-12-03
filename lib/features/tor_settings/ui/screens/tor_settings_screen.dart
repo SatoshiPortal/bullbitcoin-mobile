@@ -26,7 +26,7 @@ class _TorSettingsScreenState extends State<TorSettingsScreen> {
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [TorProxyWidget()],
           ),
         ),

@@ -65,8 +65,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           context.read<SettingsCubit>().state.isSuperuser ??
                           false;
                       if (isSuperuser) {
-                        final notLoggedIn =
-                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        final notLoggedIn = context
+                            .read<ExchangeCubit>()
+                            .state
+                            .notLoggedIn;
                         if (notLoggedIn) {
                           context.goNamed(ExchangeRoute.exchangeLanding.name);
                         } else {
@@ -78,8 +80,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         context.goNamed(ExchangeRoute.exchangeLanding.name);
                       }
                     } else {
-                      final notLoggedIn =
-                          context.read<ExchangeCubit>().state.notLoggedIn;
+                      final notLoggedIn = context
+                          .read<ExchangeCubit>()
+                          .state
+                          .notLoggedIn;
                       if (notLoggedIn) {
                         context.goNamed(ExchangeRoute.exchangeLanding.name);
                       } else {
@@ -143,12 +147,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 ),
                 SettingsEntryItem(
                   icon: Icons.monitor_heart,
-                  iconColor:
-                      serviceStatusLoading
-                          ? context.appColors.textMuted
-                          : serviceStatus.allServicesOnline
-                          ? context.appColors.success
-                          : context.appColors.error,
+                  iconColor: serviceStatusLoading
+                      ? context.appColors.textMuted
+                      : serviceStatus.allServicesOnline
+                      ? context.appColors.success
+                      : context.appColors.error,
                   title: context.loc.settingsServicesStatusTitle,
                   onTap: () {
                     context.pushNamed(StatusCheckRoute.serviceStatus.name);
@@ -165,7 +168,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
         color: context.appColors.transparent,
         child: SafeArea(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               if (appVersion != null)
                 ListTile(
@@ -185,7 +188,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 24),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: .spaceEvenly,
                   children: [
                     InkWell(
                       onTap: () {
@@ -195,7 +198,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         launchUrl(url, mode: LaunchMode.externalApplication);
                       },
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: .min,
                         children: [
                           const Icon(FontAwesomeIcons.telegram),
                           const Gap(8),
@@ -216,7 +219,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         launchUrl(url, mode: LaunchMode.externalApplication);
                       },
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: .min,
                         children: [
                           const Icon(FontAwesomeIcons.github),
                           const Gap(8),

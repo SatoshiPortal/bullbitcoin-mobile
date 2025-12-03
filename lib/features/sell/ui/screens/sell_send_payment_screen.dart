@@ -75,7 +75,7 @@ class SellSendPaymentScreen extends StatelessWidget {
             ),
             const Gap(4.0),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
                 Text(
                   context.loc.sellPriceWillRefreshIn,
@@ -226,7 +226,7 @@ class _DetailRow extends StatelessWidget {
           value == null
               ? const LoadingLineContent()
               : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   Text(
                     title,
@@ -238,12 +238,12 @@ class _DetailRow extends StatelessWidget {
                     child:
                         onTap == null
                             ? Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisAlignment: .end,
                               children: [
                                 Flexible(
                                   child: Text(
                                     value!,
-                                    textAlign: TextAlign.end,
+                                    textAlign: .end,
                                     maxLines: 2,
                                     style: context.font.bodyMedium?.copyWith(
                                       color: valueColor,
@@ -270,14 +270,14 @@ class _DetailRow extends StatelessWidget {
                             )
                             : GestureDetector(
                               onTap: onTap,
-                              behavior: HitTestBehavior.opaque,
+                              behavior: .opaque,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisAlignment: .end,
                                 children: [
                                   Flexible(
                                     child: Text(
                                       value!,
-                                      textAlign: TextAlign.end,
+                                      textAlign: .end,
                                       maxLines: 2,
                                       style: context.font.bodyMedium?.copyWith(
                                         color: valueColor,
@@ -386,7 +386,7 @@ class _SellError extends StatelessWidget {
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
             ),
-            textAlign: TextAlign.center,
+            textAlign: .center,
           ),
         ),
         BelowMinAmountSellError _ => Padding(
@@ -396,7 +396,7 @@ class _SellError extends StatelessWidget {
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
             ),
-            textAlign: TextAlign.center,
+            textAlign: .center,
           ),
         ),
         InsufficientBalanceSellError _ => Padding(
@@ -406,7 +406,7 @@ class _SellError extends StatelessWidget {
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
             ),
-            textAlign: TextAlign.center,
+            textAlign: .center,
           ),
         ),
         UnexpectedSellError(:final message) => Padding(
@@ -416,7 +416,7 @@ class _SellError extends StatelessWidget {
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
             ),
-            textAlign: TextAlign.center,
+            textAlign: .center,
           ),
         ),
         _ => const SizedBox.shrink(),

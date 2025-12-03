@@ -20,7 +20,7 @@ class LegacySeedViewScreen extends StatelessWidget {
         appBar: AppBar(
           title: BBText(
             context.loc.legacySeedViewScreenTitle,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            style: const TextStyle(fontWeight: .bold, fontSize: 20),
           ),
         ),
         body: BlocBuilder<LegacySeedViewCubit, LegacySeedViewState>(
@@ -51,7 +51,7 @@ class LegacySeedViewScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final seed = state.seeds[index];
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -64,7 +64,7 @@ class LegacySeedViewScreen extends StatelessWidget {
                         ),
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           BBText(
                             context.loc.legacySeedViewMnemonicLabel,
@@ -85,7 +85,7 @@ class LegacySeedViewScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0, left: 8.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: .start,
                           children: [
                             BBText(
                               context.loc.legacySeedViewPassphrasesLabel,

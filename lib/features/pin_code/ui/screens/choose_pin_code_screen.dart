@@ -33,12 +33,12 @@ class ChoosePinCodeScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    crossAxisAlignment: .stretch,
                     children: [
                       const Gap(30),
                       Text(
                         context.loc.pinCodeCreateTitle,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                         style: context.font.headlineMedium?.copyWith(
                           color: context.appColors.outline,
                         ),
@@ -47,7 +47,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                       const Gap(16),
                       Text(
                         context.loc.pinCodeCreateDescription,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                         style: context.font.bodyMedium?.copyWith(
                           color: context.appColors.outline,
                         ),
@@ -100,7 +100,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                                       .minPinCodeLength
                                       .toString(),
                                 ),
-                                textAlign: TextAlign.start,
+                                textAlign: .start,
                                 style: context.font.labelSmall?.copyWith(
                                   color: context.appColors.error,
                                 ),

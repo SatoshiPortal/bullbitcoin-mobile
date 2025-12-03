@@ -27,14 +27,14 @@ class ArkBalanceDetailWidget extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 Text('Balance Breakdown', style: context.font.headlineMedium),
                 const Gap(24),
                 if (arkBalance != null) ...[
                   // Boarding Unconfirmed
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Row(
                         children: [
@@ -59,7 +59,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   const Gap(16),
                   // Boarding Confirmed
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Row(
                         children: [
@@ -84,7 +84,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   const Gap(16),
                   // Preconfirmed
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Row(
                         children: [
@@ -106,7 +106,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   const Gap(16),
                   // Settled
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Row(
                         children: [
@@ -128,7 +128,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   const Gap(16),
                   // Available
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Row(
                         children: [
@@ -152,7 +152,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   const Gap(16),
                   // Total
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Text('Total', style: context.font.titleLarge),
                       CurrencyText(
@@ -185,7 +185,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage(Assets.backgrounds.bgInstantWallet.path),
-          fit: BoxFit.cover,
+          fit: .cover,
           colorFilter: null,
         ),
         border: Border(
@@ -197,11 +197,11 @@ class ArkBalanceDetailWidget extends StatelessWidget {
         children: [
           Center(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: .min,
+              mainAxisAlignment: .center,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
                     const Gap(16),
                     CurrencyText(

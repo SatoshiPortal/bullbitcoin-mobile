@@ -123,20 +123,20 @@ class _SelectableCustomFeeListItemState
       child: Material(
         elevation: isCustomFeeSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
-        clipBehavior: Clip.hardEdge,
+        clipBehavior: .hardEdge,
         color: context.appColors.onSecondary,
         shadowColor: context.appColors.secondary,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Expanded(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      crossAxisAlignment: .stretch,
                       children: [
                         BBText('Custom Fee', style: context.font.headlineLarge),
                         if (subtitle1.isNotEmpty) ...[
@@ -177,7 +177,7 @@ class _SelectableCustomFeeListItemState
                 keyboardType: TextInputType.numberWithOptions(
                   decimal: !_isAbsolute,
                 ),
-                textInputAction: TextInputAction.done,
+                textInputAction: .done,
                 inputFormatters: [
                   if (_isAbsolute)
                     FilteringTextInputFormatter.digitsOnly

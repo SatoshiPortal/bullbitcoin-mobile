@@ -103,7 +103,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
     return Column(
       children: [
         Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             BBButton.big(
               bgColor: context.appColors.secondary,
@@ -118,14 +118,14 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
             ),
             const Gap(8),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: .spaceAround,
               children: [
                 BBText(
                   'Showing ${logs.length} of ${widget.logs.length} logs',
                   style: context.font.bodySmall?.copyWith(
                     color: context.appColors.onSurface.withValues(alpha: 0.6),
                   ),
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                 ),
                 if (_startDate != null || _endDate != null) ...[
                   const Gap(8),
@@ -141,11 +141,11 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
         ),
         Expanded(
           child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
+            scrollDirection: .vertical,
             child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+              scrollDirection: .horizontal,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: List.generate(logs.length, (index) {
                   final logLine = logs[index];
                   final parts = logLine.split('\t');
@@ -203,7 +203,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
           ),
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             BBButton.small(
               onPressed: () => _showConfirmDeleteLogsBottomSheet(context),
@@ -253,7 +253,7 @@ Future<void> _showConfirmDeleteLogsBottomSheet(BuildContext context) async {
             ),
             const Gap(16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: .spaceEvenly,
               children: [
                 BBButton.small(
                   onPressed: () async {

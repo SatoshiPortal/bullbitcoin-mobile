@@ -31,7 +31,7 @@ class WalletDeletionConfirmationAlertDialog extends StatelessWidget {
           child: const Text('Delete'),
         ),
       ],
-      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actionsAlignment: .spaceBetween,
     );
   }
 }

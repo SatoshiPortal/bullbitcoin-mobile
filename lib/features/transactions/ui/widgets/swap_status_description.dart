@@ -18,7 +18,7 @@ class SwapStatusDescription extends StatelessWidget {
     final bool shouldShowWarning = swap.status != SwapStatus.completed;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [
         Container(
           width: double.infinity,
@@ -39,7 +39,7 @@ class SwapStatusDescription extends StatelessWidget {
             ),
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Row(
                 children: [
@@ -74,7 +74,7 @@ class SwapStatusDescription extends StatelessWidget {
                                   swap.status == SwapStatus.expired
                               ? context.appColors.error
                               : context.appColors.secondary,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: .bold,
                     ),
                   ),
                 ],
@@ -100,7 +100,7 @@ class SwapStatusDescription extends StatelessWidget {
                                 swap.status == SwapStatus.expired
                             ? context.appColors.error.withValues(alpha: 0.8)
                             : context.appColors.outline,
-                    fontStyle: FontStyle.italic,
+                    fontStyle: .italic,
                   ),
                 ),
               ],

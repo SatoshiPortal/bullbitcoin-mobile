@@ -52,7 +52,7 @@ class WalletDetailsScreen extends StatelessWidget {
             isDeletingWallet
                 ? Center(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       const CircularProgressIndicator(),
                       const Gap(16),
@@ -130,7 +130,7 @@ class _InfoField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           label,
@@ -163,7 +163,7 @@ class _CopyField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           label,
@@ -189,7 +189,7 @@ class _CopyField extends StatelessWidget {
                 log.info('Copied $label to clipboard');
               },
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   BBText(
                     copyLabel,

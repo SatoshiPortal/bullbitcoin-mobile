@@ -65,7 +65,7 @@ class WalletCards extends StatelessWidget {
     return Padding(
       padding: padding ?? const EdgeInsets.all(13.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           for (final w in wallets) ...[
             WalletCard(

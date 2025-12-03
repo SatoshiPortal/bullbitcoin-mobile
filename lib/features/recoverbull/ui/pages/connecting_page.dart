@@ -54,8 +54,8 @@ class ConnectingPage extends StatelessWidget {
                   state.keyServerStatus == KeyServerStatus.offline;
 
               return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: .center,
+                crossAxisAlignment: .center,
                 children: [
                   if (!torOnline || !serverOnline)
                     Gif(
@@ -69,9 +69,9 @@ class ConnectingPage extends StatelessWidget {
                   const Gap(24),
                   BBText(
                     context.loc.recoverbullCheckingConnection,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     style: context.font.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: .bold,
                     ),
                   ),
                   const Gap(24),
@@ -91,7 +91,7 @@ class ConnectingPage extends StatelessWidget {
                     BBText(
                       state.error?.toTranslated(context) ??
                           context.loc.recoverbullConnectionFailed,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.appColors.error,
                       ),
@@ -112,7 +112,7 @@ class ConnectingPage extends StatelessWidget {
                   ] else ...[
                     BBText(
                       context.loc.recoverbullPleaseWait,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.appColors.textMuted,
                       ),
@@ -168,7 +168,7 @@ class _StatusRow extends StatelessWidget {
             statusText,
             style: context.font.bodyMedium?.copyWith(
               color: statusColor,
-              fontWeight: FontWeight.w600,
+              fontWeight: .w600,
             ),
           ),
         ],

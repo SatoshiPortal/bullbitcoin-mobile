@@ -37,7 +37,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
               title: BBText(
                 context.loc.allSeedViewTitle,
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                   fontSize: 20,
                 ),
               ),
@@ -64,7 +64,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                         context.loc.allSeedViewLoadingMessage,
                         style: context.font.bodyMedium,
                         color: context.appColors.onSurface.withValues(alpha: 0.7),
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                       ),
                     ),
                   );
@@ -119,7 +119,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                           state.existingWallets.length,
                         ),
                         style: context.font.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                         color: context.appColors.onSurface,
                       ),
@@ -136,7 +136,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                           state.oldWallets.length,
                         ),
                         style: context.font.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                         color: context.appColors.onSurface,
                       ),
@@ -189,7 +189,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                 context.loc.allSeedViewIUnderstandButton,
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.primary,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
               ),
             ),
@@ -213,7 +213,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
             context.loc.allSeedViewDeleteWarningTitle,
             style: context.font.headlineSmall?.copyWith(
               color: context.appColors.error,
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
             ),
           ),
           content: SingleChildScrollView(
@@ -238,7 +238,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                 context.loc.delete,
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.error,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
               ),
             ),
@@ -256,7 +256,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Container(
             padding: const EdgeInsets.all(16),
@@ -266,7 +266,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
               border: Border.all(color: context.appColors.primary, width: 2),
             ),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Expanded(
                   child: BBText(
@@ -295,7 +295,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
             Padding(
               padding: const EdgeInsets.only(top: 8.0, left: 8.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   BBText(
                     context.loc.allSeedViewPassphraseLabel,

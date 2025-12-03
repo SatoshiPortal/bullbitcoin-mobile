@@ -58,7 +58,7 @@ class Bip85HomePage extends StatelessWidget {
                   }),
                 const Gap(16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
                     BBButton.small(
                       onPressed: () => cubit.deriveNextMnemonic(),

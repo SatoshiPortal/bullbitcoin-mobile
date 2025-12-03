@@ -45,7 +45,7 @@ class RequestIdentifierScreen extends StatelessWidget {
           final cubit = context.read<RequestIdentifierCubit>();
 
           return Stack(
-            fit: StackFit.expand,
+            fit: .expand,
             children: [
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
@@ -66,8 +66,8 @@ class RequestIdentifierScreen extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: .stretch,
+                      mainAxisSize: .min,
                       children: [
                         const Gap(32),
                         BBText(
@@ -144,7 +144,7 @@ class RequestErrorWidget extends StatelessWidget {
         error,
         style: context.font.bodyMedium,
         color: context.appColors.error,
-        textAlign: TextAlign.center,
+        textAlign: .center,
         maxLines: 2,
       );
     }

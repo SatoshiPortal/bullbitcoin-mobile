@@ -126,7 +126,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: .min,
                     children: [
                       Gif(
                         image: AssetImage(Assets.animations.successTick.path),
@@ -138,7 +138,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         context.loc.paySinpeEnviado,
                         style: context.font.headlineLarge?.copyWith(
                           color: context.appColors.secondary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(16),
@@ -151,7 +151,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         '${order.payoutAmount.toStringAsFixed(2)} ${order.payoutCurrency}',
                         style: context.font.headlineSmall?.copyWith(
                           color: context.appColors.secondary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(8),
@@ -164,7 +164,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         order.orderNumber.toString(),
                         style: context.font.bodyMedium?.copyWith(
                           color: context.appColors.secondary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(8),
@@ -177,7 +177,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         order.referenceNumber ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
                           color: context.appColors.secondary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(8),
@@ -190,7 +190,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         order.beneficiaryName ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
                           color: context.appColors.secondary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(4),
@@ -198,7 +198,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         _formatSinpePhoneNumber(order.beneficiaryAccountNumber),
                         style: context.font.headlineSmall?.copyWith(
                           color: context.appColors.secondary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(8),
@@ -211,7 +211,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         order.originName ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
                           color: context.appColors.secondary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       ),
                       const Gap(4),
@@ -219,7 +219,7 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
                         order.originCedula ?? context.loc.payNotAvailable,
                         style: context.font.headlineSmall?.copyWith(
                           color: context.appColors.secondary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                       ),
                     ],

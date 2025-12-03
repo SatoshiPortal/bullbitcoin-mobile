@@ -39,12 +39,12 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               const Gap(20),
               BBText(
                 context.loc.backupWalletImportanceWarning,
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 style: context.font.bodyLarge,
                 maxLines: 5,
               ),
@@ -54,7 +54,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                   Assets.misc.encryptedVault.path,
                   width: 36,
                   height: 45,
-                  fit: BoxFit.cover,
+                  fit: .cover,
                 ),
                 title: context.loc.backupWalletEncryptedVaultTitle,
                 description: context.loc.backupWalletEncryptedVaultDescription,
@@ -79,7 +79,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                   Assets.misc.physicalBackup.path,
                   width: 36,
                   height: 45,
-                  fit: BoxFit.cover,
+                  fit: .cover,
                 ),
                 title: context.loc.backupWalletPhysicalBackupTitle,
                 description: context.loc.backupWalletPhysicalBackupDescription,

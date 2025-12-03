@@ -16,7 +16,7 @@ class TransactionNotesTableItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Expanded(
             flex: 2,
@@ -30,7 +30,7 @@ class TransactionNotesTableItem extends StatelessWidget {
           Expanded(
             flex: 3,
             child: Wrap(
-              alignment: WrapAlignment.end,
+              alignment: .end,
               spacing: 8,
               runSpacing: 8,
               children:
@@ -97,7 +97,7 @@ class NoteChip extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
 
           children: [
             Flexible(
@@ -109,7 +109,7 @@ class NoteChip extends StatelessWidget {
                     color: context.appColors.outlineVariant,
                   ),
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: .ellipsis,
                 ),
               ),
             ),

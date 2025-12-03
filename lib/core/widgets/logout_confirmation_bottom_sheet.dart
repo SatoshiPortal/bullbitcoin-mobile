@@ -32,7 +32,7 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               Container(
                 width: 40,
@@ -48,9 +48,9 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
               BBText(
                 'Confirm Logout',
                 style: context.font.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const SizedBox(height: 8),
               BBText(
@@ -58,9 +58,9 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 maxLines: 4,
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
               ),
               const SizedBox(height: 24),
               Row(

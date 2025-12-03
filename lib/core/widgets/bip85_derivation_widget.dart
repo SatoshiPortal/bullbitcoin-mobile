@@ -33,10 +33,10 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
         border: Border.all(color: context.appColors.border),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               Text(
                 widget.derivation.path,

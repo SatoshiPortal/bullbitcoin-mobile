@@ -27,34 +27,33 @@ class RecipientTypeSelector extends StatelessWidget {
     );
 
     if (selectedType == null) {
-      return Column(
-        children:
-            options.map((type) {
-              return Column(
-                children: [
-                  RadioListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(
-                        color: context.appColors.onSecondaryFixed,
-                      ),
-                    ),
-                    title: RecipientTypeText(
-                      recipientType: type,
-                      style: context.font.headlineSmall,
-                    ),
-                    value: type,
-                    groupValue: selectedType,
-                    onChanged: (value) {
-                      if (value != null) {
-                        onTypeSelected(value);
-                      }
-                    },
+      return RadioGroup<RecipientType>(
+        groupValue: selectedType,
+        onChanged: (value) {
+          if (value != null) {
+            onTypeSelected(value);
+          }
+        },
+        child: Column(
+          children: options.map((type) {
+            return Column(
+              children: [
+                RadioListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: context.appColors.onSecondaryFixed),
                   ),
-                  const Gap(16),
-                ],
-              );
-            }).toList(),
+                  title: RecipientTypeText(
+                    recipientType: type,
+                    style: context.font.headlineSmall,
+                  ),
+                  value: type,
+                ),
+                const Gap(16),
+              ],
+            );
+          }).toList(),
+        ),
       );
     } else {
       return Material(
@@ -72,15 +71,14 @@ class RecipientTypeSelector extends StatelessWidget {
               Icons.keyboard_arrow_down,
               color: context.appColors.secondary,
             ),
-            items:
-                options
-                    .map(
-                      (type) => DropdownMenuItem<RecipientType>(
-                        value: type,
-                        child: RecipientTypeText(recipientType: type),
-                      ),
-                    )
-                    .toList(),
+            items: options
+                .map(
+                  (type) => DropdownMenuItem<RecipientType>(
+                    value: type,
+                    child: RecipientTypeText(recipientType: type),
+                  ),
+                )
+                .toList(),
             value: selectedType,
             onChanged: (value) {
               if (value != null) {

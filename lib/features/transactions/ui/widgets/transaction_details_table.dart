@@ -100,7 +100,7 @@ class TransactionDetailsTable extends StatelessWidget {
               child: Text(
                 StringFormatting.truncateMiddle(txId),
                 style: TextStyle(color: context.appColors.primary),
-                textAlign: TextAlign.end,
+                textAlign: .end,
               ),
             ),
           ),

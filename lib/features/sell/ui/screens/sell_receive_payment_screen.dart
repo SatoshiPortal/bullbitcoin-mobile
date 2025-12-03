@@ -56,7 +56,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Center(
               child: BBText(
@@ -66,7 +66,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
             ),
             Center(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   BBText(
                     context.loc.sellPriceWillRefreshIn,
@@ -216,7 +216,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           BBText(
             label,
@@ -227,12 +227,12 @@ class SellReceivePaymentScreen extends StatelessWidget {
           const Spacer(),
           Expanded(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: .end,
               children: [
                 Flexible(
                   child: BBText(
                     value,
-                    textAlign: TextAlign.end,
+                    textAlign: .end,
                     maxLines: 2,
                     style: context.font.bodyMedium?.copyWith(
                       color: isError ? context.appColors.error : null,

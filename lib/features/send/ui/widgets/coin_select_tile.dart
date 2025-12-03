@@ -28,10 +28,9 @@ class CoinSelectTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utxoValue =
-        bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
-            : FormatAmount.sats(utxo.amountSat.toInt());
+    final utxoValue = bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
+        : FormatAmount.sats(utxo.amountSat.toInt());
 
     final fiatEquivalent = FormatAmount.fiat(
       ConvertAmount.satsToFiat(utxo.amountSat.toInt(), exchangeRate),
@@ -39,10 +38,9 @@ class CoinSelectTile extends StatelessWidget {
     ); // You can format this better
 
     final address = utxo.address;
-    final addressType =
-        utxo.addressKeyChain == WalletAddressKeyChain.external
-            ? 'Receive'
-            : 'Change';
+    final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
+        ? 'Receive'
+        : 'Change';
     final label = utxo.labels.join(', ');
 
     return GestureDetector(
@@ -55,11 +53,11 @@ class CoinSelectTile extends StatelessWidget {
           border: Border.all(color: context.appColors.outlineVariant),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   ListTile(
                     shape: RoundedRectangleBorder(
@@ -73,7 +71,7 @@ class CoinSelectTile extends StatelessWidget {
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
                             color: context.appColors.outlineVariant,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: .w500,
                           ),
                         ),
                       ],
@@ -84,11 +82,13 @@ class CoinSelectTile extends StatelessWidget {
                         color: context.appColors.outline,
                       ),
                     ),
-                    trailing: Radio<bool>(
-                      value: true,
+                    trailing: RadioGroup<bool>(
                       groupValue: selected,
                       onChanged: (_) => onTap(),
-                      activeColor: context.appColors.secondary,
+                      child: Radio<bool>(
+                        value: true,
+                        activeColor: context.appColors.secondary,
+                      ),
                     ),
                   ),
                   // const SizedBox(height: 4),

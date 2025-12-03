@@ -22,8 +22,8 @@ class LoadingLineContent extends StatelessWidget {
       child: Padding(
         padding: padding,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: .min,
+          crossAxisAlignment: .start,
           children: [
             Container(width: width, height: height, color: context.appColors.surface),
           ],

@@ -17,13 +17,13 @@ class AccountOwnershipWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           context.loc.withdrawOwnershipQuestion,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.secondary,
-            fontWeight: FontWeight.w500,
+            fontWeight: .w500,
           ),
         ),
         const Gap(8),
@@ -64,31 +64,32 @@ class AccountOwnershipWidget extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(
-                color:
-                    isSelected
-                        ? context.appColors.primary
-                        : context.appColors.surface,
+                color: isSelected
+                    ? context.appColors.primary
+                    : context.appColors.surface,
                 width: 1,
               ),
             ),
-            child: Row(
-              children: [
-                Radio<bool>(
-                  value: value,
-                  groupValue: (formData[key] as String?) == 'true',
-                  onChanged: (_) => onFormDataChanged(key, value.toString()),
-                  activeColor: context.appColors.primary,
-                ),
-                const Gap(8),
-                Expanded(
-                  child: BBText(
-                    label,
-                    style: context.font.headlineSmall?.copyWith(
-                      color: context.appColors.secondary,
+            child: RadioGroup<bool>(
+              groupValue: (formData[key] as String?) == 'true',
+              onChanged: (_) => onFormDataChanged(key, value.toString()),
+              child: Row(
+                children: [
+                  Radio<bool>(
+                    value: value,
+                    activeColor: context.appColors.primary,
+                  ),
+                  const Gap(8),
+                  Expanded(
+                    child: BBText(
+                      label,
+                      style: context.font.headlineSmall?.copyWith(
+                        color: context.appColors.secondary,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

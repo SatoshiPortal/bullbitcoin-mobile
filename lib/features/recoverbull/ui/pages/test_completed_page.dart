@@ -18,7 +18,7 @@ class TestCompletedPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: <Widget>[
             const Spacer(),
             Column(
@@ -42,7 +42,7 @@ class TestCompletedPage extends StatelessWidget {
                 BBText(
                   context.loc.recoverbullTestSuccessDescription,
                   style: context.font.bodyMedium,
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                 ),
               ],
             ),

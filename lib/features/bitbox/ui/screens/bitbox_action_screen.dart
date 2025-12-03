@@ -152,13 +152,13 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         const Gap(24),
         BBText(
           _getMainTextForState(state),
-          textAlign: TextAlign.center,
+          textAlign: .center,
           style: context.font.bodyLarge,
         ),
         const Gap(16),
         BBText(
           _getSubTextForState(state),
-          textAlign: TextAlign.center,
+          textAlign: .center,
           color: context.appColors.textMuted,
           style: context.font.bodyMedium,
         ),
@@ -231,10 +231,10 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           ),
           child: BBText(
             state.result?.toString() ?? '',
-            textAlign: TextAlign.center,
+            textAlign: .center,
             style: context.font.headlineMedium?.copyWith(
               fontFamily: 'monospace',
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
               color: context.appColors.primary,
               letterSpacing: 2,
             ),
@@ -243,7 +243,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         const Gap(20),
         BBText(
           'Waiting for confirmation on BitBox02...',
-          textAlign: TextAlign.center,
+          textAlign: .center,
           color: context.appColors.textMuted.withValues(alpha: 0.7),
           style: context.font.bodyMedium,
         ),
@@ -331,7 +331,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
               color: context.appColors.text,
               letterSpacing: 1,
             ),
-            textAlign: TextAlign.center,
+            textAlign: .center,
           ),
         ),
         const Gap(12),
@@ -339,7 +339,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           'Please verify this address on your BitBox device',
           style: context.font.bodySmall,
           color: context.appColors.textMuted.withValues(alpha: 0.6),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
       ],
     );
@@ -487,13 +487,13 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
                       vertical: 12,
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         Expanded(
                           child: BBText(
                             _getScriptTypeDisplayName(_selectedScriptType),
                             style: context.font.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: .w500,
                             ),
                           ),
                         ),
@@ -553,7 +553,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
             child: SafeArea(
               child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     const Gap(16),
                     BBText(

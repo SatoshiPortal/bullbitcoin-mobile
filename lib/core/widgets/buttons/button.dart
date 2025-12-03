@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-enum _ButtonSize { small, large }
+enum ButtonSize { small, large }
 
 class BBButton extends StatelessWidget {
   const BBButton.big({
@@ -21,7 +21,7 @@ class BBButton extends StatelessWidget {
     this.height,
     this.width,
     this.textStyle,
-  }) : size = _ButtonSize.large;
+  }) : size = ButtonSize.large;
 
   const BBButton.small({
     super.key,
@@ -38,7 +38,7 @@ class BBButton extends StatelessWidget {
     this.height,
     this.width,
     this.textStyle,
-  }) : size = _ButtonSize.small;
+  }) : size = ButtonSize.small;
 
   final String? icon;
   final IconData? iconData;
@@ -49,7 +49,7 @@ class BBButton extends StatelessWidget {
   final bool iconFirst;
   final Function onPressed;
   final bool outlined;
-  final _ButtonSize size;
+  final ButtonSize size;
   final Color? borderColor;
   final bool disabled;
   final double? height;
@@ -58,14 +58,13 @@ class BBButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(size == _ButtonSize.large ? 2 : 2);
+    final radius = BorderRadius.circular(size == ButtonSize.large ? 2 : 2);
 
-    final image =
-        iconData != null
-            ? Icon(iconData, size: 20, color: textColor)
-            : icon != null
-            ? Image.asset(icon!, width: 20, height: 20, color: textColor)
-            : const SizedBox.shrink();
+    final image = iconData != null
+        ? Icon(iconData, size: 20, color: textColor)
+        : icon != null
+        ? Image.asset(icon!, width: 20, height: 20, color: textColor)
+        : const SizedBox.shrink();
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 200),
@@ -77,18 +76,17 @@ class BBButton extends StatelessWidget {
           borderRadius: radius,
           child: Container(
             height: height ?? 52,
-            width: width ?? (size == _ButtonSize.large ? null : 160),
-            padding:
-                height != null
-                    ? null
-                    : const EdgeInsets.symmetric(vertical: 12),
+            width: width ?? (size == ButtonSize.large ? null : 160),
+            padding: height != null
+                ? null
+                : const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
               color: bgColor,
               border: outlined ? Border.all(color: textColor) : null,
               borderRadius: radius,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
                 if (iconData == null && icon == null) ...[
                   BBText(

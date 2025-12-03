@@ -35,7 +35,7 @@ class PinSettingsScreen extends StatelessWidget {
                   vertical: 24,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(
                       context.loc.pinCodeManageTitle,

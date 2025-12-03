@@ -37,7 +37,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(

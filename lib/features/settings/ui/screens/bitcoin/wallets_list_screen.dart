@@ -55,12 +55,12 @@ class WalletsListScreen extends StatelessWidget {
                           vertical: 18,
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: .spaceBetween,
                           children: [
                             Expanded(
                               child: BBText(
                                 wallet.displayLabel,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: .ellipsis,
                                 style: context.font.bodyLarge?.copyWith(
                                   color: context.appColors.text,
                                 ),

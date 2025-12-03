@@ -13,10 +13,10 @@ class InteracEmailCadForm extends StatefulWidget {
   const InteracEmailCadForm({super.key});
 
   @override
-  _InteracEmailCadFormState createState() => _InteracEmailCadFormState();
+  InteracEmailCadFormState createState() => InteracEmailCadFormState();
 }
 
-class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
+class InteracEmailCadFormState extends State<InteracEmailCadForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _nameFocusNode = FocusNode();
@@ -34,8 +34,10 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
   @override
   void initState() {
     super.initState();
-    _onlyOwnerPermitted =
-        context.read<RecipientsBloc>().state.onlyOwnerRecipients;
+    _onlyOwnerPermitted = context
+        .read<RecipientsBloc>()
+        .state
+        .onlyOwnerRecipients;
     if (_onlyOwnerPermitted) {
       _isMyAccount = true;
     }
@@ -72,8 +74,8 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'Email Address',
@@ -86,13 +88,11 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
               // Force lowercase
               LowerCaseTextFormatter(),
             ],
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _email = value;
@@ -104,13 +104,11 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
             labelText: 'Name',
             hintText: 'Enter recipient name',
             focusNode: _nameFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _securityQuestionFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;
@@ -122,7 +120,7 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
             labelText: 'Security Question',
             hintText: 'Enter security question (10-40 characters)',
             focusNode: _securityQuestionFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _securityAnswerFocusNode.requestFocus(),
             inputFormatters: [LengthLimitingTextInputFormatter(40)],
             validator: (v) {
@@ -147,12 +145,9 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
                 '${_securityQuestion.length}/40 characters',
                 style: TextStyle(
                   fontSize: 12,
-                  color:
-                      _securityQuestion.length < 10
-                          ? context.appColors.error
-                          : context.appColors.onSurface.withValues(
-                            alpha: 0.6,
-                          ),
+                  color: _securityQuestion.length < 10
+                      ? context.appColors.error
+                      : context.appColors.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ),
@@ -161,13 +156,11 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
             labelText: 'Security Answer',
             hintText: 'Enter security answer',
             focusNode: _securityAnswerFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _securityAnswer = value;
@@ -179,7 +172,7 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {
@@ -193,38 +186,37 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
             'Who does this account belong to?',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
+              fontWeight: .w500,
               color: context.appColors.onSurface,
             ),
           ),
           const Gap(8.0),
-          RadioListTile<bool>(
-            title: const Text('This is my account'),
-            value: true,
+          RadioGroup<bool>(
             groupValue: _isMyAccount,
             onChanged: (value) {
-              setState(() {
-                _isMyAccount = value ?? true;
-              });
+              if (!_onlyOwnerPermitted) {
+                setState(() {
+                  _isMyAccount = value ?? false;
+                });
+              }
             },
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity.compact,
-          ),
-          const Gap(8.0),
-          RadioListTile<bool>(
-            title: const Text("This is someone else's account"),
-            value: false,
-            groupValue: _isMyAccount,
-            onChanged:
-                _onlyOwnerPermitted
-                    ? null
-                    : (value) {
-                      setState(() {
-                        _isMyAccount = value ?? false;
-                      });
-                    },
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity.compact,
+            child: const Column(
+              children: [
+                RadioListTile<bool>(
+                  title: Text('This is my account'),
+                  value: true,
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+                Gap(8.0),
+                RadioListTile<bool>(
+                  title: Text("This is someone else's account"),
+                  value: false,
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
+            ),
           ),
           const Gap(24.0),
           RecipientFormContinueButton(onPressed: _submitForm),

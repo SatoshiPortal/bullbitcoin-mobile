@@ -58,8 +58,10 @@ class SettingsCubit extends Cubit<SettingsState> {
   final RevokeArkUsecase _revokeArkUsecase;
 
   Future<void> init() async {
-    final (storedSettings, appInfo) =
-        await (_getSettingsUsecase.execute(), PackageInfo.fromPlatform()).wait;
+    final (storedSettings, appInfo) = await (
+      _getSettingsUsecase.execute(),
+      PackageInfo.fromPlatform(),
+    ).wait;
     final appVersion = '${appInfo.version}+${appInfo.buildNumber}';
 
     emit(

@@ -29,17 +29,17 @@ class ExchangeHomeTopSection extends StatelessWidget {
       child: Stack(
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               Container(
                 color: context.appColors.overlay,
                 height: 264 + 78,
                 // color: Colors.red,
                 child: Stack(
-                  fit: StackFit.expand,
+                  fit: .expand,
                   children: [
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: .center,
                       children: [
                         Gap(topGap),
                         ...balances.map(
@@ -47,7 +47,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
                             '${b.amount} ${b.currencyCode}',
                             style: balanceTextStyle?.copyWith(
                               color: context.appColors.onPrimary,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: .w500,
                             ),
                           ),
                         ),

@@ -58,7 +58,7 @@ class PaymentReceivedPage extends StatelessWidget {
 
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: .end,
         children: [
           const Spacer(),
           Gif(

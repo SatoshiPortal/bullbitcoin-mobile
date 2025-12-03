@@ -117,7 +117,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: .start,
             children: [
               QrImageView(data: state.parts[state.currentIndex]),
               const Gap(16),

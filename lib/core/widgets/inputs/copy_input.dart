@@ -112,9 +112,9 @@ class CopyInput extends StatelessWidget {
                       modalTitle!,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontSize: 20,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: .w700,
                       ),
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     )
                     : null,
 

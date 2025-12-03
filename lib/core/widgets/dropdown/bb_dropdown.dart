@@ -39,7 +39,7 @@ class BBDropdown<T> extends StatelessWidget {
         child: ButtonTheme(
           alignedDropdown: true,
           child: DropdownButtonFormField<T>(
-            value: value,
+            initialValue: value,
             items:
                 items.map((item) {
                   return DropdownMenuItem<T>(

@@ -50,7 +50,7 @@ class ExchangeAmountInputField extends StatelessWidget {
             : _bitcoinUnit?.code ?? 'BTC';
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           context.loc.exchangeAmountInputTitle,
@@ -68,8 +68,8 @@ class ExchangeAmountInputField extends StatelessWidget {
               vertical: 16.0,
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: .min,
+              crossAxisAlignment: .start,
               children: [
                 if (_isLoading)
                   const LoadingLineContent(
@@ -77,8 +77,8 @@ class ExchangeAmountInputField extends StatelessWidget {
                   )
                 else
                   Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: .min,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Expanded(
                         child: TextFormField(
@@ -166,8 +166,8 @@ class ExchangeAmountInputField extends StatelessWidget {
                     )
                   else
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: .start,
+                      mainAxisSize: .min,
                       children: [
                         InkWell(
                           onTap: () {

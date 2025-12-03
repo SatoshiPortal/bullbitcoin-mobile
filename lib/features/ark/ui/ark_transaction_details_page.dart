@@ -92,7 +92,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                   showFiat: false,
                   style: context.font.displaySmall?.copyWith(
                     color: context.appColors.onSurface,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: .w500,
                   ),
                   fiatAmount: null,
                   fiatCurrency: null,
@@ -115,7 +115,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                                   style: TextStyle(
                                     color: context.appColors.primary,
                                   ),
-                                  textAlign: TextAlign.end,
+                                  textAlign: .end,
                                 ),
                               )
                               : null,

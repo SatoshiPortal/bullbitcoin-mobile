@@ -45,7 +45,7 @@ class ReceiveQrPage extends StatelessWidget {
 
     return SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           // const Gap(10),
           // const ReceiveNetworkSelection(),
@@ -88,7 +88,7 @@ class ReceiveQRDetails extends StatelessWidget {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [
         Center(
           child: Container(
@@ -112,7 +112,7 @@ class ReceiveQRDetails extends StatelessWidget {
             child: BBText(
               context.loc.receivePayjoinActivated,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
           ),
         ],
@@ -120,7 +120,7 @@ class ReceiveQRDetails extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               BBText(
                 isLightning
@@ -134,7 +134,7 @@ class ReceiveQRDetails extends StatelessWidget {
               CopyInput(
                 text: addressOrInvoiceOnly,
                 clipboardText: clipboardData,
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
                 canShowValueModal: true,
                 modalTitle:
                     isLightning
@@ -187,7 +187,7 @@ class ReceiveInfoDetails extends StatelessWidget {
           border: Border.all(color: context.appColors.surface),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             Padding(
               padding: const EdgeInsets.only(
@@ -200,7 +200,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         BBText(
                           context.loc.receiveAmount,
@@ -209,7 +209,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         ),
                         const Gap(4),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: .spaceBetween,
                           children: [
                             Expanded(
                               child: CurrencyText(
@@ -272,7 +272,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                   Expanded(
                     flex: 6,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         BBText(
                           context.loc.receiveNote,
@@ -284,7 +284,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                           note.isNotEmpty ? note : context.loc.receiveEnterHere,
                           style: context.font.bodyMedium,
                           maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: .ellipsis,
                         ),
                       ],
                     ),
@@ -338,7 +338,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           const Gap(12),
           const ReceiveLnSwapID(),
@@ -348,7 +348,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 10, bottom: 12),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 BBText(
                   context.loc.receiveAmount,
@@ -357,7 +357,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                 ),
                 const Spacer(),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: .end,
                   children: [
                     CurrencyText(
                       amountSat ?? 0,
@@ -379,7 +379,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 12),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   BBText(
                     context.loc.receiveReceiveAmount,
@@ -413,7 +413,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                       note.isNotEmpty ? note : '',
                       style: context.font.bodyMedium,
                       maxLines: 5,
-                      textAlign: TextAlign.end,
+                      textAlign: .end,
                     ),
                   ),
                 ],
@@ -447,7 +447,7 @@ class ReceiveLnSwapID extends StatelessWidget {
           BBText(
             swap.id,
             style: context.font.bodyLarge,
-            textAlign: TextAlign.end,
+            textAlign: .end,
           ),
           const Gap(4),
           InkWell(

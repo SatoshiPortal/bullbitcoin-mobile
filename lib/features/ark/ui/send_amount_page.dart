@@ -158,7 +158,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
   Widget build(BuildContext context) {
     return GestureDetector(
       // tap outside input to close keyboard
-      behavior: HitTestBehavior.opaque,
+      behavior: .opaque,
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
@@ -182,7 +182,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
         body: SafeArea(
           child: Form(
             child: ScrollableColumn(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: .spaceBetween,
               children: [
                 PriceInput(
                   currency: _currencyCode,
@@ -195,7 +195,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
                   error: _error,
                 ),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
                     Divider(
                       height: 1,

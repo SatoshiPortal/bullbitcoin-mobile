@@ -37,7 +37,7 @@ class SettleBottomSheet extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   Container(
                     width: 40,
@@ -57,9 +57,9 @@ class SettleBottomSheet extends StatelessWidget {
                   BBText(
                     context.loc.arkSettleTitle,
                     style: context.font.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: .bold,
                     ),
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                   ),
                   const Gap(8),
                   BBText(
@@ -67,7 +67,7 @@ class SettleBottomSheet extends StatelessWidget {
                     style: context.font.bodyMedium?.copyWith(
                       color: context.appColors.textMuted,
                     ),
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     maxLines: 3,
                   ),
                   const Gap(24),
@@ -81,7 +81,7 @@ class SettleBottomSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         BBText(
                           context.loc.arkSettleIncludeRecoverable,
@@ -90,7 +90,7 @@ class SettleBottomSheet extends StatelessWidget {
                         Switch(
                           value: state.withRecoverableVtxos,
                           onChanged: cubit.onChangedSelectRecoverableVtxos,
-                          activeColor: context.appColors.primary,
+                          activeThumbColor: context.appColors.primary,
                         ),
                       ],
                     ),

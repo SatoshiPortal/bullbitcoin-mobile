@@ -30,7 +30,7 @@ class OnboardingSplash extends StatelessWidget {
             const _BG(),
             Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   const Spacer(flex: 2),
                   SuperuserTapUnlocker(
@@ -44,7 +44,7 @@ class OnboardingSplash extends StatelessWidget {
                     context.loc.onboardingBullBitcoin,
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 54,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: .w500,
                       color: context.appColors.onPrimaryFixed,
                       height: 1,
                     ),
@@ -53,7 +53,7 @@ class OnboardingSplash extends StatelessWidget {
                     context.loc.onboardingOwnYourMoney,
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 40,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: .w500,
                       color: context.appColors.secondaryFixed,
                       height: 1,
                     ),
@@ -65,7 +65,7 @@ class OnboardingSplash extends StatelessWidget {
                       context.loc.onboardingSplashDescription,
                       style: context.font.labelSmall,
                       color: context.appColors.onPrimaryFixed,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                       maxLines: 2,
                     ),
                   ),
@@ -102,7 +102,7 @@ class _Actions extends StatelessWidget {
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [
         if (creating || loading) ...[
           Center(
@@ -178,7 +178,7 @@ class _BG extends StatelessWidget {
             angle: 3.141,
             child: Image.asset(
               Assets.backgrounds.bgLong.path,
-              fit: BoxFit.cover,
+              fit: .cover,
               height: double.infinity,
               width: double.infinity,
             ),

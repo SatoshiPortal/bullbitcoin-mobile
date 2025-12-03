@@ -37,19 +37,17 @@ class CommonCoinSelectionBottomSheet extends StatelessWidget {
       0,
       (previousValue, element) => previousValue + element.amountSat.toInt(),
     );
-    final selectedUtxoTotal =
-        bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
-            : FormatAmount.sats(selectedUtxoTotalSat);
-    final amountToSend =
-        bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(amountToSendSat))
-            : FormatAmount.sats(amountToSendSat);
+    final selectedUtxoTotal = bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
+        : FormatAmount.sats(selectedUtxoTotalSat);
+    final amountToSend = bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(amountToSendSat))
+        : FormatAmount.sats(amountToSendSat);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Stack(
             alignment: Alignment.center,
@@ -98,19 +96,16 @@ class CommonCoinSelectionBottomSheet extends StatelessWidget {
           const Gap(24),
           BBButton.big(
             label: "Done",
-            onPressed:
-                selectedUtxoTotalSat >= amountToSendSat
-                    ? () => context.pop()
-                    : () {},
+            onPressed: selectedUtxoTotalSat >= amountToSendSat
+                ? () => context.pop()
+                : () {},
             disabled: selectedUtxoTotalSat < amountToSendSat,
-            bgColor:
-                selectedUtxoTotalSat >= amountToSendSat
-                    ? context.appColors.secondary
-                    : context.appColors.outlineVariant,
-            textColor:
-                selectedUtxoTotalSat >= amountToSendSat
-                    ? context.appColors.onSecondary
-                    : context.appColors.outline,
+            bgColor: selectedUtxoTotalSat >= amountToSendSat
+                ? context.appColors.secondary
+                : context.appColors.outlineVariant,
+            textColor: selectedUtxoTotalSat >= amountToSendSat
+                ? context.appColors.onSecondary
+                : context.appColors.outline,
           ),
           const Gap(24),
         ],
@@ -139,10 +134,9 @@ class CommonCoinSelectTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utxoValue =
-        bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
-            : FormatAmount.sats(utxo.amountSat.toInt());
+    final utxoValue = bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
+        : FormatAmount.sats(utxo.amountSat.toInt());
 
     final fiatEquivalent = FormatAmount.fiat(
       ConvertAmount.satsToFiat(utxo.amountSat.toInt(), exchangeRate),
@@ -150,10 +144,9 @@ class CommonCoinSelectTile extends StatelessWidget {
     );
 
     final address = utxo.address;
-    final addressType =
-        utxo.addressKeyChain == WalletAddressKeyChain.external
-            ? 'Receive'
-            : 'Change';
+    final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
+        ? 'Receive'
+        : 'Change';
     final label = utxo.labels.join(', ');
 
     return GestureDetector(
@@ -166,11 +159,11 @@ class CommonCoinSelectTile extends StatelessWidget {
           border: Border.all(color: context.appColors.outlineVariant),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   ListTile(
                     shape: RoundedRectangleBorder(
@@ -184,7 +177,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
                             color: context.appColors.outlineVariant,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: .w500,
                           ),
                         ),
                       ],
@@ -195,11 +188,13 @@ class CommonCoinSelectTile extends StatelessWidget {
                         color: context.appColors.outline,
                       ),
                     ),
-                    trailing: Radio<bool>(
-                      value: true,
+                    trailing: RadioGroup<bool>(
                       groupValue: selected,
                       onChanged: (_) => onTap(),
-                      activeColor: context.appColors.secondary,
+                      child: Radio<bool>(
+                        value: true,
+                        activeColor: context.appColors.secondary,
+                      ),
                     ),
                   ),
                   BBText(

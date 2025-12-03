@@ -19,10 +19,10 @@ import 'package:gap/gap.dart';
 class SwapPage extends StatefulWidget {
   const SwapPage({super.key});
   @override
-  _SwapPageState createState() => _SwapPageState();
+  SwapPageState createState() => SwapPageState();
 }
 
-class _SwapPageState extends State<SwapPage> {
+class SwapPageState extends State<SwapPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _amountController = TextEditingController();
   int _amountSat = 0;
@@ -41,12 +41,16 @@ class _SwapPageState extends State<SwapPage> {
       // calculate fees etc. in Stateless child Widgets like SwapAmountInput
       // and SwapFeesRow.
       setState(() {
-        _amountSat =
-            bitcoinUnit == BitcoinUnit.sats
-                ? int.tryParse(_amountController.text) ?? 0
-                : ConvertAmount.btcToSats(
-                  double.tryParse(_amountController.text) ?? 0,
-                );
+        _amountSat = bitcoinUnit == BitcoinUnit.sats
+            ? int.tryParse(_amountController.text) ?? 0
+            : ConvertAmount.btcToSats(
+                double.tryParse(_amountController.text) ?? 0,
+              );
+        _amountSat = bitcoinUnit == BitcoinUnit.sats
+            ? int.tryParse(_amountController.text) ?? 0
+            : ConvertAmount.btcToSats(
+                double.tryParse(_amountController.text) ?? 0,
+              );
       });
     });
   }
@@ -66,12 +70,12 @@ class _SwapPageState extends State<SwapPage> {
           _amountController.text = state.amount;
           final bitcoinUnit = state.bitcoinUnit;
           setState(() {
-            _amountSat =
-                bitcoinUnit == BitcoinUnit.sats
-                    ? int.tryParse(state.amount) ?? 0
-                    : ConvertAmount.btcToSats(
-                      double.tryParse(state.amount) ?? 0,
-                    );
+            _amountSat = bitcoinUnit == BitcoinUnit.sats
+                ? int.tryParse(state.amount) ?? 0
+                : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
+            _amountSat = bitcoinUnit == BitcoinUnit.sats
+                ? int.tryParse(state.amount) ?? 0
+                : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
           });
         }
       },
@@ -82,13 +86,12 @@ class _SwapPageState extends State<SwapPage> {
             preferredSize: const Size.fromHeight(3),
             child: BlocSelector<TransferBloc, TransferState, bool>(
               selector: (state) => state.isStarting || state.isCreatingSwap,
-              builder:
-                  (context, isLoading) => FadingLinearProgress(
-                    height: 3,
-                    trigger: isLoading,
-                    backgroundColor: context.appColors.onPrimary,
-                    foregroundColor: context.appColors.primary,
-                  ),
+              builder: (context, isLoading) => FadingLinearProgress(
+                height: 3,
+                trigger: isLoading,
+                backgroundColor: context.appColors.onPrimary,
+                foregroundColor: context.appColors.primary,
+              ),
             ),
           ),
         ),
@@ -98,7 +101,7 @@ class _SwapPageState extends State<SwapPage> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   const Gap(12),
                   InfoCard(
@@ -110,7 +113,7 @@ class _SwapPageState extends State<SwapPage> {
                   ),
                   const Gap(12),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       BlocSelector<TransferBloc, TransferState, bool>(
                         selector: (state) => state.sendToExternal,
@@ -128,14 +131,14 @@ class _SwapPageState extends State<SwapPage> {
                         builder: (context, sendToExternal) {
                           return Switch(
                             value: sendToExternal,
-                            activeColor: context.appColors.onSecondary,
+                            activeThumbColor: context.appColors.onSecondary,
                             activeTrackColor: context.appColors.secondary,
                             inactiveThumbColor: context.appColors.onSecondary,
                             inactiveTrackColor: context.appColors.surface,
                             trackOutlineColor:
                                 WidgetStateProperty.resolveWith<Color?>(
                                   (Set<WidgetState> states) =>
-                                      context.appColors.transparent,
+                                      Colors.transparent,
                                 ),
                             onChanged: (value) {
                               context.read<TransferBloc>().add(
@@ -189,7 +192,7 @@ class _SwapPageState extends State<SwapPage> {
                   ),
                   const Gap(24),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       BlocSelector<TransferBloc, TransferState, bool>(
                         selector: (state) => state.receiveExactAmount,
@@ -207,14 +210,14 @@ class _SwapPageState extends State<SwapPage> {
                         builder: (context, receiveExactAmount) {
                           return Switch(
                             value: receiveExactAmount,
-                            activeColor: context.appColors.onSecondary,
+                            activeThumbColor: context.appColors.onSecondary,
                             activeTrackColor: context.appColors.secondary,
                             inactiveThumbColor: context.appColors.onSecondary,
                             inactiveTrackColor: context.appColors.surface,
                             trackOutlineColor:
                                 WidgetStateProperty.resolveWith<Color?>(
                                   (Set<WidgetState> states) =>
-                                      context.appColors.transparent,
+                                      Colors.transparent,
                                 ),
                             onChanged: (value) {
                               context.read<TransferBloc>().add(
@@ -228,11 +231,10 @@ class _SwapPageState extends State<SwapPage> {
                   ),
                   const Gap(24),
                   BlocSelector<TransferBloc, TransferState, bool>(
-                    selector:
-                        (state) =>
-                            state.isStarting ||
-                            state.isCreatingSwap ||
-                            state.continueClicked,
+                    selector: (state) =>
+                        state.isStarting ||
+                        state.isCreatingSwap ||
+                        state.continueClicked,
                     builder: (context, isLoading) {
                       return BBButton.big(
                         label: context.loc.swapContinueButton,

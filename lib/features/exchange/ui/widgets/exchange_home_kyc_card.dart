@@ -24,7 +24,7 @@ class ExchangeHomeKycCard extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       tileColor: context.appColors.secondary,
       leading: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           Icon(
             Icons.person_outline_outlined,
@@ -48,7 +48,7 @@ class ExchangeHomeKycCard extends StatelessWidget {
         context.loc.exchangeKycCardTitle,
         style: theme.textTheme.bodyMedium?.copyWith(
           color: context.appColors.onPrimary,
-          fontWeight: FontWeight.w500,
+          fontWeight: .w500,
         ),
       ),
 
@@ -56,7 +56,7 @@ class ExchangeHomeKycCard extends StatelessWidget {
         context.loc.exchangeKycCardSubtitle,
         style: theme.textTheme.bodyMedium?.copyWith(
           color: context.appColors.surface,
-          fontWeight: FontWeight.w500,
+          fontWeight: .w500,
         ),
       ),
       titleAlignment: ListTileTitleAlignment.center,

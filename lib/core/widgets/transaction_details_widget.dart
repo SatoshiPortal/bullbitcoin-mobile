@@ -17,7 +17,7 @@ class TransactionDetailsWidget extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           _buildHeader(context),
           const Gap(16),
@@ -36,7 +36,7 @@ class TransactionDetailsWidget extends StatelessWidget {
       context,
       elevation: 2,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
             children: [
@@ -45,7 +45,7 @@ class TransactionDetailsWidget extends StatelessWidget {
               BBText(
                 'Transaction ID',
                 style: context.font.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
               ),
             ],
@@ -60,7 +60,7 @@ class TransactionDetailsWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   BBText(
                     '${tx.txid.substring(0, _txidCut)}…${tx.txid.substring(tx.txid.length - _txidCut)}',
@@ -87,12 +87,12 @@ class TransactionDetailsWidget extends StatelessWidget {
     return _buildCard(
       context,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           BBText(
             'Info',
             style: context.font.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
             ),
           ),
           const Gap(12),
@@ -109,7 +109,7 @@ class TransactionDetailsWidget extends StatelessWidget {
     return _buildCard(
       context,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           _buildSectionHeader(
             context,
@@ -140,7 +140,7 @@ class TransactionDetailsWidget extends StatelessWidget {
     return _buildCard(
       context,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           _buildSectionHeader(
             context,
@@ -156,7 +156,7 @@ class TransactionDetailsWidget extends StatelessWidget {
               index: index,
               color: context.appColors.primary,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   BBText(
                     '${output.value} sats',
@@ -200,7 +200,7 @@ class TransactionDetailsWidget extends StatelessWidget {
         BBText(
           title,
           style: context.font.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: .bold,
           ),
         ),
       ],
@@ -247,7 +247,7 @@ class TransactionDetailsWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           SizedBox(
             width: 100,

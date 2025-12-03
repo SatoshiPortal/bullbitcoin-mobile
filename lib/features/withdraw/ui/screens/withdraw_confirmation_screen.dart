@@ -191,7 +191,7 @@ class _DetailRow extends StatelessWidget {
           value == null
               ? const LoadingLineContent()
               : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   Text(
                     title,
@@ -202,7 +202,7 @@ class _DetailRow extends StatelessWidget {
                   Expanded(
                     child: Text(
                       value!,
-                      textAlign: TextAlign.end,
+                      textAlign: .end,
                       maxLines: 2,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.appColors.outlineVariant,

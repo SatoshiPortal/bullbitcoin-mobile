@@ -14,7 +14,7 @@ class TorConnectionStatusCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Text(context.loc.torSettingsConnectionStatus, style: context.font.titleMedium),
             const Gap(16),
@@ -24,12 +24,12 @@ class TorConnectionStatusCard extends StatelessWidget {
                 const Gap(12),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Text(
                         _getStatusTitle(context, status),
                         style: context.font.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
+                          fontWeight: .w600,
                         ),
                       ),
                       const Gap(4),
@@ -92,7 +92,7 @@ class _StatusIndicator extends StatelessWidget {
       width: 48,
       height: 48,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        shape: .circle,
         color: color.withValues(alpha: 0.1),
       ),
       child: Center(

@@ -32,7 +32,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
     return Scaffold(
       backgroundColor: context.appColors.overlay,
       body: Stack(
-        fit: StackFit.expand,
+        fit: .expand,
         children: [
           QrScannerWidget(
             scanDelay:
@@ -133,12 +133,12 @@ void showCopiedSnackBar(BuildContext context) {
     SnackBar(
       content: Text(
         context.loc.importWatchOnlyCopiedToClipboard,
-        textAlign: TextAlign.center,
+        textAlign: .center,
         style: TextStyle(fontSize: 14, color: context.appColors.onPrimary),
       ),
       duration: const Duration(seconds: 2),
       backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(204),
-      behavior: SnackBarBehavior.floating,
+      behavior: .floating,
       elevation: 4,
       margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -180,7 +180,7 @@ Future<String?> _choosePassportDerivation(
       builder: (ctx) {
         return SafeArea(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),

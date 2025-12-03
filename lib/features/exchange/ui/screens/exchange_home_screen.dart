@@ -108,9 +108,8 @@ class ExchangeHomeScreen extends StatelessWidget {
                       ),
                       const Gap(16),
                       InkWell(
-                        onTap:
-                            () =>
-                                context.pushNamed(SettingsRoute.settings.name),
+                        onTap: () =>
+                            context.pushNamed(SettingsRoute.settings.name),
                         child: Image.asset(
                           Assets.icons.settingsLine.path,
                           width: 32,
@@ -136,10 +135,9 @@ class ExchangeHomeScreen extends StatelessWidget {
                         iconData: Icons.arrow_downward,
                         label: context.loc.exchangeHomeDepositButton,
                         iconFirst: true,
-                        onPressed:
-                            () => context.pushNamed(
-                              FundExchangeRoute.fundExchangeAccount.name,
-                            ),
+                        onPressed: () => context.pushNamed(
+                          FundExchangeRoute.fundExchangeAccount.name,
+                        ),
                         bgColor: context.appColors.onSurface,
                         textColor: context.appColors.surface,
                       ),
@@ -151,9 +149,8 @@ class ExchangeHomeScreen extends StatelessWidget {
                         label: context.loc.exchangeHomeWithdrawButton,
                         iconFirst: true,
                         disabled: false,
-                        onPressed:
-                            () =>
-                                context.pushNamed(WithdrawRoute.withdraw.name),
+                        onPressed: () =>
+                            context.pushNamed(WithdrawRoute.withdraw.name),
                         bgColor: context.appColors.onSurface,
                         textColor: context.appColors.surface,
                       ),

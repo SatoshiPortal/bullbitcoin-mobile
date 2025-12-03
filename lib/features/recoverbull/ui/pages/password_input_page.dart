@@ -110,14 +110,14 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
             child: Form(
               key: _formKey,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: .stretch,
                 children: [
                   SizedBox(
                     height: 60,
                     child: Center(
                       child: BBText(
                         description,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                         style: context.font.labelMedium?.copyWith(
                           color: context.appColors.textMuted,
                         ),
@@ -130,7 +130,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                     needPasswordConfirmation && validatedPassword.isNotEmpty
                         ? context.loc.recoverbullConfirmInput(inputTypeString)
                         : inputTypeString,
-                    textAlign: TextAlign.start,
+                    textAlign: .start,
                     style: context.font.labelSmall?.copyWith(
                       color: context.appColors.textMuted,
                     ),
@@ -140,7 +140,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                     controller: inputController,
                     obscureText: isObscured,
                     readOnly: inputType == InputType.pin,
-                    textAlign: TextAlign.left,
+                    textAlign: .left,
                     textAlignVertical: TextAlignVertical.center,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     style: context.font.headlineSmall?.copyWith(
@@ -204,7 +204,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                     )
                   else
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: .spaceAround,
                       children: [
                         BBButton.small(
                           label:

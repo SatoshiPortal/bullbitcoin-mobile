@@ -28,7 +28,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           context.loc.exchangeCurrencyDropdownTitle,
@@ -47,7 +47,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
                   isLoading
                       ? const LoadingLineContent()
                       : DropdownButtonFormField<String>(
-                        value: selectedCurrency ?? initialCurrency?.code,
+                        initialValue: selectedCurrency ?? initialCurrency?.code,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(

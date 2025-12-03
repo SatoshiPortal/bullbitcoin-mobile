@@ -230,7 +230,7 @@ class MnemonicWordState extends State<MnemonicWord> {
               displayIndex,
               style: context.font.headlineMedium,
               color: context.appColors.surface,
-              textAlign: TextAlign.right,
+              textAlign: .right,
             ),
           ),
           const Gap(4),
@@ -246,7 +246,7 @@ class MnemonicWordState extends State<MnemonicWord> {
                 ));
               },
               focusNode: widget.focusNode,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
+              clipBehavior: .antiAliasWithSaveLayer,
               onEditingComplete: widget.onComplete,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.only(right: 8),
@@ -376,7 +376,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       key: key,
       height: height,
       child: ListView.separated(
-        scrollDirection: Axis.horizontal,
+        scrollDirection: .horizontal,
         itemCount: hints.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
@@ -403,7 +403,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     return Column(
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           spacing: 16,
           children: [
             Expanded(
@@ -426,7 +426,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
             Expanded(
               child: Column(
                 spacing: 16,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children:
                     rightWords
                         .map(
@@ -466,7 +466,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
       value: value,
       underline: const SizedBox(),
       style: context.font.bodyMedium?.copyWith(
-        fontWeight: FontWeight.w600,
+        fontWeight: .w600,
         color: context.appColors.text,
       ),
       dropdownColor: context.appColors.surface,
@@ -479,7 +479,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
                   child: BBText(
                     '${length.words} words',
                     style: context.font.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: .w600,
                       color: context.appColors.text,
                     ),
                   ),

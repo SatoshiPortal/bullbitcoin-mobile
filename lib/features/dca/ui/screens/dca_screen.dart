@@ -53,7 +53,7 @@ class _DcaScreenState extends State<DcaScreen> {
             child: Form(
               key: _formKey,
               child: ScrollableColumn(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   const Gap(24),
                   if (!_hasFunds) ...[
@@ -84,7 +84,7 @@ class _DcaScreenState extends State<DcaScreen> {
                       child: Text(
                         context.loc.dcaSetupScheduleMessage,
                         style: Theme.of(context).textTheme.bodyMedium,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                       ),
                     ),
                     const Gap(24),

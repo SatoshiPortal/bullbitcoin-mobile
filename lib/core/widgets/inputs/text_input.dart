@@ -110,8 +110,8 @@ class _BBInputTextState extends State<BBInputText> {
               : TextInputType.multiline,
       textInputAction:
           shouldPreventNewlines
-              ? TextInputAction.done
-              : TextInputAction.newline,
+              ? .done
+              : .newline,
       inputFormatters: [
         if (shouldPreventNewlines)
           FilteringTextInputFormatter.deny(RegExp(r'\n')),
@@ -131,7 +131,7 @@ class _BBInputTextState extends State<BBInputText> {
           ),
       onTap: () => widget.onEnter?.call(),
       onSubmitted: widget.onDone,
-      textAlign: TextAlign.left,
+      textAlign: .left,
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: widget.hint,
@@ -148,7 +148,7 @@ class _BBInputTextState extends State<BBInputText> {
                     widget.fixedPrefix!,
                     style: context.font.bodyLarge?.copyWith(
                       color: context.appColors.onSurface,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: .w500,
                     ),
                   ),
                 )

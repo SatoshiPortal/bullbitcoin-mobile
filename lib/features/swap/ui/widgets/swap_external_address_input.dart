@@ -24,7 +24,7 @@ class SwapExternalAddressInput extends StatelessWidget {
         );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(context.loc.swapToLabel, style: context.font.bodyLarge),
         const Gap(4),
@@ -41,7 +41,7 @@ class SwapExternalAddressInput extends StatelessWidget {
           ),
           maxLines: 1,
           rightIcon: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               IconButton(
                 icon: Icon(

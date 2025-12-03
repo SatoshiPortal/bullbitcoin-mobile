@@ -72,7 +72,7 @@ class SendConfirmPage extends StatelessWidget {
                 Text(
                   context.loc.arkSendConfirmMessage,
                   style: context.font.bodyLarge,
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                 ),
                 const SizedBox(height: 24),
                 SendConfirmationDetailRow(
@@ -94,7 +94,7 @@ class SendConfirmPage extends StatelessWidget {
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.error,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const SizedBox(height: 16),
             ],
@@ -127,7 +127,7 @@ class SendConfirmationDetailRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: .spaceBetween,
         children: [
           Text(
             label,
@@ -142,7 +142,7 @@ class SendConfirmationDetailRow extends StatelessWidget {
                     ? const LoadingLineContent()
                     : Text(
                       value!,
-                      textAlign: TextAlign.end,
+                      textAlign: .end,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: context.appColors.outlineVariant,
                       ),

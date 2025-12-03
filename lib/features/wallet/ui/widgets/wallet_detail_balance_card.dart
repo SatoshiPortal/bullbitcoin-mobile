@@ -35,12 +35,12 @@ class WalletDetailBalanceCard extends StatelessWidget {
                 ? Assets.backgrounds.bgInstantWallet.path
                 : Assets.backgrounds.bgSecureWallet.path,
           ),
-          fit: BoxFit.cover,
+          fit: .cover,
           colorFilter:
               signer == SignerEntity.none
                   ? ColorFilter.mode(
                     context.theme.secondaryHeaderColor,
-                    BlendMode.color,
+                    .color,
                   )
                   : null,
         ),
@@ -62,11 +62,11 @@ class WalletDetailBalanceCard extends StatelessWidget {
           if (hasSyncingIndicator) const TxsSyncingIndicator(),
           Center(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: .min,
+              mainAxisAlignment: .center,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
                     const Gap(16),
                     CurrencyText(

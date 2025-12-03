@@ -52,7 +52,7 @@ class AutoSwapFeeWarning extends StatelessWidget {
         border: Border.all(color: context.appColors.error.withOpacity(0.5)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           BBText(
             context.loc.walletAutoTransferBlockedTitle,
@@ -70,7 +70,7 @@ class AutoSwapFeeWarning extends StatelessWidget {
           ),
           const Gap(12),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: .end,
             children: [
               BBButton.small(
                 label: context.loc.walletAutoTransferBlockButton,

@@ -26,7 +26,7 @@ class OpenTheCameraWidget extends StatelessWidget {
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.outlineVariant,
               ),
-              textAlign: TextAlign.center,
+              textAlign: .center,
               maxLines: 2,
             ),
           ),

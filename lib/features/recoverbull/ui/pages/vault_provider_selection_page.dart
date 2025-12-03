@@ -144,18 +144,18 @@ class HowToDecideVaultLocation extends StatelessWidget {
         ),
         padding: const EdgeInsets.symmetric(vertical: 30),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   const Spacer(),
                   BBText(
                     context.loc.backupWalletHowToDecideBackupModalTitle,
                     style: context.font.headlineMedium,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                   ),
                   const Spacer(),
                   GestureDetector(
@@ -174,7 +174,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       BBText(
                         context.loc.backupWalletHowToDecideVaultCloudSecurity,
@@ -204,7 +204,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                                       .loc
                                       .backupWalletHowToDecideVaultCustomRecommendation,
                               style: context.font.labelMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: .bold,
                               ),
                             ),
                             TextSpan(
@@ -228,7 +228,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                                       .loc
                                       .backupWalletHowToDecideVaultCloudRecommendation,
                               style: context.font.labelMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: .bold,
                               ),
                             ),
                             TextSpan(
