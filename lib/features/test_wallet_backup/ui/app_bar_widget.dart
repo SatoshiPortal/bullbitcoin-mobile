@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -96,7 +97,7 @@ Future<String?> _showWalletPicker({
                   Center(
                     child: BBText(
                       wallet.isDefault
-                          ? 'Default Wallets'
+                          ? context.loc.testBackupDefaultWallets
                           : wallet.displayLabel,
                       style: context.font.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w600,
@@ -108,7 +109,7 @@ Future<String?> _showWalletPicker({
             ),
           ),
           BBButton.big(
-            label: 'Confirm',
+            label: context.loc.testBackupConfirm,
             onPressed: () {
               final wallet = wallets[controller.selectedItem];
               context.read<TestWalletBackupBloc>().add(

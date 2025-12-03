@@ -4462,6 +4462,86 @@
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
   },
+  "swapTransferTitle": "Transfer",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapExternalTransferLabel": "External Transfer",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "From",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapToLabel": "To",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapAmountLabel": "Amount",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapReceiveExactAmountLabel": "Receive exact amount",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapSubtractFeesLabel": "Subtract fees from amount",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapExternalAddressHint": "Enter external wallet address",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapValidationEnterAmount": "Please enter an amount",
+  "@swapValidationEnterAmount": {
+    "description": "Validation error when amount is empty"
+  },
+  "swapValidationPositiveAmount": "Enter a positive amount",
+  "@swapValidationPositiveAmount": {
+    "description": "Validation error when amount is not positive"
+  },
+  "swapValidationInsufficientBalance": "Insufficient balance",
+  "@swapValidationInsufficientBalance": {
+    "description": "Validation error when amount exceeds wallet balance"
+  },
+  "swapValidationMinimumAmount": "Minimum amount is {amount} {currency}",
+  "@swapValidationMinimumAmount": {
+    "description": "Validation error when amount is below minimum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "swapValidationMaximumAmount": "Maximum amount is {amount} {currency}",
+  "@swapValidationMaximumAmount": {
+    "description": "Validation error when amount exceeds maximum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "swapValidationSelectFromWallet": "Please select a wallet to transfer from",
+  "@swapValidationSelectFromWallet": {
+    "description": "Validation error when no source wallet selected"
+  },
+  "swapValidationSelectToWallet": "Please select a wallet to transfer to",
+  "@swapValidationSelectToWallet": {
+    "description": "Validation error when no destination wallet selected"
+  },
+  "swapDoNotUninstallWarning": "Do not uninstall the app until the transfer completes!",
+  "@swapDoNotUninstallWarning": {
+    "description": "Warning message during pending transfer"
+  },
   "pinSecurityTitle": "Security PIN",
   "@pinSecurityTitle": {
     "description": "AppBar title for PIN settings screen"
@@ -10839,5 +10919,98 @@
   "statusCheckUnknown": "Unknown",
   "@statusCheckUnknown": {
     "description": "Status text when service status is unknown"
+  },
+  "torSettingsTitle": "Tor Settings",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "torSettingsEnableProxy": "Enable Tor Proxy",
+  "@torSettingsEnableProxy": {
+    "description": "Label for the toggle to enable/disable Tor proxy"
+  },
+  "torSettingsProxyPort": "Tor Proxy Port",
+  "@torSettingsProxyPort": {
+    "description": "Title for Tor proxy port settings"
+  },
+  "torSettingsPortDisplay": "Port: {port}",
+  "@torSettingsPortDisplay": {
+    "description": "Display text showing current port number",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Port Number",
+  "@torSettingsPortNumber": {
+    "description": "Label for port number input field"
+  },
+  "torSettingsPortHint": "9050",
+  "@torSettingsPortHint": {
+    "description": "Hint text for port input showing default value"
+  },
+  "torSettingsPortHelper": "Default Orbot port: 9050",
+  "@torSettingsPortHelper": {
+    "description": "Helper text explaining default Orbot port"
+  },
+  "torSettingsPortValidationEmpty": "Please enter a port number",
+  "@torSettingsPortValidationEmpty": {
+    "description": "Validation error when port is empty"
+  },
+  "torSettingsPortValidationInvalid": "Please enter a valid number",
+  "@torSettingsPortValidationInvalid": {
+    "description": "Validation error when port is not a valid number"
+  },
+  "torSettingsPortValidationRange": "Port must be between 1 and 65535",
+  "@torSettingsPortValidationRange": {
+    "description": "Validation error when port is out of valid range"
+  },
+  "torSettingsSaveButton": "Save",
+  "@torSettingsSaveButton": {
+    "description": "Save button label for Tor port settings"
+  },
+  "torSettingsConnectionStatus": "Connection Status",
+  "@torSettingsConnectionStatus": {
+    "description": "Title for connection status card"
+  },
+  "torSettingsStatusConnected": "Connected",
+  "@torSettingsStatusConnected": {
+    "description": "Status title when Tor is connected"
+  },
+  "torSettingsStatusConnecting": "Connecting...",
+  "@torSettingsStatusConnecting": {
+    "description": "Status title when Tor is connecting"
+  },
+  "torSettingsStatusDisconnected": "Disconnected",
+  "@torSettingsStatusDisconnected": {
+    "description": "Status title when Tor is disconnected"
+  },
+  "torSettingsStatusUnknown": "Status Unknown",
+  "@torSettingsStatusUnknown": {
+    "description": "Status title when Tor status is unknown"
+  },
+  "torSettingsDescConnected": "Tor proxy is running and ready",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsDescConnecting": "Establishing Tor connection",
+  "@torSettingsDescConnecting": {
+    "description": "Description when Tor is connecting"
+  },
+  "torSettingsDescDisconnected": "Tor proxy is not running",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "torSettingsDescUnknown": "Unable to determine Tor status. Ensure Orbot is installed and running.",
+  "@torSettingsDescUnknown": {
+    "description": "Description when Tor status is unknown"
+  },
+  "torSettingsInfoTitle": "Important Information",
+  "@torSettingsInfoTitle": {
+    "description": "Title for the Tor information card"
+  },
+  "torSettingsInfoDescription": "• Tor proxy only applies to Bitcoin (not Liquid)\n• Default Orbot port is 9050\n• Ensure Orbot is running before enabling\n• Connection may be slower through Tor",
+  "@torSettingsInfoDescription": {
+    "description": "Information about Tor proxy usage"
   }
 }
