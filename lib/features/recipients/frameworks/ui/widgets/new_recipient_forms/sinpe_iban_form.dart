@@ -12,10 +12,10 @@ class SinpeIbanForm extends StatefulWidget {
   const SinpeIbanForm({super.key, this.recipientType});
 
   @override
-  _SinpeIbanFormState createState() => _SinpeIbanFormState();
+  SinpeIbanFormState createState() => SinpeIbanFormState();
 }
 
-class _SinpeIbanFormState extends State<SinpeIbanForm> {
+class SinpeIbanFormState extends State<SinpeIbanForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _ibanFocusNode = FocusNode();
   final FocusNode _ownerNameFocusNode = FocusNode();
@@ -72,11 +72,9 @@ class _SinpeIbanFormState extends State<SinpeIbanForm> {
             autofocus: true,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _ownerNameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _iban = value;
@@ -90,11 +88,9 @@ class _SinpeIbanFormState extends State<SinpeIbanForm> {
             focusNode: _ownerNameFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _ownerName = value;

@@ -19,10 +19,10 @@ import 'package:gap/gap.dart';
 class SwapPage extends StatefulWidget {
   const SwapPage({super.key});
   @override
-  _SwapPageState createState() => _SwapPageState();
+  SwapPageState createState() => SwapPageState();
 }
 
-class _SwapPageState extends State<SwapPage> {
+class SwapPageState extends State<SwapPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _amountController = TextEditingController();
   int _amountSat = 0;
@@ -41,6 +41,11 @@ class _SwapPageState extends State<SwapPage> {
       // calculate fees etc. in Stateless child Widgets like SwapAmountInput
       // and SwapFeesRow.
       setState(() {
+        _amountSat = bitcoinUnit == BitcoinUnit.sats
+            ? int.tryParse(_amountController.text) ?? 0
+            : ConvertAmount.btcToSats(
+                double.tryParse(_amountController.text) ?? 0,
+              );
         _amountSat = bitcoinUnit == BitcoinUnit.sats
             ? int.tryParse(_amountController.text) ?? 0
             : ConvertAmount.btcToSats(
@@ -65,6 +70,9 @@ class _SwapPageState extends State<SwapPage> {
           _amountController.text = state.amount;
           final bitcoinUnit = state.bitcoinUnit;
           setState(() {
+            _amountSat = bitcoinUnit == BitcoinUnit.sats
+                ? int.tryParse(state.amount) ?? 0
+                : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
             _amountSat = bitcoinUnit == BitcoinUnit.sats
                 ? int.tryParse(state.amount) ?? 0
                 : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
@@ -223,6 +231,10 @@ class _SwapPageState extends State<SwapPage> {
                   ),
                   const Gap(24),
                   BlocSelector<TransferBloc, TransferState, bool>(
+                    selector: (state) =>
+                        state.isStarting ||
+                        state.isCreatingSwap ||
+                        state.continueClicked,
                     selector: (state) =>
                         state.isStarting ||
                         state.isCreatingSwap ||

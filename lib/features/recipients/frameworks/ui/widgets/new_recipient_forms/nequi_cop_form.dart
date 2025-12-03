@@ -12,10 +12,10 @@ class NequiCopForm extends StatefulWidget {
   const NequiCopForm({super.key});
 
   @override
-  _NequiCopFormState createState() => _NequiCopFormState();
+  NequiCopFormState createState() => NequiCopFormState();
 }
 
-class _NequiCopFormState extends State<NequiCopForm> {
+class NequiCopFormState extends State<NequiCopForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _labelFocusNode = FocusNode();
@@ -67,11 +67,9 @@ class _NequiCopFormState extends State<NequiCopForm> {
             autofocus: true,
             prefixText: '+57',
             textInputAction: TextInputAction.next,
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _phoneNumber = value;
@@ -145,11 +143,9 @@ class _NequiCopFormState extends State<NequiCopForm> {
             hintText: 'Enter document number',
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _documentId = value;
@@ -163,11 +159,9 @@ class _NequiCopFormState extends State<NequiCopForm> {
             focusNode: _nameFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;

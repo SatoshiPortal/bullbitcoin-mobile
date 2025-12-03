@@ -11,10 +11,10 @@ class BankTransferCadForm extends StatefulWidget {
   const BankTransferCadForm({super.key});
 
   @override
-  _BankTransferCadFormState createState() => _BankTransferCadFormState();
+  BankTransferCadFormState createState() => BankTransferCadFormState();
 }
 
-class _BankTransferCadFormState extends State<BankTransferCadForm> {
+class BankTransferCadFormState extends State<BankTransferCadForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _institutionNumberFocusNode = FocusNode();
   final FocusNode _transitNumberFocusNode = FocusNode();
@@ -34,8 +34,10 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
   @override
   void initState() {
     super.initState();
-    _onlyOwnerPermitted =
-        context.read<RecipientsBloc>().state.onlyOwnerRecipients;
+    _onlyOwnerPermitted = context
+        .read<RecipientsBloc>()
+        .state
+        .onlyOwnerRecipients;
     if (_onlyOwnerPermitted) {
       _isMyAccount = true;
     }
@@ -84,11 +86,9 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
             autofocus: true,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _transitNumberFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _institutionNumber = value;
@@ -102,11 +102,9 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
             focusNode: _transitNumberFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _accountNumberFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _transitNumber = value;
@@ -120,11 +118,9 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
             focusNode: _accountNumberFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _accountNumber = value;
@@ -138,11 +134,9 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
             focusNode: _nameFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _defaultCommentFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;

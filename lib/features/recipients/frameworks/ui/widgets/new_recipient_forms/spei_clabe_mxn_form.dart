@@ -10,10 +10,10 @@ class SpeiClabeMxnForm extends StatefulWidget {
   const SpeiClabeMxnForm({super.key});
 
   @override
-  _SpeiClabeMxnFormState createState() => _SpeiClabeMxnFormState();
+  SpeiClabeMxnFormState createState() => SpeiClabeMxnFormState();
 }
 
-class _SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
+class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _clabeFocusNode = FocusNode();
   final FocusNode _nameFocusNode = FocusNode();
@@ -58,11 +58,9 @@ class _SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
             autofocus: true,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _clabe = value;
@@ -76,11 +74,9 @@ class _SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
             focusNode: _nameFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;

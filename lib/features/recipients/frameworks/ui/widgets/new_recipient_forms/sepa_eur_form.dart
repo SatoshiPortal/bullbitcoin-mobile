@@ -11,10 +11,10 @@ class SepaEurForm extends StatefulWidget {
   const SepaEurForm({super.key});
 
   @override
-  _SepaEurFormState createState() => _SepaEurFormState();
+  SepaEurFormState createState() => SepaEurFormState();
 }
 
-class _SepaEurFormState extends State<SepaEurForm> {
+class SepaEurFormState extends State<SepaEurForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _ibanFocusNode = FocusNode();
   final FocusNode _firstnameFocusNode = FocusNode();
@@ -33,8 +33,10 @@ class _SepaEurFormState extends State<SepaEurForm> {
   @override
   void initState() {
     super.initState();
-    _onlyOwnerPermitted =
-        context.read<RecipientsBloc>().state.onlyOwnerRecipients;
+    _onlyOwnerPermitted = context
+        .read<RecipientsBloc>()
+        .state
+        .onlyOwnerRecipients;
     if (_onlyOwnerPermitted) {
       _isMyAccount = true;
     }
@@ -88,11 +90,9 @@ class _SepaEurFormState extends State<SepaEurForm> {
                 _firstnameFocusNode.requestFocus();
               }
             },
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _iban = value;
@@ -126,11 +126,9 @@ class _SepaEurFormState extends State<SepaEurForm> {
               focusNode: _firstnameFocusNode,
               textInputAction: TextInputAction.next,
               onFieldSubmitted: (_) => _lastnameFocusNode.requestFocus(),
-              validator:
-                  (v) =>
-                      (v == null || v.trim().isEmpty)
-                          ? "This field can't be empty"
-                          : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? "This field can't be empty"
+                  : null,
               onChanged: (value) {
                 setState(() {
                   _firstname = value;
@@ -144,11 +142,9 @@ class _SepaEurFormState extends State<SepaEurForm> {
               focusNode: _lastnameFocusNode,
               textInputAction: TextInputAction.next,
               onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-              validator:
-                  (v) =>
-                      (v == null || v.trim().isEmpty)
-                          ? "This field can't be empty"
-                          : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? "This field can't be empty"
+                  : null,
               onChanged: (value) {
                 setState(() {
                   _lastname = value;
@@ -164,11 +160,9 @@ class _SepaEurFormState extends State<SepaEurForm> {
               focusNode: _corporateNameFocusNode,
               textInputAction: TextInputAction.next,
               onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-              validator:
-                  (v) =>
-                      (v == null || v.trim().isEmpty)
-                          ? "This field can't be empty"
-                          : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? "This field can't be empty"
+                  : null,
               onChanged: (value) {
                 setState(() {
                   _corporateName = value;

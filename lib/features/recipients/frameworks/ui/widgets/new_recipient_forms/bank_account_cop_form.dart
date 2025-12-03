@@ -14,10 +14,10 @@ class BankAccountCopForm extends StatefulWidget {
   const BankAccountCopForm({super.key});
 
   @override
-  _BankAccountCopFormState createState() => _BankAccountCopFormState();
+  BankAccountCopFormState createState() => BankAccountCopFormState();
 }
 
-class _BankAccountCopFormState extends State<BankAccountCopForm> {
+class BankAccountCopFormState extends State<BankAccountCopForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _accountNumberFocusNode = FocusNode();
   final FocusNode _documentIdFocusNode = FocusNode();
@@ -102,9 +102,8 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
                     _institutionNumber = value;
                   });
                 },
-                validator:
-                    (v) =>
-                        (v == null) ? "Please select a bank institution" : null,
+                validator: (v) =>
+                    (v == null) ? "Please select a bank institution" : null,
                 items: [
                   const DropdownMenuItem<CopBankInstitutionsViewModel?>(
                     value: null,
@@ -179,11 +178,9 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             autofocus: true,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _documentIdFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _accountNumber = value;
@@ -258,11 +255,9 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             focusNode: _documentIdFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _documentId = value;
@@ -276,11 +271,9 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             focusNode: _nameFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;

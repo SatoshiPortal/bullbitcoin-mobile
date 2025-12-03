@@ -12,10 +12,10 @@ class BillPaymentCadForm extends StatefulWidget {
   const BillPaymentCadForm({super.key});
 
   @override
-  _BillPaymentCadFormState createState() => _BillPaymentCadFormState();
+  BillPaymentCadFormState createState() => BillPaymentCadFormState();
 }
 
-class _BillPaymentCadFormState extends State<BillPaymentCadForm> {
+class BillPaymentCadFormState extends State<BillPaymentCadForm> {
   final _formKey = GlobalKey<FormState>();
   List<CadBillerViewModel>? _cadBillers;
   CadBillerViewModel? _selectedBiller;
@@ -85,8 +85,8 @@ class _BillPaymentCadFormState extends State<BillPaymentCadForm> {
                   ) ??
                   const Iterable<CadBillerViewModel>.empty();
             },
-            displayStringForOption:
-                (CadBillerViewModel biller) => biller.payeeName,
+            displayStringForOption: (CadBillerViewModel biller) =>
+                biller.payeeName,
             onSelected: (CadBillerViewModel biller) {
               setState(() {
                 _selectedBiller = biller;
@@ -94,33 +94,27 @@ class _BillPaymentCadFormState extends State<BillPaymentCadForm> {
               // Move focus to account number field after selection
               _accountNumberFocusNode.requestFocus();
             },
-            fieldViewBuilder: (
-              context,
-              controller,
-              focusNode,
-              onFieldSubmitted,
-            ) {
-              return BBTextFormField(
-                prefix: const Icon(Icons.search),
-                labelText: 'Biller Name',
-                hintText: 'Search and select a biller',
-                controller: controller,
-                focusNode: focusNode,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedBiller = null;
-                  });
+            fieldViewBuilder:
+                (context, controller, focusNode, onFieldSubmitted) {
+                  return BBTextFormField(
+                    prefix: const Icon(Icons.search),
+                    labelText: 'Biller Name',
+                    hintText: 'Search and select a biller',
+                    controller: controller,
+                    focusNode: focusNode,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedBiller = null;
+                      });
+                    },
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? "Enter 3 or more characters to search"
+                        : _selectedBiller == null
+                        ? "Please select a biller from the list"
+                        : null,
+                    textInputAction: TextInputAction.next,
+                  );
                 },
-                validator:
-                    (v) =>
-                        (v == null || v.trim().isEmpty)
-                            ? "Enter 3 or more characters to search"
-                            : _selectedBiller == null
-                            ? "Please select a biller from the list"
-                            : null,
-                textInputAction: TextInputAction.next,
-              );
-            },
           ),
           const Gap(12.0),
           BBTextFormField(
@@ -129,11 +123,9 @@ class _BillPaymentCadFormState extends State<BillPaymentCadForm> {
             focusNode: _accountNumberFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _payeeAccountNumber = value;

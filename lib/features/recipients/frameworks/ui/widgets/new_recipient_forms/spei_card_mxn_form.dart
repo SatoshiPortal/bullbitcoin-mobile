@@ -10,10 +10,10 @@ class SpeiCardMxnForm extends StatefulWidget {
   const SpeiCardMxnForm({super.key});
 
   @override
-  _SpeiCardMxnFormState createState() => _SpeiCardMxnFormState();
+  SpeiCardMxnFormState createState() => SpeiCardMxnFormState();
 }
 
-class _SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
+class SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _institutionCodeFocusNode = FocusNode();
   final FocusNode _debitCardFocusNode = FocusNode();
@@ -62,11 +62,9 @@ class _SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
             autofocus: true,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _debitCardFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _institutionCode = value;
@@ -80,11 +78,9 @@ class _SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
             focusNode: _debitCardFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _debitCard = value;
@@ -98,11 +94,9 @@ class _SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
             focusNode: _nameFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;

@@ -10,10 +10,10 @@ class CbuCvuArgentinaForm extends StatefulWidget {
   const CbuCvuArgentinaForm({super.key});
 
   @override
-  _CbuCvuArgentinaFormState createState() => _CbuCvuArgentinaFormState();
+  CbuCvuArgentinaFormState createState() => CbuCvuArgentinaFormState();
 }
 
-class _CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
+class CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _cbuCvuFocusNode = FocusNode();
   final FocusNode _nameFocusNode = FocusNode();
@@ -58,11 +58,9 @@ class _CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
             autofocus: true,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _cbuCvu = value;
@@ -76,11 +74,9 @@ class _CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
             focusNode: _nameFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;

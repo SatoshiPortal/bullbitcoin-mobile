@@ -16,10 +16,10 @@ class Countdown extends StatefulWidget {
   });
 
   @override
-  _CountdownState createState() => _CountdownState();
+  CountdownState createState() => CountdownState();
 }
 
-class _CountdownState extends State<Countdown> {
+class CountdownState extends State<Countdown> {
   late Duration remainingTime;
   late Timer? timer;
 

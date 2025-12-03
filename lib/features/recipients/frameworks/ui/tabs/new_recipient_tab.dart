@@ -24,10 +24,10 @@ class NewRecipientTab extends StatefulWidget {
   const NewRecipientTab({super.key});
 
   @override
-  _NewRecipientTabState createState() => _NewRecipientTabState();
+  NewRecipientTabState createState() => NewRecipientTabState();
 }
 
-class _NewRecipientTabState extends State<NewRecipientTab> {
+class NewRecipientTabState extends State<NewRecipientTab> {
   late String _selectedJurisdiction;
   RecipientType? _selectedRecipientType;
 
@@ -35,13 +35,12 @@ class _NewRecipientTabState extends State<NewRecipientTab> {
   void initState() {
     super.initState();
     // TODO: Initialize with the user's default jurisdiction if available
-    _selectedJurisdiction =
-        context
-            .read<RecipientsBloc>()
-            .state
-            .selectableRecipientTypes
-            .map((t) => t.jurisdictionCode)
-            .first;
+    _selectedJurisdiction = context
+        .read<RecipientsBloc>()
+        .state
+        .selectableRecipientTypes
+        .map((t) => t.jurisdictionCode)
+        .first;
   }
 
   @override

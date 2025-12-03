@@ -13,10 +13,10 @@ class SinpeMovilCrcForm extends StatefulWidget {
   const SinpeMovilCrcForm({super.key});
 
   @override
-  _SinpeMovilCrcFormState createState() => _SinpeMovilCrcFormState();
+  SinpeMovilCrcFormState createState() => SinpeMovilCrcFormState();
 }
 
-class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
+class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _phoneNumberFocusNode = FocusNode();
   final FocusNode _labelFocusNode = FocusNode();
@@ -114,25 +114,24 @@ class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
                 hintText: 'Owner name will appear here',
                 controller: _ownerNameController,
                 disabled: true,
-                suffix:
-                    _ownerNameController.text.isNotEmpty
-                        ? Icon(Icons.check_circle, color: context.appColors.success)
-                        : isChecking
-                        ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                context.appColors.primary,
-                              ),
+                suffix: _ownerNameController.text.isNotEmpty
+                    ? const Icon(Icons.check_circle, color: Colors.green)
+                    : isChecking
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              context.appColors.primary,
                             ),
                           ),
-                        )
-                        : Icon(
-                          Icons.check_circle_outline,
-                          color: context.appColors.textMuted,
                         ),
+                      )
+                    : const Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.grey,
+                      ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
                     return "Please validate the phone number";
