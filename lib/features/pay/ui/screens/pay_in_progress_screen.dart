@@ -162,8 +162,8 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                           pathParameters: {'orderId': order.orderId},
                         );
                       },
-                      bgColor: context.colorScheme.secondary,
-                      textColor: context.colorScheme.onPrimary,
+                      bgColor: context.appColors.secondary,
+                      textColor: context.appColors.onPrimary,
                     ),
                 ],
               ),

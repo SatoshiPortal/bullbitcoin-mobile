@@ -159,7 +159,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
           BBButton.big(
             label: widget.submitLabel,
             onPressed: onSubmit,
-            bgColor: context.colorScheme.onSurface,
+            bgColor: context.appColors.onSurface,
             textColor: context.appColors.surface,
           ),
         ],
@@ -221,8 +221,8 @@ class MnemonicWordState extends State<MnemonicWord> {
                   widget.word.isEmpty
                       ? context.appColors.onSurface
                       : isValidWord
-                      ? Colors.green
-                      : Colors.red,
+                      ? context.appColors.success
+                      : context.appColors.error,
 
               borderRadius: BorderRadius.circular(4),
             ),
@@ -248,16 +248,16 @@ class MnemonicWordState extends State<MnemonicWord> {
               focusNode: widget.focusNode,
               clipBehavior: Clip.antiAliasWithSaveLayer,
               onEditingComplete: widget.onComplete,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.only(right: 8),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.only(right: 8),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
+                  borderSide: BorderSide(color: context.appColors.transparent),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
+                  borderSide: BorderSide(color: context.appColors.transparent),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
+                  borderSide: BorderSide(color: context.appColors.transparent),
                 ),
               ),
             ),

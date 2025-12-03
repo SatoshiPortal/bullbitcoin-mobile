@@ -57,8 +57,8 @@ class SendConfirmPage extends StatelessWidget {
                   ? FadingLinearProgress(
                     height: 3,
                     trigger: isLoading,
-                    backgroundColor: context.colorScheme.surface,
-                    foregroundColor: context.colorScheme.primary,
+                    backgroundColor: context.appColors.surface,
+                    foregroundColor: context.appColors.primary,
                   )
                   : const SizedBox(height: 3),
         ),
@@ -92,7 +92,7 @@ class SendConfirmPage extends StatelessWidget {
               Text(
                 error.message,
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colorScheme.error,
+                  color: context.appColors.error,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -104,8 +104,8 @@ class SendConfirmPage extends StatelessWidget {
                 context.read<ArkCubit>().onSendConfirmed();
               },
               disabled: isLoading,
-              bgColor: context.colorScheme.secondary,
-              textColor: context.colorScheme.onSecondary,
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
             ),
           ],
         ),
@@ -132,7 +132,7 @@ class SendConfirmationDetailRow extends StatelessWidget {
           Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.surfaceContainer,
+              color: context.appColors.surfaceContainer,
             ),
           ),
           const Gap(8),
@@ -144,7 +144,7 @@ class SendConfirmationDetailRow extends StatelessWidget {
                       value!,
                       textAlign: TextAlign.end,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.outlineVariant,
+                        color: context.appColors.outlineVariant,
                       ),
                     ),
           ),

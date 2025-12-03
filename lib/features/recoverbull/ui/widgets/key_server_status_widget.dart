@@ -35,7 +35,7 @@ class KeyServerStatusWidget extends StatelessWidget {
                     text: context.loc.recoverbullKeyServer,
                     style: context.font.labelLarge?.copyWith(
                       fontSize: 12,
-                      color: context.colorScheme.onSurface,
+                      color: context.appColors.onSurface,
                     ),
                   ),
 
@@ -45,7 +45,7 @@ class KeyServerStatusWidget extends StatelessWidget {
                       size: 12,
                       color: switch (status) {
                         KeyServerStatus.online => context.appColors.success,
-                        KeyServerStatus.offline => context.colorScheme.error,
+                        KeyServerStatus.offline => context.appColors.error,
                         KeyServerStatus.connecting =>
                           context.appColors.textMuted,
                         KeyServerStatus.unknown => context.appColors.textMuted,

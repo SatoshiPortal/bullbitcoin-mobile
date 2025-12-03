@@ -40,14 +40,14 @@ class PinSettingsScreen extends StatelessWidget {
                     Text(
                       context.loc.pinCodeManageTitle,
                       style: context.font.headlineMedium?.copyWith(
-                        color: context.colorScheme.outlineVariant,
+                        color: context.appColors.outlineVariant,
                       ),
                     ),
                     const Gap(16),
                     Text(
                       context.loc.pinCodeCreateDescription,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colorScheme.outline,
+                        color: context.appColors.outline,
                       ),
                     ),
                   ],
@@ -64,16 +64,16 @@ class PinSettingsScreen extends StatelessWidget {
                             ? context.loc.pinCodeChangeButton
                             : context.loc.pinCodeCreateButton,
                     onPressed: () => bloc.add(const PinCodeCreate()),
-                    bgColor: context.colorScheme.secondary,
-                    textColor: context.colorScheme.onSecondary,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
                   ),
                   const Gap(16),
                   if (isPinCodeSet)
                     BBButton.big(
                       label: context.loc.pinCodeRemoveButton,
                       onPressed: () => bloc.add(const PinCodeDelete()),
-                      bgColor: context.colorScheme.errorContainer,
-                      textColor: context.colorScheme.onSecondary,
+                      bgColor: context.appColors.errorContainer,
+                      textColor: context.appColors.onSecondary,
                     ),
                   const Gap(24),
                 ],

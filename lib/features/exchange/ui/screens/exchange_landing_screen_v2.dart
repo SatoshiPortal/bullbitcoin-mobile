@@ -25,10 +25,10 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
         context.goNamed(WalletRoute.walletHome.name);
       },
       child: Scaffold(
-        backgroundColor: context.colorScheme.secondary,
+        backgroundColor: context.appColors.secondary,
         appBar: AppBar(
           leading: BackButton(
-            color: context.colorScheme.onSecondary,
+            color: context.appColors.onSecondary,
             onPressed: () => context.goNamed(WalletRoute.walletHome.name),
           ),
         ),
@@ -59,7 +59,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                         BBText(
                           context.loc.exchangeBrandName,
                           style: AppFonts.textTitleTheme.textStyle.copyWith(
-                            color: context.colorScheme.onSecondary,
+                            color: context.appColors.onSecondary,
                             fontSize: 64,
                           ),
                         ),
@@ -67,7 +67,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                         BBText(
                           context.loc.exchangeLandingRecommendedExchange,
                           style: context.font.headlineSmall?.copyWith(
-                            color: context.colorScheme.onSecondary,
+                            color: context.appColors.onSecondary,
                           ),
                         ),
                       ],
@@ -79,7 +79,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: context.colorScheme.primary,
+                        color: context.appColors.primary,
                         width: 0,
                       ),
                       borderRadius: BorderRadius.circular(12),
@@ -90,42 +90,42 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                         BBText(
                           context.loc.exchangeFeatureSelfCustody,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colorScheme.onSecondary,
+                            color: context.appColors.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
                           context.loc.exchangeFeatureDcaOrders,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colorScheme.onSecondary,
+                            color: context.appColors.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
                           context.loc.exchangeFeatureSellBitcoin,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colorScheme.onSecondary,
+                            color: context.appColors.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
                           context.loc.exchangeFeatureBankTransfers,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colorScheme.onSecondary,
+                            color: context.appColors.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
                           context.loc.exchangeFeatureCustomerSupport,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colorScheme.onSecondary,
+                            color: context.appColors.onSecondary,
                           ),
                         ),
                         const Gap(12),
                         BBText(
                           context.loc.exchangeFeatureUnifiedHistory,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colorScheme.onSecondary,
+                            color: context.appColors.onSecondary,
                           ),
                         ),
                       ],
@@ -136,7 +136,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: context.colorScheme.primary.withValues(alpha: 0.1),
+                      color: context.appColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -144,7 +144,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.info_outline,
-                          color: context.colorScheme.onSecondary,
+                          color: context.appColors.onSecondary,
                           size: 20,
                         ),
                         const Gap(8),
@@ -157,7 +157,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                                     .loc
                                     .exchangeLandingDisclaimerNotAvailable,
                                 style: context.font.bodySmall?.copyWith(
-                                  color: context.colorScheme.onSecondary,
+                                  color: context.appColors.onSecondary,
                                 ),
                               ),
                             ],
@@ -183,8 +183,8 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                           );
                         }
                       },
-                      bgColor: context.colorScheme.primary,
-                      textColor: context.colorScheme.onSecondary,
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onSecondary,
                     ),
                   ),
                   const Gap(32),

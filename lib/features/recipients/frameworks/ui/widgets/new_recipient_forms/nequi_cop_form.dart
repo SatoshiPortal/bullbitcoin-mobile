@@ -84,14 +84,14 @@ class _NequiCopFormState extends State<NequiCopForm> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: context.colorScheme.onSurface,
+              color: context.appColors.onSurface,
             ),
             textAlign: TextAlign.left,
           ),
           const Gap(8.0),
           Material(
             elevation: 4,
-            color: context.colorScheme.onPrimary,
+            color: context.appColors.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -102,7 +102,7 @@ class _NequiCopFormState extends State<NequiCopForm> {
                 borderRadius: BorderRadius.circular(4.0),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colorScheme.secondary,
+                  color: context.appColors.secondary,
                 ),
                 value: _documentType,
                 onChanged: (value) {

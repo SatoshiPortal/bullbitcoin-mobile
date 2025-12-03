@@ -100,8 +100,8 @@ class CoinSelectionBottomSheet extends StatelessWidget {
           BBButton.big(
             label: "Done",
             onPressed: context.pop,
-            bgColor: context.colorScheme.secondary,
-            textColor: context.colorScheme.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
           const Gap(24),
         ],

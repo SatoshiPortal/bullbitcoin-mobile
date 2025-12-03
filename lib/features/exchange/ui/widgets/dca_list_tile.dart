@@ -33,7 +33,7 @@ class _DcaListTileState extends State<DcaListTile> {
       return Text(
         context.loc.exchangeDcaUnableToGetConfig,
         style: TextStyle(
-          color: context.colorScheme.onSurface.withValues(alpha: 0.6),
+          color: context.appColors.onSurface.withValues(alpha: 0.6),
         ),
       );
     }
@@ -72,9 +72,9 @@ class _DcaListTileState extends State<DcaListTile> {
                           : context.loc.exchangeDcaViewSettings,
                       style: TextStyle(
                         fontSize: 14,
-                        color: context.colorScheme.primary,
+                        color: context.appColors.primary,
                         decoration: TextDecoration.underline,
-                        decorationColor: context.colorScheme.primary,
+                        decorationColor: context.appColors.primary,
                       ),
                     ),
                   ),
@@ -95,7 +95,7 @@ class _DcaListTileState extends State<DcaListTile> {
                   context: context,
                   builder: (BuildContext dialogContext) {
                     return AlertDialog(
-                      backgroundColor: Colors.white,
+                      backgroundColor: context.appColors.surfaceFixed,
                       title: Text(context.loc.exchangeDcaCancelDialogTitle),
                       content: Text(context.loc.exchangeDcaCancelDialogMessage),
                       actions: [

@@ -45,7 +45,7 @@ class OnboardingSplash extends StatelessWidget {
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 54,
                       fontWeight: FontWeight.w500,
-                      color: context.colorScheme.onPrimaryFixed,
+                      color: context.appColors.onPrimaryFixed,
                       height: 1,
                     ),
                   ),
@@ -54,7 +54,7 @@ class OnboardingSplash extends StatelessWidget {
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 40,
                       fontWeight: FontWeight.w500,
-                      color: context.colorScheme.secondaryFixed,
+                      color: context.appColors.secondaryFixed,
                       height: 1,
                     ),
                   ),
@@ -64,7 +64,7 @@ class OnboardingSplash extends StatelessWidget {
                     child: BBText(
                       context.loc.onboardingSplashDescription,
                       style: context.font.labelSmall,
-                      color: context.colorScheme.onPrimaryFixed,
+                      color: context.appColors.onPrimaryFixed,
                       textAlign: TextAlign.center,
                       maxLines: 2,
                     ),
@@ -107,7 +107,7 @@ class _Actions extends StatelessWidget {
         if (creating || loading) ...[
           Center(
             child: CircularProgressIndicator(
-              color: context.colorScheme.onPrimaryFixed,
+              color: context.appColors.onPrimaryFixed,
             ),
           ),
         ] else ...[
@@ -144,11 +144,11 @@ class _Actions extends StatelessWidget {
               child: Text(
                 'Advanced Options',
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colorScheme.onPrimaryFixed.withValues(
+                  color: context.appColors.onPrimaryFixed.withValues(
                     alpha: 0.9,
                   ),
                   decoration: TextDecoration.underline,
-                  decorationColor: context.colorScheme.onPrimaryFixed
+                  decorationColor: context.appColors.onPrimaryFixed
                       .withValues(alpha: 0.9),
                 ),
               ),
@@ -168,7 +168,7 @@ class _BG extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          color: context.colorScheme.primaryFixed,
+          color: context.appColors.primaryFixed,
           height: double.infinity,
           width: double.infinity,
         ),

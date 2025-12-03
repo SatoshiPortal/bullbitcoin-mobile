@@ -87,7 +87,7 @@ class ReceiveQR extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
         decoration: BoxDecoration(
-          color: context.colorScheme.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: BorderRadius.circular(12),
         ),
         child:

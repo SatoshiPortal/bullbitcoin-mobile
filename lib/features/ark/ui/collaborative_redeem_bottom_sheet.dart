@@ -22,7 +22,7 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       isDismissible: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: context.appColors.transparent,
       builder:
           (_) => CollaborativeRedeemBottomSheet(cubit: cubit, amount: amount),
     );
@@ -35,7 +35,7 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.4,
       ),
       decoration: BoxDecoration(
-        color: context.colorScheme.onPrimary,
+        color: context.appColors.onPrimary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: BlocBuilder<ArkCubit, ArkState>(
@@ -90,8 +90,8 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                             child: BBButton.big(
                               label: 'Cancel',
                               onPressed: () => Navigator.of(context).pop(),
-                              bgColor: context.colorScheme.surface,
-                              textColor: context.colorScheme.onSurface,
+                              bgColor: context.appColors.surface,
+                              textColor: context.appColors.onSurface,
                             ),
                           ),
                           const Gap(16),
@@ -102,8 +102,8 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                                 Navigator.of(context).pop();
                                 await cubit.onSendConfirmed();
                               },
-                              bgColor: context.colorScheme.primary,
-                              textColor: context.colorScheme.onPrimary,
+                              bgColor: context.appColors.primary,
+                              textColor: context.appColors.onPrimary,
                             ),
                           ),
                         ],

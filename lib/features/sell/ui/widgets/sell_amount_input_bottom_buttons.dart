@@ -50,8 +50,8 @@ class SellAmountInputBottomButtons extends StatelessWidget {
           InfoCard(
             title: context.loc.sellKycPendingTitle,
             description: context.loc.sellKycPendingDescription,
-            bgColor: context.colorScheme.tertiary.withValues(alpha: 0.1),
-            tagColor: context.colorScheme.onTertiary,
+            bgColor: context.appColors.tertiary.withValues(alpha: 0.1),
+            tagColor: context.appColors.onTertiary,
           ),
           const Gap(16.0),
           BBButton.big(
@@ -59,8 +59,8 @@ class SellAmountInputBottomButtons extends StatelessWidget {
             onPressed: () {
               context.pushReplacementNamed(ExchangeRoute.exchangeKyc.name);
             },
-            bgColor: context.colorScheme.primary,
-            textColor: context.colorScheme.onPrimary,
+            bgColor: context.appColors.primary,
+            textColor: context.appColors.onPrimary,
           ),
         ],
       );
@@ -88,8 +88,8 @@ class SellAmountInputBottomButtons extends StatelessWidget {
             );
           }
         },
-        bgColor: context.colorScheme.secondary,
-        textColor: context.colorScheme.onSecondary,
+        bgColor: context.appColors.secondary,
+        textColor: context.appColors.onSecondary,
       );
     }
   }

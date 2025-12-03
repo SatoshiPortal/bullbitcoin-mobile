@@ -148,7 +148,7 @@ class _TestBackupButton extends StatelessWidget {
           ),
       borderColor: context.appColors.onSurface,
       outlined: true,
-      bgColor: Colors.transparent,
+      bgColor: context.appColors.transparent,
       textColor: context.appColors.onSurface,
     );
   }
@@ -194,7 +194,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
       },
       borderColor: context.appColors.onSurface,
       outlined: true,
-      bgColor: Colors.transparent,
+      bgColor: context.appColors.transparent,
       textColor: context.appColors.onSurface,
     );
   }

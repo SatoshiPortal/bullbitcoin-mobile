@@ -83,7 +83,7 @@ class PaymentInProgressPage extends StatelessWidget {
           BBText(
             '~$amountFiat',
             style: context.font.bodyLarge,
-            color: context.colorScheme.surface,
+            color: context.appColors.surface,
           ),
         ],
       ),

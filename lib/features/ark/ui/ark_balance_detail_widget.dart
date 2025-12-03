@@ -189,7 +189,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
           colorFilter: null,
         ),
         border: Border(
-          bottom: BorderSide(color: theme.colorScheme.secondary, width: 9),
+          bottom: BorderSide(color: context.appColors.secondary, width: 9),
         ),
         borderRadius: BorderRadius.circular(2),
       ),
@@ -207,7 +207,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                     CurrencyText(
                       totalBalance,
                       style: theme.textTheme.displaySmall?.copyWith(
-                        color: theme.colorScheme.onPrimary,
+                        color: context.appColors.onPrimary,
                       ),
                       showFiat: false,
                     ),
@@ -227,7 +227,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
               onPressed: () => _showBalanceBreakdown(context),
               icon: Icon(
                 Icons.info_outline,
-                color: theme.colorScheme.onPrimary,
+                color: context.appColors.onPrimary,
               ),
               tooltip: 'Balance breakdown',
             ),

@@ -11,12 +11,11 @@ class AppTheme {
         themeType == AppThemeType.dark ? AppColors.dark : AppColors.light;
     final brightness =
         themeType == AppThemeType.dark ? Brightness.dark : Brightness.light;
-    final colorScheme = colors.toColorScheme(brightness);
     final fonts = AppFonts.textTheme;
 
     return ThemeData(
       useMaterial3: true,
-      colorScheme: colorScheme,
+      brightness: brightness,
       canvasColor: colors.cardBackground,
       scaffoldBackgroundColor: colors.background,
       fontFamily: fonts.fontFamily,
@@ -49,7 +48,7 @@ class AppTheme {
       ),
        */
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
+        backgroundColor: colors.transparent,
         systemOverlayStyle:
             themeType == AppThemeType.dark
                 ? SystemUiOverlayStyle.light
@@ -95,8 +94,8 @@ class AppTheme {
           return colors.surface;
         }),
         padding: EdgeInsets.zero,
-        overlayColor: WidgetStateProperty.all(Colors.transparent),
-        trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+        overlayColor: WidgetStateProperty.all(colors.transparent),
+        trackOutlineColor: WidgetStateProperty.all(colors.transparent),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         thumbIcon: WidgetStateProperty.all(
           Icon(Icons.circle, color: colors.surface),
@@ -132,7 +131,6 @@ class AppTheme {
 extension ThemeEx on BuildContext {
   ThemeData get theme => Theme.of(this);
   TextTheme get font => theme.textTheme;
-  ColorScheme get colorScheme => theme.colorScheme;
   AppColors get appColors =>
       theme.brightness == Brightness.dark ? AppColors.dark : AppColors.light;
 }

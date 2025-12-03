@@ -93,7 +93,7 @@ class ConnectingPage extends StatelessWidget {
                           context.loc.recoverbullConnectionFailed,
                       textAlign: TextAlign.center,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colorScheme.error,
+                        color: context.appColors.error,
                       ),
                       maxLines: 3,
                     ),
@@ -101,7 +101,7 @@ class ConnectingPage extends StatelessWidget {
                     BBButton.big(
                       label: context.loc.recoverbullRetry,
                       textStyle: context.font.headlineLarge,
-                      bgColor: context.colorScheme.onSurface,
+                      bgColor: context.appColors.onSurface,
                       textColor: context.appColors.surface,
                       onPressed: () {
                         context.read<RecoverBullBloc>()
@@ -149,7 +149,7 @@ class _StatusRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: context.colorScheme.surface,
+        color: context.appColors.surface,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -160,7 +160,7 @@ class _StatusRow extends StatelessWidget {
             child: BBText(
               label,
               style: context.font.bodyLarge?.copyWith(
-                color: context.colorScheme.onSurface,
+                color: context.appColors.onSurface,
               ),
             ),
           ),
@@ -200,7 +200,7 @@ class _StatusRow extends StatelessWidget {
 
     return switch (statusEnum.toString().split('.').last) {
       'online' => context.appColors.success,
-      'offline' => context.colorScheme.error,
+      'offline' => context.appColors.error,
       'connecting' => context.appColors.textMuted,
       _ => context.appColors.textMuted,
     };

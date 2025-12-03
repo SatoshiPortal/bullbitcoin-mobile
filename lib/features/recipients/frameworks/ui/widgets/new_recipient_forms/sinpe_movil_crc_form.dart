@@ -116,7 +116,7 @@ class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
                 disabled: true,
                 suffix:
                     _ownerNameController.text.isNotEmpty
-                        ? const Icon(Icons.check_circle, color: Colors.green)
+                        ? Icon(Icons.check_circle, color: context.appColors.success)
                         : isChecking
                         ? SizedBox(
                           width: 20,
@@ -124,14 +124,14 @@ class _SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
                           child: Center(
                             child: CircularProgressIndicator(
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                context.colorScheme.primary,
+                                context.appColors.primary,
                               ),
                             ),
                           ),
                         )
-                        : const Icon(
+                        : Icon(
                           Icons.check_circle_outline,
-                          color: Colors.grey,
+                          color: context.appColors.textMuted,
                         ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {

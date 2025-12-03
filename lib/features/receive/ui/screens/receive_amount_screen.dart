@@ -144,8 +144,8 @@ class ReceiveAmountContinueButton extends StatelessWidget {
           }
         },
         disabled: creatingSwap || amountException != null,
-        bgColor: context.colorScheme.secondary,
-        textColor: context.colorScheme.onSecondary,
+        bgColor: context.appColors.secondary,
+        textColor: context.appColors.onSecondary,
       ),
     );
   }

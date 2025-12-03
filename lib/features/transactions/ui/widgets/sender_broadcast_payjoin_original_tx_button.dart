@@ -40,15 +40,15 @@ class SenderBroadcastPayjoinOriginalTxButton extends StatelessWidget {
                 .read<TransactionDetailsCubit>()
                 .broadcastPayjoinOriginalTx();
           },
-          bgColor: context.colorScheme.secondary,
-          textColor: context.colorScheme.onSecondary,
+          bgColor: context.appColors.secondary,
+          textColor: context.appColors.onSecondary,
         ),
         const Gap(16),
         if (broadcastOriginalTransactionException != null) ...[
           Text(
             'Error: ${broadcastOriginalTransactionException.message}',
             style: context.font.bodyMedium?.copyWith(
-              color: context.colorScheme.error,
+              color: context.appColors.error,
             ),
             textAlign: TextAlign.center,
           ),

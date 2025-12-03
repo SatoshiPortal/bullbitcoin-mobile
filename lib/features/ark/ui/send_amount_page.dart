@@ -173,8 +173,8 @@ class _SendAmountPageState extends State<SendAmountPage> {
                     ? FadingLinearProgress(
                       height: 3,
                       trigger: _isLoading,
-                      backgroundColor: context.colorScheme.surface,
-                      foregroundColor: context.colorScheme.primary,
+                      backgroundColor: context.appColors.surface,
+                      foregroundColor: context.appColors.primary,
                     )
                     : const SizedBox(height: 3),
           ),
@@ -199,7 +199,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
                   children: [
                     Divider(
                       height: 1,
-                      color: context.colorScheme.secondaryFixedDim,
+                      color: context.appColors.secondaryFixedDim,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -235,8 +235,8 @@ class _SendAmountPageState extends State<SendAmountPage> {
                   label: context.loc.arkContinueButton,
                   onPressed: _submit,
                   disabled: _controller.text.isEmpty || _isLoading,
-                  bgColor: context.colorScheme.secondary,
-                  textColor: context.colorScheme.onSecondary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ),

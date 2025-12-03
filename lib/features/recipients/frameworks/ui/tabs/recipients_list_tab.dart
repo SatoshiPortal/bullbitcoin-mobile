@@ -206,7 +206,9 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
               '$e',
               style: context.font.bodyMedium?.copyWith(
                 color:
-                    e == null ? Colors.transparent : context.colorScheme.error,
+                    e == null
+                        ? context.appColors.transparent
+                        : context.appColors.error,
               ),
             );
           },
@@ -220,8 +222,8 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
               RecipientsEvent.selected(_selectedRecipient!),
             );
           },
-          bgColor: context.colorScheme.secondary,
-          textColor: context.colorScheme.onSecondary,
+          bgColor: context.appColors.secondary,
+          textColor: context.appColors.onSecondary,
         ),
       ],
     );

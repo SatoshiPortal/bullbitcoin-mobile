@@ -45,8 +45,8 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
             preferredSize: const Size.fromHeight(3.0),
             child: FadingLinearProgress(
               trigger: isBroadcasting,
-              backgroundColor: context.colorScheme.onPrimary,
-              foregroundColor: context.colorScheme.primary,
+              backgroundColor: context.appColors.onPrimary,
+              foregroundColor: context.appColors.primary,
             ),
           ),
         ),
@@ -109,7 +109,7 @@ class PayjoinInProgressPage extends StatelessWidget {
             Text(
               '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
               style: context.font.bodyLarge?.copyWith(
-                color: context.colorScheme.surface,
+                color: context.appColors.surface,
               ),
             ),
           ],
@@ -157,8 +157,8 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
                 const ReceivePayjoinOriginalTxBroadcasted(),
               );
             },
-            bgColor: context.colorScheme.secondary,
-            textColor: context.colorScheme.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
           const Gap(16),
           if (broadcastOriginalTransactionException != null) ...[
@@ -167,7 +167,7 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
                 broadcastOriginalTransactionException.message,
               ),
               style: context.font.bodyMedium?.copyWith(
-                color: context.colorScheme.error,
+                color: context.appColors.error,
               ),
               textAlign: TextAlign.center,
             ),

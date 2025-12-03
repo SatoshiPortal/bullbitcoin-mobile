@@ -48,10 +48,10 @@ class WalletDetailBalanceCard extends StatelessWidget {
           bottom: BorderSide(
             color:
                 isLiquid && signer == SignerEntity.local
-                    ? theme.colorScheme.tertiary
+                    ? context.appColors.tertiary
                     : !isLiquid && signer == SignerEntity.local
-                    ? theme.colorScheme.onTertiary
-                    : theme.colorScheme.secondary,
+                    ? context.appColors.onTertiary
+                    : context.appColors.secondary,
             width: 9,
           ),
         ),
@@ -72,7 +72,7 @@ class WalletDetailBalanceCard extends StatelessWidget {
                     CurrencyText(
                       balanceSat,
                       style: theme.textTheme.displaySmall?.copyWith(
-                        color: theme.colorScheme.onPrimary,
+                        color: context.appColors.onPrimary,
                       ),
                       showFiat: false,
                     ),

@@ -196,7 +196,7 @@ class _SepaEurFormState extends State<SepaEurForm> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: context.colorScheme.onSurface,
+              color: context.appColors.onSurface,
             ),
           ),
           const Gap(8.0),

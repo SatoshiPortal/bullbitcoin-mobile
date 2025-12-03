@@ -74,8 +74,8 @@ class VaultProviderSelectionPage extends StatelessWidget {
             children: [
               FadingLinearProgress(
                 trigger: state.isLoading,
-                backgroundColor: context.colorScheme.surface,
-                foregroundColor: context.colorScheme.primary,
+                backgroundColor: context.appColors.surface,
+                foregroundColor: context.appColors.primary,
                 height: 2.0,
               ),
 
@@ -114,7 +114,7 @@ class VaultProviderSelectionPage extends StatelessWidget {
                         child: BBText(
                           context.loc.backupWalletHowToDecide,
                           style: context.font.headlineLarge?.copyWith(
-                            color: context.colorScheme.primary,
+                            color: context.appColors.primary,
                           ),
                         ),
                       ),
@@ -162,7 +162,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
                     onTap: () => context.pop(),
                     child: Icon(
                       Icons.close,
-                      color: context.colorScheme.onSurface,
+                      color: context.appColors.onSurface,
                     ),
                   ),
                 ],

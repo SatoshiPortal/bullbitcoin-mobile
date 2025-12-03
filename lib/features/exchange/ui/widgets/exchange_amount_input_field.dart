@@ -90,14 +90,14 @@ class ExchangeAmountInputField extends StatelessWidget {
                             AmountInputFormatter(inputCurrency),
                           ],
                           style: context.font.displaySmall?.copyWith(
-                            color: context.colorScheme.primary,
+                            color: context.appColors.primary,
                           ),
                           decoration: InputDecoration(
                             hintText: NumberFormat.decimalPatternDigits(
                               decimalDigits: amountInputDecimals,
                             ).format(0),
                             hintStyle: context.font.displaySmall?.copyWith(
-                              color: context.colorScheme.primary,
+                              color: context.appColors.primary,
                             ),
                             border: InputBorder.none,
                           ),
@@ -152,7 +152,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                             ? _fiatCurrency!.code
                             : _bitcoinUnit.code,
                         style: context.font.displaySmall?.copyWith(
-                          color: context.colorScheme.primary,
+                          color: context.appColors.primary,
                         ),
                       ),
                     ],
@@ -181,7 +181,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                           },
                           child: Icon(
                             Icons.swap_vert,
-                            color: context.colorScheme.outline,
+                            color: context.appColors.outline,
                           ),
                         ),
                         const Gap(8.0),
@@ -190,7 +190,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                               ? _bitcoinUnit?.code ?? BitcoinUnit.btc.code
                               : _fiatCurrency!.code,
                           style: context.font.bodyMedium?.copyWith(
-                            color: context.colorScheme.outline,
+                            color: context.appColors.outline,
                           ),
                         ),
                       ],

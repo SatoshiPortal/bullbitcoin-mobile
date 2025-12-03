@@ -50,8 +50,8 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                     (bloc.state as WithdrawConfirmationState)
                         .isConfirmingWithdrawal,
               ),
-              backgroundColor: context.colorScheme.onPrimary,
-              foregroundColor: context.colorScheme.primary,
+              backgroundColor: context.appColors.onPrimary,
+              foregroundColor: context.appColors.primary,
             ),
             Expanded(
               child: ScrollableColumn(
@@ -61,7 +61,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                   Text(
                     'Confirm withdrawal',
                     style: context.font.headlineMedium?.copyWith(
-                      color: context.colorScheme.secondary,
+                      color: context.appColors.secondary,
                     ),
                   ),
                   const Gap(4.0),
@@ -192,7 +192,7 @@ class _DetailRow extends StatelessWidget {
                   Text(
                     title,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colorScheme.surfaceContainer,
+                      color: context.appColors.surfaceContainer,
                     ),
                   ),
                   Expanded(
@@ -201,7 +201,7 @@ class _DetailRow extends StatelessWidget {
                       textAlign: TextAlign.end,
                       maxLines: 2,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colorScheme.outlineVariant,
+                        color: context.appColors.outlineVariant,
                       ),
                     ),
                   ),
@@ -216,7 +216,7 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Divider(color: context.colorScheme.secondaryFixedDim, height: 1);
+    return Divider(color: context.appColors.secondaryFixedDim, height: 1);
   }
 }
 
@@ -245,7 +245,7 @@ class _ConfirmButton extends StatelessWidget {
           Text(
             'Error: $withdrawError',
             style: context.font.bodyMedium?.copyWith(
-              color: context.colorScheme.error,
+              color: context.appColors.error,
             ),
           ),
           const Gap(16),
@@ -255,7 +255,7 @@ class _ConfirmButton extends StatelessWidget {
           label: 'Confirm withdrawal',
           disabled: isConfirmingWithdrawal,
           onPressed: onConfirmPressed,
-          bgColor: context.colorScheme.onSurface,
+          bgColor: context.appColors.onSurface,
           textColor: context.appColors.surface,
         ),
       ],

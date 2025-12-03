@@ -79,7 +79,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                           context.loc.appUnlockEnterPinMessage,
                           textAlign: TextAlign.center,
                           style: context.font.headlineMedium?.copyWith(
-                            color: context.colorScheme.outline,
+                            color: context.appColors.outline,
                           ),
                           maxLines: 3,
                         ),
@@ -131,7 +131,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                                   ),
                                   textAlign: TextAlign.start,
                                   style: context.font.labelSmall?.copyWith(
-                                    color: context.colorScheme.error,
+                                    color: context.appColors.error,
                                   ),
                                 )
                                 : const SizedBox.shrink();
@@ -179,8 +179,8 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                   disabled: !canSubmit,
                   bgColor:
                       canSubmit
-                          ? context.colorScheme.secondary
-                          : context.colorScheme.outline,
+                          ? context.appColors.secondary
+                          : context.appColors.outline,
                   onPressed: () {
                     if (canSubmit) {
                       context.read<AppUnlockBloc>().add(
@@ -188,7 +188,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                       );
                     }
                   },
-                  textColor: context.colorScheme.onSecondary,
+                  textColor: context.appColors.onSecondary,
                 );
               },
             ),

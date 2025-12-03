@@ -48,7 +48,7 @@ class DcaSuccessScreen extends StatelessWidget {
               Icon(
                 Icons.check_circle,
                 size: 72,
-                color: context.colorScheme.inverseSurface,
+                color: context.appColors.inverseSurface,
               ),
               const Gap(24),
               Text(
@@ -80,8 +80,8 @@ class DcaSuccessScreen extends StatelessWidget {
                 onPressed: () {
                   context.goNamed(ExchangeRoute.exchangeHome.name);
                 },
-                bgColor: context.colorScheme.secondary,
-                textColor: context.colorScheme.onSecondary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
               ),
               const Gap(16.0),
             ],

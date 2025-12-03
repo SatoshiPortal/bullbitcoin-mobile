@@ -87,32 +87,32 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     style: context.font.headlineSmall?.copyWith(
                       color:
                           _useDefaultLightningAddress
-                              ? context.colorScheme.surfaceContainer
-                              : context.colorScheme.secondary,
+                              ? context.appColors.surfaceContainer
+                              : context.appColors.secondary,
                     ),
                     enabled: !_useDefaultLightningAddress,
                     decoration: InputDecoration(
                       fillColor:
                           _useDefaultLightningAddress
-                              ? context.colorScheme.secondaryFixedDim
-                              : context.colorScheme.onPrimary,
+                              ? context.appColors.secondaryFixedDim
+                              : context.appColors.onPrimary,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colorScheme.secondaryFixedDim,
+                          color: context.appColors.secondaryFixedDim,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colorScheme.secondaryFixedDim,
+                          color: context.appColors.secondaryFixedDim,
                         ),
                       ),
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colorScheme.secondaryFixedDim
+                          color: context.appColors.secondaryFixedDim
                               .withValues(alpha: 0.5),
                         ),
                       ),
@@ -124,8 +124,8 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                           Icons.paste,
                           color:
                               _useDefaultLightningAddress
-                                  ? context.colorScheme.surfaceContainer
-                                  : context.colorScheme.secondary,
+                                  ? context.appColors.surfaceContainer
+                                  : context.appColors.secondary,
                         ),
                         onPressed:
                             _useDefaultLightningAddress
@@ -169,7 +169,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                               _defaultLightningAddress!;
                         }
                       },
-                      tileColor: Colors.black.withValues(alpha: 0.04),
+                      tileColor: context.appColors.overlay.withValues(alpha: 0.04),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -191,8 +191,8 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                       );
                     }
                   },
-                  bgColor: context.colorScheme.secondary,
-                  textColor: context.colorScheme.onSecondary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
                 ),
                 const Gap(16.0),
               ],

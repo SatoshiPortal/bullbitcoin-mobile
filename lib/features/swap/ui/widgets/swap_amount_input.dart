@@ -113,12 +113,12 @@ class SwapAmountInput extends StatelessWidget {
                             return null;
                           },
                           style: context.font.displaySmall?.copyWith(
-                            color: context.colorScheme.primary,
+                            color: context.appColors.primary,
                           ),
                           decoration: InputDecoration(
                             hintText: '0',
                             hintStyle: context.font.displaySmall?.copyWith(
-                              color: context.colorScheme.primary,
+                              color: context.appColors.primary,
                             ),
                             border: InputBorder.none,
                           ),
@@ -133,7 +133,7 @@ class SwapAmountInput extends StatelessWidget {
                       Text(
                         fromCurrency,
                         style: context.font.displaySmall?.copyWith(
-                          color: context.colorScheme.primary,
+                          color: context.appColors.primary,
                         ),
                       ),
                     ],

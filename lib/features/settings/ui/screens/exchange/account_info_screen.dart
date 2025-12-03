@@ -132,19 +132,18 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: value));
-                      final theme = Theme.of(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: BBText(
                             copiedMessage ?? '',
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
-                              color: Colors.white,
+                              color: context.appColors.surfaceFixed,
                             ),
                           ),
                           duration: const Duration(seconds: 2),
-                          backgroundColor: theme.colorScheme.onSurface
+                          backgroundColor: context.appColors.onSurface
                               .withAlpha(204),
                           behavior: SnackBarBehavior.floating,
                           elevation: 4,

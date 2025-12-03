@@ -53,7 +53,7 @@ class _ActionRow extends StatelessWidget {
     return Material(
       elevation: 2,
       shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),
-      color: Colors.transparent,
+      color: context.appColors.transparent,
       child: SizedBox(
         height: 80,
         child: Row(
@@ -213,7 +213,7 @@ class _ActionButton extends StatelessWidget {
                 icon,
                 height: 24,
                 width: 24,
-                color: context.colorScheme.onSurface,
+                color: context.appColors.onSurface,
               ),
               BBText(label, style: context.font.bodyLarge),
             ],

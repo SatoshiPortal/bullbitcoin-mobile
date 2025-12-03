@@ -43,7 +43,7 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colorScheme.secondaryFixedDim,
+      backgroundColor: context.appColors.secondaryFixedDim,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -56,13 +56,13 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
               child: BBButton.big(
                 iconData: Icons.check_circle,
                 textStyle: context.font.labelMedium,
-                textColor: context.colorScheme.onPrimary,
+                textColor: context.appColors.onPrimary,
                 onPressed: () {},
                 label:
                     data.$1.length > 30
                         ? '${data.$1.substring(0, 10)}…${data.$1.substring(data.$1.length - 10)}'
                         : data.$1,
-                bgColor: Colors.transparent,
+                bgColor: context.appColors.transparent,
               ),
             ),
 
@@ -75,7 +75,7 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
                 onPressed: context.mounted ? () => context.pop() : null,
                 icon: Icon(
                   CupertinoIcons.xmark_circle,
-                  color: context.colorScheme.onPrimary,
+                  color: context.appColors.onPrimary,
                   size: 64,
                 ),
               ),

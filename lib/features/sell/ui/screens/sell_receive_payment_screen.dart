@@ -71,7 +71,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                   BBText(
                     context.loc.sellPriceWillRefreshIn,
                     style: context.font.bodyMedium,
-                    color: context.colorScheme.outline,
+                    color: context.appColors.outline,
                   ),
                   if (order != null)
                     Countdown(
@@ -106,7 +106,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
             Container(
               height: 1,
               width: double.infinity,
-              color: context.colorScheme.secondaryFixedDim,
+              color: context.appColors.secondaryFixedDim,
             ),
             const Gap(16),
             _buildDetailRow(
@@ -178,20 +178,20 @@ class SellReceivePaymentScreen extends StatelessWidget {
                         SnackBarUtils.showCopiedSnackBar(context);
                       }
                     },
-                    bgColor: Colors.transparent,
-                    textColor: context.colorScheme.secondary,
+                    bgColor: context.appColors.transparent,
+                    textColor: context.appColors.secondary,
                     outlined: true,
-                    borderColor: context.colorScheme.secondary,
+                    borderColor: context.appColors.secondary,
                   ),
                 ),
                 const Gap(16),
                 Expanded(
                   child: BBButton.big(
                     label: context.loc.sellShowQrCode,
-                    bgColor: Colors.transparent,
-                    textColor: context.colorScheme.secondary,
+                    bgColor: context.appColors.transparent,
+                    textColor: context.appColors.secondary,
                     outlined: true,
-                    borderColor: context.colorScheme.secondary,
+                    borderColor: context.appColors.secondary,
                     onPressed: () {
                       SellQrBottomSheet.show(context, bip21InvoiceData);
                     },
@@ -221,7 +221,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
           BBText(
             label,
             style: context.font.bodyMedium?.copyWith(
-              color: context.colorScheme.surfaceContainer,
+              color: context.appColors.surfaceContainer,
             ),
           ),
           const Spacer(),
@@ -235,7 +235,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                     textAlign: TextAlign.end,
                     maxLines: 2,
                     style: context.font.bodyMedium?.copyWith(
-                      color: isError ? context.colorScheme.error : null,
+                      color: isError ? context.appColors.error : null,
                     ),
                   ),
                 ),
@@ -248,7 +248,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                     },
                     child: Icon(
                       Icons.copy,
-                      color: context.colorScheme.primary,
+                      color: context.appColors.primary,
                       size: 16,
                     ),
                   ),

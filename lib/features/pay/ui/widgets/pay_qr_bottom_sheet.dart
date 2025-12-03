@@ -17,7 +17,7 @@ class PayQrBottomSheet extends StatelessWidget {
     await showModalBottomSheet(
       context: context,
       useRootNavigator: true,
-      backgroundColor: context.colorScheme.onPrimary,
+      backgroundColor: context.appColors.onPrimary,
       constraints: const BoxConstraints(maxWidth: double.infinity),
       isScrollControlled: true,
       builder: (context) {
@@ -61,11 +61,11 @@ class PayQrBottomSheet extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.appColors.surfaceFixed,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.5),
+                    color: context.appColors.overlay.withValues(alpha: 0.5),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),

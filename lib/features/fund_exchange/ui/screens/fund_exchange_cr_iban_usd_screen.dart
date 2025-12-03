@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -72,17 +73,20 @@ class FundExchangeCrIbanUsdScreen extends StatelessWidget {
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: context.loc.fundExchangeCrIbanUsdLabelPaymentDescription,
+                  label:
+                      context.loc.fundExchangeCrIbanUsdLabelPaymentDescription,
                   value: details?.code,
-                  helpText: context.loc.fundExchangeCrIbanUsdPaymentDescriptionHelp,
+                  helpText:
+                      context.loc.fundExchangeCrIbanUsdPaymentDescriptionHelp,
                 ),
                 const Gap(16.0),
                 InfoCard(
-                  description: context.loc.fundExchangeCrIbanUsdTransferCodeWarning,
-                  bgColor: theme.colorScheme.inverseSurface.withValues(
+                  description:
+                      context.loc.fundExchangeCrIbanUsdTransferCodeWarning,
+                  bgColor: context.appColors.inverseSurface.withValues(
                     alpha: 0.1,
                   ),
-                  tagColor: theme.colorScheme.secondary,
+                  tagColor: context.appColors.secondary,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(

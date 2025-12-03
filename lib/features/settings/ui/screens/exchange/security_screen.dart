@@ -60,7 +60,7 @@ class ExchangeSecurityScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
+                      color: context.appColors.overlay.withValues(alpha: 0.05),
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: const Offset(0, 2),

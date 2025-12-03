@@ -67,16 +67,16 @@ class _BBSegmentFullState extends State<BBSegmentFull> {
                 style:
                     item == selectedSegment
                         ? context.font.labelLarge?.copyWith(
-                          color: context.colorScheme.primary,
+                          color: context.appColors.primary,
                         )
                         : widget.disabledItems.contains(item)
                         ? context.font.labelMedium?.copyWith(
-                          color: context.colorScheme.outline.withValues(
+                          color: context.appColors.outline.withValues(
                             alpha: 0.5,
                           ),
                         )
                         : context.font.labelMedium?.copyWith(
-                          color: context.colorScheme.outline,
+                          color: context.appColors.outline,
                         ),
               ),
           },

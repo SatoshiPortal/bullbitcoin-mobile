@@ -18,7 +18,7 @@ class SettleBottomSheet extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       isDismissible: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: context.appColors.transparent,
       builder: (_) => SettleBottomSheet(cubit: cubit),
     );
   }

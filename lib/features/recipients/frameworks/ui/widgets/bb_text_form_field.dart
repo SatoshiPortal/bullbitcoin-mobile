@@ -58,8 +58,8 @@ class BBTextFormField extends StatelessWidget {
                 context.font.bodyLarge?.copyWith(
                   color:
                       isDisabled
-                          ? context.colorScheme.outline
-                          : context.colorScheme.secondary,
+                          ? context.appColors.outline
+                          : context.appColors.secondary,
                   fontWeight: FontWeight.w500,
                 ),
             textAlign: TextAlign.left,
@@ -72,31 +72,31 @@ class BBTextFormField extends StatelessWidget {
           textInputAction: textInputAction,
           inputFormatters: inputFormatters,
           style: (style ?? context.font.bodyLarge)?.copyWith(
-            color: isDisabled ? context.colorScheme.outline : null,
+            color: isDisabled ? context.appColors.outline : null,
           ),
           enabled: !isDisabled,
           decoration: InputDecoration(
             fillColor:
                 isDisabled
-                    ? context.colorScheme.surfaceContainerHighest
-                    : context.colorScheme.onPrimary,
+                    ? context.appColors.surfaceContainerHighest
+                    : context.appColors.onPrimary,
             filled: true,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide(
-                color: context.colorScheme.secondaryFixedDim,
+                color: context.appColors.secondaryFixedDim,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide(
-                color: context.colorScheme.secondaryFixedDim,
+                color: context.appColors.secondaryFixedDim,
               ),
             ),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide(
-                color: context.colorScheme.secondaryFixedDim.withValues(
+                color: context.appColors.secondaryFixedDim.withValues(
                   alpha: 0.5,
                 ),
               ),
@@ -104,7 +104,7 @@ class BBTextFormField extends StatelessWidget {
             contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
             hintText: hintText,
             hintStyle: context.font.bodyMedium?.copyWith(
-              color: context.colorScheme.outline,
+              color: context.appColors.outline,
             ),
             prefixIcon:
                 prefixText != null
@@ -114,7 +114,7 @@ class BBTextFormField extends StatelessWidget {
                         prefixText!,
                         style: (style ?? context.font.bodyLarge)?.copyWith(
                           color:
-                              isDisabled ? context.colorScheme.outline : null,
+                              isDisabled ? context.appColors.outline : null,
                         ),
                       ),
                     )
@@ -131,7 +131,7 @@ class BBTextFormField extends StatelessWidget {
                         suffixText!,
                         style: (style ?? context.font.bodyLarge)?.copyWith(
                           color:
-                              isDisabled ? context.colorScheme.outline : null,
+                              isDisabled ? context.appColors.outline : null,
                         ),
                       ),
                     )

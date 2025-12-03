@@ -61,7 +61,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
           height: 56,
           child: Material(
             elevation: 4,
-            color: context.colorScheme.onPrimary,
+            color: context.appColors.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
@@ -72,7 +72,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                 ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colorScheme.secondary,
+                  color: context.appColors.secondary,
                 ),
                 value: selectedWallet?.id,
                 items: [
@@ -121,7 +121,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
             height: 56,
             child: Material(
               elevation: 2,
-              color: context.colorScheme.onPrimary,
+              color: context.appColors.onPrimary,
               borderRadius: BorderRadius.circular(2.0),
               child: Center(
                 child: TextFormField(
@@ -131,7 +131,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                   decoration: InputDecoration(
                     hintText: context.loc.buyBitcoinAddressHint,
                     hintStyle: context.font.headlineSmall?.copyWith(
-                      color: context.colorScheme.outline,
+                      color: context.appColors.outline,
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
@@ -140,7 +140,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                     suffixIcon: IconButton(
                       icon: Icon(
                         Icons.paste,
-                        color: context.colorScheme.secondary,
+                        color: context.appColors.secondary,
                       ),
                       onPressed: () {
                         Clipboard.getData(Clipboard.kTextPlain).then((value) {

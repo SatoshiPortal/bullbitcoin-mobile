@@ -477,7 +477,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
                 border: Border.all(color: context.appColors.border, width: 1),
               ),
               child: Material(
-                color: Colors.transparent,
+                color: context.appColors.transparent,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(8),
                   onTap: () => _showScriptTypeSelection(context),
@@ -626,7 +626,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
             BBButton.big(
               onPressed: () => _openAppSettings(),
               label: 'Manage App Permissions',
-              bgColor: context.colorScheme.onSurface,
+              bgColor: context.appColors.onSurface,
               textColor: context.appColors.surface,
             ),
           ],

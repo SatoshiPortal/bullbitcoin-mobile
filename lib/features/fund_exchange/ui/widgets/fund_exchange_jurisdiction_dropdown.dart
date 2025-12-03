@@ -32,7 +32,7 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
             dropdownColor: context.appColors.surface,
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: context.colorScheme.onSurface,
+              color: context.appColors.onSurface,
             ),
             value: fundingCountry,
             items: [

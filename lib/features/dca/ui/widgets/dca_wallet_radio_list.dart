@@ -21,8 +21,8 @@ class DcaWalletRadioList extends StatelessWidget {
     final hasError = errorText != null && errorText!.isNotEmpty;
     final borderColor =
         hasError
-            ? context.colorScheme.error
-            : context.colorScheme.onSecondaryFixed;
+            ? context.appColors.error
+            : context.appColors.onSecondaryFixed;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

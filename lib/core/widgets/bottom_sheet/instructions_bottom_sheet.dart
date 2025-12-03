@@ -28,7 +28,7 @@ class InstructionsBottomSheet extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       isDismissible: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: context.appColors.transparent,
       builder:
           (_) => InstructionsBottomSheet(
             title: title,

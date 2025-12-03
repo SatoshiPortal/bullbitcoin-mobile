@@ -51,8 +51,8 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                     );
                   }
                 },
-                bgColor: context.colorScheme.secondary,
-                textColor: context.colorScheme.onSecondary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
               ),
               const Gap(16.0),
             ],

@@ -76,7 +76,7 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                backgroundColor: context.colorScheme.secondaryFixed,
+                backgroundColor: context.appColors.secondaryFixed,
                 constraints: const BoxConstraints(maxWidth: double.infinity),
                 useSafeArea: true,
                 builder:
@@ -91,8 +91,8 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
           BBButton.big(
             label: context.loc.sellDone,
             onPressed: context.pop,
-            bgColor: context.colorScheme.secondary,
-            textColor: context.colorScheme.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
         ],
       ),

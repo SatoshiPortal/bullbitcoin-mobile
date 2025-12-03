@@ -22,7 +22,7 @@ class WalletStatusWidget extends StatelessWidget {
           BBText(
             context.loc.recoverbullLookingForBalance,
             style: context.font.bodyMedium?.copyWith(
-              color: context.colorScheme.onSurface,
+              color: context.appColors.onSurface,
             ),
           ),
         ],
@@ -38,14 +38,14 @@ class WalletStatusWidget extends StatelessWidget {
           BBText(
             context.loc.recoverbullBalance(totalBalance),
             style: context.font.bodyMedium?.copyWith(
-              color: context.colorScheme.onSurface,
+              color: context.appColors.onSurface,
             ),
           ),
           const Gap(4),
           BBText(
             context.loc.recoverbullTransactions(totalTransactions),
             style: context.font.bodyMedium?.copyWith(
-              color: context.colorScheme.onSurface,
+              color: context.appColors.onSurface,
             ),
           ),
         ],

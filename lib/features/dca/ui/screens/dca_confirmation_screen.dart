@@ -33,8 +33,8 @@ class DcaConfirmationScreen extends StatelessWidget {
             FadingLinearProgress(
               height: 3,
               trigger: confirmationState.isConfirmingDca,
-              backgroundColor: context.colorScheme.onPrimary,
-              foregroundColor: context.colorScheme.primary,
+              backgroundColor: context.appColors.onPrimary,
+              foregroundColor: context.appColors.primary,
             ),
             const Gap(24),
             Padding(
@@ -56,7 +56,7 @@ class DcaConfirmationScreen extends StatelessWidget {
                   context.loc.dcaConfirmFrequencyMonthly,
               },
             ),
-            Divider(color: context.colorScheme.surface),
+            Divider(color: context.appColors.surface),
             DcaConfirmationDetailRow(
               label: context.loc.dcaConfirmAmount,
               value: FormatAmount.fiat(
@@ -64,19 +64,19 @@ class DcaConfirmationScreen extends StatelessWidget {
                 confirmationState.currency.code,
               ),
             ),
-            Divider(color: context.colorScheme.surface),
+            Divider(color: context.appColors.surface),
             DcaConfirmationDetailRow(
               label: context.loc.dcaConfirmPaymentMethod,
               value: context.loc.dcaConfirmPaymentBalance(
                 confirmationState.currency.code.toUpperCase(),
               ),
             ),
-            Divider(color: context.colorScheme.surface),
+            Divider(color: context.appColors.surface),
             DcaConfirmationDetailRow(
               label: context.loc.dcaConfirmOrderType,
               value: context.loc.dcaConfirmOrderTypeValue,
             ),
-            Divider(color: context.colorScheme.surface),
+            Divider(color: context.appColors.surface),
             DcaConfirmationDetailRow(
               label: context.loc.dcaConfirmNetwork,
               value: switch (confirmationState.network) {
@@ -86,7 +86,7 @@ class DcaConfirmationScreen extends StatelessWidget {
               },
             ),
             if (confirmationState.network == DcaNetwork.lightning) ...[
-              Divider(color: context.colorScheme.surface),
+              Divider(color: context.appColors.surface),
               DcaConfirmationDetailRow(
                 label: context.loc.dcaConfirmLightningAddress,
                 value: confirmationState.lightningAddress,
@@ -97,7 +97,7 @@ class DcaConfirmationScreen extends StatelessWidget {
               Text(
                 context.loc.dcaConfirmError(confirmationState.error!),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: context.colorScheme.error,
+                  color: context.appColors.error,
                 ),
               ),
               const Gap(16),
@@ -108,8 +108,8 @@ class DcaConfirmationScreen extends StatelessWidget {
               onPressed: () {
                 context.read<DcaBloc>().add(const DcaEvent.confirmed());
               },
-              bgColor: context.colorScheme.secondary,
-              textColor: context.colorScheme.onSecondary,
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
             ),
             const Gap(16.0),
           ],

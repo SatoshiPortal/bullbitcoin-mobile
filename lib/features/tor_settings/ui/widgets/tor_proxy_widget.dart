@@ -73,8 +73,8 @@ class TorProxyWidget extends StatelessWidget {
                 '• Default Orbot port is 9050\n'
                 '• Ensure Orbot is running before enabling\n'
                 '• Connection may be slower through Tor',
-            bgColor: context.colorScheme.tertiaryContainer,
-            tagColor: context.colorScheme.tertiary,
+            bgColor: context.appColors.tertiaryContainer,
+            tagColor: context.appColors.tertiary,
           ),
         ],
       ],

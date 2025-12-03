@@ -53,8 +53,8 @@ class TestCompletedPage extends StatelessWidget {
               ),
               child: BBButton.big(
                 label: context.loc.recoverbullGotIt,
-                bgColor: context.colorScheme.secondary,
-                textColor: context.colorScheme.onPrimary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onPrimary,
                 onPressed: () {
                   context.goNamed(WalletRoute.walletHome.name);
                 },

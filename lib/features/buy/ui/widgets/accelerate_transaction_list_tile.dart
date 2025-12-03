@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 
@@ -16,12 +17,12 @@ class AccelerateTransactionListTile extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.onPrimary, // or Colors.white
+        color: context.appColors.onPrimary, // or Colors.white
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: theme.colorScheme.secondary),
+        border: Border.all(color: context.appColors.secondary),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.surface,
+            color: context.appColors.surface,
             offset: const Offset(0, 2),
           ),
         ],
@@ -36,28 +37,30 @@ class AccelerateTransactionListTile extends StatelessWidget {
               child: CircularProgressIndicator(
                 value: 0.75, // portion of the circle to fill
                 strokeWidth: 4,
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.orange),
-                backgroundColor: Colors.grey.shade300,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  context.appColors.warning,
+                ),
+                backgroundColor: context.appColors.shimmerBase,
               ),
             ),
-            Icon(Icons.schedule, size: 16, color: theme.colorScheme.secondary),
+            Icon(Icons.schedule, size: 16, color: context.appColors.secondary),
           ],
         ),
         title: Text(
           context.loc.buyAccelerateTransaction,
           style: theme.textTheme.headlineLarge?.copyWith(
-            color: theme.colorScheme.secondary,
+            color: context.appColors.secondary,
           ),
         ),
         subtitle: Text(
           context.loc.buyGetConfirmedFaster,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.secondary,
+            color: context.appColors.secondary,
           ),
         ),
         trailing: Icon(
           Icons.fast_forward_outlined,
-          color: theme.colorScheme.secondary,
+          color: context.appColors.secondary,
         ),
         onTap: onTap,
       ),

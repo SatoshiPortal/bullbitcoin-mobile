@@ -60,13 +60,13 @@ class _ScannerState extends State<QrScannerWidget> {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: context.colorScheme.secondary,
+                color: context.appColors.secondary,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 _progressText,
                 style: TextStyle(
-                  color: context.colorScheme.onSecondary,
+                  color: context.appColors.onSecondary,
                   fontSize: 14,
                 ),
                 textAlign: TextAlign.center,

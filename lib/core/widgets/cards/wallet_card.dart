@@ -65,14 +65,14 @@ class WalletCard extends StatelessWidget {
                                 BBText(
                                   title,
                                   style: context.font.bodyLarge,
-                                  color: context.colorScheme.onSurface,
+                                  color: context.appColors.onSurface,
                                 ),
                                 const Gap(4),
                                 CurrencyText(
                                   balanceSat,
                                   showFiat: false,
                                   style: context.font.bodyLarge,
-                                  color: context.colorScheme.onSurface,
+                                  color: context.appColors.onSurface,
                                 ),
                               ],
                             ),
@@ -113,8 +113,8 @@ class WalletCard extends StatelessWidget {
                   right: 0,
                   child: FadingLinearProgress(
                     trigger: isSyncing,
-                    backgroundColor: context.colorScheme.surface,
-                    foregroundColor: context.colorScheme.onSecondaryFixed,
+                    backgroundColor: context.appColors.surface,
+                    foregroundColor: context.appColors.onSecondaryFixed,
                     height: 3.0,
                   ),
                 ),

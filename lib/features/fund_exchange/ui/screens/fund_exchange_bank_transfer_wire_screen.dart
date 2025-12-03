@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -68,10 +69,10 @@ class FundExchangeBankTransferWireScreen extends StatelessWidget {
                 ),
                 const Gap(16.0),
                 InfoCard(
-                  bgColor: theme.colorScheme.inverseSurface.withValues(
+                  bgColor: context.appColors.inverseSurface.withValues(
                     alpha: 0.1,
                   ),
-                  tagColor: theme.colorScheme.secondary,
+                  tagColor: context.appColors.secondary,
                   description: context.loc.fundExchangeInfoTransferCode,
                 ),
                 const Gap(24.0),

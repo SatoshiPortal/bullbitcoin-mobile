@@ -35,7 +35,7 @@ class SwapProgressIndicator extends StatelessWidget {
                       right: stepWidth / 2,
                       child: Container(
                         height: 5,
-                        color: context.colorScheme.surfaceContainerHighest,
+                        color: context.appColors.surfaceContainerHighest,
                       ),
                     ),
 
@@ -47,7 +47,7 @@ class SwapProgressIndicator extends StatelessWidget {
                         width: stepWidth * currentStep,
                         child: Container(
                           height: 5,
-                          color: context.colorScheme.primary,
+                          color: context.appColors.primary,
                         ),
                       ),
 
@@ -63,12 +63,12 @@ class SwapProgressIndicator extends StatelessWidget {
                         // Determine colors based on state
                         final Color indicatorColor;
                         if (isFailedOrExpired && index == 0) {
-                          indicatorColor = context.colorScheme.error;
+                          indicatorColor = context.appColors.error;
                         } else if (isCompleted) {
-                          indicatorColor = context.colorScheme.primary;
+                          indicatorColor = context.appColors.primary;
                         } else {
                           indicatorColor =
-                              context.colorScheme.surfaceContainerHighest;
+                              context.appColors.surfaceContainerHighest;
                         }
 
                         // Create indicator content
@@ -77,19 +77,19 @@ class SwapProgressIndicator extends StatelessWidget {
                           indicatorChild = Icon(
                             Icons.error_outline,
                             size: 15,
-                            color: context.colorScheme.onError,
+                            color: context.appColors.onError,
                           );
                         } else if (isCompleted) {
                           indicatorChild = Icon(
                             Icons.check,
                             size: 20,
-                            color: context.colorScheme.onPrimary,
+                            color: context.appColors.onPrimary,
                           );
                         } else {
                           indicatorChild = Text(
                             '${index + 1}',
                             style: TextStyle(
-                              color: context.colorScheme.onSurfaceVariant,
+                              color: context.appColors.onSurfaceVariant,
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                             ),
@@ -113,7 +113,7 @@ class SwapProgressIndicator extends StatelessWidget {
                                               ? Border.all(
                                                 color:
                                                     context
-                                                        .colorScheme
+                                                        .appColors
                                                         .secondary,
                                                 width: 2,
                                               )
@@ -196,14 +196,14 @@ class SwapProgressIndicator extends StatelessWidget {
 
     if (isFailedOrExpired) {
       return index == 0
-          ? context.colorScheme.error
-          : context.colorScheme.outline;
+          ? context.appColors.error
+          : context.appColors.outline;
     }
 
     if (index <= currentStep) {
-      return context.colorScheme.primary;
+      return context.appColors.primary;
     }
 
-    return context.colorScheme.outline;
+    return context.appColors.outline;
   }
 }

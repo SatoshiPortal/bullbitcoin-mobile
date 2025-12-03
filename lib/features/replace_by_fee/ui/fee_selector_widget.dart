@@ -82,8 +82,8 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
         elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
         clipBehavior: Clip.hardEdge,
-        color: context.colorScheme.onSecondary,
-        shadowColor: context.colorScheme.secondary,
+        color: context.appColors.onSecondary,
+        shadowColor: context.appColors.secondary,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
@@ -117,8 +117,8 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                 Icons.radio_button_checked_outlined,
                 color:
                     isSelected
-                        ? context.colorScheme.primary
-                        : context.colorScheme.surface,
+                        ? context.appColors.primary
+                        : context.appColors.surface,
               ),
             ],
           ),
@@ -138,8 +138,8 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
         elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
         clipBehavior: Clip.hardEdge,
-        color: context.colorScheme.onSecondary,
-        shadowColor: context.colorScheme.secondary,
+        color: context.appColors.onSecondary,
+        shadowColor: context.appColors.secondary,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -157,8 +157,8 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                     Icons.radio_button_checked_outlined,
                     color:
                         isSelected
-                            ? context.colorScheme.primary
-                            : context.colorScheme.surface,
+                            ? context.appColors.primary
+                            : context.appColors.surface,
                   ),
                 ],
               ),

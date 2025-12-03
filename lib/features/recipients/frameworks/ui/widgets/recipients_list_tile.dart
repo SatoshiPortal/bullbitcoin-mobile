@@ -30,10 +30,10 @@ class RecipientsListTile extends StatelessWidget {
           border: Border.all(
             color:
                 selected
-                    ? context.colorScheme.primary
-                    : context.colorScheme.surface,
+                    ? context.appColors.primary
+                    : context.appColors.surface,
           ),
-          color: context.colorScheme.onPrimary,
+          color: context.appColors.onPrimary,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,7 +47,7 @@ class RecipientsListTile extends StatelessWidget {
                   child: Text(
                     name ?? '-',
                     style: context.font.headlineLarge?.copyWith(
-                      color: context.colorScheme.secondary,
+                      color: context.appColors.secondary,
                     ),
                   ),
                 ),
@@ -55,7 +55,7 @@ class RecipientsListTile extends StatelessWidget {
                   value: true,
                   groupValue: selected,
                   onChanged: (_) => onTap(),
-                  activeColor: context.colorScheme.primary,
+                  activeColor: context.appColors.primary,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   visualDensity: VisualDensity.compact,
                 ),
@@ -64,7 +64,7 @@ class RecipientsListTile extends StatelessWidget {
             RecipientTypeText(
               recipientType: recipient.type,
               style: context.font.bodyMedium?.copyWith(
-                color: context.colorScheme.secondary,
+                color: context.appColors.secondary,
               ),
             ),
             switch (recipient.type) {
@@ -147,7 +147,7 @@ class _InfoRow extends StatelessWidget {
       child: Text(
         '$label: ${value != null && value!.isNotEmpty ? value : '-'}',
         style: context.font.bodyMedium?.copyWith(
-          color: context.colorScheme.secondary,
+          color: context.appColors.secondary,
         ),
       ),
     );

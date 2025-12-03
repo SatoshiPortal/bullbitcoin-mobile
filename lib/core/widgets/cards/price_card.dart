@@ -12,7 +12,7 @@ class PriceCard extends StatelessWidget {
     return BBText(
       text,
       style: context.font.displayMedium,
-      color: context.colorScheme.onPrimary,
+      color: context.appColors.onPrimary,
     );
   }
 }

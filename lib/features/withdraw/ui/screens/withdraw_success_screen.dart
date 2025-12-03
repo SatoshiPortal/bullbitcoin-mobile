@@ -47,14 +47,14 @@ class WithdrawSuccessScreen extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.check_circle,
-                        color: context.colorScheme.secondary,
+                        color: context.appColors.secondary,
                         size: 64,
                       ),
                       const Gap(16),
                       Text(
                         'Withdrawal Initiated',
                         style: context.font.headlineLarge?.copyWith(
-                          color: context.colorScheme.secondary,
+                          color: context.appColors.secondary,
                         ),
                       ),
                     ],
@@ -72,7 +72,7 @@ class WithdrawSuccessScreen extends StatelessWidget {
                         pathParameters: {'orderId': order.orderId},
                       );
                     },
-                    bgColor: context.colorScheme.onSurface,
+                    bgColor: context.appColors.onSurface,
                     textColor: context.appColors.surface,
                   ),
                 ),

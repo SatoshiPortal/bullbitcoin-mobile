@@ -44,8 +44,8 @@ class VaultRecoveryPage extends StatelessWidget {
             children: [
               FadingLinearProgress(
                 trigger: isLoadingStatuses || state.isLoading,
-                backgroundColor: context.colorScheme.surface,
-                foregroundColor: context.colorScheme.primary,
+                backgroundColor: context.appColors.surface,
+                foregroundColor: context.appColors.primary,
                 height: 2.0,
               ),
               Expanded(
@@ -70,7 +70,7 @@ class VaultRecoveryPage extends StatelessWidget {
                             );
                           },
                           label: context.loc.recoverbullContinue,
-                          bgColor: context.colorScheme.onSurface,
+                          bgColor: context.appColors.onSurface,
                           textColor: context.appColors.surface,
                           disabled: state.decryptedVault == null,
                         ),

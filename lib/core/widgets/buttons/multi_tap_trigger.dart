@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 
@@ -55,7 +56,6 @@ class _MultiTapTriggerState extends State<MultiTapTrigger> {
   }
 
   void _showSnackBar(BuildContext context, String message) {
-    final theme = Theme.of(context);
     final messenger = ScaffoldMessenger.of(context);
     messenger.clearSnackBars();
     messenger.showSnackBar(
@@ -65,13 +65,15 @@ class _MultiTapTriggerState extends State<MultiTapTrigger> {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
-            color: widget.tapsReachedMessageTextColor ?? Colors.white,
+            color:
+                widget.tapsReachedMessageTextColor ??
+                context.appColors.onPrimary,
           ),
         ),
         duration: const Duration(seconds: 2),
         backgroundColor:
             widget.tapsReachedMessageBackgroundColor?.withAlpha(204) ??
-            theme.colorScheme.onSurface.withAlpha(204),
+            context.appColors.onSurface.withAlpha(204),
         behavior: SnackBarBehavior.floating,
         elevation: 4,
         margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),

@@ -93,7 +93,7 @@ class SelectScriptTypePage extends StatelessWidget {
                   BBButton.big(
                     label: context.loc.importMnemonicContinue,
                     onPressed: cubit.import,
-                    bgColor: context.colorScheme.onSurface,
+                    bgColor: context.appColors.onSurface,
                     textColor: context.appColors.surface,
                     disabled: state.isLoading,
                   ),
@@ -193,7 +193,9 @@ class _WalletTypeCard extends StatelessWidget {
                   width: 2,
                 ),
                 color:
-                    isSelected ? context.appColors.primary : Colors.transparent,
+                    isSelected
+                        ? context.appColors.primary
+                        : context.appColors.transparent,
               ),
               child:
                   isSelected

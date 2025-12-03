@@ -30,7 +30,6 @@ class TransactionDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final isLoading = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.isLoading,
     );
@@ -82,8 +81,8 @@ class TransactionDetailsScreen extends StatelessWidget {
           preferredSize: const Size.fromHeight(3.0),
           child: FadingLinearProgress(
             trigger: isBroadcastingPayjoinOriginalTx,
-            backgroundColor: context.colorScheme.onPrimary,
-            foregroundColor: context.colorScheme.primary,
+            backgroundColor: context.appColors.onPrimary,
+            foregroundColor: context.appColors.primary,
           ),
         ),
       ),
@@ -155,8 +154,8 @@ class TransactionDetailsScreen extends StatelessWidget {
                         swap,
                       );
                     },
-                    bgColor: theme.colorScheme.primary,
-                    textColor: theme.colorScheme.onPrimary,
+                    bgColor: context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
                   ),
                 ],
                 const Gap(32),
@@ -183,7 +182,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                         );
                       }
                     },
-                    bgColor: Colors.transparent,
+                    bgColor: context.appColors.transparent,
                     textColor: context.appColors.onSurface,
                     outlined: true,
                     borderColor: context.appColors.onSurface,
@@ -204,7 +203,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                         extra: walletTransaction,
                       );
                     },
-                    bgColor: theme.colorScheme.onSurface,
+                    bgColor: context.appColors.onSurface,
                     textColor: context.appColors.surface,
                   ),
               ],

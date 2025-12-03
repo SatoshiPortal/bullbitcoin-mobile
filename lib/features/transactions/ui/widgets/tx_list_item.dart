@@ -36,8 +36,8 @@ class TxListItem extends StatelessWidget {
             : tx.isOngoingSwap
             ? context.appColors.border.withValues(alpha: 0.3)
             : tx.isBitcoin
-            ? context.colorScheme.onTertiary
-            : context.colorScheme.tertiary;
+            ? context.appColors.onTertiary
+            : context.appColors.tertiary;
     final networkLabel =
         isOrderType
             ? tx.order!.orderType.value
@@ -130,7 +130,7 @@ class TxListItem extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(2.0),
               ),
-              child: Icon(icon, color: context.colorScheme.onSurface),
+              child: Icon(icon, color: context.appColors.onSurface),
             ),
             const Gap(16.0),
             Expanded(
@@ -165,7 +165,7 @@ class TxListItem extends StatelessWidget {
                     BBText(
                       label,
                       style: context.font.labelSmall?.copyWith(
-                        color: context.colorScheme.outline,
+                        color: context.appColors.outline,
                       ),
                     ),
                 ],

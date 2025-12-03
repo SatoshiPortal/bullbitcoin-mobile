@@ -17,7 +17,7 @@ class DevModeSwitch extends StatelessWidget {
       context: context,
       child: Container(
         decoration: BoxDecoration(
-          color: context.colorScheme.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: SafeArea(
@@ -45,8 +45,8 @@ class DevModeSwitch extends StatelessWidget {
                     );
                     context.pop();
                   },
-                  bgColor: context.colorScheme.primary,
-                  textColor: context.colorScheme.onPrimary,
+                  bgColor: context.appColors.primary,
+                  textColor: context.appColors.onPrimary,
                 ),
               ],
             ),

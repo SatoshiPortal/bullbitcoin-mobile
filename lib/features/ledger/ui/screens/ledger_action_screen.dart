@@ -232,7 +232,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
             BBButton.big(
               onPressed: () => _openAppSettings(),
               label: context.loc.ledgerButtonManagePermissions,
-              bgColor: context.colorScheme.onSurface,
+              bgColor: context.appColors.onSurface,
               textColor: context.appColors.surface,
             ),
           ],
@@ -302,7 +302,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
             border: Border.all(color: context.appColors.border, width: 1),
           ),
           child: Material(
-            color: Colors.transparent,
+            color: context.appColors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(8),
               onTap: () => _showScriptTypeSelection(context),

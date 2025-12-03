@@ -209,7 +209,7 @@ class _AddCustomServerBottomSheetState
                                 Text(
                                   '(Auto-detected)',
                                   style: context.font.bodySmall?.copyWith(
-                                    color: context.colorScheme.onSurface
+                                    color: context.appColors.onSurface
                                         .withValues(alpha: 0.6),
                                   ),
                                 ),
@@ -237,7 +237,7 @@ class _AddCustomServerBottomSheetState
                           ? context.loc.electrumLiquidSslInfo
                           : context.loc.electrumBitcoinServerInfo,
                       style: context.font.bodySmall?.copyWith(
-                        color: context.colorScheme.onSurface.withValues(
+                        color: context.appColors.onSurface.withValues(
                           alpha: 0.6,
                         ),
                       ),
@@ -248,7 +248,7 @@ class _AddCustomServerBottomSheetState
                   BBButton.big(
                     label: context.loc.electrumAddServer,
                     onPressed: _submit,
-                    bgColor: context.colorScheme.onSurface,
+                    bgColor: context.appColors.onSurface,
                     textColor: context.appColors.surface,
                   ),
                 ],

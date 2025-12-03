@@ -40,8 +40,8 @@ class DriveVaultsListPage extends StatelessWidget {
         children: [
           FadingLinearProgress(
             trigger: state.isLoading,
-            backgroundColor: context.colorScheme.surface,
-            foregroundColor: context.colorScheme.primary,
+            backgroundColor: context.appColors.surface,
+            foregroundColor: context.appColors.primary,
             height: 2.0,
           ),
           Expanded(
@@ -92,7 +92,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
           maxHeight: MediaQuery.of(context).size.height * 0.4,
         ),
         decoration: BoxDecoration(
-          color: context.colorScheme.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: Padding(
@@ -111,8 +111,8 @@ class _DriveFileMetadataItem extends StatelessWidget {
                         OnExportDriveFile(fileMetadata: driveFileMetadata),
                       );
                     },
-                    bgColor: context.colorScheme.secondary,
-                    textColor: context.colorScheme.onSecondary,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
                   ),
                   BBButton.small(
                     label: 'Delete',
@@ -120,8 +120,8 @@ class _DriveFileMetadataItem extends StatelessWidget {
                       context.pop();
                       _showDeleteConfirmationBottomSheet(context);
                     },
-                    bgColor: context.colorScheme.primary,
-                    textColor: context.colorScheme.onPrimary,
+                    bgColor: context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
                   ),
                 ],
               ),
@@ -141,7 +141,7 @@ class _DriveFileMetadataItem extends StatelessWidget {
           maxHeight: MediaQuery.of(context).size.height * 0.5,
         ),
         decoration: BoxDecoration(
-          color: context.colorScheme.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: Padding(
@@ -163,8 +163,8 @@ class _DriveFileMetadataItem extends StatelessWidget {
                   BBButton.small(
                     label: 'Cancel',
                     onPressed: () => context.pop(),
-                    bgColor: context.colorScheme.secondary,
-                    textColor: context.colorScheme.onSecondary,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
                   ),
                   BBButton.small(
                     label: 'Delete',
@@ -174,8 +174,8 @@ class _DriveFileMetadataItem extends StatelessWidget {
                         OnDeleteDriveFile(fileMetadata: driveFileMetadata),
                       );
                     },
-                    bgColor: context.colorScheme.primary,
-                    textColor: context.colorScheme.onPrimary,
+                    bgColor: context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
                   ),
                 ],
               ),

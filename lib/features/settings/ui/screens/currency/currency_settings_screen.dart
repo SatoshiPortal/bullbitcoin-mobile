@@ -32,7 +32,7 @@ class CurrencySettingsScreen extends StatelessWidget {
         useRootNavigator: true,
         context: context,
         isScrollControlled: true,
-        backgroundColor: context.colorScheme.secondaryFixedDim,
+        backgroundColor: context.appColors.secondaryFixedDim,
         constraints: const BoxConstraints(maxWidth: double.infinity),
         builder: (context) {
           return CurrencyBottomSheet(
@@ -51,11 +51,11 @@ class CurrencySettingsScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.settingsCurrencyTitle,
-          color: context.colorScheme.secondaryFixed,
+          color: context.appColors.secondaryFixed,
           onBack: context.pop,
         ),
       ),
-      backgroundColor: theme.colorScheme.secondaryFixed,
+      backgroundColor: context.appColors.secondaryFixed,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -66,11 +66,11 @@ class CurrencySettingsScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),
                   ),
-                  tileColor: Colors.transparent,
+                  tileColor: context.appColors.transparent,
                   title: BBText(
                     context.loc.satsBitcoinUnitSettingsLabel,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.outlineVariant,
+                      color: context.appColors.outlineVariant,
                     ),
                   ),
                   trailing: const SatsBitcoinUnitSwitch(),
@@ -79,11 +79,11 @@ class CurrencySettingsScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),
                   ),
-                  tileColor: Colors.transparent,
+                  tileColor: context.appColors.transparent,
                   title: BBText(
                     context.loc.currencySettingsDefaultFiatCurrencyLabel,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.outlineVariant,
+                      color: context.appColors.outlineVariant,
                     ),
                   ),
                   onTap:

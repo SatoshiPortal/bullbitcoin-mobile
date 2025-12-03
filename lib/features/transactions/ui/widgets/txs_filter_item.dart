@@ -22,12 +22,14 @@ class TxsFilterItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
           color:
-              isSelected ? context.colorScheme.onSurface : Colors.transparent,
+              isSelected
+                  ? context.appColors.onSurface
+                  : context.appColors.transparent,
           borderRadius: BorderRadius.circular(2.0),
           border: Border.all(
             color:
                 isSelected
-                    ? context.colorScheme.onSurface
+                    ? context.appColors.onSurface
                     : context.appColors.border,
           ),
         ),
@@ -37,7 +39,7 @@ class TxsFilterItem extends StatelessWidget {
             color:
                 isSelected
                     ? context.appColors.surface
-                    : context.colorScheme.onSurface,
+                    : context.appColors.onSurface,
           ),
         ),
       ),

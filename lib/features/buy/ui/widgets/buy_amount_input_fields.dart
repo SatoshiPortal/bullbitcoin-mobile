@@ -102,14 +102,14 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                                   ]
                                   : [FilteringTextInputFormatter.digitsOnly],
                           style: context.font.displaySmall?.copyWith(
-                            color: context.colorScheme.primary,
+                            color: context.appColors.primary,
                           ),
                           decoration: InputDecoration(
                             hintText: NumberFormat.decimalPatternDigits(
                               decimalDigits: amountInputDecimals,
                             ).format(0),
                             hintStyle: context.font.displaySmall?.copyWith(
-                              color: context.colorScheme.primary,
+                              color: context.appColors.primary,
                             ),
                             border: InputBorder.none,
                           ),
@@ -119,7 +119,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                       Text(
                         isFiatCurrencyInput ? currency.code : bitcoinUnit.code,
                         style: context.font.displaySmall?.copyWith(
-                          color: context.colorScheme.primary,
+                          color: context.appColors.primary,
                         ),
                       ),
                     ],
@@ -144,14 +144,14 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                         },
                         child: Icon(
                           Icons.swap_vert,
-                          color: context.colorScheme.outline,
+                          color: context.appColors.outline,
                         ),
                       ),
                       const Gap(8.0),
                       Text(
                         isFiatCurrencyInput ? bitcoinUnit.code : currency.code,
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colorScheme.outline,
+                          color: context.appColors.outline,
                         ),
                       ),
                       // CurrencyText(
@@ -189,7 +189,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           child: Text(
                             context.loc.buyMax,
                             style: context.font.bodyMedium?.copyWith(
-                              color: context.colorScheme.primary,
+                              color: context.appColors.primary,
                             ),
                           ),
                         ),
@@ -220,7 +220,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                 dropdownColor: context.appColors.surface,
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colorScheme.onSurface,
+                  color: context.appColors.onSurface,
                 ),
                 items:
                     balances.keys

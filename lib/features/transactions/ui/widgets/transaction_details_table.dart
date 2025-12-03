@@ -96,7 +96,7 @@ class TransactionDetailsTable extends StatelessWidget {
               },
               child: Text(
                 StringFormatting.truncateMiddle(txId),
-                style: TextStyle(color: context.colorScheme.primary),
+                style: TextStyle(color: context.appColors.primary),
                 textAlign: TextAlign.end,
               ),
             ),
@@ -728,7 +728,7 @@ class TransactionDetailsTable extends StatelessWidget {
             expandableChild: BBText(
               swap.getDisplayMessage(),
               style: context.font.bodySmall?.copyWith(
-                color: context.colorScheme.secondary,
+                color: context.appColors.secondary,
               ),
               maxLines: 5,
             ),
@@ -885,7 +885,7 @@ class TransactionDetailsTable extends StatelessWidget {
                           ? 'This fees will be deducted from the amount sent'
                           : 'This is the total fee deducted from the amount sent',
                       style: context.font.labelSmall,
-                      color: context.colorScheme.surfaceContainer,
+                      color: context.appColors.surfaceContainer,
                     ),
                   ),
                   if (swap.isLnReceiveSwap && swap.fees!.lockupFee != null)
@@ -953,14 +953,14 @@ Widget _feeRow(BuildContext context, String label, int amt) {
         BBText(
           label,
           style: context.font.bodySmall,
-          color: context.colorScheme.surfaceContainer,
+          color: context.appColors.surfaceContainer,
         ),
         const Spacer(),
         CurrencyText(
           amt,
           showFiat: false,
           style: context.font.bodySmall,
-          color: context.colorScheme.surfaceContainer,
+          color: context.appColors.surfaceContainer,
         ),
       ],
     ),

@@ -32,7 +32,7 @@ class HomeFiatBalance extends StatelessWidget {
         showFiat: true,
         // '\$0.0 CAD',
         style: context.font.bodyLarge,
-        color: context.colorScheme.onPrimary,
+        color: context.appColors.onPrimary,
       ),
     );
   }

@@ -30,7 +30,7 @@ class SwapFeesRow extends StatelessWidget {
         Text(
           'Total Fees ',
           style: context.font.labelLarge?.copyWith(
-            color: context.colorScheme.surface,
+            color: context.appColors.surface,
           ),
         ),
         const Gap(4),

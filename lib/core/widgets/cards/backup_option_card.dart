@@ -72,7 +72,7 @@ class BackupOptionCard extends StatelessWidget {
               height: 24,
               child: Icon(
                 Icons.arrow_forward,
-                color: context.colorScheme.onSurface,
+                color: context.appColors.onSurface,
               ),
             ),
           ],

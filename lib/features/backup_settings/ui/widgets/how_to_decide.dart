@@ -13,7 +13,7 @@ class HowToDecideBackupOption extends StatelessWidget {
       heightFactor: 0.75,
       child: Container(
         decoration: BoxDecoration(
-          color: context.colorScheme.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         padding: const EdgeInsets.symmetric(vertical: 30),
@@ -36,7 +36,7 @@ class HowToDecideBackupOption extends StatelessWidget {
                     onTap: () => Navigator.pop(context),
                     child: Icon(
                       Icons.close,
-                      color: context.colorScheme.secondary,
+                      color: context.appColors.secondary,
                     ),
                   ),
                 ],

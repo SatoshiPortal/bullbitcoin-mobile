@@ -105,12 +105,12 @@ class CommonCoinSelectionBottomSheet extends StatelessWidget {
             disabled: selectedUtxoTotalSat < amountToSendSat,
             bgColor:
                 selectedUtxoTotalSat >= amountToSendSat
-                    ? context.colorScheme.secondary
-                    : context.colorScheme.outlineVariant,
+                    ? context.appColors.secondary
+                    : context.appColors.outlineVariant,
             textColor:
                 selectedUtxoTotalSat >= amountToSendSat
-                    ? context.colorScheme.onSecondary
-                    : context.colorScheme.outline,
+                    ? context.appColors.onSecondary
+                    : context.appColors.outline,
           ),
           const Gap(24),
         ],
@@ -163,7 +163,7 @@ class CommonCoinSelectTile extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: context.colorScheme.outlineVariant),
+          border: Border.all(color: context.appColors.outlineVariant),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,14 +176,14 @@ class CommonCoinSelectTile extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(2),
                     ),
-                    tileColor: Colors.transparent,
+                    tileColor: context.appColors.transparent,
                     contentPadding: EdgeInsets.zero,
                     title: Row(
                       children: [
                         BBText(
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
-                            color: context.colorScheme.outlineVariant,
+                            color: context.appColors.outlineVariant,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -192,52 +192,52 @@ class CommonCoinSelectTile extends StatelessWidget {
                     subtitle: BBText(
                       label,
                       style: context.font.labelMedium?.copyWith(
-                        color: context.colorScheme.outline,
+                        color: context.appColors.outline,
                       ),
                     ),
                     trailing: Radio<bool>(
                       value: true,
                       groupValue: selected,
                       onChanged: (_) => onTap(),
-                      activeColor: context.colorScheme.secondary,
+                      activeColor: context.appColors.secondary,
                     ),
                   ),
                   BBText(
                     '~$fiatEquivalent',
                     style: context.font.labelSmall?.copyWith(
-                      color: context.colorScheme.outlineVariant,
+                      color: context.appColors.outlineVariant,
                     ),
                   ),
                   const SizedBox(height: 12),
 
-                  Divider(color: context.colorScheme.secondaryFixedDim),
+                  Divider(color: context.appColors.secondaryFixedDim),
                   const SizedBox(height: 8),
                   Row(
                     children: [
                       BBText(
                         'Address: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.colorScheme.surfaceContainer,
+                          color: context.appColors.surfaceContainer,
                         ),
                       ),
                       Expanded(
                         child: BBText(
                           StringFormatting.truncateMiddle(address),
                           style: context.font.labelLarge?.copyWith(
-                            color: context.colorScheme.secondary,
+                            color: context.appColors.secondary,
                           ),
                         ),
                       ),
                       BBText(
                         'Type: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.colorScheme.surfaceContainer,
+                          color: context.appColors.surfaceContainer,
                         ),
                       ),
                       BBText(
                         addressType,
                         style: context.font.labelLarge?.copyWith(
-                          color: context.colorScheme.secondary,
+                          color: context.appColors.secondary,
                         ),
                       ),
                     ],

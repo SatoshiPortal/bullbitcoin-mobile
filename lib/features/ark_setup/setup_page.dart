@@ -25,8 +25,8 @@ class ArkSetupPage extends StatelessWidget {
             children: [
               if (isLoading)
                 LinearProgressIndicator(
-                  backgroundColor: context.colorScheme.surface,
-                  color: context.colorScheme.primary,
+                  backgroundColor: context.appColors.surface,
+                  color: context.appColors.primary,
                 ),
               Expanded(
                 child: Padding(
@@ -38,7 +38,7 @@ class ArkSetupPage extends StatelessWidget {
                       if (error != null) ...[
                         Text(
                           error.message,
-                          style: TextStyle(color: context.colorScheme.error),
+                          style: TextStyle(color: context.appColors.error),
                         ),
                         const Gap(16),
                       ],
@@ -51,8 +51,8 @@ class ArkSetupPage extends StatelessWidget {
                                       .read<ArkSetupCubit>()
                                       .createArkSecretKey(),
                           label: context.loc.arkSetupEnable,
-                          bgColor: context.colorScheme.primary,
-                          textColor: context.colorScheme.onPrimary,
+                          bgColor: context.appColors.primary,
+                          textColor: context.appColors.onPrimary,
                           disabled: arkWallet != null || isLoading,
                         ),
                       ),

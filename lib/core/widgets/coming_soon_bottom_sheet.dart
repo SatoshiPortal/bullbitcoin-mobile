@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
 
@@ -20,11 +21,10 @@ class ComingSoonBottomSheet extends StatelessWidget {
     String? icon,
     void Function()? onDismissed,
   }) {
-    final theme = Theme.of(context);
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: context.appColors.surface,
       constraints: const BoxConstraints(maxWidth: double.infinity),
       useRootNavigator: true,
       builder:
@@ -56,7 +56,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                  color: context.appColors.outline.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -65,7 +65,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
                 Icon(
                   Icons.construction,
                   size: 48,
-                  color: theme.colorScheme.primary,
+                  color: context.appColors.primary,
                 ),
                 const SizedBox(height: 16),
               ],
@@ -80,7 +80,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
               Text(
                 description,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  color: context.appColors.onSurface.withValues(alpha: 0.7),
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 3,
@@ -93,8 +93,8 @@ class ComingSoonBottomSheet extends StatelessWidget {
                   Navigator.of(context).pop();
                   onDismissed?.call();
                 },
-                bgColor: theme.colorScheme.onSurface,
-                textColor: theme.colorScheme.surface,
+                bgColor: context.appColors.onSurface,
+                textColor: context.appColors.surface,
               ),
             ],
           ),

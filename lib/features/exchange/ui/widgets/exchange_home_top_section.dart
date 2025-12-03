@@ -32,7 +32,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                color: Colors.black,
+                color: context.appColors.overlay,
                 height: 264 + 78,
                 // color: Colors.red,
                 child: Stack(
@@ -46,7 +46,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
                           (b) => BBText(
                             '${b.amount} ${b.currencyCode}',
                             style: balanceTextStyle?.copyWith(
-                              color: theme.colorScheme.onPrimary,
+                              color: context.appColors.onPrimary,
                               fontWeight: FontWeight.w500,
                             ),
                           ),

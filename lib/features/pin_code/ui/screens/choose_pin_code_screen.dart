@@ -40,7 +40,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                         context.loc.pinCodeCreateTitle,
                         textAlign: TextAlign.center,
                         style: context.font.headlineMedium?.copyWith(
-                          color: context.colorScheme.outline,
+                          color: context.appColors.outline,
                         ),
                         maxLines: 3,
                       ),
@@ -49,7 +49,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                         context.loc.pinCodeCreateDescription,
                         textAlign: TextAlign.center,
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colorScheme.outline,
+                          color: context.appColors.outline,
                         ),
                       ),
                       const Gap(30),
@@ -102,7 +102,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                                 ),
                                 textAlign: TextAlign.start,
                                 style: context.font.labelSmall?.copyWith(
-                                  color: context.colorScheme.error,
+                                  color: context.appColors.error,
                                 ),
                               )
                               : const SizedBox.shrink();

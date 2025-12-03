@@ -66,7 +66,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
             width: 300,
             height: 300,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.appColors.surfaceFixed,
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Center(child: CircularProgressIndicator()),
@@ -78,14 +78,14 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
             width: 300,
             height: 300,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.appColors.surfaceFixed,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
               child: Text(
                 context.loc.psbtFlowError(state.error!),
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colorScheme.error,
+                  color: context.appColors.error,
                 ),
               ),
             ),
@@ -97,14 +97,14 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
             width: 300,
             height: 300,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.appColors.surfaceFixed,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
               child: Text(
                 context.loc.psbtFlowNoPartsToDisplay,
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colorScheme.error,
+                  color: context.appColors.error,
                 ),
               ),
             ),
@@ -113,7 +113,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
 
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.appColors.surfaceFixed,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -134,8 +134,8 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
                         value: currentValue,
                         min: 25.0,
                         max: 200.0,
-                        activeColor: context.colorScheme.secondary,
-                        inactiveColor: context.colorScheme.surfaceContainer,
+                        activeColor: context.appColors.secondary,
+                        inactiveColor: context.appColors.surfaceContainer,
                         onChanged: (value) {
                           final newFragmentLength = value.round();
                           context
@@ -157,7 +157,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
                     state.parts.length.toString(),
                   ),
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colorScheme.secondary,
+                    color: context.appColors.secondary,
                   ),
                 ),
                 const Gap(8),

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/template/domain/ip_address_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -48,7 +49,7 @@ class TemplateWidget extends StatelessWidget {
                       Text(
                         subtitle!,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey[600],
+                          color: context.appColors.textMuted,
                         ),
                       ),
                     ],
@@ -57,9 +58,9 @@ class TemplateWidget extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
+                          color: context.appColors.info.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.blue.shade200),
+                          border: Border.all(color: context.appColors.info.withValues(alpha: 0.3)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,8 +82,8 @@ class TemplateWidget extends StatelessWidget {
                                   size: 12,
                                   color:
                                       ipAddressData!.isSecureConnection
-                                          ? Colors.green
-                                          : Colors.orange,
+                                          ? context.appColors.success
+                                          : context.appColors.warning,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -93,8 +94,8 @@ class TemplateWidget extends StatelessWidget {
                                     fontSize: 10,
                                     color:
                                         ipAddressData!.isSecureConnection
-                                            ? Colors.green
-                                            : Colors.orange,
+                                            ? context.appColors.success
+                                            : context.appColors.warning,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
@@ -103,7 +104,7 @@ class TemplateWidget extends StatelessWidget {
                                       ? Icons.phone_android
                                       : Icons.computer,
                                   size: 12,
-                                  color: Colors.grey[600],
+                                  color: context.appColors.textMuted,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -112,7 +113,7 @@ class TemplateWidget extends StatelessWidget {
                                       : 'Desktop',
                                   style: TextStyle(
                                     fontSize: 10,
-                                    color: Colors.grey[600],
+                                    color: context.appColors.textMuted,
                                   ),
                                 ),
                               ],
@@ -134,7 +135,7 @@ class TemplateWidget extends StatelessWidget {
                 Icon(
                   Icons.arrow_forward_ios,
                   size: 16,
-                  color: Colors.grey[400],
+                  color: context.appColors.textMuted,
                 ),
             ],
           ),

@@ -67,7 +67,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
       appBar: AppBar(
         title: Text(context.loc.addressViewAddressesTitle),
         scrolledUnderElevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: context.appColors.transparent,
         elevation: 0,
       ),
       body: SafeArea(

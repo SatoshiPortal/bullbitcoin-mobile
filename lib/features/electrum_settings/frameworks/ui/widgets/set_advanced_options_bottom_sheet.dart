@@ -328,11 +328,9 @@ class _SetAdvancedOptionsBottomSheetState
                                               timeoutValue.toString(),
                                               recommended.toString(),
                                             ),
-                                        tagColor: context.colorScheme.tertiary,
+                                        tagColor: context.appColors.tertiary,
                                         bgColor:
-                                            context
-                                                .colorScheme
-                                                .tertiaryContainer,
+                                            context.appColors.tertiaryContainer,
                                       ),
                                     ],
                                   );
@@ -409,7 +407,7 @@ class _SetAdvancedOptionsBottomSheetState
                             shape: const RoundedRectangleBorder(
                               side: BorderSide.none,
                             ),
-                            tileColor: Colors.transparent,
+                            tileColor: context.appColors.transparent,
                             title: Text(context.loc.electrumValidateDomain),
                             contentPadding: EdgeInsets.zero,
                             value: _validateDomain,
@@ -432,7 +430,7 @@ class _SetAdvancedOptionsBottomSheetState
                                   state.advancedOptionsError!,
                                 ),
                                 style: TextStyle(
-                                  color: context.colorScheme.error,
+                                  color: context.appColors.error,
                                   fontSize: 14,
                                 ),
                               ),
@@ -465,10 +463,10 @@ class _SetAdvancedOptionsBottomSheetState
                                       );
                                       FocusScope.of(context).unfocus();
                                     },
-                                    bgColor: Colors.transparent,
+                                    bgColor: context.appColors.transparent,
                                     outlined: true,
                                     textStyle: context.font.headlineLarge,
-                                    textColor: context.colorScheme.onSurface,
+                                    textColor: context.appColors.onSurface,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -477,7 +475,7 @@ class _SetAdvancedOptionsBottomSheetState
                                     label: context.loc.electrumConfirm,
                                     disabled: state.isSavingAdvancedOptions,
                                     onPressed: _confirm,
-                                    bgColor: context.colorScheme.onSurface,
+                                    bgColor: context.appColors.onSurface,
                                     textStyle: context.font.headlineLarge,
                                     textColor: context.appColors.surface,
                                   ),

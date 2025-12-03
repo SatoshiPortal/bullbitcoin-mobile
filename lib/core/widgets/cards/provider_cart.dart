@@ -45,7 +45,7 @@ class _ProviderCardState extends State<ProviderCard>
     return ScaleTransition(
       scale: _scaleAnimation,
       child: Material(
-        color: Colors.transparent,
+        color: context.appColors.transparent,
         child: InkWell(
           onTapDown: (_) => _controller.forward(),
           onTapUp: (_) => _controller.reverse(),
@@ -87,10 +87,7 @@ class _ProviderCardState extends State<ProviderCard>
                     ),
                   ),
                   const Gap(8),
-                  Icon(
-                    Icons.arrow_forward,
-                    color: context.colorScheme.onSurface,
-                  ),
+                  Icon(Icons.arrow_forward, color: context.appColors.onSurface),
                 ],
               ),
             ),

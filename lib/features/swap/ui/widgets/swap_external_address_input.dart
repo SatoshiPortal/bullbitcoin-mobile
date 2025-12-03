@@ -36,7 +36,7 @@ class SwapExternalAddressInput extends StatelessWidget {
           value: state.address,
           hint: 'Enter external wallet address',
           hintStyle: context.font.bodyMedium?.copyWith(
-            color: context.colorScheme.surfaceContainer,
+            color: context.appColors.surfaceContainer,
           ),
           maxLines: 1,
           rightIcon: Row(
@@ -45,7 +45,7 @@ class SwapExternalAddressInput extends StatelessWidget {
               IconButton(
                 icon: Icon(
                   Icons.qr_code_scanner,
-                  color: context.colorScheme.secondary,
+                  color: context.appColors.secondary,
                   size: 20,
                 ),
                 onPressed: () async {
@@ -62,7 +62,7 @@ class SwapExternalAddressInput extends StatelessWidget {
               IconButton(
                 icon: Icon(
                   Icons.paste_sharp,
-                  color: context.colorScheme.secondary,
+                  color: context.appColors.secondary,
                   size: 20,
                 ),
                 onPressed: () {
@@ -88,7 +88,7 @@ class SwapExternalAddressInput extends StatelessWidget {
             child: BBText(
               state.error!,
               style: context.font.labelSmall,
-              color: context.colorScheme.error,
+              color: context.appColors.error,
             ),
           ),
       ],

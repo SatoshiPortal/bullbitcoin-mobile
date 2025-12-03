@@ -49,7 +49,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                           context.loc.pinCodeConfirmTitle,
                           textAlign: TextAlign.center,
                           style: context.font.headlineMedium?.copyWith(
-                            color: context.colorScheme.outline,
+                            color: context.appColors.outline,
                           ),
                           maxLines: 3,
                         ),
@@ -97,7 +97,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                                   context.loc.pinCodeMismatchError,
                                   textAlign: TextAlign.start,
                                   style: context.font.labelSmall?.copyWith(
-                                    color: context.colorScheme.error,
+                                    color: context.appColors.error,
                                   ),
                                 )
                                 : const SizedBox.shrink();
@@ -162,14 +162,14 @@ class _ConfirmButton extends StatelessWidget {
             disabled: !canConfirm,
             bgColor:
                 canConfirm
-                    ? context.colorScheme.secondary
-                    : context.colorScheme.outline,
+                    ? context.appColors.secondary
+                    : context.appColors.outline,
             onPressed: () {
               context.read<PinCodeSettingBloc>().add(
                 const PinCodeSettingPinCodeConfirmed(),
               );
             },
-            textColor: context.colorScheme.onSecondary,
+            textColor: context.appColors.onSecondary,
           );
         },
       ),

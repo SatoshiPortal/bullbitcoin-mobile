@@ -66,7 +66,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                 reorderedMnemonic.isEmpty ? 1 : reorderedMnemonic.length + 1;
             final showPrompt = reorderedMnemonic.length < mnemonic.length;
             return Scaffold(
-              backgroundColor: context.colorScheme.onSecondary,
+              backgroundColor: context.appColors.onSecondary,
               appBar: PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
                 child: AppBarWidget(title: title),
@@ -96,7 +96,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                               textAlign: TextAlign.center,
                               style: context.font.labelMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
-                                color: context.colorScheme.outline,
+                                color: context.appColors.outline,
                                 letterSpacing: 0,
                                 fontSize: 12,
                               ),
@@ -109,7 +109,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                           textAlign: TextAlign.center,
                           style: context.font.labelMedium?.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: context.colorScheme.surface,
+                            color: context.appColors.surface,
                             letterSpacing: 0,
                             fontSize: 14,
                           ),
@@ -188,16 +188,16 @@ class _ShuffledMnemonicWord extends StatelessWidget {
                   OnWordsSelected(word: word, index: index),
                 );
               },
-      splashColor: Colors.transparent,
+      splashColor: context.appColors.transparent,
       child: Container(
         margin: const EdgeInsets.fromLTRB(8, 0, 8, 20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.appColors.surface,
           borderRadius: BorderRadius.circular(2.76),
-          border: Border.all(color: context.colorScheme.surface, width: 0.69),
+          border: Border.all(color: context.appColors.surface, width: 0.69),
           boxShadow: [
             BoxShadow(
-              color: context.colorScheme.surface,
+              color: context.appColors.surface,
               offset: const Offset(0, 2),
             ),
           ],
@@ -239,7 +239,7 @@ class _ShuffledMnemonicWord extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
                       letterSpacing: 0.15,
-                      color: Colors.white,
+                      color: context.appColors.onPrimary,
                     ),
                   ),
                 ),
@@ -253,7 +253,7 @@ class _ShuffledMnemonicWord extends StatelessWidget {
               style: context.font.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
-                color: context.colorScheme.secondary,
+                color: context.appColors.secondary,
               ),
             ),
           ],

@@ -164,7 +164,7 @@ class _EnabledToggle extends StatelessWidget {
               inactiveThumbColor: context.appColors.surface,
               inactiveTrackColor: context.appColors.textMuted,
               trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) => Colors.transparent,
+                (Set<WidgetState> states) => context.appColors.transparent,
               ),
               onChanged: (value) {
                 context.read<AutoSwapSettingsCubit>().onEnabledToggleChanged(
@@ -236,7 +236,7 @@ class _AmountThresholdField extends StatelessWidget {
           BBText(
             amountThresholdError.displayMessage(),
             style: context.font.bodySmall?.copyWith(
-              color: context.colorScheme.error,
+              color: context.appColors.error,
             ),
           ),
         ],
@@ -304,7 +304,7 @@ class _FeeThresholdField extends StatelessWidget {
           BBText(
             feeThresholdError.displayMessage(),
             style: context.font.bodySmall?.copyWith(
-              color: context.colorScheme.error,
+              color: context.appColors.error,
             ),
           ),
         ],
@@ -346,7 +346,7 @@ class _AlwaysBlockToggle extends StatelessWidget {
               inactiveThumbColor: context.appColors.surface,
               inactiveTrackColor: context.appColors.textMuted,
               trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) => Colors.transparent,
+                (Set<WidgetState> states) => context.appColors.transparent,
               ),
               onChanged: (value) {
                 context
@@ -399,7 +399,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
               BBText(
                 context.loc.autoswapRecipientWalletRequired,
                 style: context.font.bodyLarge?.copyWith(
-                  color: context.colorScheme.error,
+                  color: context.appColors.error,
                 ),
               ),
             ],
@@ -525,7 +525,7 @@ class _SaveButton extends StatelessWidget {
                       }
                     });
               },
-      bgColor: context.colorScheme.onSurface,
+      bgColor: context.appColors.onSurface,
       textStyle: context.font.headlineLarge,
       textColor: context.appColors.surface,
     );

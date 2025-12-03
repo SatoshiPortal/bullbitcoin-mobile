@@ -82,7 +82,7 @@ class PaymentReceivedPage extends StatelessWidget {
           BBText(
             '~$amountFiat',
             style: context.font.bodyLarge,
-            color: context.colorScheme.surface,
+            color: context.appColors.surface,
           ),
           const Spacer(),
           const ReceiveDetailsButton(),
@@ -125,8 +125,8 @@ class ReceiveDetailsButton extends StatelessWidget {
             );
           }
         },
-        bgColor: context.colorScheme.secondary,
-        textColor: context.colorScheme.onSecondary,
+        bgColor: context.appColors.secondary,
+        textColor: context.appColors.onSecondary,
       ),
     );
   }

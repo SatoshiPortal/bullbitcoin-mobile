@@ -76,7 +76,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
         title: BBText(
           'Vault Recovery Server',
           style: context.font.headlineMedium,
-          color: context.colorScheme.onSurface,
+          color: context.appColors.onSurface,
         ),
       ),
       body:
@@ -95,8 +95,8 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                       size: 64,
                       color:
                           _isUsingDefaultServer
-                              ? context.colorScheme.primary
-                              : context.colorScheme.tertiary,
+                              ? context.appColors.primary
+                              : context.appColors.tertiary,
                     ),
                     const Gap(32),
                     BBText(
@@ -141,8 +141,8 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                       InfoCard(
                         description:
                             'You are using a custom Recoverbull server. Make sure you trust this server.',
-                        tagColor: context.colorScheme.error,
-                        bgColor: context.colorScheme.errorContainer,
+                        tagColor: context.appColors.error,
+                        bgColor: context.appColors.errorContainer,
                       ),
                       const Gap(24),
                     ],
@@ -168,7 +168,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           ),
                         );
                       },
-                      bgColor: context.colorScheme.onSurface,
+                      bgColor: context.appColors.onSurface,
                       textColor: context.appColors.surface,
                     ),
                     const Gap(16),
@@ -180,13 +180,13 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           Icon(
                             Icons.info_outline,
                             size: 20,
-                            color: context.colorScheme.primary,
+                            color: context.appColors.primary,
                           ),
                           const Gap(8),
                           BBText(
                             'Learn more about Recoverbull',
                             style: context.font.bodyMedium,
-                            color: context.colorScheme.primary,
+                            color: context.appColors.primary,
                           ),
                         ],
                       ),

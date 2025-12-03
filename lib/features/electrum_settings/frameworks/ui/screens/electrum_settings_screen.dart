@@ -32,8 +32,8 @@ class ElectrumSettingsScreen extends StatelessWidget {
                   ? FadingLinearProgress(
                     height: 3,
                     trigger: isLoading,
-                    backgroundColor: context.colorScheme.surface,
-                    foregroundColor: context.colorScheme.primary,
+                    backgroundColor: context.appColors.surface,
+                    foregroundColor: context.appColors.primary,
                   )
                   : const SizedBox(height: 3),
         ),
@@ -91,7 +91,7 @@ class ElectrumSettingsScreen extends StatelessWidget {
                 child: Text(
                   context.loc.electrumAdvancedOptions,
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colorScheme.primary,
+                    color: context.appColors.primary,
                   ),
                 ),
               ),

@@ -172,7 +172,7 @@ class _TransactionLabelBottomsheetState
                 Gap(Device.screen.height * 0.01),
                 BBText(
                   state.err!.toString(),
-                  style: context.font.bodySmall?.copyWith(color: Colors.red),
+                  style: context.font.bodySmall?.copyWith(color: context.appColors.error),
                 ),
               ],
               Gap(Device.screen.height * 0.03),

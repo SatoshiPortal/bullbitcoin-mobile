@@ -19,7 +19,7 @@ class ReceiveEnterNote extends StatelessWidget {
     await showModalBottomSheet(
       context: context,
       useRootNavigator: true,
-      backgroundColor: context.colorScheme.onPrimary,
+      backgroundColor: context.appColors.onPrimary,
       isScrollControlled: true,
       constraints: const BoxConstraints(maxWidth: double.infinity),
       builder: (context) {
@@ -61,7 +61,7 @@ class ReceiveEnterNote extends StatelessWidget {
                 onPressed: () {
                   context.pop();
                 },
-                color: context.colorScheme.secondary,
+                color: context.appColors.secondary,
                 icon: const Icon(Icons.close_sharp),
               ),
             ],
@@ -70,7 +70,7 @@ class ReceiveEnterNote extends StatelessWidget {
           BBInputText(
             hint: context.loc.receiveNotePlaceholder,
             hintStyle: context.font.bodyLarge?.copyWith(
-              color: context.colorScheme.surfaceContainer,
+              color: context.appColors.surfaceContainer,
             ),
             value: currentNote,
             maxLength: NoteValidator.maxNoteLength,
@@ -83,7 +83,7 @@ class ReceiveEnterNote extends StatelessWidget {
             BBText(
               error.toString(),
               style: context.font.labelSmall?.copyWith(
-                color: context.colorScheme.error,
+                color: context.appColors.error,
               ),
             ),
           ],
@@ -99,8 +99,8 @@ class ReceiveEnterNote extends StatelessWidget {
                 context.pop();
               }
             },
-            bgColor: context.colorScheme.secondary,
-            textColor: context.colorScheme.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
           const Gap(24),
         ],

@@ -19,12 +19,12 @@ class EyeToggle extends StatelessWidget {
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: context.colorScheme.surfaceBright),
-          color: context.colorScheme.scrim,
+          border: Border.all(color: context.appColors.surfaceBright),
+          color: context.appColors.scrim,
         ),
         child: Icon(
           !hide ? Icons.visibility : Icons.visibility_off,
-          color: context.colorScheme.onPrimary,
+          color: context.appColors.onPrimary,
           size: 20,
         ),
       ),

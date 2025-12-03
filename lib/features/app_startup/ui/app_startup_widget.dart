@@ -111,15 +111,15 @@ class AppStartupFailureScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(2.0),
                 ),
-                tileColor: context.colorScheme.error.withValues(alpha: 0.1),
+                tileColor: context.appColors.error.withValues(alpha: 0.1),
                 title: Row(
                   children: [
-                    Icon(Icons.error_outline, color: context.colorScheme.error),
+                    Icon(Icons.error_outline, color: context.appColors.error),
                     const Gap(8),
                     Text(
                       context.loc.appStartupErrorTitle,
                       style: context.font.headlineLarge?.copyWith(
-                        color: context.colorScheme.error,
+                        color: context.appColors.error,
                       ),
                     ),
                   ],
@@ -133,7 +133,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                             : context.loc.appStartupErrorMessageNoBackup
                         : e.toString(),
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colorScheme.secondary.withValues(
+                      color: context.appColors.secondary.withValues(
                         alpha: 0.7,
                       ),
                     ),
@@ -148,8 +148,8 @@ class AppStartupFailureScreen extends StatelessWidget {
                   launchUrl(url, mode: LaunchMode.externalApplication);
                 },
                 label: context.loc.appStartupContactSupportButton,
-                bgColor: context.colorScheme.primary,
-                textColor: context.colorScheme.onPrimary,
+                bgColor: context.appColors.primary,
+                textColor: context.appColors.onPrimary,
               ),
               const SizedBox(height: 24),
               const ShareLogsWidget(),

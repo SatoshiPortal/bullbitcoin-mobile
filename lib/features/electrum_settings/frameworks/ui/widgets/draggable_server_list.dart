@@ -51,15 +51,15 @@ class DraggableServerList extends StatelessWidget {
         Text(
           context.loc.electrumDefaultServers,
           style: context.font.titleSmall?.copyWith(
-            color: context.colorScheme.onSurface.withValues(alpha: 0.7),
+            color: context.appColors.onSurface.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(height: 8),
         if (customServers.isNotEmpty) ...[
           InfoCard(
             description: context.loc.electrumDefaultServersInfo,
-            tagColor: context.colorScheme.tertiary,
-            bgColor: context.colorScheme.tertiaryContainer,
+            tagColor: context.appColors.tertiary,
+            bgColor: context.appColors.tertiaryContainer,
           ),
           const SizedBox(height: 8),
         ],
@@ -77,14 +77,14 @@ class DraggableServerList extends StatelessWidget {
           Text(
             context.loc.electrumCustomServers,
             style: context.font.titleSmall?.copyWith(
-              color: context.colorScheme.onSurface.withValues(alpha: 0.7),
+              color: context.appColors.onSurface.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             context.loc.electrumDragToReorder,
             style: context.font.bodySmall?.copyWith(
-              color: context.colorScheme.onSurface.withValues(alpha: 0.5),
+              color: context.appColors.onSurface.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 8),
@@ -128,8 +128,8 @@ class DraggableServerList extends StatelessWidget {
         if (electrumServersError != null) ...[
           InfoCard(
             description: _getErrorMessage(context, electrumServersError),
-            tagColor: context.colorScheme.error,
-            bgColor: context.colorScheme.errorContainer,
+            tagColor: context.appColors.error,
+            bgColor: context.appColors.errorContainer,
           ),
           const Gap(16),
         ],
@@ -147,12 +147,12 @@ class DraggableServerList extends StatelessWidget {
           },
           icon: Icon(
             Icons.add_circle_outline,
-            color: context.colorScheme.primary,
+            color: context.appColors.primary,
           ),
           label: Text(
             context.loc.electrumAddCustomServer,
             style: context.font.bodyMedium?.copyWith(
-              color: context.colorScheme.primary,
+              color: context.appColors.primary,
             ),
           ),
         ),

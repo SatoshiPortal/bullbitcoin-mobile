@@ -36,7 +36,7 @@ class RecipientTypeSelector extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                       side: BorderSide(
-                        color: context.colorScheme.onSecondaryFixed,
+                        color: context.appColors.onSecondaryFixed,
                       ),
                     ),
                     title: RecipientTypeText(
@@ -59,7 +59,7 @@ class RecipientTypeSelector extends StatelessWidget {
     } else {
       return Material(
         elevation: 4,
-        color: context.colorScheme.onPrimary,
+        color: context.appColors.onPrimary,
         borderRadius: BorderRadius.circular(4.0),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -70,7 +70,7 @@ class RecipientTypeSelector extends StatelessWidget {
             borderRadius: BorderRadius.circular(4.0),
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: context.colorScheme.secondary,
+              color: context.appColors.secondary,
             ),
             items:
                 options

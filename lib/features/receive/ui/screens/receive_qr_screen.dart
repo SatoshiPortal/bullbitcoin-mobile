@@ -96,7 +96,7 @@ class ReceiveQRDetails extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
             decoration: BoxDecoration(
-              color: context.colorScheme.onPrimary,
+              color: context.appColors.onPrimary,
               borderRadius: BorderRadius.circular(12),
             ),
             child:
@@ -184,7 +184,7 @@ class ReceiveInfoDetails extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(2),
-          border: Border.all(color: context.colorScheme.surface),
+          border: Border.all(color: context.appColors.surface),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -205,7 +205,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         BBText(
                           context.loc.receiveAmount,
                           style: context.font.labelSmall,
-                          color: context.colorScheme.outline,
+                          color: context.appColors.outline,
                         ),
                         const Gap(4),
                         Row(
@@ -223,7 +223,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         BBText(
                           '~$amountEquivalent',
                           style: context.font.bodyLarge,
-                          color: context.colorScheme.outline,
+                          color: context.appColors.outline,
                         ),
                       ],
                     ),
@@ -259,7 +259,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                 ],
               ),
             ),
-            Container(color: context.colorScheme.surface, height: 1),
+            Container(color: context.appColors.surface, height: 1),
             Padding(
               padding: const EdgeInsets.only(
                 left: 8,
@@ -277,7 +277,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         BBText(
                           context.loc.receiveNote,
                           style: context.font.labelSmall,
-                          color: context.colorScheme.outline,
+                          color: context.appColors.outline,
                         ),
                         const Gap(4),
                         BBText(
@@ -327,13 +327,13 @@ class ReceiveLnInfoDetails extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: context.colorScheme.onPrimary,
+        color: context.appColors.onPrimary,
         borderRadius: BorderRadius.circular(2),
-        border: Border.all(color: context.colorScheme.surface),
+        border: Border.all(color: context.appColors.surface),
         boxShadow: [
           BoxShadow(
             offset: const Offset(0, 2),
-            color: context.colorScheme.surfaceContainer,
+            color: context.appColors.surfaceContainer,
           ),
         ],
       ),
@@ -344,7 +344,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
           const ReceiveLnSwapID(),
           const Gap(12),
 
-          Container(color: context.colorScheme.surface, height: 1),
+          Container(color: context.appColors.surface, height: 1),
           Padding(
             padding: const EdgeInsets.only(top: 10, bottom: 12),
             child: Row(
@@ -353,7 +353,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                 BBText(
                   context.loc.receiveAmount,
                   style: context.font.bodySmall,
-                  color: context.colorScheme.surfaceContainer,
+                  color: context.appColors.surfaceContainer,
                 ),
                 const Spacer(),
                 Column(
@@ -367,7 +367,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                     BBText(
                       '~$amountEquivalent',
                       style: context.font.labelSmall,
-                      color: context.colorScheme.surfaceContainer,
+                      color: context.appColors.surfaceContainer,
                     ),
                   ],
                 ),
@@ -375,7 +375,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
             ),
           ),
           if (swap?.receieveAmount != null) ...[
-            Container(color: context.colorScheme.surface, height: 1),
+            Container(color: context.appColors.surface, height: 1),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 12),
               child: Row(
@@ -384,7 +384,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                   BBText(
                     context.loc.receiveReceiveAmount,
                     style: context.font.bodySmall,
-                    color: context.colorScheme.surfaceContainer,
+                    color: context.appColors.surfaceContainer,
                   ),
                   const Spacer(),
                   CurrencyText(
@@ -397,7 +397,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
             ),
           ],
           if (note.isNotEmpty) ...[
-            Container(color: context.colorScheme.surface, height: 1),
+            Container(color: context.appColors.surface, height: 1),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 12),
               child: Row(
@@ -405,7 +405,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                   BBText(
                     context.loc.receiveNote,
                     style: context.font.labelSmall,
-                    color: context.colorScheme.outline,
+                    color: context.appColors.outline,
                   ),
                   const Gap(24),
                   Expanded(
@@ -441,7 +441,7 @@ class ReceiveLnSwapID extends StatelessWidget {
           BBText(
             context.loc.receiveSwapId,
             style: context.font.bodySmall,
-            color: context.colorScheme.surfaceContainer,
+            color: context.appColors.surfaceContainer,
           ),
           const Spacer(),
           BBText(
@@ -451,11 +451,7 @@ class ReceiveLnSwapID extends StatelessWidget {
           ),
           const Gap(4),
           InkWell(
-            child: Icon(
-              Icons.copy,
-              color: context.colorScheme.primary,
-              size: 16,
-            ),
+            child: Icon(Icons.copy, color: context.appColors.primary, size: 16),
             onTap: () {
               Clipboard.setData(ClipboardData(text: swap.id));
             },
@@ -484,14 +480,14 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
           BBText(
             label,
             style: context.font.bodySmall,
-            color: context.colorScheme.surfaceContainer,
+            color: context.appColors.surfaceContainer,
           ),
           const Spacer(),
           CurrencyText(
             amt,
             showFiat: false,
             style: context.font.bodySmall,
-            color: context.colorScheme.surfaceContainer,
+            color: context.appColors.surfaceContainer,
           ),
         ],
       ),
@@ -505,12 +501,12 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
 
     return Column(
       children: [
-        Container(color: context.colorScheme.surface, height: 1),
+        Container(color: context.appColors.surface, height: 1),
         const Gap(8),
         InkWell(
-          splashColor: Colors.transparent,
+          splashColor: context.appColors.transparent,
           splashFactory: NoSplash.splashFactory,
-          highlightColor: Colors.transparent,
+          highlightColor: context.appColors.transparent,
           onTap: () {
             setState(() {
               expanded = !expanded;
@@ -521,32 +517,32 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
               BBText(
                 context.loc.receiveTotalFee,
                 style: context.font.bodySmall,
-                color: context.colorScheme.surfaceContainer,
+                color: context.appColors.surfaceContainer,
               ),
               const Spacer(),
               CurrencyText(
                 swap.fees?.totalFees(null) ?? 0,
                 showFiat: false,
                 style: context.font.bodyLarge,
-                color: context.colorScheme.outlineVariant,
+                color: context.appColors.outlineVariant,
               ),
               const Gap(4),
               Icon(
                 expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                color: context.colorScheme.primary,
+                color: context.appColors.primary,
               ),
             ],
           ),
         ),
         const Gap(12),
         if (expanded && swap.fees != null) ...[
-          Container(color: context.colorScheme.surface, height: 1),
+          Container(color: context.appColors.surface, height: 1),
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: BBText(
               context.loc.receiveFeeExplanation,
               style: context.font.labelSmall,
-              color: context.colorScheme.surfaceContainer,
+              color: context.appColors.surfaceContainer,
             ),
           ),
           if (swap.fees!.lockupFee != null)
@@ -624,8 +620,8 @@ class ReceiveNewAddressButton extends StatelessWidget {
             const ReceiveEvent.receiveNewAddressGenerated(),
           );
         },
-        bgColor: context.colorScheme.secondary,
-        textColor: context.colorScheme.onSecondary,
+        bgColor: context.appColors.secondary,
+        textColor: context.appColors.onSecondary,
       ),
     );
   }
@@ -667,8 +663,8 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
             ),
           );
         },
-        bgColor: context.colorScheme.primary,
-        textColor: context.colorScheme.onPrimary,
+        bgColor: context.appColors.primary,
+        textColor: context.appColors.onPrimary,
         outlined: true,
       ),
     );
@@ -711,8 +707,8 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
             ),
           );
         },
-        bgColor: context.colorScheme.primary,
-        textColor: context.colorScheme.onPrimary,
+        bgColor: context.appColors.primary,
+        textColor: context.appColors.onPrimary,
         outlined: true,
       ),
     );

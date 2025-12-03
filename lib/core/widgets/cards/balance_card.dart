@@ -27,7 +27,7 @@ class BalanceCard extends StatelessWidget {
         child: Material(
           clipBehavior: Clip.antiAlias,
           elevation: 2,
-          color: context.colorScheme.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: BorderRadius.circular(2),
           child: Row(
             children: [
@@ -35,18 +35,18 @@ class BalanceCard extends StatelessWidget {
               BBText(
                 '${balance.currencyCode.toUpperCase()} account balance',
                 style: context.font.bodyLarge,
-                color: context.colorScheme.secondary,
+                color: context.appColors.secondary,
               ),
               const Spacer(),
               BBText(
                 '${_removeTrailingFiatZeros(balance.amount.toStringAsFixed(2))} ${balance.currencyCode.toUpperCase()}',
                 style: context.font.bodyLarge,
-                color: context.colorScheme.secondary,
+                color: context.appColors.secondary,
               ),
               const Gap(8),
               Icon(
                 Icons.chevron_right,
-                color: context.colorScheme.outline,
+                color: context.appColors.outline,
                 size: 24,
               ),
               const Gap(8),

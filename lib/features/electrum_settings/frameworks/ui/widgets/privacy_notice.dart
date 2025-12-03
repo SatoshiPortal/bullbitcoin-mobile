@@ -22,7 +22,7 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       decoration: BoxDecoration(
-        color: context.colorScheme.onPrimary,
+        color: context.appColors.onPrimary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
@@ -76,10 +76,10 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                           child: BBButton.big(
                             label: context.loc.electrumPrivacyNoticeCancel,
                             onPressed: () => Navigator.of(context).pop(false),
-                            bgColor: Colors.transparent,
+                            bgColor: context.appColors.transparent,
                             outlined: true,
                             textStyle: context.font.headlineLarge,
-                            textColor: context.colorScheme.secondary,
+                            textColor: context.appColors.secondary,
                           ),
                         ),
                         const Gap(16),
@@ -87,9 +87,9 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                           child: BBButton.big(
                             label: context.loc.electrumPrivacyNoticeSave,
                             onPressed: () => Navigator.of(context).pop(true),
-                            bgColor: context.colorScheme.secondary,
+                            bgColor: context.appColors.secondary,
                             textStyle: context.font.headlineLarge,
-                            textColor: context.colorScheme.onSecondary,
+                            textColor: context.appColors.onSecondary,
                           ),
                         ),
                       ],

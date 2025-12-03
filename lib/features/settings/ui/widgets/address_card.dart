@@ -41,16 +41,18 @@ class AddressCard extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 Clipboard.setData(ClipboardData(text: address));
-                final theme = Theme.of(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
                       context.loc.addressCardCopiedMessage,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 14, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: context.appColors.surfaceFixed,
+                      ),
                     ),
                     duration: const Duration(seconds: 2),
-                    backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
+                    backgroundColor: context.appColors.onSurface.withAlpha(204),
                     behavior: SnackBarBehavior.floating,
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(
@@ -70,7 +72,7 @@ class AddressCard extends StatelessWidget {
               child: Text(
                 StringFormatting.truncateMiddle(address, head: 10, tail: 20),
                 style: context.font.headlineMedium?.copyWith(
-                  color: context.colorScheme.primary,
+                  color: context.appColors.primary,
                 ),
               ),
             ),

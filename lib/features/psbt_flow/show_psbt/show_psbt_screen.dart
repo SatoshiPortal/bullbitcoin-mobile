@@ -66,8 +66,8 @@ class ShowPsbtScreen extends StatelessWidget {
                           break;
                       }
                     },
-                    bgColor: context.colorScheme.onSecondary,
-                    textColor: context.colorScheme.secondary,
+                    bgColor: context.appColors.onSecondary,
+                    textColor: context.appColors.secondary,
                     outlined: true,
                   ),
               ],
@@ -75,8 +75,8 @@ class ShowPsbtScreen extends StatelessWidget {
 
             BBButton.big(
               label: context.loc.psbtFlowDone,
-              bgColor: context.colorScheme.secondary,
-              textColor: context.colorScheme.onPrimary,
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onPrimary,
               onPressed: () {
                 context.pushNamed(
                   BroadcastSignedTxRoute.broadcastHome.name,

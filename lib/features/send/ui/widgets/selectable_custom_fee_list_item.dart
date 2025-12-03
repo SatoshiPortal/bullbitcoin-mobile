@@ -124,8 +124,8 @@ class _SelectableCustomFeeListItemState
         elevation: isCustomFeeSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
         clipBehavior: Clip.hardEdge,
-        color: context.colorScheme.onSecondary,
-        shadowColor: context.colorScheme.secondary,
+        color: context.appColors.onSecondary,
+        shadowColor: context.appColors.secondary,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -155,8 +155,8 @@ class _SelectableCustomFeeListItemState
                     Icons.radio_button_checked_outlined,
                     color:
                         isCustomFeeSelected
-                            ? context.colorScheme.primary
-                            : context.colorScheme.surface,
+                            ? context.appColors.primary
+                            : context.appColors.surface,
                   ),
                 ],
               ),
@@ -186,24 +186,24 @@ class _SelectableCustomFeeListItemState
                 ],
                 style: context.font.bodyLarge,
                 decoration: InputDecoration(
-                  fillColor: context.colorScheme.onPrimary,
+                  fillColor: context.appColors.onPrimary,
                   filled: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     borderSide: BorderSide(
-                      color: context.colorScheme.secondaryFixedDim,
+                      color: context.appColors.secondaryFixedDim,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     borderSide: BorderSide(
-                      color: context.colorScheme.secondaryFixedDim,
+                      color: context.appColors.secondaryFixedDim,
                     ),
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     borderSide: BorderSide(
-                      color: context.colorScheme.secondaryFixedDim.withValues(
+                      color: context.appColors.secondaryFixedDim.withValues(
                         alpha: 0.5,
                       ),
                     ),
@@ -214,7 +214,7 @@ class _SelectableCustomFeeListItemState
                           ? 'Enter absolute fee in sats'
                           : 'Enter relative fee in sats/vB',
                   hintStyle: context.font.bodyMedium?.copyWith(
-                    color: context.colorScheme.outline,
+                    color: context.appColors.outline,
                   ),
                   suffixText: _isAbsolute ? 'sats' : 'sats/vB',
                 ),
@@ -226,8 +226,8 @@ class _SelectableCustomFeeListItemState
                 disabled: _customFee == null,
                 label: 'Confirm custom fee',
                 onPressed: submitCustomFee,
-                bgColor: context.colorScheme.secondary,
-                textColor: context.colorScheme.onPrimary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onPrimary,
               ),
             ],
           ),

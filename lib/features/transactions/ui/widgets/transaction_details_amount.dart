@@ -45,7 +45,7 @@ class TransactionDetailsAmount extends StatelessWidget {
               : amountSat ?? 0,
           showFiat: false,
           style: context.font.displaySmall?.copyWith(
-            color: context.colorScheme.outlineVariant,
+            color: context.appColors.outlineVariant,
             fontWeight: FontWeight.w500,
           ),
           fiatAmount:

@@ -44,8 +44,8 @@ class SwapConfirmPage extends StatelessWidget {
           child: FadingLinearProgress(
             height: 3,
             trigger: isConfirming,
-            backgroundColor: context.colorScheme.onPrimary,
-            foregroundColor: context.colorScheme.primary,
+            backgroundColor: context.appColors.onPrimary,
+            foregroundColor: context.appColors.primary,
           ),
         ),
       ),

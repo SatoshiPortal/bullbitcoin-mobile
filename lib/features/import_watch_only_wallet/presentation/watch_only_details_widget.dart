@@ -110,7 +110,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         BBButton.big(
           onPressed: cubit.import,
           label: context.loc.importWatchOnlyImport,
-          bgColor: context.colorScheme.onSurface,
+          bgColor: context.appColors.onSurface,
           textColor: context.appColors.surface,
         ),
         const Gap(24),

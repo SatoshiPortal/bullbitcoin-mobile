@@ -18,8 +18,8 @@ class CreateWalletButton extends StatelessWidget {
 
     return BBButton.big(
       label: context.loc.onboardingCreateNewWallet,
-      bgColor: context.colorScheme.secondaryFixed,
-      textColor: context.colorScheme.onSecondaryFixed,
+      bgColor: context.appColors.secondaryFixed,
+      textColor: context.appColors.onSecondaryFixed,
       iconData: Icons.account_balance_wallet_outlined,
       onPressed: () {
         if (creating) return;
