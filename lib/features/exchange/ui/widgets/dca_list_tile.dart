@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+
 class DcaListTile extends StatefulWidget {
   const DcaListTile({super.key, required this.hasDcaActive, required this.dca});
 
@@ -32,7 +33,7 @@ class _DcaListTileState extends State<DcaListTile> {
       return Text(
         context.loc.exchangeDcaUnableToGetConfig,
         style: TextStyle(
-          color: context.colour.onSurface.withValues(alpha: 0.6),
+          color: context.appColors.onSurface.withValues(alpha: 0.6),
         ),
       );
     }
@@ -66,12 +67,14 @@ class _DcaListTileState extends State<DcaListTile> {
                   GestureDetector(
                     onTap: () => setState(() => _showSettings = !_showSettings),
                     child: Text(
-                      _showSettings ? context.loc.exchangeDcaHideSettings : context.loc.exchangeDcaViewSettings,
+                      _showSettings
+                          ? context.loc.exchangeDcaHideSettings
+                          : context.loc.exchangeDcaViewSettings,
                       style: TextStyle(
                         fontSize: 14,
-                        color: context.colour.primary,
+                        color: context.appColors.primary,
                         decoration: TextDecoration.underline,
-                        decorationColor: context.colour.primary,
+                        decorationColor: context.appColors.primary,
                       ),
                     ),
                   ),
@@ -92,24 +95,26 @@ class _DcaListTileState extends State<DcaListTile> {
                   context: context,
                   builder: (BuildContext dialogContext) {
                     return AlertDialog(
-                      backgroundColor: Colors.white,
+                      backgroundColor: context.appColors.surfaceFixed,
                       title: Text(context.loc.exchangeDcaCancelDialogTitle),
-                      content: Text(
-                        context.loc.exchangeDcaCancelDialogMessage,
-                      ),
+                      content: Text(context.loc.exchangeDcaCancelDialogMessage),
                       actions: [
                         TextButton(
                           onPressed: () {
                             Navigator.of(dialogContext).pop();
                           },
-                          child: Text(context.loc.exchangeDcaCancelDialogCancelButton),
+                          child: Text(
+                            context.loc.exchangeDcaCancelDialogCancelButton,
+                          ),
                         ),
                         TextButton(
                           onPressed: () {
                             Navigator.of(dialogContext).pop();
                             context.read<ExchangeCubit>().stopDca();
                           },
-                          child: Text(context.loc.exchangeDcaCancelDialogConfirmButton),
+                          child: Text(
+                            context.loc.exchangeDcaCancelDialogConfirmButton,
+                          ),
                         ),
                       ],
                     );

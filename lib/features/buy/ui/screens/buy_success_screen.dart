@@ -63,7 +63,7 @@ class BuySuccessScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.check_circle, size: 100, color: Colors.green),
+                Icon(Icons.check_circle, size: 100, color: context.appColors.success),
                 const SizedBox(height: 20),
                 Text(
                   context.loc.buyYouBought(formattedPayOutAmount),
@@ -121,8 +121,8 @@ class BuySuccessScreen extends StatelessWidget {
                       pathParameters: {'orderId': buyOrder.orderId},
                     );
                   },
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onPrimary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onPrimary,
                 ),
               ],
             ),

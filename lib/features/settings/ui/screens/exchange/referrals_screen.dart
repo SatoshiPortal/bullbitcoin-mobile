@@ -11,7 +11,7 @@ class ExchangeReferralsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
@@ -30,11 +30,11 @@ class ExchangeReferralsScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: context.colour.onPrimary,
+                  color: context.appColors.surface,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color: context.colour.surface.withValues(alpha: 0.1),
+                      color: context.appColors.overlay.withValues(alpha: 0.05),
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: const Offset(0, 2),
@@ -48,21 +48,21 @@ class ExchangeReferralsScreen extends StatelessWidget {
                     Text(
                       context.loc.exchangeReferralsJoinMissionTitle,
                       style: context.font.bodyLarge?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.appColors.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       context.loc.exchangeReferralsContactSupportMessage,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       context.loc.exchangeReferralsApplyToJoinMessage,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -78,7 +78,7 @@ class ExchangeReferralsScreen extends StatelessWidget {
                       child: Text(
                         context.loc.exchangeReferralsMissionLink,
                         style: context.font.bodyLarge?.copyWith(
-                          color: context.colour.primary,
+                          color: context.appColors.primary,
                           decoration: TextDecoration.underline,
                         ),
                       ),

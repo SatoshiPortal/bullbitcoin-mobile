@@ -62,7 +62,10 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(context.loc.arkSendRecipientTitle, style: context.font.headlineMedium),
+          title: Text(
+            context.loc.arkSendRecipientTitle,
+            style: context.font.headlineMedium,
+          ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3),
             child: BlocSelector<ArkCubit, ArkState, bool>(
@@ -73,14 +76,14 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                           ? FadingLinearProgress(
                             height: 3,
                             trigger: isLoading,
-                            backgroundColor: context.colour.surface,
-                            foregroundColor: context.colour.primary,
+                            backgroundColor: context.appColors.surface,
+                            foregroundColor: context.appColors.primary,
                           )
                           : const SizedBox(height: 3),
             ),
           ),
         ),
-        backgroundColor: context.colour.secondaryFixedDim,
+        backgroundColor: context.appColors.secondaryFixedDim,
         body: ScrollableColumn(
           padding: EdgeInsets.zero,
           children: [
@@ -119,24 +122,24 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                           focusNode: _focusNode,
                           textInputAction: TextInputAction.done,
                           decoration: InputDecoration(
-                            fillColor: context.colour.onPrimary,
+                            fillColor: context.appColors.onPrimary,
                             filled: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
                               borderSide: BorderSide(
-                                color: context.colour.secondaryFixedDim,
+                                color: context.appColors.secondaryFixedDim,
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
                               borderSide: BorderSide(
-                                color: context.colour.secondaryFixedDim,
+                                color: context.appColors.secondaryFixedDim,
                               ),
                             ),
                             disabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
                               borderSide: BorderSide(
-                                color: context.colour.secondaryFixedDim
+                                color: context.appColors.secondaryFixedDim
                                     .withValues(alpha: 0.5),
                               ),
                             ),
@@ -145,12 +148,12 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                             ),
                             hintText: context.loc.arkSendRecipientHint,
                             hintStyle: context.font.bodyMedium?.copyWith(
-                              color: context.colour.outline,
+                              color: context.appColors.outline,
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 Icons.paste_outlined,
-                                color: context.colour.secondary,
+                                color: context.appColors.secondary,
                               ),
                               onPressed: () {
                                 Clipboard.getData(Clipboard.kTextPlain).then((
@@ -180,7 +183,7 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                               child: Text(
                                 error?.message ?? '',
                                 style: context.font.bodyMedium?.copyWith(
-                                  color: context.colour.error,
+                                  color: context.appColors.error,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -195,8 +198,8 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
                               label: context.loc.arkContinueButton,
                               onPressed: _submit,
                               disabled: _controller.text.isEmpty || isLoading,
-                              bgColor: context.colour.secondary,
-                              textColor: context.colour.onSecondary,
+                              bgColor: context.appColors.secondary,
+                              textColor: context.appColors.onSecondary,
                             );
                           },
                         ),

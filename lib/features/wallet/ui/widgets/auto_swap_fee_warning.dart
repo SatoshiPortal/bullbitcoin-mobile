@@ -45,10 +45,10 @@ class AutoSwapFeeWarning extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: context.colour.surface,
+        color: context.appColors.surface,
         borderRadius: BorderRadius.circular(8),
         // ignore: deprecated_member_use
-        border: Border.all(color: context.colour.error.withOpacity(0.5)),
+        border: Border.all(color: context.appColors.error.withOpacity(0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +56,7 @@ class AutoSwapFeeWarning extends StatelessWidget {
           BBText(
             'Auto Transfer Blocked',
             style: context.font.titleMedium,
-            color: context.colour.error,
+            color: context.appColors.error,
           ),
           const Gap(12),
           BBText(
@@ -74,8 +74,8 @@ class AutoSwapFeeWarning extends StatelessWidget {
                     const BlockAutoSwapUntilNextExecution(),
                   );
                 },
-                bgColor: context.colour.error,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.error,
+                textColor: context.appColors.onSecondary,
                 height: 32,
                 width: 80,
                 textStyle: context.font.bodyMedium,
@@ -88,8 +88,8 @@ class AutoSwapFeeWarning extends StatelessWidget {
                     const ExecuteAutoSwapFeeOverride(),
                   );
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
                 height: 32,
                 width: 80,
                 textStyle: context.font.bodyMedium,

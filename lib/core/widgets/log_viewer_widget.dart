@@ -106,8 +106,8 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             BBButton.big(
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
               outlined: true,
               onPressed: _selectDateRange,
               iconData: Icons.date_range,
@@ -123,7 +123,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                 BBText(
                   'Showing ${logs.length} of ${widget.logs.length} logs',
                   style: context.font.bodySmall?.copyWith(
-                    color: context.colour.onSurface.withValues(alpha: 0.6),
+                    color: context.appColors.onSurface.withValues(alpha: 0.6),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -131,7 +131,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                   const Gap(8),
                   IconButton(
                     onPressed: _clearDateRange,
-                    icon: Icon(Icons.clear, color: context.colour.primary),
+                    icon: Icon(Icons.clear, color: context.appColors.primary),
                     tooltip: 'Clear filter',
                   ),
                 ],
@@ -151,18 +151,18 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                   final parts = logLine.split('\t');
 
                   // color for level
-                  Color iconColor = context.colour.secondary;
+                  Color iconColor = context.appColors.secondary;
                   if (parts.length > 1) {
                     final colorForLevel = switch (parts[1]) {
-                      'FINEST' => Colors.lightGreenAccent,
-                      'FINER' => Colors.lightGreen,
-                      'FINE' => Colors.green,
-                      'CONFIG' => Colors.brown,
-                      'INFO' => Colors.blue,
-                      'WARNING' => Colors.orange,
-                      'SEVERE' => Colors.red,
-                      'SHOUT' => Colors.purple,
-                      _ => Colors.grey,
+                      'FINEST' => context.appColors.success.withValues(alpha: 0.5),
+                      'FINER' => context.appColors.success.withValues(alpha: 0.7),
+                      'FINE' => context.appColors.success,
+                      'CONFIG' => context.appColors.textMuted,
+                      'INFO' => context.appColors.info,
+                      'WARNING' => context.appColors.warning,
+                      'SEVERE' => context.appColors.error,
+                      'SHOUT' => context.appColors.primary,
+                      _ => context.appColors.textMuted,
                     };
                     iconColor = colorForLevel;
                   }
@@ -192,7 +192,7 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                         style: context.font.bodySmall?.copyWith(
                           fontFamily: 'monospace',
                           fontSize: 12,
-                          color: context.colour.onSurface,
+                          color: context.appColors.onSurface,
                         ),
                       ),
                     ],
@@ -208,12 +208,12 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
             BBButton.small(
               onPressed: () => _showConfirmDeleteLogsBottomSheet(context),
               label: 'Delete',
-              bgColor: context.colour.primary,
-              textColor: context.colour.onPrimary,
+              bgColor: context.appColors.primary,
+              textColor: context.appColors.onPrimary,
             ),
             BBButton.small(
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
               onPressed: _shareLogs,
               label: 'Share',
             ),
@@ -237,7 +237,7 @@ Future<void> _showConfirmDeleteLogsBottomSheet(BuildContext context) async {
         maxHeight: MediaQuery.of(context).size.height * 0.3,
       ),
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: context.appColors.onPrimary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Padding(
@@ -261,14 +261,14 @@ Future<void> _showConfirmDeleteLogsBottomSheet(BuildContext context) async {
                     await log.deleteLogs();
                   },
                   label: 'Delete',
-                  bgColor: context.colour.primary,
-                  textColor: context.colour.onPrimary,
+                  bgColor: context.appColors.primary,
+                  textColor: context.appColors.onPrimary,
                 ),
                 BBButton.small(
                   onPressed: () => context.pop(),
                   label: 'Cancel',
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onSecondary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ),

@@ -27,9 +27,7 @@ class ShowAnimatedQrWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => ShowAnimatedQrCubit(psbt: psbt, qrType: qrType),
-      child: _ShowAnimatedQrView(
-        showSlider: showSlider,
-      ),
+      child: _ShowAnimatedQrView(showSlider: showSlider),
     );
   }
 }
@@ -37,9 +35,7 @@ class ShowAnimatedQrWidget extends StatelessWidget {
 class _ShowAnimatedQrView extends StatefulWidget {
   final bool showSlider;
 
-  const _ShowAnimatedQrView({
-    required this.showSlider,
-  });
+  const _ShowAnimatedQrView({required this.showSlider});
 
   @override
   State<_ShowAnimatedQrView> createState() => _ShowAnimatedQrViewState();
@@ -61,7 +57,6 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ShowAnimatedQrCubit, ShowAnimatedQrState>(
@@ -71,12 +66,10 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
             width: 300,
             height: 300,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.appColors.surfaceFixed,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
+            child: const Center(child: CircularProgressIndicator()),
           );
         }
 
@@ -85,14 +78,14 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
             width: 300,
             height: 300,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.appColors.surfaceFixed,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
               child: Text(
                 context.loc.psbtFlowError(state.error!),
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.error,
+                  color: context.appColors.error,
                 ),
               ),
             ),
@@ -104,14 +97,14 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
             width: 300,
             height: 300,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.appColors.surfaceFixed,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
               child: Text(
                 context.loc.psbtFlowNoPartsToDisplay,
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.error,
+                  color: context.appColors.error,
                 ),
               ),
             ),
@@ -120,7 +113,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
 
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.appColors.surfaceFixed,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -133,19 +126,21 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Builder(
                     builder: (context) {
-                      final currentValue = state.fragmentLength.toDouble().clamp(25.0, 200.0);
-                      
+                      final currentValue = state.fragmentLength
+                          .toDouble()
+                          .clamp(25.0, 200.0);
+
                       return Slider(
                         value: currentValue,
                         min: 25.0,
                         max: 200.0,
-                        activeColor: context.colour.secondary,
-                        inactiveColor: context.colour.surfaceContainer,
+                        activeColor: context.appColors.secondary,
+                        inactiveColor: context.appColors.surfaceContainer,
                         onChanged: (value) {
                           final newFragmentLength = value.round();
-                          context.read<ShowAnimatedQrCubit>().updateFragmentLength(
-                            newFragmentLength,
-                          );
+                          context
+                              .read<ShowAnimatedQrCubit>()
+                              .updateFragmentLength(newFragmentLength);
                           _debouncedCallback(newFragmentLength);
                         },
                       );
@@ -157,9 +152,12 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
 
               if (state.parts.length > 1) ...[
                 BBText(
-                  context.loc.psbtFlowPartProgress((state.currentIndex + 1).toString(), state.parts.length.toString()),
+                  context.loc.psbtFlowPartProgress(
+                    (state.currentIndex + 1).toString(),
+                    state.parts.length.toString(),
+                  ),
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.secondary,
+                    color: context.appColors.secondary,
                   ),
                 ),
                 const Gap(8),

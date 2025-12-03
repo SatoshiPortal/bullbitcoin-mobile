@@ -32,12 +32,12 @@ class TxListItem extends StatelessWidget {
             : Icons.arrow_downward;
     final walletColor =
         isOrderType
-            ? context.colour.secondaryFixedDim
+            ? context.appColors.border
             : tx.isOngoingSwap
-            ? context.colour.secondaryContainer.withValues(alpha: 0.3)
+            ? context.appColors.border.withValues(alpha: 0.3)
             : tx.isBitcoin
-            ? context.colour.onTertiary
-            : context.colour.tertiary;
+            ? context.appColors.onTertiary
+            : context.appColors.tertiary;
     final networkLabel =
         isOrderType
             ? tx.order!.orderType.value
@@ -109,7 +109,7 @@ class TxListItem extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8.0),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.surface,
           borderRadius: BorderRadius.circular(2.0),
           boxShadow: const [],
         ),
@@ -120,25 +120,17 @@ class TxListItem extends StatelessWidget {
               decoration: BoxDecoration(
                 color:
                     tx.isOngoingSwap
-                        ? context.colour.secondaryContainer.withValues(
-                          alpha: 0.3,
-                        )
-                        : context.colour.onPrimary,
+                        ? context.appColors.border.withValues(alpha: 0.3)
+                        : context.appColors.surface,
                 border: Border.all(
                   color:
                       tx.isOngoingSwap
-                          ? context.colour.secondary.withValues(alpha: 0.5)
-                          : context.colour.surface,
+                          ? context.appColors.border.withValues(alpha: 0.5)
+                          : context.appColors.border,
                 ),
                 borderRadius: BorderRadius.circular(2.0),
               ),
-              child: Icon(
-                icon,
-                color:
-                    tx.isOngoingSwap
-                        ? context.colour.secondary
-                        : context.colour.secondary,
-              ),
+              child: Icon(icon, color: context.appColors.onSurface),
             ),
             const Gap(16.0),
             Expanded(
@@ -173,7 +165,7 @@ class TxListItem extends StatelessWidget {
                     BBText(
                       label,
                       style: context.font.labelSmall?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.outline,
                       ),
                     ),
                 ],
@@ -194,7 +186,7 @@ class TxListItem extends StatelessWidget {
                   child: BBText(
                     networkLabel,
                     style: context.font.labelSmall?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.appColors.onSurface,
                     ),
                   ),
                 ),
@@ -205,14 +197,14 @@ class TxListItem extends StatelessWidget {
                       BBText(
                         date,
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.outline,
+                          color: context.appColors.textMuted,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.check_circle,
                         size: 12.0,
-                        color: context.colour.inverseSurface,
+                        color: context.appColors.success,
                       ),
                     ],
                   )
@@ -222,7 +214,7 @@ class TxListItem extends StatelessWidget {
                       BBText(
                         tx.order!.orderStatus.value,
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.outline,
+                          color: context.appColors.textMuted,
                         ),
                       ),
                     ],
@@ -235,14 +227,14 @@ class TxListItem extends StatelessWidget {
                       BBText(
                         date ?? '',
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.outline,
+                          color: context.appColors.textMuted,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.check_circle,
                         size: 12.0,
-                        color: context.colour.inverseSurface,
+                        color: context.appColors.success,
                       ),
                     ],
                   )
@@ -253,14 +245,14 @@ class TxListItem extends StatelessWidget {
                       BBText(
                         date ?? '',
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.outline,
+                          color: context.appColors.textMuted,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.check_circle,
                         size: 12.0,
-                        color: context.colour.inverseSurface,
+                        color: context.appColors.success,
                       ),
                     ],
                   )
@@ -270,14 +262,14 @@ class TxListItem extends StatelessWidget {
                       BBText(
                         date,
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.outline,
+                          color: context.appColors.textMuted,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.check_circle,
                         size: 12.0,
-                        color: context.colour.inverseSurface,
+                        color: context.appColors.success,
                       ),
                     ],
                   )
@@ -287,14 +279,14 @@ class TxListItem extends StatelessWidget {
                       BBText(
                         date,
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.secondary,
+                          color: context.appColors.textMuted,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.sync,
                         size: 12.0,
-                        color: context.colour.secondary,
+                        color: context.appColors.textMuted,
                       ),
                     ],
                   )
@@ -304,10 +296,7 @@ class TxListItem extends StatelessWidget {
                       BBText(
                         tx.isOngoingSwap ? 'In Progress' : 'Pending',
                         style: context.font.labelSmall?.copyWith(
-                          color:
-                              tx.isOngoingSwap
-                                  ? context.colour.secondary
-                                  : context.colour.outline,
+                          color: context.appColors.textMuted,
                         ),
                       ),
                       const Gap(4.0),
@@ -315,7 +304,7 @@ class TxListItem extends StatelessWidget {
                         Icon(
                           Icons.sync,
                           size: 12.0,
-                          color: context.colour.secondary,
+                          color: context.appColors.textMuted,
                         ),
                     ],
                   ),

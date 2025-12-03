@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -50,6 +51,12 @@ class SettingsLocator {
       ),
     );
 
+    locator.registerFactory<SetThemeModeUsecase>(
+      () => SetThemeModeUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
     // Blocs
     locator.registerFactory<SettingsCubit>(
       () => SettingsCubit(
@@ -62,6 +69,7 @@ class SettingsLocator {
         setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
         getOldSeedsUsecase: locator<GetOldSeedsUsecase>(),
         setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),
+        setThemeModeUsecase: locator<SetThemeModeUsecase>(),
         revokeArkUsecase: locator<RevokeArkUsecase>(),
       ),
     );

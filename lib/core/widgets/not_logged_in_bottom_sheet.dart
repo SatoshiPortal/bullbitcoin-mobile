@@ -9,11 +9,10 @@ class NotLoggedInBottomSheet extends StatelessWidget {
   const NotLoggedInBottomSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    final theme = Theme.of(context);
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: theme.colorScheme.onPrimary,
+      backgroundColor: context.appColors.onPrimary,
       useRootNavigator: true,
       constraints: const BoxConstraints(maxWidth: double.infinity),
       builder: (context) => const NotLoggedInBottomSheet(),
@@ -36,7 +35,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: context.colour.outline.withValues(alpha: 0.3),
+                  color: context.appColors.outline.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -44,7 +43,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
               Icon(
                 Icons.account_circle_outlined,
                 size: 48,
-                color: context.colour.primary,
+                color: context.appColors.primary,
               ),
               const SizedBox(height: 16),
               BBText(
@@ -58,7 +57,7 @@ class NotLoggedInBottomSheet extends StatelessWidget {
               BBText(
                 'Please log in to your Bull Bitcoin account to access exchange settings.',
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.secondary.withValues(alpha: 0.7),
+                  color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 3,
@@ -71,8 +70,8 @@ class NotLoggedInBottomSheet extends StatelessWidget {
                   Navigator.of(context).pop();
                   context.goNamed(ExchangeRoute.exchangeHome.name);
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onPrimary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onPrimary,
               ),
             ],
           ),

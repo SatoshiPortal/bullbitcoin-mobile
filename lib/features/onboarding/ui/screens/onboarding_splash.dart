@@ -45,7 +45,7 @@ class OnboardingSplash extends StatelessWidget {
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 54,
                       fontWeight: FontWeight.w500,
-                      color: context.colour.onPrimary,
+                      color: context.appColors.onPrimaryFixed,
                       height: 1,
                     ),
                   ),
@@ -54,7 +54,7 @@ class OnboardingSplash extends StatelessWidget {
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 40,
                       fontWeight: FontWeight.w500,
-                      color: context.colour.secondary,
+                      color: context.appColors.secondaryFixed,
                       height: 1,
                     ),
                   ),
@@ -64,7 +64,7 @@ class OnboardingSplash extends StatelessWidget {
                     child: BBText(
                       context.loc.onboardingSplashDescription,
                       style: context.font.labelSmall,
-                      color: context.colour.onPrimary,
+                      color: context.appColors.onPrimaryFixed,
                       textAlign: TextAlign.center,
                       maxLines: 2,
                     ),
@@ -106,7 +106,9 @@ class _Actions extends StatelessWidget {
       children: [
         if (creating || loading) ...[
           Center(
-            child: CircularProgressIndicator(color: context.colour.onPrimary),
+            child: CircularProgressIndicator(
+              color: context.appColors.onPrimaryFixed,
+            ),
           ),
         ] else ...[
           const CreateWalletButton(),
@@ -142,11 +144,12 @@ class _Actions extends StatelessWidget {
               child: Text(
                 'Advanced Options',
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.onPrimary.withValues(alpha: 0.9),
-                  decoration: TextDecoration.underline,
-                  decorationColor: context.colour.onPrimary.withValues(
+                  color: context.appColors.onPrimaryFixed.withValues(
                     alpha: 0.9,
                   ),
+                  decoration: TextDecoration.underline,
+                  decorationColor: context.appColors.onPrimaryFixed
+                      .withValues(alpha: 0.9),
                 ),
               ),
             ),
@@ -165,12 +168,12 @@ class _BG extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          color: context.colour.primary,
+          color: context.appColors.primaryFixed,
           height: double.infinity,
           width: double.infinity,
         ),
         Opacity(
-          opacity: 0.1,
+          opacity: 0.2,
           child: Transform.rotate(
             angle: 3.141,
             child: Image.asset(

@@ -112,8 +112,8 @@ class SwapInProgressPage extends StatelessWidget {
                 if (swap?.status != SwapStatus.completed) ...[
                   InfoCard(
                     description: context.loc.swapDoNotUninstallWarning,
-                    tagColor: context.colour.tertiary,
-                    bgColor: context.colour.secondaryFixed,
+                    tagColor: context.appColors.tertiary,
+                    bgColor: context.appColors.secondaryFixed,
                     boldDescription: true,
                   ),
                   const Gap(16),
@@ -121,8 +121,8 @@ class SwapInProgressPage extends StatelessWidget {
                 BBButton.big(
                   label: context.loc.swapGoHomeButton,
                   onPressed: () => context.goNamed(WalletRoute.walletHome.name),
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onSecondary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
                 ),
                 const Gap(32),
               ],

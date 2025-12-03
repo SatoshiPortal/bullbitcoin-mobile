@@ -31,7 +31,7 @@ class SwapFeesRow extends StatelessWidget {
         Text(
           context.loc.swapTotalFees,
           style: context.font.labelLarge?.copyWith(
-            color: context.colour.surface,
+            color: context.appColors.surface,
           ),
         ),
         const Gap(4),

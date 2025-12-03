@@ -76,14 +76,14 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: context.colour.onSurface,
+              color: context.appColors.onSurface,
             ),
             textAlign: TextAlign.left,
           ),
           const Gap(8.0),
           Material(
             elevation: 4,
-            color: context.colour.onPrimary,
+            color: context.appColors.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -94,7 +94,7 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
                 decoration: const InputDecoration(border: InputBorder.none),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.appColors.secondary,
                 ),
                 value: _institutionNumber,
                 onChanged: (value) {
@@ -130,14 +130,14 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: context.colour.onSurface,
+              color: context.appColors.onSurface,
             ),
             textAlign: TextAlign.left,
           ),
           const Gap(8.0),
           Material(
             elevation: 4,
-            color: context.colour.onPrimary,
+            color: context.appColors.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -148,7 +148,7 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
                 borderRadius: BorderRadius.circular(4.0),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.appColors.secondary,
                 ),
                 value: _accountType,
                 onChanged: (value) {
@@ -196,14 +196,14 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: context.colour.onSurface,
+              color: context.appColors.onSurface,
             ),
             textAlign: TextAlign.left,
           ),
           const Gap(8.0),
           Material(
             elevation: 4,
-            color: context.colour.onPrimary,
+            color: context.appColors.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -214,7 +214,7 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
                 borderRadius: BorderRadius.circular(4.0),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.appColors.secondary,
                 ),
                 value: _documentType,
                 onChanged: (value) {

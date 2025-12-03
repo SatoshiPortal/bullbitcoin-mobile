@@ -149,8 +149,10 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
                   fontSize: 12,
                   color:
                       _securityQuestion.length < 10
-                          ? context.colour.error
-                          : context.colour.onSurface.withValues(alpha: 0.6),
+                          ? context.appColors.error
+                          : context.appColors.onSurface.withValues(
+                            alpha: 0.6,
+                          ),
                 ),
               ),
             ),
@@ -192,7 +194,7 @@ class _InteracEmailCadFormState extends State<InteracEmailCadForm> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: context.colour.onSurface,
+              color: context.appColors.onSurface,
             ),
           ),
           const Gap(8.0),

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -55,11 +56,11 @@ class FundExchangeAccountScreen extends StatelessWidget {
                 const Gap(24.0),
                 CircleAvatar(
                   radius: 32,
-                  backgroundColor: theme.colorScheme.secondaryContainer,
+                  backgroundColor: context.appColors.surfaceContainer,
                   child: Icon(
                     Icons.account_balance,
                     size: 24,
-                    color: theme.colorScheme.onPrimaryContainer,
+                    color: context.appColors.onSurface,
                   ),
                 ),
                 const Gap(8.0),
@@ -86,20 +87,18 @@ class FundExchangeAccountScreen extends StatelessWidget {
                       const FundExchangeCanadaMethods(),
                     FundingJurisdiction.europe =>
                       const FundExchangeEuropeMethods(),
-                    FundingJurisdiction.mexico =>
-                      FundExchangeMethodListTile(
-                        method: FundingMethod.speiTransfer,
-                        title: context.loc.fundExchangeSpeiTransfer,
-                        subtitle: context.loc.fundExchangeSpeiSubtitle,
-                      ),
+                    FundingJurisdiction.mexico => FundExchangeMethodListTile(
+                      method: FundingMethod.speiTransfer,
+                      title: context.loc.fundExchangeSpeiTransfer,
+                      subtitle: context.loc.fundExchangeSpeiSubtitle,
+                    ),
                     FundingJurisdiction.costaRica =>
                       const FundExchangeCostaRicaMethods(),
-                    FundingJurisdiction.argentina =>
-                      FundExchangeMethodListTile(
-                        method: FundingMethod.arsBankTransfer,
-                        title: context.loc.fundExchangeBankTransfer,
-                        subtitle: context.loc.fundExchangeBankTransferSubtitle,
-                      ),
+                    FundingJurisdiction.argentina => FundExchangeMethodListTile(
+                      method: FundingMethod.arsBankTransfer,
+                      title: context.loc.fundExchangeBankTransfer,
+                      subtitle: context.loc.fundExchangeBankTransferSubtitle,
+                    ),
                   },
               ],
             ),

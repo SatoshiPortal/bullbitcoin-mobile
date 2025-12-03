@@ -30,9 +30,9 @@ class BBDropdown<T> extends StatelessWidget {
           popupMenuTheme: PopupMenuThemeData(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4.0),
-              side: BorderSide(color: context.colour.primary, width: 1.0),
+              side: BorderSide(color: context.appColors.primary, width: 1.0),
             ),
-            color: context.colour.onPrimary,
+            color: context.appColors.onPrimary,
             elevation: 8,
           ),
         ),
@@ -54,14 +54,14 @@ class BBDropdown<T> extends StatelessWidget {
             onChanged: onChanged,
             validator: validator,
             hint: hint,
-            dropdownColor: context.colour.onPrimary,
+            dropdownColor: context.appColors.onPrimary,
             menuMaxHeight: 240,
             itemHeight: height,
             alignment: Alignment.center,
             isExpanded: true,
             decoration: InputDecoration(
               filled: true,
-              fillColor: context.colour.onPrimary,
+              fillColor: context.appColors.onPrimary,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4.0),
                 borderSide: BorderSide.none,
@@ -74,7 +74,7 @@ class BBDropdown<T> extends StatelessWidget {
             ),
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: context.colour.secondary,
+              color: context.appColors.secondary,
             ),
           ),
         ),

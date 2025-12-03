@@ -41,8 +41,8 @@ class TorProxyErrorBanner extends StatelessWidget {
       child: InfoCard(
         description:
             'Tor proxy is enabled but cannot connect. Make sure Orbot or similar app is running, or disable Tor proxy in Advanced Options (server will see your IP address).',
-        tagColor: context.colour.error,
-        bgColor: context.colour.error.withValues(alpha: 0.1),
+        tagColor: context.appColors.error,
+        bgColor: context.appColors.errorContainer,
       ),
     );
   }

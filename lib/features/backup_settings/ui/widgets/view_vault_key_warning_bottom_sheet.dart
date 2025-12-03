@@ -24,7 +24,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: context.appColors.onPrimary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
@@ -63,7 +63,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                     BBText(
                       context.loc.backupSettingsKeyWarningBold,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.appColors.secondary,
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 4,
@@ -87,10 +87,10 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                           child: BBButton.big(
                             label: context.loc.cancelButton,
                             onPressed: () => Navigator.of(context).pop(false),
-                            bgColor: Colors.transparent,
+                            bgColor: context.appColors.transparent,
                             outlined: true,
                             textStyle: context.font.headlineLarge,
-                            textColor: context.colour.secondary,
+                            textColor: context.appColors.secondary,
                           ),
                         ),
                         const Gap(16),
@@ -98,9 +98,9 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                           child: BBButton.big(
                             label: context.loc.sendContinue,
                             onPressed: () => context.pop(true),
-                            bgColor: context.colour.secondary,
+                            bgColor: context.appColors.secondary,
                             textStyle: context.font.headlineLarge,
-                            textColor: context.colour.onPrimary,
+                            textColor: context.appColors.onPrimary,
                           ),
                         ),
                       ],

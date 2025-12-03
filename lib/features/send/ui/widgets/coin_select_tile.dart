@@ -52,7 +52,7 @@ class CoinSelectTile extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: context.colour.outlineVariant),
+          border: Border.all(color: context.appColors.outlineVariant),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,14 +65,14 @@ class CoinSelectTile extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(2),
                     ),
-                    tileColor: Colors.transparent,
+                    tileColor: context.appColors.transparent,
                     contentPadding: EdgeInsets.zero,
                     title: Row(
                       children: [
                         BBText(
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
-                            color: context.colour.outlineVariant,
+                            color: context.appColors.outlineVariant,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -81,53 +81,53 @@ class CoinSelectTile extends StatelessWidget {
                     subtitle: BBText(
                       label,
                       style: context.font.labelMedium?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.outline,
                       ),
                     ),
                     trailing: Radio<bool>(
                       value: true,
                       groupValue: selected,
                       onChanged: (_) => onTap(),
-                      activeColor: context.colour.secondary,
+                      activeColor: context.appColors.secondary,
                     ),
                   ),
                   // const SizedBox(height: 4),
                   BBText(
                     '~$fiatEquivalent',
                     style: context.font.labelSmall?.copyWith(
-                      color: context.colour.outlineVariant,
+                      color: context.appColors.outlineVariant,
                     ),
                   ),
                   const SizedBox(height: 12),
 
-                  Divider(color: context.colour.secondaryFixedDim),
+                  Divider(color: context.appColors.secondaryFixedDim),
                   const SizedBox(height: 8),
                   Row(
                     children: [
                       BBText(
                         'Address: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.colour.surfaceContainer,
+                          color: context.appColors.surfaceContainer,
                         ),
                       ),
                       Expanded(
                         child: BBText(
                           StringFormatting.truncateMiddle(address),
                           style: context.font.labelLarge?.copyWith(
-                            color: context.colour.secondary,
+                            color: context.appColors.secondary,
                           ),
                         ),
                       ),
                       BBText(
                         'Type: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.colour.surfaceContainer,
+                          color: context.appColors.surfaceContainer,
                         ),
                       ),
                       BBText(
                         addressType,
                         style: context.font.labelLarge?.copyWith(
-                          color: context.colour.secondary,
+                          color: context.appColors.secondary,
                         ),
                       ),
                     ],

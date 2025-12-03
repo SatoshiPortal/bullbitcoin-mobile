@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 
@@ -14,10 +15,10 @@ class ExchangeAccountScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.account_balance_wallet,
                 size: 64,
-                color: Colors.grey,
+                color: context.appColors.textMuted,
               ),
               const SizedBox(height: 16),
               Text(
@@ -30,7 +31,7 @@ class ExchangeAccountScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 context.loc.exchangeAccountComingSoon,
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(fontSize: 16, color: context.appColors.textMuted),
                 textAlign: TextAlign.center,
               ),
             ],

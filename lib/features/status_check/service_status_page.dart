@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
@@ -12,7 +13,7 @@ class ServiceStatusPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Service Status')),
+      appBar: AppBar(title: Text(context.loc.statusCheckTitle)),
       body: BlocBuilder<ServiceStatusCubit, ServiceStatusState>(
         builder: (context, state) {
           final serviceStatus = state.serviceStatus;
@@ -64,9 +65,11 @@ class ServiceStatusPage extends StatelessWidget {
                           children: [
                             if (serviceStatus.lastChecked != null)
                               BBText(
-                                'Last checked: ${_formatDateTime(serviceStatus.lastChecked!)}',
+                                context.loc.statusCheckLastChecked(
+                                  _formatDateTime(serviceStatus.lastChecked!),
+                                ),
                                 style: context.font.bodySmall,
-                                color: context.colour.onSurfaceVariant,
+                                color: context.appColors.onSurfaceVariant,
                               ),
                           ],
                         ),
@@ -108,13 +111,13 @@ class _ServiceStatusItem extends StatelessWidget {
         BBText(
           service.name,
           style: context.font.bodyMedium,
-          color: context.colour.onSurface,
+          color: context.appColors.onSurface,
         ),
         const Spacer(),
         BBText(
-          _getStatusText(),
+          _getStatusText(context),
           style: context.font.bodySmall,
-          color: context.colour.onSurfaceVariant,
+          color: context.appColors.onSurfaceVariant,
         ),
       ],
     );
@@ -123,22 +126,22 @@ class _ServiceStatusItem extends StatelessWidget {
   Color _getStatusColor(BuildContext context) {
     switch (service.status) {
       case ServiceStatus.online:
-        return context.colour.inverseSurface;
+        return context.appColors.inverseSurface;
       case ServiceStatus.offline:
-        return context.colour.error;
+        return context.appColors.error;
       case ServiceStatus.unknown:
-        return context.colour.surfaceContainerHighest;
+        return context.appColors.surfaceContainerHighest;
     }
   }
 
-  String _getStatusText() {
+  String _getStatusText(BuildContext context) {
     switch (service.status) {
       case ServiceStatus.online:
-        return 'Online';
+        return context.loc.statusCheckOnline;
       case ServiceStatus.offline:
-        return 'Offline';
+        return context.loc.statusCheckOffline;
       case ServiceStatus.unknown:
-        return 'Unknown';
+        return context.loc.statusCheckUnknown;
     }
   }
 }

@@ -46,7 +46,10 @@ class SendConfirmPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.loc.arkSendConfirmTitle, style: context.font.headlineMedium),
+        title: Text(
+          context.loc.arkSendConfirmTitle,
+          style: context.font.headlineMedium,
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child:
@@ -54,8 +57,8 @@ class SendConfirmPage extends StatelessWidget {
                   ? FadingLinearProgress(
                     height: 3,
                     trigger: isLoading,
-                    backgroundColor: context.colour.surface,
-                    foregroundColor: context.colour.primary,
+                    backgroundColor: context.appColors.surface,
+                    foregroundColor: context.appColors.primary,
                   )
                   : const SizedBox(height: 3),
         ),
@@ -89,7 +92,7 @@ class SendConfirmPage extends StatelessWidget {
               Text(
                 error.message,
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.error,
+                  color: context.appColors.error,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -101,8 +104,8 @@ class SendConfirmPage extends StatelessWidget {
                 context.read<ArkCubit>().onSendConfirmed();
               },
               disabled: isLoading,
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
             ),
           ],
         ),
@@ -129,7 +132,7 @@ class SendConfirmationDetailRow extends StatelessWidget {
           Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.surfaceContainer,
+              color: context.appColors.surfaceContainer,
             ),
           ),
           const Gap(8),
@@ -141,7 +144,7 @@ class SendConfirmationDetailRow extends StatelessWidget {
                       value!,
                       textAlign: TextAlign.end,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.outlineVariant,
+                        color: context.appColors.outlineVariant,
                       ),
                     ),
           ),

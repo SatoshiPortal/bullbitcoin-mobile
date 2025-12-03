@@ -62,8 +62,10 @@ class _DcaScreenState extends State<DcaScreen> {
                       title: context.loc.dcaSetupInsufficientBalance,
                       description:
                           context.loc.dcaSetupInsufficientBalanceMessage,
-                      bgColor: context.colour.tertiary.withValues(alpha: 0.1),
-                      tagColor: context.colour.onTertiary,
+                      bgColor: context.appColors.tertiary.withValues(
+                        alpha: 0.1,
+                      ),
+                      tagColor: context.appColors.onTertiary,
                     ),
                     const Gap(16.0),
                     BBButton.big(
@@ -73,8 +75,8 @@ class _DcaScreenState extends State<DcaScreen> {
                           FundExchangeRoute.fundExchangeAccount.name,
                         );
                       },
-                      bgColor: context.colour.primary,
-                      textColor: context.colour.onPrimary,
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
                     ),
                   ] else ...[
                     Padding(
@@ -100,7 +102,9 @@ class _DcaScreenState extends State<DcaScreen> {
                       initialValue: _frequency,
                       validator:
                           (val) =>
-                              val == null ? context.loc.dcaSetupFrequencyError : null,
+                              val == null
+                                  ? context.loc.dcaSetupFrequencyError
+                                  : null,
                       builder: (field) {
                         return DcaFrequencyRadioList(
                           selectedFrequency: field.value,
@@ -128,8 +132,8 @@ class _DcaScreenState extends State<DcaScreen> {
                           );
                         }
                       },
-                      bgColor: context.colour.secondary,
-                      textColor: context.colour.onSecondary,
+                      bgColor: context.appColors.secondary,
+                      textColor: context.appColors.onSecondary,
                     ),
                   ],
                   const Gap(16.0),

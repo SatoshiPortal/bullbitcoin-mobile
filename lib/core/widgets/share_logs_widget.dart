@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/screens/logs_viewer_screen.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -20,7 +21,7 @@ class _ShareLogsWidgetState extends State<ShareLogsWidget> {
       children: [
         ListTile(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-          tileColor: Colors.transparent,
+          tileColor: context.appColors.transparent,
           title: const Text('Share logs'),
           onTap: () => _shareLogs(context),
           trailing: const Icon(Icons.share_sharp),
@@ -28,7 +29,7 @@ class _ShareLogsWidgetState extends State<ShareLogsWidget> {
         const Gap(16),
         ListTile(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-          tileColor: Colors.transparent,
+          tileColor: context.appColors.transparent,
           title: const Text('View logs'),
           onTap: () async {
             final logs = await log.readLogs();
@@ -75,18 +76,17 @@ class _ShareLogsWidgetState extends State<ShareLogsWidget> {
       Text(
         'Error sharing logs: $error',
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 14, color: Colors.white),
+        style: TextStyle(fontSize: 14, color: context.appColors.onPrimary),
       ),
     );
   }
 
   void _showSnackbar(BuildContext context, Widget content) {
-    final theme = Theme.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: content,
         duration: const Duration(seconds: 2),
-        backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
+        backgroundColor: context.appColors.onSurface.withAlpha(204),
         behavior: SnackBarBehavior.floating,
         elevation: 4,
         margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),

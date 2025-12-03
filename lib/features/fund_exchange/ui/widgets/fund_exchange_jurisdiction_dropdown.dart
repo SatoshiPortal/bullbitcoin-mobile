@@ -19,7 +19,8 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
       height: 56,
       child: Material(
         elevation: 4,
-        color: context.colour.onPrimary,
+        shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),
+        color: context.appColors.surface,
         borderRadius: BorderRadius.circular(4.0),
         child: Center(
           child: DropdownButtonFormField<FundingJurisdiction>(
@@ -28,15 +29,19 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
             ),
+            dropdownColor: context.appColors.surface,
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: context.colour.secondary,
+              color: context.appColors.onSurface,
             ),
             value: fundingCountry,
             items: [
               DropdownMenuItem(
                 value: FundingJurisdiction.canada,
-                child: BBText(context.loc.fundExchangeJurisdictionCanada, style: context.font.headlineSmall),
+                child: BBText(
+                  context.loc.fundExchangeJurisdictionCanada,
+                  style: context.font.headlineSmall,
+                ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.europe,
@@ -47,7 +52,10 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.mexico,
-                child: BBText(context.loc.fundExchangeJurisdictionMexico, style: context.font.headlineSmall),
+                child: BBText(
+                  context.loc.fundExchangeJurisdictionMexico,
+                  style: context.font.headlineSmall,
+                ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.costaRica,
