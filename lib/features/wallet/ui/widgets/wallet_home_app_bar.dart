@@ -22,10 +22,6 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       (PriceChartCubit cubit) => cubit.state.showChart,
     );
 
-    final currency = context.select(
-      (PriceChartCubit cubit) => cubit.state.currency ?? 'CAD',
-    );
-
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
@@ -59,7 +55,7 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   size: 24,
                 ),
                 onPressed: () {
-                  context.read<PriceChartCubit>().showChart(currency);
+                  context.read<PriceChartCubit>().showChart();
                 },
               ),
             ),

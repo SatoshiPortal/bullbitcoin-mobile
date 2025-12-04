@@ -112,9 +112,14 @@ class PriceChartCubit extends Cubit<PriceChartState> {
     }
   }
 
-  void showChart(String currency) {
+  Future<void> showChart([String? currency]) async {
     emit(state.copyWith(showChart: true));
-    loadPriceHistory(currency: currency);
+    if (currency != null) {
+      loadPriceHistory(currency: currency);
+    } else {
+      final settings = await _getSettingsUsecase.execute();
+      loadPriceHistory(currency: settings.currencyCode);
+    }
   }
 
   void hideChart() {

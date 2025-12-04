@@ -1,14 +1,44 @@
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+
+extension _CurrencyIconExtension on String {
+  String get currencyIcon {
+    switch (this) {
+      case 'USD':
+        return '🇺🇸';
+      case 'EUR':
+        return '🇪🇺';
+      case 'CAD':
+        return '🇨🇦';
+      case 'CRC':
+        return '🇨🇷';
+      case 'MXN':
+        return '🇲🇽';
+      case 'ARS':
+        return '🇦🇷';
+      case 'COP':
+        return '🇨🇴';
+      case 'sats':
+      case 'BTC':
+      default:
+        return '₿';
+    }
+  }
+}
 
 class PriceChartWidget extends StatelessWidget {
   const PriceChartWidget({super.key});
@@ -41,29 +71,41 @@ class PriceChartWidget extends StatelessWidget {
           return const SizedBox.shrink();
         }
         final selectedIndex = state.selectedDataPointIndex;
-        final currency = state.currency ?? 'CAD';
+        final currency =
+            state.currency ??
+            context.select((SettingsCubit cubit) => cubit.state.currencyCode) ??
+            'CAD';
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 40.0),
-          child: Column(
+          child: Stack(
             children: [
-              const Gap(72),
-              if (selectedIndex != null && selectedIndex < rates.length)
-                _PriceDisplay(rate: rates[selectedIndex], currency: currency)
-              else if (rates.isNotEmpty)
-                _PriceDisplay(rate: rates.last, currency: currency),
-              const Gap(16),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: _Chart(
-                    rates: rates,
-                    selectedIndex: selectedIndex,
-                    onTap: (index) {
-                      context.read<PriceChartCubit>().selectDataPoint(index);
-                    },
+              Column(
+                children: [
+                  const Gap(72),
+                  if (selectedIndex != null && selectedIndex < rates.length)
+                    _PriceDisplay(
+                      rate: rates[selectedIndex],
+                      currency: currency,
+                    )
+                  else if (rates.isNotEmpty)
+                    _PriceDisplay(rate: rates.last, currency: currency),
+                  const Gap(16),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: _Chart(
+                        rates: rates,
+                        selectedIndex: selectedIndex,
+                        onTap: (index) {
+                          context.read<PriceChartCubit>().selectDataPoint(
+                            index,
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
@@ -79,35 +121,132 @@ class _PriceDisplay extends StatelessWidget {
   final Rate rate;
   final String currency;
 
+  Future<void> _openCurrencyBottomSheet(BuildContext context) async {
+    List<String> availableCurrencies;
+
+    try {
+      final blocState = context.read<BitcoinPriceBloc>().state;
+      if (blocState.availableCurrencies != null &&
+          blocState.availableCurrencies!.isNotEmpty) {
+        availableCurrencies = blocState.availableCurrencies!;
+      } else {
+        final usecase = locator<GetAvailableCurrenciesUsecase>();
+        availableCurrencies = await usecase.execute();
+      }
+    } catch (e) {
+      return;
+    }
+
+    if (availableCurrencies.isEmpty || !context.mounted) {
+      return;
+    }
+
+    final selectedCurrency = await showModalBottomSheet<String?>(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      isDismissible: true,
+      useSafeArea: true,
+      backgroundColor: context.appColors.secondaryFixedDim,
+      constraints: const BoxConstraints(maxWidth: double.infinity),
+      builder: (sheetContext) {
+        return CurrencyBottomSheet(
+          availableCurrencies: availableCurrencies,
+          selectedValue: currency,
+        );
+      },
+    );
+
+    if (selectedCurrency != null &&
+        selectedCurrency != currency &&
+        context.mounted) {
+      context.read<PriceChartCubit>().changeCurrency(selectedCurrency);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final price = rate.indexPrice ?? rate.price ?? 0.0;
     final dateFormat = DateFormat('MMM d, yyyy HH:mm');
     final date = rate.createdAt;
 
-    return Column(
-      children: [
-        BBText(
-          currency,
-          style: context.font.bodyMedium?.copyWith(
-            color: context.appColors.onPrimary.withValues(alpha: 0.7),
-          ),
-        ),
-        const Gap(4),
-        BBText(
-          NumberFormat.currency(symbol: '', decimalDigits: 2).format(price),
-          style: context.font.displaySmall?.copyWith(
-            color: context.appColors.onPrimary,
-          ),
-        ),
-        const Gap(4),
-        BBText(
-          dateFormat.format(date.toLocal()),
-          style: context.font.bodySmall?.copyWith(
-            color: context.appColors.onPrimary.withValues(alpha: 0.6),
-          ),
-        ),
-      ],
+    return Builder(
+      builder: (builderContext) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                _openCurrencyBottomSheet(builderContext);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 16.0,
+                ),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      currency.currencyIcon,
+                      style: context.font.headlineSmall,
+                    ),
+                    const Gap(6),
+                    BBText(
+                      currency,
+                      style: context.font.bodyMedium?.copyWith(
+                        color: context.appColors.onPrimary.withValues(
+                          alpha: 0.7,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const Gap(4),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                _openCurrencyBottomSheet(builderContext);
+              },
+              child: Center(
+                child: BBText(
+                  NumberFormat.currency(
+                    symbol: '',
+                    decimalDigits: 2,
+                  ).format(price),
+                  style: context.font.displaySmall?.copyWith(
+                    color: context.appColors.onPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            const Gap(4),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                _openCurrencyBottomSheet(builderContext);
+              },
+              child: Center(
+                child: BBText(
+                  dateFormat.format(date.toLocal()),
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.onPrimary.withValues(alpha: 0.6),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -86,7 +86,6 @@ class ExchangeHomeScreen extends StatelessWidget {
                   BlocBuilder<PriceChartCubit, PriceChartState>(
                     builder: (context, priceChartState) {
                       final showChart = priceChartState.showChart;
-                      final currency = priceChartState.currency ?? 'CAD';
 
                       return SliverAppBar(
                         backgroundColor: Colors.transparent,
@@ -107,9 +106,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                               if (showChart) {
                                 context.read<PriceChartCubit>().hideChart();
                               } else {
-                                context.read<PriceChartCubit>().showChart(
-                                  currency,
-                                );
+                                context.read<PriceChartCubit>().showChart();
                               }
                             },
                           ),
