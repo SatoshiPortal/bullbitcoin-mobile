@@ -1879,31 +1879,11 @@
   "@payNotAvailable": {
     "description": "Texto para información no disponible"
   },
-  "payContinue": "Continuar",
-  "@payContinue": {
-    "description": "Etiqueta del botón para continuar"
-  },
-  "paySelectNetwork": "Seleccionar red",
-  "@paySelectNetwork": {
-    "description": "Título de la barra de aplicación para la pantalla de selección de red"
-  },
-  "payHowToPayInvoice": "¿Cómo desea pagar esta factura?",
-  "@payHowToPayInvoice": {
-    "description": "Pregunta para seleccionar la red de pago"
-  },
-  "payBitcoinOnchain": "Bitcoin on-chain",
+              "payBitcoinOnchain": "Bitcoin on-chain",
   "@payBitcoinOnchain": {
     "description": "Opción para pago Bitcoin on-chain"
   },
-  "payLightningNetwork": "Lightning Network",
-  "@payLightningNetwork": {
-    "description": "Opción para pago Lightning Network"
-  },
-  "payLiquidNetwork": "Liquid Network",
-  "@payLiquidNetwork": {
-    "description": "Opción para pago Liquid Network"
-  },
-  "payAboveMaxAmount": "Está intentando pagar un monto superior al monto máximo que se puede pagar con esta billetera.",
+          "payAboveMaxAmount": "Está intentando pagar un monto superior al monto máximo que se puede pagar con esta billetera.",
   "@payAboveMaxAmount": {
     "description": "Mensaje de error cuando el monto de pago excede el máximo"
   },
@@ -1931,15 +1911,7 @@
   "@payPaymentInProgressDescription": {
     "description": "Descripción para el pago en curso"
   },
-  "payInvalidState": "Estado inválido",
-  "@payInvalidState": {
-    "description": "Mensaje de error para estado inválido"
-  },
-  "payPleasePayInvoice": "Por favor, pague esta factura",
-  "@payPleasePayInvoice": {
-    "description": "Instrucción para pagar la factura"
-  },
-  "payPriceRefreshIn": "El precio se actualizará en ",
+          "payPriceRefreshIn": "El precio se actualizará en ",
   "@payPriceRefreshIn": {
     "description": "Texto antes del temporizador de cuenta regresiva"
   },
@@ -1975,99 +1947,11 @@
   "@payCopied": {
     "description": "Mensaje de éxito después de copiar"
   },
-  "payPayee": "Beneficiario",
-  "@payPayee": {
-    "description": "Etiqueta para el beneficiario en el pago de factura"
-  },
-  "payAccount": "Cuenta",
-  "@payAccount": {
-    "description": "Etiqueta para la información de cuenta"
-  },
-  "payAllCountries": "Todos los países",
-  "@payAllCountries": {
-    "description": "Opción de filtro para todos los países"
-  },
-  "payAllTypes": "Todos los tipos",
-  "@payAllTypes": {
-    "description": "Opción de filtro para todos los tipos"
-  },
-  "paySelectRecipient": "Seleccionar destinatario",
-  "@paySelectRecipient": {
-    "description": "Título de la barra de aplicación para la pantalla de selección de destinatario"
-  },
-  "payWhoAreYouPaying": "¿A quién está pagando?",
-  "@payWhoAreYouPaying": {
-    "description": "Pregunta para la selección de destinatario"
-  },
-  "payNewRecipients": "Nuevos destinatarios",
-  "@payNewRecipients": {
-    "description": "Etiqueta de pestaña para nuevos destinatarios"
-  },
-  "payMyFiatRecipients": "Mis destinatarios fiat",
-  "@payMyFiatRecipients": {
-    "description": "Etiqueta de pestaña para destinatarios fiat guardados"
-  },
-  "payConfirmPayment": "Confirmar pago",
-  "@payConfirmPayment": {
-    "description": "Título para la pantalla de confirmación de pago"
-  },
-  "payRecipientDetails": "Detalles del destinatario",
-  "@payRecipientDetails": {
-    "description": "Etiqueta para la sección de detalles del destinatario"
-  },
-  "payPayinAmount": "Monto a pagar",
-  "@payPayinAmount": {
-    "description": "Etiqueta para el monto a pagar"
-  },
-  "payExchangeRate": "Tasa de cambio",
-  "@payExchangeRate": {
-    "description": "Etiqueta para la tasa de cambio"
-  },
-  "payPayFromWallet": "Pagar desde billetera",
-  "@payPayFromWallet": {
-    "description": "Etiqueta para la selección de billetera"
-  },
-  "payInstantPayments": "Pagos instantáneos",
-  "@payInstantPayments": {
-    "description": "Descripción para la billetera Lightning"
-  },
-  "paySecureBitcoinWallet": "Billetera Bitcoin segura",
-  "@paySecureBitcoinWallet": {
-    "description": "Descripción para la billetera Bitcoin estándar"
-  },
-  "payFeePriority": "Prioridad de comisión",
-  "@payFeePriority": {
-    "description": "Etiqueta para el ajuste de prioridad de comisión"
-  },
-  "payFastest": "Más rápido",
-  "@payFastest": {
-    "description": "Opción de prioridad de comisión más rápida"
-  },
-  "payNetworkFees": "Comisiones de red",
-  "@payNetworkFees": {
-    "description": "Etiqueta para las comisiones de red"
-  },
-  "payCalculating": "Calculando...",
-  "@payCalculating": {
-    "description": "Texto de estado mientras se calculan las comisiones"
-  },
-  "payAdvancedSettings": "Configuración avanzada",
-  "@payAdvancedSettings": {
-    "description": "Etiqueta del botón para configuración avanzada"
-  },
-  "paySelectWallet": "Seleccionar billetera",
-  "@paySelectWallet": {
-    "description": "Título de la barra de aplicación para la pantalla de selección de billetera"
-  },
-  "payWhichWallet": "¿Desde qué billetera desea pagar?",
+                                                                                      "payWhichWallet": "¿Desde qué billetera desea pagar?",
   "@payWhichWallet": {
     "description": "Pregunta para la selección de billetera"
   },
-  "payExternalWallet": "Billetera externa",
-  "@payExternalWallet": {
-    "description": "Opción para pago desde billetera externa"
-  },
-  "payExternalWalletDescription": "Pagar desde otra billetera Bitcoin",
+      "payExternalWalletDescription": "Pagar desde otra billetera Bitcoin",
   "@payExternalWalletDescription": {
     "description": "Descripción para la opción de billetera externa"
   },
@@ -2075,19 +1959,11 @@
   "@payInsufficientBalance": {
     "description": "Mensaje de error para saldo insuficiente"
   },
-  "payAdvancedOptions": "Opciones avanzadas",
-  "@payAdvancedOptions": {
-    "description": "Título para el panel de opciones avanzadas"
-  },
-  "payRbfActivated": "Replace-by-fee activado",
+      "payRbfActivated": "Replace-by-fee activado",
   "@payRbfActivated": {
     "description": "Etiqueta para el interruptor RBF"
   },
-  "paySelectCoinsManually": "Seleccionar monedas manualmente",
-  "@paySelectCoinsManually": {
-    "description": "Etiqueta para la selección manual de monedas"
-  },
-  "transactionTitle": "Transacciones",
+      "transactionTitle": "Transacciones",
   "@transactionTitle": {
     "description": "Título para la pantalla de transacciones"
   },
@@ -3354,15 +3230,7 @@
   "@fundExchangeErrorLoadingDetails": {
     "description": "Mensaje de error cuando los detalles de financiamiento no se pueden cargar"
   },
-  "fundExchangeSinpeTitle": "SINPE Móvil",
-  "@fundExchangeSinpeTitle": {
-    "description": "Título de pantalla para el método de pago SINPE Móvil (Costa Rica)"
-  },
-  "fundExchangeSinpeDescription": "Envía los fondos a nuestro número de teléfono SINPE Móvil. Debes enviar los fondos desde el mismo número de teléfono asociado a tu cuenta Bull Bitcoin. Si envías el pago desde un número diferente, o si le pides a alguien más que haga el pago por ti, ",
-  "@fundExchangeSinpeDescription": {
-    "description": "Descripción principal para el método de pago SINPE Móvil explicando los requisitos"
-  },
-  "fundExchangeSinpeDescriptionBold": "será rechazado.",
+          "fundExchangeSinpeDescriptionBold": "será rechazado.",
   "@fundExchangeSinpeDescriptionBold": {
     "description": "Texto en negrita advirtiendo que el pago desde un número incorrecto será rechazado"
   },
@@ -3386,11 +3254,7 @@
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Etiqueta para el nombre del destinatario en transferencia SINPE"
   },
-  "fundExchangeCrIbanCrcTitle": "Transferencia Bancaria (CRC)",
-  "@fundExchangeCrIbanCrcTitle": {
-    "description": "Título de pantalla para transferencia bancaria IBAN de Costa Rica en CRC (Colón)"
-  },
-  "fundExchangeCrIbanCrcDescription": "Envía una transferencia bancaria desde tu cuenta bancaria usando los detalles a continuación ",
+      "fundExchangeCrIbanCrcDescription": "Envía una transferencia bancaria desde tu cuenta bancaria usando los detalles a continuación ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "Primera parte de la descripción para transferencia CR IBAN CRC"
   },
@@ -3430,11 +3294,7 @@
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
     "description": "Etiqueta para Cédula Jurídica (número de identificación legal en Costa Rica)"
   },
-  "fundExchangeCrIbanUsdTitle": "Transferencia Bancaria (USD)",
-  "@fundExchangeCrIbanUsdTitle": {
-    "description": "Título de pantalla para transferencia bancaria IBAN de Costa Rica en USD"
-  },
-  "fundExchangeCrIbanUsdDescription": "Envía una transferencia bancaria desde tu cuenta bancaria usando los detalles a continuación ",
+      "fundExchangeCrIbanUsdDescription": "Envía una transferencia bancaria desde tu cuenta bancaria usando los detalles a continuación ",
   "@fundExchangeCrIbanUsdDescription": {
     "description": "Primera parte de la descripción para transferencia CR IBAN USD"
   },
@@ -4525,10 +4385,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
-        "type": "String"
-      }
-    }
+      "currency": {}    }
   },
   "swapValidationSelectFromWallet": "Por favor seleccione una billetera de origen",
   "@swapValidationSelectFromWallet": {
@@ -5392,11 +5249,7 @@
   "@payInvoiceExpired": {
     "description": "Error message when Lightning invoice has expired"
   },
-  "payInsufficientBalance": "Saldo insuficiente",
-  "@payInsufficientBalance": {
-    "description": "Error message when wallet balance is too low for payment"
-  },
-  "payNetworkError": "Error de red. Por favor intente nuevamente",
+      "payNetworkError": "Error de red. Por favor intente nuevamente",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
@@ -5428,15 +5281,7 @@
   "@payEnterInvoice": {
     "description": "Placeholder text for invoice input field"
   },
-  "payAmount": "Monto",
-  "@payAmount": {
-    "description": "Label for payment amount field"
-  },
-  "payFee": "Comisión",
-  "@payFee": {
-    "description": "Label for payment fee field"
-  },
-  "payTotal": "Total",
+          "payTotal": "Total",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
   },
@@ -5444,11 +5289,7 @@
   "@payDescription": {
     "description": "Label for payment description/memo field"
   },
-  "payRecipient": "Destinatario",
-  "@payRecipient": {
-    "description": "Label for payment recipient field"
-  },
-  "payCancelPayment": "Cancelar Pago",
+      "payCancelPayment": "Cancelar Pago",
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
@@ -6822,11 +6663,7 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-  "testBackupTitle": "Probar su billetera",
-  "@testBackupTitle": {
-    "description": "AppBar title for test backup options screen"
-  },
-  "testBackupWalletTitle": "Probar {walletName}",
+      "testBackupWalletTitle": "Probar {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",
     "placeholders": {
@@ -9962,11 +9799,7 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "electrumAddCustomServer": "Agregar servidor personalizado",
-  "@electrumAddCustomServer": {
-    "description": "Button label to add a custom server"
-  },
-  "electrumLoadFailedError": "Error al cargar los servidores{reason}",
+      "electrumLoadFailedError": "Error al cargar los servidores{reason}",
   "@electrumLoadFailedError": {
     "description": "Error message when loading servers fails",
     "placeholders": {
@@ -10201,11 +10034,7 @@
   "@arkSendRecipientTitle": {
     "description": "Title for the ark send recipient page"
   },
-  "arkSendRecipientHint": "Ingrese una dirección de pago o factura",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address input field"
-  },
-  "arkSendRecipientError": "Por favor ingrese un destinatario",
+      "arkSendRecipientError": "Por favor ingrese un destinatario",
   "@arkSendRecipientError": {
     "description": "Error message when recipient field is empty"
   },
@@ -10701,15 +10530,8 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
-        "type": "String",
-        "description": "The purchase frequency (e.g., 'day', 'week')"
-      },
-      "network": {
-        "type": "String",
-        "description": "The network being used (e.g., 'Bitcoin Network')"
-      }
-    }
+      "frequency": {},
+      "network": {}    }
   },
   "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
   "@exchangeDcaAddressDisplay": {
