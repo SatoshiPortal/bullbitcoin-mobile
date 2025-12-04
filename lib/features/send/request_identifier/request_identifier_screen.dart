@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -23,7 +24,7 @@ class RequestIdentifierScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Send',
+          title: context.loc.sendTitle,
           color: context.appColors.secondaryFixedDim,
           onBack: () => context.pop(),
         ),
@@ -71,7 +72,7 @@ class RequestIdentifierScreen extends StatelessWidget {
                       children: [
                         const Gap(32),
                         BBText(
-                          "Recipient's address or invoice",
+                          context.loc.sendRecipientAddressOrInvoice,
                           style: context.font.bodyMedium,
                         ),
                         const Gap(16),
@@ -109,7 +110,7 @@ class PasteRequestWidget extends StatelessWidget {
       onlyPaste: true,
       onChanged: cubit.updateRawRequest,
       value: address,
-      hint: 'Paste a payment address or invoice',
+      hint: context.loc.sendPasteAddressOrInvoice,
       hintStyle: context.font.bodyLarge?.copyWith(
         color: context.appColors.surfaceContainer,
       ),
@@ -167,7 +168,7 @@ class ContinueButtonWidget extends StatelessWidget {
     final cubit = context.read<RequestIdentifierCubit>();
 
     return BBButton.big(
-      label: 'Continue',
+      label: context.loc.sendContinue,
       onPressed: cubit.validatePaymentRequest,
       disabled: !hasRequest || hasError,
       bgColor: context.appColors.secondary,

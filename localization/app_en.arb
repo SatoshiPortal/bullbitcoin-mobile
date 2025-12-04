@@ -1879,31 +1879,11 @@
   "@payNotAvailable": {
     "description": "Placeholder for unavailable information"
   },
-  "payContinue": "Continue",
-  "@payContinue": {
-    "description": "Button label to continue"
-  },
-  "paySelectNetwork": "Select Network",
-  "@paySelectNetwork": {
-    "description": "AppBar title for network selection screen"
-  },
-  "payHowToPayInvoice": "How do you want to pay this invoice?",
-  "@payHowToPayInvoice": {
-    "description": "Question prompt for selecting payment network"
-  },
-  "payBitcoinOnchain": "Bitcoin on-chain",
+              "payBitcoinOnchain": "Bitcoin on-chain",
   "@payBitcoinOnchain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "payLightningNetwork": "Lightning Network",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "payLiquidNetwork": "Liquid Network",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "payAboveMaxAmount": "You are trying to pay above the maximum amount that can be paid with this wallet.",
+          "payAboveMaxAmount": "You are trying to pay above the maximum amount that can be paid with this wallet.",
   "@payAboveMaxAmount": {
     "description": "Error message when payment amount exceeds maximum"
   },
@@ -1931,15 +1911,7 @@
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "payInvalidState": "Invalid state",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "payPleasePayInvoice": "Please pay this invoice",
-  "@payPleasePayInvoice": {
-    "description": "Instruction to pay invoice"
-  },
-  "payPriceRefreshIn": "Price will refresh in ",
+          "payPriceRefreshIn": "Price will refresh in ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
@@ -1975,99 +1947,11 @@
   "@payCopied": {
     "description": "Success message after copying"
   },
-  "payPayee": "Payee",
-  "@payPayee": {
-    "description": "Label for payee in bill payment"
-  },
-  "payAccount": "Account",
-  "@payAccount": {
-    "description": "Label for account information"
-  },
-  "payAllCountries": "All countries",
-  "@payAllCountries": {
-    "description": "Filter option for all countries"
-  },
-  "payAllTypes": "All types",
-  "@payAllTypes": {
-    "description": "Filter option for all types"
-  },
-  "paySelectRecipient": "Select recipient",
-  "@paySelectRecipient": {
-    "description": "AppBar title for recipient selection screen"
-  },
-  "payWhoAreYouPaying": "Who are you paying?",
-  "@payWhoAreYouPaying": {
-    "description": "Question prompt for recipient selection"
-  },
-  "payNewRecipients": "New recipients",
-  "@payNewRecipients": {
-    "description": "Tab label for new recipients"
-  },
-  "payMyFiatRecipients": "My fiat recipients",
-  "@payMyFiatRecipients": {
-    "description": "Tab label for saved fiat recipients"
-  },
-  "payConfirmPayment": "Confirm payment",
-  "@payConfirmPayment": {
-    "description": "Title for payment confirmation screen"
-  },
-  "payRecipientDetails": "Recipient details",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details section"
-  },
-  "payPayinAmount": "Payin amount",
-  "@payPayinAmount": {
-    "description": "Label for payin amount"
-  },
-  "payExchangeRate": "Exchange rate",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
-  },
-  "payPayFromWallet": "Pay from wallet",
-  "@payPayFromWallet": {
-    "description": "Label for wallet selection"
-  },
-  "payInstantPayments": "Instant payments",
-  "@payInstantPayments": {
-    "description": "Description for Lightning wallet"
-  },
-  "paySecureBitcoinWallet": "Secure Bitcoin wallet",
-  "@paySecureBitcoinWallet": {
-    "description": "Description for standard Bitcoin wallet"
-  },
-  "payFeePriority": "Fee Priority",
-  "@payFeePriority": {
-    "description": "Label for fee priority setting"
-  },
-  "payFastest": "Fastest",
-  "@payFastest": {
-    "description": "Fastest fee priority option"
-  },
-  "payNetworkFees": "Network fees",
-  "@payNetworkFees": {
-    "description": "Label for network fees"
-  },
-  "payCalculating": "Calculating...",
-  "@payCalculating": {
-    "description": "Status text while calculating fees"
-  },
-  "payAdvancedSettings": "Advanced Settings",
-  "@payAdvancedSettings": {
-    "description": "Button label for advanced settings"
-  },
-  "paySelectWallet": "Select Wallet",
-  "@paySelectWallet": {
-    "description": "AppBar title for wallet selection screen"
-  },
-  "payWhichWallet": "Which wallet do you want to pay from?",
+                                                                                      "payWhichWallet": "Which wallet do you want to pay from?",
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"
   },
-  "payExternalWallet": "External wallet",
-  "@payExternalWallet": {
-    "description": "Option for external wallet payment"
-  },
-  "payExternalWalletDescription": "Pay from another Bitcoin wallet",
+      "payExternalWalletDescription": "Pay from another Bitcoin wallet",
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
   },
@@ -2075,19 +1959,11 @@
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
   },
-  "payAdvancedOptions": "Advanced options",
-  "@payAdvancedOptions": {
-    "description": "Title for advanced options bottom sheet"
-  },
-  "payRbfActivated": "Replace-by-fee activated",
+      "payRbfActivated": "Replace-by-fee activated",
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
   },
-  "paySelectCoinsManually": "Select coins manually",
-  "@paySelectCoinsManually": {
-    "description": "Label for manual coin selection"
-  },
-  "transactionTitle": "Transactions",
+      "transactionTitle": "Transactions",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
   },
@@ -3354,15 +3230,7 @@
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
-  "fundExchangeSinpeTitle": "SINPE Móvil",
-  "@fundExchangeSinpeTitle": {
-    "description": "Screen title for SINPE Móvil payment method (Costa Rica)"
-  },
-  "fundExchangeSinpeDescription": "Send funds to our SINPE Móvil phone number. You must send funds from the same phone number associated with your Bull Bitcoin account. If you send payment from a different number, or if you ask someone else to make the payment for you, ",
-  "@fundExchangeSinpeDescription": {
-    "description": "Main description for SINPE Móvil payment method explaining requirements"
-  },
-  "fundExchangeSinpeDescriptionBold": "it will be rejected.",
+          "fundExchangeSinpeDescriptionBold": "it will be rejected.",
   "@fundExchangeSinpeDescriptionBold": {
     "description": "Bold text warning that payment from wrong number will be rejected"
   },
@@ -3386,11 +3254,7 @@
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
   },
-  "fundExchangeCrIbanCrcTitle": "Bank Transfer (CRC)",
-  "@fundExchangeCrIbanCrcTitle": {
-    "description": "Screen title for Costa Rica IBAN bank transfer in CRC (Colón)"
-  },
-  "fundExchangeCrIbanCrcDescription": "Send a bank transfer from your bank account using the details below ",
+      "fundExchangeCrIbanCrcDescription": "Send a bank transfer from your bank account using the details below ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
   },
@@ -3430,11 +3294,7 @@
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica)"
   },
-  "fundExchangeCrIbanUsdTitle": "Bank Transfer (USD)",
-  "@fundExchangeCrIbanUsdTitle": {
-    "description": "Screen title for Costa Rica IBAN bank transfer in USD"
-  },
-  "fundExchangeCrIbanUsdDescription": "Send a bank transfer from your bank account using the details below ",
+      "fundExchangeCrIbanUsdDescription": "Send a bank transfer from your bank account using the details below ",
   "@fundExchangeCrIbanUsdDescription": {
     "description": "First part of description for CR IBAN USD transfer"
   },
@@ -4525,10 +4385,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
-        "type": "String"
-      }
-    }
+      "currency": {}    }
   },
   "swapValidationSelectFromWallet": "Please select a wallet to transfer from",
   "@swapValidationSelectFromWallet": {
@@ -5392,11 +5249,7 @@
   "@payInvoiceExpired": {
     "description": "Error message when Lightning invoice has expired"
   },
-  "payInsufficientBalance": "Insufficient balance",
-  "@payInsufficientBalance": {
-    "description": "Error message when wallet balance is too low for payment"
-  },
-  "payNetworkError": "Network error. Please try again",
+      "payNetworkError": "Network error. Please try again",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
@@ -5428,15 +5281,7 @@
   "@payEnterInvoice": {
     "description": "Placeholder text for invoice input field"
   },
-  "payAmount": "Amount",
-  "@payAmount": {
-    "description": "Label for payment amount field"
-  },
-  "payFee": "Fee",
-  "@payFee": {
-    "description": "Label for payment fee field"
-  },
-  "payTotal": "Total",
+          "payTotal": "Total",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
   },
@@ -6082,6 +5927,229 @@
         "type": "String"
       }
     }
+  },
+  "sendSwapId": "Swap ID",
+  "@sendSwapId": {
+    "description": "Label for swap identifier in transaction details"
+  },
+  "sendSendAmount": "Send Amount",
+  "@sendSendAmount": {
+    "description": "Label for amount being sent in swap"
+  },
+  "sendReceiveAmount": "Receive Amount",
+  "@sendReceiveAmount": {
+    "description": "Label for amount being received in swap"
+  },
+  "sendSendNetworkFee": "Send Network Fee",
+  "@sendSendNetworkFee": {
+    "description": "Label for network fee on send side of swap"
+  },
+  "sendTransferFee": "Transfer Fee",
+  "@sendTransferFee": {
+    "description": "Label for total swap transfer fee"
+  },
+  "sendTransferFeeDescription": "This is the total fee deducted from the amount sent",
+  "@sendTransferFeeDescription": {
+    "description": "Explanation of what the transfer fee represents"
+  },
+  "sendReceiveNetworkFee": "Receive Network Fee",
+  "@sendReceiveNetworkFee": {
+    "description": "Label for network fee on receive side"
+  },
+  "sendServerNetworkFees": "Server Network Fees",
+  "@sendServerNetworkFees": {
+    "description": "Label for Boltz server fees"
+  },
+  "sendConfirmSend": "Confirm Send",
+  "@sendConfirmSend": {
+    "description": "Title for send confirmation screen"
+  },
+  "sendSending": "Sending",
+  "@sendSending": {
+    "description": "Title shown while transaction is being sent"
+  },
+  "sendBroadcastingTransaction": "Broadcasting the transaction.",
+  "@sendBroadcastingTransaction": {
+    "description": "Message shown while broadcasting transaction to network"
+  },
+  "sendSwapInProgressInvoice": "The swap is in progress. The invoice will be paid in a few seconds.",
+  "@sendSwapInProgressInvoice": {
+    "description": "Message for Liquid swap in progress"
+  },
+  "sendSwapInProgressBitcoin": "The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
+  "@sendSwapInProgressBitcoin": {
+    "description": "Message for Bitcoin swap in progress"
+  },
+  "sendSwapRefundInProgress": "Swap Refund In Progress",
+  "@sendSwapRefundInProgress": {
+    "description": "Title when swap failed and refund is processing"
+  },
+  "sendSwapFailed": "The swap failed. Your refund will be processed shortly.",
+  "@sendSwapFailed": {
+    "description": "Message explaining swap failure and refund"
+  },
+  "sendSwapRefundCompleted": "Swap Refund Completed",
+  "@sendSwapRefundCompleted": {
+    "description": "Title when refund has completed"
+  },
+  "sendRefundProcessed": "Your refund has been processed.",
+  "@sendRefundProcessed": {
+    "description": "Message confirming refund completion"
+  },
+  "sendInvoicePaid": "Invoice Paid",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "sendPaymentProcessing": "The payment is being processed. It may take up to a minute",
+  "@sendPaymentProcessing": {
+    "description": "Message while payment processes"
+  },
+  "sendPaymentWillTakeTime": "Payment Will Take Time",
+  "@sendPaymentWillTakeTime": {
+    "description": "Title warning of delayed payment"
+  },
+  "sendSwapInitiated": "Swap Initiated",
+  "@sendSwapInitiated": {
+    "description": "Title when chain swap begins"
+  },
+  "sendSwapWillTakeTime": "It will take a while to confirm",
+  "@sendSwapWillTakeTime": {
+    "description": "Message warning swap confirmation takes time"
+  },
+  "sendSuccessfullySent": "Successfully Sent",
+  "@sendSuccessfullySent": {
+    "description": "Title for successful send completion"
+  },
+  "sendViewDetails": "View Details",
+  "@sendViewDetails": {
+    "description": "Button to view transaction details"
+  },
+  "sendShowPsbt": "Show PSBT",
+  "@sendShowPsbt": {
+    "description": "Button to display PSBT for external signing"
+  },
+  "sendSignWithLedger": "Sign with Ledger",
+  "@sendSignWithLedger": {
+    "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSignWithBitBox": "Sign with BitBox",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
+  },
+  "sendTransactionSignedLedger": "Transaction signed successfully with Ledger",
+  "@sendTransactionSignedLedger": {
+    "description": "Success message after Ledger signing"
+  },
+  "sendHighFeeWarningDescription": "Total fee is {feePercent}% of the amount you are sending",
+  "@sendHighFeeWarningDescription": {
+    "description": "Warning message showing fee as percentage of send amount",
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEnterAbsoluteFee": "Enter absolute fee in sats",
+  "@sendEnterAbsoluteFee": {
+    "description": "Placeholder for absolute fee input field"
+  },
+  "sendEnterRelativeFee": "Enter relative fee in sats/vB",
+  "@sendEnterRelativeFee": {
+    "description": "Placeholder for relative fee rate input field"
+  },
+  "sendErrorArkExperimentalOnly": "ARK payment requests are available from experimental Ark feature only.",
+  "@sendErrorArkExperimentalOnly": {
+    "description": "Error when ARK payment is attempted without experimental feature enabled"
+  },
+  "sendErrorSwapCreationFailed": "Failed to create swap.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorInsufficientBalanceForPayment": "Not enough balance to cover this payment",
+  "@sendErrorInsufficientBalanceForPayment": {
+    "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendErrorInvalidAddressOrInvoice": "Invalid Bitcoin Payment Address or Invoice",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "sendErrorBuildFailed": "Build Failed",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorConfirmationFailed": "Confirmation Failed",
+  "@sendErrorConfirmationFailed": {
+    "description": "Error title when transaction confirmation fails"
+  },
+  "sendErrorInsufficientBalanceForSwap": "Not enough balance to pay this swap via Liquid and not within swap limits to pay via Bitcoin.",
+  "@sendErrorInsufficientBalanceForSwap": {
+    "description": "Error when balance insufficient for swap through either network"
+  },
+  "sendErrorAmountBelowSwapLimits": "Amount is below swap limits",
+  "@sendErrorAmountBelowSwapLimits": {
+    "description": "Error when amount is below minimum swap limit"
+  },
+  "sendErrorAmountAboveSwapLimits": "Amount is above swap limits",
+  "@sendErrorAmountAboveSwapLimits": {
+    "description": "Error when amount exceeds maximum swap limit"
+  },
+  "sendErrorAmountBelowMinimum": "Amount below minimum swap limit: {minLimit} sats",
+  "@sendErrorAmountBelowMinimum": {
+    "description": "Error with specific minimum swap amount",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorAmountAboveMaximum": "Amount above maximum swap limit: {maxLimit} sats",
+  "@sendErrorAmountAboveMaximum": {
+    "description": "Error with specific maximum swap amount",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorSwapFeesNotLoaded": "Swap fees not loaded",
+  "@sendErrorSwapFeesNotLoaded": {
+    "description": "Error when swap fee information is unavailable"
+  },
+  "sendErrorInsufficientFundsForFees": "Not enough funds to cover amount and fees",
+  "@sendErrorInsufficientFundsForFees": {
+    "description": "Error when wallet cannot cover transaction amount plus fees"
+  },
+  "sendErrorBroadcastFailed": "Failed to broadcast transaction. Check your network connection and try again.",
+  "@sendErrorBroadcastFailed": {
+    "description": "Error when transaction broadcast fails"
+  },
+  "sendErrorBalanceTooLowForMinimum": "Balance too low for minimum swap amount",
+  "@sendErrorBalanceTooLowForMinimum": {
+    "description": "Error when balance is below minimum required for swap"
+  },
+  "sendErrorAmountExceedsMaximum": "Amount exceeds maximum swap amount",
+  "@sendErrorAmountExceedsMaximum": {
+    "description": "Error when amount is above maximum allowed for swap"
+  },
+  "sendErrorLiquidWalletRequired": "Liquid wallet must be used for a liquid to lightning swap",
+  "@sendErrorLiquidWalletRequired": {
+    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+  },
+  "sendErrorBitcoinWalletRequired": "Bitcoin wallet must be used for a bitcoin to lightning swap",
+  "@sendErrorBitcoinWalletRequired": {
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+  },
+  "sendErrorInsufficientFundsForPayment": "Not enough funds available to make this payment.",
+  "@sendErrorInsufficientFundsForPayment": {
+    "description": "Error when insufficient funds available"
+  },
+  "sendTypeSend": "Send",
+  "@sendTypeSend": {
+    "description": "Send type name for Bitcoin/Liquid transactions"
+  },
+  "sendTypeSwap": "Swap",
+  "@sendTypeSwap": {
+    "description": "Send type name for Lightning swap transactions"
   },
   "sellAmount": "Amount to Sell",
   "@sellAmount": {
@@ -6818,11 +6886,7 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-  "testBackupTitle": "Test your wallet",
-  "@testBackupTitle": {
-    "description": "AppBar title for test backup options screen"
-  },
-  "testBackupWalletTitle": "Test {walletName}",
+      "testBackupWalletTitle": "Test {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",
     "placeholders": {
@@ -10015,11 +10079,7 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "electrumAddCustomServer": "Add Custom Server",
-  "@electrumAddCustomServer": {
-    "description": "Button label to add a custom server"
-  },
-  "electrumLoadFailedError": "Failed to load servers{reason}",
+      "electrumLoadFailedError": "Failed to load servers{reason}",
   "@electrumLoadFailedError": {
     "description": "Error message when loading servers fails",
     "placeholders": {
@@ -10254,11 +10314,7 @@
   "@arkSendRecipientTitle": {
     "description": "Title for the ark send recipient page"
   },
-  "arkSendRecipientHint": "Enter a payment address or invoice",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address input field"
-  },
-  "arkSendRecipientError": "Please enter a recipient",
+      "arkSendRecipientError": "Please enter a recipient",
   "@arkSendRecipientError": {
     "description": "Error message when recipient field is empty"
   },
@@ -10754,15 +10810,8 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
-        "type": "String",
-        "description": "The purchase frequency (e.g., 'day', 'week')"
-      },
-      "network": {
-        "type": "String",
-        "description": "The network being used (e.g., 'Bitcoin Network')"
-      }
-    }
+      "frequency": {},
+      "network": {}    }
   },
   "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
   "@exchangeDcaAddressDisplay": {
