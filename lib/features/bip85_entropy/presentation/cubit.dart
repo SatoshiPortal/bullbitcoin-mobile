@@ -35,8 +35,8 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> init() async {
     try {
-      await fetchAllDerivations();
       await fetchXprvBase58();
+      await fetchAllDerivations();
     } catch (e) {
       emit(state.copyWith(error: Bip85EntropyError(e.toString())));
     }
