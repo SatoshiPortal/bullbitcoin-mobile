@@ -1,10 +1,12 @@
-import 'package:bb_mobile/core/exchange/data/models/rate_history_model.dart';
+import 'dart:math' show pow;
+
 import 'package:bb_mobile/core/exchange/data/models/rate_history_request_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/rate_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
 import 'package:dio/dio.dart';
 
 abstract class PriceRemoteDatasource {
-  Future<List<Rate>> getPriceHistory({
+  Future<List<RateModel>> getPriceHistory({
     required String fromCurrency,
     required String toCurrency,
     required RateTimelineInterval interval,
@@ -21,7 +23,7 @@ class BullbitcoinPriceRemoteDatasource implements PriceRemoteDatasource {
     : _http = bullbitcoinApiHttpClient;
 
   @override
-  Future<List<Rate>> getPriceHistory({
+  Future<List<RateModel>> getPriceHistory({
     required String fromCurrency,
     required String toCurrency,
     required RateTimelineInterval interval,
@@ -71,8 +73,62 @@ class BullbitcoinPriceRemoteDatasource implements PriceRemoteDatasource {
         return [];
       }
 
-      final rateHistory = RateHistoryModel.fromJson(element);
-      return rateHistory.elements;
+      final intervalStr = element['interval'] as String? ?? 'week';
+      final precision = element['precision'] as int? ?? 2;
+      final fromCurrencyValue =
+          element['fromCurrency'] as String? ?? fromCurrency;
+      final toCurrencyValue = element['toCurrency'] as String? ?? toCurrency;
+
+      final ratesList = element['rates'] as List<dynamic>?;
+      if (ratesList == null || ratesList.isEmpty) {
+        return [];
+      }
+
+      final precisionDivisor = pow(10, precision).toDouble();
+
+      final models = <RateModel>[];
+      for (var i = 0; i < ratesList.length; i++) {
+        try {
+          final rateItem = ratesList[i];
+          final rateData = rateItem as Map<String, dynamic>;
+
+          final periodStart = rateData['periodStart'] as String?;
+          final createdAt = rateData['createdAt'] as String?;
+          final dateStr = periodStart ?? createdAt;
+
+          if (dateStr == null) {
+            continue;
+          }
+
+          final indexPriceValue = rateData['indexPrice'];
+          final indexPriceInt = indexPriceValue is int ? indexPriceValue : null;
+          final indexPriceDouble = indexPriceValue is double
+              ? indexPriceValue
+              : null;
+          final indexPrice = indexPriceInt != null
+              ? indexPriceInt / precisionDivisor
+              : indexPriceDouble;
+
+          final model = RateModel(
+            fromCurrency: fromCurrencyValue,
+            toCurrency: toCurrencyValue,
+            interval: intervalStr,
+            createdAt: dateStr,
+            marketPrice: null,
+            price: null,
+            priceCurrency: null,
+            precision: precision,
+            indexPrice: indexPrice,
+            userPrice: null,
+          );
+
+          models.add(model);
+        } catch (e) {
+          continue;
+        }
+      }
+
+      return models;
     } catch (e) {
       return [];
     }

@@ -1,70 +1,98 @@
 import 'dart:math' show pow;
 
+import 'package:bb_mobile/core/exchange/data/models/rate_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
 
 class RateHistoryModel {
-  final List<Rate> elements;
+  final String fromCurrency;
+  final String toCurrency;
+  final String interval;
+  final int precision;
+  final List<RateModel> rates;
 
-  RateHistoryModel({required this.elements});
+  RateHistoryModel({
+    required this.fromCurrency,
+    required this.toCurrency,
+    required this.interval,
+    required this.precision,
+    required this.rates,
+  });
 
   factory RateHistoryModel.fromJson(Map<String, dynamic> json) {
-    final rates = json['rates'] as List<dynamic>?;
+    final intervalStr = json['interval'] as String? ?? 'week';
+    final precision = json['precision'] as int? ?? 2;
+    final fromCurrency = json['fromCurrency'] as String? ?? 'BTC';
+    final toCurrency = json['toCurrency'] as String? ?? 'CAD';
 
-    if (rates == null || rates.isEmpty) {
-      return RateHistoryModel(elements: []);
+    final elements = json['elements'] as List<dynamic>?;
+
+    if (elements == null || elements.isEmpty) {
+      return RateHistoryModel(
+        fromCurrency: fromCurrency,
+        toCurrency: toCurrency,
+        interval: intervalStr,
+        precision: precision,
+        rates: [],
+      );
     }
 
     try {
-      final intervalStr = json['interval'] as String?;
-      final precision = json['precision'] as int? ?? 2;
-      final fromCurrency = json['fromCurrency'] as String? ?? 'BTC';
-      final toCurrency = json['toCurrency'] as String? ?? 'CAD';
-
       final precisionDivisor = pow(10, precision).toDouble();
 
-      final parsedRates =
-          rates.map((e) {
-            try {
-              final data = e as Map<String, dynamic>;
+      final parsedRates = elements.map((e) {
+        try {
+          final data = e as Map<String, dynamic>;
 
-              final periodStart = data['periodStart'] as String?;
-              final createdAt = data['createdAt'] as String?;
-              final dateStr = periodStart ?? createdAt;
+          final periodStart = data['periodStart'] as String?;
+          final createdAt = data['createdAt'] as String?;
+          final dateStr = periodStart ?? createdAt;
 
-              if (dateStr == null) {
-                throw Exception(
-                  'Missing periodStart or createdAt in rate data',
-                );
-              }
+          if (dateStr == null) {
+            throw Exception('Missing periodStart or createdAt in rate data');
+          }
 
-              final indexPriceInt = data['indexPrice'] as int?;
-              final indexPrice =
-                  indexPriceInt != null
-                      ? indexPriceInt / precisionDivisor
-                      : null;
+          final indexPriceInt = data['indexPrice'] as int?;
+          final indexPriceDouble = data['indexPrice'] as double?;
+          final indexPrice = indexPriceInt != null
+              ? indexPriceInt / precisionDivisor
+              : indexPriceDouble;
 
-              final rate = Rate(
-                fromCurrency: fromCurrency,
-                toCurrency: toCurrency,
-                interval: RateTimelineInterval.fromValue(intervalStr ?? 'week'),
-                createdAt: DateTime.parse(dateStr),
-                marketPrice: null,
-                price: null,
-                priceCurrency: null,
-                precision: precision,
-                indexPrice: indexPrice,
-                userPrice: null,
-              );
+          return RateModel(
+            fromCurrency: fromCurrency,
+            toCurrency: toCurrency,
+            interval: intervalStr,
+            createdAt: dateStr,
+            marketPrice: null,
+            price: null,
+            priceCurrency: null,
+            precision: precision,
+            indexPrice: indexPrice,
+            userPrice: null,
+          );
+        } catch (e) {
+          rethrow;
+        }
+      }).toList();
 
-              return rate;
-            } catch (e) {
-              rethrow;
-            }
-          }).toList();
-
-      return RateHistoryModel(elements: parsedRates);
+      return RateHistoryModel(
+        fromCurrency: fromCurrency,
+        toCurrency: toCurrency,
+        interval: intervalStr,
+        precision: precision,
+        rates: parsedRates,
+      );
     } catch (e) {
-      return RateHistoryModel(elements: []);
+      return RateHistoryModel(
+        fromCurrency: fromCurrency,
+        toCurrency: toCurrency,
+        interval: intervalStr,
+        precision: precision,
+        rates: [],
+      );
     }
+  }
+
+  List<Rate> toEntityList() {
+    return rates.map((rateModel) => rateModel.toEntity()).toList();
   }
 }

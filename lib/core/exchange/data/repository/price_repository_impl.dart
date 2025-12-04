@@ -60,7 +60,7 @@ class PriceRepositoryImpl implements PriceRepository {
       RateTimelineInterval.day => now.subtract(const Duration(days: 90)),
     };
 
-    final remotePrices = await _remoteDatasource.getPriceHistory(
+    final remotePriceModels = await _remoteDatasource.getPriceHistory(
       fromCurrency: fromCurrency,
       toCurrency: toCurrency,
       interval: interval,
@@ -68,7 +68,11 @@ class PriceRepositoryImpl implements PriceRepository {
       toDate: now,
     );
 
-    if (remotePrices.isNotEmpty) {
+    if (remotePriceModels.isNotEmpty) {
+      final remotePrices = remotePriceModels
+          .map((model) => model.toEntity())
+          .toList();
+
       await _localDatasource.clearPrices(
         fromCurrency: fromCurrency,
         toCurrency: toCurrency,
@@ -96,12 +100,15 @@ class PriceRepositoryImpl implements PriceRepository {
             toDate: now,
           );
           if (dayPrices.isNotEmpty) {
+            final dayPricesEntities = dayPrices
+                .map((model) => model.toEntity())
+                .toList();
             await _localDatasource.clearPrices(
               fromCurrency: fromCurrency,
               toCurrency: toCurrency,
               interval: RateTimelineInterval.day.value,
             );
-            await _localDatasource.savePrices(dayPrices);
+            await _localDatasource.savePrices(dayPricesEntities);
             await _localDatasource.cleanupOldRates(
               fromCurrency: fromCurrency,
               toCurrency: toCurrency,
@@ -143,12 +150,15 @@ class PriceRepositoryImpl implements PriceRepository {
             toDate: now,
           );
           if (fifteenPrices.isNotEmpty) {
+            final fifteenPricesEntities = fifteenPrices
+                .map((model) => model.toEntity())
+                .toList();
             await _localDatasource.clearPrices(
               fromCurrency: fromCurrency,
               toCurrency: toCurrency,
               interval: RateTimelineInterval.fifteen.value,
             );
-            await _localDatasource.savePrices(fifteenPrices);
+            await _localDatasource.savePrices(fifteenPricesEntities);
             await _localDatasource.cleanupOldRates(
               fromCurrency: fromCurrency,
               toCurrency: toCurrency,
