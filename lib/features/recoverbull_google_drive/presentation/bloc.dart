@@ -41,17 +41,13 @@ class RecoverBullGoogleDriveBloc
     Emitter<RecoverBullGoogleDriveState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true, error: null));
+      emit(state.copyWith(isLoading: true));
       final driveMetadata = await _fetchAllDriveFileMetadataUsecase.execute();
       emit(state.copyWith(driveMetadata: driveMetadata));
       log.fine('$OnFetchDriveVaults ${driveMetadata.length} metadata found');
     } catch (e) {
       log.severe('$OnFetchDriveVaults: $e');
-      if (e is RecoverBullGoogleDriveError) {
-        emit(state.copyWith(error: e));
-      } else {
-        emit(state.copyWith(error: FetchDriveVaultsFailedError()));
-      }
+      emit(state.copyWith(error: FetchAllDriveFilesError()));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -68,11 +64,7 @@ class RecoverBullGoogleDriveBloc
       emit(state.copyWith(selectedVault: vault));
     } catch (e) {
       log.severe('$OnSelectDriveFileMetadata: $e');
-      if (e is RecoverBullGoogleDriveError) {
-        emit(state.copyWith(error: e));
-      } else {
-        emit(state.copyWith(error: SelectDriveVaultFailedError()));
-      }
+      emit(state.copyWith(error: FetchAllDriveFilesError()));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -83,7 +75,7 @@ class RecoverBullGoogleDriveBloc
     Emitter<RecoverBullGoogleDriveState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true, error: null));
+      emit(state.copyWith(isLoading: true));
       await _deleteDriveFileUsecase.execute(event.fileMetadata.id);
       final updatedMetadata =
           state.driveMetadata
@@ -93,11 +85,7 @@ class RecoverBullGoogleDriveBloc
       log.fine('$OnDeleteDriveFile succeed');
     } catch (e) {
       log.severe('$OnDeleteDriveFile: $e');
-      if (e is RecoverBullGoogleDriveError) {
-        emit(state.copyWith(error: e));
-      } else {
-        emit(state.copyWith(error: DeleteDriveVaultFailedError()));
-      }
+      emit(state.copyWith(error: FetchAllDriveFilesError()));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -108,16 +96,12 @@ class RecoverBullGoogleDriveBloc
     Emitter<RecoverBullGoogleDriveState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true, error: null));
+      emit(state.copyWith(isLoading: true));
       await _exportDriveFileUsecase.execute(event.fileMetadata);
       log.fine('$OnExportDriveFile succeed');
     } catch (e) {
       log.severe('$OnExportDriveFile: $e');
-      if (e is RecoverBullGoogleDriveError) {
-        emit(state.copyWith(error: e));
-      } else {
-        emit(state.copyWith(error: ExportDriveVaultFailedError()));
-      }
+      emit(state.copyWith(error: FetchAllDriveFilesError()));
     } finally {
       emit(state.copyWith(isLoading: false));
     }

@@ -1,22 +1,13 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/material.dart';
 
-class RecoverBullGoogleDriveError extends BullException {
-  RecoverBullGoogleDriveError(super.message);
+abstract class RecoverBullGoogleDriveError {
+  String toTranslated(BuildContext context);
 }
 
-class FetchDriveVaultsFailedError extends RecoverBullGoogleDriveError {
-  FetchDriveVaultsFailedError()
-    : super('Failed to fetch vaults from Google Drive');
-}
-
-class SelectDriveVaultFailedError extends RecoverBullGoogleDriveError {
-  SelectDriveVaultFailedError() : super('Failed to select vault from Google Drive');
-}
-
-class DeleteDriveVaultFailedError extends RecoverBullGoogleDriveError {
-  DeleteDriveVaultFailedError() : super('Failed to delete vault from Google Drive');
-}
-
-class ExportDriveVaultFailedError extends RecoverBullGoogleDriveError {
-  ExportDriveVaultFailedError() : super('Failed to export vault from Google Drive');
+class FetchAllDriveFilesError extends RecoverBullGoogleDriveError {
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullGoogleDriveErrorFetchFailed;
+  }
 }

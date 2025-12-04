@@ -48,7 +48,7 @@ class DriveVaultsListPage extends StatelessWidget {
           Expanded(
             child:
                 error != null
-                    ? Center(child: Text(error.message))
+                    ? Center(child: Text(error.toTranslated(context)))
                     : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: SingleChildScrollView(
