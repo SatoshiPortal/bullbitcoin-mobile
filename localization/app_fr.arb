@@ -6087,6 +6087,229 @@
       }
     }
   },
+  "sendSwapId": "ID d'échange",
+  "@sendSwapId": {
+    "description": "Label for swap identifier in transaction details"
+  },
+  "sendSendAmount": "Montant envoyé",
+  "@sendSendAmount": {
+    "description": "Label for amount being sent in swap"
+  },
+  "sendReceiveAmount": "Montant reçu",
+  "@sendReceiveAmount": {
+    "description": "Label for amount being received in swap"
+  },
+  "sendSendNetworkFee": "Frais de réseau d'envoi",
+  "@sendSendNetworkFee": {
+    "description": "Label for network fee on send side of swap"
+  },
+  "sendTransferFee": "Frais de transfert",
+  "@sendTransferFee": {
+    "description": "Label for total swap transfer fee"
+  },
+  "sendTransferFeeDescription": "Il s'agit des frais totaux déduits du montant envoyé",
+  "@sendTransferFeeDescription": {
+    "description": "Explanation of what the transfer fee represents"
+  },
+  "sendReceiveNetworkFee": "Frais de réseau de réception",
+  "@sendReceiveNetworkFee": {
+    "description": "Label for network fee on receive side"
+  },
+  "sendServerNetworkFees": "Frais de réseau du serveur",
+  "@sendServerNetworkFees": {
+    "description": "Label for Boltz server fees"
+  },
+  "sendConfirmSend": "Confirmer l'envoi",
+  "@sendConfirmSend": {
+    "description": "Title for send confirmation screen"
+  },
+  "sendSending": "Envoi en cours",
+  "@sendSending": {
+    "description": "Title shown while transaction is being sent"
+  },
+  "sendBroadcastingTransaction": "Diffusion de la transaction.",
+  "@sendBroadcastingTransaction": {
+    "description": "Message shown while broadcasting transaction to network"
+  },
+  "sendSwapInProgressInvoice": "L'échange est en cours. La facture sera payée dans quelques secondes.",
+  "@sendSwapInProgressInvoice": {
+    "description": "Message for Liquid swap in progress"
+  },
+  "sendSwapInProgressBitcoin": "L'échange est en cours. Les transactions Bitcoin peuvent prendre du temps à confirmer. Vous pouvez retourner à l'accueil et attendre.",
+  "@sendSwapInProgressBitcoin": {
+    "description": "Message for Bitcoin swap in progress"
+  },
+  "sendSwapRefundInProgress": "Remboursement d'échange en cours",
+  "@sendSwapRefundInProgress": {
+    "description": "Title when swap failed and refund is processing"
+  },
+  "sendSwapFailed": "L'échange a échoué. Votre remboursement sera traité sous peu.",
+  "@sendSwapFailed": {
+    "description": "Message explaining swap failure and refund"
+  },
+  "sendSwapRefundCompleted": "Remboursement d'échange terminé",
+  "@sendSwapRefundCompleted": {
+    "description": "Title when refund has completed"
+  },
+  "sendRefundProcessed": "Votre remboursement a été traité.",
+  "@sendRefundProcessed": {
+    "description": "Message confirming refund completion"
+  },
+  "sendInvoicePaid": "Facture payée",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "sendPaymentProcessing": "Le paiement est en cours de traitement. Cela peut prendre jusqu'à une minute",
+  "@sendPaymentProcessing": {
+    "description": "Message while payment processes"
+  },
+  "sendPaymentWillTakeTime": "Le paiement prendra du temps",
+  "@sendPaymentWillTakeTime": {
+    "description": "Title warning of delayed payment"
+  },
+  "sendSwapInitiated": "Échange initié",
+  "@sendSwapInitiated": {
+    "description": "Title when chain swap begins"
+  },
+  "sendSwapWillTakeTime": "Cela prendra du temps à confirmer",
+  "@sendSwapWillTakeTime": {
+    "description": "Message warning swap confirmation takes time"
+  },
+  "sendSuccessfullySent": "Envoyé avec succès",
+  "@sendSuccessfullySent": {
+    "description": "Title for successful send completion"
+  },
+  "sendViewDetails": "Voir les détails",
+  "@sendViewDetails": {
+    "description": "Button to view transaction details"
+  },
+  "sendShowPsbt": "Afficher PSBT",
+  "@sendShowPsbt": {
+    "description": "Button to display PSBT for external signing"
+  },
+  "sendSignWithLedger": "Signer avec Ledger",
+  "@sendSignWithLedger": {
+    "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSignWithBitBox": "Signer avec BitBox",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
+  },
+  "sendTransactionSignedLedger": "Transaction signée avec succès avec Ledger",
+  "@sendTransactionSignedLedger": {
+    "description": "Success message after Ledger signing"
+  },
+  "sendHighFeeWarningDescription": "Les frais totaux représentent {feePercent}% du montant que vous envoyez",
+  "@sendHighFeeWarningDescription": {
+    "description": "Warning message showing fee as percentage of send amount",
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEnterAbsoluteFee": "Entrer les frais absolus en sats",
+  "@sendEnterAbsoluteFee": {
+    "description": "Placeholder for absolute fee input field"
+  },
+  "sendEnterRelativeFee": "Entrer les frais relatifs en sats/vB",
+  "@sendEnterRelativeFee": {
+    "description": "Placeholder for relative fee rate input field"
+  },
+  "sendErrorArkExperimentalOnly": "Les demandes de paiement ARK ne sont disponibles que depuis la fonctionnalité expérimentale Ark.",
+  "@sendErrorArkExperimentalOnly": {
+    "description": "Error when ARK payment is attempted without experimental feature enabled"
+  },
+  "sendErrorSwapCreationFailed": "Échec de la création de l'échange.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorInsufficientBalanceForPayment": "Solde insuffisant pour couvrir ce paiement",
+  "@sendErrorInsufficientBalanceForPayment": {
+    "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendErrorInvalidAddressOrInvoice": "Adresse de paiement Bitcoin ou facture invalide",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "sendErrorBuildFailed": "Échec de la construction",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorConfirmationFailed": "Échec de la confirmation",
+  "@sendErrorConfirmationFailed": {
+    "description": "Error title when transaction confirmation fails"
+  },
+  "sendErrorInsufficientBalanceForSwap": "Solde insuffisant pour payer cet échange via Liquid et hors des limites d'échange pour payer via Bitcoin.",
+  "@sendErrorInsufficientBalanceForSwap": {
+    "description": "Error when balance insufficient for swap through either network"
+  },
+  "sendErrorAmountBelowSwapLimits": "Le montant est inférieur aux limites d'échange",
+  "@sendErrorAmountBelowSwapLimits": {
+    "description": "Error when amount is below minimum swap limit"
+  },
+  "sendErrorAmountAboveSwapLimits": "Le montant est supérieur aux limites d'échange",
+  "@sendErrorAmountAboveSwapLimits": {
+    "description": "Error when amount exceeds maximum swap limit"
+  },
+  "sendErrorAmountBelowMinimum": "Montant inférieur à la limite d'échange minimale : {minLimit} sats",
+  "@sendErrorAmountBelowMinimum": {
+    "description": "Error with specific minimum swap amount",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorAmountAboveMaximum": "Montant supérieur à la limite d'échange maximale : {maxLimit} sats",
+  "@sendErrorAmountAboveMaximum": {
+    "description": "Error with specific maximum swap amount",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorSwapFeesNotLoaded": "Frais d'échange non chargés",
+  "@sendErrorSwapFeesNotLoaded": {
+    "description": "Error when swap fee information is unavailable"
+  },
+  "sendErrorInsufficientFundsForFees": "Fonds insuffisants pour couvrir le montant et les frais",
+  "@sendErrorInsufficientFundsForFees": {
+    "description": "Error when wallet cannot cover transaction amount plus fees"
+  },
+  "sendErrorBroadcastFailed": "Échec de la diffusion de la transaction. Vérifiez votre connexion réseau et réessayez.",
+  "@sendErrorBroadcastFailed": {
+    "description": "Error when transaction broadcast fails"
+  },
+  "sendErrorBalanceTooLowForMinimum": "Solde trop bas pour le montant d'échange minimum",
+  "@sendErrorBalanceTooLowForMinimum": {
+    "description": "Error when balance is below minimum required for swap"
+  },
+  "sendErrorAmountExceedsMaximum": "Le montant dépasse le montant d'échange maximum",
+  "@sendErrorAmountExceedsMaximum": {
+    "description": "Error when amount is above maximum allowed for swap"
+  },
+  "sendErrorLiquidWalletRequired": "Un portefeuille Liquid doit être utilisé pour un échange de liquid vers lightning",
+  "@sendErrorLiquidWalletRequired": {
+    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+  },
+  "sendErrorBitcoinWalletRequired": "Un portefeuille Bitcoin doit être utilisé pour un échange de bitcoin vers lightning",
+  "@sendErrorBitcoinWalletRequired": {
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+  },
+  "sendErrorInsufficientFundsForPayment": "Fonds insuffisants disponibles pour effectuer ce paiement.",
+  "@sendErrorInsufficientFundsForPayment": {
+    "description": "Error when insufficient funds available"
+  },
+  "sendTypeSend": "Envoyer",
+  "@sendTypeSend": {
+    "description": "Send type name for Bitcoin/Liquid transactions"
+  },
+  "sendTypeSwap": "Échanger",
+  "@sendTypeSwap": {
+    "description": "Send type name for Lightning swap transactions"
+  },
   "sellAmount": "Montant à vendre",
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
