@@ -7156,6 +7156,31 @@
       }
     }
   },
+  "recoverbullGoogleDriveCancelButton": "Cancel",
+  "@recoverbullGoogleDriveCancelButton": {
+    "description": "Cancel button text for delete confirmation dialog"
+  },
+  "recoverbullGoogleDriveDeleteButton": "Delete",
+  "@recoverbullGoogleDriveDeleteButton": {
+    "description": "Delete button text for vault backup"
+  },
+  "recoverbullGoogleDriveDeleteConfirmation": "Are you sure you want to delete this vault backup? This action cannot be undone.",
+  "@recoverbullGoogleDriveDeleteConfirmation": {
+    "description": "Confirmation message for deleting a vault backup"
+  },
+  "recoverbullGoogleDriveDeleteVaultTitle": "Delete Vault",
+  "@recoverbullGoogleDriveDeleteVaultTitle": {
+    "description": "Title for delete vault confirmation dialog"
+  },
+  "recoverbullGoogleDriveErrorDisplay": "Error: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "recoverbullBalance": "Balance: {balance}",
   "@recoverbullBalance": {
     "description": "Label showing wallet balance during vault recovery",
@@ -7414,6 +7439,38 @@
       }
     }
   },
+  "recoverbullGoogleDriveErrorDeleteFailed": "Failed to delete vault from Google Drive",
+  "@recoverbullGoogleDriveErrorDeleteFailed": {
+    "description": "Error message when deleting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Failed to export vault from Google Drive",
+  "@recoverbullGoogleDriveErrorExportFailed": {
+    "description": "Error message when exporting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorFetchFailed": "Failed to fetch vaults from Google Drive",
+  "@recoverbullGoogleDriveErrorFetchFailed": {
+    "description": "Error message when fetching drive backups fails"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "An error occurred. Please try again.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Failed to select vault from Google Drive",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullGoogleDriveExportButton": "Export",
+  "@recoverbullGoogleDriveExportButton": {
+    "description": "Export button text for vault backup"
+  },
+  "recoverbullGoogleDriveNoBackupsFound": "No backups found",
+  "@recoverbullGoogleDriveNoBackupsFound": {
+    "description": "Message displayed when no backups are found in Google Drive"
+  },
+  "recoverbullGoogleDriveScreenTitle": "Google Drive Vaults",
+  "@recoverbullGoogleDriveScreenTitle": {
+    "description": "Screen title for Google Drive vaults management"
+  },  
   "recoverbullRecoverBullServer": "RecoverBull Server",
   "@recoverbullRecoverBullServer": {
     "description": "Label for RecoverBull server connection status"

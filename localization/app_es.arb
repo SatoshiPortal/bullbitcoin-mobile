@@ -7156,6 +7156,31 @@
       }
     }
   },
+  "recoverbullGoogleDriveCancelButton": "Cancelar",
+  "@recoverbullGoogleDriveCancelButton": {
+    "description": "Cancel button text for delete confirmation dialog"
+  },
+  "recoverbullGoogleDriveDeleteButton": "Eliminar",
+  "@recoverbullGoogleDriveDeleteButton": {
+    "description": "Delete button text for vault backup"
+  },
+  "recoverbullGoogleDriveDeleteConfirmation": "¿Está seguro de que desea eliminar esta copia de seguridad del cofre? Esta acción no se puede deshacer.",
+  "@recoverbullGoogleDriveDeleteConfirmation": {
+    "description": "Confirmation message for deleting a vault backup"
+  },
+  "recoverbullGoogleDriveDeleteVaultTitle": "Eliminar Cofre",
+  "@recoverbullGoogleDriveDeleteVaultTitle": {
+    "description": "Title for delete vault confirmation dialog"
+  },
+  "recoverbullGoogleDriveErrorDisplay": "Error: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "recoverbullBalance": "Saldo: {balance}",
   "@recoverbullBalance": {
     "description": "Label showing wallet balance during vault recovery",
@@ -7413,6 +7438,38 @@
         "type": "String"
       }
     }
+  },
+  "recoverbullGoogleDriveErrorDeleteFailed": "Error al eliminar el cofre de Google Drive",
+  "@recoverbullGoogleDriveErrorDeleteFailed": {
+    "description": "Error message when deleting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Error al exportar el cofre de Google Drive",
+  "@recoverbullGoogleDriveErrorExportFailed": {
+    "description": "Error message when exporting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorFetchFailed": "Error al obtener los cofres de Google Drive",
+  "@recoverbullGoogleDriveErrorFetchFailed": {
+    "description": "Error message when fetching drive backups fails"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "Se produjo un error. Por favor, inténtelo de nuevo.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Error al seleccionar el cofre de Google Drive",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullGoogleDriveExportButton": "Exportar",
+  "@recoverbullGoogleDriveExportButton": {
+    "description": "Export button text for vault backup"
+  },
+  "recoverbullGoogleDriveNoBackupsFound": "No se encontraron copias de seguridad",
+  "@recoverbullGoogleDriveNoBackupsFound": {
+    "description": "Message displayed when no backups are found in Google Drive"
+  },
+  "recoverbullGoogleDriveScreenTitle": "Cofres de Google Drive",
+  "@recoverbullGoogleDriveScreenTitle": {
+    "description": "Screen title for Google Drive vaults management"
   },
   "recoverbullRecoverBullServer": "Servidor RecoverBull",
   "@recoverbullRecoverBullServer": {

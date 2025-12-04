@@ -7156,6 +7156,31 @@
       }
     }
   },
+  "recoverbullGoogleDriveCancelButton": "Annuler",
+  "@recoverbullGoogleDriveCancelButton": {
+    "description": "Cancel button text for delete confirmation dialog"
+  },
+  "recoverbullGoogleDriveDeleteButton": "Supprimer",
+  "@recoverbullGoogleDriveDeleteButton": {
+    "description": "Delete button text for vault backup"
+  },
+  "recoverbullGoogleDriveDeleteConfirmation": "Êtes-vous sûr de vouloir supprimer cette sauvegarde de coffre-fort ? Cette action ne peut pas être annulée.",
+  "@recoverbullGoogleDriveDeleteConfirmation": {
+    "description": "Confirmation message for deleting a vault backup"
+  },
+  "recoverbullGoogleDriveDeleteVaultTitle": "Supprimer le coffre-fort",
+  "@recoverbullGoogleDriveDeleteVaultTitle": {
+    "description": "Title for delete vault confirmation dialog"
+  },
+  "recoverbullGoogleDriveErrorDisplay": "Erreur : {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "recoverbullBalance": "Solde : {balance}",
   "@recoverbullBalance": {
     "description": "Label showing wallet balance during vault recovery",
@@ -7413,6 +7438,38 @@
         "type": "String"
       }
     }
+  },
+  "recoverbullGoogleDriveErrorDeleteFailed": "Échec de la suppression du coffre-fort de Google Drive",
+  "@recoverbullGoogleDriveErrorDeleteFailed": {
+    "description": "Error message when deleting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Échec de l'exportation du coffre-fort de Google Drive",
+  "@recoverbullGoogleDriveErrorExportFailed": {
+    "description": "Error message when exporting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorFetchFailed": "Échec de la récupération des coffres-forts de Google Drive",
+  "@recoverbullGoogleDriveErrorFetchFailed": {
+    "description": "Error message when fetching drive backups fails"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "Une erreur s'est produite. Veuillez réessayer.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Échec de la sélection du coffre-fort de Google Drive",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullGoogleDriveExportButton": "Exporter",
+  "@recoverbullGoogleDriveExportButton": {
+    "description": "Export button text for vault backup"
+  },
+  "recoverbullGoogleDriveNoBackupsFound": "Aucune sauvegarde trouvée",
+  "@recoverbullGoogleDriveNoBackupsFound": {
+    "description": "Message displayed when no backups are found in Google Drive"
+  },
+  "recoverbullGoogleDriveScreenTitle": "Coffres-forts Google Drive",
+  "@recoverbullGoogleDriveScreenTitle": {
+    "description": "Screen title for Google Drive vaults management"
   },
   "recoverbullRecoverBullServer": "Serveur RecoverBull",
   "@recoverbullRecoverBullServer": {
