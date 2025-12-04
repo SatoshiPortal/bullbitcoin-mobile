@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -397,16 +396,20 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   currencyCode,
                                 );
                               },
-                              error:
-                                  balanceError != null
-                                      ? context.loc.sendErrorInsufficientBalanceForPayment
-                                      : !walletHasBalance
-                                      ? context.loc.sendInsufficientBalance
-                                      : swapLimitsError != null
-                                      ? _getSwapLimitsErrorMessage(context, swapLimitsError)
-                                      : swapCreationError != null
-                                      ? context.loc.sendErrorSwapCreationFailed
-                                      : null,
+                              error: balanceError != null
+                                  ? context
+                                        .loc
+                                        .sendErrorInsufficientBalanceForPayment
+                                  : !walletHasBalance
+                                  ? context.loc.sendInsufficientBalance
+                                  : swapLimitsError != null
+                                  ? _getSwapLimitsErrorMessage(
+                                      context,
+                                      swapLimitsError,
+                                    )
+                                  : swapCreationError != null
+                                  ? context.loc.sendErrorSwapCreationFailed
+                                  : null,
                               focusNode: _amountFocusNode,
                               readOnly: _isMax,
                               isMax: _isMax,
@@ -431,28 +434,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                     : null,
                                 walletLabel: selectedWalletLabel,
                               ),
-                            ),
-                            Builder(
-                              builder: (context) {
-                                final inputCurrency = context
-                                    .select<SendCubit, String>(
-                                      (cubit) =>
-                                          cubit.state.inputAmountCurrencyCode,
-                                    );
-
-                                return AmountDialPad(
-                                  controller: _amountController,
-                                  inputCurrencyCode: inputCurrency,
-                                  onAmountChanged: () {
-                                    // Unset max since user manually changed the amount
-                                    _setIsMax(false);
-                                    // Inform the cubit of the change
-                                    context.read<SendCubit>().amountChanged(
-                                      amount: _amountController.text,
-                                    );
-                                  },
-                                );
-                              },
                             ),
                             const Gap(16),
                             if (buildError != null) const _SendError(),
@@ -670,8 +651,9 @@ class _HighFeeWarning extends StatelessWidget {
   Widget build(BuildContext context) {
     return InfoCard(
       title: context.loc.sendHighFeeWarning,
-      description:
-          context.loc.sendHighFeeWarningDescription(feePercent.toStringAsFixed(2)),
+      description: context.loc.sendHighFeeWarningDescription(
+        feePercent.toStringAsFixed(2),
+      ),
       tagColor: context.appColors.onError,
       bgColor: context.appColors.secondaryFixed,
     );
@@ -760,7 +742,9 @@ class ConfirmSendButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.disableConfirmSend,
     );
     return BBButton.big(
-      label: hasFinalizedTx ? context.loc.sendBroadcastTransaction : context.loc.sendConfirm,
+      label: hasFinalizedTx
+          ? context.loc.sendBroadcastTransaction
+          : context.loc.sendConfirm,
       onPressed: () {
         context.read<SendCubit>().onConfirmTransactionClicked();
       },
@@ -1188,7 +1172,11 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                   ),
                 ),
                 if (fees.claimFee != null)
-                  _feeRow(context, context.loc.sendReceiveNetworkFee, fees.claimFee!),
+                  _feeRow(
+                    context,
+                    context.loc.sendReceiveNetworkFee,
+                    fees.claimFee!,
+                  ),
                 if (fees.serverNetworkFees != null)
                   _feeRow(
                     context,
@@ -1450,7 +1438,10 @@ class SendSendingScreen extends StatelessWidget {
               ),
               if (!isLnSwap) ...[
                 const Gap(8),
-                BBText(context.loc.sendSending, style: context.font.headlineLarge),
+                BBText(
+                  context.loc.sendSending,
+                  style: context.font.headlineLarge,
+                ),
                 const Gap(8),
                 BBText(
                   context.loc.sendBroadcastingTransaction,
@@ -1461,7 +1452,10 @@ class SendSendingScreen extends StatelessWidget {
               ],
               if (isLnSwap && !isLnPaid) ...[
                 const Gap(8),
-                BBText(context.loc.sendSending, style: context.font.headlineLarge),
+                BBText(
+                  context.loc.sendSending,
+                  style: context.font.headlineLarge,
+                ),
                 const Gap(8),
                 if (isLiquid)
                   BBText(
@@ -1589,7 +1583,10 @@ class SendSucessScreen extends StatelessWidget {
                       width: 100,
                     ),
                     const Gap(20),
-                    BBText(context.loc.sendInvoicePaid, style: context.font.headlineLarge),
+                    BBText(
+                      context.loc.sendInvoicePaid,
+                      style: context.font.headlineLarge,
+                    ),
                   ] else if (isLnSwap &&
                       !isBitcoin &&
                       lnSwap.status != SwapStatus.canCoop &&
@@ -1605,13 +1602,19 @@ class SendSucessScreen extends StatelessWidget {
                       style: context.font.headlineLarge,
                     )
                   else if (isChainSwap) ...[
-                    BBText(context.loc.sendSwapInitiated, style: context.font.bodyLarge),
+                    BBText(
+                      context.loc.sendSwapInitiated,
+                      style: context.font.bodyLarge,
+                    ),
                     BBText(
                       context.loc.sendSwapWillTakeTime,
                       style: context.font.labelSmall,
                     ),
                   ] else
-                    BBText(context.loc.sendSuccessfullySent, style: context.font.bodyLarge),
+                    BBText(
+                      context.loc.sendSuccessfullySent,
+                      style: context.font.bodyLarge,
+                    ),
                   const Gap(8),
                   BBText(
                     amount,
@@ -1814,7 +1817,10 @@ class SignBitBoxButton extends StatelessWidget {
 }
 
 /// Helper function to get localized error message for SwapLimitsException
-String _getSwapLimitsErrorMessage(BuildContext context, SwapLimitsException error) {
+String _getSwapLimitsErrorMessage(
+  BuildContext context,
+  SwapLimitsException error,
+) {
   if (error.isBelowMinimum && error.minLimit != null) {
     return context.loc.sendErrorAmountBelowMinimum(error.minLimit.toString());
   } else if (error.isAboveMaximum && error.maxLimit != null) {
