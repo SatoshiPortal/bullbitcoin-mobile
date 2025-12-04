@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
@@ -10,7 +9,6 @@ import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 
 class SendAmountPage extends StatefulWidget {
   const SendAmountPage({
@@ -124,8 +122,10 @@ class _SendAmountPageState extends State<SendAmountPage> {
     final inputAmount = _controller.text;
     final exchangeRate = context.read<ArkCubit>().state.exchangeRate;
     final bitcoinUnit = context.read<ArkCubit>().state.preferredBitcoinUnit;
-    final equivalentCurrencyCode =
-        context.read<ArkCubit>().state.equivalentCurrencyCode;
+    final equivalentCurrencyCode = context
+        .read<ArkCubit>()
+        .state
+        .equivalentCurrencyCode;
     String equivalentValue = '0';
     if (_currencyCode == BitcoinUnit.sats.code) {
       final amountSat = int.tryParse(inputAmount) ?? 0;
@@ -135,10 +135,9 @@ class _SendAmountPageState extends State<SendAmountPage> {
       equivalentValue = (amountBtc * exchangeRate).toStringAsFixed(2);
     } else {
       final amountFiat = double.tryParse(inputAmount) ?? 0;
-      equivalentValue =
-          bitcoinUnit == BitcoinUnit.sats
-              ? (amountFiat * 1e8 / exchangeRate).toStringAsFixed(0)
-              : (amountFiat / exchangeRate).toStringAsFixed(8);
+      equivalentValue = bitcoinUnit == BitcoinUnit.sats
+          ? (amountFiat * 1e8 / exchangeRate).toStringAsFixed(0)
+          : (amountFiat / exchangeRate).toStringAsFixed(8);
     }
     return '$equivalentValue $equivalentCurrencyCode';
   }
@@ -168,15 +167,14 @@ class _SendAmountPageState extends State<SendAmountPage> {
           ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3),
-            child:
-                _isLoading
-                    ? FadingLinearProgress(
-                      height: 3,
-                      trigger: _isLoading,
-                      backgroundColor: context.appColors.surface,
-                      foregroundColor: context.appColors.primary,
-                    )
-                    : const SizedBox(height: 3),
+            child: _isLoading
+                ? FadingLinearProgress(
+                    height: 3,
+                    trigger: _isLoading,
+                    backgroundColor: context.appColors.surface,
+                    foregroundColor: context.appColors.primary,
+                  )
+                : const SizedBox(height: 3),
           ),
         ),
         body: SafeArea(
@@ -204,14 +202,11 @@ class _SendAmountPageState extends State<SendAmountPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: BalanceRow(
-                        balance:
-                            _preferredBitcoinUnit == BitcoinUnit.btc
-                                ? (_maxSpendableSat != null
-                                    ? (_maxSpendableSat! / 1e8).toStringAsFixed(
-                                      8,
-                                    )
-                                    : '0.00000000')
-                                : (_maxSpendableSat?.toString() ?? '0'),
+                        balance: _preferredBitcoinUnit == BitcoinUnit.btc
+                            ? (_maxSpendableSat != null
+                                  ? (_maxSpendableSat! / 1e8).toStringAsFixed(8)
+                                  : '0.00000000')
+                            : (_maxSpendableSat?.toString() ?? '0'),
                         currencyCode: _preferredBitcoinUnit.code,
                         onMaxPressed: () async {
                           await context
@@ -223,11 +218,6 @@ class _SendAmountPageState extends State<SendAmountPage> {
                         },
                         walletLabel: context.loc.arkInstantPayments,
                       ),
-                    ),
-                    const Gap(24),
-                    AmountDialPad(
-                      controller: _controller,
-                      inputCurrencyCode: _currencyCode,
                     ),
                   ],
                 ),
