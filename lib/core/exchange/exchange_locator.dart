@@ -1,15 +1,19 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/price_local_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/price_remote_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_funding_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/repository/price_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_funding_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/price_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
@@ -17,11 +21,14 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_price_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
@@ -59,6 +66,18 @@ class ExchangeLocator {
         ),
       ),
       instanceName: 'testnetExchangeApiDatasource',
+    );
+
+    locator.registerLazySingleton<PriceRemoteDatasource>(
+      () => BullbitcoinPriceRemoteDatasource(
+        bullbitcoinApiHttpClient: Dio(
+          BaseOptions(baseUrl: ApiServiceConstants.bbApiUrl),
+        ),
+      ),
+    );
+
+    locator.registerLazySingleton<PriceLocalDatasource>(
+      () => PriceLocalDatasource(db: locator<SqliteDatabase>()),
     );
   }
 
@@ -148,6 +167,13 @@ class ExchangeLocator {
       ),
       instanceName: 'testnetExchangeFundingRepository',
     );
+
+    locator.registerLazySingleton<PriceRepository>(
+      () => PriceRepositoryImpl(
+        remoteDatasource: locator<PriceRemoteDatasource>(),
+        localDatasource: locator<PriceLocalDatasource>(),
+      ),
+    );
   }
 
   static void registerUseCases(GetIt locator) {
@@ -184,6 +210,16 @@ class ExchangeLocator {
           instanceName: 'testnetExchangeRateRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<GetPriceHistoryUsecase>(
+      () => GetPriceHistoryUsecase(priceRepository: locator<PriceRepository>()),
+    );
+
+    locator.registerFactory<RefreshPriceHistoryUsecase>(
+      () => RefreshPriceHistoryUsecase(
+        priceRepository: locator<PriceRepository>(),
       ),
     );
 

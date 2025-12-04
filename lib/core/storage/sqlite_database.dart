@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/storage/tables/electrum_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
+import 'package:bb_mobile/core/storage/tables/prices_table.dart';
 import 'package:bb_mobile/core/storage/tables/recoverbull_table.dart';
 import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
@@ -49,6 +50,7 @@ part 'sqlite_database.g.dart';
     AutoSwap,
     Bip85Derivations,
     Recoverbull,
+    Prices,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
