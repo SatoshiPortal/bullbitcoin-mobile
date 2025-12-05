@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/ark/entities/ark_balance.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
@@ -29,7 +30,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
             child: Column(
               mainAxisSize: .min,
               children: [
-                Text('Balance Breakdown', style: context.font.headlineMedium),
+                Text(context.loc.arkBalanceBreakdown, style: context.font.headlineMedium),
                 const Gap(24),
                 if (arkBalance != null) ...[
                   // Boarding Unconfirmed
@@ -44,7 +45,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                           ),
                           const Gap(8),
                           Text(
-                            'Boarding Unconfirmed',
+                            context.loc.arkBoardingUnconfirmed,
                             style: context.font.bodyLarge,
                           ),
                         ],
@@ -69,7 +70,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                           ),
                           const Gap(8),
                           Text(
-                            'Boarding Confirmed',
+                            context.loc.arkBoardingConfirmed,
                             style: context.font.bodyLarge,
                           ),
                         ],
@@ -93,7 +94,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                             color: context.appColors.warning,
                           ),
                           const Gap(8),
-                          Text('Preconfirmed', style: context.font.bodyLarge),
+                          Text(context.loc.arkPreconfirmed, style: context.font.bodyLarge),
                         ],
                       ),
                       CurrencyText(
@@ -115,7 +116,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                             color: context.appColors.success,
                           ),
                           const Gap(8),
-                          Text('Settled', style: context.font.bodyLarge),
+                          Text(context.loc.arkSettled, style: context.font.bodyLarge),
                         ],
                       ),
                       CurrencyText(
@@ -137,7 +138,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                             color: context.appColors.primary,
                           ),
                           const Gap(8),
-                          Text('Available', style: context.font.bodyLarge),
+                          Text(context.loc.arkAvailable, style: context.font.bodyLarge),
                         ],
                       ),
                       CurrencyText(
@@ -154,7 +155,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   Row(
                     mainAxisAlignment: .spaceBetween,
                     children: [
-                      Text('Total', style: context.font.titleLarge),
+                      Text(context.loc.arkTotal, style: context.font.titleLarge),
                       CurrencyText(
                         arkBalance!.completeTotal,
                         style: context.font.titleLarge,
@@ -164,7 +165,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   ),
                 ] else ...[
                   Text(
-                    'No balance data available',
+                    context.loc.arkNoBalanceData,
                     style: context.font.bodyLarge,
                   ),
                 ],
@@ -229,7 +230,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                 Icons.info_outline,
                 color: context.appColors.onPrimary,
               ),
-              tooltip: 'Balance breakdown',
+              tooltip: context.loc.arkBalanceBreakdownTooltip,
             ),
           ),
         ],
