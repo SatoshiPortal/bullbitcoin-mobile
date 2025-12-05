@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -38,6 +39,9 @@ class WalletDetailScreen extends StatelessWidget {
                     : context.loc.walletNameSecureBitcoin
                 : wallet.displayLabel
             : '';
+
+    final hideExchangeFeatures =
+        context.watch<SettingsCubit>().state.hideExchangeFeatures ?? false;
 
     return Scaffold(
       appBar: AppBar(
@@ -88,7 +92,12 @@ class WalletDetailScreen extends StatelessWidget {
               ),
             ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 40),
+            padding: EdgeInsets.only(
+              left: 13.0,
+              right: 13.0,
+              bottom: hideExchangeFeatures ? 40.0 : 16.0,
+              top: 16.0,
+            ),
             child: WalletBottomButtons(wallet: wallet),
           ),
         ],

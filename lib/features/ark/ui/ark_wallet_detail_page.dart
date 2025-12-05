@@ -6,6 +6,8 @@ import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark/ui/ark_balance_detail_widget.dart';
 import 'package:bb_mobile/features/ark/ui/settle_bottom_sheet.dart';
 import 'package:bb_mobile/features/ark/ui/transaction_history_widget.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,8 @@ class ArkWalletDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<ArkCubit>();
     final state = context.watch<ArkCubit>().state;
+    final hideExchangeFeatures =
+        context.watch<SettingsCubit>().state.hideExchangeFeatures ?? false;
 
     return Scaffold(
       appBar: AppBar(
@@ -97,13 +101,13 @@ class ArkWalletDetailPage extends StatelessWidget {
                       );
                     },
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(
                       left: 13.0,
                       right: 13.0,
-                      bottom: 40.0,
+                      bottom: hideExchangeFeatures ? 40.0 : 16.0,
                     ),
-                    child: ArkWalletBottomButtons(),
+                    child: const ArkWalletBottomButtons(),
                   ),
                 ],
               ),
@@ -122,6 +126,18 @@ class ArkWalletBottomButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        BBButton.small(
+          iconData: Icons.swap_vert,
+          label: '',
+          onPressed: () {
+            context.pushNamed(SwapRoute.swap.name);
+          },
+          bgColor: context.colour.secondary,
+          textColor: context.colour.onPrimary,
+          width: 56,
+          height: 56,
+        ),
+        const Gap(8),
         Expanded(
           child: BBButton.big(
             iconData: Icons.arrow_downward,

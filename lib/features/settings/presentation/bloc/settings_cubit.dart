@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_hide_exchange_features_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
@@ -30,6 +31,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetIsSuperuserUsecase setIsSuperuserUsecase,
     required SetIsDevModeUsecase setIsDevModeUsecase,
     required SetThemeModeUsecase setThemeModeUsecase,
+    required SetHideExchangeFeaturesUsecase setHideExchangeFeaturesUsecase,
     required GetOldSeedsUsecase getOldSeedsUsecase,
     required RevokeArkUsecase revokeArkUsecase,
   }) : _setEnvironmentUsecase = setEnvironmentUsecase,
@@ -42,6 +44,7 @@ class SettingsCubit extends Cubit<SettingsState> {
        _setThemeModeUsecase = setThemeModeUsecase,
        _getOldSeedsUsecase = getOldSeedsUsecase,
        _setIsDevModeUsecase = setIsDevModeUsecase,
+       _setHideExchangeFeaturesUsecase = setHideExchangeFeaturesUsecase,
        _revokeArkUsecase = revokeArkUsecase,
        super(const SettingsState());
 
@@ -55,6 +58,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetThemeModeUsecase _setThemeModeUsecase;
   final GetOldSeedsUsecase _getOldSeedsUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
+  final SetHideExchangeFeaturesUsecase _setHideExchangeFeaturesUsecase;
   final RevokeArkUsecase _revokeArkUsecase;
 
   Future<void> init() async {
@@ -168,6 +172,19 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+      ),
+    );
+  }
+
+  Future<void> toggleHideExchangeFeatures(bool hide) async {
+    final settings = state.storedSettings;
+    log.config(
+      'Hide exchange features toggled: $hide was ${settings?.hideExchangeFeatures}',
+    );
+    await _setHideExchangeFeaturesUsecase.execute(hide);
+    emit(
+      state.copyWith(
+        storedSettings: settings?.copyWith(hideExchangeFeatures: hide),
       ),
     );
   }

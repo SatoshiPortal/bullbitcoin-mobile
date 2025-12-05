@@ -22,6 +22,7 @@ class DatabaseSeeds {
             useTorProxy: false,
             torProxyPort: 9050,
             themeMode: 'system',
+            hideExchangeFeatures: false,
           ),
         );
   }

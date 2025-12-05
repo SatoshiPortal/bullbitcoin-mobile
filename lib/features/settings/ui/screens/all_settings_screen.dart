@@ -48,6 +48,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
+    final hideExchangeFeatures = context.select(
+      (SettingsCubit cubit) => cubit.state.hideExchangeFeatures ?? false,
+    );
+
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
       body: SafeArea(
@@ -56,15 +60,31 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                SettingsEntryItem(
-                  icon: Icons.account_balance_wallet,
-                  title: context.loc.settingsExchangeSettingsTitle,
-                  onTap: () {
-                    if (Platform.isIOS) {
-                      final isSuperuser =
-                          context.read<SettingsCubit>().state.isSuperuser ??
-                          false;
-                      if (isSuperuser) {
+                if (!hideExchangeFeatures)
+                  SettingsEntryItem(
+                    icon: Icons.account_balance_wallet,
+                    title: context.loc.settingsExchangeSettingsTitle,
+                    onTap: () {
+                      if (Platform.isIOS) {
+                        final isSuperuser =
+                            context.read<SettingsCubit>().state.isSuperuser ??
+                            false;
+                        if (isSuperuser) {
+                          final notLoggedIn = context
+                              .read<ExchangeCubit>()
+                              .state
+                              .notLoggedIn;
+                          if (notLoggedIn) {
+                            context.goNamed(ExchangeRoute.exchangeLanding.name);
+                          } else {
+                            context.pushNamed(
+                              SettingsRoute.exchangeSettings.name,
+                            );
+                          }
+                        } else {
+                          context.goNamed(ExchangeRoute.exchangeLanding.name);
+                        }
+                      } else {
                         final notLoggedIn = context
                             .read<ExchangeCubit>()
                             .state
@@ -72,26 +92,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         if (notLoggedIn) {
                           context.goNamed(ExchangeRoute.exchangeLanding.name);
                         } else {
-                          context.pushNamed(
-                            SettingsRoute.exchangeSettings.name,
-                          );
+                          context.pushNamed(SettingsRoute.exchangeSettings.name);
                         }
-                      } else {
-                        context.goNamed(ExchangeRoute.exchangeLanding.name);
                       }
-                    } else {
-                      final notLoggedIn = context
-                          .read<ExchangeCubit>()
-                          .state
-                          .notLoggedIn;
-                      if (notLoggedIn) {
-                        context.goNamed(ExchangeRoute.exchangeLanding.name);
-                      } else {
-                        context.pushNamed(SettingsRoute.exchangeSettings.name);
-                      }
-                    }
-                  },
-                ),
+                    },
+                  ),
                 SettingsEntryItem(
                   icon: Icons.save_alt,
                   title: context.loc.settingsWalletBackupTitle,

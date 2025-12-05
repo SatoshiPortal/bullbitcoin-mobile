@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/hide_exchange_features_switch.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,6 +59,11 @@ class AppSettingsScreen extends StatelessWidget {
                       ),
                     );
                   },
+                ),
+                const SettingsEntryItem(
+                  icon: Icons.visibility_off,
+                  title: 'Hide Exchange Features',
+                  trailing: HideExchangeFeaturesSwitch(),
                 ),
                 if (isSuperuser)
                   SettingsEntryItem(

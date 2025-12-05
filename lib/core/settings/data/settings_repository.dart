@@ -35,6 +35,7 @@ class SettingsRepository implements domain.SettingsRepository {
     required bool useTorProxy,
     required int torProxyPort,
     AppThemeMode themeMode = AppThemeMode.system,
+    required bool hideExchangeFeatures,
   }) async {
     await _settingsDatasource.store(
       SettingsModel(
@@ -49,6 +50,7 @@ class SettingsRepository implements domain.SettingsRepository {
         useTorProxy: useTorProxy,
         torProxyPort: torProxyPort,
         themeMode: themeMode,
+        hideExchangeFeatures: hideExchangeFeatures,
       ),
     );
   }
@@ -68,6 +70,7 @@ class SettingsRepository implements domain.SettingsRepository {
       useTorProxy: s.useTorProxy,
       torProxyPort: s.torProxyPort,
       themeMode: s.themeMode,
+      hideExchangeFeatures: s.hideExchangeFeatures,
     );
   }
 
@@ -120,5 +123,10 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setThemeMode(AppThemeMode themeMode) async {
     await _settingsDatasource.setThemeMode(themeMode);
+  }
+
+  @override
+  Future<void> setHideExchangeFeatures(bool hide) async {
+    await _settingsDatasource.setHideExchangeFeatures(hide);
   }
 }

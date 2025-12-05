@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
+import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +18,18 @@ class WalletBottomButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        BBButton.small(
+          iconData: Icons.swap_vert,
+          label: '',
+          onPressed: () {
+            context.pushNamed(SwapRoute.swap.name);
+          },
+          bgColor: context.colour.secondary,
+          textColor: context.colour.onPrimary,
+          width: 56,
+          height: 56,
+        ),
+        const Gap(8),
         Expanded(
           child: BBButton.big(
             iconData: Icons.arrow_downward,
