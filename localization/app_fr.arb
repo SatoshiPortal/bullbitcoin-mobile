@@ -4385,7 +4385,8 @@
       "amount": {
         "type": "String"
       },
-      "currency": {}    }
+      "currency": {"type": "String"}    
+    }
   },
   "swapValidationSelectFromWallet": "Veuillez sélectionner un portefeuille source",
   "@swapValidationSelectFromWallet": {
@@ -9653,9 +9654,9 @@
   "@dcaBuyingMessage": {
     "description": "DCA status message",
     "placeholders": {
-      "amount": {},
-      "frequency": {},
-      "network": {}
+      "amount": {"type": "String"},
+      "frequency": {"type": "String"},
+      "network": {"type": "String"}
     }
   },
   "exchangeAuthLoginFailed": "Échec de la connexion",
@@ -9754,7 +9755,7 @@
   "@withdrawConfirmError": {
     "description": "Error message on confirmation screen",
     "placeholders": {
-      "error": {}
+      "error": {"type": "String"}
     }
   },
   "fundExchangeFundAccount": "Financer votre compte",
@@ -9849,7 +9850,7 @@
   "@dcaConfirmPaymentBalance": {
     "description": "Payment method balance format",
     "placeholders": {
-      "currency": {}
+      "currency": {"type": "String"}
     }
   },
   "dcaConfirmOrderType": "Type de commande",
@@ -9884,7 +9885,7 @@
   "@dcaConfirmError": {
     "description": "DCA confirmation error message",
     "placeholders": {
-      "error": {}
+      "error": {"type": "String"}
     }
   },
   "dcaConfirmContinue": "Continuer",
@@ -10203,7 +10204,7 @@
   "@autoswapSaveError": {
     "description": "Error message when save fails",
     "placeholders": {
-      "error": {}
+      "error": {"type": "String"}
     }
   },
   "electrumTitle": "Paramètres du serveur Electrum",
@@ -10234,8 +10235,8 @@
   "@electrumServerUrlHint": {
     "description": "Hint text for server URL input",
     "placeholders": {
-      "network": {},
-      "environment": {}
+      "network": {"type": "String"},
+      "environment": {"type": "String"}
     }
   },
   "electrumMainnet": "Mainnet",
@@ -10310,7 +10311,7 @@
   "@electrumStopGapTooHighError": {
     "description": "Validation error for Stop Gap exceeding maximum",
     "placeholders": {
-      "maxStopGap": {}
+      "maxStopGap": {"type": "String"}
     }
   },
   "electrumTimeoutEmptyError": "Le délai d'attente ne peut pas être vide",
@@ -10325,7 +10326,7 @@
   "@electrumTimeoutTooHighError": {
     "description": "Validation error for Timeout exceeding maximum",
     "placeholders": {
-      "maxTimeout": {}
+      "maxTimeout": {"type": "String"}
     }
   },
   "electrumRetryCountEmptyError": "Le nombre de tentatives ne peut pas être vide",
@@ -10340,29 +10341,29 @@
   "@electrumTimeoutWarning": {
     "description": "Warning message when timeout is too low for the configured Stop Gap",
     "placeholders": {
-      "timeoutValue": {},
-      "recommended": {}
+      "timeoutValue": {"type": "String"},
+      "recommended": {"type": "String"}
     }
   },
   "electrumInvalidStopGapError": "Valeur d'écart d'arrêt invalide : {value}",
   "@electrumInvalidStopGapError": {
     "description": "Error message for invalid Stop Gap value from backend",
     "placeholders": {
-      "value": {}
+      "value": {"type": "String"}
     }
   },
   "electrumInvalidTimeoutError": "Valeur de délai d'attente invalide : {value}",
   "@electrumInvalidTimeoutError": {
     "description": "Error message for invalid Timeout value from backend",
     "placeholders": {
-      "value": {}
+      "value": {"type": "String"}
     }
   },
   "electrumInvalidRetryError": "Valeur de nombre de tentatives invalide : {value}",
   "@electrumInvalidRetryError": {
     "description": "Error message for invalid Retry Count value from backend",
     "placeholders": {
-      "value": {}
+      "value": {"type": "String"}
     }
   },
   "electrumSaveFailedError": "Échec de l'enregistrement des options avancées",
@@ -10393,7 +10394,7 @@
   "@electrumDeleteConfirmation": {
     "description": "Confirmation message for server deletion",
     "placeholders": {
-      "serverUrl": {}
+      "serverUrl": {"type": "String"}
     }
   },
   "electrumCancel": "Annuler",
@@ -10572,7 +10573,7 @@
   "@arkAboutDustValue": {
     "description": "Dust value format",
     "placeholders": {
-      "dust": {}
+      "dust": {"type": "int"}
     }
   },
   "arkAboutSessionDuration": "Durée de la session",
@@ -10599,56 +10600,56 @@
   "@arkAboutCopiedMessage": {
     "description": "Snackbar message when field copied",
     "placeholders": {
-      "label": {}
+      "label": {"type": "String"}
     }
   },
   "arkAboutDurationSeconds": "{seconds} secondes",
   "@arkAboutDurationSeconds": {
     "description": "Duration format for seconds",
     "placeholders": {
-      "seconds": {}
+      "seconds": {"type": "int"}
     }
   },
   "arkAboutDurationMinute": "{minutes} minute",
   "@arkAboutDurationMinute": {
     "description": "Duration format for singular minute",
     "placeholders": {
-      "minutes": {}
+      "minutes": {"type": "int"}
     }
   },
   "arkAboutDurationMinutes": "{minutes} minutes",
   "@arkAboutDurationMinutes": {
     "description": "Duration format for plural minutes",
     "placeholders": {
-      "minutes": {}
+      "minutes": {"type": "int"}
     }
   },
   "arkAboutDurationHour": "{hours} heure",
   "@arkAboutDurationHour": {
     "description": "Duration format for singular hour",
     "placeholders": {
-      "hours": {}
+      "hours": {"type": "int"}
     }
   },
   "arkAboutDurationHours": "{hours} heures",
   "@arkAboutDurationHours": {
     "description": "Duration format for plural hours",
     "placeholders": {
-      "hours": {}
+      "hours": {"type": "int"}
     }
   },
   "arkAboutDurationDay": "{days} jour",
   "@arkAboutDurationDay": {
     "description": "Duration format for singular day",
     "placeholders": {
-      "days": {}
+      "days": {"type": "int"}
     }
   },
   "arkAboutDurationDays": "{days} jours",
   "@arkAboutDurationDays": {
     "description": "Duration format for plural days",
     "placeholders": {
-      "days": {}
+      "days": {"type": "int"}
     }
   },
   "arkSendRecipientTitle": "Envoyer au destinataire",
@@ -11151,8 +11152,8 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {},
-      "network": {}    }
+      "frequency": {"type": "String"},
+      "network": {"type": "String"}    }
   },
   "exchangeDcaAddressDisplay": "{addressLabel} : {address}",
   "@exchangeDcaAddressDisplay": {

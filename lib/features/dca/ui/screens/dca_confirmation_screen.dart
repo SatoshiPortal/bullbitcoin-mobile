@@ -95,7 +95,7 @@ class DcaConfirmationScreen extends StatelessWidget {
             const Spacer(),
             if (confirmationState.error != null) ...[
               Text(
-                context.loc.dcaConfirmError(confirmationState.error!),
+                context.loc.dcaConfirmError(confirmationState.error!.toString()),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: context.appColors.error,
                 ),
