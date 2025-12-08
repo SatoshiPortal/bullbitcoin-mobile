@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -55,7 +56,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
             children: [
               Center(
                 child: BBText(
-                  "Select amount",
+                  context.loc.sendSelectAmount,
                   style: context.font.headlineMedium,
                 ),
               ),
@@ -73,7 +74,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
           BBText(selectedUtxoTotal, style: context.font.displaySmall),
           const Gap(8),
           BBText(
-            'Amount requested: $amountToSend',
+            '${context.loc.sendAmountRequested}$amountToSend',
             style: context.font.bodySmall,
           ),
           const Gap(24),
@@ -98,7 +99,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
           ),
           const Gap(24),
           BBButton.big(
-            label: "Done",
+            label: context.loc.sendDone,
             onPressed: context.pop,
             bgColor: context.appColors.secondary,
             textColor: context.appColors.onSecondary,

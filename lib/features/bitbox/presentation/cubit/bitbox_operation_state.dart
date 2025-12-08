@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
+import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_errors.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'bitbox_operation_state.freezed.dart';
@@ -20,7 +21,7 @@ sealed class BitBoxOperationState with _$BitBoxOperationState {
   const factory BitBoxOperationState({
     @Default(BitBoxOperationStatus.initial) BitBoxOperationStatus status,
     BitBoxDeviceEntity? connectedDevice,
-    String? errorMessage,
+    BitBoxError? error,
     dynamic result,
   }) = _BitBoxOperationState;
 

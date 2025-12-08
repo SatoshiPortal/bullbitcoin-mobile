@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/send/ui/screens/full_screen_scanner_page.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -22,7 +23,7 @@ class OpenTheCameraWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 48),
             child: Text(
-              'Scan any Bitcoin or Lightning QR code to pay with bitcoin.',
+              context.loc.sendScanBitcoinQRCode,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.outlineVariant,
               ),
@@ -47,7 +48,7 @@ class OpenTheCameraWidget extends StatelessWidget {
                   ),
                 );
               },
-              label: 'Open the Camera',
+              label: context.loc.sendOpenTheCamera,
               bgColor: context.appColors.transparent,
               borderColor: context.appColors.surfaceContainer,
               textColor: context.appColors.secondary,

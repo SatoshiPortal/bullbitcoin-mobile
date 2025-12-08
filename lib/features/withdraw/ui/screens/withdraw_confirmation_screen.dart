@@ -247,7 +247,7 @@ class _ConfirmButton extends StatelessWidget {
       children: [
         if (withdrawError != null) ...[
           Text(
-            context.loc.withdrawConfirmError(withdrawError),
+            context.loc.withdrawConfirmError(withdrawError.toString()),
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
             ),

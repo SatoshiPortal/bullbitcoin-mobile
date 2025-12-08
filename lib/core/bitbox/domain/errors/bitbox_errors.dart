@@ -1,4 +1,6 @@
 // lib/core/bitbox/domain/errors/bitbox_errors.dart
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'bitbox_errors.freezed.dart';
@@ -23,21 +25,23 @@ sealed class BitBoxError with _$BitBoxError {
 
   const BitBoxError._();
 
-  String get message => when(
-    permissionDenied: () => 'USB permissions are required to connect to BitBox devices.',
-    noDevicesFound: () => 'No BitBox devices found. Make sure your device is powered on and connected via USB.',
-    multipleDevicesFound: () => 'Multiple BitBox devices found. Please ensure only one device is connected.',
-    deviceNotFound: () => 'BitBox device not found.',
-    connectionTypeNotInitialized: () => 'Connection type not initialized.',
-    noActiveConnection: () => 'No active connection to BitBox device.',
-    deviceMismatch: () => 'Device mismatch detected.',
-    invalidMagicBytes: () => 'Invalid PSBT format detected.',
-    deviceNotPaired: () => 'Device not paired. Please complete the pairing process first.',
-    handshakeFailed: () => 'Failed to establish secure connection. Please try again.',
-    operationTimeout: () => 'Operation timed out. Please try again.',
-    connectionFailed: () => 'Failed to connect to BitBox device. Please check your connection.',
-    invalidResponse: () => 'Invalid response from BitBox device. Please try again.',
-    operationCancelled: () => 'Operation was cancelled. Please try again.',
+  /// Returns the localized error message.
+  String toTranslated(BuildContext context) => when(
+    permissionDenied: () => context.loc.bitboxErrorPermissionDenied,
+    noDevicesFound: () => context.loc.bitboxErrorNoDevicesFound,
+    multipleDevicesFound: () => context.loc.bitboxErrorMultipleDevicesFound,
+    deviceNotFound: () => context.loc.bitboxErrorDeviceNotFound,
+    connectionTypeNotInitialized: () =>
+        context.loc.bitboxErrorConnectionTypeNotInitialized,
+    noActiveConnection: () => context.loc.bitboxErrorNoActiveConnection,
+    deviceMismatch: () => context.loc.bitboxErrorDeviceMismatch,
+    invalidMagicBytes: () => context.loc.bitboxErrorInvalidMagicBytes,
+    deviceNotPaired: () => context.loc.bitboxErrorDeviceNotPaired,
+    handshakeFailed: () => context.loc.bitboxErrorHandshakeFailed,
+    operationTimeout: () => context.loc.bitboxErrorOperationTimeout,
+    connectionFailed: () => context.loc.bitboxErrorConnectionFailed,
+    invalidResponse: () => context.loc.bitboxErrorInvalidResponse,
+    operationCancelled: () => context.loc.bitboxErrorOperationCancelled,
     operationFailed: (msg) => msg,
   );
 }

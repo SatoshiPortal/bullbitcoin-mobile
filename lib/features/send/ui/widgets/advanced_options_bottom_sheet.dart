@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -30,7 +31,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             children: [
               Center(
                 child: BBText(
-                  "Advanced options",
+                  context.loc.sendAdvancedOptions,
                   style: context.font.headlineMedium,
                 ),
               ),
@@ -49,7 +50,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             mainAxisAlignment: .spaceBetween,
             children: [
               BBText(
-                "Replace-by-fee activated",
+                context.loc.sendReplaceByFeeActivated,
                 style: context.font.headlineMedium,
               ),
               Switch(
@@ -64,7 +65,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           const Gap(24),
           ListTile(
             title: BBText(
-              "Select coins manually",
+              context.loc.sendSelectCoinsManually,
               style: context.font.bodyLarge?.copyWith(
                 fontWeight: .w500,
               ),
@@ -87,7 +88,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(24),
           BBButton.big(
-            label: "Done",
+            label: context.loc.sendDone,
             onPressed: context.pop,
             bgColor: context.appColors.secondary,
             textColor: context.appColors.onSecondary,

@@ -1879,31 +1879,11 @@
   "@payNotAvailable": {
     "description": "Placeholder for unavailable information"
   },
-  "payContinue": "Continue",
-  "@payContinue": {
-    "description": "Button label to continue"
-  },
-  "paySelectNetwork": "Select Network",
-  "@paySelectNetwork": {
-    "description": "AppBar title for network selection screen"
-  },
-  "payHowToPayInvoice": "How do you want to pay this invoice?",
-  "@payHowToPayInvoice": {
-    "description": "Question prompt for selecting payment network"
-  },
-  "payBitcoinOnchain": "Bitcoin on-chain",
+              "payBitcoinOnchain": "Bitcoin on-chain",
   "@payBitcoinOnchain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "payLightningNetwork": "Lightning Network",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "payLiquidNetwork": "Liquid Network",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "payAboveMaxAmount": "You are trying to pay above the maximum amount that can be paid with this wallet.",
+          "payAboveMaxAmount": "You are trying to pay above the maximum amount that can be paid with this wallet.",
   "@payAboveMaxAmount": {
     "description": "Error message when payment amount exceeds maximum"
   },
@@ -1931,15 +1911,7 @@
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "payInvalidState": "Invalid state",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "payPleasePayInvoice": "Please pay this invoice",
-  "@payPleasePayInvoice": {
-    "description": "Instruction to pay invoice"
-  },
-  "payPriceRefreshIn": "Price will refresh in ",
+          "payPriceRefreshIn": "Price will refresh in ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
@@ -1975,99 +1947,11 @@
   "@payCopied": {
     "description": "Success message after copying"
   },
-  "payPayee": "Payee",
-  "@payPayee": {
-    "description": "Label for payee in bill payment"
-  },
-  "payAccount": "Account",
-  "@payAccount": {
-    "description": "Label for account information"
-  },
-  "payAllCountries": "All countries",
-  "@payAllCountries": {
-    "description": "Filter option for all countries"
-  },
-  "payAllTypes": "All types",
-  "@payAllTypes": {
-    "description": "Filter option for all types"
-  },
-  "paySelectRecipient": "Select recipient",
-  "@paySelectRecipient": {
-    "description": "AppBar title for recipient selection screen"
-  },
-  "payWhoAreYouPaying": "Who are you paying?",
-  "@payWhoAreYouPaying": {
-    "description": "Question prompt for recipient selection"
-  },
-  "payNewRecipients": "New recipients",
-  "@payNewRecipients": {
-    "description": "Tab label for new recipients"
-  },
-  "payMyFiatRecipients": "My fiat recipients",
-  "@payMyFiatRecipients": {
-    "description": "Tab label for saved fiat recipients"
-  },
-  "payConfirmPayment": "Confirm payment",
-  "@payConfirmPayment": {
-    "description": "Title for payment confirmation screen"
-  },
-  "payRecipientDetails": "Recipient details",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details section"
-  },
-  "payPayinAmount": "Payin amount",
-  "@payPayinAmount": {
-    "description": "Label for payin amount"
-  },
-  "payExchangeRate": "Exchange rate",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
-  },
-  "payPayFromWallet": "Pay from wallet",
-  "@payPayFromWallet": {
-    "description": "Label for wallet selection"
-  },
-  "payInstantPayments": "Instant payments",
-  "@payInstantPayments": {
-    "description": "Description for Lightning wallet"
-  },
-  "paySecureBitcoinWallet": "Secure Bitcoin wallet",
-  "@paySecureBitcoinWallet": {
-    "description": "Description for standard Bitcoin wallet"
-  },
-  "payFeePriority": "Fee Priority",
-  "@payFeePriority": {
-    "description": "Label for fee priority setting"
-  },
-  "payFastest": "Fastest",
-  "@payFastest": {
-    "description": "Fastest fee priority option"
-  },
-  "payNetworkFees": "Network fees",
-  "@payNetworkFees": {
-    "description": "Label for network fees"
-  },
-  "payCalculating": "Calculating...",
-  "@payCalculating": {
-    "description": "Status text while calculating fees"
-  },
-  "payAdvancedSettings": "Advanced Settings",
-  "@payAdvancedSettings": {
-    "description": "Button label for advanced settings"
-  },
-  "paySelectWallet": "Select Wallet",
-  "@paySelectWallet": {
-    "description": "AppBar title for wallet selection screen"
-  },
-  "payWhichWallet": "Which wallet do you want to pay from?",
+                                                                                      "payWhichWallet": "Which wallet do you want to pay from?",
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"
   },
-  "payExternalWallet": "External wallet",
-  "@payExternalWallet": {
-    "description": "Option for external wallet payment"
-  },
-  "payExternalWalletDescription": "Pay from another Bitcoin wallet",
+      "payExternalWalletDescription": "Pay from another Bitcoin wallet",
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
   },
@@ -2075,19 +1959,11 @@
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
   },
-  "payAdvancedOptions": "Advanced options",
-  "@payAdvancedOptions": {
-    "description": "Title for advanced options bottom sheet"
-  },
-  "payRbfActivated": "Replace-by-fee activated",
+      "payRbfActivated": "Replace-by-fee activated",
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
   },
-  "paySelectCoinsManually": "Select coins manually",
-  "@paySelectCoinsManually": {
-    "description": "Label for manual coin selection"
-  },
-  "transactionTitle": "Transactions",
+      "transactionTitle": "Transactions",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
   },
@@ -3354,15 +3230,7 @@
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
-  "fundExchangeSinpeTitle": "SINPE Móvil",
-  "@fundExchangeSinpeTitle": {
-    "description": "Screen title for SINPE Móvil payment method (Costa Rica)"
-  },
-  "fundExchangeSinpeDescription": "Send funds to our SINPE Móvil phone number. You must send funds from the same phone number associated with your Bull Bitcoin account. If you send payment from a different number, or if you ask someone else to make the payment for you, ",
-  "@fundExchangeSinpeDescription": {
-    "description": "Main description for SINPE Móvil payment method explaining requirements"
-  },
-  "fundExchangeSinpeDescriptionBold": "it will be rejected.",
+          "fundExchangeSinpeDescriptionBold": "it will be rejected.",
   "@fundExchangeSinpeDescriptionBold": {
     "description": "Bold text warning that payment from wrong number will be rejected"
   },
@@ -3386,11 +3254,7 @@
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
   },
-  "fundExchangeCrIbanCrcTitle": "Bank Transfer (CRC)",
-  "@fundExchangeCrIbanCrcTitle": {
-    "description": "Screen title for Costa Rica IBAN bank transfer in CRC (Colón)"
-  },
-  "fundExchangeCrIbanCrcDescription": "Send a bank transfer from your bank account using the details below ",
+      "fundExchangeCrIbanCrcDescription": "Send a bank transfer from your bank account using the details below ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
   },
@@ -3430,11 +3294,7 @@
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica)"
   },
-  "fundExchangeCrIbanUsdTitle": "Bank Transfer (USD)",
-  "@fundExchangeCrIbanUsdTitle": {
-    "description": "Screen title for Costa Rica IBAN bank transfer in USD"
-  },
-  "fundExchangeCrIbanUsdDescription": "Send a bank transfer from your bank account using the details below ",
+      "fundExchangeCrIbanUsdDescription": "Send a bank transfer from your bank account using the details below ",
   "@fundExchangeCrIbanUsdDescription": {
     "description": "First part of description for CR IBAN USD transfer"
   },
@@ -4525,10 +4385,7 @@
       "amount": {
         "type": "String"
       },
-      "currency": {
-        "type": "String"
-      }
-    }
+      "currency": {"type": "String"}    }
   },
   "swapValidationSelectFromWallet": "Please select a wallet to transfer from",
   "@swapValidationSelectFromWallet": {
@@ -5071,6 +4928,347 @@
       }
     }
   },
+  "bitboxErrorPermissionDenied": "USB permissions are required to connect to BitBox devices.",
+  "@bitboxErrorPermissionDenied": {
+    "description": "Error when USB permissions are not granted for BitBox"
+  },
+  "bitboxErrorNoDevicesFound": "No BitBox devices found. Make sure your device is powered on and connected via USB.",
+  "@bitboxErrorNoDevicesFound": {
+    "description": "Error when no BitBox devices are detected"
+  },
+  "bitboxErrorMultipleDevicesFound": "Multiple BitBox devices found. Please ensure only one device is connected.",
+  "@bitboxErrorMultipleDevicesFound": {
+    "description": "Error when multiple BitBox devices are connected"
+  },
+  "bitboxErrorDeviceNotFound": "BitBox device not found.",
+  "@bitboxErrorDeviceNotFound": {
+    "description": "Error when BitBox device cannot be found"
+  },
+  "bitboxErrorConnectionTypeNotInitialized": "Connection type not initialized.",
+  "@bitboxErrorConnectionTypeNotInitialized": {
+    "description": "Error when connection type is not initialized"
+  },
+  "bitboxErrorNoActiveConnection": "No active connection to BitBox device.",
+  "@bitboxErrorNoActiveConnection": {
+    "description": "Error when there is no active connection to BitBox"
+  },
+  "bitboxErrorDeviceMismatch": "Device mismatch detected.",
+  "@bitboxErrorDeviceMismatch": {
+    "description": "Error when connected device does not match expected device"
+  },
+  "bitboxErrorInvalidMagicBytes": "Invalid PSBT format detected.",
+  "@bitboxErrorInvalidMagicBytes": {
+    "description": "Error when PSBT has invalid magic bytes"
+  },
+  "bitboxErrorDeviceNotPaired": "Device not paired. Please complete the pairing process first.",
+  "@bitboxErrorDeviceNotPaired": {
+    "description": "Error when BitBox device is not paired"
+  },
+  "bitboxErrorHandshakeFailed": "Failed to establish secure connection. Please try again.",
+  "@bitboxErrorHandshakeFailed": {
+    "description": "Error when handshake with BitBox device fails"
+  },
+  "bitboxErrorOperationTimeout": "Operation timed out. Please try again.",
+  "@bitboxErrorOperationTimeout": {
+    "description": "Error when BitBox operation times out"
+  },
+  "bitboxErrorConnectionFailed": "Failed to connect to BitBox device. Please check your connection.",
+  "@bitboxErrorConnectionFailed": {
+    "description": "Error when connection to BitBox device fails"
+  },
+  "bitboxErrorInvalidResponse": "Invalid response from BitBox device. Please try again.",
+  "@bitboxErrorInvalidResponse": {
+    "description": "Error when BitBox returns an invalid response"
+  },
+  "bitboxErrorOperationCancelled": "Operation was cancelled. Please try again.",
+  "@bitboxErrorOperationCancelled": {
+    "description": "Error when BitBox operation is cancelled"
+  },
+  "bitboxActionUnlockDeviceTitle": "Unlock BitBox Device",
+  "@bitboxActionUnlockDeviceTitle": {
+    "description": "Title for unlock device action"
+  },
+  "bitboxActionPairDeviceTitle": "Pair BitBox Device",
+  "@bitboxActionPairDeviceTitle": {
+    "description": "Title for pair device action"
+  },
+  "bitboxActionImportWalletTitle": "Import BitBox Wallet",
+  "@bitboxActionImportWalletTitle": {
+    "description": "Title for import wallet action"
+  },
+  "bitboxActionSignTransactionTitle": "Sign Transaction",
+  "@bitboxActionSignTransactionTitle": {
+    "description": "Title for sign transaction action"
+  },
+  "bitboxActionVerifyAddressTitle": "Verify Address on BitBox",
+  "@bitboxActionVerifyAddressTitle": {
+    "description": "Title for verify address action"
+  },
+  "bitboxActionUnlockDeviceButton": "Unlock Device",
+  "@bitboxActionUnlockDeviceButton": {
+    "description": "Button text for unlock device"
+  },
+  "bitboxActionPairDeviceButton": "Start Pairing",
+  "@bitboxActionPairDeviceButton": {
+    "description": "Button text for pair device"
+  },
+  "bitboxActionImportWalletButton": "Start Import",
+  "@bitboxActionImportWalletButton": {
+    "description": "Button text for import wallet"
+  },
+  "bitboxActionSignTransactionButton": "Start Signing",
+  "@bitboxActionSignTransactionButton": {
+    "description": "Button text for sign transaction"
+  },
+  "bitboxActionVerifyAddressButton": "Verify Address",
+  "@bitboxActionVerifyAddressButton": {
+    "description": "Button text for verify address"
+  },
+  "bitboxActionUnlockDeviceProcessing": "Unlocking Device",
+  "@bitboxActionUnlockDeviceProcessing": {
+    "description": "Processing text for unlock device"
+  },
+  "bitboxActionPairDeviceProcessing": "Pairing Device",
+  "@bitboxActionPairDeviceProcessing": {
+    "description": "Processing text for pair device"
+  },
+  "bitboxActionImportWalletProcessing": "Importing Wallet",
+  "@bitboxActionImportWalletProcessing": {
+    "description": "Processing text for import wallet"
+  },
+  "bitboxActionSignTransactionProcessing": "Signing Transaction",
+  "@bitboxActionSignTransactionProcessing": {
+    "description": "Processing text for sign transaction"
+  },
+  "bitboxActionVerifyAddressProcessing": "Showing address on BitBox...",
+  "@bitboxActionVerifyAddressProcessing": {
+    "description": "Processing text for verify address"
+  },
+  "bitboxActionUnlockDeviceSuccess": "Device Unlocked Successfully",
+  "@bitboxActionUnlockDeviceSuccess": {
+    "description": "Success text for unlock device"
+  },
+  "bitboxActionPairDeviceSuccess": "Device Paired Successfully",
+  "@bitboxActionPairDeviceSuccess": {
+    "description": "Success text for pair device"
+  },
+  "bitboxActionImportWalletSuccess": "Wallet Imported Successfully",
+  "@bitboxActionImportWalletSuccess": {
+    "description": "Success text for import wallet"
+  },
+  "bitboxActionSignTransactionSuccess": "Transaction Signed Successfully",
+  "@bitboxActionSignTransactionSuccess": {
+    "description": "Success text for sign transaction"
+  },
+  "bitboxActionVerifyAddressSuccess": "Address Verified Successfully",
+  "@bitboxActionVerifyAddressSuccess": {
+    "description": "Success text for verify address"
+  },
+  "bitboxActionUnlockDeviceSuccessSubtext": "Your BitBox device is now unlocked and ready to use.",
+  "@bitboxActionUnlockDeviceSuccessSubtext": {
+    "description": "Success subtext for unlock device"
+  },
+  "bitboxActionPairDeviceSuccessSubtext": "Your BitBox device is now paired and ready to use.",
+  "@bitboxActionPairDeviceSuccessSubtext": {
+    "description": "Success subtext for pair device"
+  },
+  "bitboxActionImportWalletSuccessSubtext": "Your BitBox wallet has been imported successfully.",
+  "@bitboxActionImportWalletSuccessSubtext": {
+    "description": "Success subtext for import wallet"
+  },
+  "bitboxActionSignTransactionSuccessSubtext": "Your transaction has been signed successfully.",
+  "@bitboxActionSignTransactionSuccessSubtext": {
+    "description": "Success subtext for sign transaction"
+  },
+  "bitboxActionVerifyAddressSuccessSubtext": "The address has been verified on your BitBox device.",
+  "@bitboxActionVerifyAddressSuccessSubtext": {
+    "description": "Success subtext for verify address"
+  },
+  "bitboxActionUnlockDeviceProcessingSubtext": "Please enter your password on the BitBox device...",
+  "@bitboxActionUnlockDeviceProcessingSubtext": {
+    "description": "Processing subtext for unlock device"
+  },
+  "bitboxActionPairDeviceProcessingSubtext": "Please verify the pairing code on your BitBox device...",
+  "@bitboxActionPairDeviceProcessingSubtext": {
+    "description": "Processing subtext for pair device"
+  },
+  "bitboxActionImportWalletProcessingSubtext": "Setting up your watch-only wallet...",
+  "@bitboxActionImportWalletProcessingSubtext": {
+    "description": "Processing subtext for import wallet"
+  },
+  "bitboxActionSignTransactionProcessingSubtext": "Please confirm the transaction on your BitBox device...",
+  "@bitboxActionSignTransactionProcessingSubtext": {
+    "description": "Processing subtext for sign transaction"
+  },
+  "bitboxActionVerifyAddressProcessingSubtext": "Please confirm the address on your BitBox device.",
+  "@bitboxActionVerifyAddressProcessingSubtext": {
+    "description": "Processing subtext for verify address"
+  },
+  "bitboxScreenConnectDevice": "Connect Your BitBox Device",
+  "@bitboxScreenConnectDevice": {
+    "description": "Main text when in initial state"
+  },
+  "bitboxScreenScanning": "Scanning for Devices",
+  "@bitboxScreenScanning": {
+    "description": "Main text when scanning for devices"
+  },
+  "bitboxScreenConnecting": "Connecting to BitBox",
+  "@bitboxScreenConnecting": {
+    "description": "Main text when connecting to device"
+  },
+  "bitboxScreenPairingCode": "Pairing Code",
+  "@bitboxScreenPairingCode": {
+    "description": "Main text when showing pairing code"
+  },
+  "bitboxScreenEnterPassword": "Enter Password",
+  "@bitboxScreenEnterPassword": {
+    "description": "Main text when waiting for password"
+  },
+  "bitboxScreenVerifyAddress": "Verify Address",
+  "@bitboxScreenVerifyAddress": {
+    "description": "Main text when showing address verification"
+  },
+  "bitboxScreenActionFailed": "{action} Failed",
+  "@bitboxScreenActionFailed": {
+    "description": "Main text when action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "bitboxScreenConnectSubtext": "Make sure your BitBox02 is unlocked and connected via USB.",
+  "@bitboxScreenConnectSubtext": {
+    "description": "Subtext for initial state"
+  },
+  "bitboxScreenScanningSubtext": "Looking for your BitBox device...",
+  "@bitboxScreenScanningSubtext": {
+    "description": "Subtext when scanning"
+  },
+  "bitboxScreenConnectingSubtext": "Establishing secure connection...",
+  "@bitboxScreenConnectingSubtext": {
+    "description": "Subtext when connecting"
+  },
+  "bitboxScreenPairingCodeSubtext": "Verify this code matches your BitBox02 screen, then confirm on the device.",
+  "@bitboxScreenPairingCodeSubtext": {
+    "description": "Subtext when showing pairing code"
+  },
+  "bitboxScreenEnterPasswordSubtext": "Please enter your password on the BitBox device to continue.",
+  "@bitboxScreenEnterPasswordSubtext": {
+    "description": "Subtext when waiting for password"
+  },
+  "bitboxScreenVerifyAddressSubtext": "Compare this address with your BitBox02 screen",
+  "@bitboxScreenVerifyAddressSubtext": {
+    "description": "Subtext when showing address verification"
+  },
+  "bitboxScreenUnknownError": "Unknown error occurred",
+  "@bitboxScreenUnknownError": {
+    "description": "Fallback error message"
+  },
+  "bitboxScreenWaitingConfirmation": "Waiting for confirmation on BitBox02...",
+  "@bitboxScreenWaitingConfirmation": {
+    "description": "Message shown while waiting for device confirmation"
+  },
+  "bitboxScreenAddressToVerify": "Address to verify:",
+  "@bitboxScreenAddressToVerify": {
+    "description": "Label for address verification"
+  },
+  "bitboxScreenVerifyOnDevice": "Please verify this address on your BitBox device",
+  "@bitboxScreenVerifyOnDevice": {
+    "description": "Instruction to verify address on device"
+  },
+  "bitboxScreenWalletTypeLabel": "Wallet Type:",
+  "@bitboxScreenWalletTypeLabel": {
+    "description": "Label for wallet type selector"
+  },
+  "bitboxScreenSelectWalletType": "Select Wallet Type",
+  "@bitboxScreenSelectWalletType": {
+    "description": "Title for wallet type selection modal"
+  },
+  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
+  "@bitboxScreenSegwitBip84": {
+    "description": "Script type display name for BIP84"
+  },
+  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Recommended",
+  "@bitboxScreenSegwitBip84Subtitle": {
+    "description": "Subtitle for BIP84 option"
+  },
+  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
+  "@bitboxScreenNestedSegwitBip49": {
+    "description": "Script type display name for BIP49"
+  },
+  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
+  "@bitboxScreenNestedSegwitBip49Subtitle": {
+    "description": "Subtitle for BIP49 option"
+  },
+  "bitboxScreenTroubleshootingTitle": "BitBox02 Troubleshooting",
+  "@bitboxScreenTroubleshootingTitle": {
+    "description": "Title for troubleshooting instructions"
+  },
+  "bitboxScreenTroubleshootingSubtitle": "First, make sure your BitBox02 device is connected to your phone USB port. If your device still doesn't connect with the app, try the following:",
+  "@bitboxScreenTroubleshootingSubtitle": {
+    "description": "Subtitle for troubleshooting instructions"
+  },
+  "bitboxScreenTroubleshootingStep1": "Make sure your phone has USB permissions enabled.",
+  "@bitboxScreenTroubleshootingStep1": {
+    "description": "Troubleshooting step 1"
+  },
+  "bitboxScreenTroubleshootingStep2": "Restart your BitBox02 device by unplugging and reconnecting it.",
+  "@bitboxScreenTroubleshootingStep2": {
+    "description": "Troubleshooting step 2"
+  },
+  "bitboxScreenTroubleshootingStep3": "Make sure you have the latest firmware installed on your BitBox.",
+  "@bitboxScreenTroubleshootingStep3": {
+    "description": "Troubleshooting step 3"
+  },
+  "bitboxScreenTryAgainButton": "Try Again",
+  "@bitboxScreenTryAgainButton": {
+    "description": "Button to retry failed action"
+  },
+  "bitboxScreenManagePermissionsButton": "Manage App Permissions",
+  "@bitboxScreenManagePermissionsButton": {
+    "description": "Button to open app permissions settings"
+  },
+  "bitboxScreenNeedHelpButton": "Need Help?",
+  "@bitboxScreenNeedHelpButton": {
+    "description": "Button to show help instructions"
+  },
+  "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "bitboxCubitPermissionDenied": "USB permission denied. Please grant permission to access your BitBox device.",
+  "@bitboxCubitPermissionDenied": {
+    "description": "Error interpretation for permission denied"
+  },
+  "bitboxCubitDeviceNotFound": "No BitBox device found. Please connect your device and try again.",
+  "@bitboxCubitDeviceNotFound": {
+    "description": "Error interpretation for device not found"
+  },
+  "bitboxCubitDeviceNotPaired": "Device not paired. Please complete the pairing process first.",
+  "@bitboxCubitDeviceNotPaired": {
+    "description": "Error interpretation for device not paired"
+  },
+  "bitboxCubitHandshakeFailed": "Failed to establish secure connection. Please try again.",
+  "@bitboxCubitHandshakeFailed": {
+    "description": "Error interpretation for handshake failure"
+  },
+  "bitboxCubitOperationTimeout": "Operation timed out. Please try again.",
+  "@bitboxCubitOperationTimeout": {
+    "description": "Error interpretation for timeout"
+  },
+  "bitboxCubitConnectionFailed": "Failed to connect to BitBox device. Please check your connection.",
+  "@bitboxCubitConnectionFailed": {
+    "description": "Error interpretation for connection failure"
+  },
+  "bitboxCubitInvalidResponse": "Invalid response from BitBox device. Please try again.",
+  "@bitboxCubitInvalidResponse": {
+    "description": "Error interpretation for invalid response"
+  },
+  "bitboxCubitOperationCancelled": "Operation was cancelled. Please try again.",
+  "@bitboxCubitOperationCancelled": {
+    "description": "Error interpretation for cancelled operation"
+  },
   "advancedOptionsTitle": "Advanced options",
   "@advancedOptionsTitle": {
     "description": "Bottom sheet header/title for advanced sending options"
@@ -5392,11 +5590,7 @@
   "@payInvoiceExpired": {
     "description": "Error message when Lightning invoice has expired"
   },
-  "payInsufficientBalance": "Insufficient balance",
-  "@payInsufficientBalance": {
-    "description": "Error message when wallet balance is too low for payment"
-  },
-  "payNetworkError": "Network error. Please try again",
+      "payNetworkError": "Network error. Please try again",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
@@ -5428,15 +5622,7 @@
   "@payEnterInvoice": {
     "description": "Placeholder text for invoice input field"
   },
-  "payAmount": "Amount",
-  "@payAmount": {
-    "description": "Label for payment amount field"
-  },
-  "payFee": "Fee",
-  "@payFee": {
-    "description": "Label for payment fee field"
-  },
-  "payTotal": "Total",
+          "payTotal": "Total",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
   },
@@ -6082,6 +6268,229 @@
         "type": "String"
       }
     }
+  },
+  "sendSwapId": "Swap ID",
+  "@sendSwapId": {
+    "description": "Label for swap identifier in transaction details"
+  },
+  "sendSendAmount": "Send Amount",
+  "@sendSendAmount": {
+    "description": "Label for amount being sent in swap"
+  },
+  "sendReceiveAmount": "Receive Amount",
+  "@sendReceiveAmount": {
+    "description": "Label for amount being received in swap"
+  },
+  "sendSendNetworkFee": "Send Network Fee",
+  "@sendSendNetworkFee": {
+    "description": "Label for network fee on send side of swap"
+  },
+  "sendTransferFee": "Transfer Fee",
+  "@sendTransferFee": {
+    "description": "Label for total swap transfer fee"
+  },
+  "sendTransferFeeDescription": "This is the total fee deducted from the amount sent",
+  "@sendTransferFeeDescription": {
+    "description": "Explanation of what the transfer fee represents"
+  },
+  "sendReceiveNetworkFee": "Receive Network Fee",
+  "@sendReceiveNetworkFee": {
+    "description": "Label for network fee on receive side"
+  },
+  "sendServerNetworkFees": "Server Network Fees",
+  "@sendServerNetworkFees": {
+    "description": "Label for Boltz server fees"
+  },
+  "sendConfirmSend": "Confirm Send",
+  "@sendConfirmSend": {
+    "description": "Title for send confirmation screen"
+  },
+  "sendSending": "Sending",
+  "@sendSending": {
+    "description": "Title shown while transaction is being sent"
+  },
+  "sendBroadcastingTransaction": "Broadcasting the transaction.",
+  "@sendBroadcastingTransaction": {
+    "description": "Message shown while broadcasting transaction to network"
+  },
+  "sendSwapInProgressInvoice": "The swap is in progress. The invoice will be paid in a few seconds.",
+  "@sendSwapInProgressInvoice": {
+    "description": "Message for Liquid swap in progress"
+  },
+  "sendSwapInProgressBitcoin": "The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
+  "@sendSwapInProgressBitcoin": {
+    "description": "Message for Bitcoin swap in progress"
+  },
+  "sendSwapRefundInProgress": "Swap Refund In Progress",
+  "@sendSwapRefundInProgress": {
+    "description": "Title when swap failed and refund is processing"
+  },
+  "sendSwapFailed": "The swap failed. Your refund will be processed shortly.",
+  "@sendSwapFailed": {
+    "description": "Message explaining swap failure and refund"
+  },
+  "sendSwapRefundCompleted": "Swap Refund Completed",
+  "@sendSwapRefundCompleted": {
+    "description": "Title when refund has completed"
+  },
+  "sendRefundProcessed": "Your refund has been processed.",
+  "@sendRefundProcessed": {
+    "description": "Message confirming refund completion"
+  },
+  "sendInvoicePaid": "Invoice Paid",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "sendPaymentProcessing": "The payment is being processed. It may take up to a minute",
+  "@sendPaymentProcessing": {
+    "description": "Message while payment processes"
+  },
+  "sendPaymentWillTakeTime": "Payment Will Take Time",
+  "@sendPaymentWillTakeTime": {
+    "description": "Title warning of delayed payment"
+  },
+  "sendSwapInitiated": "Swap Initiated",
+  "@sendSwapInitiated": {
+    "description": "Title when chain swap begins"
+  },
+  "sendSwapWillTakeTime": "It will take a while to confirm",
+  "@sendSwapWillTakeTime": {
+    "description": "Message warning swap confirmation takes time"
+  },
+  "sendSuccessfullySent": "Successfully Sent",
+  "@sendSuccessfullySent": {
+    "description": "Title for successful send completion"
+  },
+  "sendViewDetails": "View Details",
+  "@sendViewDetails": {
+    "description": "Button to view transaction details"
+  },
+  "sendShowPsbt": "Show PSBT",
+  "@sendShowPsbt": {
+    "description": "Button to display PSBT for external signing"
+  },
+  "sendSignWithLedger": "Sign with Ledger",
+  "@sendSignWithLedger": {
+    "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSignWithBitBox": "Sign with BitBox",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
+  },
+  "sendTransactionSignedLedger": "Transaction signed successfully with Ledger",
+  "@sendTransactionSignedLedger": {
+    "description": "Success message after Ledger signing"
+  },
+  "sendHighFeeWarningDescription": "Total fee is {feePercent}% of the amount you are sending",
+  "@sendHighFeeWarningDescription": {
+    "description": "Warning message showing fee as percentage of send amount",
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEnterAbsoluteFee": "Enter absolute fee in sats",
+  "@sendEnterAbsoluteFee": {
+    "description": "Placeholder for absolute fee input field"
+  },
+  "sendEnterRelativeFee": "Enter relative fee in sats/vB",
+  "@sendEnterRelativeFee": {
+    "description": "Placeholder for relative fee rate input field"
+  },
+  "sendErrorArkExperimentalOnly": "ARK payment requests are available from experimental Ark feature only.",
+  "@sendErrorArkExperimentalOnly": {
+    "description": "Error when ARK payment is attempted without experimental feature enabled"
+  },
+  "sendErrorSwapCreationFailed": "Failed to create swap.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorInsufficientBalanceForPayment": "Not enough balance to cover this payment",
+  "@sendErrorInsufficientBalanceForPayment": {
+    "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendErrorInvalidAddressOrInvoice": "Invalid Bitcoin Payment Address or Invoice",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "sendErrorBuildFailed": "Build Failed",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorConfirmationFailed": "Confirmation Failed",
+  "@sendErrorConfirmationFailed": {
+    "description": "Error title when transaction confirmation fails"
+  },
+  "sendErrorInsufficientBalanceForSwap": "Not enough balance to pay this swap via Liquid and not within swap limits to pay via Bitcoin.",
+  "@sendErrorInsufficientBalanceForSwap": {
+    "description": "Error when balance insufficient for swap through either network"
+  },
+  "sendErrorAmountBelowSwapLimits": "Amount is below swap limits",
+  "@sendErrorAmountBelowSwapLimits": {
+    "description": "Error when amount is below minimum swap limit"
+  },
+  "sendErrorAmountAboveSwapLimits": "Amount is above swap limits",
+  "@sendErrorAmountAboveSwapLimits": {
+    "description": "Error when amount exceeds maximum swap limit"
+  },
+  "sendErrorAmountBelowMinimum": "Amount below minimum swap limit: {minLimit} sats",
+  "@sendErrorAmountBelowMinimum": {
+    "description": "Error with specific minimum swap amount",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorAmountAboveMaximum": "Amount above maximum swap limit: {maxLimit} sats",
+  "@sendErrorAmountAboveMaximum": {
+    "description": "Error with specific maximum swap amount",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorSwapFeesNotLoaded": "Swap fees not loaded",
+  "@sendErrorSwapFeesNotLoaded": {
+    "description": "Error when swap fee information is unavailable"
+  },
+  "sendErrorInsufficientFundsForFees": "Not enough funds to cover amount and fees",
+  "@sendErrorInsufficientFundsForFees": {
+    "description": "Error when wallet cannot cover transaction amount plus fees"
+  },
+  "sendErrorBroadcastFailed": "Failed to broadcast transaction. Check your network connection and try again.",
+  "@sendErrorBroadcastFailed": {
+    "description": "Error when transaction broadcast fails"
+  },
+  "sendErrorBalanceTooLowForMinimum": "Balance too low for minimum swap amount",
+  "@sendErrorBalanceTooLowForMinimum": {
+    "description": "Error when balance is below minimum required for swap"
+  },
+  "sendErrorAmountExceedsMaximum": "Amount exceeds maximum swap amount",
+  "@sendErrorAmountExceedsMaximum": {
+    "description": "Error when amount is above maximum allowed for swap"
+  },
+  "sendErrorLiquidWalletRequired": "Liquid wallet must be used for a liquid to lightning swap",
+  "@sendErrorLiquidWalletRequired": {
+    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+  },
+  "sendErrorBitcoinWalletRequired": "Bitcoin wallet must be used for a bitcoin to lightning swap",
+  "@sendErrorBitcoinWalletRequired": {
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+  },
+  "sendErrorInsufficientFundsForPayment": "Not enough funds available to make this payment.",
+  "@sendErrorInsufficientFundsForPayment": {
+    "description": "Error when insufficient funds available"
+  },
+  "sendTypeSend": "Send",
+  "@sendTypeSend": {
+    "description": "Send type name for Bitcoin/Liquid transactions"
+  },
+  "sendTypeSwap": "Swap",
+  "@sendTypeSwap": {
+    "description": "Send type name for Lightning swap transactions"
   },
   "sellAmount": "Amount to Sell",
   "@sellAmount": {
@@ -6818,11 +7227,7 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-  "testBackupTitle": "Test your wallet",
-  "@testBackupTitle": {
-    "description": "AppBar title for test backup options screen"
-  },
-  "testBackupWalletTitle": "Test {walletName}",
+      "testBackupWalletTitle": "Test {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",
     "placeholders": {
@@ -7092,6 +7497,31 @@
       }
     }
   },
+  "recoverbullGoogleDriveCancelButton": "Cancel",
+  "@recoverbullGoogleDriveCancelButton": {
+    "description": "Cancel button text for delete confirmation dialog"
+  },
+  "recoverbullGoogleDriveDeleteButton": "Delete",
+  "@recoverbullGoogleDriveDeleteButton": {
+    "description": "Delete button text for vault backup"
+  },
+  "recoverbullGoogleDriveDeleteConfirmation": "Are you sure you want to delete this vault backup? This action cannot be undone.",
+  "@recoverbullGoogleDriveDeleteConfirmation": {
+    "description": "Confirmation message for deleting a vault backup"
+  },
+  "recoverbullGoogleDriveDeleteVaultTitle": "Delete Vault",
+  "@recoverbullGoogleDriveDeleteVaultTitle": {
+    "description": "Title for delete vault confirmation dialog"
+  },
+  "recoverbullGoogleDriveErrorDisplay": "Error: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "recoverbullBalance": "Balance: {balance}",
   "@recoverbullBalance": {
     "description": "Label showing wallet balance during vault recovery",
@@ -7350,6 +7780,38 @@
       }
     }
   },
+  "recoverbullGoogleDriveErrorDeleteFailed": "Failed to delete vault from Google Drive",
+  "@recoverbullGoogleDriveErrorDeleteFailed": {
+    "description": "Error message when deleting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Failed to export vault from Google Drive",
+  "@recoverbullGoogleDriveErrorExportFailed": {
+    "description": "Error message when exporting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorFetchFailed": "Failed to fetch vaults from Google Drive",
+  "@recoverbullGoogleDriveErrorFetchFailed": {
+    "description": "Error message when fetching drive backups fails"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "An error occurred. Please try again.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Failed to select vault from Google Drive",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullGoogleDriveExportButton": "Export",
+  "@recoverbullGoogleDriveExportButton": {
+    "description": "Export button text for vault backup"
+  },
+  "recoverbullGoogleDriveNoBackupsFound": "No backups found",
+  "@recoverbullGoogleDriveNoBackupsFound": {
+    "description": "Message displayed when no backups are found in Google Drive"
+  },
+  "recoverbullGoogleDriveScreenTitle": "Google Drive Vaults",
+  "@recoverbullGoogleDriveScreenTitle": {
+    "description": "Screen title for Google Drive vaults management"
+  },  
   "recoverbullRecoverBullServer": "RecoverBull Server",
   "@recoverbullRecoverBullServer": {
     "description": "Label for RecoverBull server connection status"
@@ -9191,9 +9653,9 @@
   "@dcaBuyingMessage": {
     "description": "DCA status message",
     "placeholders": {
-      "amount": {},
-      "frequency": {},
-      "network": {}
+      "amount": {"type": "String"},
+      "frequency": {"type": "String"},
+      "network": {"type": "String"}
     }
   },
   "exchangeAuthLoginFailed": "Login Failed",
@@ -9292,7 +9754,7 @@
   "@withdrawConfirmError": {
     "description": "Error message on confirmation screen",
     "placeholders": {
-      "error": {}
+      "error": {"type": "String"}
     }
   },
   "fundExchangeFundAccount": "Fund your account",
@@ -9387,7 +9849,7 @@
   "@dcaConfirmPaymentBalance": {
     "description": "Payment method balance format",
     "placeholders": {
-      "currency": {}
+      "currency": {"type": "String"}
     }
   },
   "dcaConfirmOrderType": "Order type",
@@ -9422,7 +9884,7 @@
   "@dcaConfirmError": {
     "description": "DCA confirmation error message",
     "placeholders": {
-      "error": {}
+      "error": {"type": "String"}
     }
   },
   "dcaConfirmContinue": "Continue",
@@ -9741,7 +10203,7 @@
   "@autoswapSaveError": {
     "description": "Error message when save fails",
     "placeholders": {
-      "error": {}
+      "error": {"type": "String"}
     }
   },
   "electrumTitle": "Electrum Server Settings",
@@ -9772,8 +10234,8 @@
   "@electrumServerUrlHint": {
     "description": "Hint text for server URL input",
     "placeholders": {
-      "network": {},
-      "environment": {}
+      "network": {"type": "String"},
+      "environment": {"type": "String"}
     }
   },
   "electrumMainnet": "Mainnet",
@@ -9848,7 +10310,7 @@
   "@electrumStopGapTooHighError": {
     "description": "Validation error for Stop Gap exceeding maximum",
     "placeholders": {
-      "maxStopGap": {}
+      "maxStopGap": {"type": "String"}
     }
   },
   "electrumTimeoutEmptyError": "Timeout can't be empty",
@@ -9863,7 +10325,7 @@
   "@electrumTimeoutTooHighError": {
     "description": "Validation error for Timeout exceeding maximum",
     "placeholders": {
-      "maxTimeout": {}
+      "maxTimeout": {"type": "String"}
     }
   },
   "electrumRetryCountEmptyError": "Retry Count can't be empty",
@@ -9878,29 +10340,29 @@
   "@electrumTimeoutWarning": {
     "description": "Warning message when timeout is too low for the configured Stop Gap",
     "placeholders": {
-      "timeoutValue": {},
-      "recommended": {}
+      "timeoutValue": {"type": "String"},
+      "recommended": {"type": "String"}
     }
   },
   "electrumInvalidStopGapError": "Invalid Stop Gap value: {value}",
   "@electrumInvalidStopGapError": {
     "description": "Error message for invalid Stop Gap value from backend",
     "placeholders": {
-      "value": {}
+      "value": {"type": "String"}
     }
   },
   "electrumInvalidTimeoutError": "Invalid Timeout value: {value}",
   "@electrumInvalidTimeoutError": {
     "description": "Error message for invalid Timeout value from backend",
     "placeholders": {
-      "value": {}
+      "value": {"type": "String"}
     }
   },
   "electrumInvalidRetryError": "Invalid Retry Count value: {value}",
   "@electrumInvalidRetryError": {
     "description": "Error message for invalid Retry Count value from backend",
     "placeholders": {
-      "value": {}
+      "value": {"type": "String"}
     }
   },
   "electrumSaveFailedError": "Failed to save advanced options",
@@ -9931,7 +10393,7 @@
   "@electrumDeleteConfirmation": {
     "description": "Confirmation message for server deletion",
     "placeholders": {
-      "serverUrl": {}
+      "serverUrl": {"type": "String"}
     }
   },
   "electrumCancel": "Cancel",
@@ -9958,11 +10420,7 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "electrumAddCustomServer": "Add Custom Server",
-  "@electrumAddCustomServer": {
-    "description": "Button label to add a custom server"
-  },
-  "electrumLoadFailedError": "Failed to load servers{reason}",
+      "electrumLoadFailedError": "Failed to load servers{reason}",
   "@electrumLoadFailedError": {
     "description": "Error message when loading servers fails",
     "placeholders": {
@@ -10114,7 +10572,7 @@
   "@arkAboutDustValue": {
     "description": "Dust value format",
     "placeholders": {
-      "dust": {}
+      "dust": {"type": "int"}
     }
   },
   "arkAboutSessionDuration": "Session duration",
@@ -10141,67 +10599,63 @@
   "@arkAboutCopiedMessage": {
     "description": "Snackbar message when field copied",
     "placeholders": {
-      "label": {}
+      "label": {"type": "String"}
     }
   },
   "arkAboutDurationSeconds": "{seconds} seconds",
   "@arkAboutDurationSeconds": {
     "description": "Duration format for seconds",
     "placeholders": {
-      "seconds": {}
+      "seconds": {"type": "int"}
     }
   },
   "arkAboutDurationMinute": "{minutes} minute",
   "@arkAboutDurationMinute": {
     "description": "Duration format for singular minute",
     "placeholders": {
-      "minutes": {}
+      "minutes": {"type": "int"}
     }
   },
   "arkAboutDurationMinutes": "{minutes} minutes",
   "@arkAboutDurationMinutes": {
     "description": "Duration format for plural minutes",
     "placeholders": {
-      "minutes": {}
+      "minutes": {"type": "int"}
     }
   },
   "arkAboutDurationHour": "{hours} hour",
   "@arkAboutDurationHour": {
     "description": "Duration format for singular hour",
     "placeholders": {
-      "hours": {}
+      "hours": {"type": "int"}
     }
   },
   "arkAboutDurationHours": "{hours} hours",
   "@arkAboutDurationHours": {
     "description": "Duration format for plural hours",
     "placeholders": {
-      "hours": {}
+      "hours": {"type": "int"}
     }
   },
   "arkAboutDurationDay": "{days} day",
   "@arkAboutDurationDay": {
     "description": "Duration format for singular day",
     "placeholders": {
-      "days": {}
+      "days": {"type": "int"}
     }
   },
   "arkAboutDurationDays": "{days} days",
   "@arkAboutDurationDays": {
     "description": "Duration format for plural days",
     "placeholders": {
-      "days": {}
+      "days": {"type": "int"}
     }
   },
   "arkSendRecipientTitle": "Send to Recipient",
   "@arkSendRecipientTitle": {
     "description": "Title for the ark send recipient page"
   },
-  "arkSendRecipientHint": "Enter a payment address or invoice",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address input field"
-  },
-  "arkSendRecipientError": "Please enter a recipient",
+      "arkSendRecipientError": "Please enter a recipient",
   "@arkSendRecipientError": {
     "description": "Error message when recipient field is empty"
   },
@@ -10701,15 +11155,8 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {
-        "type": "String",
-        "description": "The purchase frequency (e.g., 'day', 'week')"
-      },
-      "network": {
-        "type": "String",
-        "description": "The network being used (e.g., 'Bitcoin Network')"
-      }
-    }
+      "frequency": {"type": "String"},
+      "network": {"type": "String"}    }
   },
   "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
   "@exchangeDcaAddressDisplay": {
