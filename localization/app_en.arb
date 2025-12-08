@@ -11067,5 +11067,13 @@
   "walletAutoTransferAllowButton": "Allow",
   "@walletAutoTransferAllowButton": {
     "description": "Button to allow auto-transfer despite high fees"
+  },
+  "navigationTabWallet": "Wallet",
+  "@navigationTabWallet": {
+    "description": "Label for the Wallet tab in bottom navigation"
+  },
+  "navigationTabExchange": "Exchange",
+  "@navigationTabExchange": {
+    "description": "Label for the Exchange tab in bottom navigation"
   }
 }

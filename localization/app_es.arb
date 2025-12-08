@@ -11071,5 +11071,13 @@
   "walletAutoTransferAllowButton": "Permitir",
   "@walletAutoTransferAllowButton": {
     "description": "Button to allow auto-transfer despite high fees"
+  },
+  "navigationTabWallet": "Billetera",
+  "@navigationTabWallet": {
+    "description": "Label for the Wallet tab in bottom navigation"
+  },
+  "navigationTabExchange": "Intercambio",
+  "@navigationTabExchange": {
+    "description": "Label for the Exchange tab in bottom navigation"
   }
 }

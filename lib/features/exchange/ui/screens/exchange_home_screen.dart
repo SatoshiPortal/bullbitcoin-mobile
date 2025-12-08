@@ -167,7 +167,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                           FundExchangeRoute.fundExchangeAccount.name,
                         ),
                         bgColor: context.appColors.secondary,
-                        textColor: context.appColors.onPrimary,
+                        textColor: context.appColors.onSecondary,
                       ),
                     ),
                     const Gap(4),
@@ -180,7 +180,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                         onPressed: () =>
                             context.pushNamed(WithdrawRoute.withdraw.name),
                         bgColor: context.appColors.secondary,
-                        textColor: context.appColors.onPrimary,
+                        textColor: context.appColors.onSecondary,
                       ),
                     ),
                   ],

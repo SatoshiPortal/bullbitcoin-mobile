@@ -23,7 +23,7 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
 
     return AppBar(
-      backgroundColor: Colors.transparent,
+      backgroundColor: context.appColors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.light,

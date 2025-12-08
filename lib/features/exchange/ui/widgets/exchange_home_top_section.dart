@@ -38,7 +38,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                color: Colors.black,
+                color: context.appColors.overlay,
                 height: 264 + 78,
                 child: Stack(
                   fit: StackFit.expand,
@@ -47,28 +47,28 @@ class ExchangeHomeTopSection extends StatelessWidget {
                       duration: const Duration(milliseconds: 300),
                       transitionBuilder: (child, animation) {
                         return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(1.0, 0.0),
-                            end: Offset.zero,
-                          ).animate(
-                            CurvedAnimation(
-                              parent: animation,
-                              curve: Curves.easeInOut,
-                            ),
-                          ),
+                          position:
+                              Tween<Offset>(
+                                begin: const Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(
+                                CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeInOut,
+                                ),
+                              ),
                           child: child,
                         );
                       },
-                      child:
-                          showChart
-                              ? const _ChartView(key: ValueKey('chart'))
-                              : _BalancesView(
-                                key: const ValueKey('balances'),
-                                balances: balances,
-                                balanceTextStyle: balanceTextStyle,
-                                theme: theme,
-                                topGap: topGap,
-                              ),
+                      child: showChart
+                          ? const _ChartView(key: ValueKey('chart'))
+                          : _BalancesView(
+                              key: const ValueKey('balances'),
+                              balances: balances,
+                              balanceTextStyle: balanceTextStyle,
+                              theme: theme,
+                              topGap: topGap,
+                            ),
                     ),
                   ],
                 ),

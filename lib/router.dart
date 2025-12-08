@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
@@ -107,14 +108,14 @@ class AppRouter {
                             }
                           }
                         },
-                        items: const [
+                        items: [
                           BottomNavigationBarItem(
-                            icon: Icon(Icons.currency_bitcoin),
-                            label: 'Wallet',
+                            icon: const Icon(Icons.currency_bitcoin),
+                            label: context.loc.navigationTabWallet,
                           ),
                           BottomNavigationBarItem(
-                            icon: Icon(Icons.attach_money),
-                            label: 'Exchange',
+                            icon: const Icon(Icons.attach_money),
+                            label: context.loc.navigationTabExchange,
                           ),
                         ],
                       ),
