@@ -1,4 +1,5 @@
-
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'bitbox_action.freezed.dart';
@@ -13,63 +14,64 @@ sealed class BitBoxAction with _$BitBoxAction {
 
   const BitBoxAction._();
 
-  String get title {
+  String toTitle(BuildContext context) {
     return when(
-      unlockDevice: () => 'Unlock BitBox Device',
-      pairDevice: () => 'Pair BitBox Device',
-      importWallet: () => 'Import BitBox Wallet',
-      signTransaction: () => 'Sign Transaction',
-      verifyAddress: () => 'Verify Address on BitBox',
+      unlockDevice: () => context.loc.bitboxActionUnlockDeviceTitle,
+      pairDevice: () => context.loc.bitboxActionPairDeviceTitle,
+      importWallet: () => context.loc.bitboxActionImportWalletTitle,
+      signTransaction: () => context.loc.bitboxActionSignTransactionTitle,
+      verifyAddress: () => context.loc.bitboxActionVerifyAddressTitle,
     );
   }
 
-  String get buttonText {
+  String toButtonText(BuildContext context) {
     return when(
-      unlockDevice: () => 'Unlock Device',
-      pairDevice: () => 'Start Pairing',
-      importWallet: () => 'Start Import',
-      signTransaction: () => 'Start Signing',
-      verifyAddress: () => 'Verify Address',
+      unlockDevice: () => context.loc.bitboxActionUnlockDeviceButton,
+      pairDevice: () => context.loc.bitboxActionPairDeviceButton,
+      importWallet: () => context.loc.bitboxActionImportWalletButton,
+      signTransaction: () => context.loc.bitboxActionSignTransactionButton,
+      verifyAddress: () => context.loc.bitboxActionVerifyAddressButton,
     );
   }
 
-  String get processingText {
+  String toProcessingText(BuildContext context) {
     return when(
-      unlockDevice: () => 'Unlocking Device',
-      pairDevice: () => 'Pairing Device',
-      importWallet: () => 'Importing Wallet',
-      signTransaction: () => 'Signing Transaction',
-      verifyAddress: () => 'Showing address on BitBox...',
+      unlockDevice: () => context.loc.bitboxActionUnlockDeviceProcessing,
+      pairDevice: () => context.loc.bitboxActionPairDeviceProcessing,
+      importWallet: () => context.loc.bitboxActionImportWalletProcessing,
+      signTransaction: () => context.loc.bitboxActionSignTransactionProcessing,
+      verifyAddress: () => context.loc.bitboxActionVerifyAddressProcessing,
     );
   }
 
-  String get successText {
+  String toSuccessText(BuildContext context) {
     return when(
-      unlockDevice: () => 'Device Unlocked Successfully',
-      pairDevice: () => 'Device Paired Successfully',
-      importWallet: () => 'Wallet Imported Successfully',
-      signTransaction: () => 'Transaction Signed Successfully',
-      verifyAddress: () => 'Address Verified Successfully',
+      unlockDevice: () => context.loc.bitboxActionUnlockDeviceSuccess,
+      pairDevice: () => context.loc.bitboxActionPairDeviceSuccess,
+      importWallet: () => context.loc.bitboxActionImportWalletSuccess,
+      signTransaction: () => context.loc.bitboxActionSignTransactionSuccess,
+      verifyAddress: () => context.loc.bitboxActionVerifyAddressSuccess,
     );
   }
 
-  String get successSubText {
+  String toSuccessSubText(BuildContext context) {
     return when(
-      unlockDevice: () => 'Your BitBox device is now unlocked and ready to use.',
-      pairDevice: () => 'Your BitBox device is now paired and ready to use.',
-      importWallet: () => 'Your BitBox wallet has been imported successfully.',
-      signTransaction: () => 'Your transaction has been signed successfully.',
-      verifyAddress: () => 'The address has been verified on your BitBox device.',
+      unlockDevice: () => context.loc.bitboxActionUnlockDeviceSuccessSubtext,
+      pairDevice: () => context.loc.bitboxActionPairDeviceSuccessSubtext,
+      importWallet: () => context.loc.bitboxActionImportWalletSuccessSubtext,
+      signTransaction: () => context.loc.bitboxActionSignTransactionSuccessSubtext,
+      verifyAddress: () => context.loc.bitboxActionVerifyAddressSuccessSubtext,
     );
   }
 
-  String get processingSubText {
+  String toProcessingSubText(BuildContext context) {
     return when(
-      unlockDevice: () => 'Please enter your password on the BitBox device...',
-      pairDevice: () => 'Please verify the pairing code on your BitBox device...',
-      importWallet: () => 'Setting up your watch-only wallet...',
-      signTransaction: () => 'Please confirm the transaction on your BitBox device...',
-      verifyAddress: () => 'Please confirm the address on your BitBox device.',
+      unlockDevice: () => context.loc.bitboxActionUnlockDeviceProcessingSubtext,
+      pairDevice: () => context.loc.bitboxActionPairDeviceProcessingSubtext,
+      importWallet: () => context.loc.bitboxActionImportWalletProcessingSubtext,
+      signTransaction: () =>
+          context.loc.bitboxActionSignTransactionProcessingSubtext,
+      verifyAddress: () => context.loc.bitboxActionVerifyAddressProcessingSubtext,
     );
   }
 }

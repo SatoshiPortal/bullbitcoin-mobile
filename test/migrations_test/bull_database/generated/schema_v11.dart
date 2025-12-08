@@ -120,41 +120,34 @@ class Transactions extends Table
   TransactionsData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return TransactionsData(
-      txid:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}txid'],
-          )!,
-      version:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}version'],
-          )!,
-      size:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}size'],
-          )!,
-      vsize:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}vsize'],
-          )!,
-      locktime:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}locktime'],
-          )!,
-      vin:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}vin'],
-          )!,
-      vout:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}vout'],
-          )!,
+      txid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}txid'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      size: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}size'],
+      )!,
+      vsize: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vsize'],
+      )!,
+      locktime: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}locktime'],
+      )!,
+      vin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vin'],
+      )!,
+      vout: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vout'],
+      )!,
       blockhash: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}blockhash'],
@@ -249,21 +242,19 @@ class TransactionsData extends DataClass
       locktime: Value(locktime),
       vin: Value(vin),
       vout: Value(vout),
-      blockhash:
-          blockhash == null && nullToAbsent
-              ? const Value.absent()
-              : Value(blockhash),
-      height:
-          height == null && nullToAbsent ? const Value.absent() : Value(height),
-      confirmations:
-          confirmations == null && nullToAbsent
-              ? const Value.absent()
-              : Value(confirmations),
+      blockhash: blockhash == null && nullToAbsent
+          ? const Value.absent()
+          : Value(blockhash),
+      height: height == null && nullToAbsent
+          ? const Value.absent()
+          : Value(height),
+      confirmations: confirmations == null && nullToAbsent
+          ? const Value.absent()
+          : Value(confirmations),
       time: time == null && nullToAbsent ? const Value.absent() : Value(time),
-      blocktime:
-          blocktime == null && nullToAbsent
-              ? const Value.absent()
-              : Value(blocktime),
+      blocktime: blocktime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(blocktime),
     );
   }
 
@@ -329,8 +320,9 @@ class TransactionsData extends DataClass
     vout: vout ?? this.vout,
     blockhash: blockhash.present ? blockhash.value : this.blockhash,
     height: height.present ? height.value : this.height,
-    confirmations:
-        confirmations.present ? confirmations.value : this.confirmations,
+    confirmations: confirmations.present
+        ? confirmations.value
+        : this.confirmations,
     time: time.present ? time.value : this.time,
     blocktime: blocktime.present ? blocktime.value : this.blocktime,
   );
@@ -345,10 +337,9 @@ class TransactionsData extends DataClass
       vout: data.vout.present ? data.vout.value : this.vout,
       blockhash: data.blockhash.present ? data.blockhash.value : this.blockhash,
       height: data.height.present ? data.height.value : this.height,
-      confirmations:
-          data.confirmations.present
-              ? data.confirmations.value
-              : this.confirmations,
+      confirmations: data.confirmations.present
+          ? data.confirmations.value
+          : this.confirmations,
       time: data.time.present ? data.time.value : this.time,
       blocktime: data.blocktime.present ? data.blocktime.value : this.blocktime,
     );
@@ -748,31 +739,26 @@ class WalletMetadatas extends Table
   WalletMetadatasData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return WalletMetadatasData(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}id'],
-          )!,
-      masterFingerprint:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}master_fingerprint'],
-          )!,
-      xpubFingerprint:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}xpub_fingerprint'],
-          )!,
-      isEncryptedVaultTested:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_encrypted_vault_tested'],
-          )!,
-      isPhysicalBackupTested:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_physical_backup_tested'],
-          )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      masterFingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}master_fingerprint'],
+      )!,
+      xpubFingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}xpub_fingerprint'],
+      )!,
+      isEncryptedVaultTested: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_encrypted_vault_tested'],
+      )!,
+      isPhysicalBackupTested: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_physical_backup_tested'],
+      )!,
       latestEncryptedBackup: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}latest_encrypted_backup'],
@@ -781,35 +767,30 @@ class WalletMetadatas extends Table
         DriftSqlType.int,
         data['${effectivePrefix}latest_physical_backup'],
       ),
-      xpub:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}xpub'],
-          )!,
-      externalPublicDescriptor:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}external_public_descriptor'],
-          )!,
-      internalPublicDescriptor:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}internal_public_descriptor'],
-          )!,
-      signer:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}signer'],
-          )!,
+      xpub: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}xpub'],
+      )!,
+      externalPublicDescriptor: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}external_public_descriptor'],
+      )!,
+      internalPublicDescriptor: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}internal_public_descriptor'],
+      )!,
+      signer: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}signer'],
+      )!,
       signerDevice: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}signer_device'],
       ),
-      isDefault:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_default'],
-          )!,
+      isDefault: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_default'],
+      )!,
       label: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}label'],
@@ -912,33 +893,29 @@ class WalletMetadatasData extends DataClass
       xpubFingerprint: Value(xpubFingerprint),
       isEncryptedVaultTested: Value(isEncryptedVaultTested),
       isPhysicalBackupTested: Value(isPhysicalBackupTested),
-      latestEncryptedBackup:
-          latestEncryptedBackup == null && nullToAbsent
-              ? const Value.absent()
-              : Value(latestEncryptedBackup),
-      latestPhysicalBackup:
-          latestPhysicalBackup == null && nullToAbsent
-              ? const Value.absent()
-              : Value(latestPhysicalBackup),
+      latestEncryptedBackup: latestEncryptedBackup == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latestEncryptedBackup),
+      latestPhysicalBackup: latestPhysicalBackup == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latestPhysicalBackup),
       xpub: Value(xpub),
       externalPublicDescriptor: Value(externalPublicDescriptor),
       internalPublicDescriptor: Value(internalPublicDescriptor),
       signer: Value(signer),
-      signerDevice:
-          signerDevice == null && nullToAbsent
-              ? const Value.absent()
-              : Value(signerDevice),
+      signerDevice: signerDevice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(signerDevice),
       isDefault: Value(isDefault),
-      label:
-          label == null && nullToAbsent ? const Value.absent() : Value(label),
-      syncedAt:
-          syncedAt == null && nullToAbsent
-              ? const Value.absent()
-              : Value(syncedAt),
-      birthday:
-          birthday == null && nullToAbsent
-              ? const Value.absent()
-              : Value(birthday),
+      label: label == null && nullToAbsent
+          ? const Value.absent()
+          : Value(label),
+      syncedAt: syncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncedAt),
+      birthday: birthday == null && nullToAbsent
+          ? const Value.absent()
+          : Value(birthday),
     );
   }
 
@@ -1030,14 +1007,12 @@ class WalletMetadatasData extends DataClass
         isEncryptedVaultTested ?? this.isEncryptedVaultTested,
     isPhysicalBackupTested:
         isPhysicalBackupTested ?? this.isPhysicalBackupTested,
-    latestEncryptedBackup:
-        latestEncryptedBackup.present
-            ? latestEncryptedBackup.value
-            : this.latestEncryptedBackup,
-    latestPhysicalBackup:
-        latestPhysicalBackup.present
-            ? latestPhysicalBackup.value
-            : this.latestPhysicalBackup,
+    latestEncryptedBackup: latestEncryptedBackup.present
+        ? latestEncryptedBackup.value
+        : this.latestEncryptedBackup,
+    latestPhysicalBackup: latestPhysicalBackup.present
+        ? latestPhysicalBackup.value
+        : this.latestPhysicalBackup,
     xpub: xpub ?? this.xpub,
     externalPublicDescriptor:
         externalPublicDescriptor ?? this.externalPublicDescriptor,
@@ -1053,44 +1028,35 @@ class WalletMetadatasData extends DataClass
   WalletMetadatasData copyWithCompanion(WalletMetadatasCompanion data) {
     return WalletMetadatasData(
       id: data.id.present ? data.id.value : this.id,
-      masterFingerprint:
-          data.masterFingerprint.present
-              ? data.masterFingerprint.value
-              : this.masterFingerprint,
-      xpubFingerprint:
-          data.xpubFingerprint.present
-              ? data.xpubFingerprint.value
-              : this.xpubFingerprint,
-      isEncryptedVaultTested:
-          data.isEncryptedVaultTested.present
-              ? data.isEncryptedVaultTested.value
-              : this.isEncryptedVaultTested,
-      isPhysicalBackupTested:
-          data.isPhysicalBackupTested.present
-              ? data.isPhysicalBackupTested.value
-              : this.isPhysicalBackupTested,
-      latestEncryptedBackup:
-          data.latestEncryptedBackup.present
-              ? data.latestEncryptedBackup.value
-              : this.latestEncryptedBackup,
-      latestPhysicalBackup:
-          data.latestPhysicalBackup.present
-              ? data.latestPhysicalBackup.value
-              : this.latestPhysicalBackup,
+      masterFingerprint: data.masterFingerprint.present
+          ? data.masterFingerprint.value
+          : this.masterFingerprint,
+      xpubFingerprint: data.xpubFingerprint.present
+          ? data.xpubFingerprint.value
+          : this.xpubFingerprint,
+      isEncryptedVaultTested: data.isEncryptedVaultTested.present
+          ? data.isEncryptedVaultTested.value
+          : this.isEncryptedVaultTested,
+      isPhysicalBackupTested: data.isPhysicalBackupTested.present
+          ? data.isPhysicalBackupTested.value
+          : this.isPhysicalBackupTested,
+      latestEncryptedBackup: data.latestEncryptedBackup.present
+          ? data.latestEncryptedBackup.value
+          : this.latestEncryptedBackup,
+      latestPhysicalBackup: data.latestPhysicalBackup.present
+          ? data.latestPhysicalBackup.value
+          : this.latestPhysicalBackup,
       xpub: data.xpub.present ? data.xpub.value : this.xpub,
-      externalPublicDescriptor:
-          data.externalPublicDescriptor.present
-              ? data.externalPublicDescriptor.value
-              : this.externalPublicDescriptor,
-      internalPublicDescriptor:
-          data.internalPublicDescriptor.present
-              ? data.internalPublicDescriptor.value
-              : this.internalPublicDescriptor,
+      externalPublicDescriptor: data.externalPublicDescriptor.present
+          ? data.externalPublicDescriptor.value
+          : this.externalPublicDescriptor,
+      internalPublicDescriptor: data.internalPublicDescriptor.present
+          ? data.internalPublicDescriptor.value
+          : this.internalPublicDescriptor,
       signer: data.signer.present ? data.signer.value : this.signer,
-      signerDevice:
-          data.signerDevice.present
-              ? data.signerDevice.value
-              : this.signerDevice,
+      signerDevice: data.signerDevice.present
+          ? data.signerDevice.value
+          : this.signerDevice,
       isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
       label: data.label.present ? data.label.value : this.label,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
@@ -1466,21 +1432,18 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
   LabelsData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return LabelsData(
-      label:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}label'],
-          )!,
-      ref:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}ref'],
-          )!,
-      type:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}type'],
-          )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      ref: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ref'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
       origin: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}origin'],
@@ -1531,12 +1494,12 @@ class LabelsData extends DataClass implements Insertable<LabelsData> {
       label: Value(label),
       ref: Value(ref),
       type: Value(type),
-      origin:
-          origin == null && nullToAbsent ? const Value.absent() : Value(origin),
-      spendable:
-          spendable == null && nullToAbsent
-              ? const Value.absent()
-              : Value(spendable),
+      origin: origin == null && nullToAbsent
+          ? const Value.absent()
+          : Value(origin),
+      spendable: spendable == null && nullToAbsent
+          ? const Value.absent()
+          : Value(spendable),
     );
   }
 
@@ -1839,61 +1802,50 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
   SettingsData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return SettingsData(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}id'],
-          )!,
-      environment:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}environment'],
-          )!,
-      bitcoinUnit:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}bitcoin_unit'],
-          )!,
-      language:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}language'],
-          )!,
-      currency:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}currency'],
-          )!,
-      hideAmounts:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}hide_amounts'],
-          )!,
-      isSuperuser:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_superuser'],
-          )!,
-      isDevModeEnabled:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_dev_mode_enabled'],
-          )!,
-      useTorProxy:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}use_tor_proxy'],
-          )!,
-      torProxyPort:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}tor_proxy_port'],
-          )!,
-      themeMode:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}theme_mode'],
-          )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      environment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}environment'],
+      )!,
+      bitcoinUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bitcoin_unit'],
+      )!,
+      language: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}language'],
+      )!,
+      currency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency'],
+      )!,
+      hideAmounts: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}hide_amounts'],
+      )!,
+      isSuperuser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_superuser'],
+      )!,
+      isDevModeEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_dev_mode_enabled'],
+      )!,
+      useTorProxy: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}use_tor_proxy'],
+      )!,
+      torProxyPort: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tor_proxy_port'],
+      )!,
+      themeMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}theme_mode'],
+      )!,
     );
   }
 
@@ -2026,26 +1978,29 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
       id: data.id.present ? data.id.value : this.id,
-      environment:
-          data.environment.present ? data.environment.value : this.environment,
-      bitcoinUnit:
-          data.bitcoinUnit.present ? data.bitcoinUnit.value : this.bitcoinUnit,
+      environment: data.environment.present
+          ? data.environment.value
+          : this.environment,
+      bitcoinUnit: data.bitcoinUnit.present
+          ? data.bitcoinUnit.value
+          : this.bitcoinUnit,
       language: data.language.present ? data.language.value : this.language,
       currency: data.currency.present ? data.currency.value : this.currency,
-      hideAmounts:
-          data.hideAmounts.present ? data.hideAmounts.value : this.hideAmounts,
-      isSuperuser:
-          data.isSuperuser.present ? data.isSuperuser.value : this.isSuperuser,
-      isDevModeEnabled:
-          data.isDevModeEnabled.present
-              ? data.isDevModeEnabled.value
-              : this.isDevModeEnabled,
-      useTorProxy:
-          data.useTorProxy.present ? data.useTorProxy.value : this.useTorProxy,
-      torProxyPort:
-          data.torProxyPort.present
-              ? data.torProxyPort.value
-              : this.torProxyPort,
+      hideAmounts: data.hideAmounts.present
+          ? data.hideAmounts.value
+          : this.hideAmounts,
+      isSuperuser: data.isSuperuser.present
+          ? data.isSuperuser.value
+          : this.isSuperuser,
+      isDevModeEnabled: data.isDevModeEnabled.present
+          ? data.isDevModeEnabled.value
+          : this.isDevModeEnabled,
+      useTorProxy: data.useTorProxy.present
+          ? data.useTorProxy.value
+          : this.useTorProxy,
+      torProxyPort: data.torProxyPort.present
+          ? data.torProxyPort.value
+          : this.torProxyPort,
       themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
     );
   }
@@ -2389,51 +2344,42 @@ class PayjoinSenders extends Table
   PayjoinSendersData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return PayjoinSendersData(
-      uri:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}uri'],
-          )!,
-      isTestnet:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_testnet'],
-          )!,
-      sender:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}sender'],
-          )!,
-      walletId:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}wallet_id'],
-          )!,
-      originalPsbt:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}original_psbt'],
-          )!,
-      originalTxId:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}original_tx_id'],
-          )!,
-      amountSat:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}amount_sat'],
-          )!,
-      createdAt:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}created_at'],
-          )!,
-      expireAfterSec:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}expire_after_sec'],
-          )!,
+      uri: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uri'],
+      )!,
+      isTestnet: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_testnet'],
+      )!,
+      sender: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sender'],
+      )!,
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      )!,
+      originalPsbt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}original_psbt'],
+      )!,
+      originalTxId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}original_tx_id'],
+      )!,
+      amountSat: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_sat'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      expireAfterSec: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}expire_after_sec'],
+      )!,
       proposalPsbt: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}proposal_psbt'],
@@ -2442,16 +2388,14 @@ class PayjoinSenders extends Table
         DriftSqlType.string,
         data['${effectivePrefix}tx_id'],
       ),
-      isExpired:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_expired'],
-          )!,
-      isCompleted:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_completed'],
-          )!,
+      isExpired: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_expired'],
+      )!,
+      isCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_completed'],
+      )!,
     );
   }
 
@@ -2525,10 +2469,9 @@ class PayjoinSendersData extends DataClass
       amountSat: Value(amountSat),
       createdAt: Value(createdAt),
       expireAfterSec: Value(expireAfterSec),
-      proposalPsbt:
-          proposalPsbt == null && nullToAbsent
-              ? const Value.absent()
-              : Value(proposalPsbt),
+      proposalPsbt: proposalPsbt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(proposalPsbt),
       txId: txId == null && nullToAbsent ? const Value.absent() : Value(txId),
       isExpired: Value(isExpired),
       isCompleted: Value(isCompleted),
@@ -2611,28 +2554,25 @@ class PayjoinSendersData extends DataClass
       isTestnet: data.isTestnet.present ? data.isTestnet.value : this.isTestnet,
       sender: data.sender.present ? data.sender.value : this.sender,
       walletId: data.walletId.present ? data.walletId.value : this.walletId,
-      originalPsbt:
-          data.originalPsbt.present
-              ? data.originalPsbt.value
-              : this.originalPsbt,
-      originalTxId:
-          data.originalTxId.present
-              ? data.originalTxId.value
-              : this.originalTxId,
+      originalPsbt: data.originalPsbt.present
+          ? data.originalPsbt.value
+          : this.originalPsbt,
+      originalTxId: data.originalTxId.present
+          ? data.originalTxId.value
+          : this.originalTxId,
       amountSat: data.amountSat.present ? data.amountSat.value : this.amountSat,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      expireAfterSec:
-          data.expireAfterSec.present
-              ? data.expireAfterSec.value
-              : this.expireAfterSec,
-      proposalPsbt:
-          data.proposalPsbt.present
-              ? data.proposalPsbt.value
-              : this.proposalPsbt,
+      expireAfterSec: data.expireAfterSec.present
+          ? data.expireAfterSec.value
+          : this.expireAfterSec,
+      proposalPsbt: data.proposalPsbt.present
+          ? data.proposalPsbt.value
+          : this.proposalPsbt,
       txId: data.txId.present ? data.txId.value : this.txId,
       isExpired: data.isExpired.present ? data.isExpired.value : this.isExpired,
-      isCompleted:
-          data.isCompleted.present ? data.isCompleted.value : this.isCompleted,
+      isCompleted: data.isCompleted.present
+          ? data.isCompleted.value
+          : this.isCompleted,
     );
   }
 
@@ -3045,51 +2985,42 @@ class PayjoinReceivers extends Table
   PayjoinReceiversData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return PayjoinReceiversData(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}id'],
-          )!,
-      address:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}address'],
-          )!,
-      isTestnet:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_testnet'],
-          )!,
-      receiver:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}receiver'],
-          )!,
-      walletId:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}wallet_id'],
-          )!,
-      pjUri:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}pj_uri'],
-          )!,
-      maxFeeRateSatPerVb:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bigInt,
-            data['${effectivePrefix}max_fee_rate_sat_per_vb'],
-          )!,
-      createdAt:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}created_at'],
-          )!,
-      expireAfterSec:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}expire_after_sec'],
-          )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      address: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address'],
+      )!,
+      isTestnet: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_testnet'],
+      )!,
+      receiver: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}receiver'],
+      )!,
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      )!,
+      pjUri: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pj_uri'],
+      )!,
+      maxFeeRateSatPerVb: attachedDatabase.typeMapping.read(
+        DriftSqlType.bigInt,
+        data['${effectivePrefix}max_fee_rate_sat_per_vb'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      expireAfterSec: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}expire_after_sec'],
+      )!,
       originalTxBytes: attachedDatabase.typeMapping.read(
         DriftSqlType.blob,
         data['${effectivePrefix}original_tx_bytes'],
@@ -3110,16 +3041,14 @@ class PayjoinReceivers extends Table
         DriftSqlType.string,
         data['${effectivePrefix}tx_id'],
       ),
-      isExpired:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_expired'],
-          )!,
-      isCompleted:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_completed'],
-          )!,
+      isExpired: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_expired'],
+      )!,
+      isCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_completed'],
+      )!,
     );
   }
 
@@ -3208,22 +3137,18 @@ class PayjoinReceiversData extends DataClass
       maxFeeRateSatPerVb: Value(maxFeeRateSatPerVb),
       createdAt: Value(createdAt),
       expireAfterSec: Value(expireAfterSec),
-      originalTxBytes:
-          originalTxBytes == null && nullToAbsent
-              ? const Value.absent()
-              : Value(originalTxBytes),
-      originalTxId:
-          originalTxId == null && nullToAbsent
-              ? const Value.absent()
-              : Value(originalTxId),
-      amountSat:
-          amountSat == null && nullToAbsent
-              ? const Value.absent()
-              : Value(amountSat),
-      proposalPsbt:
-          proposalPsbt == null && nullToAbsent
-              ? const Value.absent()
-              : Value(proposalPsbt),
+      originalTxBytes: originalTxBytes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originalTxBytes),
+      originalTxId: originalTxId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originalTxId),
+      amountSat: amountSat == null && nullToAbsent
+          ? const Value.absent()
+          : Value(amountSat),
+      proposalPsbt: proposalPsbt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(proposalPsbt),
       txId: txId == null && nullToAbsent ? const Value.absent() : Value(txId),
       isExpired: Value(isExpired),
       isCompleted: Value(isCompleted),
@@ -3308,8 +3233,9 @@ class PayjoinReceiversData extends DataClass
     maxFeeRateSatPerVb: maxFeeRateSatPerVb ?? this.maxFeeRateSatPerVb,
     createdAt: createdAt ?? this.createdAt,
     expireAfterSec: expireAfterSec ?? this.expireAfterSec,
-    originalTxBytes:
-        originalTxBytes.present ? originalTxBytes.value : this.originalTxBytes,
+    originalTxBytes: originalTxBytes.present
+        ? originalTxBytes.value
+        : this.originalTxBytes,
     originalTxId: originalTxId.present ? originalTxId.value : this.originalTxId,
     amountSat: amountSat.present ? amountSat.value : this.amountSat,
     proposalPsbt: proposalPsbt.present ? proposalPsbt.value : this.proposalPsbt,
@@ -3325,32 +3251,28 @@ class PayjoinReceiversData extends DataClass
       receiver: data.receiver.present ? data.receiver.value : this.receiver,
       walletId: data.walletId.present ? data.walletId.value : this.walletId,
       pjUri: data.pjUri.present ? data.pjUri.value : this.pjUri,
-      maxFeeRateSatPerVb:
-          data.maxFeeRateSatPerVb.present
-              ? data.maxFeeRateSatPerVb.value
-              : this.maxFeeRateSatPerVb,
+      maxFeeRateSatPerVb: data.maxFeeRateSatPerVb.present
+          ? data.maxFeeRateSatPerVb.value
+          : this.maxFeeRateSatPerVb,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      expireAfterSec:
-          data.expireAfterSec.present
-              ? data.expireAfterSec.value
-              : this.expireAfterSec,
-      originalTxBytes:
-          data.originalTxBytes.present
-              ? data.originalTxBytes.value
-              : this.originalTxBytes,
-      originalTxId:
-          data.originalTxId.present
-              ? data.originalTxId.value
-              : this.originalTxId,
+      expireAfterSec: data.expireAfterSec.present
+          ? data.expireAfterSec.value
+          : this.expireAfterSec,
+      originalTxBytes: data.originalTxBytes.present
+          ? data.originalTxBytes.value
+          : this.originalTxBytes,
+      originalTxId: data.originalTxId.present
+          ? data.originalTxId.value
+          : this.originalTxId,
       amountSat: data.amountSat.present ? data.amountSat.value : this.amountSat,
-      proposalPsbt:
-          data.proposalPsbt.present
-              ? data.proposalPsbt.value
-              : this.proposalPsbt,
+      proposalPsbt: data.proposalPsbt.present
+          ? data.proposalPsbt.value
+          : this.proposalPsbt,
       txId: data.txId.present ? data.txId.value : this.txId,
       isExpired: data.isExpired.present ? data.isExpired.value : this.isExpired,
-      isCompleted:
-          data.isCompleted.present ? data.isCompleted.value : this.isCompleted,
+      isCompleted: data.isCompleted.present
+          ? data.isCompleted.value
+          : this.isCompleted,
     );
   }
 
@@ -3721,31 +3643,26 @@ class ElectrumServers extends Table
   ElectrumServersData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ElectrumServersData(
-      url:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}url'],
-          )!,
-      isTestnet:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_testnet'],
-          )!,
-      isLiquid:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_liquid'],
-          )!,
-      priority:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}priority'],
-          )!,
-      isCustom:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_custom'],
-          )!,
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      )!,
+      isTestnet: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_testnet'],
+      )!,
+      isLiquid: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_liquid'],
+      )!,
+      priority: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}priority'],
+      )!,
+      isCustom: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_custom'],
+      )!,
     );
   }
 
@@ -4035,31 +3952,26 @@ class ElectrumSettings extends Table
   ElectrumSettingsData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ElectrumSettingsData(
-      network:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}network'],
-          )!,
-      validateDomain:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}validate_domain'],
-          )!,
-      stopGap:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}stop_gap'],
-          )!,
-      timeout:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}timeout'],
-          )!,
-      retry:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}retry'],
-          )!,
+      network: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}network'],
+      )!,
+      validateDomain: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}validate_domain'],
+      )!,
+      stopGap: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}stop_gap'],
+      )!,
+      timeout: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}timeout'],
+      )!,
+      retry: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}retry'],
+      )!,
       socks5: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}socks5'],
@@ -4110,8 +4022,9 @@ class ElectrumSettingsData extends DataClass
       stopGap: Value(stopGap),
       timeout: Value(timeout),
       retry: Value(retry),
-      socks5:
-          socks5 == null && nullToAbsent ? const Value.absent() : Value(socks5),
+      socks5: socks5 == null && nullToAbsent
+          ? const Value.absent()
+          : Value(socks5),
     );
   }
 
@@ -4160,10 +4073,9 @@ class ElectrumSettingsData extends DataClass
   ElectrumSettingsData copyWithCompanion(ElectrumSettingsCompanion data) {
     return ElectrumSettingsData(
       network: data.network.present ? data.network.value : this.network,
-      validateDomain:
-          data.validateDomain.present
-              ? data.validateDomain.value
-              : this.validateDomain,
+      validateDomain: data.validateDomain.present
+          ? data.validateDomain.value
+          : this.validateDomain,
       stopGap: data.stopGap.present ? data.stopGap.value : this.stopGap,
       timeout: data.timeout.present ? data.timeout.value : this.timeout,
       retry: data.retry.present ? data.retry.value : this.retry,
@@ -4521,41 +4433,34 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
   SwapsData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return SwapsData(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}id'],
-          )!,
-      type:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}type'],
-          )!,
-      direction:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}direction'],
-          )!,
-      status:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}status'],
-          )!,
-      isTestnet:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_testnet'],
-          )!,
-      keyIndex:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}key_index'],
-          )!,
-      creationTime:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}creation_time'],
-          )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      direction: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}direction'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      isTestnet: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_testnet'],
+      )!,
+      keyIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}key_index'],
+      )!,
+      creationTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}creation_time'],
+      )!,
       completionTime: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}completion_time'],
@@ -4748,70 +4653,54 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       isTestnet: Value(isTestnet),
       keyIndex: Value(keyIndex),
       creationTime: Value(creationTime),
-      completionTime:
-          completionTime == null && nullToAbsent
-              ? const Value.absent()
-              : Value(completionTime),
-      receiveWalletId:
-          receiveWalletId == null && nullToAbsent
-              ? const Value.absent()
-              : Value(receiveWalletId),
-      sendWalletId:
-          sendWalletId == null && nullToAbsent
-              ? const Value.absent()
-              : Value(sendWalletId),
-      invoice:
-          invoice == null && nullToAbsent
-              ? const Value.absent()
-              : Value(invoice),
-      paymentAddress:
-          paymentAddress == null && nullToAbsent
-              ? const Value.absent()
-              : Value(paymentAddress),
-      paymentAmount:
-          paymentAmount == null && nullToAbsent
-              ? const Value.absent()
-              : Value(paymentAmount),
-      receiveAddress:
-          receiveAddress == null && nullToAbsent
-              ? const Value.absent()
-              : Value(receiveAddress),
-      receiveTxid:
-          receiveTxid == null && nullToAbsent
-              ? const Value.absent()
-              : Value(receiveTxid),
-      sendTxid:
-          sendTxid == null && nullToAbsent
-              ? const Value.absent()
-              : Value(sendTxid),
-      preimage:
-          preimage == null && nullToAbsent
-              ? const Value.absent()
-              : Value(preimage),
-      refundAddress:
-          refundAddress == null && nullToAbsent
-              ? const Value.absent()
-              : Value(refundAddress),
-      refundTxid:
-          refundTxid == null && nullToAbsent
-              ? const Value.absent()
-              : Value(refundTxid),
-      boltzFees:
-          boltzFees == null && nullToAbsent
-              ? const Value.absent()
-              : Value(boltzFees),
-      lockupFees:
-          lockupFees == null && nullToAbsent
-              ? const Value.absent()
-              : Value(lockupFees),
-      claimFees:
-          claimFees == null && nullToAbsent
-              ? const Value.absent()
-              : Value(claimFees),
-      serverNetworkFees:
-          serverNetworkFees == null && nullToAbsent
-              ? const Value.absent()
-              : Value(serverNetworkFees),
+      completionTime: completionTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completionTime),
+      receiveWalletId: receiveWalletId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(receiveWalletId),
+      sendWalletId: sendWalletId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sendWalletId),
+      invoice: invoice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(invoice),
+      paymentAddress: paymentAddress == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paymentAddress),
+      paymentAmount: paymentAmount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paymentAmount),
+      receiveAddress: receiveAddress == null && nullToAbsent
+          ? const Value.absent()
+          : Value(receiveAddress),
+      receiveTxid: receiveTxid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(receiveTxid),
+      sendTxid: sendTxid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sendTxid),
+      preimage: preimage == null && nullToAbsent
+          ? const Value.absent()
+          : Value(preimage),
+      refundAddress: refundAddress == null && nullToAbsent
+          ? const Value.absent()
+          : Value(refundAddress),
+      refundTxid: refundTxid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(refundTxid),
+      boltzFees: boltzFees == null && nullToAbsent
+          ? const Value.absent()
+          : Value(boltzFees),
+      lockupFees: lockupFees == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lockupFees),
+      claimFees: claimFees == null && nullToAbsent
+          ? const Value.absent()
+          : Value(claimFees),
+      serverNetworkFees: serverNetworkFees == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverNetworkFees),
     );
   }
 
@@ -4908,31 +4797,36 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
     isTestnet: isTestnet ?? this.isTestnet,
     keyIndex: keyIndex ?? this.keyIndex,
     creationTime: creationTime ?? this.creationTime,
-    completionTime:
-        completionTime.present ? completionTime.value : this.completionTime,
-    receiveWalletId:
-        receiveWalletId.present ? receiveWalletId.value : this.receiveWalletId,
+    completionTime: completionTime.present
+        ? completionTime.value
+        : this.completionTime,
+    receiveWalletId: receiveWalletId.present
+        ? receiveWalletId.value
+        : this.receiveWalletId,
     sendWalletId: sendWalletId.present ? sendWalletId.value : this.sendWalletId,
     invoice: invoice.present ? invoice.value : this.invoice,
-    paymentAddress:
-        paymentAddress.present ? paymentAddress.value : this.paymentAddress,
-    paymentAmount:
-        paymentAmount.present ? paymentAmount.value : this.paymentAmount,
-    receiveAddress:
-        receiveAddress.present ? receiveAddress.value : this.receiveAddress,
+    paymentAddress: paymentAddress.present
+        ? paymentAddress.value
+        : this.paymentAddress,
+    paymentAmount: paymentAmount.present
+        ? paymentAmount.value
+        : this.paymentAmount,
+    receiveAddress: receiveAddress.present
+        ? receiveAddress.value
+        : this.receiveAddress,
     receiveTxid: receiveTxid.present ? receiveTxid.value : this.receiveTxid,
     sendTxid: sendTxid.present ? sendTxid.value : this.sendTxid,
     preimage: preimage.present ? preimage.value : this.preimage,
-    refundAddress:
-        refundAddress.present ? refundAddress.value : this.refundAddress,
+    refundAddress: refundAddress.present
+        ? refundAddress.value
+        : this.refundAddress,
     refundTxid: refundTxid.present ? refundTxid.value : this.refundTxid,
     boltzFees: boltzFees.present ? boltzFees.value : this.boltzFees,
     lockupFees: lockupFees.present ? lockupFees.value : this.lockupFees,
     claimFees: claimFees.present ? claimFees.value : this.claimFees,
-    serverNetworkFees:
-        serverNetworkFees.present
-            ? serverNetworkFees.value
-            : this.serverNetworkFees,
+    serverNetworkFees: serverNetworkFees.present
+        ? serverNetworkFees.value
+        : this.serverNetworkFees,
   );
   SwapsData copyWithCompanion(SwapsCompanion data) {
     return SwapsData(
@@ -4942,53 +4836,47 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       status: data.status.present ? data.status.value : this.status,
       isTestnet: data.isTestnet.present ? data.isTestnet.value : this.isTestnet,
       keyIndex: data.keyIndex.present ? data.keyIndex.value : this.keyIndex,
-      creationTime:
-          data.creationTime.present
-              ? data.creationTime.value
-              : this.creationTime,
-      completionTime:
-          data.completionTime.present
-              ? data.completionTime.value
-              : this.completionTime,
-      receiveWalletId:
-          data.receiveWalletId.present
-              ? data.receiveWalletId.value
-              : this.receiveWalletId,
-      sendWalletId:
-          data.sendWalletId.present
-              ? data.sendWalletId.value
-              : this.sendWalletId,
+      creationTime: data.creationTime.present
+          ? data.creationTime.value
+          : this.creationTime,
+      completionTime: data.completionTime.present
+          ? data.completionTime.value
+          : this.completionTime,
+      receiveWalletId: data.receiveWalletId.present
+          ? data.receiveWalletId.value
+          : this.receiveWalletId,
+      sendWalletId: data.sendWalletId.present
+          ? data.sendWalletId.value
+          : this.sendWalletId,
       invoice: data.invoice.present ? data.invoice.value : this.invoice,
-      paymentAddress:
-          data.paymentAddress.present
-              ? data.paymentAddress.value
-              : this.paymentAddress,
-      paymentAmount:
-          data.paymentAmount.present
-              ? data.paymentAmount.value
-              : this.paymentAmount,
-      receiveAddress:
-          data.receiveAddress.present
-              ? data.receiveAddress.value
-              : this.receiveAddress,
-      receiveTxid:
-          data.receiveTxid.present ? data.receiveTxid.value : this.receiveTxid,
+      paymentAddress: data.paymentAddress.present
+          ? data.paymentAddress.value
+          : this.paymentAddress,
+      paymentAmount: data.paymentAmount.present
+          ? data.paymentAmount.value
+          : this.paymentAmount,
+      receiveAddress: data.receiveAddress.present
+          ? data.receiveAddress.value
+          : this.receiveAddress,
+      receiveTxid: data.receiveTxid.present
+          ? data.receiveTxid.value
+          : this.receiveTxid,
       sendTxid: data.sendTxid.present ? data.sendTxid.value : this.sendTxid,
       preimage: data.preimage.present ? data.preimage.value : this.preimage,
-      refundAddress:
-          data.refundAddress.present
-              ? data.refundAddress.value
-              : this.refundAddress,
-      refundTxid:
-          data.refundTxid.present ? data.refundTxid.value : this.refundTxid,
+      refundAddress: data.refundAddress.present
+          ? data.refundAddress.value
+          : this.refundAddress,
+      refundTxid: data.refundTxid.present
+          ? data.refundTxid.value
+          : this.refundTxid,
       boltzFees: data.boltzFees.present ? data.boltzFees.value : this.boltzFees,
-      lockupFees:
-          data.lockupFees.present ? data.lockupFees.value : this.lockupFees,
+      lockupFees: data.lockupFees.present
+          ? data.lockupFees.value
+          : this.lockupFees,
       claimFees: data.claimFees.present ? data.claimFees.value : this.claimFees,
-      serverNetworkFees:
-          data.serverNetworkFees.present
-              ? data.serverNetworkFees.value
-              : this.serverNetworkFees,
+      serverNetworkFees: data.serverNetworkFees.present
+          ? data.serverNetworkFees.value
+          : this.serverNetworkFees,
     );
   }
 
@@ -5472,36 +5360,30 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
   AutoSwapData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return AutoSwapData(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}id'],
-          )!,
-      enabled:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}enabled'],
-          )!,
-      balanceThresholdSats:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}balance_threshold_sats'],
-          )!,
-      feeThresholdPercent:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.double,
-            data['${effectivePrefix}fee_threshold_percent'],
-          )!,
-      blockTillNextExecution:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}block_till_next_execution'],
-          )!,
-      alwaysBlock:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}always_block'],
-          )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      )!,
+      balanceThresholdSats: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}balance_threshold_sats'],
+      )!,
+      feeThresholdPercent: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}fee_threshold_percent'],
+      )!,
+      blockTillNextExecution: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}block_till_next_execution'],
+      )!,
+      alwaysBlock: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}always_block'],
+      )!,
       recipientWalletId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}recipient_wallet_id'],
@@ -5555,10 +5437,9 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
       feeThresholdPercent: Value(feeThresholdPercent),
       blockTillNextExecution: Value(blockTillNextExecution),
       alwaysBlock: Value(alwaysBlock),
-      recipientWalletId:
-          recipientWalletId == null && nullToAbsent
-              ? const Value.absent()
-              : Value(recipientWalletId),
+      recipientWalletId: recipientWalletId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recipientWalletId),
     );
   }
 
@@ -5615,33 +5496,29 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     blockTillNextExecution:
         blockTillNextExecution ?? this.blockTillNextExecution,
     alwaysBlock: alwaysBlock ?? this.alwaysBlock,
-    recipientWalletId:
-        recipientWalletId.present
-            ? recipientWalletId.value
-            : this.recipientWalletId,
+    recipientWalletId: recipientWalletId.present
+        ? recipientWalletId.value
+        : this.recipientWalletId,
   );
   AutoSwapData copyWithCompanion(AutoSwapCompanion data) {
     return AutoSwapData(
       id: data.id.present ? data.id.value : this.id,
       enabled: data.enabled.present ? data.enabled.value : this.enabled,
-      balanceThresholdSats:
-          data.balanceThresholdSats.present
-              ? data.balanceThresholdSats.value
-              : this.balanceThresholdSats,
-      feeThresholdPercent:
-          data.feeThresholdPercent.present
-              ? data.feeThresholdPercent.value
-              : this.feeThresholdPercent,
-      blockTillNextExecution:
-          data.blockTillNextExecution.present
-              ? data.blockTillNextExecution.value
-              : this.blockTillNextExecution,
-      alwaysBlock:
-          data.alwaysBlock.present ? data.alwaysBlock.value : this.alwaysBlock,
-      recipientWalletId:
-          data.recipientWalletId.present
-              ? data.recipientWalletId.value
-              : this.recipientWalletId,
+      balanceThresholdSats: data.balanceThresholdSats.present
+          ? data.balanceThresholdSats.value
+          : this.balanceThresholdSats,
+      feeThresholdPercent: data.feeThresholdPercent.present
+          ? data.feeThresholdPercent.value
+          : this.feeThresholdPercent,
+      blockTillNextExecution: data.blockTillNextExecution.present
+          ? data.blockTillNextExecution.value
+          : this.blockTillNextExecution,
+      alwaysBlock: data.alwaysBlock.present
+          ? data.alwaysBlock.value
+          : this.alwaysBlock,
+      recipientWalletId: data.recipientWalletId.present
+          ? data.recipientWalletId.value
+          : this.recipientWalletId,
     );
   }
 
@@ -5859,26 +5736,22 @@ class Bip85Derivations extends Table
   Bip85DerivationsData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Bip85DerivationsData(
-      path:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}path'],
-          )!,
-      xprvFingerprint:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}xprv_fingerprint'],
-          )!,
-      application:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}application'],
-          )!,
-      status:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}status'],
-          )!,
+      path: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}path'],
+      )!,
+      xprvFingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}xprv_fingerprint'],
+      )!,
+      application: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}application'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
       alias: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}alias'],
@@ -5925,8 +5798,9 @@ class Bip85DerivationsData extends DataClass
       xprvFingerprint: Value(xprvFingerprint),
       application: Value(application),
       status: Value(status),
-      alias:
-          alias == null && nullToAbsent ? const Value.absent() : Value(alias),
+      alias: alias == null && nullToAbsent
+          ? const Value.absent()
+          : Value(alias),
     );
   }
 
@@ -5971,12 +5845,12 @@ class Bip85DerivationsData extends DataClass
   Bip85DerivationsData copyWithCompanion(Bip85DerivationsCompanion data) {
     return Bip85DerivationsData(
       path: data.path.present ? data.path.value : this.path,
-      xprvFingerprint:
-          data.xprvFingerprint.present
-              ? data.xprvFingerprint.value
-              : this.xprvFingerprint,
-      application:
-          data.application.present ? data.application.value : this.application,
+      xprvFingerprint: data.xprvFingerprint.present
+          ? data.xprvFingerprint.value
+          : this.xprvFingerprint,
+      application: data.application.present
+          ? data.application.value
+          : this.application,
       status: data.status.present ? data.status.value : this.status,
       alias: data.alias.present ? data.alias.value : this.alias,
     );
@@ -6154,21 +6028,18 @@ class Recoverbull extends Table with TableInfo<Recoverbull, RecoverbullData> {
   RecoverbullData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return RecoverbullData(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}id'],
-          )!,
-      url:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}url'],
-          )!,
-      isPermissionGranted:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_permission_granted'],
-          )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      )!,
+      isPermissionGranted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_permission_granted'],
+      )!,
     );
   }
 
@@ -6237,10 +6108,9 @@ class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
     return RecoverbullData(
       id: data.id.present ? data.id.value : this.id,
       url: data.url.present ? data.url.value : this.url,
-      isPermissionGranted:
-          data.isPermissionGranted.present
-              ? data.isPermissionGranted.value
-              : this.isPermissionGranted,
+      isPermissionGranted: data.isPermissionGranted.present
+          ? data.isPermissionGranted.value
+          : this.isPermissionGranted,
     );
   }
 
@@ -6331,6 +6201,550 @@ class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
   }
 }
 
+class Prices extends Table with TableInfo<Prices, PricesData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Prices(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  late final GeneratedColumn<String> fromCurrency = GeneratedColumn<String>(
+    'from_currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<String> toCurrency = GeneratedColumn<String>(
+    'to_currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<String> interval = GeneratedColumn<String>(
+    'interval',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<double> marketPrice = GeneratedColumn<double>(
+    'market_price',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<double> price = GeneratedColumn<double>(
+    'price',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<String> priceCurrency = GeneratedColumn<String>(
+    'price_currency',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<int> precision = GeneratedColumn<int>(
+    'precision',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<double> indexPrice = GeneratedColumn<double>(
+    'index_price',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<double> userPrice = GeneratedColumn<double>(
+    'user_price',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    fromCurrency,
+    toCurrency,
+    interval,
+    marketPrice,
+    price,
+    priceCurrency,
+    precision,
+    indexPrice,
+    userPrice,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'prices';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {fromCurrency, toCurrency, interval, createdAt},
+  ];
+  @override
+  PricesData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PricesData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      fromCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}from_currency'],
+      )!,
+      toCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}to_currency'],
+      )!,
+      interval: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}interval'],
+      )!,
+      marketPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}market_price'],
+      ),
+      price: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}price'],
+      ),
+      priceCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}price_currency'],
+      ),
+      precision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}precision'],
+      ),
+      indexPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}index_price'],
+      ),
+      userPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}user_price'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  Prices createAlias(String alias) {
+    return Prices(attachedDatabase, alias);
+  }
+}
+
+class PricesData extends DataClass implements Insertable<PricesData> {
+  final int id;
+  final String fromCurrency;
+  final String toCurrency;
+  final String interval;
+  final double? marketPrice;
+  final double? price;
+  final String? priceCurrency;
+  final int? precision;
+  final double? indexPrice;
+  final double? userPrice;
+  final String createdAt;
+  const PricesData({
+    required this.id,
+    required this.fromCurrency,
+    required this.toCurrency,
+    required this.interval,
+    this.marketPrice,
+    this.price,
+    this.priceCurrency,
+    this.precision,
+    this.indexPrice,
+    this.userPrice,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['from_currency'] = Variable<String>(fromCurrency);
+    map['to_currency'] = Variable<String>(toCurrency);
+    map['interval'] = Variable<String>(interval);
+    if (!nullToAbsent || marketPrice != null) {
+      map['market_price'] = Variable<double>(marketPrice);
+    }
+    if (!nullToAbsent || price != null) {
+      map['price'] = Variable<double>(price);
+    }
+    if (!nullToAbsent || priceCurrency != null) {
+      map['price_currency'] = Variable<String>(priceCurrency);
+    }
+    if (!nullToAbsent || precision != null) {
+      map['precision'] = Variable<int>(precision);
+    }
+    if (!nullToAbsent || indexPrice != null) {
+      map['index_price'] = Variable<double>(indexPrice);
+    }
+    if (!nullToAbsent || userPrice != null) {
+      map['user_price'] = Variable<double>(userPrice);
+    }
+    map['created_at'] = Variable<String>(createdAt);
+    return map;
+  }
+
+  PricesCompanion toCompanion(bool nullToAbsent) {
+    return PricesCompanion(
+      id: Value(id),
+      fromCurrency: Value(fromCurrency),
+      toCurrency: Value(toCurrency),
+      interval: Value(interval),
+      marketPrice: marketPrice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(marketPrice),
+      price: price == null && nullToAbsent
+          ? const Value.absent()
+          : Value(price),
+      priceCurrency: priceCurrency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(priceCurrency),
+      precision: precision == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precision),
+      indexPrice: indexPrice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(indexPrice),
+      userPrice: userPrice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userPrice),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory PricesData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PricesData(
+      id: serializer.fromJson<int>(json['id']),
+      fromCurrency: serializer.fromJson<String>(json['fromCurrency']),
+      toCurrency: serializer.fromJson<String>(json['toCurrency']),
+      interval: serializer.fromJson<String>(json['interval']),
+      marketPrice: serializer.fromJson<double?>(json['marketPrice']),
+      price: serializer.fromJson<double?>(json['price']),
+      priceCurrency: serializer.fromJson<String?>(json['priceCurrency']),
+      precision: serializer.fromJson<int?>(json['precision']),
+      indexPrice: serializer.fromJson<double?>(json['indexPrice']),
+      userPrice: serializer.fromJson<double?>(json['userPrice']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'fromCurrency': serializer.toJson<String>(fromCurrency),
+      'toCurrency': serializer.toJson<String>(toCurrency),
+      'interval': serializer.toJson<String>(interval),
+      'marketPrice': serializer.toJson<double?>(marketPrice),
+      'price': serializer.toJson<double?>(price),
+      'priceCurrency': serializer.toJson<String?>(priceCurrency),
+      'precision': serializer.toJson<int?>(precision),
+      'indexPrice': serializer.toJson<double?>(indexPrice),
+      'userPrice': serializer.toJson<double?>(userPrice),
+      'createdAt': serializer.toJson<String>(createdAt),
+    };
+  }
+
+  PricesData copyWith({
+    int? id,
+    String? fromCurrency,
+    String? toCurrency,
+    String? interval,
+    Value<double?> marketPrice = const Value.absent(),
+    Value<double?> price = const Value.absent(),
+    Value<String?> priceCurrency = const Value.absent(),
+    Value<int?> precision = const Value.absent(),
+    Value<double?> indexPrice = const Value.absent(),
+    Value<double?> userPrice = const Value.absent(),
+    String? createdAt,
+  }) => PricesData(
+    id: id ?? this.id,
+    fromCurrency: fromCurrency ?? this.fromCurrency,
+    toCurrency: toCurrency ?? this.toCurrency,
+    interval: interval ?? this.interval,
+    marketPrice: marketPrice.present ? marketPrice.value : this.marketPrice,
+    price: price.present ? price.value : this.price,
+    priceCurrency: priceCurrency.present
+        ? priceCurrency.value
+        : this.priceCurrency,
+    precision: precision.present ? precision.value : this.precision,
+    indexPrice: indexPrice.present ? indexPrice.value : this.indexPrice,
+    userPrice: userPrice.present ? userPrice.value : this.userPrice,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  PricesData copyWithCompanion(PricesCompanion data) {
+    return PricesData(
+      id: data.id.present ? data.id.value : this.id,
+      fromCurrency: data.fromCurrency.present
+          ? data.fromCurrency.value
+          : this.fromCurrency,
+      toCurrency: data.toCurrency.present
+          ? data.toCurrency.value
+          : this.toCurrency,
+      interval: data.interval.present ? data.interval.value : this.interval,
+      marketPrice: data.marketPrice.present
+          ? data.marketPrice.value
+          : this.marketPrice,
+      price: data.price.present ? data.price.value : this.price,
+      priceCurrency: data.priceCurrency.present
+          ? data.priceCurrency.value
+          : this.priceCurrency,
+      precision: data.precision.present ? data.precision.value : this.precision,
+      indexPrice: data.indexPrice.present
+          ? data.indexPrice.value
+          : this.indexPrice,
+      userPrice: data.userPrice.present ? data.userPrice.value : this.userPrice,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PricesData(')
+          ..write('id: $id, ')
+          ..write('fromCurrency: $fromCurrency, ')
+          ..write('toCurrency: $toCurrency, ')
+          ..write('interval: $interval, ')
+          ..write('marketPrice: $marketPrice, ')
+          ..write('price: $price, ')
+          ..write('priceCurrency: $priceCurrency, ')
+          ..write('precision: $precision, ')
+          ..write('indexPrice: $indexPrice, ')
+          ..write('userPrice: $userPrice, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    fromCurrency,
+    toCurrency,
+    interval,
+    marketPrice,
+    price,
+    priceCurrency,
+    precision,
+    indexPrice,
+    userPrice,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PricesData &&
+          other.id == this.id &&
+          other.fromCurrency == this.fromCurrency &&
+          other.toCurrency == this.toCurrency &&
+          other.interval == this.interval &&
+          other.marketPrice == this.marketPrice &&
+          other.price == this.price &&
+          other.priceCurrency == this.priceCurrency &&
+          other.precision == this.precision &&
+          other.indexPrice == this.indexPrice &&
+          other.userPrice == this.userPrice &&
+          other.createdAt == this.createdAt);
+}
+
+class PricesCompanion extends UpdateCompanion<PricesData> {
+  final Value<int> id;
+  final Value<String> fromCurrency;
+  final Value<String> toCurrency;
+  final Value<String> interval;
+  final Value<double?> marketPrice;
+  final Value<double?> price;
+  final Value<String?> priceCurrency;
+  final Value<int?> precision;
+  final Value<double?> indexPrice;
+  final Value<double?> userPrice;
+  final Value<String> createdAt;
+  const PricesCompanion({
+    this.id = const Value.absent(),
+    this.fromCurrency = const Value.absent(),
+    this.toCurrency = const Value.absent(),
+    this.interval = const Value.absent(),
+    this.marketPrice = const Value.absent(),
+    this.price = const Value.absent(),
+    this.priceCurrency = const Value.absent(),
+    this.precision = const Value.absent(),
+    this.indexPrice = const Value.absent(),
+    this.userPrice = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  PricesCompanion.insert({
+    this.id = const Value.absent(),
+    required String fromCurrency,
+    required String toCurrency,
+    required String interval,
+    this.marketPrice = const Value.absent(),
+    this.price = const Value.absent(),
+    this.priceCurrency = const Value.absent(),
+    this.precision = const Value.absent(),
+    this.indexPrice = const Value.absent(),
+    this.userPrice = const Value.absent(),
+    required String createdAt,
+  }) : fromCurrency = Value(fromCurrency),
+       toCurrency = Value(toCurrency),
+       interval = Value(interval),
+       createdAt = Value(createdAt);
+  static Insertable<PricesData> custom({
+    Expression<int>? id,
+    Expression<String>? fromCurrency,
+    Expression<String>? toCurrency,
+    Expression<String>? interval,
+    Expression<double>? marketPrice,
+    Expression<double>? price,
+    Expression<String>? priceCurrency,
+    Expression<int>? precision,
+    Expression<double>? indexPrice,
+    Expression<double>? userPrice,
+    Expression<String>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (fromCurrency != null) 'from_currency': fromCurrency,
+      if (toCurrency != null) 'to_currency': toCurrency,
+      if (interval != null) 'interval': interval,
+      if (marketPrice != null) 'market_price': marketPrice,
+      if (price != null) 'price': price,
+      if (priceCurrency != null) 'price_currency': priceCurrency,
+      if (precision != null) 'precision': precision,
+      if (indexPrice != null) 'index_price': indexPrice,
+      if (userPrice != null) 'user_price': userPrice,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  PricesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? fromCurrency,
+    Value<String>? toCurrency,
+    Value<String>? interval,
+    Value<double?>? marketPrice,
+    Value<double?>? price,
+    Value<String?>? priceCurrency,
+    Value<int?>? precision,
+    Value<double?>? indexPrice,
+    Value<double?>? userPrice,
+    Value<String>? createdAt,
+  }) {
+    return PricesCompanion(
+      id: id ?? this.id,
+      fromCurrency: fromCurrency ?? this.fromCurrency,
+      toCurrency: toCurrency ?? this.toCurrency,
+      interval: interval ?? this.interval,
+      marketPrice: marketPrice ?? this.marketPrice,
+      price: price ?? this.price,
+      priceCurrency: priceCurrency ?? this.priceCurrency,
+      precision: precision ?? this.precision,
+      indexPrice: indexPrice ?? this.indexPrice,
+      userPrice: userPrice ?? this.userPrice,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (fromCurrency.present) {
+      map['from_currency'] = Variable<String>(fromCurrency.value);
+    }
+    if (toCurrency.present) {
+      map['to_currency'] = Variable<String>(toCurrency.value);
+    }
+    if (interval.present) {
+      map['interval'] = Variable<String>(interval.value);
+    }
+    if (marketPrice.present) {
+      map['market_price'] = Variable<double>(marketPrice.value);
+    }
+    if (price.present) {
+      map['price'] = Variable<double>(price.value);
+    }
+    if (priceCurrency.present) {
+      map['price_currency'] = Variable<String>(priceCurrency.value);
+    }
+    if (precision.present) {
+      map['precision'] = Variable<int>(precision.value);
+    }
+    if (indexPrice.present) {
+      map['index_price'] = Variable<double>(indexPrice.value);
+    }
+    if (userPrice.present) {
+      map['user_price'] = Variable<double>(userPrice.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PricesCompanion(')
+          ..write('id: $id, ')
+          ..write('fromCurrency: $fromCurrency, ')
+          ..write('toCurrency: $toCurrency, ')
+          ..write('interval: $interval, ')
+          ..write('marketPrice: $marketPrice, ')
+          ..write('price: $price, ')
+          ..write('priceCurrency: $priceCurrency, ')
+          ..write('precision: $precision, ')
+          ..write('indexPrice: $indexPrice, ')
+          ..write('userPrice: $userPrice, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV11 extends GeneratedDatabase {
   DatabaseAtV11(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
@@ -6345,6 +6759,7 @@ class DatabaseAtV11 extends GeneratedDatabase {
   late final AutoSwap autoSwap = AutoSwap(this);
   late final Bip85Derivations bip85Derivations = Bip85Derivations(this);
   late final Recoverbull recoverbull = Recoverbull(this);
+  late final Prices prices = Prices(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6362,6 +6777,7 @@ class DatabaseAtV11 extends GeneratedDatabase {
     autoSwap,
     bip85Derivations,
     recoverbull,
+    prices,
   ];
   @override
   int get schemaVersion => 11;
