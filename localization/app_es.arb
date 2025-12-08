@@ -11618,5 +11618,17 @@
   "withdrawOrderAlreadyConfirmedError": "Esta orden de retiro ya ha sido confirmada.",
   "@withdrawOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed withdrawal order"
+  },
+  "recoverbullErrorRejected": "Rechazado por el servidor de claves",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullErrorServiceUnavailable": "Servicio no disponible. Por favor, verifica tu conexión.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullErrorInvalidVaultFile": "Archivo de bóveda inválido.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
   }
 }

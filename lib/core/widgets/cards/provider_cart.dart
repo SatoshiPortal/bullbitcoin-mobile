@@ -78,11 +78,11 @@ class _ProviderCardState extends State<ProviderCard>
                       crossAxisAlignment: .start,
                       children: [
                         BBText(
-                          widget.provider.name,
+                          widget.provider.displayName(context),
                           style: context.font.headlineMedium,
                         ),
                         const Gap(10),
-                        OptionsTag(text: widget.provider.description),
+                        OptionsTag(text: widget.provider.description(context)),
                       ],
                     ),
                   ),
