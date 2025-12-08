@@ -4,6 +4,8 @@ import 'package:drift/drift.dart';
 
 class Schema10To11 {
   static Future<void> migrate(Migrator m, Schema11 schema11) async {
+    await m.createTable(schema11.prices);
+
     final settings = schema11.settings;
     await m.addColumn(settings, settings.themeMode);
 

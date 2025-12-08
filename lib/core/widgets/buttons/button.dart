@@ -82,7 +82,9 @@ class BBButton extends StatelessWidget {
                 : const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
               color: bgColor,
-              border: outlined ? Border.all(color: textColor) : null,
+              border: outlined
+                  ? Border.all(color: borderColor ?? textColor)
+                  : null,
               borderRadius: radius,
             ),
             child: Row(

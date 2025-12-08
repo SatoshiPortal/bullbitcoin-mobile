@@ -39,10 +39,9 @@ class OpenTheCameraWidget extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   PageRouteBuilder(
-                    pageBuilder:
-                        (context, _, _) => FullScreenScannerPage(
-                          onScannedPaymentRequest: onScannedPaymentRequest,
-                        ),
+                    pageBuilder: (context, _, _) => FullScreenScannerPage(
+                      onScannedPaymentRequest: onScannedPaymentRequest,
+                    ),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) =>
                             child,

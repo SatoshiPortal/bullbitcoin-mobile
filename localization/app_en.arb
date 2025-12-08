@@ -11031,6 +11031,10 @@
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
   },
+  "priceChartFetchingHistory": "Fetching Price History...",
+  "@priceChartFetchingHistory": {
+    "description": "Message shown while fetching price history when no local data is available"
+  },
   "exchangeLandingDisclaimerLegal": "Access to exchange services will be restricted to countries where Bull Bitcoin can legally operate and may require KYC.",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"
@@ -11510,5 +11514,13 @@
   "walletAutoTransferAllowButton": "Allow",
   "@walletAutoTransferAllowButton": {
     "description": "Button to allow auto-transfer despite high fees"
+  },
+  "navigationTabWallet": "Wallet",
+  "@navigationTabWallet": {
+    "description": "Label for the Wallet tab in bottom navigation"
+  },
+  "navigationTabExchange": "Exchange",
+  "@navigationTabExchange": {
+    "description": "Label for the Exchange tab in bottom navigation"
   }
 }
