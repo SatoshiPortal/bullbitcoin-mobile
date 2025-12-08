@@ -48,16 +48,19 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> init() async {
     try {
+      emit(state.copyWith(isLoading: true));
       await fetchXprvBase58();
       await fetchAllDerivations();
+      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: Bip85EntropyError(e.toString())));
     }
   }
 
   Future<void> fetchAllDerivations() async {
+    emit(state.copyWith(isLoading: true));
     final derivations = await _fetchAllBip85DerivationsUsecase.execute();
-    emit(state.copyWith(derivations: derivations));
+    emit(state.copyWith(derivations: derivations, isLoading: false));
   }
 
   Future<void> fetchXprvBase58() async {
@@ -71,8 +74,10 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> deriveNextMnemonic() async {
     try {
+      emit(state.copyWith(isLoading: true));
       await _deriveNextBip85MnemonicFromDefaultWalletUsecase.execute();
       await fetchAllDerivations();
+      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: Bip85EntropyError(e.toString())));
     }
@@ -80,8 +85,10 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> deriveNextHex() async {
     try {
+      emit(state.copyWith(isLoading: true));
       await _deriveNextBip85HexFromDefaultWalletUsecase.execute(length: 30);
       await fetchAllDerivations();
+      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: Bip85EntropyError(e.toString())));
     }

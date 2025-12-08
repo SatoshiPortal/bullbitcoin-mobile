@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bip85_derivation_widget.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
 import 'package:flutter/material.dart';
@@ -23,9 +22,11 @@ class Bip85HomePage extends StatelessWidget {
 
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
-            child: ScrollableColumn(
+            child: Column(
               children: [
-                FadingLinearProgress(trigger: state.xprvBase58.isEmpty),
+                FadingLinearProgress(
+                  trigger: state.xprvBase58.isEmpty || state.isLoading,
+                ),
                 Container(
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(12),
@@ -48,36 +49,44 @@ class Bip85HomePage extends StatelessWidget {
                 ),
                 const Gap(16),
                 if (state.derivations.isNotEmpty && state.xprvBase58.isNotEmpty)
-                  ...List.generate(state.derivations.length, (index) {
-                    final derivation = state.derivations[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Bip85DerivationWidget(
-                        xprvBase58: state.xprvBase58,
-                        derivation: derivation,
-                        onAliasChanged: cubit.aliasDerivation,
-                        onDerivationRevoked: cubit.revokeDerivation,
-                        onDerivationActivated: cubit.activateDerivation,
-                      ),
-                    );
-                  }),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: state.derivations.length,
+                      itemBuilder: (context, index) {
+                        final derivation = state.derivations[index];
+                        return Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Bip85DerivationWidget(
+                            xprvBase58: state.xprvBase58,
+                            derivation: derivation,
+                            onAliasChanged: cubit.aliasDerivation,
+                            onDerivationRevoked: cubit.revokeDerivation,
+                            onDerivationActivated: cubit.activateDerivation,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 const Gap(16),
-                Row(
-                  mainAxisAlignment: .spaceBetween,
-                  children: [
-                    BBButton.small(
-                      onPressed: () => cubit.deriveNextMnemonic(),
-                      label: context.loc.bip85NextMnemonic,
-                      bgColor: context.appColors.onSurface,
-                      textColor: context.appColors.surface,
-                    ),
-                    BBButton.small(
-                      onPressed: () => cubit.deriveNextHex(),
-                      label: context.loc.bip85NextHex,
-                      bgColor: context.appColors.onSurface,
-                      textColor: context.appColors.surface,
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: .spaceBetween,
+                    children: [
+                      BBButton.small(
+                        onPressed: () => cubit.deriveNextMnemonic(),
+                        label: context.loc.bip85NextMnemonic,
+                        bgColor: context.appColors.onSurface,
+                        textColor: context.appColors.surface,
+                      ),
+                      BBButton.small(
+                        onPressed: () => cubit.deriveNextHex(),
+                        label: context.loc.bip85NextHex,
+                        bgColor: context.appColors.onSurface,
+                        textColor: context.appColors.surface,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

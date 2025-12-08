@@ -72,10 +72,13 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
     final isRevoked = widget.derivation.status == Bip85Status.revoked;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         border: Border.all(color: context.appColors.border),
+        borderRadius: BorderRadius.circular(8),
+        color: context.appColors.surface,
       ),
+
       child: Column(
         crossAxisAlignment: .start,
         children: [
