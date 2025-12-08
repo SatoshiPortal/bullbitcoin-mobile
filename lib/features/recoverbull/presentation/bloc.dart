@@ -266,7 +266,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.fine('Vault selected');
     } catch (e) {
       log.severe('$OnVaultSelection: $e');
-      emit(state.copyWith(error: SelectVaultError()));
+      switch (e) {
+        case core.InvalidVaultFileError():
+          emit(state.copyWith(error: InvalidVaultFileFormatError()));
+        default:
+          emit(state.copyWith(error: SelectVaultError()));
+      }
     } finally {
       emit(state.copyWith(isLoading: false));
     }

@@ -11703,5 +11703,17 @@
   "coreScreensConfirmButton": "Confirmer",
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
+  },
+  "recoverbullErrorRejected": "Rejeté par le serveur de clés",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullErrorServiceUnavailable": "Service indisponible. Veuillez vérifier votre connexion.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullErrorInvalidVaultFile": "Fichier de coffre invalide.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
   }
 }

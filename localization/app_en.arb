@@ -11702,5 +11702,17 @@
   "coreScreensConfirmButton": "Confirm",
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
+  },
+  "recoverbullErrorRejected": "Rejected by the Key Server",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullErrorServiceUnavailable": "Service unavailable. Please check your connection.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullErrorInvalidVaultFile": "Invalid vault file.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
   }
 }

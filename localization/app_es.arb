@@ -11702,5 +11702,17 @@
   "coreScreensConfirmButton": "Confirmar",
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
+  },
+  "recoverbullErrorRejected": "Rechazado por el servidor de claves",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullErrorServiceUnavailable": "Servicio no disponible. Por favor, verifica tu conexión.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullErrorInvalidVaultFile": "Archivo de bóveda inválido.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
   }
 }
