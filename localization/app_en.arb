@@ -11618,5 +11618,17 @@
   "withdrawOrderAlreadyConfirmedError": "This withdrawal order has already been confirmed.",
   "@withdrawOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed withdrawal order"
+  },
+  "recoverbullErrorRejected": "Rejected by the Key Server",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullErrorServiceUnavailable": "Service unavailable. Please check your connection.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullErrorInvalidVaultFile": "Invalid vault file.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
   }
 }
