@@ -184,7 +184,7 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           DetailsTableItem(
             label: context.loc.transactionDetailLabelStatus,
-            displayValue: walletTransaction.status.displayName,
+            displayValue: walletTransaction.status.displayName(context),
           ),
           if (walletTransaction.confirmationTime != null)
             DetailsTableItem(
@@ -740,9 +740,9 @@ class TransactionDetailsTable extends StatelessWidget {
                         swap.isLnSendSwap &&
                             (swap as LnSendSwap).refundTxid != null)
                     ? context.loc.transactionDetailLabelRefunded
-                    : swap.status.displayName,
+                    : swap.status.displayName(context),
             expandableChild: BBText(
-              swap.getDisplayMessage(),
+              swap.getDisplayMessage(context),
               style: context.font.bodySmall?.copyWith(
                 color: context.appColors.secondary,
               ),

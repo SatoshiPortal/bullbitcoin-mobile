@@ -55,7 +55,7 @@ class TransactionDetailsScreen extends StatelessWidget {
     final isOrderType = tx?.isOrder == true;
     final walletTransaction = tx?.walletTransaction;
     final swap = tx?.swap;
-    final swapAction = swap?.swapAction ?? '';
+    final swapAction = swap?.swapAction(context) ?? '';
     final isChainSwap = swap?.isChainSwap ?? false;
     final retryingSwap = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.retryingSwap,
