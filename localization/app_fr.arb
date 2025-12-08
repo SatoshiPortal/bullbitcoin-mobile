@@ -11619,5 +11619,89 @@
   "withdrawOrderAlreadyConfirmedError": "Cet ordre de retrait a déjà été confirmé.",
   "@withdrawOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed withdrawal order"
+  },
+  "coreScreensPageNotFound": "Page non trouvée",
+  "@coreScreensPageNotFound": {
+    "description": "Error message shown when a page/route is not found"
+  },
+  "coreScreensLogsTitle": "Journaux",
+  "@coreScreensLogsTitle": {
+    "description": "AppBar title for logs viewer screen"
+  },
+  "coreScreensConfirmSend": "Confirmer l'envoi",
+  "@coreScreensConfirmSend": {
+    "description": "Title for confirm send action"
+  },
+  "coreScreensExternalTransfer": "Transfert externe",
+  "@coreScreensExternalTransfer": {
+    "description": "Title for external transfer action"
+  },
+  "coreScreensInternalTransfer": "Transfert interne",
+  "@coreScreensInternalTransfer": {
+    "description": "Title for internal transfer action"
+  },
+  "coreScreensConfirmTransfer": "Confirmer le transfert",
+  "@coreScreensConfirmTransfer": {
+    "description": "Title for confirm transfer action"
+  },
+  "coreScreensFromLabel": "De",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensToLabel": "À",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensAmountLabel": "Montant",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensNetworkFeesLabel": "Frais de réseau",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "coreScreensFeePriorityLabel": "Priorité des frais",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "coreScreensTransferIdLabel": "ID de transfert",
+  "@coreScreensTransferIdLabel": {
+    "description": "Label for transfer ID field"
+  },
+  "coreScreensTotalFeesLabel": "Frais totaux",
+  "@coreScreensTotalFeesLabel": {
+    "description": "Label for total fees field"
+  },
+  "coreScreensTransferFeeLabel": "Frais de transfert",
+  "@coreScreensTransferFeeLabel": {
+    "description": "Label for transfer fee field"
+  },
+  "coreScreensFeeDeductionExplanation": "Ceci est le total des frais déduits du montant envoyé",
+  "@coreScreensFeeDeductionExplanation": {
+    "description": "Explanation text for fee deduction"
+  },
+  "coreScreensReceiveNetworkFeeLabel": "Frais de réseau de réception",
+  "@coreScreensReceiveNetworkFeeLabel": {
+    "description": "Label for receive network fee field"
+  },
+  "coreScreensServerNetworkFeesLabel": "Frais de réseau du serveur",
+  "@coreScreensServerNetworkFeesLabel": {
+    "description": "Label for server network fees field"
+  },
+  "coreScreensSendAmountLabel": "Montant envoyé",
+  "@coreScreensSendAmountLabel": {
+    "description": "Label for send amount field"
+  },
+  "coreScreensReceiveAmountLabel": "Montant reçu",
+  "@coreScreensReceiveAmountLabel": {
+    "description": "Label for receive amount field"
+  },
+  "coreScreensSendNetworkFeeLabel": "Frais de réseau d'envoi",
+  "@coreScreensSendNetworkFeeLabel": {
+    "description": "Label for send network fee field"
+  },
+  "coreScreensConfirmButton": "Confirmer",
+  "@coreScreensConfirmButton": {
+    "description": "Text for confirm button"
   }
 }
