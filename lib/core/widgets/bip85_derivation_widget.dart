@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class Bip85DerivationWidget extends StatefulWidget {
   final String xprvBase58;
@@ -72,6 +73,18 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
                   color: context.appColors.onSurface,
                 ),
                 onPressed: () => setState(() => _isObscured = !_isObscured),
+              ),
+              IconButton(
+                icon: Icon(Icons.copy, color: context.appColors.onSurface),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: data));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Copied to clipboard'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                },
               ),
             ],
           ),
