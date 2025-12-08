@@ -133,7 +133,7 @@ class Bip85Datasource {
     }
   }
 
-  Future<void> reactivate(String path) async {
+  Future<void> activate(String path) async {
     try {
       await _sqlite.managers.bip85Derivations
           .filter((b) => b.path(path))

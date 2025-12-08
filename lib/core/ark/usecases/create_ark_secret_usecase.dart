@@ -42,7 +42,7 @@ class CreateArkSecretUsecase {
     // If a revoked derivation exists, reactivate it
     if (existingArkDerivation != null) {
       if (existingArkDerivation.status == Bip85Status.revoked) {
-        await _bip85Repository.reactivate(existingArkDerivation.path);
+        await _bip85Repository.activate(existingArkDerivation);
         final xprvBase58 = Bip32Derivation.getXprvFromSeed(
           defaultSeed.bytes,
           Network.bitcoinMainnet,

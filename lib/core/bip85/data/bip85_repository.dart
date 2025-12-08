@@ -67,17 +67,17 @@ class Bip85Repository {
     }
   }
 
-  Future<void> revoke(String path) async {
+  Future<void> revoke(Bip85DerivationEntity derivation) async {
     try {
-      await _datasource.revoke(path);
+      await _datasource.revoke(derivation.path);
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> reactivate(String path) async {
+  Future<void> activate(Bip85DerivationEntity derivation) async {
     try {
-      await _datasource.reactivate(path);
+      await _datasource.activate(derivation.path);
     } catch (e) {
       rethrow;
     }
