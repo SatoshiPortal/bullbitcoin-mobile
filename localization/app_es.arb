@@ -11574,5 +11574,49 @@
   "navigationTabExchange": "Intercambio",
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
+  },
+  "buyUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyBelowMinAmountError": "Está intentando comprar por debajo del monto mínimo.",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyAboveMaxAmountError": "Está intentando comprar por encima del monto máximo.",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyInsufficientFundsError": "Fondos insuficientes en su cuenta Bull Bitcoin para completar esta compra.",
+  "@buyInsufficientFundsError": {
+    "description": "Error message for insufficient funds during buy"
+  },
+  "buyOrderNotFoundError": "No se encontró la orden de compra. Por favor, inténtelo de nuevo.",
+  "@buyOrderNotFoundError": {
+    "description": "Error message for order not found during buy"
+  },
+  "buyOrderAlreadyConfirmedError": "Esta orden de compra ya ha sido confirmada.",
+  "@buyOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed buy order"
+  },
+  "withdrawUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
+  "@withdrawUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during withdraw"
+  },
+  "withdrawBelowMinAmountError": "Está intentando retirar por debajo del monto mínimo.",
+  "@withdrawBelowMinAmountError": {
+    "description": "Error message for amount below minimum during withdraw"
+  },
+  "withdrawAboveMaxAmountError": "Está intentando retirar por encima del monto máximo.",
+  "@withdrawAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during withdraw"
+  },
+  "withdrawOrderNotFoundError": "No se encontró la orden de retiro. Por favor, inténtelo de nuevo.",
+  "@withdrawOrderNotFoundError": {
+    "description": "Error message for order not found during withdraw"
+  },
+  "withdrawOrderAlreadyConfirmedError": "Esta orden de retiro ya ha sido confirmada.",
+  "@withdrawOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed withdrawal order"
   }
 }
