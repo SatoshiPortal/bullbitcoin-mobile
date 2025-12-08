@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/bip85/domain/alias_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/fetch_all_derivations_usecase.dart';
@@ -16,6 +17,7 @@ class Bip85EntropyLocator {
         deriveNextBip85HexFromDefaultWalletUsecase:
             locator<DeriveNextBip85HexFromDefaultWalletUsecase>(),
         getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
+        aliasBip85DerivationUsecase: locator<AliasBip85DerivationUsecase>(),
       ),
     );
   }

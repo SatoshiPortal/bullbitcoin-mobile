@@ -82,4 +82,12 @@ class Bip85Repository {
       rethrow;
     }
   }
+
+  Future<void> alias(Bip85DerivationEntity derivation, String alias) async {
+    try {
+      await _datasource.alias(derivation.path, alias);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

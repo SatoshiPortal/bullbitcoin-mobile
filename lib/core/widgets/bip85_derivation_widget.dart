@@ -7,11 +7,13 @@ import 'package:flutter/services.dart';
 class Bip85DerivationWidget extends StatefulWidget {
   final String xprvBase58;
   final Bip85DerivationEntity derivation;
+  final Future<void> Function(Bip85DerivationEntity, String)? onAliasChanged;
 
   const Bip85DerivationWidget({
     super.key,
     required this.derivation,
     required this.xprvBase58,
+    this.onAliasChanged,
   });
 
   @override
@@ -20,6 +22,29 @@ class Bip85DerivationWidget extends StatefulWidget {
 
 class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
   bool _isObscured = true;
+  bool _isEditingAlias = false;
+  late TextEditingController _aliasController;
+
+  @override
+  void initState() {
+    super.initState();
+    _aliasController = TextEditingController(
+      text: widget.derivation.alias ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _aliasController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveAlias() async {
+    if (widget.onAliasChanged != null) {
+      await widget.onAliasChanged!(widget.derivation, _aliasController.text);
+      setState(() => _isEditingAlias = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +78,39 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
               ),
             ],
           ),
-          Text(
-            widget.derivation.alias ?? '',
-            style: TextStyle(color: context.appColors.text),
+          Row(
+            children: [
+              Expanded(
+                child: _isEditingAlias
+                    ? TextField(
+                        controller: _aliasController,
+                        autofocus: true,
+                        style: TextStyle(color: context.appColors.text),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: context.appColors.border,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Text(
+                        widget.derivation.alias ?? '',
+                        style: TextStyle(color: context.appColors.text),
+                      ),
+              ),
+              if (widget.onAliasChanged != null)
+                if (_isEditingAlias)
+                  IconButton(
+                    icon: Icon(Icons.check, color: context.appColors.onSurface),
+                    onPressed: _saveAlias,
+                  )
+                else
+                  IconButton(
+                    icon: Icon(Icons.edit, color: context.appColors.onSurface),
+                    onPressed: () => setState(() => _isEditingAlias = true),
+                  ),
+            ],
           ),
           Row(
             children: [

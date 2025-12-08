@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/bip85/domain/alias_bip85_derivation_usecase.dart';
+import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/fetch_all_derivations_usecase.dart';
@@ -15,6 +17,7 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   final DeriveNextBip85HexFromDefaultWalletUsecase
   _deriveNextBip85HexFromDefaultWalletUsecase;
   final GetDefaultSeedUsecase _getDefaultSeedUsecase;
+  final AliasBip85DerivationUsecase _aliasBip85DerivationUsecase;
 
   Bip85EntropyCubit({
     required FetchAllBip85DerivationsUsecase fetchAllBip85DerivationsUsecase,
@@ -23,12 +26,14 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
     required DeriveNextBip85HexFromDefaultWalletUsecase
     deriveNextBip85HexFromDefaultWalletUsecase,
     required GetDefaultSeedUsecase getDefaultSeedUsecase,
+    required AliasBip85DerivationUsecase aliasBip85DerivationUsecase,
   }) : _fetchAllBip85DerivationsUsecase = fetchAllBip85DerivationsUsecase,
        _deriveNextBip85MnemonicFromDefaultWalletUsecase =
            deriveNextBip85MnemonicFromDefaultWalletUsecase,
        _deriveNextBip85HexFromDefaultWalletUsecase =
            deriveNextBip85HexFromDefaultWalletUsecase,
        _getDefaultSeedUsecase = getDefaultSeedUsecase,
+       _aliasBip85DerivationUsecase = aliasBip85DerivationUsecase,
        super(const Bip85EntropyState()) {
     init();
   }
@@ -68,6 +73,21 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   Future<void> deriveNextHex() async {
     try {
       await _deriveNextBip85HexFromDefaultWalletUsecase.execute(length: 30);
+      await fetchAllDerivations();
+    } catch (e) {
+      emit(state.copyWith(error: Bip85EntropyError(e.toString())));
+    }
+  }
+
+  Future<void> aliasDerivation(
+    Bip85DerivationEntity derivation,
+    String alias,
+  ) async {
+    try {
+      await _aliasBip85DerivationUsecase.execute(
+        derivation: derivation,
+        alias: alias,
+      );
       await fetchAllDerivations();
     } catch (e) {
       emit(state.copyWith(error: Bip85EntropyError(e.toString())));
