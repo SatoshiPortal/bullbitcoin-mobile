@@ -1,5 +1,6 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/mempool_url.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
@@ -36,22 +37,22 @@ class ArkTransactionDetailsPage extends StatelessWidget {
         if (tx.confirmedAt != null) {
           date = DateTime.fromMillisecondsSinceEpoch(tx.confirmedAt! * 1000);
         }
-        type = 'Boarding';
-        statusLabel = date != null ? 'Confirmed' : 'Pending';
+        type = context.loc.arkTxBoarding;
+        statusLabel = date != null ? context.loc.arkStatusConfirmed : context.loc.arkTxPending;
       case final ark_wallet.Transaction_Commitment tx:
         txid = tx.txid;
         sats = tx.sats;
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
-        type = 'Settlement';
-        statusLabel = 'Confirmed';
+        type = context.loc.arkTxSettlement;
+        statusLabel = context.loc.arkStatusConfirmed;
         isIncoming = false;
         isSwap = true;
       case final ark_wallet.Transaction_Redeem tx:
         txid = tx.txid;
         sats = tx.sats;
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
-        type = 'Payment';
-        statusLabel = tx.isSettled ? 'Settled' : 'Pending';
+        type = context.loc.arkTxPayment;
+        statusLabel = tx.isSettled ? context.loc.arkStatusSettled : context.loc.arkTxPending;
         isIncoming = false;
     }
 
@@ -64,7 +65,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Transaction details',
+          title: context.loc.arkTransactionDetails,
           actionIcon: Icons.close,
           onAction: () => context.pop(),
         ),
@@ -101,7 +102,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                 DetailsTable(
                   items: [
                     DetailsTableItem(
-                      label: 'Transaction ID',
+                      label: context.loc.arkTransactionId,
                       displayValue: StringFormatting.truncateMiddle(txid),
                       copyValue: txid,
                       displayWidget:
@@ -120,14 +121,14 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                               )
                               : null,
                     ),
-                    DetailsTableItem(label: 'Type', displayValue: type),
+                    DetailsTableItem(label: context.loc.arkType, displayValue: type),
                     DetailsTableItem(
-                      label: 'Status',
+                      label: context.loc.arkStatus,
                       displayValue: statusLabel,
                     ),
                     DetailsTableItem(
-                      label: 'Amount',
-                      displayValue: '$sats sats',
+                      label: context.loc.arkAmount,
+                      displayValue: '$sats ${context.loc.arkSatsUnit}',
                     ),
                     // Note: Network fee is not currently available from the ark_wallet library
                     // When the library exposes fee information, it can be added here like:
@@ -138,7 +139,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                     //   ),
                     if (date != null)
                       DetailsTableItem(
-                        label: 'Date',
+                        label: context.loc.arkDate,
                         displayValue: DateFormat(
                           'MMM d, y, h:mm a',
                         ).format(date),

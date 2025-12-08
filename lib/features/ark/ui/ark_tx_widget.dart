@@ -1,5 +1,6 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/mempool_url.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -14,14 +15,14 @@ import 'package:url_launcher/url_launcher.dart';
 enum ArkTransactionType { boarding, commitment, redeem }
 
 extension ArkTransactionTypeExtension on ArkTransactionType {
-  String get name {
+  String toTranslated(BuildContext context) {
     switch (this) {
       case ArkTransactionType.boarding:
-        return 'Boarding';
+        return context.loc.arkTxBoarding;
       case ArkTransactionType.commitment:
-        return 'Settlement';
+        return context.loc.arkTxSettlement;
       case ArkTransactionType.redeem:
-        return 'Payment';
+        return context.loc.arkTxPayment;
     }
   }
 }
@@ -130,7 +131,7 @@ class ArkTxWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2.0),
                   ),
                   child: BBText(
-                    StringFormatting.capitalize(transactionType.name),
+                    transactionType.toTranslated(context),
                     style: context.font.labelSmall?.copyWith(
                       color: context.appColors.onSecondary,
                     ),
@@ -158,7 +159,7 @@ class ArkTxWidget extends StatelessWidget {
                   Row(
                     children: [
                       BBText(
-                        'Pending',
+                        context.loc.arkTxPending,
                         style: context.font.labelSmall?.copyWith(
                           color: context.appColors.primary,
                         ),

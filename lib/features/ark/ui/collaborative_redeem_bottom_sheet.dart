@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
@@ -56,7 +57,7 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                       children: [
                         const Gap(24),
                         BBText(
-                          'Collaborative Redeem',
+                          context.loc.arkCollaborativeRedeem,
                           style: context.font.headlineMedium,
                         ),
                         GestureDetector(
@@ -78,7 +79,7 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                         value: state.withRecoverableVtxos,
                         onChanged: cubit.onChangedSelectRecoverableVtxos,
                         title: BBText(
-                          'Recoverable Vtxos',
+                          context.loc.arkRecoverableVtxos,
                           style: context.font.bodyMedium,
                         ),
                         contentPadding: EdgeInsets.zero,
@@ -88,7 +89,7 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                         children: [
                           Expanded(
                             child: BBButton.big(
-                              label: 'Cancel',
+                              label: context.loc.arkCancelButton,
                               onPressed: () => Navigator.of(context).pop(),
                               bgColor: context.appColors.surface,
                               textColor: context.appColors.onSurface,
@@ -97,7 +98,7 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                           const Gap(16),
                           Expanded(
                             child: BBButton.big(
-                              label: 'Redeem',
+                              label: context.loc.arkRedeemButton,
                               onPressed: () async {
                                 Navigator.of(context).pop();
                                 await cubit.onSendConfirmed();

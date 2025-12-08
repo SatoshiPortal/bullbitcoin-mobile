@@ -4929,6 +4929,58 @@
       }
     }
   },
+  "arkSendSuccessTitle": "Envoi réussi",
+  "@arkSendSuccessTitle": {
+    "description": "Title shown after successful Ark send transaction"
+  },
+  "arkSendSuccessMessage": "Votre transaction Ark a été effectuée avec succès !",
+  "@arkSendSuccessMessage": {
+    "description": "Success message shown after Ark send transaction completes"
+  },
+  "arkBoardingUnconfirmed": "Embarquement non confirmé",
+  "@arkBoardingUnconfirmed": {
+    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
+  },
+  "arkBoardingConfirmed": "Embarquement confirmé",
+  "@arkBoardingConfirmed": {
+    "description": "Label for confirmed boarding balance in Ark balance breakdown"
+  },
+  "arkPreconfirmed": "Préconfirmé",
+  "@arkPreconfirmed": {
+    "description": "Label for preconfirmed balance in Ark balance breakdown"
+  },
+  "arkSettled": "Réglé",
+  "@arkSettled": {
+    "description": "Label for settled balance in Ark balance breakdown"
+  },
+  "arkAvailable": "Disponible",
+  "@arkAvailable": {
+    "description": "Label for available balance in Ark balance breakdown"
+  },
+  "arkNoBalanceData": "Aucune donnée de solde disponible",
+  "@arkNoBalanceData": {
+    "description": "Message shown when Ark balance data is not available"
+  },
+  "arkTxPending": "En attente",
+  "@arkTxPending": {
+    "description": "Status label for pending Ark transactions"
+  },
+  "arkTxBoarding": "Embarquement",
+  "@arkTxBoarding": {
+    "description": "Transaction type label for Ark boarding transactions"
+  },
+  "arkTxSettlement": "Règlement",
+  "@arkTxSettlement": {
+    "description": "Transaction type label for Ark settlement transactions"
+  },
+  "arkTxPayment": "Paiement",
+  "@arkTxPayment": {
+    "description": "Transaction type label for Ark payment transactions"
+  },
+  "arkSatsUnit": "sats",
+  "@arkSatsUnit": {
+    "description": "Unit label for satoshis in Ark transaction details"
+  },
   "bitboxErrorPermissionDenied": "Les autorisations USB sont nécessaires pour se connecter aux appareils BitBox.",
   "@bitboxErrorPermissionDenied": {
     "description": "Error when USB permissions are not granted for BitBox"
