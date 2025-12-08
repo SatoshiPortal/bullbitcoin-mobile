@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -49,13 +50,13 @@ class CommonSendConfirmTopArea extends StatelessWidget {
         ),
         const Gap(16),
         if (_sendType == SendType.send)
-          BBText('Confirm Send', style: context.font.bodyMedium)
+          BBText(context.loc.coreScreensConfirmSend, style: context.font.bodyMedium)
         else if (_sendToExternal == true)
-          BBText('External Transfer', style: context.font.bodyMedium)
+          BBText(context.loc.coreScreensExternalTransfer, style: context.font.bodyMedium)
         else if (_sendToExternal == false)
-          BBText('Internal Transfer', style: context.font.bodyMedium)
+          BBText(context.loc.coreScreensInternalTransfer, style: context.font.bodyMedium)
         else
-          BBText('Confirm Transfer', style: context.font.bodyMedium),
+          BBText(context.loc.coreScreensConfirmTransfer, style: context.font.bodyMedium),
         const Gap(4),
         BBText(
           _formattedConfirmedAmountBitcoin,
@@ -124,7 +125,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
         crossAxisAlignment: .stretch,
         children: [
           CommonInfoRow(
-            title: 'From',
+            title: context.loc.coreScreensFromLabel,
             details: BBText(
               _sendWalletLabel,
               style: context.font.bodyLarge,
@@ -133,7 +134,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'To',
+            title: context.loc.coreScreensToLabel,
             details: Row(
               mainAxisAlignment: .end,
               mainAxisSize: .min,
@@ -164,7 +165,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Amount',
+            title: context.loc.coreScreensAmountLabel,
             details: Column(
               crossAxisAlignment: .end,
               children: [
@@ -179,7 +180,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Network fees',
+            title: context.loc.coreScreensNetworkFeesLabel,
             details: BBText(
               "$_absoluteFees sats",
               style: context.font.bodyLarge,
@@ -188,7 +189,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Fee Priority',
+            title: context.loc.coreScreensFeePriorityLabel,
             details: InkWell(
               child: Row(
                 mainAxisAlignment: .end,
@@ -249,7 +250,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
         crossAxisAlignment: .stretch,
         children: [
           CommonInfoRow(
-            title: 'From',
+            title: context.loc.coreScreensFromLabel,
             details: BBText(
               _sendWalletLabel,
               style: context.font.bodyLarge,
@@ -258,7 +259,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'To',
+            title: context.loc.coreScreensToLabel,
             details: Row(
               mainAxisAlignment: .end,
               mainAxisSize: .min,
@@ -294,7 +295,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Transfer ID',
+            title: context.loc.coreScreensTransferIdLabel,
             details: BBText(
               _swapId,
               style: context.font.bodyLarge,
@@ -303,7 +304,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Amount',
+            title: context.loc.coreScreensAmountLabel,
             details: Column(
               crossAxisAlignment: .end,
               children: [
@@ -318,7 +319,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Total fees',
+            title: context.loc.coreScreensTotalFeesLabel,
             details: BBText(
               "$_totalSwapFees sats",
               style: context.font.bodyLarge,
@@ -386,7 +387,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
               child: Row(
                 children: [
                   BBText(
-                    'Transfer Fee',
+                    context.loc.coreScreensTransferFeeLabel,
                     style: context.font.bodySmall,
                     color: context.appColors.surfaceContainer,
                   ),
@@ -415,20 +416,20 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: BBText(
-                    'This is the total fee deducted from the amount sent',
+                    context.loc.coreScreensFeeDeductionExplanation,
                     style: context.font.labelSmall,
                     color: context.appColors.surfaceContainer,
                   ),
                 ),
                 if (fees.claimFee != null)
-                  _feeRow(context, 'Receive Network Fee', fees.claimFee!),
+                  _feeRow(context, context.loc.coreScreensReceiveNetworkFeeLabel, fees.claimFee!),
                 if (fees.serverNetworkFees != null)
                   _feeRow(
                     context,
-                    'Server Network Fees',
+                    context.loc.coreScreensServerNetworkFeesLabel,
                     fees.serverNetworkFees!,
                   ),
-                _feeRow(context, 'Transfer Fee', fees.boltzFee ?? 0),
+                _feeRow(context, context.loc.coreScreensTransferFeeLabel, fees.boltzFee ?? 0),
                 const Gap(4),
               ],
             ),
@@ -468,7 +469,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
         crossAxisAlignment: .stretch,
         children: [
           CommonInfoRow(
-            title: 'From',
+            title: context.loc.coreScreensFromLabel,
             details: BBText(
               sendWalletLabel,
               style: context.font.bodyLarge,
@@ -477,7 +478,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'To',
+            title: context.loc.coreScreensToLabel,
             details: Row(
               mainAxisAlignment: .end,
               mainAxisSize: .min,
@@ -519,7 +520,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Transfer ID',
+            title: context.loc.coreScreensTransferIdLabel,
             details: Row(
               mainAxisAlignment: .end,
               mainAxisSize: .min,
@@ -545,7 +546,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Send Amount',
+            title: context.loc.coreScreensSendAmountLabel,
             details: Column(
               crossAxisAlignment: .end,
               children: [
@@ -569,7 +570,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           if (swap.receieveAmount != null)
             CommonInfoRow(
-              title: 'Receive Amount',
+              title: context.loc.coreScreensReceiveAmountLabel,
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
@@ -584,7 +585,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           if (swap.receieveAmount != null) _divider(context),
           if (swap.fees?.lockupFee != null)
             CommonInfoRow(
-              title: 'Send Network Fee',
+              title: context.loc.coreScreensSendNetworkFeeLabel,
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
@@ -676,7 +677,7 @@ class CommonConfirmSendButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.big(
-      label: 'Confirm',
+      label: context.loc.coreScreensConfirmButton,
       onPressed: () {
         _onPressed();
       },

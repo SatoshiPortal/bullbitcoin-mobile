@@ -11619,6 +11619,90 @@
   "@withdrawOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed withdrawal order"
   },
+  "coreScreensPageNotFound": "Page not found",
+  "@coreScreensPageNotFound": {
+    "description": "Error message shown when a page/route is not found"
+  },
+  "coreScreensLogsTitle": "Logs",
+  "@coreScreensLogsTitle": {
+    "description": "AppBar title for logs viewer screen"
+  },
+  "coreScreensConfirmSend": "Confirm Send",
+  "@coreScreensConfirmSend": {
+    "description": "Title for confirm send action"
+  },
+  "coreScreensExternalTransfer": "External Transfer",
+  "@coreScreensExternalTransfer": {
+    "description": "Title for external transfer action"
+  },
+  "coreScreensInternalTransfer": "Internal Transfer",
+  "@coreScreensInternalTransfer": {
+    "description": "Title for internal transfer action"
+  },
+  "coreScreensConfirmTransfer": "Confirm Transfer",
+  "@coreScreensConfirmTransfer": {
+    "description": "Title for confirm transfer action"
+  },
+  "coreScreensFromLabel": "From",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensToLabel": "To",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensAmountLabel": "Amount",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensNetworkFeesLabel": "Network fees",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "coreScreensFeePriorityLabel": "Fee Priority",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "coreScreensTransferIdLabel": "Transfer ID",
+  "@coreScreensTransferIdLabel": {
+    "description": "Label for transfer ID field"
+  },
+  "coreScreensTotalFeesLabel": "Total fees",
+  "@coreScreensTotalFeesLabel": {
+    "description": "Label for total fees field"
+  },
+  "coreScreensTransferFeeLabel": "Transfer Fee",
+  "@coreScreensTransferFeeLabel": {
+    "description": "Label for transfer fee field"
+  },
+  "coreScreensFeeDeductionExplanation": "This is the total fee deducted from the amount sent",
+  "@coreScreensFeeDeductionExplanation": {
+    "description": "Explanation text for fee deduction"
+  },
+  "coreScreensReceiveNetworkFeeLabel": "Receive Network Fee",
+  "@coreScreensReceiveNetworkFeeLabel": {
+    "description": "Label for receive network fee field"
+  },
+  "coreScreensServerNetworkFeesLabel": "Server Network Fees",
+  "@coreScreensServerNetworkFeesLabel": {
+    "description": "Label for server network fees field"
+  },
+  "coreScreensSendAmountLabel": "Send Amount",
+  "@coreScreensSendAmountLabel": {
+    "description": "Label for send amount field"
+  },
+  "coreScreensReceiveAmountLabel": "Receive Amount",
+  "@coreScreensReceiveAmountLabel": {
+    "description": "Label for receive amount field"
+  },
+  "coreScreensSendNetworkFeeLabel": "Send Network Fee",
+  "@coreScreensSendNetworkFeeLabel": {
+    "description": "Label for send network fee field"
+  },
+  "coreScreensConfirmButton": "Confirm",
+  "@coreScreensConfirmButton": {
+    "description": "Text for confirm button"
+  },
   "recoverbullErrorRejected": "Rejected by the Key Server",
   "@recoverbullErrorRejected": {
     "description": "Error message when request is rejected by the key server"
