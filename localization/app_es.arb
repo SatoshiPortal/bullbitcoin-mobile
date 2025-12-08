@@ -5261,15 +5261,15 @@
   "@bitboxScreenTroubleshootingSubtitle": {
     "description": "Subtitle for troubleshooting instructions"
   },
-  "bitboxScreenTroubleshootingStep1": "Asegúrese de que los permisos USB estén habilitados en su teléfono.",
+  "bitboxScreenTroubleshootingStep1": "Asegúrese de tener el firmware más reciente instalado en su BitBox.",
   "@bitboxScreenTroubleshootingStep1": {
     "description": "Troubleshooting step 1"
   },
-  "bitboxScreenTroubleshootingStep2": "Reinicie su dispositivo BitBox02 desconectándolo y volviéndolo a conectar.",
+  "bitboxScreenTroubleshootingStep2": "Asegúrese de que los permisos USB estén habilitados en su teléfono.",
   "@bitboxScreenTroubleshootingStep2": {
     "description": "Troubleshooting step 2"
   },
-  "bitboxScreenTroubleshootingStep3": "Asegúrese de tener el firmware más reciente instalado en su BitBox.",
+  "bitboxScreenTroubleshootingStep3": "Reinicie su dispositivo BitBox02 desconectándolo y volviéndolo a conectar.",
   "@bitboxScreenTroubleshootingStep3": {
     "description": "Troubleshooting step 3"
   },
