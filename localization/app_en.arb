@@ -11574,5 +11574,49 @@
   "navigationTabExchange": "Exchange",
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
+  },
+  "buyUnauthenticatedError": "You are not authenticated. Please log in to continue.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyBelowMinAmountError": "You are trying to buy below the minimum amount.",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyAboveMaxAmountError": "You are trying to buy above the maximum amount.",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyInsufficientFundsError": "Insufficient funds in your Bull Bitcoin account to complete this buy order.",
+  "@buyInsufficientFundsError": {
+    "description": "Error message for insufficient funds during buy"
+  },
+  "buyOrderNotFoundError": "The buy order was not found. Please try again.",
+  "@buyOrderNotFoundError": {
+    "description": "Error message for order not found during buy"
+  },
+  "buyOrderAlreadyConfirmedError": "This buy order has already been confirmed.",
+  "@buyOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed buy order"
+  },
+  "withdrawUnauthenticatedError": "You are not authenticated. Please log in to continue.",
+  "@withdrawUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during withdraw"
+  },
+  "withdrawBelowMinAmountError": "You are trying to withdraw below the minimum amount.",
+  "@withdrawBelowMinAmountError": {
+    "description": "Error message for amount below minimum during withdraw"
+  },
+  "withdrawAboveMaxAmountError": "You are trying to withdraw above the maximum amount.",
+  "@withdrawAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during withdraw"
+  },
+  "withdrawOrderNotFoundError": "The withdrawal order was not found. Please try again.",
+  "@withdrawOrderNotFoundError": {
+    "description": "Error message for order not found during withdraw"
+  },
+  "withdrawOrderAlreadyConfirmedError": "This withdrawal order has already been confirmed.",
+  "@withdrawOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed withdrawal order"
   }
 }

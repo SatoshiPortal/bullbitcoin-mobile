@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'buy_error.freezed.dart';
@@ -15,4 +17,17 @@ sealed class BuyError with _$BuyError {
       OrderAlreadyConfirmedBuyError;
   const factory BuyError.unexpected({required String message}) =
       UnexpectedBuyError;
+
+  const BuyError._();
+
+  /// Returns the localized error message.
+  String toTranslated(BuildContext context) => when(
+    unauthenticated: () => context.loc.buyUnauthenticatedError,
+    belowMinAmount: (_) => context.loc.buyBelowMinAmountError,
+    aboveMaxAmount: (_) => context.loc.buyAboveMaxAmountError,
+    insufficientFunds: () => context.loc.buyInsufficientFundsError,
+    orderNotFound: () => context.loc.buyOrderNotFoundError,
+    orderAlreadyConfirmed: () => context.loc.buyOrderAlreadyConfirmedError,
+    unexpected: (message) => message,
+  );
 }

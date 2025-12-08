@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -449,50 +448,19 @@ class _PayError extends StatelessWidget {
               : null,
     );
 
+    if (payError == null) return const SizedBox.shrink();
+
     return Center(
-      child: switch (payError) {
-        AboveMaxAmountPayError _ => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            context.loc.payAboveMaxAmount,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.error,
-            ),
-            textAlign: .center,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        child: Text(
+          payError.toTranslated(context),
+          style: context.font.bodyMedium?.copyWith(
+            color: context.appColors.error,
           ),
+          textAlign: TextAlign.center,
         ),
-        BelowMinAmountPayError _ => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            context.loc.payBelowMinAmount,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.error,
-            ),
-            textAlign: .center,
-          ),
-        ),
-        InsufficientBalancePayError _ => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            context.loc.payInsufficientBalance,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.error,
-            ),
-            textAlign: .center,
-          ),
-        ),
-        UnexpectedPayError(:final message) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            message,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.error,
-            ),
-            textAlign: .center,
-          ),
-        ),
-        _ => const SizedBox.shrink(),
-      },
+      ),
     );
   }
 }

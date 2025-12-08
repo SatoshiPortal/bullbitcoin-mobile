@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -377,50 +376,19 @@ class _SellError extends StatelessWidget {
               : null,
     );
 
+    if (sellError == null) return const SizedBox.shrink();
+
     return Center(
-      child: switch (sellError) {
-        AboveMaxAmountSellError _ => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            context.loc.sellAboveMaxAmountError,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.error,
-            ),
-            textAlign: .center,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        child: Text(
+          sellError.toTranslated(context),
+          style: context.font.bodyMedium?.copyWith(
+            color: context.appColors.error,
           ),
+          textAlign: TextAlign.center,
         ),
-        BelowMinAmountSellError _ => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            context.loc.sellBelowMinAmountError,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.error,
-            ),
-            textAlign: .center,
-          ),
-        ),
-        InsufficientBalanceSellError _ => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            context.loc.sellInsufficientBalanceError,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.error,
-            ),
-            textAlign: .center,
-          ),
-        ),
-        UnexpectedSellError(:final message) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            message,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.error,
-            ),
-            textAlign: .center,
-          ),
-        ),
-        _ => const SizedBox.shrink(),
-      },
+      ),
     );
   }
 }
