@@ -1,8 +1,10 @@
+import 'package:bb_mobile/core/bip85/domain/activate_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/alias_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/fetch_all_derivations_usecase.dart';
+import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -18,6 +20,8 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   _deriveNextBip85HexFromDefaultWalletUsecase;
   final GetDefaultSeedUsecase _getDefaultSeedUsecase;
   final AliasBip85DerivationUsecase _aliasBip85DerivationUsecase;
+  final RevokeBip85DerivationUsecase _revokeBip85DerivationUsecase;
+  final ActivateBip85DerivationUsecase _activateBip85DerivationUsecase;
 
   Bip85EntropyCubit({
     required FetchAllBip85DerivationsUsecase fetchAllBip85DerivationsUsecase,
@@ -27,6 +31,8 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
     deriveNextBip85HexFromDefaultWalletUsecase,
     required GetDefaultSeedUsecase getDefaultSeedUsecase,
     required AliasBip85DerivationUsecase aliasBip85DerivationUsecase,
+    required RevokeBip85DerivationUsecase revokeBip85DerivationUsecase,
+    required ActivateBip85DerivationUsecase activateBip85DerivationUsecase,
   }) : _fetchAllBip85DerivationsUsecase = fetchAllBip85DerivationsUsecase,
        _deriveNextBip85MnemonicFromDefaultWalletUsecase =
            deriveNextBip85MnemonicFromDefaultWalletUsecase,
@@ -34,6 +40,8 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
            deriveNextBip85HexFromDefaultWalletUsecase,
        _getDefaultSeedUsecase = getDefaultSeedUsecase,
        _aliasBip85DerivationUsecase = aliasBip85DerivationUsecase,
+       _revokeBip85DerivationUsecase = revokeBip85DerivationUsecase,
+       _activateBip85DerivationUsecase = activateBip85DerivationUsecase,
        super(const Bip85EntropyState()) {
     init();
   }
@@ -88,6 +96,24 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
         derivation: derivation,
         alias: alias,
       );
+      await fetchAllDerivations();
+    } catch (e) {
+      emit(state.copyWith(error: Bip85EntropyError(e.toString())));
+    }
+  }
+
+  Future<void> revokeDerivation(Bip85DerivationEntity derivation) async {
+    try {
+      await _revokeBip85DerivationUsecase.execute(derivation);
+      await fetchAllDerivations();
+    } catch (e) {
+      emit(state.copyWith(error: Bip85EntropyError(e.toString())));
+    }
+  }
+
+  Future<void> activateDerivation(Bip85DerivationEntity derivation) async {
+    try {
+      await _activateBip85DerivationUsecase.execute(derivation);
       await fetchAllDerivations();
     } catch (e) {
       emit(state.copyWith(error: Bip85EntropyError(e.toString())));

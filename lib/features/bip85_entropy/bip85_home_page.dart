@@ -56,6 +56,8 @@ class Bip85HomePage extends StatelessWidget {
                         xprvBase58: state.xprvBase58,
                         derivation: derivation,
                         onAliasChanged: cubit.aliasDerivation,
+                        onDerivationRevoked: cubit.revokeDerivation,
+                        onDerivationActivated: cubit.activateDerivation,
                       ),
                     );
                   }),
