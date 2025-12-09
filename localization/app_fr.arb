@@ -27,6 +27,158 @@
       }
     }
   },
+  "coreSwapsStatusPending": "En attente",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "coreSwapsStatusInProgress": "En cours",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "coreSwapsStatusCompleted": "Terminé",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreSwapsStatusExpired": "Expiré",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsStatusFailed": "Échoué",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "coreSwapsActionClaim": "Réclamer",
+  "@coreSwapsActionClaim": {
+    "description": "Action label for claiming a swap"
+  },
+  "coreSwapsActionClose": "Fermer",
+  "@coreSwapsActionClose": {
+    "description": "Action label for closing a swap cooperatively"
+  },
+  "coreSwapsActionRefund": "Rembourser",
+  "@coreSwapsActionRefund": {
+    "description": "Action label for refunding a swap"
+  },
+  "coreSwapsLnReceivePending": "L'échange n'est pas encore initialisé.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "coreSwapsLnReceivePaid": "L'expéditeur a payé la facture.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "coreSwapsLnReceiveClaimable": "L'échange est prêt à être réclamé.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveRefundable": "L'échange est prêt à être remboursé.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveCanCoop": "L'échange sera complété sous peu.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "coreSwapsLnReceiveCompleted": "L'échange est terminé.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "coreSwapsLnReceiveExpired": "Échange expiré.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "coreSwapsLnReceiveFailed": "Échange échoué.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "coreSwapsLnSendPending": "L'échange n'est pas encore initialisé.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "coreSwapsLnSendPaid": "La facture sera payée après confirmation de votre paiement.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "coreSwapsLnSendClaimable": "L'échange est prêt à être réclamé.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "coreSwapsLnSendRefundable": "L'échange est prêt à être remboursé.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "coreSwapsLnSendCanCoop": "L'échange sera complété sous peu.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "coreSwapsLnSendCompletedRefunded": "L'échange a été remboursé.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "coreSwapsLnSendCompletedSuccess": "L'échange est terminé avec succès.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "coreSwapsLnSendExpired": "Échange expiré",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsLnSendFailedRefunding": "L'échange sera remboursé sous peu.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "coreSwapsLnSendFailed": "Échange échoué.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsChainPending": "Le transfert n'est pas encore initialisé.",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "coreSwapsChainPaid": "En attente de la confirmation du paiement du fournisseur de transfert. Cela peut prendre un certain temps.",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "coreSwapsChainClaimable": "Le transfert est prêt à être réclamé.",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "coreSwapsChainRefundable": "Le transfert est prêt à être remboursé.",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "coreSwapsChainCanCoop": "Le transfert sera complété sous peu.",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "coreSwapsChainCompletedRefunded": "Le transfert a été remboursé.",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "coreSwapsChainCompletedSuccess": "Le transfert est terminé avec succès.",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "coreSwapsChainExpired": "Transfert expiré",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "coreSwapsChainFailedRefunding": "Le transfert sera remboursé sous peu.",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "coreSwapsChainFailed": "Transfert échoué.",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "coreWalletTransactionStatusPending": "En attente",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "coreWalletTransactionStatusConfirmed": "Confirmé",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
   "onboardingScreenTitle": "Bienvenue",
   "@onboardingScreenTitle": {
     "description": "Le titre de l'écran d'intégration"
