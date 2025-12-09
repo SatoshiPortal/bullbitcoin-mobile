@@ -50,8 +50,9 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         environment: environment,
       );
       final bitcoinWallets = allWallets.where((w) => !w.isLiquid).toList();
-      final defaultBitcoinWallet =
-          bitcoinWallets.where((w) => w.isDefault).firstOrNull;
+      final defaultBitcoinWallet = bitcoinWallets
+          .where((w) => w.isDefault)
+          .firstOrNull;
       String amountThresholdInput;
       if (settings.bitcoinUnit == BitcoinUnit.btc) {
         // Convert sats to BTC for display
@@ -167,12 +168,39 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
     }
   }
 
-  void onAmountThresholdChanged(String value) {
+  Future<void> onAmountThresholdChanged(String value) async {
     // Remove decimal points if unit is sats
-    final sanitizedValue =
-        state.bitcoinUnit == BitcoinUnit.sats
-            ? value.replaceAll(RegExp(r'[^\d]'), '')
-            : value;
+    final sanitizedValue = state.bitcoinUnit == BitcoinUnit.sats
+        ? value.replaceAll(RegExp(r'[^\d]'), '')
+        : value;
+
+    // Validate minimum threshold in real-time
+    if (sanitizedValue.isNotEmpty) {
+      final settings = await _getSettingsUsecase.execute();
+      int balanceThresholdSats;
+
+      if (state.bitcoinUnit == BitcoinUnit.btc) {
+        final btcAmount = double.tryParse(sanitizedValue) ?? 0;
+        balanceThresholdSats = ConvertAmount.btcToSats(btcAmount);
+      } else {
+        balanceThresholdSats = int.tryParse(sanitizedValue) ?? 0;
+      }
+
+      if (balanceThresholdSats > 0 &&
+          balanceThresholdSats < _minimumAmountThresholdSats) {
+        final exception = MinimumAmountThresholdException(
+          _minimumAmountThresholdSats,
+          settings.bitcoinUnit,
+        );
+        emit(
+          state.copyWith(
+            amountThresholdInput: sanitizedValue,
+            amountThresholdError: exception,
+          ),
+        );
+        return;
+      }
+    }
 
     emit(
       state.copyWith(
@@ -282,6 +310,37 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       state.copyWith(
         selectedBitcoinWalletId: walletId,
         error: null, // Clear any previous error when wallet is selected
+      ),
+    );
+  }
+
+  void toggleBitcoinUnit() {
+    final currentUnit = state.bitcoinUnit;
+    if (currentUnit == null) return;
+
+    final newUnit = currentUnit == BitcoinUnit.btc
+        ? BitcoinUnit.sats
+        : BitcoinUnit.btc;
+
+    String? newAmountThresholdInput;
+    if (state.amountThresholdInput != null &&
+        state.amountThresholdInput!.isNotEmpty) {
+      if (currentUnit == BitcoinUnit.btc) {
+        final btcAmount = double.tryParse(state.amountThresholdInput!) ?? 0;
+        final satsAmount = ConvertAmount.btcToSats(btcAmount);
+        newAmountThresholdInput = satsAmount.toString();
+      } else {
+        final satsAmount = int.tryParse(state.amountThresholdInput!) ?? 0;
+        final btcAmount = ConvertAmount.satsToBtc(satsAmount);
+        newAmountThresholdInput = btcAmount.toString();
+      }
+    }
+
+    emit(
+      state.copyWith(
+        bitcoinUnit: newUnit,
+        amountThresholdInput: newAmountThresholdInput,
+        amountThresholdError: null,
       ),
     );
   }

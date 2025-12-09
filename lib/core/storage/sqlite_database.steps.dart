@@ -3918,7 +3918,7 @@ final class Schema11 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape13 autoSwap = Shape13(
+  late final Shape22 autoSwap = Shape22(
     source: i0.VersionedTable(
       entityName: 'auto_swap',
       withoutRowId: false,
@@ -3926,12 +3926,13 @@ final class Schema11 extends i0.VersionedSchema {
       tableConstraints: [],
       columns: [
         _column_31,
-        _column_87,
+        _column_115,
         _column_88,
         _column_89,
         _column_90,
         _column_91,
         _column_101,
+        _column_116,
       ],
       attachedDatabase: database,
     ),
@@ -3959,7 +3960,7 @@ final class Schema11 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape22 prices = Shape22(
+  late final Shape23 prices = Shape23(
     source: i0.VersionedTable(
       entityName: 'prices',
       withoutRowId: false,
@@ -3969,8 +3970,6 @@ final class Schema11 extends i0.VersionedSchema {
       ],
       columns: [
         _column_31,
-        _column_115,
-        _column_116,
         _column_117,
         _column_118,
         _column_119,
@@ -3979,6 +3978,8 @@ final class Schema11 extends i0.VersionedSchema {
         _column_122,
         _column_123,
         _column_124,
+        _column_125,
+        _column_126,
       ],
       attachedDatabase: database,
     ),
@@ -4025,6 +4026,49 @@ class Shape22 extends i0.VersionedTable {
   Shape22({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<int> get id =>
       columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<bool> get enabled =>
+      columnsByName['enabled']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<int> get balanceThresholdSats =>
+      columnsByName['balance_threshold_sats']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get feeThresholdPercent =>
+      columnsByName['fee_threshold_percent']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<bool> get blockTillNextExecution =>
+      columnsByName['block_till_next_execution']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<bool> get alwaysBlock =>
+      columnsByName['always_block']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<String> get recipientWalletId =>
+      columnsByName['recipient_wallet_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<bool> get showWarning =>
+      columnsByName['show_warning']! as i1.GeneratedColumn<bool>;
+}
+
+i1.GeneratedColumn<bool> _column_115(String aliasedName) =>
+    i1.GeneratedColumn<bool>(
+      'enabled',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.bool,
+      defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
+        'CHECK ("enabled" IN (0, 1))',
+      ),
+      defaultValue: const CustomExpression('1'),
+    );
+i1.GeneratedColumn<bool> _column_116(String aliasedName) =>
+    i1.GeneratedColumn<bool>(
+      'show_warning',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.bool,
+      defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
+        'CHECK ("show_warning" IN (0, 1))',
+      ),
+      defaultValue: const CustomExpression('1'),
+    );
+
+class Shape23 extends i0.VersionedTable {
+  Shape23({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<String> get fromCurrency =>
       columnsByName['from_currency']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get toCurrency =>
@@ -4047,70 +4091,70 @@ class Shape22 extends i0.VersionedTable {
       columnsByName['created_at']! as i1.GeneratedColumn<String>;
 }
 
-i1.GeneratedColumn<String> _column_115(String aliasedName) =>
+i1.GeneratedColumn<String> _column_117(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'from_currency',
       aliasedName,
       false,
       type: i1.DriftSqlType.string,
     );
-i1.GeneratedColumn<String> _column_116(String aliasedName) =>
+i1.GeneratedColumn<String> _column_118(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'to_currency',
       aliasedName,
       false,
       type: i1.DriftSqlType.string,
     );
-i1.GeneratedColumn<String> _column_117(String aliasedName) =>
+i1.GeneratedColumn<String> _column_119(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'interval',
       aliasedName,
       false,
       type: i1.DriftSqlType.string,
     );
-i1.GeneratedColumn<double> _column_118(String aliasedName) =>
+i1.GeneratedColumn<double> _column_120(String aliasedName) =>
     i1.GeneratedColumn<double>(
       'market_price',
       aliasedName,
       true,
       type: i1.DriftSqlType.double,
     );
-i1.GeneratedColumn<double> _column_119(String aliasedName) =>
+i1.GeneratedColumn<double> _column_121(String aliasedName) =>
     i1.GeneratedColumn<double>(
       'price',
       aliasedName,
       true,
       type: i1.DriftSqlType.double,
     );
-i1.GeneratedColumn<String> _column_120(String aliasedName) =>
+i1.GeneratedColumn<String> _column_122(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'price_currency',
       aliasedName,
       true,
       type: i1.DriftSqlType.string,
     );
-i1.GeneratedColumn<int> _column_121(String aliasedName) =>
+i1.GeneratedColumn<int> _column_123(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'precision',
       aliasedName,
       true,
       type: i1.DriftSqlType.int,
     );
-i1.GeneratedColumn<double> _column_122(String aliasedName) =>
+i1.GeneratedColumn<double> _column_124(String aliasedName) =>
     i1.GeneratedColumn<double>(
       'index_price',
       aliasedName,
       true,
       type: i1.DriftSqlType.double,
     );
-i1.GeneratedColumn<double> _column_123(String aliasedName) =>
+i1.GeneratedColumn<double> _column_125(String aliasedName) =>
     i1.GeneratedColumn<double>(
       'user_price',
       aliasedName,
       true,
       type: i1.DriftSqlType.double,
     );
-i1.GeneratedColumn<String> _column_124(String aliasedName) =>
+i1.GeneratedColumn<String> _column_126(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'created_at',
       aliasedName,

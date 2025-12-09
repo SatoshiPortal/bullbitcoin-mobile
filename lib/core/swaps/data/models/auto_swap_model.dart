@@ -7,12 +7,13 @@ part 'auto_swap_model.freezed.dart';
 @freezed
 sealed class AutoSwapModel with _$AutoSwapModel {
   const factory AutoSwapModel({
-    @Default(false) bool enabled,
+    @Default(true) bool enabled,
     @Default(1000000) int balanceThresholdSats,
     @Default(3.0) double feeThresholdPercent,
     @Default(false) bool blockTillNextExecution,
     @Default(false) bool alwaysBlock,
     @Default(null) String? recipientWalletId,
+    @Default(true) bool showWarning,
   }) = _AutoSwapModel;
 
   const AutoSwapModel._();
@@ -25,6 +26,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       blockTillNextExecution: entity.blockTillNextExecution,
       alwaysBlock: entity.alwaysBlock,
       recipientWalletId: entity.recipientWalletId,
+      showWarning: entity.showWarning,
     );
   }
 
@@ -36,6 +38,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       blockTillNextExecution: blockTillNextExecution,
       alwaysBlock: alwaysBlock,
       recipientWalletId: recipientWalletId,
+      showWarning: showWarning,
     );
   }
 
@@ -47,6 +50,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       blockTillNextExecution: row.blockTillNextExecution,
       alwaysBlock: row.alwaysBlock,
       recipientWalletId: row.recipientWalletId,
+      showWarning: row.showWarning,
     );
   }
 
@@ -59,6 +63,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       blockTillNextExecution: blockTillNextExecution,
       alwaysBlock: alwaysBlock,
       recipientWalletId: recipientWalletId,
+      showWarning: showWarning,
     );
   }
 }

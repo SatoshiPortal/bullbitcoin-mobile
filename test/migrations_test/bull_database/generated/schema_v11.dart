@@ -5291,7 +5291,7 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'CHECK ("enabled" IN (0, 1))',
     ),
-    defaultValue: const CustomExpression('0'),
+    defaultValue: const CustomExpression('1'),
   );
   late final GeneratedColumn<int> balanceThresholdSats = GeneratedColumn<int>(
     'balance_threshold_sats',
@@ -5339,6 +5339,17 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  late final GeneratedColumn<bool> showWarning = GeneratedColumn<bool>(
+    'show_warning',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("show_warning" IN (0, 1))',
+    ),
+    defaultValue: const CustomExpression('1'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5348,6 +5359,7 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
     blockTillNextExecution,
     alwaysBlock,
     recipientWalletId,
+    showWarning,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5388,6 +5400,10 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
         DriftSqlType.string,
         data['${effectivePrefix}recipient_wallet_id'],
       ),
+      showWarning: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}show_warning'],
+      )!,
     );
   }
 
@@ -5405,6 +5421,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   final bool blockTillNextExecution;
   final bool alwaysBlock;
   final String? recipientWalletId;
+  final bool showWarning;
   const AutoSwapData({
     required this.id,
     required this.enabled,
@@ -5413,6 +5430,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     required this.blockTillNextExecution,
     required this.alwaysBlock,
     this.recipientWalletId,
+    required this.showWarning,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5426,6 +5444,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     if (!nullToAbsent || recipientWalletId != null) {
       map['recipient_wallet_id'] = Variable<String>(recipientWalletId);
     }
+    map['show_warning'] = Variable<bool>(showWarning);
     return map;
   }
 
@@ -5440,6 +5459,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
       recipientWalletId: recipientWalletId == null && nullToAbsent
           ? const Value.absent()
           : Value(recipientWalletId),
+      showWarning: Value(showWarning),
     );
   }
 
@@ -5464,6 +5484,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
       recipientWalletId: serializer.fromJson<String?>(
         json['recipientWalletId'],
       ),
+      showWarning: serializer.fromJson<bool>(json['showWarning']),
     );
   }
   @override
@@ -5477,6 +5498,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
       'blockTillNextExecution': serializer.toJson<bool>(blockTillNextExecution),
       'alwaysBlock': serializer.toJson<bool>(alwaysBlock),
       'recipientWalletId': serializer.toJson<String?>(recipientWalletId),
+      'showWarning': serializer.toJson<bool>(showWarning),
     };
   }
 
@@ -5488,6 +5510,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     bool? blockTillNextExecution,
     bool? alwaysBlock,
     Value<String?> recipientWalletId = const Value.absent(),
+    bool? showWarning,
   }) => AutoSwapData(
     id: id ?? this.id,
     enabled: enabled ?? this.enabled,
@@ -5499,6 +5522,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     recipientWalletId: recipientWalletId.present
         ? recipientWalletId.value
         : this.recipientWalletId,
+    showWarning: showWarning ?? this.showWarning,
   );
   AutoSwapData copyWithCompanion(AutoSwapCompanion data) {
     return AutoSwapData(
@@ -5519,6 +5543,9 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
       recipientWalletId: data.recipientWalletId.present
           ? data.recipientWalletId.value
           : this.recipientWalletId,
+      showWarning: data.showWarning.present
+          ? data.showWarning.value
+          : this.showWarning,
     );
   }
 
@@ -5531,7 +5558,8 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
           ..write('feeThresholdPercent: $feeThresholdPercent, ')
           ..write('blockTillNextExecution: $blockTillNextExecution, ')
           ..write('alwaysBlock: $alwaysBlock, ')
-          ..write('recipientWalletId: $recipientWalletId')
+          ..write('recipientWalletId: $recipientWalletId, ')
+          ..write('showWarning: $showWarning')
           ..write(')'))
         .toString();
   }
@@ -5545,6 +5573,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     blockTillNextExecution,
     alwaysBlock,
     recipientWalletId,
+    showWarning,
   );
   @override
   bool operator ==(Object other) =>
@@ -5556,7 +5585,8 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
           other.feeThresholdPercent == this.feeThresholdPercent &&
           other.blockTillNextExecution == this.blockTillNextExecution &&
           other.alwaysBlock == this.alwaysBlock &&
-          other.recipientWalletId == this.recipientWalletId);
+          other.recipientWalletId == this.recipientWalletId &&
+          other.showWarning == this.showWarning);
 }
 
 class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
@@ -5567,6 +5597,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
   final Value<bool> blockTillNextExecution;
   final Value<bool> alwaysBlock;
   final Value<String?> recipientWalletId;
+  final Value<bool> showWarning;
   const AutoSwapCompanion({
     this.id = const Value.absent(),
     this.enabled = const Value.absent(),
@@ -5575,6 +5606,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     this.blockTillNextExecution = const Value.absent(),
     this.alwaysBlock = const Value.absent(),
     this.recipientWalletId = const Value.absent(),
+    this.showWarning = const Value.absent(),
   });
   AutoSwapCompanion.insert({
     this.id = const Value.absent(),
@@ -5584,6 +5616,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     this.blockTillNextExecution = const Value.absent(),
     this.alwaysBlock = const Value.absent(),
     this.recipientWalletId = const Value.absent(),
+    this.showWarning = const Value.absent(),
   }) : balanceThresholdSats = Value(balanceThresholdSats),
        feeThresholdPercent = Value(feeThresholdPercent);
   static Insertable<AutoSwapData> custom({
@@ -5594,6 +5627,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     Expression<bool>? blockTillNextExecution,
     Expression<bool>? alwaysBlock,
     Expression<String>? recipientWalletId,
+    Expression<bool>? showWarning,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -5606,6 +5640,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
         'block_till_next_execution': blockTillNextExecution,
       if (alwaysBlock != null) 'always_block': alwaysBlock,
       if (recipientWalletId != null) 'recipient_wallet_id': recipientWalletId,
+      if (showWarning != null) 'show_warning': showWarning,
     });
   }
 
@@ -5617,6 +5652,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     Value<bool>? blockTillNextExecution,
     Value<bool>? alwaysBlock,
     Value<String?>? recipientWalletId,
+    Value<bool>? showWarning,
   }) {
     return AutoSwapCompanion(
       id: id ?? this.id,
@@ -5627,6 +5663,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
           blockTillNextExecution ?? this.blockTillNextExecution,
       alwaysBlock: alwaysBlock ?? this.alwaysBlock,
       recipientWalletId: recipientWalletId ?? this.recipientWalletId,
+      showWarning: showWarning ?? this.showWarning,
     );
   }
 
@@ -5658,6 +5695,9 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     if (recipientWalletId.present) {
       map['recipient_wallet_id'] = Variable<String>(recipientWalletId.value);
     }
+    if (showWarning.present) {
+      map['show_warning'] = Variable<bool>(showWarning.value);
+    }
     return map;
   }
 
@@ -5670,7 +5710,8 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
           ..write('feeThresholdPercent: $feeThresholdPercent, ')
           ..write('blockTillNextExecution: $blockTillNextExecution, ')
           ..write('alwaysBlock: $alwaysBlock, ')
-          ..write('recipientWalletId: $recipientWalletId')
+          ..write('recipientWalletId: $recipientWalletId, ')
+          ..write('showWarning: $showWarning')
           ..write(')'))
         .toString();
   }
