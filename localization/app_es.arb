@@ -9473,25 +9473,37 @@
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
   },
-  "importQrDeviceKeystoneStep2": "Haga clic en los 3 puntos en la parte superior derecha",
+  "importQrDeviceKeystoneStep2": "Ingrese su PIN",
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "importQrDeviceKeystoneStep3": "Seleccione Conectar Billetera de Software",
+  "importQrDeviceKeystoneStep3": "Haga clic en los tres puntos en la parte superior derecha",
   "@importQrDeviceKeystoneStep3": {
     "description": "Keystone instruction step 3"
   },
-  "importQrDeviceKeystoneStep4": "Haga clic en el botón \"abrir cámara\"",
+  "importQrDeviceKeystoneStep4": "Seleccione Conectar Billetera de Software",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "importQrDeviceKeystoneStep5": "Escanee el código QR que ve en su dispositivo.",
+  "importQrDeviceKeystoneStep5": "Elija la opción de billetera BULL",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "importQrDeviceKeystoneStep6": "¡Eso es todo!",
+  "importQrDeviceKeystoneStep6": "En su dispositivo móvil, toque Abrir Cámara",
   "@importQrDeviceKeystoneStep6": {
     "description": "Keystone instruction step 6"
+  },
+  "importQrDeviceKeystoneStep7": "Escanee el código QR mostrado en su Keystone",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "Ingrese una etiqueta para su billetera Keystone y toque Importar",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDeviceKeystoneStep9": "La configuración está completa",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
   },
   "importQrDevicePassportName": "Foundation Passport",
   "@importQrDevicePassportName": {

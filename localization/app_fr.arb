@@ -9474,25 +9474,37 @@
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
   },
-  "importQrDeviceKeystoneStep2": "Cliquez sur les 3 points en haut à droite",
+  "importQrDeviceKeystoneStep2": "Entrez votre code PIN",
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "importQrDeviceKeystoneStep3": "Sélectionnez Connecter un Portefeuille Logiciel",
+  "importQrDeviceKeystoneStep3": "Cliquez sur les trois points en haut à droite",
   "@importQrDeviceKeystoneStep3": {
     "description": "Keystone instruction step 3"
   },
-  "importQrDeviceKeystoneStep4": "Cliquez sur le bouton \"ouvrir la caméra\"",
+  "importQrDeviceKeystoneStep4": "Sélectionnez Connecter un Portefeuille Logiciel",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "importQrDeviceKeystoneStep5": "Scannez le code QR affiché sur votre appareil.",
+  "importQrDeviceKeystoneStep5": "Choisissez l'option portefeuille BULL",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "importQrDeviceKeystoneStep6": "C'est fait !",
+  "importQrDeviceKeystoneStep6": "Sur votre appareil mobile, appuyez sur Ouvrir la Caméra",
   "@importQrDeviceKeystoneStep6": {
     "description": "Keystone instruction step 6"
+  },
+  "importQrDeviceKeystoneStep7": "Scannez le code QR affiché sur votre Keystone",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "Entrez une étiquette pour votre portefeuille Keystone et appuyez sur Importer",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDeviceKeystoneStep9": "La configuration est terminée",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
   },
   "importQrDevicePassportName": "Foundation Passport",
   "@importQrDevicePassportName": {
