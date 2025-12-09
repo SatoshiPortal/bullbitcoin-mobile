@@ -18,7 +18,7 @@ sealed class ImportMnemonicState with _$ImportMnemonicState {
     @Default(null) Mnemonic? mnemonic,
     @Default(ScriptType.bip84) ScriptType scriptType,
     @Default(false) bool isLoading,
-    @Default(null) Wallet? wallet,
+    @Default(null) List<Wallet>? wallets,
     @Default(null) ({BigInt satoshis, int transactions})? bip44Status,
     @Default(null) ({BigInt satoshis, int transactions})? bip49Status,
     @Default(null) ({BigInt satoshis, int transactions})? bip84Status,
