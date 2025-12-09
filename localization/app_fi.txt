@@ -1,0 +1,235 @@
+ToDo:
+
+283
+307?!?
+315
+327 
+331
+363 367
+383 tule mukaan missioon
+479
+527
+567
+915 tx<-
+924 tx<-
+981 osoitteen tiedot
+664 kulu
+700 _
+763
+767 vaihtoraha
+771
+783 swapit
+795
+871 swap->
+887
+972 palvelimen
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+1044 Välitön maksulompakko
+=======
+1044 Välitön maksulompakko -> Pikamaksulompakko
+ja Turvallinen -> Säästö
+>>>>>>> Stashed changes
+=======
+1044 Välitön maksulompakko -> Pikamaksulompakko
+ja Turvallinen -> Säästö
+>>>>>>> Stashed changes
+1092 hinta -> kurssi
+1137 typo
+1141 Verkon kulut 1149
+1153 aika -> viive
+1397 Fiat-maksujen...
+1498 Y-tunnus
+1502 Y-tunnus
+1574 "
+1592
+1694 Maksupyyntö
+1698
+1734 (payin amount = Maksun määrä)
+1806 kurssi
+1898 maksupyyntö
+1902
+1918 Saaja
+1950 TAB
+1958 maksupyyntö
+1966 tx
+1979 tx
+1987 swap
+2000 swap
+2009 kuvaus
+2013 Aktivoi RBF
+2097 swap
+2105
+2113 tx ID tunnus
+2133 osoitteen kuvaus
+2157 siirtotunnus
+2169 swap
+2177 Liq tx tunnus
+2181
+2185 Siirron
+2193 Verkon kulut
+2217 Payjoin
+2237 Maksumäärä
+2261 Tilauksen tila
+2269 TX
+2273 kuvaus
+2277 kuvausta
+2293 saanut
+2309 Lunastettu
+2325 Lunasta
+2341 swap
+2345 swap
+2349 _ -
+2353 _ -
+2353 Noudamme Lunastamme swap
+2357 swap
+2361 swap
+2365 swap
+2369 swap
+2377 - -
+2381 swap
+2385 swap
+2389 swap
+2393 swap
+2397 swap
+2401 tx
+2433 aika -> viive _ -
+2437 - 50 Retry ja swap korjaus
+2457 tulevat saataville
+2465 tx
+2477 swap
+2485 -tyt kulu_t_
+2497 tx verkon kulut
+2501 verkon kulut
+2509 preimage
+2521 aikataulu
+2526 kiihdytä
+2529 tx tunnus
+2549 kuvaus
+2561 -kulu
+2605 tilauksen tila
+2621 tunnus
+2625 swap
+2633 swap
+2641 Li tx tunnus
+2645 tx
+2653 swap-kulut
+2677 -in
+2681 Välitön maksu (lompakko)
+2693 Watch-Signer
+2725 natiivi
+2729 Nested
+2765 maa
+2877 Instant SEPA
+2973 Y-tunnus
+3157 kuvaus
+3393 varaa aikaa
+2415 - et voi palauttaa Bitcoin-lompakkoasi.
+3475 Vie holviin
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+
+=======
+=======
+>>>>>>> Stashed changes
+10010 Turvallinen -> Säästö
+10014 Välitön -> Pikamaksulompakko
+10058 Maksun lähtevä määrä
+10074 Pikamaksut
+10134 Instant -> Pikamaksut
+10198 Pikamaksulompakon
+10206 kulu -> fee
+10210 maksu -> kulut
+10214 kulut
+10222 kulujen vuoksi
+10440 nodin solmun
+10519 nodin
+10523 tx tunnus
+10766 vaihtoraha
+10780 "
+10828 tx
+10852 tx
+10864 tx
+11066 DCA-, Limit Order- ja automaattiostot
+11070 Myy tai vastaanota bitcoinia
+11279 KYC-vahvistus
+11301 tx maksuja -> kuluja
+11305 SellOrder myynti toimeksianto
+11319 Kulujen...
+11333 Näytä siemenlause
+11337 siemeniä - > lompakoita
+11341 Siemenlauseita ei löytynyt
+11345 Näytä siemenlauseet
+11389 Salafraasi
+11547 kulu
+11594 ostotoimeksianto
+11598
+11614 Nostotoimeksianto
+11626 Lokitiedot
+11658 Veron kulut
+11670 Kokonais kulut
+11674 Siirtokulut
+11698 verkkokulut
+3545 siemenlause
+3535 
+3643 
+3639 
+3647 salaphraasi
+3767 siemenlause
+3977 tor-verkon välityksellä
+3993 toimeksiannon
+4021 Aikataulu
+4139 Kotisivu
+4175 Aikataulu
+4215 Pikamaksulompakko
+4239 Käytettävissä
+4243 Maksimi
+4263 palata kotisivulle
+4279 siirto -> swap
+4398
+4402 Turva-PIN -> PIN 4495
+4515 Pikamaksulompakko
+4580-4585 swap
+4605 sat
+5364 Fee Rate?!?
+5381
+5504 Lokitiedo 5512
+5529 Salefraasi
+5545 siemenlause
+5585 tx
+
+5625 loki
+5807 swap 5863
+5976 Maksu useaan osoitteeseen
+6059 kuvaus
+6324 swap 6406
+6481 6490
+6498 sat
+6543 swap
+
+6616 myyntitoimeksianto
+6670 "s"
+6717 -> vahvistus
+7397 Off-line (vie aikaa) Luottamukseton
+7474 Saimenlauseketta 7543
+7611 Tor-verkon kautta
+7915 Off-line
+8074 Replace by Fee
+8090 toimistusaika -> vahvistusaika
+8094 Kulujen määrä (Kulunopeus)
+8111 "
+8119
+
+8877-8882 puuttuu rivejä?
+8886-8891
+8907-8912
+8916-8921
+8500-9000 PRssä puuttuu loppuja..
+9587 lompakkoon
+9805 maa
+9845 aikataulu 9861
+9947 -henkilöllisyys
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
