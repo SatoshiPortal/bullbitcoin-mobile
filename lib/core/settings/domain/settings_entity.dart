@@ -44,7 +44,7 @@ enum Language {
   canadianFrench('fr', 'CA'),
   franceFrench('fr', 'FR'),
   spanish('es', 'ES'),
-  spanish('fi', 'FI');
+  finnish('fi', 'FI');
 
   final String languageCode;
   final String? countryCode;

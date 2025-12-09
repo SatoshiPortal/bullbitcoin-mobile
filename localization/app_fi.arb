@@ -63,7 +63,7 @@
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
   },
-  "electrumServerSettingsLabel": Electrum-palvelin (Bitcoin-solmu)",
+  "electrumServerSettingsLabel": "Electrum-palvelin (Bitcoin-solmu)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
   },
@@ -7494,7 +7494,7 @@
   },
   "testBackupErrorFailedToFetch": "Varmuuskopion hakeminen epäonnistui: {error}",
   "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails"
+    "description": "Error when backup fetch fails",
     "placeholders": {
       "error": {
         "type": "String"
@@ -8874,7 +8874,7 @@
   },
   "importMnemonicTransactions": "{count} tapahtumaa",
   "@importMnemonicTransactions": {
-    "description": "Shows number of transactions for wallet type"
+    "description": "Shows number of transactions for wallet type",
     "placeholders": {
       "count": {
         "type": "int"
@@ -8883,7 +8883,7 @@
   },
   "importMnemonicBalance": "Saldo: {amount}",
   "@importMnemonicBalance": {
-    "description": "Shows balance for wallet type"
+    "description": "Shows balance for wallet type",
     "placeholders": {
       "amount": {
         "type": "String"
@@ -8934,7 +8934,7 @@
   },
   "importWatchOnlyYpub": "ypub",
   "@importWatchOnlyYpub": {
-   "description": "Label for ypub import method
+   "description": "Label for ypub import method"
   },
   "importWatchOnlyZpub": "zpub",
   "@importWatchOnlyZpub": {
