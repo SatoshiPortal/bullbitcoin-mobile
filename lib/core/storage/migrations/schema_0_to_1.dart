@@ -8,10 +8,19 @@ class Schema0To1 {
 
     // Seed database with default values
     // !Important! If future migrations add columns that require default
-    //  values as well, the seeding of that column has to be done in the
-    //  migration step as well, since either the onCreate or the migration
-    //  steps get executed, not both. Make sure in the migration you only
-    //  seed the new columns and don't overwrite any existing data.
+    // values as well, the seeding of that column has to be done in the
+    // migration step itself using inline insertions.
+    //
+    // DO NOT use DatabaseSeeds functions in migrations since they reference
+    // the CURRENT schema, not the historical schema at that migration version.
+    // This will cause failures when columns don't exist yet.
+    //
+    // Instead, use RawValuesInsertable for inline data insertion:
+    // - See schema_1_to_2.dart for seeding new table rows
+    // - See schema_9_to_10.dart for seeding with schema-versioned tables
+    // - See schema_10_to_11.dart for TableMigration with columnTransformer
+    //
+    // Make sure to only seed NEW columns/rows and don't overwrite existing data.
     await Future.wait([
       DatabaseSeeds.seedDefaultSettings(m.database as SqliteDatabase),
       DatabaseSeeds.seedDefaultElectrumServers(m.database as SqliteDatabase),
