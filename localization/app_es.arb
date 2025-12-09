@@ -11982,5 +11982,29 @@
   "recoverbullErrorInvalidVaultFile": "Archivo de bóveda inválido.",
   "@recoverbullErrorInvalidVaultFile": {
     "description": "Error message when vault file format is invalid"
+  },
+  "systemLabelSwaps": "Swaps",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "systemLabelAutoSwap": "Auto Swap",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelPayjoin": "Payjoin",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "systemLabelSelfSpend": "Auto Gasto",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "systemLabelExchangeBuy": "Comprar",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "systemLabelExchangeSell": "Vender",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
   }
 }
