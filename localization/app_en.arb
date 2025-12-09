@@ -9469,29 +9469,41 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "importQrDeviceKeystoneStep1": "Turn on your Keystone device",
+  "importQrDeviceKeystoneStep1": "Power on your Keystone device",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
   },
-  "importQrDeviceKeystoneStep2": "Click the 3 dots at the top right",
+  "importQrDeviceKeystoneStep2": "Enter your PIN",
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "importQrDeviceKeystoneStep3": "Select Connect Software Wallet",
+  "importQrDeviceKeystoneStep3": "Click the three dots at the top right",
   "@importQrDeviceKeystoneStep3": {
     "description": "Keystone instruction step 3"
   },
-  "importQrDeviceKeystoneStep4": "Click the \"open camera\" button",
+  "importQrDeviceKeystoneStep4": "Select Connect Software Wallet",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "importQrDeviceKeystoneStep5": "Scan the QR code you see on your device.",
+  "importQrDeviceKeystoneStep5": "Choose BULL wallet option",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "importQrDeviceKeystoneStep6": "That's it!",
+  "importQrDeviceKeystoneStep6": "On your mobile device, tap Open Camera",
   "@importQrDeviceKeystoneStep6": {
     "description": "Keystone instruction step 6"
+  },
+  "importQrDeviceKeystoneStep7": "Scan the QR code displayed on your Keystone",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "Enter a label for your Keystone wallet and tap Import",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDeviceKeystoneStep9": "Setup is complete",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
   },
   "importQrDevicePassportName": "Foundation Passport",
   "@importQrDevicePassportName": {
