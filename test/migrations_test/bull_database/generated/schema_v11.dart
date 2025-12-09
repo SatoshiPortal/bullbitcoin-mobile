@@ -16,6 +16,7 @@ class Transactions extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
@@ -23,6 +24,7 @@ class Transactions extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> size = GeneratedColumn<String>(
     'size',
@@ -30,6 +32,7 @@ class Transactions extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> vsize = GeneratedColumn<String>(
     'vsize',
@@ -37,6 +40,7 @@ class Transactions extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> locktime = GeneratedColumn<int>(
     'locktime',
@@ -44,6 +48,7 @@ class Transactions extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> vin = GeneratedColumn<String>(
     'vin',
@@ -51,6 +56,7 @@ class Transactions extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> vout = GeneratedColumn<String>(
     'vout',
@@ -58,6 +64,7 @@ class Transactions extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> blockhash = GeneratedColumn<String>(
     'blockhash',
@@ -65,6 +72,7 @@ class Transactions extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> height = GeneratedColumn<int>(
     'height',
@@ -72,6 +80,7 @@ class Transactions extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> confirmations = GeneratedColumn<int>(
     'confirmations',
@@ -79,6 +88,7 @@ class Transactions extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> time = GeneratedColumn<int>(
     'time',
@@ -86,6 +96,7 @@ class Transactions extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> blocktime = GeneratedColumn<int>(
     'blocktime',
@@ -93,6 +104,7 @@ class Transactions extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -175,6 +187,11 @@ class Transactions extends Table
   Transactions createAlias(String alias) {
     return Transactions(attachedDatabase, alias);
   }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(txid)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class TransactionsData extends DataClass
@@ -589,6 +606,7 @@ class WalletMetadatas extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> masterFingerprint =
       GeneratedColumn<String>(
@@ -597,6 +615,7 @@ class WalletMetadatas extends Table
         false,
         type: DriftSqlType.string,
         requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
       );
   late final GeneratedColumn<String> xpubFingerprint = GeneratedColumn<String>(
     'xpub_fingerprint',
@@ -604,35 +623,31 @@ class WalletMetadatas extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> isEncryptedVaultTested =
-      GeneratedColumn<bool>(
-        'is_encrypted_vault_tested',
-        aliasedName,
-        false,
-        type: DriftSqlType.bool,
-        requiredDuringInsert: true,
-        defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("is_encrypted_vault_tested" IN (0, 1))',
-        ),
-      );
-  late final GeneratedColumn<bool> isPhysicalBackupTested =
-      GeneratedColumn<bool>(
-        'is_physical_backup_tested',
-        aliasedName,
-        false,
-        type: DriftSqlType.bool,
-        requiredDuringInsert: true,
-        defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("is_physical_backup_tested" IN (0, 1))',
-        ),
-      );
+  late final GeneratedColumn<int> isEncryptedVaultTested = GeneratedColumn<int>(
+    'is_encrypted_vault_tested',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (is_encrypted_vault_tested IN (0, 1))',
+  );
+  late final GeneratedColumn<int> isPhysicalBackupTested = GeneratedColumn<int>(
+    'is_physical_backup_tested',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (is_physical_backup_tested IN (0, 1))',
+  );
   late final GeneratedColumn<int> latestEncryptedBackup = GeneratedColumn<int>(
     'latest_encrypted_backup',
     aliasedName,
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> latestPhysicalBackup = GeneratedColumn<int>(
     'latest_physical_backup',
@@ -640,6 +655,7 @@ class WalletMetadatas extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> xpub = GeneratedColumn<String>(
     'xpub',
@@ -647,6 +663,7 @@ class WalletMetadatas extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> externalPublicDescriptor =
       GeneratedColumn<String>(
@@ -655,6 +672,7 @@ class WalletMetadatas extends Table
         false,
         type: DriftSqlType.string,
         requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
       );
   late final GeneratedColumn<String> internalPublicDescriptor =
       GeneratedColumn<String>(
@@ -663,6 +681,7 @@ class WalletMetadatas extends Table
         false,
         type: DriftSqlType.string,
         requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
       );
   late final GeneratedColumn<String> signer = GeneratedColumn<String>(
     'signer',
@@ -670,6 +689,7 @@ class WalletMetadatas extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> signerDevice = GeneratedColumn<String>(
     'signer_device',
@@ -677,16 +697,15 @@ class WalletMetadatas extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isDefault = GeneratedColumn<int>(
     'is_default',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_default" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_default IN (0, 1))',
   );
   late final GeneratedColumn<String> label = GeneratedColumn<String>(
     'label',
@@ -694,20 +713,23 @@ class WalletMetadatas extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<DateTime> syncedAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> syncedAt = GeneratedColumn<String>(
     'synced_at',
     aliasedName,
     true,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<DateTime> birthday = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> birthday = GeneratedColumn<String>(
     'birthday',
     aliasedName,
     true,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -752,11 +774,11 @@ class WalletMetadatas extends Table
         data['${effectivePrefix}xpub_fingerprint'],
       )!,
       isEncryptedVaultTested: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_encrypted_vault_tested'],
       )!,
       isPhysicalBackupTested: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_physical_backup_tested'],
       )!,
       latestEncryptedBackup: attachedDatabase.typeMapping.read(
@@ -788,7 +810,7 @@ class WalletMetadatas extends Table
         data['${effectivePrefix}signer_device'],
       ),
       isDefault: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_default'],
       )!,
       label: attachedDatabase.typeMapping.read(
@@ -796,11 +818,11 @@ class WalletMetadatas extends Table
         data['${effectivePrefix}label'],
       ),
       syncedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}synced_at'],
       ),
       birthday: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}birthday'],
       ),
     );
@@ -810,6 +832,11 @@ class WalletMetadatas extends Table
   WalletMetadatas createAlias(String alias) {
     return WalletMetadatas(attachedDatabase, alias);
   }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class WalletMetadatasData extends DataClass
@@ -817,8 +844,8 @@ class WalletMetadatasData extends DataClass
   final String id;
   final String masterFingerprint;
   final String xpubFingerprint;
-  final bool isEncryptedVaultTested;
-  final bool isPhysicalBackupTested;
+  final int isEncryptedVaultTested;
+  final int isPhysicalBackupTested;
   final int? latestEncryptedBackup;
   final int? latestPhysicalBackup;
   final String xpub;
@@ -826,10 +853,10 @@ class WalletMetadatasData extends DataClass
   final String internalPublicDescriptor;
   final String signer;
   final String? signerDevice;
-  final bool isDefault;
+  final int isDefault;
   final String? label;
-  final DateTime? syncedAt;
-  final DateTime? birthday;
+  final String? syncedAt;
+  final String? birthday;
   const WalletMetadatasData({
     required this.id,
     required this.masterFingerprint,
@@ -854,8 +881,8 @@ class WalletMetadatasData extends DataClass
     map['id'] = Variable<String>(id);
     map['master_fingerprint'] = Variable<String>(masterFingerprint);
     map['xpub_fingerprint'] = Variable<String>(xpubFingerprint);
-    map['is_encrypted_vault_tested'] = Variable<bool>(isEncryptedVaultTested);
-    map['is_physical_backup_tested'] = Variable<bool>(isPhysicalBackupTested);
+    map['is_encrypted_vault_tested'] = Variable<int>(isEncryptedVaultTested);
+    map['is_physical_backup_tested'] = Variable<int>(isPhysicalBackupTested);
     if (!nullToAbsent || latestEncryptedBackup != null) {
       map['latest_encrypted_backup'] = Variable<int>(latestEncryptedBackup);
     }
@@ -873,15 +900,15 @@ class WalletMetadatasData extends DataClass
     if (!nullToAbsent || signerDevice != null) {
       map['signer_device'] = Variable<String>(signerDevice);
     }
-    map['is_default'] = Variable<bool>(isDefault);
+    map['is_default'] = Variable<int>(isDefault);
     if (!nullToAbsent || label != null) {
       map['label'] = Variable<String>(label);
     }
     if (!nullToAbsent || syncedAt != null) {
-      map['synced_at'] = Variable<DateTime>(syncedAt);
+      map['synced_at'] = Variable<String>(syncedAt);
     }
     if (!nullToAbsent || birthday != null) {
-      map['birthday'] = Variable<DateTime>(birthday);
+      map['birthday'] = Variable<String>(birthday);
     }
     return map;
   }
@@ -928,10 +955,10 @@ class WalletMetadatasData extends DataClass
       id: serializer.fromJson<String>(json['id']),
       masterFingerprint: serializer.fromJson<String>(json['masterFingerprint']),
       xpubFingerprint: serializer.fromJson<String>(json['xpubFingerprint']),
-      isEncryptedVaultTested: serializer.fromJson<bool>(
+      isEncryptedVaultTested: serializer.fromJson<int>(
         json['isEncryptedVaultTested'],
       ),
-      isPhysicalBackupTested: serializer.fromJson<bool>(
+      isPhysicalBackupTested: serializer.fromJson<int>(
         json['isPhysicalBackupTested'],
       ),
       latestEncryptedBackup: serializer.fromJson<int?>(
@@ -949,10 +976,10 @@ class WalletMetadatasData extends DataClass
       ),
       signer: serializer.fromJson<String>(json['signer']),
       signerDevice: serializer.fromJson<String?>(json['signerDevice']),
-      isDefault: serializer.fromJson<bool>(json['isDefault']),
+      isDefault: serializer.fromJson<int>(json['isDefault']),
       label: serializer.fromJson<String?>(json['label']),
-      syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
-      birthday: serializer.fromJson<DateTime?>(json['birthday']),
+      syncedAt: serializer.fromJson<String?>(json['syncedAt']),
+      birthday: serializer.fromJson<String?>(json['birthday']),
     );
   }
   @override
@@ -962,8 +989,8 @@ class WalletMetadatasData extends DataClass
       'id': serializer.toJson<String>(id),
       'masterFingerprint': serializer.toJson<String>(masterFingerprint),
       'xpubFingerprint': serializer.toJson<String>(xpubFingerprint),
-      'isEncryptedVaultTested': serializer.toJson<bool>(isEncryptedVaultTested),
-      'isPhysicalBackupTested': serializer.toJson<bool>(isPhysicalBackupTested),
+      'isEncryptedVaultTested': serializer.toJson<int>(isEncryptedVaultTested),
+      'isPhysicalBackupTested': serializer.toJson<int>(isPhysicalBackupTested),
       'latestEncryptedBackup': serializer.toJson<int?>(latestEncryptedBackup),
       'latestPhysicalBackup': serializer.toJson<int?>(latestPhysicalBackup),
       'xpub': serializer.toJson<String>(xpub),
@@ -975,10 +1002,10 @@ class WalletMetadatasData extends DataClass
       ),
       'signer': serializer.toJson<String>(signer),
       'signerDevice': serializer.toJson<String?>(signerDevice),
-      'isDefault': serializer.toJson<bool>(isDefault),
+      'isDefault': serializer.toJson<int>(isDefault),
       'label': serializer.toJson<String?>(label),
-      'syncedAt': serializer.toJson<DateTime?>(syncedAt),
-      'birthday': serializer.toJson<DateTime?>(birthday),
+      'syncedAt': serializer.toJson<String?>(syncedAt),
+      'birthday': serializer.toJson<String?>(birthday),
     };
   }
 
@@ -986,8 +1013,8 @@ class WalletMetadatasData extends DataClass
     String? id,
     String? masterFingerprint,
     String? xpubFingerprint,
-    bool? isEncryptedVaultTested,
-    bool? isPhysicalBackupTested,
+    int? isEncryptedVaultTested,
+    int? isPhysicalBackupTested,
     Value<int?> latestEncryptedBackup = const Value.absent(),
     Value<int?> latestPhysicalBackup = const Value.absent(),
     String? xpub,
@@ -995,10 +1022,10 @@ class WalletMetadatasData extends DataClass
     String? internalPublicDescriptor,
     String? signer,
     Value<String?> signerDevice = const Value.absent(),
-    bool? isDefault,
+    int? isDefault,
     Value<String?> label = const Value.absent(),
-    Value<DateTime?> syncedAt = const Value.absent(),
-    Value<DateTime?> birthday = const Value.absent(),
+    Value<String?> syncedAt = const Value.absent(),
+    Value<String?> birthday = const Value.absent(),
   }) => WalletMetadatasData(
     id: id ?? this.id,
     masterFingerprint: masterFingerprint ?? this.masterFingerprint,
@@ -1132,8 +1159,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   final Value<String> id;
   final Value<String> masterFingerprint;
   final Value<String> xpubFingerprint;
-  final Value<bool> isEncryptedVaultTested;
-  final Value<bool> isPhysicalBackupTested;
+  final Value<int> isEncryptedVaultTested;
+  final Value<int> isPhysicalBackupTested;
   final Value<int?> latestEncryptedBackup;
   final Value<int?> latestPhysicalBackup;
   final Value<String> xpub;
@@ -1141,10 +1168,10 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   final Value<String> internalPublicDescriptor;
   final Value<String> signer;
   final Value<String?> signerDevice;
-  final Value<bool> isDefault;
+  final Value<int> isDefault;
   final Value<String?> label;
-  final Value<DateTime?> syncedAt;
-  final Value<DateTime?> birthday;
+  final Value<String?> syncedAt;
+  final Value<String?> birthday;
   final Value<int> rowid;
   const WalletMetadatasCompanion({
     this.id = const Value.absent(),
@@ -1169,8 +1196,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     required String id,
     required String masterFingerprint,
     required String xpubFingerprint,
-    required bool isEncryptedVaultTested,
-    required bool isPhysicalBackupTested,
+    required int isEncryptedVaultTested,
+    required int isPhysicalBackupTested,
     this.latestEncryptedBackup = const Value.absent(),
     this.latestPhysicalBackup = const Value.absent(),
     required String xpub,
@@ -1178,7 +1205,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     required String internalPublicDescriptor,
     required String signer,
     this.signerDevice = const Value.absent(),
-    required bool isDefault,
+    required int isDefault,
     this.label = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.birthday = const Value.absent(),
@@ -1197,8 +1224,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     Expression<String>? id,
     Expression<String>? masterFingerprint,
     Expression<String>? xpubFingerprint,
-    Expression<bool>? isEncryptedVaultTested,
-    Expression<bool>? isPhysicalBackupTested,
+    Expression<int>? isEncryptedVaultTested,
+    Expression<int>? isPhysicalBackupTested,
     Expression<int>? latestEncryptedBackup,
     Expression<int>? latestPhysicalBackup,
     Expression<String>? xpub,
@@ -1206,10 +1233,10 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     Expression<String>? internalPublicDescriptor,
     Expression<String>? signer,
     Expression<String>? signerDevice,
-    Expression<bool>? isDefault,
+    Expression<int>? isDefault,
     Expression<String>? label,
-    Expression<DateTime>? syncedAt,
-    Expression<DateTime>? birthday,
+    Expression<String>? syncedAt,
+    Expression<String>? birthday,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1243,8 +1270,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     Value<String>? id,
     Value<String>? masterFingerprint,
     Value<String>? xpubFingerprint,
-    Value<bool>? isEncryptedVaultTested,
-    Value<bool>? isPhysicalBackupTested,
+    Value<int>? isEncryptedVaultTested,
+    Value<int>? isPhysicalBackupTested,
     Value<int?>? latestEncryptedBackup,
     Value<int?>? latestPhysicalBackup,
     Value<String>? xpub,
@@ -1252,10 +1279,10 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     Value<String>? internalPublicDescriptor,
     Value<String>? signer,
     Value<String?>? signerDevice,
-    Value<bool>? isDefault,
+    Value<int>? isDefault,
     Value<String?>? label,
-    Value<DateTime?>? syncedAt,
-    Value<DateTime?>? birthday,
+    Value<String?>? syncedAt,
+    Value<String?>? birthday,
     Value<int>? rowid,
   }) {
     return WalletMetadatasCompanion(
@@ -1297,12 +1324,12 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
       map['xpub_fingerprint'] = Variable<String>(xpubFingerprint.value);
     }
     if (isEncryptedVaultTested.present) {
-      map['is_encrypted_vault_tested'] = Variable<bool>(
+      map['is_encrypted_vault_tested'] = Variable<int>(
         isEncryptedVaultTested.value,
       );
     }
     if (isPhysicalBackupTested.present) {
-      map['is_physical_backup_tested'] = Variable<bool>(
+      map['is_physical_backup_tested'] = Variable<int>(
         isPhysicalBackupTested.value,
       );
     }
@@ -1334,16 +1361,16 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
       map['signer_device'] = Variable<String>(signerDevice.value);
     }
     if (isDefault.present) {
-      map['is_default'] = Variable<bool>(isDefault.value);
+      map['is_default'] = Variable<int>(isDefault.value);
     }
     if (label.present) {
       map['label'] = Variable<String>(label.value);
     }
     if (syncedAt.present) {
-      map['synced_at'] = Variable<DateTime>(syncedAt.value);
+      map['synced_at'] = Variable<String>(syncedAt.value);
     }
     if (birthday.present) {
-      map['birthday'] = Variable<DateTime>(birthday.value);
+      map['birthday'] = Variable<String>(birthday.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1387,6 +1414,7 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> ref = GeneratedColumn<String>(
     'ref',
@@ -1394,6 +1422,7 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
     'type',
@@ -1401,6 +1430,7 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> origin = GeneratedColumn<String>(
     'origin',
@@ -1408,16 +1438,15 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<bool> spendable = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> spendable = GeneratedColumn<int>(
     'spendable',
     aliasedName,
     true,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("spendable" IN (0, 1))',
-    ),
+    $customConstraints: 'NULL CHECK (spendable IN (0, 1))',
   );
   @override
   List<GeneratedColumn> get $columns => [label, ref, type, origin, spendable];
@@ -1449,7 +1478,7 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
         data['${effectivePrefix}origin'],
       ),
       spendable: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}spendable'],
       ),
     );
@@ -1459,6 +1488,11 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
   Labels createAlias(String alias) {
     return Labels(attachedDatabase, alias);
   }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(label, ref)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class LabelsData extends DataClass implements Insertable<LabelsData> {
@@ -1466,7 +1500,7 @@ class LabelsData extends DataClass implements Insertable<LabelsData> {
   final String ref;
   final String type;
   final String? origin;
-  final bool? spendable;
+  final int? spendable;
   const LabelsData({
     required this.label,
     required this.ref,
@@ -1484,7 +1518,7 @@ class LabelsData extends DataClass implements Insertable<LabelsData> {
       map['origin'] = Variable<String>(origin);
     }
     if (!nullToAbsent || spendable != null) {
-      map['spendable'] = Variable<bool>(spendable);
+      map['spendable'] = Variable<int>(spendable);
     }
     return map;
   }
@@ -1513,7 +1547,7 @@ class LabelsData extends DataClass implements Insertable<LabelsData> {
       ref: serializer.fromJson<String>(json['ref']),
       type: serializer.fromJson<String>(json['type']),
       origin: serializer.fromJson<String?>(json['origin']),
-      spendable: serializer.fromJson<bool?>(json['spendable']),
+      spendable: serializer.fromJson<int?>(json['spendable']),
     );
   }
   @override
@@ -1524,7 +1558,7 @@ class LabelsData extends DataClass implements Insertable<LabelsData> {
       'ref': serializer.toJson<String>(ref),
       'type': serializer.toJson<String>(type),
       'origin': serializer.toJson<String?>(origin),
-      'spendable': serializer.toJson<bool?>(spendable),
+      'spendable': serializer.toJson<int?>(spendable),
     };
   }
 
@@ -1533,7 +1567,7 @@ class LabelsData extends DataClass implements Insertable<LabelsData> {
     String? ref,
     String? type,
     Value<String?> origin = const Value.absent(),
-    Value<bool?> spendable = const Value.absent(),
+    Value<int?> spendable = const Value.absent(),
   }) => LabelsData(
     label: label ?? this.label,
     ref: ref ?? this.ref,
@@ -1581,7 +1615,7 @@ class LabelsCompanion extends UpdateCompanion<LabelsData> {
   final Value<String> ref;
   final Value<String> type;
   final Value<String?> origin;
-  final Value<bool?> spendable;
+  final Value<int?> spendable;
   final Value<int> rowid;
   const LabelsCompanion({
     this.label = const Value.absent(),
@@ -1606,7 +1640,7 @@ class LabelsCompanion extends UpdateCompanion<LabelsData> {
     Expression<String>? ref,
     Expression<String>? type,
     Expression<String>? origin,
-    Expression<bool>? spendable,
+    Expression<int>? spendable,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1624,7 +1658,7 @@ class LabelsCompanion extends UpdateCompanion<LabelsData> {
     Value<String>? ref,
     Value<String>? type,
     Value<String?>? origin,
-    Value<bool?>? spendable,
+    Value<int?>? spendable,
     Value<int>? rowid,
   }) {
     return LabelsCompanion(
@@ -1653,7 +1687,7 @@ class LabelsCompanion extends UpdateCompanion<LabelsData> {
       map['origin'] = Variable<String>(origin.value);
     }
     if (spendable.present) {
-      map['spendable'] = Variable<bool>(spendable.value);
+      map['spendable'] = Variable<int>(spendable.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1687,9 +1721,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     hasAutoIncrement: true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
+    $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
   );
   late final GeneratedColumn<String> environment = GeneratedColumn<String>(
     'environment',
@@ -1697,6 +1729,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> bitcoinUnit = GeneratedColumn<String>(
     'bitcoin_unit',
@@ -1704,6 +1737,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> language = GeneratedColumn<String>(
     'language',
@@ -1711,6 +1745,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> currency = GeneratedColumn<String>(
     'currency',
@@ -1718,47 +1753,41 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> hideAmounts = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> hideAmounts = GeneratedColumn<int>(
     'hide_amounts',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("hide_amounts" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (hide_amounts IN (0, 1))',
   );
-  late final GeneratedColumn<bool> isSuperuser = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isSuperuser = GeneratedColumn<int>(
     'is_superuser',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_superuser" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_superuser IN (0, 1))',
   );
-  late final GeneratedColumn<bool> isDevModeEnabled = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isDevModeEnabled = GeneratedColumn<int>(
     'is_dev_mode_enabled',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_dev_mode_enabled" IN (0, 1))',
-    ),
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (is_dev_mode_enabled IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
-  late final GeneratedColumn<bool> useTorProxy = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> useTorProxy = GeneratedColumn<int>(
     'use_tor_proxy',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("use_tor_proxy" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (use_tor_proxy IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
   late final GeneratedColumn<int> torProxyPort = GeneratedColumn<int>(
@@ -1767,6 +1796,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 9050',
     defaultValue: const CustomExpression('9050'),
   );
   late final GeneratedColumn<String> themeMode = GeneratedColumn<String>(
@@ -1775,6 +1805,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'system\'',
     defaultValue: const CustomExpression('\'system\''),
   );
   @override
@@ -1823,19 +1854,19 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         data['${effectivePrefix}currency'],
       )!,
       hideAmounts: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}hide_amounts'],
       )!,
       isSuperuser: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_superuser'],
       )!,
       isDevModeEnabled: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_dev_mode_enabled'],
       )!,
       useTorProxy: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}use_tor_proxy'],
       )!,
       torProxyPort: attachedDatabase.typeMapping.read(
@@ -1853,6 +1884,9 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
   Settings createAlias(String alias) {
     return Settings(attachedDatabase, alias);
   }
+
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class SettingsData extends DataClass implements Insertable<SettingsData> {
@@ -1861,10 +1895,10 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final String bitcoinUnit;
   final String language;
   final String currency;
-  final bool hideAmounts;
-  final bool isSuperuser;
-  final bool isDevModeEnabled;
-  final bool useTorProxy;
+  final int hideAmounts;
+  final int isSuperuser;
+  final int isDevModeEnabled;
+  final int useTorProxy;
   final int torProxyPort;
   final String themeMode;
   const SettingsData({
@@ -1888,10 +1922,10 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['bitcoin_unit'] = Variable<String>(bitcoinUnit);
     map['language'] = Variable<String>(language);
     map['currency'] = Variable<String>(currency);
-    map['hide_amounts'] = Variable<bool>(hideAmounts);
-    map['is_superuser'] = Variable<bool>(isSuperuser);
-    map['is_dev_mode_enabled'] = Variable<bool>(isDevModeEnabled);
-    map['use_tor_proxy'] = Variable<bool>(useTorProxy);
+    map['hide_amounts'] = Variable<int>(hideAmounts);
+    map['is_superuser'] = Variable<int>(isSuperuser);
+    map['is_dev_mode_enabled'] = Variable<int>(isDevModeEnabled);
+    map['use_tor_proxy'] = Variable<int>(useTorProxy);
     map['tor_proxy_port'] = Variable<int>(torProxyPort);
     map['theme_mode'] = Variable<String>(themeMode);
     return map;
@@ -1924,10 +1958,10 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       bitcoinUnit: serializer.fromJson<String>(json['bitcoinUnit']),
       language: serializer.fromJson<String>(json['language']),
       currency: serializer.fromJson<String>(json['currency']),
-      hideAmounts: serializer.fromJson<bool>(json['hideAmounts']),
-      isSuperuser: serializer.fromJson<bool>(json['isSuperuser']),
-      isDevModeEnabled: serializer.fromJson<bool>(json['isDevModeEnabled']),
-      useTorProxy: serializer.fromJson<bool>(json['useTorProxy']),
+      hideAmounts: serializer.fromJson<int>(json['hideAmounts']),
+      isSuperuser: serializer.fromJson<int>(json['isSuperuser']),
+      isDevModeEnabled: serializer.fromJson<int>(json['isDevModeEnabled']),
+      useTorProxy: serializer.fromJson<int>(json['useTorProxy']),
       torProxyPort: serializer.fromJson<int>(json['torProxyPort']),
       themeMode: serializer.fromJson<String>(json['themeMode']),
     );
@@ -1941,10 +1975,10 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'bitcoinUnit': serializer.toJson<String>(bitcoinUnit),
       'language': serializer.toJson<String>(language),
       'currency': serializer.toJson<String>(currency),
-      'hideAmounts': serializer.toJson<bool>(hideAmounts),
-      'isSuperuser': serializer.toJson<bool>(isSuperuser),
-      'isDevModeEnabled': serializer.toJson<bool>(isDevModeEnabled),
-      'useTorProxy': serializer.toJson<bool>(useTorProxy),
+      'hideAmounts': serializer.toJson<int>(hideAmounts),
+      'isSuperuser': serializer.toJson<int>(isSuperuser),
+      'isDevModeEnabled': serializer.toJson<int>(isDevModeEnabled),
+      'useTorProxy': serializer.toJson<int>(useTorProxy),
       'torProxyPort': serializer.toJson<int>(torProxyPort),
       'themeMode': serializer.toJson<String>(themeMode),
     };
@@ -1956,10 +1990,10 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     String? bitcoinUnit,
     String? language,
     String? currency,
-    bool? hideAmounts,
-    bool? isSuperuser,
-    bool? isDevModeEnabled,
-    bool? useTorProxy,
+    int? hideAmounts,
+    int? isSuperuser,
+    int? isDevModeEnabled,
+    int? useTorProxy,
     int? torProxyPort,
     String? themeMode,
   }) => SettingsData(
@@ -2060,10 +2094,10 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<String> bitcoinUnit;
   final Value<String> language;
   final Value<String> currency;
-  final Value<bool> hideAmounts;
-  final Value<bool> isSuperuser;
-  final Value<bool> isDevModeEnabled;
-  final Value<bool> useTorProxy;
+  final Value<int> hideAmounts;
+  final Value<int> isSuperuser;
+  final Value<int> isDevModeEnabled;
+  final Value<int> useTorProxy;
   final Value<int> torProxyPort;
   final Value<String> themeMode;
   const SettingsCompanion({
@@ -2085,8 +2119,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     required String bitcoinUnit,
     required String language,
     required String currency,
-    required bool hideAmounts,
-    required bool isSuperuser,
+    required int hideAmounts,
+    required int isSuperuser,
     this.isDevModeEnabled = const Value.absent(),
     this.useTorProxy = const Value.absent(),
     this.torProxyPort = const Value.absent(),
@@ -2103,10 +2137,10 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<String>? bitcoinUnit,
     Expression<String>? language,
     Expression<String>? currency,
-    Expression<bool>? hideAmounts,
-    Expression<bool>? isSuperuser,
-    Expression<bool>? isDevModeEnabled,
-    Expression<bool>? useTorProxy,
+    Expression<int>? hideAmounts,
+    Expression<int>? isSuperuser,
+    Expression<int>? isDevModeEnabled,
+    Expression<int>? useTorProxy,
     Expression<int>? torProxyPort,
     Expression<String>? themeMode,
   }) {
@@ -2131,10 +2165,10 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<String>? bitcoinUnit,
     Value<String>? language,
     Value<String>? currency,
-    Value<bool>? hideAmounts,
-    Value<bool>? isSuperuser,
-    Value<bool>? isDevModeEnabled,
-    Value<bool>? useTorProxy,
+    Value<int>? hideAmounts,
+    Value<int>? isSuperuser,
+    Value<int>? isDevModeEnabled,
+    Value<int>? useTorProxy,
     Value<int>? torProxyPort,
     Value<String>? themeMode,
   }) {
@@ -2172,16 +2206,16 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       map['currency'] = Variable<String>(currency.value);
     }
     if (hideAmounts.present) {
-      map['hide_amounts'] = Variable<bool>(hideAmounts.value);
+      map['hide_amounts'] = Variable<int>(hideAmounts.value);
     }
     if (isSuperuser.present) {
-      map['is_superuser'] = Variable<bool>(isSuperuser.value);
+      map['is_superuser'] = Variable<int>(isSuperuser.value);
     }
     if (isDevModeEnabled.present) {
-      map['is_dev_mode_enabled'] = Variable<bool>(isDevModeEnabled.value);
+      map['is_dev_mode_enabled'] = Variable<int>(isDevModeEnabled.value);
     }
     if (useTorProxy.present) {
-      map['use_tor_proxy'] = Variable<bool>(useTorProxy.value);
+      map['use_tor_proxy'] = Variable<int>(useTorProxy.value);
     }
     if (torProxyPort.present) {
       map['tor_proxy_port'] = Variable<int>(torProxyPort.value);
@@ -2223,16 +2257,15 @@ class PayjoinSenders extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> isTestnet = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isTestnet = GeneratedColumn<int>(
     'is_testnet',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_testnet" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_testnet IN (0, 1))',
   );
   late final GeneratedColumn<String> sender = GeneratedColumn<String>(
     'sender',
@@ -2240,6 +2273,7 @@ class PayjoinSenders extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
     'wallet_id',
@@ -2247,6 +2281,7 @@ class PayjoinSenders extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> originalPsbt = GeneratedColumn<String>(
     'original_psbt',
@@ -2254,6 +2289,7 @@ class PayjoinSenders extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> originalTxId = GeneratedColumn<String>(
     'original_tx_id',
@@ -2261,6 +2297,7 @@ class PayjoinSenders extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> amountSat = GeneratedColumn<int>(
     'amount_sat',
@@ -2268,6 +2305,7 @@ class PayjoinSenders extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
@@ -2275,6 +2313,7 @@ class PayjoinSenders extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> expireAfterSec = GeneratedColumn<int>(
     'expire_after_sec',
@@ -2282,6 +2321,7 @@ class PayjoinSenders extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> proposalPsbt = GeneratedColumn<String>(
     'proposal_psbt',
@@ -2289,6 +2329,7 @@ class PayjoinSenders extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> txId = GeneratedColumn<String>(
     'tx_id',
@@ -2296,26 +2337,23 @@ class PayjoinSenders extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<bool> isExpired = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isExpired = GeneratedColumn<int>(
     'is_expired',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_expired" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_expired IN (0, 1))',
   );
-  late final GeneratedColumn<bool> isCompleted = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isCompleted = GeneratedColumn<int>(
     'is_completed',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_completed" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_completed IN (0, 1))',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -2349,7 +2387,7 @@ class PayjoinSenders extends Table
         data['${effectivePrefix}uri'],
       )!,
       isTestnet: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_testnet'],
       )!,
       sender: attachedDatabase.typeMapping.read(
@@ -2389,11 +2427,11 @@ class PayjoinSenders extends Table
         data['${effectivePrefix}tx_id'],
       ),
       isExpired: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_expired'],
       )!,
       isCompleted: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_completed'],
       )!,
     );
@@ -2403,12 +2441,17 @@ class PayjoinSenders extends Table
   PayjoinSenders createAlias(String alias) {
     return PayjoinSenders(attachedDatabase, alias);
   }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(uri)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class PayjoinSendersData extends DataClass
     implements Insertable<PayjoinSendersData> {
   final String uri;
-  final bool isTestnet;
+  final int isTestnet;
   final String sender;
   final String walletId;
   final String originalPsbt;
@@ -2418,8 +2461,8 @@ class PayjoinSendersData extends DataClass
   final int expireAfterSec;
   final String? proposalPsbt;
   final String? txId;
-  final bool isExpired;
-  final bool isCompleted;
+  final int isExpired;
+  final int isCompleted;
   const PayjoinSendersData({
     required this.uri,
     required this.isTestnet,
@@ -2439,7 +2482,7 @@ class PayjoinSendersData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['uri'] = Variable<String>(uri);
-    map['is_testnet'] = Variable<bool>(isTestnet);
+    map['is_testnet'] = Variable<int>(isTestnet);
     map['sender'] = Variable<String>(sender);
     map['wallet_id'] = Variable<String>(walletId);
     map['original_psbt'] = Variable<String>(originalPsbt);
@@ -2453,8 +2496,8 @@ class PayjoinSendersData extends DataClass
     if (!nullToAbsent || txId != null) {
       map['tx_id'] = Variable<String>(txId);
     }
-    map['is_expired'] = Variable<bool>(isExpired);
-    map['is_completed'] = Variable<bool>(isCompleted);
+    map['is_expired'] = Variable<int>(isExpired);
+    map['is_completed'] = Variable<int>(isCompleted);
     return map;
   }
 
@@ -2485,7 +2528,7 @@ class PayjoinSendersData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return PayjoinSendersData(
       uri: serializer.fromJson<String>(json['uri']),
-      isTestnet: serializer.fromJson<bool>(json['isTestnet']),
+      isTestnet: serializer.fromJson<int>(json['isTestnet']),
       sender: serializer.fromJson<String>(json['sender']),
       walletId: serializer.fromJson<String>(json['walletId']),
       originalPsbt: serializer.fromJson<String>(json['originalPsbt']),
@@ -2495,8 +2538,8 @@ class PayjoinSendersData extends DataClass
       expireAfterSec: serializer.fromJson<int>(json['expireAfterSec']),
       proposalPsbt: serializer.fromJson<String?>(json['proposalPsbt']),
       txId: serializer.fromJson<String?>(json['txId']),
-      isExpired: serializer.fromJson<bool>(json['isExpired']),
-      isCompleted: serializer.fromJson<bool>(json['isCompleted']),
+      isExpired: serializer.fromJson<int>(json['isExpired']),
+      isCompleted: serializer.fromJson<int>(json['isCompleted']),
     );
   }
   @override
@@ -2504,7 +2547,7 @@ class PayjoinSendersData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'uri': serializer.toJson<String>(uri),
-      'isTestnet': serializer.toJson<bool>(isTestnet),
+      'isTestnet': serializer.toJson<int>(isTestnet),
       'sender': serializer.toJson<String>(sender),
       'walletId': serializer.toJson<String>(walletId),
       'originalPsbt': serializer.toJson<String>(originalPsbt),
@@ -2514,14 +2557,14 @@ class PayjoinSendersData extends DataClass
       'expireAfterSec': serializer.toJson<int>(expireAfterSec),
       'proposalPsbt': serializer.toJson<String?>(proposalPsbt),
       'txId': serializer.toJson<String?>(txId),
-      'isExpired': serializer.toJson<bool>(isExpired),
-      'isCompleted': serializer.toJson<bool>(isCompleted),
+      'isExpired': serializer.toJson<int>(isExpired),
+      'isCompleted': serializer.toJson<int>(isCompleted),
     };
   }
 
   PayjoinSendersData copyWith({
     String? uri,
-    bool? isTestnet,
+    int? isTestnet,
     String? sender,
     String? walletId,
     String? originalPsbt,
@@ -2531,8 +2574,8 @@ class PayjoinSendersData extends DataClass
     int? expireAfterSec,
     Value<String?> proposalPsbt = const Value.absent(),
     Value<String?> txId = const Value.absent(),
-    bool? isExpired,
-    bool? isCompleted,
+    int? isExpired,
+    int? isCompleted,
   }) => PayjoinSendersData(
     uri: uri ?? this.uri,
     isTestnet: isTestnet ?? this.isTestnet,
@@ -2633,7 +2676,7 @@ class PayjoinSendersData extends DataClass
 
 class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
   final Value<String> uri;
-  final Value<bool> isTestnet;
+  final Value<int> isTestnet;
   final Value<String> sender;
   final Value<String> walletId;
   final Value<String> originalPsbt;
@@ -2643,8 +2686,8 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
   final Value<int> expireAfterSec;
   final Value<String?> proposalPsbt;
   final Value<String?> txId;
-  final Value<bool> isExpired;
-  final Value<bool> isCompleted;
+  final Value<int> isExpired;
+  final Value<int> isCompleted;
   final Value<int> rowid;
   const PayjoinSendersCompanion({
     this.uri = const Value.absent(),
@@ -2664,7 +2707,7 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
   });
   PayjoinSendersCompanion.insert({
     required String uri,
-    required bool isTestnet,
+    required int isTestnet,
     required String sender,
     required String walletId,
     required String originalPsbt,
@@ -2674,8 +2717,8 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
     required int expireAfterSec,
     this.proposalPsbt = const Value.absent(),
     this.txId = const Value.absent(),
-    required bool isExpired,
-    required bool isCompleted,
+    required int isExpired,
+    required int isCompleted,
     this.rowid = const Value.absent(),
   }) : uri = Value(uri),
        isTestnet = Value(isTestnet),
@@ -2690,7 +2733,7 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
        isCompleted = Value(isCompleted);
   static Insertable<PayjoinSendersData> custom({
     Expression<String>? uri,
-    Expression<bool>? isTestnet,
+    Expression<int>? isTestnet,
     Expression<String>? sender,
     Expression<String>? walletId,
     Expression<String>? originalPsbt,
@@ -2700,8 +2743,8 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
     Expression<int>? expireAfterSec,
     Expression<String>? proposalPsbt,
     Expression<String>? txId,
-    Expression<bool>? isExpired,
-    Expression<bool>? isCompleted,
+    Expression<int>? isExpired,
+    Expression<int>? isCompleted,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2724,7 +2767,7 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
 
   PayjoinSendersCompanion copyWith({
     Value<String>? uri,
-    Value<bool>? isTestnet,
+    Value<int>? isTestnet,
     Value<String>? sender,
     Value<String>? walletId,
     Value<String>? originalPsbt,
@@ -2734,8 +2777,8 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
     Value<int>? expireAfterSec,
     Value<String?>? proposalPsbt,
     Value<String?>? txId,
-    Value<bool>? isExpired,
-    Value<bool>? isCompleted,
+    Value<int>? isExpired,
+    Value<int>? isCompleted,
     Value<int>? rowid,
   }) {
     return PayjoinSendersCompanion(
@@ -2763,7 +2806,7 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
       map['uri'] = Variable<String>(uri.value);
     }
     if (isTestnet.present) {
-      map['is_testnet'] = Variable<bool>(isTestnet.value);
+      map['is_testnet'] = Variable<int>(isTestnet.value);
     }
     if (sender.present) {
       map['sender'] = Variable<String>(sender.value);
@@ -2793,10 +2836,10 @@ class PayjoinSendersCompanion extends UpdateCompanion<PayjoinSendersData> {
       map['tx_id'] = Variable<String>(txId.value);
     }
     if (isExpired.present) {
-      map['is_expired'] = Variable<bool>(isExpired.value);
+      map['is_expired'] = Variable<int>(isExpired.value);
     }
     if (isCompleted.present) {
-      map['is_completed'] = Variable<bool>(isCompleted.value);
+      map['is_completed'] = Variable<int>(isCompleted.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -2838,6 +2881,7 @@ class PayjoinReceivers extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> address = GeneratedColumn<String>(
     'address',
@@ -2845,16 +2889,15 @@ class PayjoinReceivers extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> isTestnet = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isTestnet = GeneratedColumn<int>(
     'is_testnet',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_testnet" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_testnet IN (0, 1))',
   );
   late final GeneratedColumn<String> receiver = GeneratedColumn<String>(
     'receiver',
@@ -2862,6 +2905,7 @@ class PayjoinReceivers extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
     'wallet_id',
@@ -2869,6 +2913,7 @@ class PayjoinReceivers extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> pjUri = GeneratedColumn<String>(
     'pj_uri',
@@ -2876,21 +2921,23 @@ class PayjoinReceivers extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<BigInt> maxFeeRateSatPerVb =
-      GeneratedColumn<BigInt>(
-        'max_fee_rate_sat_per_vb',
-        aliasedName,
-        false,
-        type: DriftSqlType.bigInt,
-        requiredDuringInsert: true,
-      );
+  late final GeneratedColumn<int> maxFeeRateSatPerVb = GeneratedColumn<int>(
+    'max_fee_rate_sat_per_vb',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
   late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> expireAfterSec = GeneratedColumn<int>(
     'expire_after_sec',
@@ -2898,6 +2945,7 @@ class PayjoinReceivers extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<i2.Uint8List> originalTxBytes =
       GeneratedColumn<i2.Uint8List>(
@@ -2906,6 +2954,7 @@ class PayjoinReceivers extends Table
         true,
         type: DriftSqlType.blob,
         requiredDuringInsert: false,
+        $customConstraints: 'NULL',
       );
   late final GeneratedColumn<String> originalTxId = GeneratedColumn<String>(
     'original_tx_id',
@@ -2913,6 +2962,7 @@ class PayjoinReceivers extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> amountSat = GeneratedColumn<int>(
     'amount_sat',
@@ -2920,6 +2970,7 @@ class PayjoinReceivers extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> proposalPsbt = GeneratedColumn<String>(
     'proposal_psbt',
@@ -2927,6 +2978,7 @@ class PayjoinReceivers extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> txId = GeneratedColumn<String>(
     'tx_id',
@@ -2934,26 +2986,23 @@ class PayjoinReceivers extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<bool> isExpired = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isExpired = GeneratedColumn<int>(
     'is_expired',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_expired" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_expired IN (0, 1))',
   );
-  late final GeneratedColumn<bool> isCompleted = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isCompleted = GeneratedColumn<int>(
     'is_completed',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_completed" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_completed IN (0, 1))',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -2994,7 +3043,7 @@ class PayjoinReceivers extends Table
         data['${effectivePrefix}address'],
       )!,
       isTestnet: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_testnet'],
       )!,
       receiver: attachedDatabase.typeMapping.read(
@@ -3010,7 +3059,7 @@ class PayjoinReceivers extends Table
         data['${effectivePrefix}pj_uri'],
       )!,
       maxFeeRateSatPerVb: attachedDatabase.typeMapping.read(
-        DriftSqlType.bigInt,
+        DriftSqlType.int,
         data['${effectivePrefix}max_fee_rate_sat_per_vb'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
@@ -3042,11 +3091,11 @@ class PayjoinReceivers extends Table
         data['${effectivePrefix}tx_id'],
       ),
       isExpired: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_expired'],
       )!,
       isCompleted: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_completed'],
       )!,
     );
@@ -3056,17 +3105,22 @@ class PayjoinReceivers extends Table
   PayjoinReceivers createAlias(String alias) {
     return PayjoinReceivers(attachedDatabase, alias);
   }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class PayjoinReceiversData extends DataClass
     implements Insertable<PayjoinReceiversData> {
   final String id;
   final String address;
-  final bool isTestnet;
+  final int isTestnet;
   final String receiver;
   final String walletId;
   final String pjUri;
-  final BigInt maxFeeRateSatPerVb;
+  final int maxFeeRateSatPerVb;
   final int createdAt;
   final int expireAfterSec;
   final i2.Uint8List? originalTxBytes;
@@ -3074,8 +3128,8 @@ class PayjoinReceiversData extends DataClass
   final int? amountSat;
   final String? proposalPsbt;
   final String? txId;
-  final bool isExpired;
-  final bool isCompleted;
+  final int isExpired;
+  final int isCompleted;
   const PayjoinReceiversData({
     required this.id,
     required this.address,
@@ -3099,11 +3153,11 @@ class PayjoinReceiversData extends DataClass
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['address'] = Variable<String>(address);
-    map['is_testnet'] = Variable<bool>(isTestnet);
+    map['is_testnet'] = Variable<int>(isTestnet);
     map['receiver'] = Variable<String>(receiver);
     map['wallet_id'] = Variable<String>(walletId);
     map['pj_uri'] = Variable<String>(pjUri);
-    map['max_fee_rate_sat_per_vb'] = Variable<BigInt>(maxFeeRateSatPerVb);
+    map['max_fee_rate_sat_per_vb'] = Variable<int>(maxFeeRateSatPerVb);
     map['created_at'] = Variable<int>(createdAt);
     map['expire_after_sec'] = Variable<int>(expireAfterSec);
     if (!nullToAbsent || originalTxBytes != null) {
@@ -3121,8 +3175,8 @@ class PayjoinReceiversData extends DataClass
     if (!nullToAbsent || txId != null) {
       map['tx_id'] = Variable<String>(txId);
     }
-    map['is_expired'] = Variable<bool>(isExpired);
-    map['is_completed'] = Variable<bool>(isCompleted);
+    map['is_expired'] = Variable<int>(isExpired);
+    map['is_completed'] = Variable<int>(isCompleted);
     return map;
   }
 
@@ -3163,13 +3217,11 @@ class PayjoinReceiversData extends DataClass
     return PayjoinReceiversData(
       id: serializer.fromJson<String>(json['id']),
       address: serializer.fromJson<String>(json['address']),
-      isTestnet: serializer.fromJson<bool>(json['isTestnet']),
+      isTestnet: serializer.fromJson<int>(json['isTestnet']),
       receiver: serializer.fromJson<String>(json['receiver']),
       walletId: serializer.fromJson<String>(json['walletId']),
       pjUri: serializer.fromJson<String>(json['pjUri']),
-      maxFeeRateSatPerVb: serializer.fromJson<BigInt>(
-        json['maxFeeRateSatPerVb'],
-      ),
+      maxFeeRateSatPerVb: serializer.fromJson<int>(json['maxFeeRateSatPerVb']),
       createdAt: serializer.fromJson<int>(json['createdAt']),
       expireAfterSec: serializer.fromJson<int>(json['expireAfterSec']),
       originalTxBytes: serializer.fromJson<i2.Uint8List?>(
@@ -3179,8 +3231,8 @@ class PayjoinReceiversData extends DataClass
       amountSat: serializer.fromJson<int?>(json['amountSat']),
       proposalPsbt: serializer.fromJson<String?>(json['proposalPsbt']),
       txId: serializer.fromJson<String?>(json['txId']),
-      isExpired: serializer.fromJson<bool>(json['isExpired']),
-      isCompleted: serializer.fromJson<bool>(json['isCompleted']),
+      isExpired: serializer.fromJson<int>(json['isExpired']),
+      isCompleted: serializer.fromJson<int>(json['isCompleted']),
     );
   }
   @override
@@ -3189,11 +3241,11 @@ class PayjoinReceiversData extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'address': serializer.toJson<String>(address),
-      'isTestnet': serializer.toJson<bool>(isTestnet),
+      'isTestnet': serializer.toJson<int>(isTestnet),
       'receiver': serializer.toJson<String>(receiver),
       'walletId': serializer.toJson<String>(walletId),
       'pjUri': serializer.toJson<String>(pjUri),
-      'maxFeeRateSatPerVb': serializer.toJson<BigInt>(maxFeeRateSatPerVb),
+      'maxFeeRateSatPerVb': serializer.toJson<int>(maxFeeRateSatPerVb),
       'createdAt': serializer.toJson<int>(createdAt),
       'expireAfterSec': serializer.toJson<int>(expireAfterSec),
       'originalTxBytes': serializer.toJson<i2.Uint8List?>(originalTxBytes),
@@ -3201,19 +3253,19 @@ class PayjoinReceiversData extends DataClass
       'amountSat': serializer.toJson<int?>(amountSat),
       'proposalPsbt': serializer.toJson<String?>(proposalPsbt),
       'txId': serializer.toJson<String?>(txId),
-      'isExpired': serializer.toJson<bool>(isExpired),
-      'isCompleted': serializer.toJson<bool>(isCompleted),
+      'isExpired': serializer.toJson<int>(isExpired),
+      'isCompleted': serializer.toJson<int>(isCompleted),
     };
   }
 
   PayjoinReceiversData copyWith({
     String? id,
     String? address,
-    bool? isTestnet,
+    int? isTestnet,
     String? receiver,
     String? walletId,
     String? pjUri,
-    BigInt? maxFeeRateSatPerVb,
+    int? maxFeeRateSatPerVb,
     int? createdAt,
     int? expireAfterSec,
     Value<i2.Uint8List?> originalTxBytes = const Value.absent(),
@@ -3221,8 +3273,8 @@ class PayjoinReceiversData extends DataClass
     Value<int?> amountSat = const Value.absent(),
     Value<String?> proposalPsbt = const Value.absent(),
     Value<String?> txId = const Value.absent(),
-    bool? isExpired,
-    bool? isCompleted,
+    int? isExpired,
+    int? isCompleted,
   }) => PayjoinReceiversData(
     id: id ?? this.id,
     address: address ?? this.address,
@@ -3346,11 +3398,11 @@ class PayjoinReceiversData extends DataClass
 class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
   final Value<String> id;
   final Value<String> address;
-  final Value<bool> isTestnet;
+  final Value<int> isTestnet;
   final Value<String> receiver;
   final Value<String> walletId;
   final Value<String> pjUri;
-  final Value<BigInt> maxFeeRateSatPerVb;
+  final Value<int> maxFeeRateSatPerVb;
   final Value<int> createdAt;
   final Value<int> expireAfterSec;
   final Value<i2.Uint8List?> originalTxBytes;
@@ -3358,8 +3410,8 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
   final Value<int?> amountSat;
   final Value<String?> proposalPsbt;
   final Value<String?> txId;
-  final Value<bool> isExpired;
-  final Value<bool> isCompleted;
+  final Value<int> isExpired;
+  final Value<int> isCompleted;
   final Value<int> rowid;
   const PayjoinReceiversCompanion({
     this.id = const Value.absent(),
@@ -3383,11 +3435,11 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
   PayjoinReceiversCompanion.insert({
     required String id,
     required String address,
-    required bool isTestnet,
+    required int isTestnet,
     required String receiver,
     required String walletId,
     required String pjUri,
-    required BigInt maxFeeRateSatPerVb,
+    required int maxFeeRateSatPerVb,
     required int createdAt,
     required int expireAfterSec,
     this.originalTxBytes = const Value.absent(),
@@ -3395,8 +3447,8 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     this.amountSat = const Value.absent(),
     this.proposalPsbt = const Value.absent(),
     this.txId = const Value.absent(),
-    required bool isExpired,
-    required bool isCompleted,
+    required int isExpired,
+    required int isCompleted,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        address = Value(address),
@@ -3412,11 +3464,11 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
   static Insertable<PayjoinReceiversData> custom({
     Expression<String>? id,
     Expression<String>? address,
-    Expression<bool>? isTestnet,
+    Expression<int>? isTestnet,
     Expression<String>? receiver,
     Expression<String>? walletId,
     Expression<String>? pjUri,
-    Expression<BigInt>? maxFeeRateSatPerVb,
+    Expression<int>? maxFeeRateSatPerVb,
     Expression<int>? createdAt,
     Expression<int>? expireAfterSec,
     Expression<i2.Uint8List>? originalTxBytes,
@@ -3424,8 +3476,8 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     Expression<int>? amountSat,
     Expression<String>? proposalPsbt,
     Expression<String>? txId,
-    Expression<bool>? isExpired,
-    Expression<bool>? isCompleted,
+    Expression<int>? isExpired,
+    Expression<int>? isCompleted,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3453,11 +3505,11 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
   PayjoinReceiversCompanion copyWith({
     Value<String>? id,
     Value<String>? address,
-    Value<bool>? isTestnet,
+    Value<int>? isTestnet,
     Value<String>? receiver,
     Value<String>? walletId,
     Value<String>? pjUri,
-    Value<BigInt>? maxFeeRateSatPerVb,
+    Value<int>? maxFeeRateSatPerVb,
     Value<int>? createdAt,
     Value<int>? expireAfterSec,
     Value<i2.Uint8List?>? originalTxBytes,
@@ -3465,8 +3517,8 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     Value<int?>? amountSat,
     Value<String?>? proposalPsbt,
     Value<String?>? txId,
-    Value<bool>? isExpired,
-    Value<bool>? isCompleted,
+    Value<int>? isExpired,
+    Value<int>? isCompleted,
     Value<int>? rowid,
   }) {
     return PayjoinReceiversCompanion(
@@ -3500,7 +3552,7 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
       map['address'] = Variable<String>(address.value);
     }
     if (isTestnet.present) {
-      map['is_testnet'] = Variable<bool>(isTestnet.value);
+      map['is_testnet'] = Variable<int>(isTestnet.value);
     }
     if (receiver.present) {
       map['receiver'] = Variable<String>(receiver.value);
@@ -3512,9 +3564,7 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
       map['pj_uri'] = Variable<String>(pjUri.value);
     }
     if (maxFeeRateSatPerVb.present) {
-      map['max_fee_rate_sat_per_vb'] = Variable<BigInt>(
-        maxFeeRateSatPerVb.value,
-      );
+      map['max_fee_rate_sat_per_vb'] = Variable<int>(maxFeeRateSatPerVb.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<int>(createdAt.value);
@@ -3538,10 +3588,10 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
       map['tx_id'] = Variable<String>(txId.value);
     }
     if (isExpired.present) {
-      map['is_expired'] = Variable<bool>(isExpired.value);
+      map['is_expired'] = Variable<int>(isExpired.value);
     }
     if (isCompleted.present) {
-      map['is_completed'] = Variable<bool>(isCompleted.value);
+      map['is_completed'] = Variable<int>(isCompleted.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -3586,26 +3636,23 @@ class ElectrumServers extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> isTestnet = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isTestnet = GeneratedColumn<int>(
     'is_testnet',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_testnet" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_testnet IN (0, 1))',
   );
-  late final GeneratedColumn<bool> isLiquid = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isLiquid = GeneratedColumn<int>(
     'is_liquid',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_liquid" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_liquid IN (0, 1))',
   );
   late final GeneratedColumn<int> priority = GeneratedColumn<int>(
     'priority',
@@ -3613,16 +3660,15 @@ class ElectrumServers extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> isCustom = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isCustom = GeneratedColumn<int>(
     'is_custom',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_custom" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_custom IN (0, 1))',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -3648,11 +3694,11 @@ class ElectrumServers extends Table
         data['${effectivePrefix}url'],
       )!,
       isTestnet: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_testnet'],
       )!,
       isLiquid: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_liquid'],
       )!,
       priority: attachedDatabase.typeMapping.read(
@@ -3660,7 +3706,7 @@ class ElectrumServers extends Table
         data['${effectivePrefix}priority'],
       )!,
       isCustom: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_custom'],
       )!,
     );
@@ -3670,15 +3716,20 @@ class ElectrumServers extends Table
   ElectrumServers createAlias(String alias) {
     return ElectrumServers(attachedDatabase, alias);
   }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(url)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class ElectrumServersData extends DataClass
     implements Insertable<ElectrumServersData> {
   final String url;
-  final bool isTestnet;
-  final bool isLiquid;
+  final int isTestnet;
+  final int isLiquid;
   final int priority;
-  final bool isCustom;
+  final int isCustom;
   const ElectrumServersData({
     required this.url,
     required this.isTestnet,
@@ -3690,10 +3741,10 @@ class ElectrumServersData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['url'] = Variable<String>(url);
-    map['is_testnet'] = Variable<bool>(isTestnet);
-    map['is_liquid'] = Variable<bool>(isLiquid);
+    map['is_testnet'] = Variable<int>(isTestnet);
+    map['is_liquid'] = Variable<int>(isLiquid);
     map['priority'] = Variable<int>(priority);
-    map['is_custom'] = Variable<bool>(isCustom);
+    map['is_custom'] = Variable<int>(isCustom);
     return map;
   }
 
@@ -3714,10 +3765,10 @@ class ElectrumServersData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ElectrumServersData(
       url: serializer.fromJson<String>(json['url']),
-      isTestnet: serializer.fromJson<bool>(json['isTestnet']),
-      isLiquid: serializer.fromJson<bool>(json['isLiquid']),
+      isTestnet: serializer.fromJson<int>(json['isTestnet']),
+      isLiquid: serializer.fromJson<int>(json['isLiquid']),
       priority: serializer.fromJson<int>(json['priority']),
-      isCustom: serializer.fromJson<bool>(json['isCustom']),
+      isCustom: serializer.fromJson<int>(json['isCustom']),
     );
   }
   @override
@@ -3725,19 +3776,19 @@ class ElectrumServersData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'url': serializer.toJson<String>(url),
-      'isTestnet': serializer.toJson<bool>(isTestnet),
-      'isLiquid': serializer.toJson<bool>(isLiquid),
+      'isTestnet': serializer.toJson<int>(isTestnet),
+      'isLiquid': serializer.toJson<int>(isLiquid),
       'priority': serializer.toJson<int>(priority),
-      'isCustom': serializer.toJson<bool>(isCustom),
+      'isCustom': serializer.toJson<int>(isCustom),
     };
   }
 
   ElectrumServersData copyWith({
     String? url,
-    bool? isTestnet,
-    bool? isLiquid,
+    int? isTestnet,
+    int? isLiquid,
     int? priority,
-    bool? isCustom,
+    int? isCustom,
   }) => ElectrumServersData(
     url: url ?? this.url,
     isTestnet: isTestnet ?? this.isTestnet,
@@ -3782,10 +3833,10 @@ class ElectrumServersData extends DataClass
 
 class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
   final Value<String> url;
-  final Value<bool> isTestnet;
-  final Value<bool> isLiquid;
+  final Value<int> isTestnet;
+  final Value<int> isLiquid;
   final Value<int> priority;
-  final Value<bool> isCustom;
+  final Value<int> isCustom;
   final Value<int> rowid;
   const ElectrumServersCompanion({
     this.url = const Value.absent(),
@@ -3797,10 +3848,10 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
   });
   ElectrumServersCompanion.insert({
     required String url,
-    required bool isTestnet,
-    required bool isLiquid,
+    required int isTestnet,
+    required int isLiquid,
     required int priority,
-    required bool isCustom,
+    required int isCustom,
     this.rowid = const Value.absent(),
   }) : url = Value(url),
        isTestnet = Value(isTestnet),
@@ -3809,10 +3860,10 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
        isCustom = Value(isCustom);
   static Insertable<ElectrumServersData> custom({
     Expression<String>? url,
-    Expression<bool>? isTestnet,
-    Expression<bool>? isLiquid,
+    Expression<int>? isTestnet,
+    Expression<int>? isLiquid,
     Expression<int>? priority,
-    Expression<bool>? isCustom,
+    Expression<int>? isCustom,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3827,10 +3878,10 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
 
   ElectrumServersCompanion copyWith({
     Value<String>? url,
-    Value<bool>? isTestnet,
-    Value<bool>? isLiquid,
+    Value<int>? isTestnet,
+    Value<int>? isLiquid,
     Value<int>? priority,
-    Value<bool>? isCustom,
+    Value<int>? isCustom,
     Value<int>? rowid,
   }) {
     return ElectrumServersCompanion(
@@ -3850,16 +3901,16 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
       map['url'] = Variable<String>(url.value);
     }
     if (isTestnet.present) {
-      map['is_testnet'] = Variable<bool>(isTestnet.value);
+      map['is_testnet'] = Variable<int>(isTestnet.value);
     }
     if (isLiquid.present) {
-      map['is_liquid'] = Variable<bool>(isLiquid.value);
+      map['is_liquid'] = Variable<int>(isLiquid.value);
     }
     if (priority.present) {
       map['priority'] = Variable<int>(priority.value);
     }
     if (isCustom.present) {
-      map['is_custom'] = Variable<bool>(isCustom.value);
+      map['is_custom'] = Variable<int>(isCustom.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -3893,16 +3944,15 @@ class ElectrumSettings extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> validateDomain = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> validateDomain = GeneratedColumn<int>(
     'validate_domain',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("validate_domain" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (validate_domain IN (0, 1))',
   );
   late final GeneratedColumn<int> stopGap = GeneratedColumn<int>(
     'stop_gap',
@@ -3910,6 +3960,7 @@ class ElectrumSettings extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> timeout = GeneratedColumn<int>(
     'timeout',
@@ -3917,6 +3968,7 @@ class ElectrumSettings extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> retry = GeneratedColumn<int>(
     'retry',
@@ -3924,6 +3976,7 @@ class ElectrumSettings extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> socks5 = GeneratedColumn<String>(
     'socks5',
@@ -3931,6 +3984,7 @@ class ElectrumSettings extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -3957,7 +4011,7 @@ class ElectrumSettings extends Table
         data['${effectivePrefix}network'],
       )!,
       validateDomain: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}validate_domain'],
       )!,
       stopGap: attachedDatabase.typeMapping.read(
@@ -3983,12 +4037,17 @@ class ElectrumSettings extends Table
   ElectrumSettings createAlias(String alias) {
     return ElectrumSettings(attachedDatabase, alias);
   }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(network)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class ElectrumSettingsData extends DataClass
     implements Insertable<ElectrumSettingsData> {
   final String network;
-  final bool validateDomain;
+  final int validateDomain;
   final int stopGap;
   final int timeout;
   final int retry;
@@ -4005,7 +4064,7 @@ class ElectrumSettingsData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['network'] = Variable<String>(network);
-    map['validate_domain'] = Variable<bool>(validateDomain);
+    map['validate_domain'] = Variable<int>(validateDomain);
     map['stop_gap'] = Variable<int>(stopGap);
     map['timeout'] = Variable<int>(timeout);
     map['retry'] = Variable<int>(retry);
@@ -4035,7 +4094,7 @@ class ElectrumSettingsData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ElectrumSettingsData(
       network: serializer.fromJson<String>(json['network']),
-      validateDomain: serializer.fromJson<bool>(json['validateDomain']),
+      validateDomain: serializer.fromJson<int>(json['validateDomain']),
       stopGap: serializer.fromJson<int>(json['stopGap']),
       timeout: serializer.fromJson<int>(json['timeout']),
       retry: serializer.fromJson<int>(json['retry']),
@@ -4047,7 +4106,7 @@ class ElectrumSettingsData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'network': serializer.toJson<String>(network),
-      'validateDomain': serializer.toJson<bool>(validateDomain),
+      'validateDomain': serializer.toJson<int>(validateDomain),
       'stopGap': serializer.toJson<int>(stopGap),
       'timeout': serializer.toJson<int>(timeout),
       'retry': serializer.toJson<int>(retry),
@@ -4057,7 +4116,7 @@ class ElectrumSettingsData extends DataClass
 
   ElectrumSettingsData copyWith({
     String? network,
-    bool? validateDomain,
+    int? validateDomain,
     int? stopGap,
     int? timeout,
     int? retry,
@@ -4113,7 +4172,7 @@ class ElectrumSettingsData extends DataClass
 
 class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
   final Value<String> network;
-  final Value<bool> validateDomain;
+  final Value<int> validateDomain;
   final Value<int> stopGap;
   final Value<int> timeout;
   final Value<int> retry;
@@ -4130,7 +4189,7 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
   });
   ElectrumSettingsCompanion.insert({
     required String network,
-    required bool validateDomain,
+    required int validateDomain,
     required int stopGap,
     required int timeout,
     required int retry,
@@ -4143,7 +4202,7 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
        retry = Value(retry);
   static Insertable<ElectrumSettingsData> custom({
     Expression<String>? network,
-    Expression<bool>? validateDomain,
+    Expression<int>? validateDomain,
     Expression<int>? stopGap,
     Expression<int>? timeout,
     Expression<int>? retry,
@@ -4163,7 +4222,7 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
 
   ElectrumSettingsCompanion copyWith({
     Value<String>? network,
-    Value<bool>? validateDomain,
+    Value<int>? validateDomain,
     Value<int>? stopGap,
     Value<int>? timeout,
     Value<int>? retry,
@@ -4188,7 +4247,7 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
       map['network'] = Variable<String>(network.value);
     }
     if (validateDomain.present) {
-      map['validate_domain'] = Variable<bool>(validateDomain.value);
+      map['validate_domain'] = Variable<int>(validateDomain.value);
     }
     if (stopGap.present) {
       map['stop_gap'] = Variable<int>(stopGap.value);
@@ -4232,12 +4291,9 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     'id',
     aliasedName,
     false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 12,
-      maxTextLength: 12,
-    ),
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
     'type',
@@ -4245,6 +4301,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> direction = GeneratedColumn<String>(
     'direction',
@@ -4252,6 +4309,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
     'status',
@@ -4259,16 +4317,15 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> isTestnet = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isTestnet = GeneratedColumn<int>(
     'is_testnet',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_testnet" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_testnet IN (0, 1))',
   );
   late final GeneratedColumn<int> keyIndex = GeneratedColumn<int>(
     'key_index',
@@ -4276,6 +4333,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> creationTime = GeneratedColumn<int>(
     'creation_time',
@@ -4283,6 +4341,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> completionTime = GeneratedColumn<int>(
     'completion_time',
@@ -4290,6 +4349,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> receiveWalletId = GeneratedColumn<String>(
     'receive_wallet_id',
@@ -4297,6 +4357,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> sendWalletId = GeneratedColumn<String>(
     'send_wallet_id',
@@ -4304,6 +4365,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> invoice = GeneratedColumn<String>(
     'invoice',
@@ -4311,6 +4373,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> paymentAddress = GeneratedColumn<String>(
     'payment_address',
@@ -4318,6 +4381,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> paymentAmount = GeneratedColumn<int>(
     'payment_amount',
@@ -4325,6 +4389,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> receiveAddress = GeneratedColumn<String>(
     'receive_address',
@@ -4332,6 +4397,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> receiveTxid = GeneratedColumn<String>(
     'receive_txid',
@@ -4339,6 +4405,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> sendTxid = GeneratedColumn<String>(
     'send_txid',
@@ -4346,6 +4413,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> preimage = GeneratedColumn<String>(
     'preimage',
@@ -4353,6 +4421,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> refundAddress = GeneratedColumn<String>(
     'refund_address',
@@ -4360,6 +4429,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> refundTxid = GeneratedColumn<String>(
     'refund_txid',
@@ -4367,6 +4437,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> boltzFees = GeneratedColumn<int>(
     'boltz_fees',
@@ -4374,6 +4445,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> lockupFees = GeneratedColumn<int>(
     'lockup_fees',
@@ -4381,6 +4453,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> claimFees = GeneratedColumn<int>(
     'claim_fees',
@@ -4388,6 +4461,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> serverNetworkFees = GeneratedColumn<int>(
     'server_network_fees',
@@ -4395,6 +4469,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -4450,7 +4525,7 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
         data['${effectivePrefix}status'],
       )!,
       isTestnet: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_testnet'],
       )!,
       keyIndex: attachedDatabase.typeMapping.read(
@@ -4532,6 +4607,11 @@ class Swaps extends Table with TableInfo<Swaps, SwapsData> {
   Swaps createAlias(String alias) {
     return Swaps(attachedDatabase, alias);
   }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class SwapsData extends DataClass implements Insertable<SwapsData> {
@@ -4539,7 +4619,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
   final String type;
   final String direction;
   final String status;
-  final bool isTestnet;
+  final int isTestnet;
   final int keyIndex;
   final int creationTime;
   final int? completionTime;
@@ -4590,7 +4670,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
     map['type'] = Variable<String>(type);
     map['direction'] = Variable<String>(direction);
     map['status'] = Variable<String>(status);
-    map['is_testnet'] = Variable<bool>(isTestnet);
+    map['is_testnet'] = Variable<int>(isTestnet);
     map['key_index'] = Variable<int>(keyIndex);
     map['creation_time'] = Variable<int>(creationTime);
     if (!nullToAbsent || completionTime != null) {
@@ -4714,7 +4794,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       type: serializer.fromJson<String>(json['type']),
       direction: serializer.fromJson<String>(json['direction']),
       status: serializer.fromJson<String>(json['status']),
-      isTestnet: serializer.fromJson<bool>(json['isTestnet']),
+      isTestnet: serializer.fromJson<int>(json['isTestnet']),
       keyIndex: serializer.fromJson<int>(json['keyIndex']),
       creationTime: serializer.fromJson<int>(json['creationTime']),
       completionTime: serializer.fromJson<int?>(json['completionTime']),
@@ -4743,7 +4823,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
       'type': serializer.toJson<String>(type),
       'direction': serializer.toJson<String>(direction),
       'status': serializer.toJson<String>(status),
-      'isTestnet': serializer.toJson<bool>(isTestnet),
+      'isTestnet': serializer.toJson<int>(isTestnet),
       'keyIndex': serializer.toJson<int>(keyIndex),
       'creationTime': serializer.toJson<int>(creationTime),
       'completionTime': serializer.toJson<int?>(completionTime),
@@ -4770,7 +4850,7 @@ class SwapsData extends DataClass implements Insertable<SwapsData> {
     String? type,
     String? direction,
     String? status,
-    bool? isTestnet,
+    int? isTestnet,
     int? keyIndex,
     int? creationTime,
     Value<int?> completionTime = const Value.absent(),
@@ -4970,7 +5050,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
   final Value<String> type;
   final Value<String> direction;
   final Value<String> status;
-  final Value<bool> isTestnet;
+  final Value<int> isTestnet;
   final Value<int> keyIndex;
   final Value<int> creationTime;
   final Value<int?> completionTime;
@@ -5021,7 +5101,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     required String type,
     required String direction,
     required String status,
-    required bool isTestnet,
+    required int isTestnet,
     required int keyIndex,
     required int creationTime,
     this.completionTime = const Value.absent(),
@@ -5053,7 +5133,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     Expression<String>? type,
     Expression<String>? direction,
     Expression<String>? status,
-    Expression<bool>? isTestnet,
+    Expression<int>? isTestnet,
     Expression<int>? keyIndex,
     Expression<int>? creationTime,
     Expression<int>? completionTime,
@@ -5107,7 +5187,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
     Value<String>? type,
     Value<String>? direction,
     Value<String>? status,
-    Value<bool>? isTestnet,
+    Value<int>? isTestnet,
     Value<int>? keyIndex,
     Value<int>? creationTime,
     Value<int?>? completionTime,
@@ -5172,7 +5252,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
       map['status'] = Variable<String>(status.value);
     }
     if (isTestnet.present) {
-      map['is_testnet'] = Variable<bool>(isTestnet.value);
+      map['is_testnet'] = Variable<int>(isTestnet.value);
     }
     if (keyIndex.present) {
       map['key_index'] = Variable<int>(keyIndex.value);
@@ -5278,19 +5358,15 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
     hasAutoIncrement: true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
+    $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
   );
-  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> enabled = GeneratedColumn<int>(
     'enabled',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("enabled" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (enabled IN (0, 1))',
     defaultValue: const CustomExpression('1'),
   );
   late final GeneratedColumn<int> balanceThresholdSats = GeneratedColumn<int>(
@@ -5299,6 +5375,7 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<double> feeThresholdPercent =
       GeneratedColumn<double>(
@@ -5307,28 +5384,25 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
         false,
         type: DriftSqlType.double,
         requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
       );
-  late final GeneratedColumn<bool> blockTillNextExecution =
-      GeneratedColumn<bool>(
-        'block_till_next_execution',
-        aliasedName,
-        false,
-        type: DriftSqlType.bool,
-        requiredDuringInsert: false,
-        defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("block_till_next_execution" IN (0, 1))',
-        ),
-        defaultValue: const CustomExpression('0'),
-      );
-  late final GeneratedColumn<bool> alwaysBlock = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> blockTillNextExecution = GeneratedColumn<int>(
+    'block_till_next_execution',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (block_till_next_execution IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<int> alwaysBlock = GeneratedColumn<int>(
     'always_block',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("always_block" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (always_block IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
   late final GeneratedColumn<String> recipientWalletId =
@@ -5338,16 +5412,15 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
         true,
         type: DriftSqlType.string,
         requiredDuringInsert: false,
+        $customConstraints: 'NULL',
       );
-  late final GeneratedColumn<bool> showWarning = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> showWarning = GeneratedColumn<int>(
     'show_warning',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("show_warning" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (show_warning IN (0, 1))',
     defaultValue: const CustomExpression('1'),
   );
   @override
@@ -5377,7 +5450,7 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
         data['${effectivePrefix}id'],
       )!,
       enabled: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}enabled'],
       )!,
       balanceThresholdSats: attachedDatabase.typeMapping.read(
@@ -5389,11 +5462,11 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
         data['${effectivePrefix}fee_threshold_percent'],
       )!,
       blockTillNextExecution: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}block_till_next_execution'],
       )!,
       alwaysBlock: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}always_block'],
       )!,
       recipientWalletId: attachedDatabase.typeMapping.read(
@@ -5401,7 +5474,7 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
         data['${effectivePrefix}recipient_wallet_id'],
       ),
       showWarning: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}show_warning'],
       )!,
     );
@@ -5411,17 +5484,20 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
   AutoSwap createAlias(String alias) {
     return AutoSwap(attachedDatabase, alias);
   }
+
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   final int id;
-  final bool enabled;
+  final int enabled;
   final int balanceThresholdSats;
   final double feeThresholdPercent;
-  final bool blockTillNextExecution;
-  final bool alwaysBlock;
+  final int blockTillNextExecution;
+  final int alwaysBlock;
   final String? recipientWalletId;
-  final bool showWarning;
+  final int showWarning;
   const AutoSwapData({
     required this.id,
     required this.enabled,
@@ -5436,15 +5512,15 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['enabled'] = Variable<bool>(enabled);
+    map['enabled'] = Variable<int>(enabled);
     map['balance_threshold_sats'] = Variable<int>(balanceThresholdSats);
     map['fee_threshold_percent'] = Variable<double>(feeThresholdPercent);
-    map['block_till_next_execution'] = Variable<bool>(blockTillNextExecution);
-    map['always_block'] = Variable<bool>(alwaysBlock);
+    map['block_till_next_execution'] = Variable<int>(blockTillNextExecution);
+    map['always_block'] = Variable<int>(alwaysBlock);
     if (!nullToAbsent || recipientWalletId != null) {
       map['recipient_wallet_id'] = Variable<String>(recipientWalletId);
     }
-    map['show_warning'] = Variable<bool>(showWarning);
+    map['show_warning'] = Variable<int>(showWarning);
     return map;
   }
 
@@ -5470,21 +5546,21 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return AutoSwapData(
       id: serializer.fromJson<int>(json['id']),
-      enabled: serializer.fromJson<bool>(json['enabled']),
+      enabled: serializer.fromJson<int>(json['enabled']),
       balanceThresholdSats: serializer.fromJson<int>(
         json['balanceThresholdSats'],
       ),
       feeThresholdPercent: serializer.fromJson<double>(
         json['feeThresholdPercent'],
       ),
-      blockTillNextExecution: serializer.fromJson<bool>(
+      blockTillNextExecution: serializer.fromJson<int>(
         json['blockTillNextExecution'],
       ),
-      alwaysBlock: serializer.fromJson<bool>(json['alwaysBlock']),
+      alwaysBlock: serializer.fromJson<int>(json['alwaysBlock']),
       recipientWalletId: serializer.fromJson<String?>(
         json['recipientWalletId'],
       ),
-      showWarning: serializer.fromJson<bool>(json['showWarning']),
+      showWarning: serializer.fromJson<int>(json['showWarning']),
     );
   }
   @override
@@ -5492,25 +5568,25 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'enabled': serializer.toJson<bool>(enabled),
+      'enabled': serializer.toJson<int>(enabled),
       'balanceThresholdSats': serializer.toJson<int>(balanceThresholdSats),
       'feeThresholdPercent': serializer.toJson<double>(feeThresholdPercent),
-      'blockTillNextExecution': serializer.toJson<bool>(blockTillNextExecution),
-      'alwaysBlock': serializer.toJson<bool>(alwaysBlock),
+      'blockTillNextExecution': serializer.toJson<int>(blockTillNextExecution),
+      'alwaysBlock': serializer.toJson<int>(alwaysBlock),
       'recipientWalletId': serializer.toJson<String?>(recipientWalletId),
-      'showWarning': serializer.toJson<bool>(showWarning),
+      'showWarning': serializer.toJson<int>(showWarning),
     };
   }
 
   AutoSwapData copyWith({
     int? id,
-    bool? enabled,
+    int? enabled,
     int? balanceThresholdSats,
     double? feeThresholdPercent,
-    bool? blockTillNextExecution,
-    bool? alwaysBlock,
+    int? blockTillNextExecution,
+    int? alwaysBlock,
     Value<String?> recipientWalletId = const Value.absent(),
-    bool? showWarning,
+    int? showWarning,
   }) => AutoSwapData(
     id: id ?? this.id,
     enabled: enabled ?? this.enabled,
@@ -5591,13 +5667,13 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
 
 class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
   final Value<int> id;
-  final Value<bool> enabled;
+  final Value<int> enabled;
   final Value<int> balanceThresholdSats;
   final Value<double> feeThresholdPercent;
-  final Value<bool> blockTillNextExecution;
-  final Value<bool> alwaysBlock;
+  final Value<int> blockTillNextExecution;
+  final Value<int> alwaysBlock;
   final Value<String?> recipientWalletId;
-  final Value<bool> showWarning;
+  final Value<int> showWarning;
   const AutoSwapCompanion({
     this.id = const Value.absent(),
     this.enabled = const Value.absent(),
@@ -5621,13 +5697,13 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
        feeThresholdPercent = Value(feeThresholdPercent);
   static Insertable<AutoSwapData> custom({
     Expression<int>? id,
-    Expression<bool>? enabled,
+    Expression<int>? enabled,
     Expression<int>? balanceThresholdSats,
     Expression<double>? feeThresholdPercent,
-    Expression<bool>? blockTillNextExecution,
-    Expression<bool>? alwaysBlock,
+    Expression<int>? blockTillNextExecution,
+    Expression<int>? alwaysBlock,
     Expression<String>? recipientWalletId,
-    Expression<bool>? showWarning,
+    Expression<int>? showWarning,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -5646,13 +5722,13 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
 
   AutoSwapCompanion copyWith({
     Value<int>? id,
-    Value<bool>? enabled,
+    Value<int>? enabled,
     Value<int>? balanceThresholdSats,
     Value<double>? feeThresholdPercent,
-    Value<bool>? blockTillNextExecution,
-    Value<bool>? alwaysBlock,
+    Value<int>? blockTillNextExecution,
+    Value<int>? alwaysBlock,
     Value<String?>? recipientWalletId,
-    Value<bool>? showWarning,
+    Value<int>? showWarning,
   }) {
     return AutoSwapCompanion(
       id: id ?? this.id,
@@ -5674,7 +5750,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
       map['id'] = Variable<int>(id.value);
     }
     if (enabled.present) {
-      map['enabled'] = Variable<bool>(enabled.value);
+      map['enabled'] = Variable<int>(enabled.value);
     }
     if (balanceThresholdSats.present) {
       map['balance_threshold_sats'] = Variable<int>(balanceThresholdSats.value);
@@ -5685,18 +5761,18 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
       );
     }
     if (blockTillNextExecution.present) {
-      map['block_till_next_execution'] = Variable<bool>(
+      map['block_till_next_execution'] = Variable<int>(
         blockTillNextExecution.value,
       );
     }
     if (alwaysBlock.present) {
-      map['always_block'] = Variable<bool>(alwaysBlock.value);
+      map['always_block'] = Variable<int>(alwaysBlock.value);
     }
     if (recipientWalletId.present) {
       map['recipient_wallet_id'] = Variable<String>(recipientWalletId.value);
     }
     if (showWarning.present) {
-      map['show_warning'] = Variable<bool>(showWarning.value);
+      map['show_warning'] = Variable<int>(showWarning.value);
     }
     return map;
   }
@@ -5729,6 +5805,7 @@ class Bip85Derivations extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> xprvFingerprint = GeneratedColumn<String>(
     'xprv_fingerprint',
@@ -5736,6 +5813,7 @@ class Bip85Derivations extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> application = GeneratedColumn<String>(
     'application',
@@ -5743,6 +5821,7 @@ class Bip85Derivations extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
     'status',
@@ -5750,6 +5829,7 @@ class Bip85Derivations extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> alias = GeneratedColumn<String>(
     'alias',
@@ -5757,6 +5837,7 @@ class Bip85Derivations extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -5804,6 +5885,11 @@ class Bip85Derivations extends Table
   Bip85Derivations createAlias(String alias) {
     return Bip85Derivations(attachedDatabase, alias);
   }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(path)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class Bip85DerivationsData extends DataClass
@@ -6035,9 +6121,7 @@ class Recoverbull extends Table with TableInfo<Recoverbull, RecoverbullData> {
     hasAutoIncrement: true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
+    $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
   );
   late final GeneratedColumn<String> url = GeneratedColumn<String>(
     'url',
@@ -6045,16 +6129,15 @@ class Recoverbull extends Table with TableInfo<Recoverbull, RecoverbullData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> isPermissionGranted = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isPermissionGranted = GeneratedColumn<int>(
     'is_permission_granted',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_permission_granted" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_permission_granted IN (0, 1))',
   );
   @override
   List<GeneratedColumn> get $columns => [id, url, isPermissionGranted];
@@ -6078,7 +6161,7 @@ class Recoverbull extends Table with TableInfo<Recoverbull, RecoverbullData> {
         data['${effectivePrefix}url'],
       )!,
       isPermissionGranted: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_permission_granted'],
       )!,
     );
@@ -6088,12 +6171,15 @@ class Recoverbull extends Table with TableInfo<Recoverbull, RecoverbullData> {
   Recoverbull createAlias(String alias) {
     return Recoverbull(attachedDatabase, alias);
   }
+
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
   final int id;
   final String url;
-  final bool isPermissionGranted;
+  final int isPermissionGranted;
   const RecoverbullData({
     required this.id,
     required this.url,
@@ -6104,7 +6190,7 @@ class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['url'] = Variable<String>(url);
-    map['is_permission_granted'] = Variable<bool>(isPermissionGranted);
+    map['is_permission_granted'] = Variable<int>(isPermissionGranted);
     return map;
   }
 
@@ -6124,7 +6210,7 @@ class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
     return RecoverbullData(
       id: serializer.fromJson<int>(json['id']),
       url: serializer.fromJson<String>(json['url']),
-      isPermissionGranted: serializer.fromJson<bool>(
+      isPermissionGranted: serializer.fromJson<int>(
         json['isPermissionGranted'],
       ),
     );
@@ -6135,11 +6221,11 @@ class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'url': serializer.toJson<String>(url),
-      'isPermissionGranted': serializer.toJson<bool>(isPermissionGranted),
+      'isPermissionGranted': serializer.toJson<int>(isPermissionGranted),
     };
   }
 
-  RecoverbullData copyWith({int? id, String? url, bool? isPermissionGranted}) =>
+  RecoverbullData copyWith({int? id, String? url, int? isPermissionGranted}) =>
       RecoverbullData(
         id: id ?? this.id,
         url: url ?? this.url,
@@ -6179,7 +6265,7 @@ class RecoverbullData extends DataClass implements Insertable<RecoverbullData> {
 class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
   final Value<int> id;
   final Value<String> url;
-  final Value<bool> isPermissionGranted;
+  final Value<int> isPermissionGranted;
   const RecoverbullCompanion({
     this.id = const Value.absent(),
     this.url = const Value.absent(),
@@ -6188,13 +6274,13 @@ class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
   RecoverbullCompanion.insert({
     this.id = const Value.absent(),
     required String url,
-    required bool isPermissionGranted,
+    required int isPermissionGranted,
   }) : url = Value(url),
        isPermissionGranted = Value(isPermissionGranted);
   static Insertable<RecoverbullData> custom({
     Expression<int>? id,
     Expression<String>? url,
-    Expression<bool>? isPermissionGranted,
+    Expression<int>? isPermissionGranted,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -6207,7 +6293,7 @@ class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
   RecoverbullCompanion copyWith({
     Value<int>? id,
     Value<String>? url,
-    Value<bool>? isPermissionGranted,
+    Value<int>? isPermissionGranted,
   }) {
     return RecoverbullCompanion(
       id: id ?? this.id,
@@ -6226,7 +6312,7 @@ class RecoverbullCompanion extends UpdateCompanion<RecoverbullData> {
       map['url'] = Variable<String>(url.value);
     }
     if (isPermissionGranted.present) {
-      map['is_permission_granted'] = Variable<bool>(isPermissionGranted.value);
+      map['is_permission_granted'] = Variable<int>(isPermissionGranted.value);
     }
     return map;
   }
@@ -6254,9 +6340,7 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
     hasAutoIncrement: true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
+    $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
   );
   late final GeneratedColumn<String> fromCurrency = GeneratedColumn<String>(
     'from_currency',
@@ -6264,6 +6348,7 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> toCurrency = GeneratedColumn<String>(
     'to_currency',
@@ -6271,6 +6356,7 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> interval = GeneratedColumn<String>(
     'interval',
@@ -6278,6 +6364,7 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<double> marketPrice = GeneratedColumn<double>(
     'market_price',
@@ -6285,6 +6372,7 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<double> price = GeneratedColumn<double>(
     'price',
@@ -6292,6 +6380,7 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> priceCurrency = GeneratedColumn<String>(
     'price_currency',
@@ -6299,6 +6388,7 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> precision = GeneratedColumn<int>(
     'precision',
@@ -6306,6 +6396,7 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<double> indexPrice = GeneratedColumn<double>(
     'index_price',
@@ -6313,6 +6404,7 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<double> userPrice = GeneratedColumn<double>(
     'user_price',
@@ -6320,6 +6412,7 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
     'created_at',
@@ -6327,6 +6420,7 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -6408,6 +6502,13 @@ class Prices extends Table with TableInfo<Prices, PricesData> {
   Prices createAlias(String alias) {
     return Prices(attachedDatabase, alias);
   }
+
+  @override
+  List<String> get customConstraints => const [
+    'UNIQUE(from_currency, to_currency, interval, created_at)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class PricesData extends DataClass implements Insertable<PricesData> {
