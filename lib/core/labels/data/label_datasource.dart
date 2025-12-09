@@ -1,4 +1,6 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
+import 'package:bb_mobile/core/labels/system_label.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart';
 
@@ -31,18 +33,25 @@ class LabelDatasource {
   }
 
   Future<List<LabelModel>> fetchByLabel({required String label}) async {
-    final labelModels =
-        await _sqlite.managers.labels.filter((l) => l.label(label)).get();
+    final labelModels = await _sqlite.managers.labels
+        .filter((l) => l.label(label))
+        .get();
     return labelModels.map((row) => LabelModel.fromSqlite(row)).toList();
   }
 
   Future<List<LabelModel>> fetchByRef(String ref) async {
-    final labelModels =
-        await _sqlite.managers.labels.filter((l) => l.ref(ref)).get();
+    final labelModels = await _sqlite.managers.labels
+        .filter((l) => l.ref(ref))
+        .get();
     return labelModels.map((row) => LabelModel.fromSqlite(row)).toList();
   }
 
   Future<void> trashByLabel({required String label}) async {
+    try {
+      SystemLabel.fromLabel(label);
+      throw BullException('System label cannot be deleted');
+    } catch (_) {}
+
     await _sqlite.managers.labels.filter((l) => l.label(label)).delete();
   }
 
@@ -51,6 +60,11 @@ class LabelDatasource {
   }
 
   Future<void> trashLabel(LabelModel label) async {
+    try {
+      SystemLabel.fromLabel(label.label);
+      throw BullException('System label cannot be deleted');
+    } catch (_) {}
+
     await _sqlite.managers.labels
         .filter((l) => l.ref(label.ref) & l.label(label.label))
         .delete();
@@ -62,9 +76,10 @@ class LabelDatasource {
   }
 
   Future<List<String>> fetchDistinct() async {
-    final rows =
-        await (_sqlite.selectOnly(_sqlite.labels, distinct: true)
-          ..addColumns([_sqlite.labels.label])).get();
+    final rows = await (_sqlite.selectOnly(
+      _sqlite.labels,
+      distinct: true,
+    )..addColumns([_sqlite.labels.label])).get();
     return rows.map((row) => row.read<String>(_sqlite.labels.label)!).toList();
   }
 
