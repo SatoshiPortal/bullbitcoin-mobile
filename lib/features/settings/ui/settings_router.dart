@@ -173,16 +173,7 @@ class SettingsRouter {
         path: SettingsRoute.theme.path,
         builder: (context, state) => const ThemeSettingsScreen(),
       ),
-      GoRoute(
-        name: SettingsRoute.language.name,
-        path: SettingsRoute.language.path,
-        builder: (context, state) => const LanguageSettingsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.autoswapSettings.name,
-        path: SettingsRoute.autoswapSettings.path,
-        builder: (context, state) => const AutoSwapSettingsScreen(),
-      ),
+
       GoRoute(
         path: SettingsRoute.pinCode.path,
         name: SettingsRoute.pinCode.name,
@@ -196,6 +187,11 @@ class SettingsRouter {
           BackupSettingsSettingsRouter.route,
           TestWalletBackupRouter.route,
         ],
+      ),
+      GoRoute(
+        name: SettingsRoute.autoswapSettings.name,
+        path: SettingsRoute.autoswapSettings.path,
+        builder: (context, state) => const AutoSwapSettingsScreen(),
       ),
       GoRoute(
         path: SettingsRoute.walletDetailsWalletList.path,
