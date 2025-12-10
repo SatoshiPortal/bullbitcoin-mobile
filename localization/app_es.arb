@@ -27,6 +27,158 @@
       }
     }
   },
+  "coreSwapsStatusPending": "Pendiente",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "coreSwapsStatusInProgress": "En progreso",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "coreSwapsStatusCompleted": "Completado",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreSwapsStatusExpired": "Expirado",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsStatusFailed": "Fallido",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "coreSwapsActionClaim": "Reclamar",
+  "@coreSwapsActionClaim": {
+    "description": "Action label for claiming a swap"
+  },
+  "coreSwapsActionClose": "Cerrar",
+  "@coreSwapsActionClose": {
+    "description": "Action label for closing a swap cooperatively"
+  },
+  "coreSwapsActionRefund": "Reembolsar",
+  "@coreSwapsActionRefund": {
+    "description": "Action label for refunding a swap"
+  },
+  "coreSwapsLnReceivePending": "El intercambio aún no está inicializado.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "coreSwapsLnReceivePaid": "El remitente ha pagado la factura.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "coreSwapsLnReceiveClaimable": "El intercambio está listo para ser reclamado.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveRefundable": "El intercambio está listo para ser reembolsado.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveCanCoop": "El intercambio se completará en breve.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "coreSwapsLnReceiveCompleted": "El intercambio está completado.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "coreSwapsLnReceiveExpired": "Intercambio expirado.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "coreSwapsLnReceiveFailed": "Intercambio fallido.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "coreSwapsLnSendPending": "El intercambio aún no está inicializado.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "coreSwapsLnSendPaid": "La factura se pagará después de que su pago reciba confirmación.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "coreSwapsLnSendClaimable": "El intercambio está listo para ser reclamado.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "coreSwapsLnSendRefundable": "El intercambio está listo para ser reembolsado.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "coreSwapsLnSendCanCoop": "El intercambio se completará en breve.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "coreSwapsLnSendCompletedRefunded": "El intercambio ha sido reembolsado.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "coreSwapsLnSendCompletedSuccess": "El intercambio se ha completado con éxito.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "coreSwapsLnSendExpired": "Intercambio expirado",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsLnSendFailedRefunding": "El intercambio será reembolsado en breve.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "coreSwapsLnSendFailed": "Intercambio fallido.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsChainPending": "La transferencia aún no está inicializada.",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "coreSwapsChainPaid": "Esperando confirmación del pago del proveedor de transferencia. Esto puede tardar un tiempo en completarse.",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "coreSwapsChainClaimable": "La transferencia está lista para ser reclamada.",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "coreSwapsChainRefundable": "La transferencia está lista para ser reembolsada.",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "coreSwapsChainCanCoop": "La transferencia se completará en breve.",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "coreSwapsChainCompletedRefunded": "La transferencia ha sido reembolsada.",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "coreSwapsChainCompletedSuccess": "La transferencia se ha completado con éxito.",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "coreSwapsChainExpired": "Transferencia expirada",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "coreSwapsChainFailedRefunding": "La transferencia será reembolsada en breve.",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "coreSwapsChainFailed": "Transferencia fallida.",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "coreWalletTransactionStatusPending": "Pendiente",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "coreWalletTransactionStatusConfirmed": "Confirmado",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
   "onboardingScreenTitle": "Bienvenido",
   "@onboardingScreenTitle": {
     "description": "El título de la pantalla de inicio"
@@ -9369,25 +9521,37 @@
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
   },
-  "importQrDeviceKeystoneStep2": "Haga clic en los 3 puntos en la parte superior derecha",
+  "importQrDeviceKeystoneStep2": "Ingrese su PIN",
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "importQrDeviceKeystoneStep3": "Seleccione Conectar Billetera de Software",
+  "importQrDeviceKeystoneStep3": "Haga clic en los tres puntos en la parte superior derecha",
   "@importQrDeviceKeystoneStep3": {
     "description": "Keystone instruction step 3"
   },
-  "importQrDeviceKeystoneStep4": "Haga clic en el botón \"abrir cámara\"",
+  "importQrDeviceKeystoneStep4": "Seleccione Conectar Billetera de Software",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "importQrDeviceKeystoneStep5": "Escanee el código QR que ve en su dispositivo.",
+  "importQrDeviceKeystoneStep5": "Elija la opción de billetera BULL",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "importQrDeviceKeystoneStep6": "¡Eso es todo!",
+  "importQrDeviceKeystoneStep6": "En su dispositivo móvil, toque Abrir Cámara",
   "@importQrDeviceKeystoneStep6": {
     "description": "Keystone instruction step 6"
+  },
+  "importQrDeviceKeystoneStep7": "Escanee el código QR mostrado en su Keystone",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "Ingrese una etiqueta para su billetera Keystone y toque Importar",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDeviceKeystoneStep9": "La configuración está completa",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
   },
   "importQrDevicePassportName": "Foundation Passport",
   "@importQrDevicePassportName": {

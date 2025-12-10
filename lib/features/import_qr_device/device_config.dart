@@ -63,6 +63,9 @@ class DeviceConfig {
             context.loc.importQrDeviceKeystoneStep4,
             context.loc.importQrDeviceKeystoneStep5,
             context.loc.importQrDeviceKeystoneStep6,
+            context.loc.importQrDeviceKeystoneStep7,
+            context.loc.importQrDeviceKeystoneStep8,
+            context.loc.importQrDeviceKeystoneStep9,
           ],
     ),
     SignerDeviceEntity.passport: DeviceConfig(
