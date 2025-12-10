@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/labels/system_label.dart';
+import 'package:bb_mobile/core/labels/label_system.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
@@ -36,7 +36,7 @@ class ConfirmBuyOrderUsecase {
         await _labelsRepository.store(
           Label.addr(
             address: order.toAddress!,
-            label: SystemLabel.exchangeBuy.label,
+            label: LabelSystem.exchangeBuy.label,
             origin: null,
           ),
         );

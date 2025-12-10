@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
-import 'package:bb_mobile/core/labels/system_label.dart';
+import 'package:bb_mobile/core/labels/label_system.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart';
 
@@ -48,7 +48,7 @@ class LabelDatasource {
 
   Future<void> trashByLabel({required String label}) async {
     try {
-      SystemLabel.fromLabel(label);
+      LabelSystem.fromLabel(label);
       throw BullException('System label cannot be deleted');
     } catch (_) {}
 
@@ -61,7 +61,7 @@ class LabelDatasource {
 
   Future<void> trashLabel(LabelModel label) async {
     try {
-      SystemLabel.fromLabel(label.label);
+      LabelSystem.fromLabel(label.label);
       throw BullException('System label cannot be deleted');
     } catch (_) {}
 
