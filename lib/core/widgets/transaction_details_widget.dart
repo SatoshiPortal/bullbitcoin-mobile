@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +8,7 @@ import 'package:gap/gap.dart';
 class TransactionDetailsWidget extends StatelessWidget {
   static const int _txidCut = 10;
 
-  final RawBitcoinTxEntity tx;
+  final BitcoinTx tx;
 
   const TransactionDetailsWidget({super.key, required this.tx});
 
@@ -44,9 +44,7 @@ class TransactionDetailsWidget extends StatelessWidget {
               const Gap(8),
               BBText(
                 'Transaction ID',
-                style: context.font.titleMedium?.copyWith(
-                  fontWeight: .bold,
-                ),
+                style: context.font.titleMedium?.copyWith(fontWeight: .bold),
               ),
             ],
           ),
@@ -69,11 +67,7 @@ class TransactionDetailsWidget extends StatelessWidget {
                     ),
                   ),
                   const Gap(4),
-                  Icon(
-                    Icons.copy,
-                    size: 12,
-                    color: context.appColors.primary,
-                  ),
+                  Icon(Icons.copy, size: 12, color: context.appColors.primary),
                 ],
               ),
             ),
@@ -91,9 +85,7 @@ class TransactionDetailsWidget extends StatelessWidget {
         children: [
           BBText(
             'Info',
-            style: context.font.titleMedium?.copyWith(
-              fontWeight: .bold,
-            ),
+            style: context.font.titleMedium?.copyWith(fontWeight: .bold),
           ),
           const Gap(12),
           _buildInfoRow(context, 'Version', tx.version.toString()),
@@ -121,12 +113,10 @@ class TransactionDetailsWidget extends StatelessWidget {
             final input = entry.value;
             return _buildItemContainer(
               context,
-              index: input.vout ?? 0,
+              index: input.vout,
               color: context.appColors.primary,
               child: BBText(
-                input.txid != null
-                    ? '${input.txid!.substring(0, _txidCut)}…${input.txid!.substring(input.txid!.length - _txidCut)}'
-                    : 'Coinbase',
+                '${input.txid.substring(0, _txidCut)}…${input.txid.substring(input.txid.length - _txidCut)}',
                 style: context.font.bodyMedium,
               ),
             );
@@ -199,9 +189,7 @@ class TransactionDetailsWidget extends StatelessWidget {
         const Gap(8),
         BBText(
           title,
-          style: context.font.titleMedium?.copyWith(
-            fontWeight: .bold,
-          ),
+          style: context.font.titleMedium?.copyWith(fontWeight: .bold),
         ),
       ],
     );

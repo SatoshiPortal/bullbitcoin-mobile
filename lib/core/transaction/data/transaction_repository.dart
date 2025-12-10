@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_re
     show ElectrumRemoteDatasource;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
-import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/locator.dart';
 
 class TransactionRepository {
@@ -14,12 +14,11 @@ class TransactionRepository {
     required ElectrumRemoteDatasource electrumRemoteDatasource,
   }) : _electrumRemoteDatasource = electrumRemoteDatasource;
 
-  Future<RawBitcoinTxEntity> fetch({required String txid}) async {
+  Future<BitcoinTx> fetch({required String txid}) async {
     final sqlite = locator<SqliteDatabase>();
-    final cachedTransaction =
-        await sqlite.managers.transactions
-            .filter((e) => e.txid(txid))
-            .getSingleOrNull();
+    final cachedTransaction = await sqlite.managers.transactions
+        .filter((e) => e.txid(txid))
+        .getSingleOrNull();
 
     if (cachedTransaction != null) {
       return TransactionModelExtension.toEntity(cachedTransaction);
@@ -27,7 +26,7 @@ class TransactionRepository {
 
     // If not found in cache, fetch from Electrum
     final txBytes = await _electrumRemoteDatasource.getTransaction(txid);
-    final tx = await RawBitcoinTxEntity.fromBytes(txBytes);
+    final tx = await BitcoinTx.fromBytes(txBytes);
 
     // Cache the transaction
     await sqlite.managers.transactions.create(

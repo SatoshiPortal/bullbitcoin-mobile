@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/errors.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
@@ -61,7 +61,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
             transaction: ScannedTransaction(
               format: TxFormat.hex,
               data: finalTx,
-              tx: await RawBitcoinTxEntity.fromBytes(hex.decode(finalTx)),
+              tx: await BitcoinTx.fromBytes(hex.decode(finalTx)),
             ),
           ),
         );
@@ -136,7 +136,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   Future<void> tryParseTransaction(String input) async {
     emit(state.copyWith(error: null));
     try {
-      final tx = await RawBitcoinTxEntity.fromPsbt(input);
+      final tx = await BitcoinTx.fromPsbt(input);
       emit(
         state.copyWith(
           transaction: ParsedTx(format: TxFormat.psbt, data: input, tx: tx),
@@ -144,7 +144,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       );
     } catch (e) {
       try {
-        final tx = await RawBitcoinTxEntity.fromBytes(hex.decode(input));
+        final tx = await BitcoinTx.fromBytes(hex.decode(input));
         emit(
           state.copyWith(
             transaction: ParsedTx(format: TxFormat.hex, data: input, tx: tx),
