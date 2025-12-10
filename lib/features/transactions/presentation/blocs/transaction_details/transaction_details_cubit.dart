@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart'
 import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/fetch_distinct_labels_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/labels/domain/label_wallet_transaction_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/label_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
@@ -39,7 +39,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required GetOrderUsecase getOrderUsecase,
     required WatchSwapUsecase watchSwapUsecase,
     required WatchPayjoinUsecase watchPayjoinUsecase,
-    required LabelWalletTransactionUsecase labelWalletTransactionUsecase,
+    required LabelTransactionUsecase labelTransactionUsecase,
     required DeleteLabelUsecase deleteLabelUsecase,
     required BroadcastOriginalTransactionUsecase
     broadcastOriginalTransactionUsecase,
@@ -54,7 +54,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
        _getOrderUsecase = getOrderUsecase,
        _watchSwapUsecase = watchSwapUsecase,
        _watchPayjoinUsecase = watchPayjoinUsecase,
-       _labelWalletTransactionUsecase = labelWalletTransactionUsecase,
+       _labelTransactionUsecase = labelTransactionUsecase,
        _deleteLabelUsecase = deleteLabelUsecase,
        _broadcastOriginalTransactionUsecase =
            broadcastOriginalTransactionUsecase,
@@ -71,7 +71,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   final GetOrderUsecase _getOrderUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
-  final LabelWalletTransactionUsecase _labelWalletTransactionUsecase;
+  final LabelTransactionUsecase _labelTransactionUsecase;
   final DeleteLabelUsecase _deleteLabelUsecase;
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
@@ -135,12 +135,12 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
           transactionsWithTxId.first.walletId,
         );
       } else if (swap is ChainSwap) {
-        swapCounterpartTxId =
-            walletId == swap.sendWalletId ? swap.receiveTxId : swap.sendTxId;
-        final counterpartWalletId =
-            walletId == swap.sendWalletId
-                ? swap.receiveWalletId
-                : swap.sendWalletId;
+        swapCounterpartTxId = walletId == swap.sendWalletId
+            ? swap.receiveTxId
+            : swap.sendTxId;
+        final counterpartWalletId = walletId == swap.sendWalletId
+            ? swap.receiveWalletId
+            : swap.sendWalletId;
         if (counterpartWalletId != null) {
           counterpartWallet = await _getWalletUsecase.execute(
             counterpartWalletId,
@@ -200,12 +200,12 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       Wallet? counterpartWallet;
       String? swapCounterpartTxId;
       if (swap is ChainSwap) {
-        swapCounterpartTxId =
-            walletId == swap.sendWalletId ? swap.receiveTxId : swap.sendTxId;
-        final counterpartWalletId =
-            walletId == swap.sendWalletId
-                ? swap.receiveWalletId
-                : swap.sendWalletId;
+        swapCounterpartTxId = walletId == swap.sendWalletId
+            ? swap.receiveTxId
+            : swap.sendTxId;
+        final counterpartWalletId = walletId == swap.sendWalletId
+            ? swap.receiveWalletId
+            : swap.sendWalletId;
         if (counterpartWalletId != null) {
           counterpartWallet = await _getWalletUsecase.execute(
             counterpartWalletId,
@@ -329,8 +329,9 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       return;
     }
 
-    await _labelWalletTransactionUsecase.execute(
-      tx: state.walletTransaction!,
+    await _labelTransactionUsecase.execute(
+      txid: state.walletTransaction!.txId,
+      origin: state.walletTransaction!.walletId,
       label: state.note!,
     );
 
@@ -412,8 +413,9 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       );
       await _deleteLabelUsecase.execute(oldLabel);
 
-      await _labelWalletTransactionUsecase.execute(
-        tx: walletTransaction,
+      await _labelTransactionUsecase.execute(
+        txid: walletTransaction.txId,
+        origin: walletTransaction.walletId,
         label: newNote,
       );
 
