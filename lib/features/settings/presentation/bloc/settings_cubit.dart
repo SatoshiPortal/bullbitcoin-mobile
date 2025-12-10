@@ -97,7 +97,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> changeLanguage(Language language) async {
     final settings = state.storedSettings;
     log.config(
-      'Language changed to: ${language.name} was ${settings?.language?.name}',
+      'Language changed to: ${language.label} was ${settings?.language?.label}',
     );
     await _setLanguageUsecase.execute(language);
     emit(

@@ -40,16 +40,16 @@ enum BitcoinUnit {
 }
 
 enum Language {
-  unitedStatesEnglish('en', 'US'),
-  canadianFrench('fr', 'CA'),
-  franceFrench('fr', 'FR'),
-  spanish('es', 'ES'),
-  finnish('fi', 'FI');
+  unitedStatesEnglish('en', 'US', 'English'),
+  franceFrench('fr', 'FR', 'Français'),
+  spanish('es', 'ES', 'Español'),
+  finnish('fi', 'FI', 'Suomeksi');
 
   final String languageCode;
   final String? countryCode;
+  final String label;
 
-  const Language(this.languageCode, this.countryCode);
+  const Language(this.languageCode, this.countryCode, this.label);
 
   static Language fromName(String name) {
     try {
