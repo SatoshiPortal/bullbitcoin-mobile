@@ -26,7 +26,10 @@ class Schema10To11 {
               schema11.autoSwap.recipientWalletId,
           schema11.autoSwap.showWarning: const Constant(true),
         },
-        newColumns: [schema11.autoSwap.showWarning],
+        newColumns: [
+          schema11.autoSwap.showWarning,
+          schema11.autoSwap.triggerBalanceSats,
+        ],
       ),
     );
 
@@ -34,5 +37,26 @@ class Schema10To11 {
     await db.managers.settings.update(
       (f) => f(id: const Value(1), themeMode: const Value('system')),
     );
+
+    final autoSwapRows =
+        await (m.database.selectOnly(schema11.autoSwap)..addColumns([
+              schema11.autoSwap.id,
+              schema11.autoSwap.balanceThresholdSats,
+            ]))
+            .get();
+    for (final row in autoSwapRows) {
+      final id = row.read(schema11.autoSwap.id);
+      final balanceThresholdSats = row.read(
+        schema11.autoSwap.balanceThresholdSats,
+      );
+      if (id != null && balanceThresholdSats != null) {
+        await db.managers.autoSwap.update(
+          (f) => f(
+            id: Value(id),
+            triggerBalanceSats: Value(balanceThresholdSats * 2),
+          ),
+        );
+      }
+    }
   }
 }

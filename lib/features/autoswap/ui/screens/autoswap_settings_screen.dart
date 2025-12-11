@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
@@ -45,6 +43,8 @@ class AutoSwapSettingsScreen extends StatelessWidget {
                       _EnabledToggle(),
                       const Gap(16),
                       _AmountThresholdField(),
+                      const Gap(16),
+                      _TriggerBalanceField(),
                       const Gap(16),
                       _FeeThresholdField(),
                       const Gap(16),
@@ -122,36 +122,6 @@ class _AmountThresholdField extends StatelessWidget {
       (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdError,
     );
 
-    int? baseBalanceSats;
-    if (amountThresholdInput != null && amountThresholdInput.isNotEmpty) {
-      if (bitcoinUnit == BitcoinUnit.btc) {
-        final btcAmount = double.tryParse(amountThresholdInput) ?? 0;
-        baseBalanceSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        baseBalanceSats = int.tryParse(amountThresholdInput) ?? 0;
-      }
-    }
-
-    String? triggerAtDisplay;
-    String? triggerAtUnit;
-    if (baseBalanceSats != null && baseBalanceSats > 0) {
-      final triggerAtSats = baseBalanceSats * 2;
-      if (bitcoinUnit == BitcoinUnit.btc) {
-        final triggerAtBtc = ConvertAmount.satsToBtc(triggerAtSats);
-        final formatted = FormatAmount.btc(triggerAtBtc);
-        triggerAtDisplay = formatted
-            .replaceAll(RegExp(r'\s*BTC\s*'), '')
-            .trim();
-        triggerAtUnit = 'BTC';
-      } else {
-        final formatted = FormatAmount.sats(triggerAtSats);
-        triggerAtDisplay = formatted
-            .replaceAll(RegExp(r'\s*sats\s*'), '')
-            .trim();
-        triggerAtUnit = 'sats';
-      }
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -228,23 +198,54 @@ class _AmountThresholdField extends StatelessWidget {
             ),
           ),
         ],
-        if (triggerAtDisplay != null && triggerAtUnit != null) ...[
-          const Gap(16),
-          BBText(
-            'Trigger At Balance',
-            style: context.font.bodyLarge?.copyWith(
-              color: context.appColors.text,
-            ),
+        const Gap(4),
+        BBText(
+          context.loc.autoswapBaseBalanceInfoText,
+          style: context.font.labelSmall?.copyWith(
+            color: context.appColors.textMuted,
           ),
-          const Gap(8),
-          Row(
-            children: [
-              Expanded(
-                child: BBInputText(
-                  value: triggerAtDisplay,
-                  disabled: true,
-                  onChanged: (_) {},
-                  rightIcon: Container(
+        ),
+      ],
+    );
+  }
+}
+
+class _TriggerBalanceField extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final triggerBalanceSatsInput = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.triggerBalanceSatsInput,
+    );
+    final bitcoinUnit = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BBText(
+          'Trigger At Balance',
+          style: context.font.bodyLarge?.copyWith(
+            color: context.appColors.text,
+          ),
+        ),
+        const Gap(8),
+        Row(
+          children: [
+            Expanded(
+              child: BBInputText(
+                value: triggerBalanceSatsInput ?? '',
+                onlyNumbers: true,
+                rightIcon: GestureDetector(
+                  onTap: () {
+                    context.read<AutoSwapSettingsCubit>().toggleBitcoinUnit();
+                    Future.delayed(const Duration(milliseconds: 300), () {
+                      if (context.mounted) {
+                        context.read<AutoSwapSettingsCubit>().updateSettings();
+                      }
+                    });
+                  },
+                  child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 8,
@@ -255,25 +256,32 @@ class _AmountThresholdField extends StatelessWidget {
                       border: Border.all(color: context.appColors.border),
                     ),
                     child: BBText(
-                      triggerAtUnit,
+                      bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
                       style: context.font.bodyMedium,
                     ),
                   ),
                 ),
+                onChanged: (value) {
+                  context
+                      .read<AutoSwapSettingsCubit>()
+                      .onTriggerBalanceChanged(value)
+                      .then((_) {
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          if (context.mounted) {
+                            context
+                                .read<AutoSwapSettingsCubit>()
+                                .updateSettings();
+                          }
+                        });
+                      });
+                },
               ),
-            ],
-          ),
-          const Gap(4),
-          BBText(
-            context.loc.autoswapTriggerAtBalanceInfoText,
-            style: context.font.labelSmall?.copyWith(
-              color: context.appColors.textMuted,
             ),
-          ),
-        ],
+          ],
+        ),
         const Gap(4),
         BBText(
-          context.loc.autoswapBaseBalanceInfoText,
+          context.loc.autoswapTriggerAtBalanceInfoText,
           style: context.font.labelSmall?.copyWith(
             color: context.appColors.textMuted,
           ),

@@ -7,6 +7,7 @@ abstract class AutoSwapSettingsState with _$AutoSwapSettingsState {
     @Default(false) bool saving,
     @Default(false) bool successfullySaved,
     String? amountThresholdInput,
+    String? triggerBalanceSatsInput,
     String? feeThresholdInput,
     @Default(false) bool enabledToggle,
     String? error,

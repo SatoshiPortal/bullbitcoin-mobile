@@ -9,6 +9,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
   const factory AutoSwapModel({
     @Default(true) bool enabled,
     @Default(1000000) int balanceThresholdSats,
+    @Default(2000000) int triggerBalanceSats,
     @Default(3.0) double feeThresholdPercent,
     @Default(false) bool blockTillNextExecution,
     @Default(false) bool alwaysBlock,
@@ -22,6 +23,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
     return AutoSwapModel(
       enabled: entity.enabled,
       balanceThresholdSats: entity.balanceThresholdSats,
+      triggerBalanceSats: entity.triggerBalanceSats,
       feeThresholdPercent: entity.feeThresholdPercent,
       blockTillNextExecution: entity.blockTillNextExecution,
       alwaysBlock: entity.alwaysBlock,
@@ -34,6 +36,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
     return AutoSwap(
       enabled: enabled,
       balanceThresholdSats: balanceThresholdSats,
+      triggerBalanceSats: triggerBalanceSats,
       feeThresholdPercent: feeThresholdPercent,
       blockTillNextExecution: blockTillNextExecution,
       alwaysBlock: alwaysBlock,
@@ -46,6 +49,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
     return AutoSwapModel(
       enabled: row.enabled,
       balanceThresholdSats: row.balanceThresholdSats,
+      triggerBalanceSats: row.triggerBalanceSats,
       feeThresholdPercent: row.feeThresholdPercent,
       blockTillNextExecution: row.blockTillNextExecution,
       alwaysBlock: row.alwaysBlock,
@@ -59,6 +63,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
       id: 1,
       enabled: enabled,
       balanceThresholdSats: balanceThresholdSats,
+      triggerBalanceSats: triggerBalanceSats,
       feeThresholdPercent: feeThresholdPercent,
       blockTillNextExecution: blockTillNextExecution,
       alwaysBlock: alwaysBlock,

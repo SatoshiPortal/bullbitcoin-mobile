@@ -1382,6 +1382,16 @@
             "dsl_features": []
           },
           {
+            "name": "trigger_balance_sats",
+            "getter_name": "triggerBalanceSats",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
             "name": "fee_threshold_percent",
             "getter_name": "feeThresholdPercent",
             "moor_type": "double",
@@ -1804,7 +1814,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"auto_swap\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"enabled\" INTEGER NOT NULL DEFAULT 1 CHECK (\"enabled\" IN (0, 1)), \"balance_threshold_sats\" INTEGER NOT NULL, \"fee_threshold_percent\" REAL NOT NULL, \"block_till_next_execution\" INTEGER NOT NULL DEFAULT 0 CHECK (\"block_till_next_execution\" IN (0, 1)), \"always_block\" INTEGER NOT NULL DEFAULT 0 CHECK (\"always_block\" IN (0, 1)), \"recipient_wallet_id\" TEXT NULL, \"show_warning\" INTEGER NOT NULL DEFAULT 1 CHECK (\"show_warning\" IN (0, 1)));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"auto_swap\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"enabled\" INTEGER NOT NULL DEFAULT 1 CHECK (\"enabled\" IN (0, 1)), \"balance_threshold_sats\" INTEGER NOT NULL, \"trigger_balance_sats\" INTEGER NOT NULL, \"fee_threshold_percent\" REAL NOT NULL, \"block_till_next_execution\" INTEGER NOT NULL DEFAULT 0 CHECK (\"block_till_next_execution\" IN (0, 1)), \"always_block\" INTEGER NOT NULL DEFAULT 0 CHECK (\"always_block\" IN (0, 1)), \"recipient_wallet_id\" TEXT NULL, \"show_warning\" INTEGER NOT NULL DEFAULT 1 CHECK (\"show_warning\" IN (0, 1)));"
         }
       ]
     },

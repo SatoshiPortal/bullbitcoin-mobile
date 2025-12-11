@@ -72,8 +72,7 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
                   bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
                 child: SingleChildScrollView(
-                  keyboardDismissBehavior:
-                      .onDrag,
+                  keyboardDismissBehavior: .onDrag,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
@@ -84,6 +83,8 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
                           _EnabledToggle(),
                           const Gap(16),
                           _AmountThresholdField(),
+                          const Gap(16),
+                          _TriggerBalanceField(),
                           const Gap(16),
                           _FeeThresholdField(),
                           const Gap(16),
@@ -241,7 +242,69 @@ class _AmountThresholdField extends StatelessWidget {
         ],
         const Gap(4),
         BBText(
-          context.loc.autoswapMaxBalanceInfoText,
+          context.loc.autoswapBaseBalanceInfoText,
+          style: context.font.labelSmall?.copyWith(
+            color: context.appColors.textMuted,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TriggerBalanceField extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final triggerBalanceSatsInput = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.triggerBalanceSatsInput,
+    );
+    final bitcoinUnit = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
+    );
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        BBText(
+          'Trigger At Balance',
+          style: context.font.bodyLarge?.copyWith(
+            color: context.appColors.text,
+          ),
+        ),
+        const Gap(8),
+        Row(
+          children: [
+            Expanded(
+              child: BBInputText(
+                value: triggerBalanceSatsInput ?? '',
+                onlyNumbers: true,
+                rightIcon: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: context.appColors.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: context.appColors.border),
+                  ),
+                  child: BBText(
+                    bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
+                    style: context.font.bodyMedium,
+                  ),
+                ),
+                onChanged: (value) {
+                  context.read<AutoSwapSettingsCubit>().onTriggerBalanceChanged(
+                    value,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        const Gap(4),
+        BBText(
+          context.loc.autoswapTriggerAtBalanceInfoText,
           style: context.font.labelSmall?.copyWith(
             color: context.appColors.textMuted,
           ),

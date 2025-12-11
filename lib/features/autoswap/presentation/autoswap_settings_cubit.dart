@@ -64,11 +64,24 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         amountThresholdInput = autoSwapSettings.balanceThresholdSats.toString();
       }
 
+      String triggerBalanceSatsInput;
+      if (settings.bitcoinUnit == BitcoinUnit.btc) {
+        // Convert sats to BTC for display
+        final btcAmount = ConvertAmount.satsToBtc(
+          autoSwapSettings.triggerBalanceSats,
+        );
+        triggerBalanceSatsInput = btcAmount.toString();
+      } else {
+        triggerBalanceSatsInput = autoSwapSettings.triggerBalanceSats
+            .toString();
+      }
+
       emit(
         state.copyWith(
           loading: false,
           settings: autoSwapSettings,
           amountThresholdInput: amountThresholdInput,
+          triggerBalanceSatsInput: triggerBalanceSatsInput,
           feeThresholdInput: autoSwapSettings.feeThresholdPercent.toString(),
           enabledToggle: autoSwapSettings.enabled,
           alwaysBlock: autoSwapSettings.alwaysBlock,
@@ -128,6 +141,29 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         return;
       }
 
+      // Convert trigger balance based on unit
+      int triggerBalanceSats;
+      if (settings.bitcoinUnit == BitcoinUnit.btc) {
+        // Convert BTC to sats for storage
+        final btcAmount =
+            double.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
+        triggerBalanceSats = ConvertAmount.btcToSats(btcAmount);
+      } else {
+        triggerBalanceSats =
+            int.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
+      }
+
+      // Validate trigger balance is at least balance threshold
+      if (triggerBalanceSats < balanceThresholdSats) {
+        emit(
+          state.copyWith(
+            saving: false,
+            error: 'Trigger balance must be at least the base balance',
+          ),
+        );
+        return;
+      }
+
       // Validate fee threshold
       final feeThreshold =
           double.tryParse(state.feeThresholdInput ?? '3.0') ?? 3.0;
@@ -141,6 +177,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         AutoSwap(
           enabled: state.enabledToggle,
           balanceThresholdSats: balanceThresholdSats,
+          triggerBalanceSats: triggerBalanceSats,
           feeThresholdPercent: feeThreshold,
           alwaysBlock: state.alwaysBlock,
           recipientWalletId: state.selectedBitcoinWalletId,
@@ -257,6 +294,28 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         return;
       }
 
+      // Convert trigger balance based on unit
+      int triggerBalanceSats;
+      if (settings.bitcoinUnit == BitcoinUnit.btc) {
+        final btcAmount =
+            double.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
+        triggerBalanceSats = ConvertAmount.btcToSats(btcAmount);
+      } else {
+        triggerBalanceSats =
+            int.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
+      }
+
+      // Validate trigger balance is at least balance threshold
+      if (triggerBalanceSats < balanceThresholdSats) {
+        emit(
+          state.copyWith(
+            saving: false,
+            error: 'Trigger balance must be at least the base balance',
+          ),
+        );
+        return;
+      }
+
       // Validate fee threshold
       final feeThreshold =
           double.tryParse(state.feeThresholdInput ?? '3.0') ?? 3.0;
@@ -270,6 +329,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         AutoSwap(
           enabled: false, // Always false for auto-save when disabled
           balanceThresholdSats: balanceThresholdSats,
+          triggerBalanceSats: triggerBalanceSats,
           feeThresholdPercent: feeThreshold,
           alwaysBlock: state.alwaysBlock,
           recipientWalletId: state.selectedBitcoinWalletId,
@@ -336,12 +396,35 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       }
     }
 
+    String? newTriggerBalanceSatsInput;
+    if (state.triggerBalanceSatsInput != null &&
+        state.triggerBalanceSatsInput!.isNotEmpty) {
+      if (currentUnit == BitcoinUnit.btc) {
+        final btcAmount = double.tryParse(state.triggerBalanceSatsInput!) ?? 0;
+        final satsAmount = ConvertAmount.btcToSats(btcAmount);
+        newTriggerBalanceSatsInput = satsAmount.toString();
+      } else {
+        final satsAmount = int.tryParse(state.triggerBalanceSatsInput!) ?? 0;
+        final btcAmount = ConvertAmount.satsToBtc(satsAmount);
+        newTriggerBalanceSatsInput = btcAmount.toString();
+      }
+    }
+
     emit(
       state.copyWith(
         bitcoinUnit: newUnit,
         amountThresholdInput: newAmountThresholdInput,
+        triggerBalanceSatsInput: newTriggerBalanceSatsInput,
         amountThresholdError: null,
       ),
     );
+  }
+
+  Future<void> onTriggerBalanceChanged(String value) async {
+    final sanitizedValue = state.bitcoinUnit == BitcoinUnit.sats
+        ? value.replaceAll(RegExp(r'[^\d]'), '')
+        : value;
+
+    emit(state.copyWith(triggerBalanceSatsInput: sanitizedValue));
   }
 }

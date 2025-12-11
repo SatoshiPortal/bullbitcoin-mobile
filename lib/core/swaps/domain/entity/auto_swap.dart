@@ -8,6 +8,7 @@ sealed class AutoSwap with _$AutoSwap {
   const factory AutoSwap({
     @Default(true) bool enabled,
     @Default(1000000) int balanceThresholdSats,
+    @Default(2000000) int triggerBalanceSats,
     @Default(3.0) double feeThresholdPercent,
     @Default(false) bool blockTillNextExecution,
     @Default(false) bool alwaysBlock,
@@ -21,7 +22,7 @@ sealed class AutoSwap with _$AutoSwap {
       _$AutoSwapFromJson(json);
 
   bool passedRequiredBalance(int balanceSat) {
-    return balanceSat >= balanceThresholdSats * 2 && enabled;
+    return balanceSat >= triggerBalanceSats && enabled;
   }
 
   bool withinFeeThreshold(double currentFeeRatio) {
