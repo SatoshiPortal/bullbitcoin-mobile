@@ -4820,6 +4820,10 @@
       }
     }
   },
+  "autoswapTriggerBalanceError": "El saldo de activación debe ser al menos 2x el saldo base",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when trigger balance is less than 2x the base balance"
+  },
   "arkNoTransactionsYet": "Aún no hay transacciones.",
   "@arkNoTransactionsYet": {
     "description": "Empty state message shown when user has no transaction history"

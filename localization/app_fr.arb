@@ -4821,6 +4821,10 @@
       }
     }
   },
+  "autoswapTriggerBalanceError": "Le solde de déclenchement doit être au moins 2x le solde de base",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when trigger balance is less than 2x the base balance"
+  },
   "arkNoTransactionsYet": "Aucune transaction pour le moment.",
   "@arkNoTransactionsYet": {
     "description": "Empty state message shown when user has no transaction history"

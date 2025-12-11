@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
@@ -21,42 +22,60 @@ class AutoSwapSettingsScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(title: Text(context.loc.autoswapSettingsTitle)),
         body: SafeArea(
-          child: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
-                builder: (context, state) {
-                  if (state.loading) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(32.0),
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
+          child: BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
+            builder: (context, state) {
+              final enabled = state.enabledToggle;
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Gap(16),
-                      _EnabledToggle(),
-                      const Gap(16),
-                      _AmountThresholdField(),
-                      const Gap(16),
-                      _TriggerBalanceField(),
-                      const Gap(16),
-                      _FeeThresholdField(),
-                      const Gap(16),
-                      _WalletSelectionDropdown(),
-                      const Gap(16),
-                      _AlwaysBlockToggle(),
-                      const Gap(30),
-                    ],
-                  );
-                },
-              ),
-            ),
+              return SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: state.loading
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(32.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Gap(16),
+                            _EnabledToggle(),
+                            const Gap(16),
+                            Stack(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _AmountThresholdField(),
+                                    const Gap(16),
+                                    _TriggerBalanceField(),
+                                    const Gap(16),
+                                    _FeeThresholdField(),
+                                    const Gap(16),
+                                    _WalletSelectionDropdown(),
+                                    const Gap(16),
+                                    _AlwaysBlockToggle(),
+                                  ],
+                                ),
+                                if (!enabled)
+                                  Positioned.fill(
+                                    child: IgnorePointer(
+                                      child: Container(
+                                        color: context.appColors.overlay,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -83,15 +102,8 @@ class _EnabledToggle extends StatelessWidget {
                 color: context.appColors.text,
               ),
             ),
-            Switch(
+            BBSwitch(
               value: enabled,
-              activeThumbColor: context.appColors.onSecondary,
-              activeTrackColor: context.appColors.secondary,
-              inactiveThumbColor: context.appColors.onSecondary,
-              inactiveTrackColor: context.appColors.surface,
-              trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) => context.appColors.transparent,
-              ),
               onChanged: (value) {
                 context.read<AutoSwapSettingsCubit>().onEnabledToggleChanged(
                   value,
@@ -120,6 +132,9 @@ class _AmountThresholdField extends StatelessWidget {
     );
     final amountThresholdError = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdError,
+    );
+    final enabled = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
     );
 
     return Column(
@@ -164,27 +179,32 @@ class _AmountThresholdField extends StatelessWidget {
                     ),
                   ),
                 ),
-                onChanged: (value) {
-                  context
-                      .read<AutoSwapSettingsCubit>()
-                      .onAmountThresholdChanged(value)
-                      .then((_) {
-                        // Auto-save after a short delay to debounce rapid changes
-                        // Only save if there's no validation error
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          if (context.mounted) {
-                            final state = context
-                                .read<AutoSwapSettingsCubit>()
-                                .state;
-                            if (state.amountThresholdError == null) {
-                              context
-                                  .read<AutoSwapSettingsCubit>()
-                                  .updateSettings();
-                            }
-                          }
-                        });
-                      });
-                },
+                onChanged: enabled
+                    ? (value) {
+                        context
+                            .read<AutoSwapSettingsCubit>()
+                            .onAmountThresholdChanged(value)
+                            .then((_) {
+                              // Auto-save after a short delay to debounce rapid changes
+                              // Only save if there's no validation error
+                              Future.delayed(
+                                const Duration(milliseconds: 500),
+                                () {
+                                  if (context.mounted) {
+                                    final state = context
+                                        .read<AutoSwapSettingsCubit>()
+                                        .state;
+                                    if (state.amountThresholdError == null) {
+                                      context
+                                          .read<AutoSwapSettingsCubit>()
+                                          .updateSettings();
+                                    }
+                                  }
+                                },
+                              );
+                            });
+                      }
+                    : (_) {},
               ),
             ),
           ],
@@ -192,7 +212,7 @@ class _AmountThresholdField extends StatelessWidget {
         if (amountThresholdError != null) ...[
           const Gap(8),
           BBText(
-            amountThresholdError.displayMessage(),
+            amountThresholdError.displayMessage(context.loc),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
             ),
@@ -218,6 +238,9 @@ class _TriggerBalanceField extends StatelessWidget {
     );
     final bitcoinUnit = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
+    );
+    final error = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.error,
     );
 
     return Column(
@@ -279,6 +302,15 @@ class _TriggerBalanceField extends StatelessWidget {
             ),
           ],
         ),
+        if (error == 'autoswapTriggerBalanceError') ...[
+          const Gap(8),
+          BBText(
+            context.loc.autoswapTriggerBalanceError,
+            style: context.font.bodySmall?.copyWith(
+              color: context.appColors.error,
+            ),
+          ),
+        ],
         const Gap(4),
         BBText(
           context.loc.autoswapTriggerAtBalanceInfoText,
@@ -347,7 +379,7 @@ class _FeeThresholdField extends StatelessWidget {
         if (feeThresholdError != null) ...[
           const Gap(8),
           BBText(
-            feeThresholdError.displayMessage(),
+            feeThresholdError.displayMessage(context.loc),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.error,
             ),
@@ -384,15 +416,8 @@ class _AlwaysBlockToggle extends StatelessWidget {
                 color: context.appColors.text,
               ),
             ),
-            Switch(
+            BBSwitch(
               value: alwaysBlock,
-              activeThumbColor: context.appColors.onSecondary,
-              activeTrackColor: context.appColors.secondary,
-              inactiveThumbColor: context.appColors.onSecondary,
-              inactiveTrackColor: context.appColors.surface,
-              trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) => context.appColors.transparent,
-              ),
               onChanged: (value) {
                 context
                     .read<AutoSwapSettingsCubit>()
@@ -463,7 +488,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
                 (wallet) => DropdownMenuItem(
                   value: wallet,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
                     child: Row(
                       children: [
                         Image.asset(

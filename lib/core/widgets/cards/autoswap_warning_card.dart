@@ -25,7 +25,7 @@ class AutoSwapWarningCard extends StatelessWidget {
           children: [
             Icon(
               Icons.swap_horiz,
-              color: context.appColors.onPrimary,
+              color: context.appColors.onSecondary,
               size: 32,
             ),
             const Gap(16),
@@ -38,13 +38,13 @@ class AutoSwapWarningCard extends StatelessWidget {
                     style: context.font.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
-                    color: context.appColors.onPrimary,
+                    color: context.appColors.onSecondary,
                   ),
                   const Gap(4),
                   BBText(
                     context.loc.autoswapWarningCardSubtitle,
                     style: context.font.bodySmall,
-                    color: context.appColors.onPrimary,
+                    color: context.appColors.onSecondary,
                   ),
                 ],
               ),

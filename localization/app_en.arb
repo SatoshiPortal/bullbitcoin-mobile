@@ -4820,6 +4820,10 @@
       }
     }
   },
+  "autoswapTriggerBalanceError": "Trigger balance must be at least 2x the base balance",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when trigger balance is less than 2x the base balance"
+  },
   "arkNoTransactionsYet": "No transactions yet.",
   "@arkNoTransactionsYet": {
     "description": "Empty state message shown when user has no transaction history"
