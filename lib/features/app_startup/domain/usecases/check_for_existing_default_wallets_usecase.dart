@@ -29,9 +29,9 @@ class CheckForExistingDefaultWalletsUsecase {
       // Check that the seed for the default wallets exist
       for (final wallet in defaultWallets) {
         // This will throw if the seed is not found or can not be decrypted
-        await _seedRepository.exists(wallet.masterFingerprint);
+        await _seedRepository.get(wallet.masterFingerprint);
       }
-      return true; // Wallets exist and seeds are found
+      return true; // Default wallets exist and seeds are found
     } else {
       return false; // No default wallets found
     }
