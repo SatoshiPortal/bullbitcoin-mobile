@@ -35,6 +35,7 @@ class RecipientsLocator {
     locator.registerLazySingleton<FlutterSecureStorage>(
       () => const FlutterSecureStorage(
         aOptions: AndroidOptions(encryptedSharedPreferences: true),
+        iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
       ),
     );
     locator.registerLazySingleton<BullbitcoinApiKeyProvider>(

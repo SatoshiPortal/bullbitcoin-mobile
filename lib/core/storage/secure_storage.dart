@@ -4,6 +4,7 @@ class SecureStorage {
   static FlutterSecureStorage init() {
     return const FlutterSecureStorage(
       aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
     );
   }
 }
