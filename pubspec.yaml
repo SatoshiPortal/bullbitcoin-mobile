@@ -53,7 +53,7 @@ dependencies:
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart
-      ref: frb-2.11.1
+      ref: 2e10deb2fbaa76e888bda7be6a2128ce2c05173d
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter
@@ -101,7 +101,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/satoshifier-dart
-      ref: frb-2.11.1
+      ref: 7b5341a5f6d8368173154132871d1f5f394019f9
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:
