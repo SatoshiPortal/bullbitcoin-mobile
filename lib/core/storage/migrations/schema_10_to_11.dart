@@ -17,6 +17,8 @@ class Schema10To11 {
           schema11.autoSwap.enabled: const Constant(true),
           schema11.autoSwap.balanceThresholdSats:
               schema11.autoSwap.balanceThresholdSats,
+          schema11.autoSwap.triggerBalanceSats:
+              schema11.autoSwap.balanceThresholdSats * const Constant(2),
           schema11.autoSwap.feeThresholdPercent:
               schema11.autoSwap.feeThresholdPercent,
           schema11.autoSwap.blockTillNextExecution:
@@ -37,26 +39,5 @@ class Schema10To11 {
     await db.managers.settings.update(
       (f) => f(id: const Value(1), themeMode: const Value('system')),
     );
-
-    final autoSwapRows =
-        await (m.database.selectOnly(schema11.autoSwap)..addColumns([
-              schema11.autoSwap.id,
-              schema11.autoSwap.balanceThresholdSats,
-            ]))
-            .get();
-    for (final row in autoSwapRows) {
-      final id = row.read(schema11.autoSwap.id);
-      final balanceThresholdSats = row.read(
-        schema11.autoSwap.balanceThresholdSats,
-      );
-      if (id != null && balanceThresholdSats != null) {
-        await db.managers.autoSwap.update(
-          (f) => f(
-            id: Value(id),
-            triggerBalanceSats: Value(balanceThresholdSats * 2),
-          ),
-        );
-      }
-    }
   }
 }
