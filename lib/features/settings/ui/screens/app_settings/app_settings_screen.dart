@@ -66,17 +66,14 @@ class AppSettingsScreen extends StatelessWidget {
                     trailing: DropdownButton<Language>(
                       value: currentLanguage,
                       underline: const SizedBox.shrink(),
-                      items:
-                          Language.values
-                              .map(
-                                (language) => DropdownMenuItem<Language>(
-                                  value: language,
-                                  child: Text(
-                                    '${language.languageCode}${language.countryCode != null ? ' (${language.countryCode})' : ''}',
-                                  ),
-                                ),
-                              )
-                              .toList(),
+                      items: Language.values
+                          .map(
+                            (language) => DropdownMenuItem<Language>(
+                              value: language,
+                              child: Text(language.label),
+                            ),
+                          )
+                          .toList(),
                       onChanged: (Language? newLanguage) {
                         if (newLanguage != null) {
                           context.read<SettingsCubit>().changeLanguage(
