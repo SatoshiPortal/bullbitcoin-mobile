@@ -280,7 +280,7 @@
   "@walletDetailsSignerLabel": {
     "description": "Label for the signer field in wallet details"
   },
-  "walletDetailsSignerDeviceLabel": "Allekirjoittajan laite",
+  "walletDetailsSignerDeviceLabel": "Allekirjoituslaite",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
   },
@@ -304,7 +304,7 @@
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
-  "bitcoinSettingsLegacySeedsTitle": "Vanhat salaiset sanat",
+  "bitcoinSettingsLegacySeedsTitle": "Vanhat siemenlauseet",
   "@bitcoinSettingsLegacySeedsTitle": {
     "description": "Title for the legacy seeds section in Bitcoin settings"
   },
@@ -324,11 +324,11 @@
   "@bitcoinSettingsBip85EntropiesTitle": {
     "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
-  "logSettingsLogsTitle": "Lokit",
+  "logSettingsLogsTitle": "Lokitiedot",
   "@logSettingsLogsTitle": {
     "description": "Title for the logs section in settings"
   },
-  "logSettingsErrorLoadingMessage": "Virhe lokien latauksessa: ",
+  "logSettingsErrorLoadingMessage": "Virhe lokitietojen latauksessa: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
   },
@@ -360,11 +360,11 @@
   "@exchangeSettingsLogOutTitle": {
     "description": "Title for the log out option in exchange settings"
   },
-  "exchangeTransactionsTitle": "Tapahtumat",
+  "exchangeTransactionsTitle": "Transaktiot",
   "@exchangeTransactionsTitle": {
     "description": "Title for the transactions section in exchange"
   },
-  "exchangeTransactionsComingSoon": "Tapahtumat - Tulossa pian",
+  "exchangeTransactionsComingSoon": "Transaktiot - tulossa pian",
   "@exchangeTransactionsComingSoon": {
     "description": "Message indicating that the transactions feature is coming soon"
   },
@@ -380,7 +380,7 @@
   "@exchangeReferralsTitle": {
     "description": "Title for the referral codes section"
   },
-  "exchangeReferralsJoinMissionTitle": "Tue missiotamme",
+  "exchangeReferralsJoinMissionTitle": "Tule mukaan missioon",
   "@exchangeReferralsJoinMissionTitle": {
     "description": "Title encouraging users to join the referral mission"
   },
@@ -476,7 +476,7 @@
   "@exchangeAppSettingsDefaultCurrencyLabel": {
     "description": "Label for default currency setting in exchange app settings"
   },
-  "exchangeAppSettingsValidationWarning": "Aseta sekä kieli- että valuutta ennen tallennusta.",
+  "exchangeAppSettingsValidationWarning": "Aseta kieli ja valuutta ennen tallennusta.",
   "@exchangeAppSettingsValidationWarning": {
     "description": "Warning message when language and currency preferences are not both set"
   },
@@ -524,7 +524,7 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "exchangeAccountInfoVerificationNotVerified": "Ei vahvistettu",
+  "exchangeAccountInfoVerificationNotVerified": "Vahvistamaton",
   "@exchangeAccountInfoVerificationNotVerified": {
     "description": "Status label for not verified verification level"
   },
@@ -564,7 +564,7 @@
   "@walletDeletionErrorDefaultWallet": {
     "description": "Error message when attempting to delete a default wallet"
   },
-  "walletDeletionErrorOngoingSwaps": "Et voi poistaa lompakkoa, jossa on käynnissä olevia vaihtoja.",
+  "walletDeletionErrorOngoingSwaps": "Et voi poistaa lompakkoa, jossa on käynnissä olevia swäppejä.",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
@@ -664,7 +664,7 @@
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
   },
-  "sendSelectNetworkFee": "Valitse verkon kulutaso",
+  "sendSelectNetworkFee": "Valitse verkkokulujen taso",
   "@sendSelectNetworkFee": {
     "description": "Label for selecting the network fee in the send flow"
   },
@@ -760,15 +760,15 @@
   "@sendType": {
     "description": "Label prefix for transaction type field"
   },
-  "sendReceive": "Vastasanota",
+  "sendReceive": "Vastaanotto",
   "@sendReceive": {
     "description": "Label for receive transaction type"
   },
-  "sendChange": "Vaihda",
+  "sendChange": "Vaihtoraha",
   "@sendChange": {
     "description": "Label for change output in a transaction"
   },
-  "sendCouldNotBuildTransaction": "Tapahtumaa ei voitu muodostaa",
+  "sendCouldNotBuildTransaction": "Transaktiota ei voitu luoda",
   "@sendCouldNotBuildTransaction": {
     "description": "Error message when a transaction cannot be built"
   },
@@ -780,7 +780,7 @@
   "@sendSlowPaymentWarning": {
     "description": "Warning title for slow payment confirmation"
   },
-  "sendSlowPaymentWarningDescription": "Bitcoin-vaihdot kestävät hetken vahvistaa.",
+  "sendSlowPaymentWarningDescription": "Bitcoin-swapit kestävät hetken vahvistua.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -792,7 +792,7 @@
   "@sendConfirm": {
     "description": "Button label for confirming a send transaction"
   },
-  "sendBroadcastTransaction": "Lähetä tapahtuma",
+  "sendBroadcastTransaction": "Lähetä transaktio",
   "@sendBroadcastTransaction": {
     "description": "Button label for broadcasting a transaction to the network"
   },
@@ -808,7 +808,7 @@
   "@sendAmount": {
     "description": "Label for the transaction amount"
   },
-  "sendNetworkFees": "Verkon kulut",
+  "sendNetworkFees": "Verkkokulut",
   "@sendNetworkFees": {
     "description": "Label for network transaction fees"
   },
@@ -868,7 +868,7 @@
   "@receiveEnterHere": {
     "description": "Placeholder text for input fields in receive"
   },
-  "receiveSwapID": "Vaihdon tunniste",
+  "receiveSwapID": "Swap-tunniste",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
@@ -876,7 +876,7 @@
   "@receiveTotalFee": {
     "description": "Label for the total fee in a receive transaction"
   },
-  "receiveNetworkFee": "Verkon kulut",
+  "receiveNetworkFee": "Verkkokulut",
   "@receiveNetworkFee": {
     "description": "Label for the network fee in a receive transaction"
   },
@@ -884,7 +884,7 @@
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
   },
-  "receiveCopyOrScanAddressOnly": "Kopioi tail skannaa ainoastaan osoite",
+  "receiveCopyOrScanAddressOnly": "Kopioi tai skannaa ainoastaan osoite",
   "@receiveCopyOrScanAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
@@ -912,7 +912,7 @@
   "@receivePaymentInProgress": {
     "description": "Status message when a payment is being processed"
   },
-  "receiveBitcoinTransactionWillTakeTime": "Bitcoin tapahtuman vahvistus kestää hetkisen.",
+  "receiveBitcoinTransactionWillTakeTime": "Bitcoin transaktion vahvistus kestää hetkisen.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
@@ -920,11 +920,11 @@
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
-  "receivePayjoinInProgress": "Payjoin käsittelyssä",
+  "receivePayjoinInProgress": "Payjoin-transaktio on käsittelyssä",
   "@receivePayjoinInProgress": {
     "description": "Status message when a payjoin transaction is in progress"
   },
-  "receiveWaitForSenderToFinish": "Odota, että lähettäjä tekee payjoin-tapahtuman",
+  "receiveWaitForSenderToFinish": "Odota, että lähettäjä tekee payjoin-transaktion",
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
@@ -969,11 +969,11 @@
   "@receiveSendNetworkFee": {
     "description": "Label for the network fee on the sending network in a swap transaction"
   },
-  "receiveServerNetworkFees": "Palvelun vaihtokulut",
+  "receiveServerNetworkFees": "Palvelimen swap-kulut",
   "@receiveServerNetworkFees": {
     "description": "Label for network fees charged by the swap server"
   },
-  "receiveSwapId": "Vaihdon tunnus",
+  "receiveSwapId": "Swapin tunnus",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
   },
@@ -1037,11 +1037,11 @@
   "@buyExternalBitcoinWallet": {
     "description": "Label for external wallet option"
   },
-  "buySecureBitcoinWallet": "Turvallinen Bitcoin-lompakko",
+  "buySecureBitcoinWallet": "Bitcoin-säästölompakko",
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
   },
-  "buyInstantPaymentWallet": "Välittömän maksun lompakko",
+  "buyInstantPaymentWallet": "Pikamaksulompakko",
   "@buyInstantPaymentWallet": {
     "description": "Label for instant payment (Liquid) wallet"
   },
@@ -1089,7 +1089,7 @@
   "@buyYouReceive": {
     "description": "Label for amount user receives"
   },
-  "buyBitcoinPrice": "Bitcoinin hinta",
+  "buyBitcoinPrice": "Bitcoin-kurssi",
   "@buyBitcoinPrice": {
     "description": "Label for Bitcoin exchange rate"
   },
@@ -1134,7 +1134,7 @@
   "@buyConfirmExpressWithdrawal": {
     "description": "Title for express withdrawal confirmation screen"
   },
-  "buyNetworkFeeExplanation": "Bitcoin-verkon kulut vähennetään saamastasi summasta ja ne menevät bitcoin-louijoille",
+  "buyNetworkFeeExplanation": "Bitcoin-louhijoille menevät Bitcoin-verkon kulut vähennetään saamastasi summasta.",
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
   },
@@ -1150,7 +1150,7 @@
   "@buyNetworkFeeRate": {
     "description": "Label for network fee rate"
   },
-  "buyConfirmationTime": "Vahvistusaika",
+  "buyConfirmationTime": "Vahvistusviive",
   "@buyConfirmationTime": {
     "description": "Label for estimated confirmation time"
   },
@@ -1374,7 +1374,7 @@
   "@sellOrderCompleted": {
     "description": "Success message for completed order"
   },
-  "sellBalanceWillBeCredited": "Tilisi saldoa päivittyy, kun tapahtuma vahvistetaan lohkoketjussa.",
+  "sellBalanceWillBeCredited": "Tilisi saldoa päivittyy, kun transaktio vahvistetaan lohkoketjussa.",
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
@@ -1394,7 +1394,7 @@
   "@payNewRecipients": {
     "description": "Tab label for new recipients"
   },
-  "payMyFiatRecipients": "Valuuttamaksujen vastaanottajat",
+  "payMyFiatRecipients": "Fiat-maksujen vastaanottajat",
   "@payMyFiatRecipients": {
     "description": "Tab label for saved recipients"
   },
@@ -1495,11 +1495,11 @@
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
   },
-  "payInstitutionNumber": "Laitosnumero",
+  "payInstitutionNumber": "Y-tunnus",
   "@payInstitutionNumber": {
     "description": "Label for institution number"
   },
-  "payInstitutionNumberHint": "Syötä instituution numero",
+  "payInstitutionNumberHint": "Syötä Y-tunnus numero",
   "@payInstitutionNumberHint": {
     "description": "Hint for institution number input"
   },
@@ -1575,7 +1575,7 @@
   "@payClabeHint": {
     "description": "Hint for CLABE input"
   },
-  "payInstitutionCode": "Laitoskoodi",
+  "payInstitutionCode": "Y-tunnus",
   "@payInstitutionCode": {
     "description": "Label for institution code field"
   },
@@ -1691,11 +1691,11 @@
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
   },
-  "payOrderNotFoundError": "Maksutilausta ei löytynyt. Yritä uudelleen.",
+  "payOrderNotFoundError": "Maksupyyntöä ei löytynyt. Yritä uudelleen.",
   "@payOrderNotFoundError": {
     "description": "Error message for order not found"
   },
-  "payOrderAlreadyConfirmedError": "Tämä maksutilaus on jo vahvistettu.",
+  "payOrderAlreadyConfirmedError": "Tämä maksupyyntö on jo vahvistettu.",
   "@payOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed order"
   },
@@ -1731,7 +1731,7 @@
   "@payOrderNumber": {
     "description": "Label for order number"
   },
-  "payPayinAmount": "Sisäänmaksun määrä",
+  "payPayinAmount": "Maksun määrä",
   "@payPayinAmount": {
     "description": "Label for amount user pays in"
   },
@@ -1803,7 +1803,7 @@
   "@payBitcoinAmount": {
     "description": "Label for Bitcoin amount"
   },
-  "payBitcoinPrice": "Bitcoinin hinta",
+  "payBitcoinPrice": "Bitcoin-kurssi",
   "@payBitcoinPrice": {
     "description": "Label for Bitcoin exchange rate"
   },
@@ -1831,7 +1831,7 @@
   "@payInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "payInProgressDescription": "Maksusi on aloitettu ja vastaanottaja saa varat, kun tapahtumallesi tulee 1 vahvistus lohkoketjussa.",
+  "payInProgressDescription": "Maksusi on aloitettu ja vastaanottaja saa varat, kun transaktio vahvistuu lohkoketjussa.",
   "@payInProgressDescription": {
     "description": "Description for payment in progress"
   },
@@ -1895,11 +1895,11 @@
   "@payNotAuthenticated": {
     "description": "Error message when user is not authenticated"
   },
-  "payOrderNotFound": "Maksutilausta ei löytynyt. Yritä uudelleen.",
+  "payOrderNotFound": "Maksupyyntöä ei löytynyt. Yritä uudelleen.",
   "@payOrderNotFound": {
     "description": "Error message when pay order is not found"
   },
-  "payOrderAlreadyConfirmed": "Tämä maksutilaus on jo vahvistettu.",
+  "payOrderAlreadyConfirmed": "Tämä maksupyyntö on jo vahvistettu.",
   "@payOrderAlreadyConfirmed": {
     "description": "Error message when pay order is already confirmed"
   },
@@ -1907,7 +1907,7 @@
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "payPaymentInProgressDescription": "Maksusi on aloitettu ja vastaanottaja saa varat, kun tapahtumallesi tulee 1 vahvistus lohkoketjussa.",
+  "payPaymentInProgressDescription": "Maksusi on aloitettu ja vastaanottaja saa varat, kun transaktio vahvistuu lohkoketjussa.",
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
@@ -1915,7 +1915,7 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payFor": "Saajalle",
+  "payFor": "Saaja",
   "@payFor": {
     "description": "Label for recipient information section"
   },
@@ -1947,7 +1947,7 @@
   "@payCopied": {
     "description": "Success message after copying"
   },
-                                                                                      "payWhichWallet": "Mistä lompakosta haluat maksaa?",
+  "payWhichWallet": "Mistä lompakosta haluat maksaa?",
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"
   },
@@ -1955,7 +1955,7 @@
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
   },
-  "payInsufficientBalance": "Valitussa lompakossa ei ole riittävästi saldoa tämän maksutilauksen suorittamiseen.",
+  "payInsufficientBalance": "Valitussa lompakossa ei ole riittävästi saldoa tämän maksupyynnön suorittamiseen.",
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
   },
@@ -1963,7 +1963,7 @@
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
   },
-      "transactionTitle": "Tapahtumat",
+      "transactionTitle": "Transaktiot",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
   },
@@ -1976,7 +1976,7 @@
       }
     }
   },
-  "transactionDetailTitle": "Tapahtuman tiedot",
+  "transactionDetailTitle": "Transaktion tiedot",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
   },
@@ -1984,7 +1984,7 @@
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
   },
-  "transactionDetailSwapProgress": "Vaihdon eteneminen",
+  "transactionDetailSwapProgress": "Swapin edistyminen",
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
@@ -1997,7 +1997,7 @@
       }
     }
   },
-  "transactionDetailRetrySwap": "Yritä vaihtoa uudelleen {action}",
+  "transactionDetailRetrySwap": "Yritä uudelleen swappiä {action}",
   "@transactionDetailRetrySwap": {
     "description": "Button label to retry a failed swap action",
     "placeholders": {
@@ -2006,11 +2006,11 @@
       }
     }
   },
-  "transactionDetailAddNote": "Lisää muistiinpano",
+  "transactionDetailAddNote": "Lisää kuvaus",
   "@transactionDetailAddNote": {
     "description": "Button label to add a note to a transaction"
   },
-  "transactionDetailBumpFees": "Nosta kuluja",
+  "transactionDetailBumpFees": "Aktivoi RFB",
   "@transactionDetailBumpFees": {
     "description": "Button label to increase transaction fees via RBF"
   },
@@ -2094,7 +2094,7 @@
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "transactionStatusSwapFailed": "Vaihto epäonnistui",
+  "transactionStatusSwapFailed": "Swap epäonnistui",
   "@transactionStatusSwapFailed": {
     "description": "Status label for failed swaps"
   },
@@ -2102,7 +2102,7 @@
   "@transactionStatusTransferExpired": {
     "description": "Status label for expired transfers"
   },
-  "transactionStatusSwapExpired": "Vaihto vanhentunut",
+  "transactionStatusSwapExpired": "Vanhentunut swap",
   "@transactionStatusSwapExpired": {
     "description": "Status label for expired swaps"
   },
@@ -2110,7 +2110,7 @@
   "@transactionStatusPayjoinRequested": {
     "description": "Status label for payjoin transaction requests"
   },
-  "transactionLabelTransactionId": "Tapahtuma-ID",
+  "transactionLabelTransactionId": "Transaktion ID",
   "@transactionLabelTransactionId": {
     "description": "Label for transaction ID field"
   },
@@ -2130,7 +2130,7 @@
   "@transactionLabelAddress": {
     "description": "Label for transaction address"
   },
-  "transactionLabelAddressNotes": "Osoitteen muistiinpanot",
+  "transactionLabelAddressNotes": "Osoitteen kuvaus",
   "@transactionLabelAddressNotes": {
     "description": "Label for address notes/labels"
   },
@@ -2154,7 +2154,7 @@
   "@transactionLabelConfirmationTime": {
     "description": "Label for transaction confirmation timestamp"
   },
-  "transactionLabelTransferId": "Siirto-ID",
+  "transactionLabelTransferId": "Swap-tunnus",
   "@transactionLabelTransferId": {
     "description": "Label for transfer/swap ID"
   },
@@ -2166,7 +2166,7 @@
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
   },
-  "transactionLabelSwapStatus": "Vaihdon tila",
+  "transactionLabelSwapStatus": "Swapin tila",
   "@transactionLabelSwapStatus": {
     "description": "Label for swap status"
   },
@@ -2174,15 +2174,15 @@
   "@transactionLabelSwapStatusRefunded": {
     "description": "Status label for refunded swaps"
   },
-  "transactionLabelLiquidTransactionId": "Liquid-tapahtuma-ID",
+  "transactionLabelLiquidTransactionId": "Liquid-transaktion ID",
   "@transactionLabelLiquidTransactionId": {
     "description": "Label for Liquid network transaction ID"
   },
-  "transactionLabelBitcoinTransactionId": "Bitcoin-tapahtuma-ID",
+  "transactionLabelBitcoinTransactionId": "Bitcoin-transaktion ID",
   "@transactionLabelBitcoinTransactionId": {
     "description": "Label for Bitcoin network transaction ID"
   },
-  "transactionLabelTotalTransferFees": "Siirtojen kokonaiskulut",
+  "transactionLabelTotalTransferFees": "Swapin kokonaiskulut",
   "@transactionLabelTotalTransferFees": {
     "description": "Label for total transfer fees"
   },
@@ -2214,7 +2214,7 @@
   "@transactionLabelPayjoinStatus": {
     "description": "Label for payjoin status"
   },
-  "transactionLabelPayjoinCreationTime": "Payjoinin luontiaika",
+  "transactionLabelPayjoinCreationTime": "Payjoin luontiaika",
   "@transactionLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation timestamp"
   },
@@ -2234,7 +2234,7 @@
   "@transactionOrderLabelOrderNumber": {
     "description": "Label for order number"
   },
-  "transactionOrderLabelPayinAmount": "Sisäänmaksun määrä",
+  "transactionOrderLabelPayinAmount": "Maksun määrä",
   "@transactionOrderLabelPayinAmount": {
     "description": "Label for order payin amount"
   },
@@ -2258,7 +2258,7 @@
   "@transactionOrderLabelPayinStatus": {
     "description": "Label for order payin status"
   },
-  "transactionOrderLabelOrderStatus": "Tilaustila",
+  "transactionOrderLabelOrderStatus": "Pyynnöntila",
   "@transactionOrderLabelOrderStatus": {
     "description": "Label for order status"
   },
@@ -2266,15 +2266,15 @@
   "@transactionOrderLabelPayoutStatus": {
     "description": "Label for order payout status"
   },
-  "transactionNotesLabel": "Tapahtuman muistiinpanot",
+  "transactionNotesLabel": "Transaktion muistiinpanot",
   "@transactionNotesLabel": {
     "description": "Label for transaction notes section"
   },
-  "transactionNoteAddTitle": "Lisää muistiinpano",
+  "transactionNoteAddTitle": "Lisää kuvaus",
   "@transactionNoteAddTitle": {
     "description": "Title for add note dialog"
   },
-  "transactionNoteEditTitle": "Muokkaa muistiinpanoa",
+  "transactionNoteEditTitle": "Muokkaa kuvausta",
   "@transactionNoteEditTitle": {
     "description": "Title for edit note dialog"
   },
@@ -2290,7 +2290,7 @@
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
   },
-  "transactionPayjoinNoProposal": "Etkö vastaanota payjoin-ehdotusta vastaanottajalta?",
+  "transactionPayjoinNoProposal": "Etkö saanut payjoin-ehdotusta vastaanottajalta?",
   "@transactionPayjoinNoProposal": {
     "description": "Message displayed when payjoin proposal is not received"
   },
@@ -2306,7 +2306,7 @@
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
   },
-  "transactionSwapProgressFundsClaimed": "Varat\nNoudettu",
+  "transactionSwapProgressFundsClaimed": "Varat\nLunastettu",
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
   },
@@ -2322,7 +2322,7 @@
   "@transactionSwapProgressConfirmed": {
     "description": "Swap progress step: confirmed"
   },
-  "transactionSwapProgressClaim": "Nouto",
+  "transactionSwapProgressClaim": "Lunastus",
   "@transactionSwapProgressClaim": {
     "description": "Swap progress step: claim"
   },
@@ -2338,71 +2338,71 @@
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
   },
-  "transactionSwapStatusSwapStatus": "Vaihdon tila",
+  "transactionSwapStatusSwapStatus": "Swapin tila",
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
   },
-  "transactionSwapDescLnReceivePending": "Vaihtosi on aloitettu. Odotamme maksun vastaanottamista Lightning-verkossa.",
+  "transactionSwapDescLnReceivePending": "Swap on aloitettu. Odotamme maksun vastaanottamista Lightning-verkossa.",
   "@transactionSwapDescLnReceivePending": {
     "description": "Description for pending Lightning receive swap"
   },
-  "transactionSwapDescLnReceivePaid": "Maksu vastaanotettu! Lähetämme nyt on-chain-tapahtuman lompakkoosi.",
+  "transactionSwapDescLnReceivePaid": "Swap vastaanotettu! Lähetämme nyt on-chain -transaktion lompakkoosi.",
   "@transactionSwapDescLnReceivePaid": {
     "description": "Description for paid Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveClaimable": "On-chain-tapahtuma on vahvistettu. Noudamme nyt varat vaihtosi suorittamiseksi.",
+  "transactionSwapDescLnReceiveClaimable": "On-chain -transaktio on vahvistettu. Lunastamme nyt varat ja toteutamme swappisi.",
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveCompleted": "Vaihtosi on suoritettu onnistuneesti! Varat ovat nyt saatavilla lompakossasi.",
+  "transactionSwapDescLnReceiveCompleted": "Swap onnistui! Varat ovat nyt saatavilla lompakossasi.",
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveFailed": "Vaihdossa ilmeni ongelma. Ota yhteyttä tukeen, jos varoja ei ole palautettu 24 tunnin kuluessa.",
+  "transactionSwapDescLnReceiveFailed": "Swapissä ilmeni ongelma. Ota yhteyttä tukeen, jos varoja ei ole palautettu 24 tunnin kuluessa.",
   "@transactionSwapDescLnReceiveFailed": {
     "description": "Description for failed Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveExpired": "Tämä vaihto on vanhentunut. Lähetetyt varat palautetaan automaattisesti lähettäjälle.",
+  "transactionSwapDescLnReceiveExpired": "Tämä swap on vanhentunut. Lähetetyt varat palautetaan automaattisesti lähettäjälle.",
   "@transactionSwapDescLnReceiveExpired": {
     "description": "Description for expired Lightning receive swap"
   },
-  "transactionSwapDescLnReceiveDefault": "Vaihtosi on käynnissä. Prosessi on automatisoitu ja voi kestää hetken.",
+  "transactionSwapDescLnReceiveDefault": "Swap on käynnissä. Prosessi on automatisoitu ja voi kestää hetken.",
   "@transactionSwapDescLnReceiveDefault": {
     "description": "Default description for Lightning receive swap"
   },
-  "transactionSwapDescLnSendPending": "Vaihtosi on aloitettu. Lähetämme on-chain-tapahtuman lukitaksemme varasi.",
+  "transactionSwapDescLnSendPending": "Swap on aloitettu. Lukitsemme varasi lähettämällä on-chain -transaktion.",
   "@transactionSwapDescLnSendPending": {
     "description": "Description for pending Lightning send swap"
   },
-  "transactionSwapDescLnSendPaid": "On-chain-tapahtumasi on lähetetty verkkoon. Yhden vahvistuksen jälkeen Lightning-maksu lähetetään.",
+  "transactionSwapDescLnSendPaid": "On-chain -transaktio on lähetetty verkkoon. Yhden vahvistuksen jälkeen Lightning-maksu lähetetään.",
   "@transactionSwapDescLnSendPaid": {
     "description": "Description for paid Lightning send swap"
   },
-  "transactionSwapDescLnSendCompleted": "Lightning-maksu on lähetetty onnistuneesti! Vaihtosi on nyt valmis.",
+  "transactionSwapDescLnSendCompleted": "Lightning-maksu on lähetetty onnistuneesti! Swap on nyt valmis.",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
   },
-  "transactionSwapDescLnSendFailed": "Vaihdossa ilmeni ongelma. Varat palautetaan automaattisesti lompakkoosi.",
+  "transactionSwapDescLnSendFailed": "Swapissa ilmeni ongelma. Varat palautetaan automaattisesti lompakkoosi.",
   "@transactionSwapDescLnSendFailed": {
     "description": "Description for failed Lightning send swap"
   },
-  "transactionSwapDescLnSendExpired": "Tämä vaihto on vanhentunut. Varat palautetaan automaattisesti lompakkoosi.",
+  "transactionSwapDescLnSendExpired": "Tämä swap on vanhentunut. Varat palautetaan automaattisesti lompakkoosi.",
   "@transactionSwapDescLnSendExpired": {
     "description": "Description for expired Lightning send swap"
   },
-  "transactionSwapDescLnSendDefault": "Vaihtosi on käynnissä. Prosessi on automatisoitu ja voi kestää hetken.",
+  "transactionSwapDescLnSendDefault": "Swap on käynnissä. Prosessi on automatisoitu ja voi kestää hetken.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
   },
-  "transactionSwapDescChainPending": "Siirto on luotu mutta sitä ei ole vielä aloitettu.",
+  "transactionSwapDescChainPending": "Swap on luotu, mutta sitä ei ole vielä aloitettu.",
   "@transactionSwapDescChainPending": {
     "description": "Description for pending chain swap"
   },
-  "transactionSwapDescChainPaid": "Tapahtumasi on lähetetty verkkoon. Odotamme nyt lukitustapahtuman vahvistusta.",
+  "transactionSwapDescChainPaid": "Transaktiosi on lähetetty verkkoon. Odotamme nyt lukitustransaktion vahvistusta.",
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
   },
-  "transactionSwapDescChainClaimable": "Lukitustapahtuma on vahvistettu. Voit nyt noutaa varat siirron suorittamiseksi.",
+  "transactionSwapDescChainClaimable": "Lukitustransaktio on vahvistettu. Voit nyt lunastaa swäpin varat.",
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
   },
@@ -2430,11 +2430,11 @@
   "@transactionSwapInfoFailedExpired": {
     "description": "Additional info for failed or expired swaps"
   },
-  "transactionSwapInfoChainDelay": "On-chain-siirrot voivat kestää jonkin aikaa lohkoketjun vahvistusaikojen vuoksi.",
+  "transactionSwapInfoChainDelay": "On-chain -siirrot kestävät jonkin aikaa lohkoketjun vahvistusviiveen vuoksi.",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
   },
-  "transactionSwapInfoClaimableTransfer": "Siirto suoritetaan automaattisesti muutamassa sekunnissa. Jos ei, voit yrittää manuaalista noutoa napsauttamalla \"Retry Transfer Claim\" -painiketta.",
+  "transactionSwapInfoClaimableTransfer": "Swappi suoritetaan automaattisesti muutamassa sekunnissa. Jos ei, niin voit yrittää manuaalista lunastusta napsauttamalla \"Yritä uudelleen lunastusta\"-painiketta.",
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
   },
@@ -2454,15 +2454,15 @@
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
-  "transactionListOngoingTransfersDescription": "Nämä siirrot ovat parhaillaan käynnissä. Varasi ovat turvassa ja ne ovat saatavilla siirron valmistuessa.",
+  "transactionListOngoingTransfersDescription": "Nämä siirrot ovat parhaillaan käynnissä. Varasi ovat turvassa ja ne tulevat saataville siirron valmistuessa.",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
-  "transactionListLoadingTransactions": "Ladataan tapahtumia...",
+  "transactionListLoadingTransactions": "Ladataan transaktioita...",
   "@transactionListLoadingTransactions": {
     "description": "Message displayed while loading transactions"
   },
-  "transactionListNoTransactions": "Ei vielä tapahtumia.",
+  "transactionListNoTransactions": "Ei transaktioita.",
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
   },
@@ -2474,7 +2474,7 @@
   "@transactionListYesterday": {
     "description": "Date label for yesterday's transactions"
   },
-  "transactionSwapDoNotUninstall": "Älä poista sovellusta ennen kuin vaihto on valmis.",
+  "transactionSwapDoNotUninstall": "Älä poista sovellusta ennen kuin swap on valmis.",
   "@transactionSwapDoNotUninstall": {
     "description": "Warning message to not uninstall app during swap"
   },
@@ -2482,7 +2482,7 @@
   "@transactionFeesDeductedFrom": {
     "description": "Fee deduction explanation for receiving swaps"
   },
-  "transactionFeesTotalDeducted": "Tämä on lähetetystä summasta vähennetty kokonaiskulu.",
+  "transactionFeesTotalDeducted": "Nämä ovat lähetetystä summasta vähennetyt kokonaiskulut.",
   "@transactionFeesTotalDeducted": {
     "description": "Fee deduction explanation for sending swaps"
   },
@@ -2494,7 +2494,7 @@
   "@transactionLabelReceiveAmount": {
     "description": "Label for receive amount in swap details"
   },
-  "transactionLabelSendNetworkFees": "Lähetyksen verkkokulut",
+  "transactionLabelSendNetworkFees": "Transaktion verkkokulut",
   "@transactionLabelSendNetworkFees": {
     "description": "Label for send network fees in swap details"
   },
@@ -2506,7 +2506,7 @@
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
   },
-  "transactionLabelPreimage": "Esikuva",
+  "transactionLabelPreimage": "Preimage",
   "@transactionLabelPreimage": {
     "description": "Label for preimage in Lightning swap details"
   },
@@ -2518,15 +2518,15 @@
   "@transactionOrderLabelOriginName": {
     "description": "Label for origin name in fiat payment order"
   },
-  "transactionOrderLabelOriginCedula": "Lähteen cédula",
+  "transactionOrderLabelOriginCedula": "Lähteen aikataulu",
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
   },
-  "transactionDetailAccelerate": "Nopeuta",
+  "transactionDetailAccelerate": "Kiihdytä",
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "transactionDetailLabelTransactionId": "Tapahtuma-ID",
+  "transactionDetailLabelTransactionId": "Transaktion ID",
   "@transactionDetailLabelTransactionId": {
     "description": "Label for transaction ID in details"
   },
@@ -2546,7 +2546,7 @@
   "@transactionDetailLabelAddress": {
     "description": "Label for address"
   },
-  "transactionDetailLabelAddressNotes": "Osoitteen muistiinpanot",
+  "transactionDetailLabelAddressNotes": "Osoitteen kuvaus",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
   },
@@ -2558,7 +2558,7 @@
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
   },
-  "transactionDetailLabelTransactionFee": "Transaktiomaksu",
+  "transactionDetailLabelTransactionFee": "Transaktiokulu",
   "@transactionDetailLabelTransactionFee": {
     "description": "Label for transaction fee"
   },
@@ -2602,7 +2602,7 @@
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
   },
-  "transactionDetailLabelOrderStatus": "Tilaustila",
+  "transactionDetailLabelOrderStatus": "Pyynnöntila",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
   },
@@ -2618,11 +2618,11 @@
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
   },
-  "transactionDetailLabelTransferId": "Siirto-ID",
+  "transactionDetailLabelTransferId": "Transaktion ID",
   "@transactionDetailLabelTransferId": {
     "description": "Label for transfer ID"
   },
-  "transactionDetailLabelSwapId": "Vaihto-ID",
+  "transactionDetailLabelSwapId": "Swap-ID",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
   },
@@ -2630,7 +2630,7 @@
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
   },
-  "transactionDetailLabelSwapStatus": "Vaihdon tila",
+  "transactionDetailLabelSwapStatus": "Swapin tila",
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
@@ -2638,11 +2638,11 @@
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
   },
-  "transactionDetailLabelLiquidTxId": "Liquid-tapahtuma-ID",
+  "transactionDetailLabelLiquidTxId": "Liquid-transaktion ID",
   "@transactionDetailLabelLiquidTxId": {
     "description": "Label for Liquid transaction ID"
   },
-  "transactionDetailLabelBitcoinTxId": "Bitcoin-tapahtuma-ID",
+  "transactionDetailLabelBitcoinTxId": "Bitcoin-transaktion ID",
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
@@ -2650,7 +2650,7 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "transactionDetailLabelSwapFees": "Vaihtokulut",
+  "transactionDetailLabelSwapFees": "Swap-kulut",
   "@transactionDetailLabelSwapFees": {
     "description": "Label for swap fees"
   },
@@ -2674,11 +2674,11 @@
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
   },
-  "transactionDetailLabelPayjoinCreationTime": "Payjoinin luontiaika",
+  "transactionDetailLabelPayjoinCreationTime": "Payjoin luontiaika",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
   },
-  "walletNameInstantPayments": "Välittömät maksut",
+  "walletNameInstantPayments": "Pikamaksulompakko",
   "@walletNameInstantPayments": {
     "description": "Default name for Liquid/instant payments wallet"
   },
@@ -2690,7 +2690,7 @@
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
   },
-  "walletTypeWatchSigner": "Katselu-allekirjoittaja",
+  "walletTypeWatchSigner": "Watch-Signer",
   "@walletTypeWatchSigner": {
     "description": "Wallet type label for watch-signer wallets"
   },
@@ -2722,11 +2722,11 @@
   "@walletAddressTypeConfidentialSegwit": {
     "description": "Address type for Liquid wallets"
   },
-  "walletAddressTypeNativeSegwit": "Natiivinen Segwit",
+  "walletAddressTypeNativeSegwit": "Natiivi Segwit",
   "@walletAddressTypeNativeSegwit": {
     "description": "Address type for BIP84 wallets"
   },
-  "walletAddressTypeNestedSegwit": "Upotettu Segwit",
+  "walletAddressTypeNestedSegwit": "Nested Segwit",
   "@walletAddressTypeNestedSegwit": {
     "description": "Address type for BIP49 wallets"
   },
@@ -2762,7 +2762,7 @@
   "@fundExchangeAccountTitle": {
     "description": "Main title on the fund exchange account screen"
   },
-  "fundExchangeAccountSubtitle": "Valitse maasi ja maksutapa",
+  "fundExchangeAccountSubtitle": "Valitse maa ja maksutapa",
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
   },
@@ -2874,7 +2874,7 @@
   "@fundExchangeMethodCanadaPostSubtitle": {
     "description": "Subtitle for Canada Post payment method"
   },
-  "fundExchangeMethodInstantSepa": "Välitön SEPA",
+  "fundExchangeMethodInstantSepa": "Instant SEPA",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -2970,7 +2970,7 @@
   "@fundExchangeLabelSwiftCode": {
     "description": "Label for SWIFT code field"
   },
-  "fundExchangeLabelInstitutionNumber": "Laitosnumero",
+  "fundExchangeLabelInstitutionNumber": "Y-tunnus",
   "@fundExchangeLabelInstitutionNumber": {
     "description": "Label for institution number field"
   },
@@ -3154,7 +3154,7 @@
   "@fundExchangeLabelClabe": {
     "description": "Label for CLABE number field (Mexico)"
   },
-  "fundExchangeLabelMemo": "Muistiinpano",
+  "fundExchangeLabelMemo": "Kuvaus",
   "@fundExchangeLabelMemo": {
     "description": "Label for memo/reference field"
   },
@@ -3390,7 +3390,7 @@
   "@physicalBackupDescription": {
     "description": "Description of physical backup method"
   },
-  "physicalBackupTag": "Luotettava (ota aikaa)",
+  "physicalBackupTag": "Luotettava (varaa aikaa)",
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
   },
@@ -3412,7 +3412,7 @@
       }
     }
   },
-  "backupInstruction1": "Jos menetät 12 sanan varmuuskopiosi, et voi palauttaa pääsyä Bitcoin-lompakkoon.",
+  "backupInstruction1": "Jos menetät 12 sanan varmuuskopiosi, et voi palauttaa Bitcoin-lompakkoasi.",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
   },
@@ -3472,7 +3472,7 @@
   "@startBackupButton": {
     "description": "Button label to start backup process"
   },
-  "exportVaultButton": "Vie holvi",
+  "exportVaultButton": "Vie holviin",
   "@exportVaultButton": {
     "description": "Button label to export vault"
   },
@@ -3542,7 +3542,7 @@
   "@confirmButton": {
     "description": "Button label to confirm action"
   },
-  "recoveryPhraseTitle": "Kirjoita palautuslausekkeesi\noikeassa järjestyksessä",
+  "recoveryPhraseTitle": "Kirjoita siemenlauseen\nsanat järjestyksessä",
   "@recoveryPhraseTitle": {
     "description": "Title instructing user to write down recovery phrase"
   },
@@ -3632,19 +3632,19 @@
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
   },
-  "legacySeedViewScreenTitle": "Vanhat salaiset sanat",
+  "legacySeedViewScreenTitle": "Vanhat siemenlauseet",
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "legacySeedViewNoSeedsMessage": "Vanhoja siemeniä ei löytynyt.",
+  "legacySeedViewNoSeedsMessage": "Vanhoja siemenlauseita ei löytynyt.",
   "@legacySeedViewNoSeedsMessage": {
     "description": "Message shown when no legacy seeds are found"
   },
-  "legacySeedViewMnemonicLabel": "Muistilauseke",
+  "legacySeedViewMnemonicLabel": "Muistikas",
   "@legacySeedViewMnemonicLabel": {
     "description": "Label for mnemonic words display"
   },
-  "legacySeedViewPassphrasesLabel": "Suojaussanat:",
+  "legacySeedViewPassphrasesLabel": "Salafraasit:",
   "@legacySeedViewPassphrasesLabel": {
     "description": "Label for passphrases section"
   },
@@ -3764,7 +3764,7 @@
   "@physicalBackupRecommendation": {
     "description": "Bold label for physical backup recommendation"
   },
-  "physicalBackupRecommendationText": "Olet varma, että osaat piilottaa ja säilyttää Bitcoin-siementekstisi turvallisesti.",
+  "physicalBackupRecommendationText": "Olet varma, että osaat piilottaa ja säilyttää Bitcoin-siemenlauseen turvallisesti.",
   "@physicalBackupRecommendationText": {
     "description": "Text explaining when to use physical backup"
   },
@@ -3974,7 +3974,7 @@
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
-  "connectingToKeyServer": "Yhdistetään avainpalvelimeen Torin yli.\nTämä voi kestää jopa minuutin.",
+  "connectingToKeyServer": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
   "@connectingToKeyServer": {
     "description": "Message shown while connecting to key server via Tor"
   },
@@ -3990,7 +3990,7 @@
   "@dcaInsufficientBalanceTitle": {
     "description": "InfoCard title when user has insufficient funds"
   },
-  "dcaInsufficientBalanceDescription": "Sinulla ei ole tarpeeksi saldoa luodaksesi tämän tilauksen.",
+  "dcaInsufficientBalanceDescription": "Sinulla ei ole tarpeeksi saldoa luodaksesi tämän pyynnön.",
   "@dcaInsufficientBalanceDescription": {
     "description": "InfoCard description explaining insufficient balance error"
   },
@@ -4002,7 +4002,7 @@
   "@dcaScheduleDescription": {
     "description": "Explanation text at the top of DCA setup form"
   },
-  "dcaFrequencyValidationError": "Valitse taajuus",
+  "dcaFrequencyValidationError": "Valitse aikataulu",
   "@dcaFrequencyValidationError": {
     "description": "Form validation error when no frequency is selected"
   },
@@ -4018,7 +4018,7 @@
   "@dcaConfirmationDescription": {
     "description": "Explanation text at the top of confirmation screen"
   },
-  "dcaFrequencyLabel": "Taajuus",
+  "dcaFrequencyLabel": "Aikataulu",
   "@dcaFrequencyLabel": {
     "description": "Label for frequency detail row"
   },
@@ -4136,7 +4136,7 @@
       }
     }
   },
-  "dcaBackToHomeButton": "Takaisin kotiin",
+  "dcaBackToHomeButton": "Kotisivulle",
   "@dcaBackToHomeButton": {
     "description": "Button label to return to exchange home screen"
   },
@@ -4172,7 +4172,7 @@
   "@dcaWalletSelectionContinueButton": {
     "description": "Button label to proceed to confirmation screen"
   },
-  "dcaSelectFrequencyLabel": "Valitse taajuus",
+  "dcaSelectFrequencyLabel": "Aikataulu",
   "@dcaSelectFrequencyLabel": {
     "description": "Label above frequency selection radio buttons"
   },
@@ -4212,7 +4212,7 @@
   "@swapConfirmTransferTitle": {
     "description": "AppBar title on the confirmation page"
   },
-  "swapInfoDescription": "Siirrä Bitcoin sujuvasti lompakoidesi välillä. Säilytä varoja Instant Payment -lompakossa päivittäistä käyttöä varten.",
+  "swapInfoDescription": "Siirrä Bitcoin sujuvasti lompakoidesi välillä. Säilytä varoja pikamaksulompakossa vain päivittäistä käyttöä varten.",
   "@swapInfoDescription": {
     "description": "Information banner text on amount page"
   },
@@ -4236,11 +4236,11 @@
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
   },
-  "swapAvailableBalance": "Saatavilla oleva saldo",
+  "swapAvailableBalance": "Käytettävissä oleva saldo",
   "@swapAvailableBalance": {
     "description": "Available balance label"
   },
-  "swapMaxButton": "MAKS",
+  "swapMaxButton": "Maksimi",
   "@swapMaxButton": {
     "description": "Button to use maximum available balance"
   },
@@ -4260,7 +4260,7 @@
   "@swapTransferPendingTitle": {
     "description": "Title during pending swap status"
   },
-  "swapTransferPendingMessage": "Siirto on käynnissä. Bitcoin-tapahtumat voivat kestää hetken vahvistua. Voit palata kotiin ja odottaa.",
+  "swapTransferPendingMessage": "Siirto on käynnissä. Bitcoin-transaktiot voivat kestää hetken vahvistua. Voit palata kotisivulle ja odottaa.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
   },
@@ -4276,7 +4276,7 @@
   "@swapTransferRefundInProgressTitle": {
     "description": "Title when swap is being refunded"
   },
-  "swapTransferRefundInProgressMessage": "Siirrossa oli virhe. Hyvityksesi on käynnissä.",
+  "swapTransferRefundInProgressMessage": "Swap epäonnistui ja hyvitys on käynnissä.",
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
   },
@@ -4318,7 +4318,7 @@
       }
     }
   },
-  "swapErrorInsufficientFunds": "Tapahtumaa ei voitu muodostaa. Todennäköisesti syynä on riittämättömät varat kulujen ja määrän kattamiseen.",
+  "swapErrorInsufficientFunds": "Transaktiota ei voitu muodostaa. Todennäköisesti syynä on riittämättömät varat kulujen ja määrän kattamiseen.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
   },
@@ -4395,31 +4395,31 @@
   "@swapValidationSelectToWallet": {
     "description": "Validation error when no destination wallet selected"
   },
-  "swapDoNotUninstallWarning": "Älä poista sovellusta ennen kuin siirto on valmis!",
+  "swapDoNotUninstallWarning": "Älä poista sovellusta ennen kuin swappi valmistuu!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
   },
-  "pinSecurityTitle": "Turva-PIN",
+  "pinSecurityTitle": "PIN-koodi",
   "@pinSecurityTitle": {
     "description": "AppBar title for PIN settings screen"
   },
-  "pinManageDescription": "Hallitse turva-PIN-koodiasi",
+  "pinManageDescription": "PIN-koodiasetukset",
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "pinProtectionDescription": "PIN suojaa pääsyn lompakkoosi ja asetuksiin. Pidä se muistettavana.",
+  "pinProtectionDescription": "PIN suojaa pääsyn lompakkoosi ja asetuksiin. Pidä se muistissa.",
   "@pinProtectionDescription": {
     "description": "Informational text explaining PIN purpose"
   },
-  "pinButtonChange": "Vaihda PIN",
+  "pinButtonChange": "Vaihda PIN-koodi",
   "@pinButtonChange": {
     "description": "Button label when PIN already exists"
   },
-  "pinButtonCreate": "Luo PIN",
+  "pinButtonCreate": "Luo PIN-koodi",
   "@pinButtonCreate": {
     "description": "Button label when no PIN exists"
   },
-  "pinButtonRemove": "Poista turva-PIN",
+  "pinButtonRemove": "Poista PIN-koodi käytöstä",
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
@@ -4431,11 +4431,11 @@
   "@appUnlockScreenTitle": {
     "description": "Title of the app unlock screen"
   },
-  "pinCreateHeadline": "Luo uusi PIN",
+  "pinCreateHeadline": "Luo uusi PIN-koodi",
   "@pinCreateHeadline": {
     "description": "Headline text on PIN creation screen"
   },
-  "pinValidationError": "PIN:n on oltava vähintään {minLength} numeroa pitkä",
+  "pinValidationError": "PIN-koodin vähimmäispituus on {minLength} numeroa",
   "@pinValidationError": {
     "description": "Error message when PIN is too short",
     "placeholders": {
@@ -4448,7 +4448,7 @@
   "@pinButtonContinue": {
     "description": "Button label to proceed after entering new PIN"
   },
-  "pinConfirmHeadline": "Vahvista uusi PIN",
+  "pinConfirmHeadline": "Vahvista uusi PIN-koodi",
   "@pinConfirmHeadline": {
     "description": "Headline text on PIN confirmation screen"
   },
@@ -4460,11 +4460,11 @@
   "@pinButtonConfirm": {
     "description": "Button label to submit confirmed PIN"
   },
-  "appUnlockEnterPinMessage": "Syötä PIN-koodisi avataksesi",
+  "appUnlockEnterPinMessage": "Avaaminen vaatii PIN-koodin",
   "@appUnlockEnterPinMessage": {
     "description": "Message prompting user to enter their PIN code to unlock the app"
   },
-  "appUnlockIncorrectPinError": "Väärä PIN. Yritä uudelleen. ({failedAttempts} {attemptsWord})",
+  "appUnlockIncorrectPinError": "Väärä PIN-koodi. Yritä uudelleen. ({failedAttempts} {attemptsWord})",
   "@appUnlockIncorrectPinError": {
     "description": "Error message shown when user enters incorrect PIN",
     "placeholders": {
@@ -4492,7 +4492,7 @@
   "@pinStatusLoading": {
     "description": "Status screen title during initialization"
   },
-  "pinStatusCheckingDescription": "Tarkistetaan PIN-tilaa",
+  "pinStatusCheckingDescription": "Tarkistetaan PIN-koodia",
   "@pinStatusCheckingDescription": {
     "description": "Status screen description during initialization"
   },
@@ -4504,19 +4504,19 @@
   "@pinStatusSettingUpDescription": {
     "description": "Status screen description during PIN save/delete operations"
   },
-  "autoswapSettingsTitle": "Automaattisen siirron asetukset",
+  "autoswapSettingsTitle": "Automaattisen swapin asetukset",
   "@autoswapSettingsTitle": {
     "description": "Main header/title of the auto swap settings bottom sheet"
   },
-  "autoswapEnableToggleLabel": "Ota automaattinen siirto käyttöön",
+  "autoswapEnableToggleLabel": "Ota käyttöön automaattiset swapit",
   "@autoswapEnableToggleLabel": {
     "description": "Label for the main toggle switch to enable/disable auto transfer feature"
   },
-  "autoswapMaxBalanceLabel": "Instant-lompakon enimmäissaldo",
+  "autoswapMaxBalanceLabel": "Pikamaksulompakon enimmäissaldo",
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
   },
-  "autoswapMaxBalanceInfoText": "Kun lompakon saldo ylittää kaksinkertaisen tämän summan, automaattisiirto aktivoituu palauttaakseen saldon tälle tasolle",
+  "autoswapMaxBalanceInfoText": "Kun lompakon saldo ylittää kaksinkertaisen tämän summan, automaattinen swap aktivoituu palauttaakseen saldon tälle tasolle",
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
@@ -4524,7 +4524,7 @@
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
   },
-  "autoswapMaxFeeInfoText": "Jos kokonaissiirtokulu on asetettua prosenttiosuutta korkeampi, automaattisiirto estetään",
+  "autoswapMaxFeeInfoText": "Jos kokonaissiirtokulu on asetettua prosenttiosuutta korkeampi, automaattiset swapit estetään",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
   },
@@ -4544,7 +4544,7 @@
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
   },
-  "autoswapRecipientWalletInfoText": "Valitse, mikä Bitcoin-lompakko vastaanottaa siirretyt varat (pakollinen)",
+  "autoswapRecipientWalletInfoText": "Valitse, mikä Bitcoin-lompakko vastaanottaa swapatut varat (pakollinen)",
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
@@ -4552,15 +4552,15 @@
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
   },
-  "autoswapAlwaysBlockLabel": "Estä aina korkeat kulut",
+  "autoswapAlwaysBlockLabel": "Älä swappaa korkeilla kuluilla",
   "@autoswapAlwaysBlockLabel": {
     "description": "Label for toggle to always block high fee transfers"
   },
-  "autoswapAlwaysBlockInfoEnabled": "Kun tämä on käytössä, automaattisiirrot, joiden kulut ylittävät asetetun rajan, estetään aina",
+  "autoswapAlwaysBlockInfoEnabled": "Kun tämä on käytössä, automaattiset swapit, joiden kulut ylittävät asetetun rajan, estetään aina",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
   },
-  "autoswapAlwaysBlockInfoDisabled": "Kun tämä on pois käytöstä, sinulle tarjotaan mahdollisuus sallia automaattisiirto, joka on estetty korkeiden kulujen vuoksi",
+  "autoswapAlwaysBlockInfoDisabled": "Kun tämä on pois käytöstä, sinulle tarjotaan mahdollisuus sallia automaattiset swapit, jotka on estetty korkeiden kulujen vuoksi",
   "@autoswapAlwaysBlockInfoDisabled": {
     "description": "Help text when always block is disabled"
   },
@@ -4577,11 +4577,11 @@
       }
     }
   },
-  "autoswapLoadSettingsError": "Automaattisiirtoasetusten lataus epäonnistui",
+  "autoswapLoadSettingsError": "Automaattisen swapin asetusten lataus epäonnistui",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"
   },
-  "autoswapUpdateSettingsError": "Automaattisiirtoasetusten päivitys epäonnistui",
+  "autoswapUpdateSettingsError": "Automaattisen swapin asetusten päivitys epäonnistui",
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
@@ -4602,7 +4602,7 @@
       }
     }
   },
-  "autoswapMinimumThresholdErrorSats": "Minimisaldon raja on {amount} sats",
+  "autoswapMinimumThresholdErrorSats": "Minimisaldon raja on {amount} sat",
   "@autoswapMinimumThresholdErrorSats": {
     "description": "Validation error shown when amount threshold is below minimum (sats display)",
     "placeholders": {
@@ -4620,7 +4620,7 @@
       }
     }
   },
-  "arkNoTransactionsYet": "Ei vielä tapahtumia.",
+  "arkNoTransactionsYet": "Ei vielä transaktioita.",
   "@arkNoTransactionsYet": {
     "description": "Empty state message shown when user has no transaction history"
   },
@@ -4632,11 +4632,11 @@
   "@arkYesterday": {
     "description": "Date label for transactions from yesterday"
   },
-  "arkSettleTransactions": "Viimeistele tapahtumat",
+  "arkSettleTransactions": "Viimeistele transaktiot",
   "@arkSettleTransactions": {
     "description": "Bottom sheet title for settling pending transactions"
   },
-  "arkSettleDescription": "Viimeistele vireillä olevat tapahtumat ja sisällytä tarvittaessa palautettavat vtxot",
+  "arkSettleDescription": "Viimeistele vireillä olevat transaktiot ja sisällytä tarvittaessa palautettavat vtxot",
   "@arkSettleDescription": {
     "description": "Description explaining what settling transactions does"
   },
@@ -4728,11 +4728,11 @@
       }
     }
   },
-  "arkTransaction": "tapahtuma",
+  "arkTransaction": "transaktio",
   "@arkTransaction": {
     "description": "Singular form for transaction count"
   },
-  "arkTransactions": "tapahtumat",
+  "arkTransactions": "transaktiot",
   "@arkTransactions": {
     "description": "Plural form for transaction count"
   },
@@ -4756,7 +4756,7 @@
   "@arkTxTypeRedeem": {
     "description": "Transaction type label for redeem transactions"
   },
-  "arkTransactionDetails": "Tapahtuman tiedot",
+  "arkTransactionDetails": "Transaktion tiedot",
   "@arkTransactionDetails": {
     "description": "AppBar title for transaction details page"
   },
@@ -4772,7 +4772,7 @@
   "@arkStatusSettled": {
     "description": "Status label for settled redeem transactions"
   },
-  "arkTransactionId": "Tapahtuma-ID",
+  "arkTransactionId": "Transaktio-ID",
   "@arkTransactionId": {
     "description": "Label for transaction ID field in details table"
   },
@@ -5361,7 +5361,7 @@
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
   },
-  "replaceByFeeFeeRateDisplay": "Kulunopeus: {feeRate} sat/vbyte",
+  "replaceByFeeFeeRateDisplay": "Kulutaso: {feeRate} sat/vbyte",
   "@replaceByFeeFeeRateDisplay": {
     "description": "Display text showing the fee rate",
     "placeholders": {
@@ -5374,11 +5374,11 @@
   "@replaceByFeeOriginalTransactionTitle": {
     "description": "Title for original transaction section"
   },
-  "replaceByFeeSatsVbUnit": "sats/vB",
+  "replaceByFeeSatsVbUnit": "sat/vB",
   "@replaceByFeeSatsVbUnit": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "replaceByFeeScreenTitle": "Korvaa kululla",
+  "replaceByFeeScreenTitle": "Replace-by-Fee",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
   },
@@ -5501,15 +5501,15 @@
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
   },
-  "shareLogsLabel": "Jaa lokit",
+  "shareLogsLabel": "Jaa lokitiedot",
   "@shareLogsLabel": {
     "description": "List tile label to share application logs"
   },
-  "viewLogsLabel": "Näytä lokit",
+  "viewLogsLabel": "Näytä lokitiedot",
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
   },
-  "errorSharingLogsMessage": "Lokien jakaminen epäonnistui: {error}",
+  "errorSharingLogsMessage": "Lokitietojen jako epäonnistui: {error}",
   "@errorSharingLogsMessage": {
     "description": "Error message when log sharing fails",
     "placeholders": {
@@ -5526,7 +5526,7 @@
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
   },
-  "optionalPassphraseHint": "Valinnainen suojaussana",
+  "optionalPassphraseHint": "Valinnainen salafraasi",
   "@optionalPassphraseHint": {
     "description": "Placeholder hint for passphrase field"
   },
@@ -5542,7 +5542,7 @@
   "@wordsDropdownSuffix": {
     "description": "Suffix for mnemonic length dropdown"
   },
-  "emptyMnemonicWordsError": "Syötä kaikki muistilausekkeen sanat",
+  "emptyMnemonicWordsError": "Syötä kaikki siemenlauseen sanat",
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"
   },
@@ -5574,7 +5574,7 @@
   "@amountLabel": {
     "description": "Label for transaction amount display"
   },
-  "networkFeesLabel": "Verkon kulut",
+  "networkFeesLabel": "Verkkokulut",
   "@networkFeesLabel": {
     "description": "Label for network transaction fees in onchain send"
   },
@@ -5582,7 +5582,7 @@
   "@feePriorityLabel": {
     "description": "Label for fee selection priority option"
   },
-  "transferIdLabel": "Siirto-ID",
+  "transferIdLabel": "Swäpin tunnus",
   "@transferIdLabel": {
     "description": "Label for swap transfer ID"
   },
@@ -5622,7 +5622,7 @@
   "@routeErrorMessage": {
     "description": "Error message displayed when user navigates to non-existent route"
   },
-  "logsViewerTitle": "Lokit",
+  "logsViewerTitle": "Lokitiedot",
   "@logsViewerTitle": {
     "description": "AppBar title for logs viewer screen"
   },
@@ -5804,11 +5804,11 @@
   "@payLiquidFee": {
     "description": "Label for Liquid Network transaction fee"
   },
-  "paySwapFee": "Vaihtokulu",
+  "paySwapFee": "Swap-kulut",
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "payServiceFee": "Palvelumaksu",
+  "payServiceFee": "Swap-palvelinkulut",
   "@payServiceFee": {
     "description": "Label for service provider fee"
   },
@@ -5847,19 +5847,19 @@
       }
     }
   },
-  "payRequiresSwap": "Tämä maksu vaatii vaihdon",
+  "payRequiresSwap": "Tämä maksu vaatii swapin",
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "paySwapInProgress": "Vaihto käynnissä...",
+  "paySwapInProgress": "Swap on käynnissä...",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
   },
-  "paySwapCompleted": "Vaihto suoritettu",
+  "paySwapCompleted": "Swap on suoritettu",
   "@paySwapCompleted": {
     "description": "Status message after successful swap"
   },
-  "paySwapFailed": "Vaihto epäonnistui",
+  "paySwapFailed": "Swap epäonnistui",
   "@paySwapFailed": {
     "description": "Error message when swap fails"
   },
@@ -5919,7 +5919,7 @@
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
   },
-  "payFeeRate": "Kulunopeus",
+  "payFeeRate": "Kulutaso",
   "@payFeeRate": {
     "description": "Label for fee rate (sat/vB)"
   },
@@ -5941,13 +5941,13 @@
       }
     }
   },
-  "payReplaceByFee": "Replace-By-Fee (RBF)",
+  "payReplaceByFee": "Replace-by-Fee (RBF)",
   "@payReplaceByFee": {
     "description": "Label for RBF feature"
   },
   "payEnableRBF": "Ota RBF käyttöön",
   "@payEnableRBF": {
-    "description": "Checkbox to enable Replace-By-Fee"
+    "description": "Checkbox to enable Replace-by-Fee"
   },
   "payRBFEnabled": "RBF käytössä",
   "@payRBFEnabled": {
@@ -5973,7 +5973,7 @@
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
   },
-  "payBatchPayment": "Erämakset",
+  "payBatchPayment": "Maksu useaan osoitteeseen",
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
   },
@@ -6058,7 +6058,7 @@
   "@payMemo": {
     "description": "Label for optional payment note"
   },
-  "payAddMemo": "Lisää muistiinpano (valinnainen)",
+  "payAddMemo": "Lisää kuvaus (valinnainen)",
   "@payAddMemo": {
     "description": "Placeholder for memo input field"
   },
@@ -6215,15 +6215,15 @@
   "@sendSwapTimeout": {
     "description": "Error when swap expires"
   },
-  "sendCustomFeeRate": "Mukautettu kulunopeus",
+  "sendCustomFeeRate": "Mukautettu kulutaso",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
   },
-  "sendFeeRateTooLow": "Kulunopeus liian alhainen",
+  "sendFeeRateTooLow": "Kulutaso liian alhainen",
   "@sendFeeRateTooLow": {
     "description": "Error for insufficient fee"
   },
-  "sendFeeRateTooHigh": "Kulunopeus vaikuttaa erittäin korkealta",
+  "sendFeeRateTooHigh": "Kulutaso vaikuttaa erittäin korkealta",
   "@sendFeeRateTooHigh": {
     "description": "Warning for excessive fee"
   },
@@ -6292,7 +6292,7 @@
   "@sendTransactionBuilt": {
     "description": "Success after transaction constructed"
   },
-  "sendBuildFailed": "Tapahtuman muodostaminen epäonnistui",
+  "sendBuildFailed": "Transaktion muodostaminen epäonnistui",
   "@sendBuildFailed": {
     "description": "Error during transaction construction"
   },
@@ -6321,7 +6321,7 @@
       }
     }
   },
-  "sendSwapId": "Vaihto-ID",
+  "sendSwapId": "Swap-ID",
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
   },
@@ -6337,7 +6337,7 @@
   "@sendSendNetworkFee": {
     "description": "Label for network fee on send side of swap"
   },
-  "sendTransferFee": "Siirtokulu",
+  "sendTransferFee": "Swap-kulut",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
@@ -6365,23 +6365,23 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "sendSwapInProgressInvoice": "Vaihto on käynnissä. Lasku maksetaan muutamassa sekunnissa.",
+  "sendSwapInProgressInvoice": "Swap on käynnissä. Lasku maksetaan muutamassa sekunnissa.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "sendSwapInProgressBitcoin": "Vaihto on käynnissä. Bitcoin-tapahtumien vahvistuminen voi kestää hetken. Voit palata kotiin ja odottaa.",
+  "sendSwapInProgressBitcoin": "Swap on käynnissä. Bitcoin-transaktion vahvistuminen voi kestää hetken. Voit palata kotiin ja odottaa.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
   },
-  "sendSwapRefundInProgress": "Vaihdon hyvitys käynnissä",
+  "sendSwapRefundInProgress": "Swapin hyvitys on käynnissä",
   "@sendSwapRefundInProgress": {
     "description": "Title when swap failed and refund is processing"
   },
-  "sendSwapFailed": "Vaihto epäonnistui. Hyvityksesi käsitellään pian.",
+  "sendSwapFailed": "Swap epäonnistui. Hyvityksesi käsitellään pian.",
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
   },
-  "sendSwapRefundCompleted": "Vaihdon hyvitys suoritettu",
+  "sendSwapRefundCompleted": "Swap hyvitys on suoritettu",
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
@@ -6401,7 +6401,7 @@
   "@sendPaymentWillTakeTime": {
     "description": "Title warning of delayed payment"
   },
-  "sendSwapInitiated": "Vaihto aloitettu",
+  "sendSwapInitiated": "Swap on aloitettu",
   "@sendSwapInitiated": {
     "description": "Title when chain swap begins"
   },
@@ -6486,7 +6486,7 @@
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
   },
-  "sendErrorAmountBelowMinimum": "Määrä alle minimirajan: {minLimit} sats",
+  "sendErrorAmountBelowMinimum": "Määrä alle minimirajan: {minLimit} sat",
   "@sendErrorAmountBelowMinimum": {
     "description": "Error with specific minimum swap amount",
     "placeholders": {
@@ -6495,7 +6495,7 @@
       }
     }
   },
-  "sendErrorAmountAboveMaximum": "Määrä ylittää suurimman swap-rajan: {maxLimit} sats",
+  "sendErrorAmountAboveMaximum": "Määrä ylittää suurimman swap-rajan: {maxLimit} sat",
   "@sendErrorAmountAboveMaximum": {
     "description": "Error with specific maximum swap amount",
     "placeholders": {
@@ -6540,7 +6540,7 @@
   "@sendTypeSend": {
     "description": "Send type name for Bitcoin/Liquid transactions"
   },
-  "sendTypeSwap": "Vaihto",
+  "sendTypeSwap": "Swap",
   "@sendTypeSwap": {
     "description": "Send type name for Lightning swap transactions"
   },
@@ -6593,7 +6593,7 @@
   "@sellRoutingNumber": {
     "description": "Label for bank routing/transit number"
   },
-  "sellInstitutionNumber": "Laitosnumero",
+  "sellInstitutionNumber": "Y-tunnus",
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
@@ -6613,7 +6613,7 @@
   "@sellReviewOrder": {
     "description": "Title for order confirmation screen"
   },
-  "sellConfirmOrder": "Vahvista myyntitilaus",
+  "sellConfirmOrder": "Vahvista myyntipyyntö",
   "@sellConfirmOrder": {
     "description": "Button to submit sell order"
   },
@@ -6713,7 +6713,7 @@
   "@sellKYCApproved": {
     "description": "Status when verification complete"
   },
-  "sellKYCRejected": "KYC-hyväksyntä hylätty",
+  "sellKYCRejected": "KYC-vahvistus hylättiin",
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
@@ -7394,7 +7394,7 @@
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
   },
-  "testBackupPhysicalBackupTag": "Luottamukseton (ota aikaa)",
+  "testBackupPhysicalBackupTag": "Luotettava (varaa aikaa)",
   "@testBackupPhysicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes longer"
   },
@@ -7471,7 +7471,7 @@
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
   },
-  "testBackupErrorNoMnemonic": "Muistilauseketta ei ole ladattu",
+  "testBackupErrorNoMnemonic": "Siemenlausetta ei ole ladattu",
   "@testBackupErrorNoMnemonic": {
     "description": "Error when mnemonic is not loaded"
   },
@@ -7540,7 +7540,7 @@
       }
     }
   },
-  "testBackupErrorLoadMnemonic": "Muistilausekkeen lataus epäonnistui: {error}",
+  "testBackupErrorLoadMnemonic": "Siemenlauseen lataus epäonnistui: {error}",
   "@testBackupErrorLoadMnemonic": {
     "description": "Error when loading mnemonic fails",
     "placeholders": {
@@ -7608,7 +7608,7 @@
   "@recoverbullConnecting": {
     "description": "Status label indicating connection in progress"
   },
-  "recoverbullConnectingTor": "Yhdistetään avainpalvelimeen Torin kautta.\nTämä voi kestää jopa minuutin.",
+  "recoverbullConnectingTor": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
   "@recoverbullConnectingTor": {
     "description": "Message shown while establishing Tor connection"
   },
@@ -7773,7 +7773,7 @@
   "@recoverbullKeyServer": {
     "description": "Label for key server connection status"
   },
-  "recoverbullLookingForBalance": "Etsitään saldoa ja tapahtumia…",
+  "recoverbullLookingForBalance": "Etsitään saldoa ja transaktioita…",
   "@recoverbullLookingForBalance": {
     "description": "Loading message while scanning wallet"
   },
@@ -7912,7 +7912,7 @@
   "@recoverbullSelectQuickAndEasy": {
     "description": "Description tag for Google Drive and iCloud provider options"
   },
-  "recoverbullSelectTakeYourTime": "Ota aikaa",
+  "recoverbullSelectTakeYourTime": "Varaa aikaa",
   "@recoverbullSelectTakeYourTime": {
     "description": "Description tag for custom location provider option"
   },
@@ -7984,7 +7984,7 @@
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
   },
-  "recoverbullTransactions": "Tapahtumat: {count}",
+  "recoverbullTransactions": "Transaktioita: {count}",
   "@recoverbullTransactions": {
     "description": "Label showing transaction count during vault recovery",
     "placeholders": {
@@ -8025,7 +8025,7 @@
   "@recoverbullRecoveryTitle": {
     "description": "AppBar title for vault recovery screen"
   },
-  "recoverbullRecoveryLoadingMessage": "Etsitään saldoa ja tapahtumia…",
+  "recoverbullRecoveryLoadingMessage": "Etsitään saldoa ja transaktioita…",
   "@recoverbullRecoveryLoadingMessage": {
     "description": "Loading message while checking wallet balance and transactions"
   },
@@ -8038,7 +8038,7 @@
       }
     }
   },
-  "recoverbullRecoveryTransactionsLabel": "Tapahtumat: {count}",
+  "recoverbullRecoveryTransactionsLabel": "Transaktiot: {count}",
   "@recoverbullRecoveryTransactionsLabel": {
     "description": "Label showing total number of transactions found",
     "placeholders": {
@@ -8071,9 +8071,9 @@
   "@recoverbullRecoveryErrorMissingDerivationPath": {
     "description": "Error when vault backup file is missing required derivation path"
   },
-  "rbfTitle": "Korvaa kululla",
+  "rbfTitle": "Replace-by-Fee",
   "@rbfTitle": {
-    "description": "AppBar title for Replace-By-Fee screen"
+    "description": "AppBar title for Replace-by-Fee screen"
   },
   "rbfOriginalTransaction": "Alkuperäinen transaktio",
   "@rbfOriginalTransaction": {
@@ -8087,11 +8087,11 @@
   "@rbfFastest": {
     "description": "Label for fastest fee option"
   },
-  "rbfEstimatedDelivery": "Arvioitu toimitusaika ~ 10 minuuttia",
+  "rbfEstimatedDelivery": "Arvioitu vahvistusviive ~ 10 minuuttia",
   "@rbfEstimatedDelivery": {
     "description": "Estimated confirmation time for fastest fee"
   },
-  "rbfFeeRate": "Kulunopeus: {rate} sat/vbyte",
+  "rbfFeeRate": "Kulutaso: {rate} sat/vbyte",
   "@rbfFeeRate": {
     "description": "Label showing fee rate",
     "placeholders": {
@@ -8108,7 +8108,7 @@
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
   },
-  "rbfErrorNoFeeRate": "Valitse kulunopeus",
+  "rbfErrorNoFeeRate": "Valitse kulutaso",
   "@rbfErrorNoFeeRate": {
     "description": "Error when no fee rate is selected"
   },
@@ -8116,7 +8116,7 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "rbfErrorFeeTooLow": "Sinun on nostettava kulunopeutta vähintään 1 sat/vbyte verrattuna alkuperäiseen transaktioon",
+  "rbfErrorFeeTooLow": "Sinun on nostettava kulutasoa vähintään 1 sat/vbyte verrattuna alkuperäiseen transaktioon",
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
   },
@@ -8528,11 +8528,11 @@
   "@passportStep7": {
     "description": "Passport troubleshooting tip 3"
   },
-  "passportStep8": "Kun tapahtuma on tuotu Passportiin, tarkista vastaanottava osoite ja määrä.",
+  "passportStep8": "Kun transaktio on tuotu Passportiin, tarkista vastaanottava osoite ja määrä.",
   "@passportStep8": {
     "description": "Passport instruction for reviewing transaction"
   },
-  "passportStep9": "Paina painikkeita allekirjoittaaksesi tapahtuman Passport-laitteella.",
+  "passportStep9": "Paina painikkeita allekirjoittaaksesi transaktion Passport-laitteella.",
   "@passportStep9": {
     "description": "Passport instruction for signing"
   },
@@ -8548,11 +8548,11 @@
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
   },
-  "passportStep13": "Tapahtuma tuodaan Bull Bitcoin -lompakkoon.",
+  "passportStep13": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
   "@passportStep13": {
     "description": "Passport instruction about import completion"
   },
-  "passportStep14": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, tapahtuma julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
+  "passportStep14": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
   "@passportStep14": {
     "description": "Passport final instruction about broadcasting"
   },
@@ -8588,7 +8588,7 @@
   "@seedsignerStep7": {
     "description": "SeedSigner troubleshooting tip 3"
   },
-  "seedsignerStep8": "Kun tapahtuma on tuotu SeedSigneriin, valitse siemen, jolla haluat allekirjoittaa.",
+  "seedsignerStep8": "Kun transaktio on tuotu SeedSigneriin, valitse siemen, jolla haluat allekirjoittaa.",
   "@seedsignerStep8": {
     "description": "SeedSigner instruction for seed selection"
   },
@@ -8608,11 +8608,11 @@
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
   },
-  "seedsignerStep13": "Tapahtuma tuodaan Bull Bitcoin -lompakkoon.",
+  "seedsignerStep13": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
   "@seedsignerStep13": {
     "description": "SeedSigner instruction about import completion"
   },
-  "seedsignerStep14": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, tapahtuma julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
+  "seedsignerStep14": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
   "@seedsignerStep14": {
     "description": "SeedSigner final instruction about broadcasting"
   },
@@ -8688,11 +8688,11 @@
   "@coldcardStep8": {
     "description": "Coldcard troubleshooting tip 3"
   },
-  "coldcardStep9": "Kun tapahtuma on tuotu Coldcardiin, tarkista vastaanottava osoite ja määrä.",
+  "coldcardStep9": "Kun transaktio on tuotu Coldcardiin, tarkista vastaanottava osoite ja määrä.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
   },
-  "coldcardStep10": "Paina painikkeita allekirjoittaaksesi tapahtuman Coldcardilla.",
+  "coldcardStep10": "Paina painikkeita allekirjoittaaksesi transaktion Coldcardilla.",
   "@coldcardStep10": {
     "description": "Coldcard instruction for signing"
   },
@@ -8708,11 +8708,11 @@
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
-  "coldcardStep14": "Tapahtuma tuodaan Bull Bitcoin -lompakkoon.",
+  "coldcardStep14": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
   "@coldcardStep14": {
     "description": "Coldcard instruction about import completion"
   },
-  "coldcardStep15": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, tapahtuma julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
+  "coldcardStep15": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
   "@coldcardStep15": {
     "description": "Coldcard final instruction about broadcasting"
   },
@@ -8752,11 +8752,11 @@
   "@jadeStep8": {
     "description": "Jade troubleshooting tip 3"
   },
-  "jadeStep9": "Kun tapahtuma on tuotu Jadeen, tarkista vastaanottava osoite ja määrä.",
+  "jadeStep9": "Kun transaktio on tuotu Jadeen, tarkista vastaanottava osoite ja määrä.",
   "@jadeStep9": {
     "description": "Jade instruction for reviewing transaction"
   },
-  "jadeStep10": "Paina painikkeita allekirjoittaaksesi tapahtuman Jadella.",
+  "jadeStep10": "Paina painikkeita allekirjoittaaksesi transaktion Jadella.",
   "@jadeStep10": {
     "description": "Jade instruction for signing"
   },
@@ -8772,11 +8772,11 @@
   "@jadeStep13": {
     "description": "Jade instruction for scanning signed PSBT"
   },
-  "jadeStep14": "Tapahtuma tuodaan Bull Bitcoin -lompakkoon.",
+  "jadeStep14": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
   "@jadeStep14": {
     "description": "Jade instruction about import completion"
   },
-  "jadeStep15": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, tapahtuma julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
+  "jadeStep15": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"
   },
@@ -8844,7 +8844,7 @@
   "@importMnemonicSelectScriptType": {
     "description": "AppBar title for script type selection"
   },
-  "importMnemonicSyncMessage": "Kaikki kolme lompakkotyyppiä synkronoidaan, ja niiden saldot ja tapahtumat näkyvät pian. Voit odottaa synkronoinnin valmistumista tai jatkaa tuontia, jos tiedät minkä lompakkotyypin haluat tuoda.",
+  "importMnemonicSyncMessage": "Kaikki kolme lompakkotyyppiä synkronoidaan, ja niiden saldot ja transaktiot näkyvät pian. Voit odottaa synkronoinnin valmistumista tai jatkaa tuontia, jos tiedät minkä lompakkotyypin haluat tuoda.",
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
   },
@@ -8872,7 +8872,7 @@
   "@importMnemonicHasBalance": {
     "description": "Status for wallet type with balance"
   },
-  "importMnemonicTransactions": "{count} tapahtumaa",
+  "importMnemonicTransactions": "{count} transaktiota",
   "@importMnemonicTransactions": {
     "description": "Shows number of transactions for wallet type",
     "placeholders": {
@@ -8911,7 +8911,7 @@
       }
 	}
   },
-  "importMnemonicTransactionsLabel": "Tapahtumat: {count}",
+  "importMnemonicTransactionsLabel": "Transaktioita: {count}",
   "@importMnemonicTransactionsLabel": {
     "description": "ImportMnemonic: Transactions label with count in wallet type card",
     "placeholders": {
@@ -9091,7 +9091,7 @@
       }
     }
   },
-  "broadcastSignedTxTitle": "Lähetä tapahtuma",
+  "broadcastSignedTxTitle": "Lähetä transaktio",
   "@broadcastSignedTxTitle": {
     "description": "AppBar title for broadcast signed transaction screen"
   },
@@ -9099,7 +9099,7 @@
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
   },
-  "broadcastSignedTxReviewTransaction": "Tarkista tapahtuma",
+  "broadcastSignedTxReviewTransaction": "Tarkista transaktio",
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
@@ -9123,11 +9123,11 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
-  "broadcastSignedTxPageTitle": "Lähetä allekirjoitettu tapahtuma",
+  "broadcastSignedTxPageTitle": "Lähetä allekirjoitettu transaktio",
   "@broadcastSignedTxPageTitle": {
     "description": "Page title for broadcast signed transaction screen"
   },
-  "broadcastSignedTxPasteHint": "Liitä PSBT tai tapahtuman HEX",
+  "broadcastSignedTxPasteHint": "Liitä PSBT tai transaktion HEX",
   "@broadcastSignedTxPasteHint": {
     "description": "Hint text for paste input field"
   },
@@ -9159,7 +9159,7 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "addressViewTransactions": "Tapahtumat",
+  "addressViewTransactions": "Transaktiot",
   "@addressViewTransactions": {
     "description": "Label for number of transactions"
   },
@@ -9593,7 +9593,7 @@
   "@exchangeLandingTitle": {
     "description": "Main title on exchange landing screen"
   },
-  "exchangeLandingConnect": "Yhdistä Bull Bitcoin -pörssitilillesi",
+  "exchangeLandingConnect": "Yhdistä Bull Bitcoin -pörssiin",
   "@exchangeLandingConnect": {
     "description": "Subtitle on exchange landing screen"
   },
@@ -9649,7 +9649,7 @@
   "@exchangeKycComplete": {
     "description": "KYC card title"
   },
-  "exchangeKycRemoveLimits": "Poista tapahtumarajoitukset",
+  "exchangeKycRemoveLimits": "Poista tapahtumien rajoitukset",
   "@exchangeKycRemoveLimits": {
     "description": "KYC card subtitle"
   },
@@ -9813,7 +9813,7 @@
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
-  "fundExchangeSelectCountry": "Valitse maasi ja maksutapa",
+  "fundExchangeSelectCountry": "Valitse maa ja maksutapa",
   "@fundExchangeSelectCountry": {
     "description": "Instruction text"
   },
@@ -9853,7 +9853,7 @@
   "@dcaSetupScheduleMessage": {
     "description": "DCA schedule explanation"
   },
-  "dcaSetupFrequencyError": "Valitse tiheys",
+  "dcaSetupFrequencyError": "Valitse aikataulu",
   "@dcaSetupFrequencyError": {
     "description": "Frequency validation error"
   },
@@ -9869,7 +9869,7 @@
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
   },
-  "dcaConfirmFrequency": "Tiheys",
+  "dcaConfirmFrequency": "Aikataulu",
   "@dcaConfirmFrequency": {
     "description": "Field label for frequency"
   },
@@ -9955,7 +9955,7 @@
   "@buyInputMaxAmountError": {
     "description": "Maximum amount error message"
   },
-  "buyInputKycPending": "KYC-henkilöllisyyden vahvistus odottaa",
+  "buyInputKycPending": "KYC-vahvistus odottaa",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
   },
@@ -10007,11 +10007,11 @@
   "@buyConfirmExternalWallet": {
     "description": "External wallet payout method"
   },
-  "buyConfirmSecureWallet": "Suojattu Bitcoin-lompakko",
+  "buyConfirmSecureWallet": "Bitcoin-säästölompakko",
   "@buyConfirmSecureWallet": {
     "description": "Secure wallet payout method"
   },
-  "buyConfirmInstantWallet": "Instant Payment -lompakko",
+  "buyConfirmInstantWallet": "Pikamaksulompakko",
   "@buyConfirmInstantWallet": {
     "description": "Instant payment wallet payout method"
   },
@@ -10055,11 +10055,11 @@
   "@sellSendPaymentMxnBalance": {
     "description": "MXN balance payout method"
   },
-  "sellSendPaymentPayinAmount": "Maksun sisääntuleva määrä",
+  "sellSendPaymentPayinAmount": "Maksun määrä",
   "@sellSendPaymentPayinAmount": {
     "description": "Field label for payin amount"
   },
-  "sellSendPaymentPayoutAmount": "Maksun määrä",
+  "sellSendPaymentPayoutAmount": "Maksun lähtevä määrä",
   "@sellSendPaymentPayoutAmount": {
     "description": "Field label for payout amount"
   },
@@ -10071,7 +10071,7 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "sellSendPaymentInstantPayments": "Instant-maksut",
+  "sellSendPaymentInstantPayments": "Pikamaksulompakko",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
   },
@@ -10131,7 +10131,7 @@
   "@swapTitle": {
     "description": "AppBar title for swap/internal transfer screen"
   },
-  "swapInfoBanner": "Siirrä Bitcoinia saumattomasti lompakoidesi välillä. Pidä varoja Instant Payment -lompakossa vain päivittäistä kulutusta varten.",
+  "swapInfoBanner": "Siirrä Bitcoinia saumattomasti lompakoidesi välillä. Pidä varoja Pikamaksulompakossa vain päivittäistä kulutusta varten.",
   "@swapInfoBanner": {
     "description": "Info banner on swap amount screen"
   },
@@ -10195,7 +10195,7 @@
   "@autoswapEnable": {
     "description": "Toggle label to enable auto transfer"
   },
-  "autoswapMaxBalance": "Instant-lompakon enimmäissaldo",
+  "autoswapMaxBalance": "Pikamaksulompakon enimmäissaldo",
   "@autoswapMaxBalance": {
     "description": "Field label for max balance threshold"
   },
@@ -10203,15 +10203,15 @@
   "@autoswapMaxBalanceInfo": {
     "description": "Info tooltip for max balance field"
   },
-  "autoswapMaxFee": "Siirron enimmäismaksu",
+  "autoswapMaxFee": "Swapin enimmäiskulut",
   "@autoswapMaxFee": {
     "description": "Field label for max fee threshold"
   },
-  "autoswapMaxFeeInfo": "Jos kokonaismaksu ylittää asetetun prosenttiosuuden, automaattinen siirto estetään",
+  "autoswapMaxFeeInfo": "Jos kokonaiskulut ylittävät asetetun prosenttiosuuden, automaattinen siirto estetään",
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
-  "autoswapAlwaysBlock": "Estä aina korkeat maksut",
+  "autoswapAlwaysBlock": "Estä aina korkeat kulut",
   "@autoswapAlwaysBlock": {
     "description": "Toggle label for always block high fees"
   },
@@ -10219,7 +10219,7 @@
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
   },
-  "autoswapAlwaysBlockDisabledInfo": "Kun tämä ei ole käytössä, sinulle annetaan mahdollisuus sallia automaattinen siirto, joka on estetty korkeiden maksujen vuoksi",
+  "autoswapAlwaysBlockDisabledInfo": "Kun tämä ei ole käytössä, sinulle annetaan mahdollisuus sallia automaattinen siirto, joka on estetty korkeiden kulujen vuoksi",
   "@autoswapAlwaysBlockDisabledInfo": {
     "description": "Info text when always block is disabled"
   },
@@ -10437,7 +10437,7 @@
   "@electrumDeleteServerTitle": {
     "description": "Delete server dialog title"
   },
-  "electrumDeletePrivacyNotice": "Tietosuoja-ilmoitus:\n\nOman nodin käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi tapahtumiisi. Poistamalla viimeisen oman palvelimesi muodostat yhteyden BullBitcoin-palvelimeen.\n",
+  "electrumDeletePrivacyNotice": "Tietosuoja-ilmoitus:\n\nOman solmun käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi transaktioihisi. Poistamalla viimeisen oman palvelimesi muodostat yhteyden BullBitcoin-palvelimeen.\n",
   "@electrumDeletePrivacyNotice": {
     "description": "Privacy notice shown when deleting last custom server"
   },
@@ -10516,11 +10516,11 @@
   "@electrumPrivacyNoticeTitle": {
     "description": "Title for privacy notice bottom sheet"
   },
-  "electrumPrivacyNoticeContent1": "Tietosuoja-ilmoitus: Oman nodin käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi tapahtumiisi.",
+  "electrumPrivacyNoticeContent1": "Tietosuoja-ilmoitus: Oman solmun käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi transaktioihisi.",
   "@electrumPrivacyNoticeContent1": {
     "description": "First paragraph of privacy notice"
   },
-  "electrumPrivacyNoticeContent2": "Jos kuitenkin tarkastelet tapahtumia mempoolin kautta napsauttamalla Transaction ID:täsi tai vastaanottajan tietoja, tämä tieto tulee BullBitcoinin tietoon.",
+  "electrumPrivacyNoticeContent2": "Jos kuitenkin tarkastelet transaktioita mempoolin kautta napsauttamalla transaktio-ID tai vastaanottajan tietoja, tämä tieto tulee BullBitcoinin tietoon.",
   "@electrumPrivacyNoticeContent2": {
     "description": "Second paragraph of privacy notice"
   },
@@ -10588,7 +10588,7 @@
   "@arkSettleTitle": {
     "description": "Settle bottom sheet title"
   },
-  "arkSettleMessage": "Viimeistele odottavat tapahtumat ja sisällytä tarvittaessa palautettavat vtxot",
+  "arkSettleMessage": "Viimeistele odottavat transaktiot ja sisällytä tarvittaessa palautettavat vtxot",
   "@arkSettleMessage": {
     "description": "Settle bottom sheet explanation"
   },
@@ -10719,7 +10719,7 @@
   "@arkSendConfirmTitle": {
     "description": "Title for the ark send confirmation page"
   },
-  "arkSendConfirmMessage": "Tarkista tapahtuman tiedot ennen lähettämistä.",
+  "arkSendConfirmMessage": "Tarkista transaktion tiedot ennen lähettämistä.",
   "@arkSendConfirmMessage": {
     "description": "Message displayed on send confirmation page"
   },
@@ -10773,11 +10773,11 @@
       }
     }
   },
-  "addressViewChangeAddressesComingSoon": "Vaihto-osoitteet tulossa pian",
+  "addressViewChangeAddressesComingSoon": "Vaihtoraha-osoitteet tulossa pian",
   "@addressViewChangeAddressesComingSoon": {
     "description": "Empty state message for change addresses feature that is coming soon"
   },
-  "addressViewChangeAddressesDescription": "Näytä lompakon vaihto-osoitteet",
+  "addressViewChangeAddressesDescription": "Näytä lompakon vaihtoraha-osoitteet",
   "@addressViewChangeAddressesDescription": {
     "description": "Description for the coming soon dialog when trying to view change addresses"
   },
@@ -10801,7 +10801,7 @@
   "@ledgerImportTitle": {
     "description": "Title for importing a Ledger hardware wallet"
   },
-  "ledgerSignTitle": "Allekirjoita tapahtuma",
+  "ledgerSignTitle": "Transaktion allekirjoitus",
   "@ledgerSignTitle": {
     "description": "Title for signing a transaction with Ledger"
   },
@@ -10825,7 +10825,7 @@
   "@ledgerProcessingImport": {
     "description": "Status message shown while importing Ledger wallet"
   },
-  "ledgerProcessingSign": "Allekirjoitetaan tapahtumaa",
+  "ledgerProcessingSign": "Transaktiota allekirjoitetaan",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
   },
@@ -10837,7 +10837,7 @@
   "@ledgerSuccessImportTitle": {
     "description": "Success message title after importing Ledger wallet"
   },
-  "ledgerSuccessSignTitle": "Tapahtuma allekirjoitettu onnistuneesti",
+  "ledgerSuccessSignTitle": "Transaktio allekirjoitetiin",
   "@ledgerSuccessSignTitle": {
     "description": "Success message title after signing transaction with Ledger"
   },
@@ -10849,7 +10849,7 @@
   "@ledgerSuccessImportDescription": {
     "description": "Success message description after importing Ledger wallet"
   },
-  "ledgerSuccessSignDescription": "Tapahtumasi on allekirjoitettu onnistuneesti.",
+  "ledgerSuccessSignDescription": "Transaktio on allekirjoitettu onnistuneesti.",
   "@ledgerSuccessSignDescription": {
     "description": "Success message description after signing transaction with Ledger"
   },
@@ -10861,7 +10861,7 @@
   "@ledgerProcessingImportSubtext": {
     "description": "Processing subtext shown while importing Ledger wallet"
   },
-  "ledgerProcessingSignSubtext": "Vahvista tapahtuma Ledger-laitteellasi...",
+  "ledgerProcessingSignSubtext": "Vahvista transaktio Ledger-laitteellasi...",
   "@ledgerProcessingSignSubtext": {
     "description": "Processing subtext shown while signing transaction"
   },
@@ -10927,7 +10927,7 @@
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
   },
-  "ledgerErrorRejectedByUser": "Käyttäjä hylkäsi tapahtuman Ledger-laitteella.",
+  "ledgerErrorRejectedByUser": "Käyttäjä hylkäsi transaktion Ledger-laitteella.",
   "@ledgerErrorRejectedByUser": {
     "description": "Error message when user rejects transaction on Ledger (error code 6985)"
   },
@@ -11063,11 +11063,11 @@
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
-  "exchangeFeatureDcaOrders": "• DCA, rajatilaukset ja automaattiostot",
+  "exchangeFeatureDcaOrders": "• DCA-, Limit Order- ja automaattiostot",
   "@exchangeFeatureDcaOrders": {
     "description": "Feature bullet point describing DCA and automated buying features"
   },
-  "exchangeFeatureSellBitcoin": "• Myy Bitcoinia, saat maksun Bitcoinina",
+  "exchangeFeatureSellBitcoin": "• Myy tai vastaanota Bitcoinia",
   "@exchangeFeatureSellBitcoin": {
     "description": "Feature bullet point describing selling Bitcoin functionality"
   },
@@ -11276,7 +11276,7 @@
   "@sellViewDetailsButton": {
     "description": "Button text to view order details"
   },
-  "sellKycPendingTitle": "KYC-henkilöllisyyden vahvistus kesken",
+  "sellKycPendingTitle": "KYC-vahvistus kesken",
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
@@ -11298,11 +11298,11 @@
   "@sellErrorNoWalletSelected": {
     "description": "Error message when no wallet is selected for payment"
   },
-  "sellErrorFeesNotCalculated": "Tapahtuman maksuja ei laskettu. Yritä uudelleen.",
+  "sellErrorFeesNotCalculated": "Transaktio kuluja ei laskettu. Yritä uudelleen.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },
-  "sellErrorUnexpectedOrderType": "Odotettiin SellOrder-tilausta, mutta vastaanotettiin eri tilaustyyppi",
+  "sellErrorUnexpectedOrderType": "Odotettiin SellOrder-pyyntöä, mutta vastaanotettiin eri tyyppinen pyyntö",
   "@sellErrorUnexpectedOrderType": {
     "description": "Error message when wrong order type is received"
   },
@@ -11316,7 +11316,7 @@
       }
     }
   },
-  "sellErrorRecalculateFees": "Maksujen uudelleenlaskenta epäonnistui: {error}",
+  "sellErrorRecalculateFees": "Kulujen uudelleenlaskenta epäonnistui: {error}",
   "@sellErrorRecalculateFees": {
     "description": "Error message when fee recalculation fails",
     "placeholders": {
@@ -11330,19 +11330,19 @@
   "@sellLoadingGeneric": {
     "description": "Generic loading message"
   },
-  "allSeedViewTitle": "Siemenkatselu",
+  "allSeedViewTitle": "Näytä siemenlauseet",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
   },
-  "allSeedViewLoadingMessage": "Tämä voi kestää hetken, jos laitteella on paljon siemeniä.",
+  "allSeedViewLoadingMessage": "Tämä voi kestää hetken, jos käytössä on paljon siemenlauseita.",
   "@allSeedViewLoadingMessage": {
     "description": "Loading message shown while fetching seeds"
   },
-  "allSeedViewNoSeedsFound": "Siemeniä ei löytynyt.",
+  "allSeedViewNoSeedsFound": "Siemenlauseita ei löytynyt.",
   "@allSeedViewNoSeedsFound": {
     "description": "Message shown when no seeds are found"
   },
-  "allSeedViewShowSeedsButton": "Näytä siemenet",
+  "allSeedViewShowSeedsButton": "Näytä siemenlauseet",
   "@allSeedViewShowSeedsButton": {
     "description": "Button label to show seed phrases"
   },
@@ -11386,7 +11386,7 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
-  "allSeedViewPassphraseLabel": "Salalause:",
+  "allSeedViewPassphraseLabel": "Salafraasi:",
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
@@ -11544,7 +11544,7 @@
   "@walletAutoTransferBlockedTitle": {
     "description": "Title for auto-swap fee warning when fees exceed threshold"
   },
-  "walletAutoTransferBlockedMessage": "Yritetään siirtää {amount} BTC. Nykyinen maksu on {currentFee}% siirtosummasta ja maksukynnys on asetettu arvoon {thresholdFee}%",
+  "walletAutoTransferBlockedMessage": "Yritetään siirtää {amount} BTC. Nykyinen kulu olisi {currentFee}% siirtosummasta ja maksukynnys on asetettu arvoon {thresholdFee}%",
   "@walletAutoTransferBlockedMessage": {
     "description": "Message explaining why auto-transfer was blocked",
     "placeholders": {
@@ -11591,11 +11591,11 @@
   "@buyInsufficientFundsError": {
     "description": "Error message for insufficient funds during buy"
   },
-  "buyOrderNotFoundError": "Ostotilausta ei löytynyt. Yritä uudelleen.",
+  "buyOrderNotFoundError": "Ostopyyntöä ei löytynyt. Yritä uudelleen.",
   "@buyOrderNotFoundError": {
     "description": "Error message for order not found during buy"
   },
-  "buyOrderAlreadyConfirmedError": "Tämä ostotilaus on jo vahvistettu.",
+  "buyOrderAlreadyConfirmedError": "Tämä ostopyyntö on jo vahvistettu.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
   },
@@ -11611,11 +11611,11 @@
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
-  "withdrawOrderNotFoundError": "Nostotilausta ei löytynyt. Yritä uudelleen.",
+  "withdrawOrderNotFoundError": "Nostopyyntöä ei löytynyt. Yritä uudelleen.",
   "@withdrawOrderNotFoundError": {
     "description": "Error message for order not found during withdraw"
   },
-  "withdrawOrderAlreadyConfirmedError": "Tämä nostotilaus on jo vahvistettu.",
+  "withdrawOrderAlreadyConfirmedError": "Tämä nostopyyntö on jo vahvistettu.",
   "@withdrawOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed withdrawal order"
   },
@@ -11623,7 +11623,7 @@
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
   },
-  "coreScreensLogsTitle": "Lokit",
+  "coreScreensLogsTitle": "Lokitiedot",
   "@coreScreensLogsTitle": {
     "description": "AppBar title for logs viewer screen"
   },
@@ -11667,11 +11667,11 @@
   "@coreScreensTransferIdLabel": {
     "description": "Label for transfer ID field"
   },
-  "coreScreensTotalFeesLabel": "Kokonaismaksut",
+  "coreScreensTotalFeesLabel": "Kokonaiskulut",
   "@coreScreensTotalFeesLabel": {
     "description": "Label for total fees field"
   },
-  "coreScreensTransferFeeLabel": "Siirtomaksu",
+  "coreScreensTransferFeeLabel": "Siirtokulut",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
   },
@@ -11695,7 +11695,7 @@
   "@coreScreensReceiveAmountLabel": {
     "description": "Label for receive amount field"
   },
-  "coreScreensSendNetworkFeeLabel": "Lähetyksen verkkomaksu",
+  "coreScreensSendNetworkFeeLabel": "Lähetyksen verkkokulut",
   "@coreScreensSendNetworkFeeLabel": {
     "description": "Label for send network fee field"
   },
