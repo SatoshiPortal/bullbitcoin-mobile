@@ -23,17 +23,8 @@ ToDo:
 871 swap->
 887
 972 palvelimen
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-1044 Välitön maksulompakko
-=======
 1044 Välitön maksulompakko -> Pikamaksulompakko
 ja Turvallinen -> Säästö
->>>>>>> Stashed changes
-=======
-1044 Välitön maksulompakko -> Pikamaksulompakko
-ja Turvallinen -> Säästö
->>>>>>> Stashed changes
 1092 hinta -> kurssi
 1137 typo
 1141 Verkon kulut 1149
@@ -126,12 +117,6 @@ ja Turvallinen -> Säästö
 3393 varaa aikaa
 2415 - et voi palauttaa Bitcoin-lompakkoasi.
 3475 Vie holviin
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-
-=======
-=======
->>>>>>> Stashed changes
 10010 Turvallinen -> Säästö
 10014 Välitön -> Pikamaksulompakko
 10058 Maksun lähtevä määrä
@@ -229,7 +214,3 @@ ja Turvallinen -> Säästö
 9805 maa
 9845 aikataulu 9861
 9947 -henkilöllisyys
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
