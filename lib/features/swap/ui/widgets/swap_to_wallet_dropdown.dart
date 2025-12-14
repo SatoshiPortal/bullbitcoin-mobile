@@ -24,27 +24,26 @@ class SwapToWalletDropdown extends StatelessWidget {
           const LoadingLineContent()
         else
           BBDropdown<Wallet>(
-            items:
-                wallets
-                    .map(
-                      (wallet) => DropdownMenuItem(
-                        value: wallet,
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              wallet.isLiquid
-                                  ? 'assets/logos/liquid.png'
-                                  : 'assets/logos/bitcoin.png',
-                              width: 20,
-                              height: 20,
-                            ),
-                            const Gap(8),
-                            Text(wallet.displayLabel),
-                          ],
+            items: wallets
+                .map(
+                  (wallet) => DropdownMenuItem(
+                    value: wallet,
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          wallet.isLiquid
+                              ? 'assets/logos/liquid.png'
+                              : 'assets/logos/bitcoin.png',
+                          width: 20,
+                          height: 20,
                         ),
-                      ),
-                    )
-                    .toList(),
+                        const Gap(8),
+                        Text(wallet.displayLabel(context)),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
             value: selected,
             validator: (value) {
               if (value == null) {

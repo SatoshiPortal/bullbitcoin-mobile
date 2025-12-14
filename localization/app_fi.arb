@@ -1879,11 +1879,11 @@
   "@payNotAvailable": {
     "description": "Placeholder for unavailable information"
   },
-              "payBitcoinOnchain": "Bitcoin on-chain",
+  "payBitcoinOnchain": "Bitcoin on-chain",
   "@payBitcoinOnchain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-          "payAboveMaxAmount": "Yrität maksaa yli suurimman summan, jonka tästä lompakosta voi maksaa.",
+  "payAboveMaxAmount": "Yrität maksaa yli suurimman summan, jonka tästä lompakosta voi maksaa.",
   "@payAboveMaxAmount": {
     "description": "Error message when payment amount exceeds maximum"
   },
@@ -1911,7 +1911,7 @@
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
-          "payPriceRefreshIn": "Hinta päivittyy ",
+  "payPriceRefreshIn": "Hinta päivittyy ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
@@ -1951,7 +1951,7 @@
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"
   },
-      "payExternalWalletDescription": "Maksa toisesta Bitcoin-lompakosta",
+  "payExternalWalletDescription": "Maksa toisesta Bitcoin-lompakosta",
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
   },
@@ -1959,11 +1959,11 @@
   "@payInsufficientBalance": {
     "description": "Error message for insufficient balance"
   },
-      "payRbfActivated": "Replace-by-fee aktivoitu",
+  "payRbfActivated": "Replace-by-fee aktivoitu",
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
   },
-      "transactionTitle": "Transaktiot",
+  "transactionTitle": "Transaktiot",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
   },
@@ -2686,6 +2686,14 @@
   "@walletNameSecureBitcoin": {
     "description": "Default name for Bitcoin wallet"
   },
+  "globalDefaultBitcoinWalletLabel": "Turvallinen Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Oletustunniste Bitcoin-lompakoille, kun niitä käytetään oletuksena"
+  },
+  "globalDefaultLiquidWalletLabel": "Pikamaksulompakko",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Oletustunniste Liquid/pikamaksulompakoille, kun niitä käytetään oletuksena"
+  },
   "walletTypeWatchOnly": "Vain katselu",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
@@ -3230,7 +3238,7 @@
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
-          "fundExchangeSinpeDescriptionBold": "se hylätään.",
+  "fundExchangeSinpeDescriptionBold": "se hylätään.",
   "@fundExchangeSinpeDescriptionBold": {
     "description": "Bold text warning that payment from wrong number will be rejected"
   },
@@ -3254,7 +3262,7 @@
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
   },
-      "fundExchangeCrIbanCrcDescription": "Lähetä pankkisiirto pankkitililtäsi käyttäen alla olevia tietoja ",
+  "fundExchangeCrIbanCrcDescription": "Lähetä pankkisiirto pankkitililtäsi käyttäen alla olevia tietoja ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
   },
@@ -3294,7 +3302,7 @@
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica)"
   },
-      "fundExchangeCrIbanUsdDescription": "Lähetä pankkisiirto pankkitililtäsi käyttäen alla olevia tietoja ",
+  "fundExchangeCrIbanUsdDescription": "Lähetä pankkisiirto pankkitililtäsi käyttäen alla olevia tietoja ",
   "@fundExchangeCrIbanUsdDescription": {
     "description": "First part of description for CR IBAN USD transfer"
   },
@@ -4385,7 +4393,10 @@
       "amount": {
         "type": "String"
       },
-      "currency": {"type": "String"}    }
+      "currency": {
+        "type": "String"
+      }
+    }
   },
   "swapValidationSelectFromWallet": "Valitse lompakko, josta siirretään",
   "@swapValidationSelectFromWallet": {
@@ -5642,7 +5653,7 @@
   "@payInvoiceExpired": {
     "description": "Error message when Lightning invoice has expired"
   },
-      "payNetworkError": "Verkkovirhe. Yritä uudelleen",
+  "payNetworkError": "Verkkovirhe. Yritä uudelleen",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
@@ -5674,7 +5685,7 @@
   "@payEnterInvoice": {
     "description": "Placeholder text for invoice input field"
   },
-          "payTotal": "Yhteensä",
+  "payTotal": "Yhteensä",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
   },
@@ -7279,7 +7290,7 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-      "testBackupWalletTitle": "Testaa {walletName}",
+  "testBackupWalletTitle": "Testaa {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",
     "placeholders": {
@@ -7863,7 +7874,7 @@
   "recoverbullGoogleDriveScreenTitle": "Google Drive -holvit",
   "@recoverbullGoogleDriveScreenTitle": {
     "description": "Screen title for Google Drive vaults management"
-  },  
+  },
   "recoverbullRecoverBullServer": "RecoverBull-palvelin",
   "@recoverbullRecoverBullServer": {
     "description": "Label for RecoverBull server connection status"
@@ -8909,7 +8920,7 @@
       "amount": {
         "type": "String"
       }
-	}
+    }
   },
   "importMnemonicTransactionsLabel": "Transaktioita: {count}",
   "@importMnemonicTransactionsLabel": {
@@ -8934,7 +8945,7 @@
   },
   "importWatchOnlyYpub": "ypub",
   "@importWatchOnlyYpub": {
-   "description": "Label for ypub import method"
+    "description": "Label for ypub import method"
   },
   "importWatchOnlyZpub": "zpub",
   "@importWatchOnlyZpub": {
@@ -9705,9 +9716,15 @@
   "@dcaBuyingMessage": {
     "description": "DCA status message",
     "placeholders": {
-      "amount": {"type": "String"},
-      "frequency": {"type": "String"},
-      "network": {"type": "String"}
+      "amount": {
+        "type": "String"
+      },
+      "frequency": {
+        "type": "String"
+      },
+      "network": {
+        "type": "String"
+      }
     }
   },
   "exchangeAuthLoginFailed": "Kirjautuminen epäonnistui",
@@ -9806,7 +9823,9 @@
   "@withdrawConfirmError": {
     "description": "Error message on confirmation screen",
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "fundExchangeFundAccount": "Rahoita tiliäsi",
@@ -9901,7 +9920,9 @@
   "@dcaConfirmPaymentBalance": {
     "description": "Payment method balance format",
     "placeholders": {
-      "currency": {"type": "String"}
+      "currency": {
+        "type": "String"
+      }
     }
   },
   "dcaConfirmOrderType": "Toimeksiantotyyppi",
@@ -9936,7 +9957,9 @@
   "@dcaConfirmError": {
     "description": "DCA confirmation error message",
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "dcaConfirmContinue": "Jatka",
@@ -10255,7 +10278,9 @@
   "@autoswapSaveError": {
     "description": "Error message when save fails",
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "electrumTitle": "Electrum-palvelinasetukset",
@@ -10286,8 +10311,12 @@
   "@electrumServerUrlHint": {
     "description": "Hint text for server URL input",
     "placeholders": {
-      "network": {"type": "String"},
-      "environment": {"type": "String"}
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
     }
   },
   "electrumMainnet": "Mainnet",
@@ -10362,7 +10391,9 @@
   "@electrumStopGapTooHighError": {
     "description": "Validation error for Stop Gap exceeding maximum",
     "placeholders": {
-      "maxStopGap": {"type": "String"}
+      "maxStopGap": {
+        "type": "String"
+      }
     }
   },
   "electrumTimeoutEmptyError": "Aikakatkaisu ei voi olla tyhjä",
@@ -10377,7 +10408,9 @@
   "@electrumTimeoutTooHighError": {
     "description": "Validation error for Timeout exceeding maximum",
     "placeholders": {
-      "maxTimeout": {"type": "String"}
+      "maxTimeout": {
+        "type": "String"
+      }
     }
   },
   "electrumRetryCountEmptyError": "Uusintayritysten määrä ei voi olla tyhjä",
@@ -10392,29 +10425,39 @@
   "@electrumTimeoutWarning": {
     "description": "Warning message when timeout is too low for the configured Stop Gap",
     "placeholders": {
-      "timeoutValue": {"type": "String"},
-      "recommended": {"type": "String"}
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
     }
   },
   "electrumInvalidStopGapError": "Virheellinen Stop Gap -arvo: {value}",
   "@electrumInvalidStopGapError": {
     "description": "Error message for invalid Stop Gap value from backend",
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "electrumInvalidTimeoutError": "Virheellinen aikakatkaisu: {value}",
   "@electrumInvalidTimeoutError": {
     "description": "Error message for invalid Timeout value from backend",
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "electrumInvalidRetryError": "Virheellinen uusintayritysten määrä: {value}",
   "@electrumInvalidRetryError": {
     "description": "Error message for invalid Retry Count value from backend",
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "electrumSaveFailedError": "Lisäasetusten tallennus epäonnistui",
@@ -10445,7 +10488,9 @@
   "@electrumDeleteConfirmation": {
     "description": "Confirmation message for server deletion",
     "placeholders": {
-      "serverUrl": {"type": "String"}
+      "serverUrl": {
+        "type": "String"
+      }
     }
   },
   "electrumCancel": "Peruuta",
@@ -10472,7 +10517,7 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-      "electrumLoadFailedError": "Palvelinten lataus epäonnistui{reason}",
+  "electrumLoadFailedError": "Palvelinten lataus epäonnistui{reason}",
   "@electrumLoadFailedError": {
     "description": "Error message when loading servers fails",
     "placeholders": {
@@ -10624,7 +10669,9 @@
   "@arkAboutDustValue": {
     "description": "Dust value format",
     "placeholders": {
-      "dust": {"type": "int"}
+      "dust": {
+        "type": "int"
+      }
     }
   },
   "arkAboutSessionDuration": "Istunnon kesto",
@@ -10651,63 +10698,79 @@
   "@arkAboutCopiedMessage": {
     "description": "Snackbar message when field copied",
     "placeholders": {
-      "label": {"type": "String"}
+      "label": {
+        "type": "String"
+      }
     }
   },
   "arkAboutDurationSeconds": "{seconds} sekuntia",
   "@arkAboutDurationSeconds": {
     "description": "Duration format for seconds",
     "placeholders": {
-      "seconds": {"type": "int"}
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationMinute": "{minutes} minuutti",
   "@arkAboutDurationMinute": {
     "description": "Duration format for singular minute",
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationMinutes": "{minutes} minuuttia",
   "@arkAboutDurationMinutes": {
     "description": "Duration format for plural minutes",
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationHour": "{hours} tunti",
   "@arkAboutDurationHour": {
     "description": "Duration format for singular hour",
     "placeholders": {
-      "hours": {"type": "int"}
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationHours": "{hours} tuntia",
   "@arkAboutDurationHours": {
     "description": "Duration format for plural hours",
     "placeholders": {
-      "hours": {"type": "int"}
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationDay": "{days} päivä",
   "@arkAboutDurationDay": {
     "description": "Duration format for singular day",
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationDays": "{days} päivää",
   "@arkAboutDurationDays": {
     "description": "Duration format for plural days",
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "arkSendRecipientTitle": "Lähetä vastaanottajalle",
   "@arkSendRecipientTitle": {
     "description": "Title for the ark send recipient page"
   },
-      "arkSendRecipientError": "Anna vastaanottaja",
+  "arkSendRecipientError": "Anna vastaanottaja",
   "@arkSendRecipientError": {
     "description": "Error message when recipient field is empty"
   },
@@ -11207,8 +11270,13 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {"type": "String"},
-      "network": {"type": "String"}    }
+      "frequency": {
+        "type": "String"
+      },
+      "network": {
+        "type": "String"
+      }
+    }
   },
   "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
   "@exchangeDcaAddressDisplay": {

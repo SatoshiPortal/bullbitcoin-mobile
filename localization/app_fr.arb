@@ -2031,11 +2031,11 @@
   "@payNotAvailable": {
     "description": "Texte pour information non disponible"
   },
-              "payBitcoinOnchain": "Bitcoin on-chain",
+  "payBitcoinOnchain": "Bitcoin on-chain",
   "@payBitcoinOnchain": {
     "description": "Option pour le paiement Bitcoin on-chain"
   },
-          "payAboveMaxAmount": "Vous essayez de payer un montant supérieur au montant maximum pouvant être payé avec ce portefeuille.",
+  "payAboveMaxAmount": "Vous essayez de payer un montant supérieur au montant maximum pouvant être payé avec ce portefeuille.",
   "@payAboveMaxAmount": {
     "description": "Message d'erreur lorsque le montant de paiement dépasse le maximum"
   },
@@ -2063,7 +2063,7 @@
   "@payPaymentInProgressDescription": {
     "description": "Description pour le paiement en cours"
   },
-          "payPriceRefreshIn": "Le prix sera actualisé dans ",
+  "payPriceRefreshIn": "Le prix sera actualisé dans ",
   "@payPriceRefreshIn": {
     "description": "Texte avant le compte à rebours"
   },
@@ -2099,11 +2099,11 @@
   "@payCopied": {
     "description": "Message de succès après la copie"
   },
-                                                                                      "payWhichWallet": "De quel portefeuille souhaitez-vous payer?",
+  "payWhichWallet": "De quel portefeuille souhaitez-vous payer?",
   "@payWhichWallet": {
     "description": "Question pour la sélection du portefeuille"
   },
-      "payExternalWalletDescription": "Payer depuis un autre portefeuille Bitcoin",
+  "payExternalWalletDescription": "Payer depuis un autre portefeuille Bitcoin",
   "@payExternalWalletDescription": {
     "description": "Description pour l'option de portefeuille externe"
   },
@@ -2111,11 +2111,11 @@
   "@payInsufficientBalance": {
     "description": "Message d'erreur pour solde insuffisant"
   },
-      "payRbfActivated": "Replace-by-fee activé",
+  "payRbfActivated": "Replace-by-fee activé",
   "@payRbfActivated": {
     "description": "Libellé pour le bouton RBF"
   },
-      "transactionTitle": "Transactions",
+  "transactionTitle": "Transactions",
   "@transactionTitle": {
     "description": "Titre de l'écran des transactions"
   },
@@ -2838,6 +2838,14 @@
   "@walletNameSecureBitcoin": {
     "description": "Nom par défaut pour le portefeuille Bitcoin"
   },
+  "globalDefaultBitcoinWalletLabel": "Bitcoin sécurisé",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Étiquette par défaut pour les portefeuilles Bitcoin lorsqu'ils sont utilisés par défaut"
+  },
+  "globalDefaultLiquidWalletLabel": "Paiements instantanés",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Étiquette par défaut pour les portefeuilles Liquid/paiements instantanés lorsqu'ils sont utilisés par défaut"
+  },
   "walletTypeWatchOnly": "Lecture seule",
   "@walletTypeWatchOnly": {
     "description": "Libellé de type de portefeuille pour les portefeuilles en lecture seule"
@@ -3382,7 +3390,7 @@
   "@fundExchangeErrorLoadingDetails": {
     "description": "Message d'erreur lorsque les détails de financement ne peuvent pas être chargés"
   },
-          "fundExchangeSinpeDescriptionBold": "il sera rejeté.",
+  "fundExchangeSinpeDescriptionBold": "il sera rejeté.",
   "@fundExchangeSinpeDescriptionBold": {
     "description": "Texte en gras avertissant que le paiement depuis un mauvais numéro sera rejeté"
   },
@@ -3406,7 +3414,7 @@
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Libellé pour le nom du destinataire dans le virement SINPE"
   },
-      "fundExchangeCrIbanCrcDescription": "Envoyez un virement bancaire depuis votre compte bancaire en utilisant les détails ci-dessous ",
+  "fundExchangeCrIbanCrcDescription": "Envoyez un virement bancaire depuis votre compte bancaire en utilisant les détails ci-dessous ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "Première partie de la description pour le virement CR IBAN CRC"
   },
@@ -3446,7 +3454,7 @@
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
     "description": "Libellé pour Cédula Jurídica (numéro d'identification légale au Costa Rica)"
   },
-      "fundExchangeCrIbanUsdDescription": "Envoyez un virement bancaire depuis votre compte bancaire en utilisant les détails ci-dessous ",
+  "fundExchangeCrIbanUsdDescription": "Envoyez un virement bancaire depuis votre compte bancaire en utilisant les détails ci-dessous ",
   "@fundExchangeCrIbanUsdDescription": {
     "description": "Première partie de la description pour le virement CR IBAN USD"
   },
@@ -4537,7 +4545,9 @@
       "amount": {
         "type": "String"
       },
-      "currency": {"type": "String"}    
+      "currency": {
+        "type": "String"
+      }
     }
   },
   "swapValidationSelectFromWallet": "Veuillez sélectionner un portefeuille source",
@@ -5795,7 +5805,7 @@
   "@payInvoiceExpired": {
     "description": "Error message when Lightning invoice has expired"
   },
-      "payNetworkError": "Erreur réseau. Veuillez réessayer",
+  "payNetworkError": "Erreur réseau. Veuillez réessayer",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
   },
@@ -5827,7 +5837,7 @@
   "@payEnterInvoice": {
     "description": "Placeholder text for invoice input field"
   },
-          "payTotal": "Total",
+  "payTotal": "Total",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
   },
@@ -5835,7 +5845,7 @@
   "@payDescription": {
     "description": "Label for payment description/memo field"
   },
-      "payCancelPayment": "Annuler le Paiement",
+  "payCancelPayment": "Annuler le Paiement",
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
@@ -7432,7 +7442,7 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-      "testBackupWalletTitle": "Tester {walletName}",
+  "testBackupWalletTitle": "Tester {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",
     "placeholders": {
@@ -9870,9 +9880,15 @@
   "@dcaBuyingMessage": {
     "description": "DCA status message",
     "placeholders": {
-      "amount": {"type": "String"},
-      "frequency": {"type": "String"},
-      "network": {"type": "String"}
+      "amount": {
+        "type": "String"
+      },
+      "frequency": {
+        "type": "String"
+      },
+      "network": {
+        "type": "String"
+      }
     }
   },
   "exchangeAuthLoginFailed": "Échec de la connexion",
@@ -9971,7 +9987,9 @@
   "@withdrawConfirmError": {
     "description": "Error message on confirmation screen",
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "fundExchangeFundAccount": "Financer votre compte",
@@ -10066,7 +10084,9 @@
   "@dcaConfirmPaymentBalance": {
     "description": "Payment method balance format",
     "placeholders": {
-      "currency": {"type": "String"}
+      "currency": {
+        "type": "String"
+      }
     }
   },
   "dcaConfirmOrderType": "Type de commande",
@@ -10101,7 +10121,9 @@
   "@dcaConfirmError": {
     "description": "DCA confirmation error message",
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "dcaConfirmContinue": "Continuer",
@@ -10420,7 +10442,9 @@
   "@autoswapSaveError": {
     "description": "Error message when save fails",
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "electrumTitle": "Paramètres du serveur Electrum",
@@ -10451,8 +10475,12 @@
   "@electrumServerUrlHint": {
     "description": "Hint text for server URL input",
     "placeholders": {
-      "network": {"type": "String"},
-      "environment": {"type": "String"}
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
     }
   },
   "electrumMainnet": "Mainnet",
@@ -10527,7 +10555,9 @@
   "@electrumStopGapTooHighError": {
     "description": "Validation error for Stop Gap exceeding maximum",
     "placeholders": {
-      "maxStopGap": {"type": "String"}
+      "maxStopGap": {
+        "type": "String"
+      }
     }
   },
   "electrumTimeoutEmptyError": "Le délai d'attente ne peut pas être vide",
@@ -10542,7 +10572,9 @@
   "@electrumTimeoutTooHighError": {
     "description": "Validation error for Timeout exceeding maximum",
     "placeholders": {
-      "maxTimeout": {"type": "String"}
+      "maxTimeout": {
+        "type": "String"
+      }
     }
   },
   "electrumRetryCountEmptyError": "Le nombre de tentatives ne peut pas être vide",
@@ -10557,29 +10589,39 @@
   "@electrumTimeoutWarning": {
     "description": "Warning message when timeout is too low for the configured Stop Gap",
     "placeholders": {
-      "timeoutValue": {"type": "String"},
-      "recommended": {"type": "String"}
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
     }
   },
   "electrumInvalidStopGapError": "Valeur d'écart d'arrêt invalide : {value}",
   "@electrumInvalidStopGapError": {
     "description": "Error message for invalid Stop Gap value from backend",
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "electrumInvalidTimeoutError": "Valeur de délai d'attente invalide : {value}",
   "@electrumInvalidTimeoutError": {
     "description": "Error message for invalid Timeout value from backend",
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "electrumInvalidRetryError": "Valeur de nombre de tentatives invalide : {value}",
   "@electrumInvalidRetryError": {
     "description": "Error message for invalid Retry Count value from backend",
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "electrumSaveFailedError": "Échec de l'enregistrement des options avancées",
@@ -10610,7 +10652,9 @@
   "@electrumDeleteConfirmation": {
     "description": "Confirmation message for server deletion",
     "placeholders": {
-      "serverUrl": {"type": "String"}
+      "serverUrl": {
+        "type": "String"
+      }
     }
   },
   "electrumCancel": "Annuler",
@@ -10637,7 +10681,7 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-      "electrumLoadFailedError": "Échec du chargement des serveurs{reason}",
+  "electrumLoadFailedError": "Échec du chargement des serveurs{reason}",
   "@electrumLoadFailedError": {
     "description": "Error message when loading servers fails",
     "placeholders": {
@@ -10789,7 +10833,9 @@
   "@arkAboutDustValue": {
     "description": "Dust value format",
     "placeholders": {
-      "dust": {"type": "int"}
+      "dust": {
+        "type": "int"
+      }
     }
   },
   "arkAboutSessionDuration": "Durée de la session",
@@ -10816,63 +10862,79 @@
   "@arkAboutCopiedMessage": {
     "description": "Snackbar message when field copied",
     "placeholders": {
-      "label": {"type": "String"}
+      "label": {
+        "type": "String"
+      }
     }
   },
   "arkAboutDurationSeconds": "{seconds} secondes",
   "@arkAboutDurationSeconds": {
     "description": "Duration format for seconds",
     "placeholders": {
-      "seconds": {"type": "int"}
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationMinute": "{minutes} minute",
   "@arkAboutDurationMinute": {
     "description": "Duration format for singular minute",
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationMinutes": "{minutes} minutes",
   "@arkAboutDurationMinutes": {
     "description": "Duration format for plural minutes",
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationHour": "{hours} heure",
   "@arkAboutDurationHour": {
     "description": "Duration format for singular hour",
     "placeholders": {
-      "hours": {"type": "int"}
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationHours": "{hours} heures",
   "@arkAboutDurationHours": {
     "description": "Duration format for plural hours",
     "placeholders": {
-      "hours": {"type": "int"}
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationDay": "{days} jour",
   "@arkAboutDurationDay": {
     "description": "Duration format for singular day",
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationDays": "{days} jours",
   "@arkAboutDurationDays": {
     "description": "Duration format for plural days",
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "arkSendRecipientTitle": "Envoyer au destinataire",
   "@arkSendRecipientTitle": {
     "description": "Title for the ark send recipient page"
   },
-      "arkSendRecipientError": "Veuillez entrer un destinataire",
+  "arkSendRecipientError": "Veuillez entrer un destinataire",
   "@arkSendRecipientError": {
     "description": "Error message when recipient field is empty"
   },
@@ -11372,8 +11434,13 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-      "frequency": {"type": "String"},
-      "network": {"type": "String"}    }
+      "frequency": {
+        "type": "String"
+      },
+      "network": {
+        "type": "String"
+      }
+    }
   },
   "exchangeDcaAddressDisplay": "{addressLabel} : {address}",
   "@exchangeDcaAddressDisplay": {

@@ -33,14 +33,11 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
       future: enableScreenPrivacy(),
       builder: (context, snapshot) {
         return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
-          listenWhen:
-              (previous, current) =>
-                  (previous.reorderedMnemonic.length !=
-                          current.mnemonic.length &&
-                      current.reorderedMnemonic.length ==
-                          current.mnemonic.length) ||
-                  (previous.statusError.isEmpty &&
-                      current.statusError.isNotEmpty),
+          listenWhen: (previous, current) =>
+              (previous.reorderedMnemonic.length != current.mnemonic.length &&
+                  current.reorderedMnemonic.length ==
+                      current.mnemonic.length) ||
+              (previous.statusError.isEmpty && current.statusError.isNotEmpty),
           listener: (context, state) {
             if (state.statusError.isNotEmpty) {
               SnackBarUtils.showSnackBar(context, state.statusError);
@@ -58,15 +55,20 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
           builder: (context, state) {
             final walletName = state.selectedWallet?.isDefault ?? false
                 ? context.loc.testBackupDefaultWallets
-                : state.selectedWallet?.displayLabel ?? '';
+                : state.selectedWallet?.displayLabel(context) ?? '';
             final title = context.loc.testBackupWalletTitle(walletName);
-            final reorderedMnemonic =
-                context.watch<TestWalletBackupBloc>().state.reorderedMnemonic;
-            final mnemonic =
-                context.watch<TestWalletBackupBloc>().state.mnemonic;
+            final reorderedMnemonic = context
+                .watch<TestWalletBackupBloc>()
+                .state
+                .reorderedMnemonic;
+            final mnemonic = context
+                .watch<TestWalletBackupBloc>()
+                .state
+                .mnemonic;
 
-            final nextWordNumber =
-                reorderedMnemonic.isEmpty ? 1 : reorderedMnemonic.length + 1;
+            final nextWordNumber = reorderedMnemonic.isEmpty
+                ? 1
+                : reorderedMnemonic.length + 1;
             final showPrompt = reorderedMnemonic.length < mnemonic.length;
             return Scaffold(
               backgroundColor: context.appColors.onSecondary,
@@ -95,7 +97,9 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                         Column(
                           children: [
                             BBText(
-                              context.loc.testBackupWhatIsWordNumber(nextWordNumber),
+                              context.loc.testBackupWhatIsWordNumber(
+                                nextWordNumber,
+                              ),
                               textAlign: .center,
                               style: context.font.labelMedium?.copyWith(
                                 fontWeight: .w700,
@@ -137,8 +141,10 @@ class _ShuffledMnemonicGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shuffledMnemonic =
-        context.watch<TestWalletBackupBloc>().state.shuffledMnemonic;
+    final shuffledMnemonic = context
+        .watch<TestWalletBackupBloc>()
+        .state
+        .shuffledMnemonic;
 
     return Column(
       children: [
@@ -177,20 +183,21 @@ class _ShuffledMnemonicWord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedMnemonicWords =
-        context.watch<TestWalletBackupBloc>().state.selectedMnemonicWords;
+    final selectedMnemonicWords = context
+        .watch<TestWalletBackupBloc>()
+        .state
+        .selectedMnemonicWords;
     final isSelected = selectedMnemonicWords.contains(index);
     final selectedWordNumber = selectedMnemonicWords.indexOf(index) + 1;
 
     return InkWell(
-      onTap:
-          isSelected
-              ? null
-              : () {
-                context.read<TestWalletBackupBloc>().add(
-                  OnWordsSelected(word: word, index: index),
-                );
-              },
+      onTap: isSelected
+          ? null
+          : () {
+              context.read<TestWalletBackupBloc>().add(
+                OnWordsSelected(word: word, index: index),
+              );
+            },
       splashColor: context.appColors.transparent,
       child: Container(
         margin: const EdgeInsets.fromLTRB(8, 0, 8, 20),
@@ -222,15 +229,13 @@ class _ShuffledMnemonicWord extends StatelessWidget {
                 width: 34.48,
                 height: 34.48,
                 decoration: BoxDecoration(
-                  color:
-                      isSelected
-                          ? const Color(0xFFE53935)
-                          : const Color(0xFFA9A9A9),
+                  color: isSelected
+                      ? const Color(0xFFE53935)
+                      : const Color(0xFFA9A9A9),
                   border: Border.all(
-                    color:
-                        isSelected
-                            ? const Color(0xFFE53935)
-                            : const Color(0xFFA9A9A9),
+                    color: isSelected
+                        ? const Color(0xFFE53935)
+                        : const Color(0xFFA9A9A9),
                     width: 0.82,
                   ),
                   borderRadius: BorderRadius.circular(2.46),

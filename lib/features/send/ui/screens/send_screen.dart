@@ -800,7 +800,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendFrom,
             details: BBText(
-              selectedWallet!.displayLabel,
+              selectedWallet!.displayLabel(context),
               style: context.font.bodyLarge,
               textAlign: .end,
             ),
@@ -969,7 +969,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendFrom,
             details: BBText(
-              selectedWallet!.displayLabel,
+              selectedWallet!.displayLabel(context),
               style: context.font.bodyLarge,
               textAlign: .end,
             ),
@@ -1224,7 +1224,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendFrom,
             details: BBText(
-              selectedWallet!.displayLabel,
+              selectedWallet!.displayLabel(context),
               style: context.font.bodyLarge,
               textAlign: .end,
             ),

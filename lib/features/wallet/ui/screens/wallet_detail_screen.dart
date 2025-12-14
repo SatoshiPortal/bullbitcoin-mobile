@@ -30,21 +30,19 @@ class WalletDetailScreen extends StatelessWidget {
         return null;
       }
     });
-    final walletName =
-        wallet != null
-            ? wallet.isDefault
-                ? wallet.isLiquid
+    final walletName = wallet != null
+        ? wallet.isDefault
+              ? wallet.isLiquid
                     ? context.loc.walletNameInstantPayments
                     : context.loc.walletNameSecureBitcoin
-                : wallet.displayLabel
-            : '';
+              : wallet.displayLabel(context)
+        : '';
 
     return Scaffold(
       appBar: AppBar(
-        title:
-            walletName.isEmpty
-                ? const LoadingLineContent(width: 150)
-                : BBText(walletName, style: context.font.headlineMedium),
+        title: walletName.isEmpty
+            ? const LoadingLineContent(width: 150)
+            : BBText(walletName, style: context.font.headlineMedium),
         actions: [
           IconButton(
             onPressed: () {
@@ -64,9 +62,8 @@ class WalletDetailScreen extends StatelessWidget {
             const LoadingBoxContent(height: 100)
           else
             BlocProvider<TransactionsCubit>(
-              create:
-                  (_) =>
-                      locator<TransactionsCubit>(param1: walletId)..loadTxs(),
+              create: (_) =>
+                  locator<TransactionsCubit>(param1: walletId)..loadTxs(),
               child: RefreshIndicator(
                 onRefresh: () async {
                   final bloc = context.read<WalletBloc>();
