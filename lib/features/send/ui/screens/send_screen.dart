@@ -381,8 +381,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                           crossAxisAlignment: .stretch,
                           children: [
                             const Gap(10),
-                            const NetworkDisplay(),
-                            const Gap(24),
                             PriceInput(
                               currency: inputCurrency,
                               amountEquivalent:
