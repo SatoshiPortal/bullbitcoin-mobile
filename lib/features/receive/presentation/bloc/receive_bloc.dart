@@ -125,6 +125,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     try {
+      if (state.wallet != null && !state.wallet!.isBitcoin) {
+        emit(state.copyWith(wallet: null, bitcoinAddress: null));
+      } else {
+        emit(state.copyWith(wallet: event.wallet, bitcoinAddress: null));
+      }
+
       // Emit a state with the Bitcoin type so the UI can update allready before
       // the async data is loaded. Remove values that should
       // not be shared between the different receive types. Currently only the
@@ -141,13 +147,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       );
 
       // If no wallet is passed through the constructor, get the default bitcoin wallet
-      Wallet? wallet = _wallet;
+      Wallet? wallet = _wallet ?? state.wallet;
       if (wallet == null) {
-        final wallets = await _getWalletsUsecase.execute(
-          onlyBitcoin: true,
-          onlyDefaults: true,
+        final wallets = await _getWalletsUsecase.execute(onlyBitcoin: true);
+        emit(state.copyWith(wallets: wallets));
+        wallet = wallets.firstWhere(
+          (w) => w.isDefault,
+          orElse: () => wallets.first,
         );
-        wallet = wallets.first;
       }
       emit(state.copyWith(wallet: wallet));
 
@@ -160,10 +167,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(
           state.copyWith(
             bitcoinUnit: bitcoinUnit,
-            inputAmountCurrencyCode:
-                state.inputAmountCurrencyCode.isNotEmpty
-                    ? state.inputAmountCurrencyCode
-                    : bitcoinUnit.code,
+            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+                ? state.inputAmountCurrencyCode
+                : bitcoinUnit.code,
           ),
         );
       }
@@ -213,8 +219,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           state.copyWith(
             payjoin: payjoin,
             error: error is! ReceivePayjoinException ? error : null,
-            receivePayjoinException:
-                error is ReceivePayjoinException ? error : null,
+            receivePayjoinException: error is ReceivePayjoinException
+                ? error
+                : null,
           ),
         );
       } else if (state.payjoin != null && !wallet.signsLocally) {
@@ -227,8 +234,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       if (state.exchangeRate == 0) {
         // If the exchange rate is not set yet, we need to get it from the settings
-        final exchangeRate =
-            await _convertSatsToCurrencyAmountUsecase.execute();
+        final exchangeRate = await _convertSatsToCurrencyAmountUsecase
+            .execute();
         emit(state.copyWith(exchangeRate: exchangeRate));
       }
 
@@ -273,10 +280,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(
           state.copyWith(
             bitcoinUnit: bitcoinUnit,
-            inputAmountCurrencyCode:
-                state.inputAmountCurrencyCode.isNotEmpty
-                    ? state.inputAmountCurrencyCode
-                    : bitcoinUnit.code,
+            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+                ? state.inputAmountCurrencyCode
+                : bitcoinUnit.code,
           ),
         );
       }
@@ -310,10 +316,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       if (state.swapLimits == null) {
         // If the swap limits are not set yet, fetch them.
         final (swapLimits, fees) = await _getSwapLimitsUsecase.execute(
-          type:
-              wallet.isLiquid
-                  ? SwapType.lightningToLiquid
-                  : SwapType.lightningToBitcoin,
+          type: wallet.isLiquid
+              ? SwapType.lightningToLiquid
+              : SwapType.lightningToBitcoin,
           isTestnet: wallet.network.isTestnet,
         );
         emit(state.copyWith(swapLimits: swapLimits));
@@ -321,8 +326,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       if (state.exchangeRate == 0) {
         // If the exchange rate is not set yet, we need to get it from the settings
-        final exchangeRate =
-            await _convertSatsToCurrencyAmountUsecase.execute();
+        final exchangeRate = await _convertSatsToCurrencyAmountUsecase
+            .execute();
         emit(state.copyWith(exchangeRate: exchangeRate));
       }
     } catch (e) {
@@ -359,10 +364,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(
           state.copyWith(
             bitcoinUnit: bitcoinUnit,
-            inputAmountCurrencyCode:
-                state.inputAmountCurrencyCode.isNotEmpty
-                    ? state.inputAmountCurrencyCode
-                    : bitcoinUnit.code,
+            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+                ? state.inputAmountCurrencyCode
+                : bitcoinUnit.code,
           ),
         );
       }
@@ -403,8 +407,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       if (state.exchangeRate == 0) {
         // If the exchange rate is not set yet, we need to get it from the settings
-        final exchangeRate =
-            await _convertSatsToCurrencyAmountUsecase.execute();
+        final exchangeRate = await _convertSatsToCurrencyAmountUsecase
+            .execute();
         emit(state.copyWith(exchangeRate: exchangeRate));
       }
 
@@ -432,10 +436,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       } else if (state.isInputAmountFiat) {
         final amountFiat = double.tryParse(event.amount);
         final isDecimalPoint = event.amount == '.';
-        amount =
-            amountFiat == null && !isDecimalPoint
-                ? state.inputAmount
-                : event.amount;
+        amount = amountFiat == null && !isDecimalPoint
+            ? state.inputAmount
+            : event.amount;
       } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
         // If the amount is in sats, make sure it is a valid BigInt and do not
         //  allow a decimal point or for it to be bigger than the max sats amount that can exist.
@@ -462,15 +465,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       int inputSat = 0;
       if (amount.isNotEmpty) {
-        inputSat =
-            state.isInputAmountFiat
-                ? ConvertAmount.fiatToSats(
-                  double.tryParse(amount) ?? 0,
-                  state.exchangeRate,
-                )
-                : state.inputAmountCurrencyCode == BitcoinUnit.sats.code
-                ? int.tryParse(amount) ?? 0
-                : ConvertAmount.btcToSats(double.tryParse(amount) ?? 0);
+        inputSat = state.isInputAmountFiat
+            ? ConvertAmount.fiatToSats(
+                double.tryParse(amount) ?? 0,
+                state.exchangeRate,
+              )
+            : state.inputAmountCurrencyCode == BitcoinUnit.sats.code
+            ? int.tryParse(amount) ?? 0
+            : ConvertAmount.btcToSats(double.tryParse(amount) ?? 0);
       }
       if (inputSat > ConversionConstants.maxSatsAmount.toInt()) {
         amountException = AboveBitcoinProtocolLimitAmountException(
@@ -559,10 +561,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     if (state.isInputAmountBelowLimit || state.isInputAmountAboveLimit) {
       emit(
         state.copyWith(
-          amountException:
-              state.isInputAmountBelowLimit
-                  ? BelowSwapLimitAmountException(state.swapLimits!.min)
-                  : AboveSwapLimitAmountException(state.swapLimits!.max),
+          amountException: state.isInputAmountBelowLimit
+              ? BelowSwapLimitAmountException(state.swapLimits!.min)
+              : AboveSwapLimitAmountException(state.swapLimits!.max),
           creatingSwap: false,
         ),
       );
@@ -586,10 +587,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       final wallet = state.wallet!;
       swap = await _createReceiveSwapUsecase.execute(
         walletId: wallet.id,
-        type:
-            wallet.isLiquid
-                ? SwapType.lightningToLiquid
-                : SwapType.lightningToBitcoin,
+        type: wallet.isLiquid
+            ? SwapType.lightningToLiquid
+            : SwapType.lightningToBitcoin,
         amountSat: confirmedAmountSat,
         description: state.note,
       );
@@ -665,8 +665,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveNewAddressGenerated event,
     Emitter<ReceiveState> emit,
   ) async {
-    final currentAddress =
-        state.isBitcoin ? state.bitcoinAddress : state.liquidAddress;
+    final currentAddress = state.isBitcoin
+        ? state.bitcoinAddress
+        : state.liquidAddress;
     if (currentAddress == null) {
       return;
     }
