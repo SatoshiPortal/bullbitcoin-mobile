@@ -92,71 +92,71 @@ class ReceiveQRDetails extends StatelessWidget {
     final selectedWallet = context.watch<ReceiveBloc>().state.wallet;
     final wallets = context.select((ReceiveBloc bloc) => bloc.state.wallets);
 
-    return Column(
-      crossAxisAlignment: .stretch,
-      children: [
-        Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 42),
-            padding: const EdgeInsets.all(16),
-            constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
-            decoration: BoxDecoration(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: .stretch,
+        children: [
+          if (wallets.length > 1 &&
+              isBitcoin &&
+              selectedWallet != null &&
+              selectedWallet.isBitcoin)
+            ColoredBox(
               color: context.appColors.onPrimary,
-              borderRadius: BorderRadius.circular(12),
+              child: DropdownButtonFormField<Wallet>(
+                alignment: Alignment.centerLeft,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                ),
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: context.appColors.secondary,
+                ),
+                dropdownColor: context.appColors.onPrimary,
+                initialValue: selectedWallet,
+                items: wallets.map((w) {
+                  return DropdownMenuItem(
+                    value: w,
+                    child: Text(
+                      w.displayLabel(context),
+                      style: context.font.headlineSmall,
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    context.read<ReceiveBloc>().add(
+                      ReceiveEvent.receiveBitcoinStarted(value),
+                    );
+                  }
+                },
+              ),
             ),
-            child: qrData.isNotEmpty
-                ? QrImageView(data: qrData)
-                : const LoadingBoxContent(height: 200),
+          const Gap(20),
+          Center(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
+              decoration: BoxDecoration(
+                color: context.appColors.onPrimary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: qrData.isNotEmpty
+                  ? QrImageView(data: qrData)
+                  : const LoadingBoxContent(height: 200),
+            ),
           ),
-        ),
-        if (isPayjoinAvailable) ...[
-          const Gap(16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: BBText(
+          if (isPayjoinAvailable) ...[
+            const Gap(16),
+            BBText(
               context.loc.receivePayjoinActivated,
               style: context.font.bodyLarge,
               textAlign: .center,
             ),
-          ),
-        ],
-        const Gap(20),
-        if (wallets.length > 1 &&
-            isBitcoin &&
-            selectedWallet != null &&
-            selectedWallet.isBitcoin)
-          DropdownButtonFormField<Wallet>(
-            alignment: Alignment.centerLeft,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-            ),
-            icon: Icon(
-              Icons.keyboard_arrow_down,
-              color: context.appColors.secondary,
-            ),
-            initialValue: selectedWallet,
-            items: wallets.map((w) {
-              return DropdownMenuItem(
-                value: w,
-                child: Text(
-                  w.displayLabel(context),
-                  style: context.font.headlineSmall,
-                ),
-              );
-            }).toList(),
-            onChanged: (value) {
-              if (value != null) {
-                context.read<ReceiveBloc>().add(
-                  ReceiveEvent.receiveBitcoinStarted(value),
-                );
-              }
-            },
-          ),
-        Gap(20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
+          ],
+          const Gap(20),
+          Column(
             crossAxisAlignment: .stretch,
             children: [
               BBText(
@@ -187,8 +187,8 @@ class ReceiveQRDetails extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
