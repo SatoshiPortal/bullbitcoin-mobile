@@ -10030,14 +10030,6 @@
   "@buyConfirmExternalWallet": {
     "description": "External wallet payout method"
   },
-  "buyConfirmSecureWallet": "Bitcoin-säästölompakko",
-  "@buyConfirmSecureWallet": {
-    "description": "Secure wallet payout method"
-  },
-  "buyConfirmInstantWallet": "Pikamaksulompakko",
-  "@buyConfirmInstantWallet": {
-    "description": "Instant payment wallet payout method"
-  },
   "buyConfirmAwaitingConfirmation": "Odottaa vahvistusta ",
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"

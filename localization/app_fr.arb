@@ -10194,14 +10194,6 @@
   "@buyConfirmExternalWallet": {
     "description": "External wallet payout method"
   },
-  "buyConfirmSecureWallet": "Portefeuille Bitcoin sécurisé",
-  "@buyConfirmSecureWallet": {
-    "description": "Secure wallet payout method"
-  },
-  "buyConfirmInstantWallet": "Portefeuille de paiement instantané",
-  "@buyConfirmInstantWallet": {
-    "description": "Instant payment wallet payout method"
-  },
   "buyConfirmAwaitingConfirmation": "En attente de confirmation ",
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
