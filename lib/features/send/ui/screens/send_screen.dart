@@ -384,6 +384,39 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                       child: Column(
                         crossAxisAlignment: .stretch,
                         children: [
+                          ColoredBox(
+                            color: context.appColors.onPrimary,
+                            child: DropdownButtonFormField<Wallet>(
+                              alignment: Alignment.centerLeft,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
+                              ),
+                              icon: Icon(
+                                Icons.keyboard_arrow_down,
+                                color: context.appColors.secondary,
+                              ),
+                              initialValue: selectedWallet,
+                              items: wallets.map((w) {
+                                return DropdownMenuItem(
+                                  value: w,
+                                  child: Text(
+                                    w.displayLabel(context),
+                                    style: context.font.headlineSmall,
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  context
+                                      .read<SendCubit>()
+                                      .updateSelectedWallet(value);
+                                }
+                              },
+                            ),
+                          ),
                           const Gap(10),
                           PriceInput(
                             currency: inputCurrency,
@@ -437,38 +470,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               walletLabel: selectedWallet.label,
                             ),
                           ),
-                          const Gap(16),
-                          if (buildError != null) const _SendError(),
-                          DropdownButtonFormField<Wallet>(
-                            alignment: Alignment.centerLeft,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                              ),
-                            ),
-                            icon: Icon(
-                              Icons.keyboard_arrow_down,
-                              color: context.appColors.secondary,
-                            ),
-                            initialValue: selectedWallet,
-                            items: wallets.map((w) {
-                              return DropdownMenuItem(
-                                value: w,
-                                child: Text(
-                                  w.displayLabel(context),
-                                  style: context.font.headlineSmall,
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                context.read<SendCubit>().updateSelectedWallet(
-                                  value,
-                                );
-                              }
-                            },
-                          ),
+                          if (buildError != null) ...[
+                            const Gap(16),
+                            const _SendError(),
+                          ],
+
                           const Spacer(),
                           Padding(
                             padding: EdgeInsets.only(
