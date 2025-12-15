@@ -17,6 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0       # Fetch full history for branch operations
+          persist-credentials: true  # Keep credentials for subsequent git commands
 
       - uses: anthropics/claude-code-action@v1
         with:
