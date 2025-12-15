@@ -147,7 +147,9 @@ class CommonCoinSelectTile extends StatelessWidget {
     final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
         ? 'Receive'
         : 'Change';
-    final label = utxo.labels.join(', ');
+    // Combine output labels and address labels
+    final allLabels = [...utxo.labels, ...utxo.addressLabels];
+    final hasLabels = allLabels.isNotEmpty;
 
     return GestureDetector(
       onTap: onTap,
@@ -182,12 +184,33 @@ class CommonCoinSelectTile extends StatelessWidget {
                         ),
                       ],
                     ),
-                    subtitle: BBText(
-                      label,
-                      style: context.font.labelMedium?.copyWith(
-                        color: context.appColors.outline,
-                      ),
-                    ),
+                    subtitle: hasLabels
+                        ? Wrap(
+                            spacing: 4,
+                            runSpacing: 4,
+                            children: allLabels
+                                .map(
+                                  (label) => Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: context.appColors.primaryContainer,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: BBText(
+                                      label,
+                                      style: context.font.labelSmall?.copyWith(
+                                        color:
+                                            context.appColors.onPrimaryContainer,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          )
+                        : null,
                     trailing: RadioGroup<bool>(
                       groupValue: selected,
                       onChanged: (_) => onTap(),
