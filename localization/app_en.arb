@@ -2830,14 +2830,6 @@
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
   },
-  "walletNameInstantPayments": "Instant Payments",
-  "@walletNameInstantPayments": {
-    "description": "Default name for Liquid/instant payments wallet"
-  },
-  "walletNameSecureBitcoin": "Secure Bitcoin",
-  "@walletNameSecureBitcoin": {
-    "description": "Default name for Bitcoin wallet"
-  },
   "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Default label for Bitcoin wallets when used as the default wallet"

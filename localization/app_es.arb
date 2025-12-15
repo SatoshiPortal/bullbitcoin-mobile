@@ -2830,14 +2830,6 @@
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Etiqueta para la fecha de creación de payjoin"
   },
-  "walletNameInstantPayments": "Pagos instantáneos",
-  "@walletNameInstantPayments": {
-    "description": "Nombre predeterminado para la billetera Liquid/pagos instantáneos"
-  },
-  "walletNameSecureBitcoin": "Bitcoin seguro",
-  "@walletNameSecureBitcoin": {
-    "description": "Nombre predeterminado para la billetera Bitcoin"
-  },
   "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Etiqueta predeterminada para billeteras Bitcoin cuando se usan como predeterminadas"
