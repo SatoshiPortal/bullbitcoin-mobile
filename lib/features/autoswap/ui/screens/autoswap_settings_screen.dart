@@ -43,34 +43,18 @@ class AutoSwapSettingsScreen extends StatelessWidget {
                           children: [
                             const Gap(16),
                             _EnabledToggle(),
-                            const Gap(16),
-                            Stack(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _AmountThresholdField(),
-                                    const Gap(16),
-                                    _TriggerBalanceField(),
-                                    const Gap(16),
-                                    _FeeThresholdField(),
-                                    const Gap(16),
-                                    _WalletSelectionDropdown(),
-                                    const Gap(16),
-                                    _AlwaysBlockToggle(),
-                                  ],
-                                ),
-                                if (!enabled)
-                                  Positioned.fill(
-                                    child: IgnorePointer(
-                                      child: Container(
-                                        color: context.appColors.overlay,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                            if (enabled) ...[
+                              const Gap(16),
+                              _AmountThresholdField(),
+                              const Gap(16),
+                              _TriggerBalanceField(),
+                              const Gap(16),
+                              _FeeThresholdField(),
+                              const Gap(16),
+                              _WalletSelectionDropdown(),
+                              const Gap(16),
+                              _AlwaysBlockToggle(),
+                            ],
                           ],
                         ),
                 ),
