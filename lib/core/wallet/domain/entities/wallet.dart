@@ -173,6 +173,11 @@ abstract class Wallet with _$Wallet {
     return network == Network.liquidMainnet || network == Network.liquidTestnet;
   }
 
+  bool get isBitcoin {
+    return network == Network.bitcoinMainnet ||
+        network == Network.bitcoinTestnet;
+  }
+
   String get derivationPath {
     // Find the content between [ and ]
     final startBracket = externalPublicDescriptor.indexOf('[');

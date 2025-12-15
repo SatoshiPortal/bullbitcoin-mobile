@@ -73,6 +73,9 @@ class ReceiveQRDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBitcoin = context.select(
+      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.bitcoin,
+    );
     final isLightning = context.select(
       (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
     );
@@ -86,40 +89,74 @@ class ReceiveQRDetails extends StatelessWidget {
     final isPayjoinAvailable = context.select(
       (ReceiveBloc bloc) => bloc.state.isPayjoinAvailable,
     );
+    final selectedWallet = context.watch<ReceiveBloc>().state.wallet;
+    final wallets = context.select((ReceiveBloc bloc) => bloc.state.wallets);
 
-    return Column(
-      crossAxisAlignment: .stretch,
-      children: [
-        Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 42),
-            padding: const EdgeInsets.all(16),
-            constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
-            decoration: BoxDecoration(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: .stretch,
+        children: [
+          if (wallets.length > 1 &&
+              isBitcoin &&
+              selectedWallet != null &&
+              selectedWallet.isBitcoin)
+            ColoredBox(
               color: context.appColors.onPrimary,
-              borderRadius: BorderRadius.circular(12),
+              child: DropdownButtonFormField<Wallet>(
+                alignment: Alignment.centerLeft,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                ),
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: context.appColors.secondary,
+                ),
+                dropdownColor: context.appColors.onPrimary,
+                initialValue: selectedWallet,
+                items: wallets.map((w) {
+                  return DropdownMenuItem(
+                    value: w,
+                    child: Text(
+                      w.displayLabel(context),
+                      style: context.font.headlineSmall,
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    context.read<ReceiveBloc>().add(
+                      ReceiveEvent.receiveBitcoinStarted(value),
+                    );
+                  }
+                },
+              ),
             ),
-            child:
-                qrData.isNotEmpty
-                    ? QrImageView(data: qrData)
-                    : const LoadingBoxContent(height: 200),
+          const Gap(20),
+          Center(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
+              decoration: BoxDecoration(
+                color: context.appColors.onPrimary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: qrData.isNotEmpty
+                  ? QrImageView(data: qrData)
+                  : const LoadingBoxContent(height: 200),
+            ),
           ),
-        ),
-        if (isPayjoinAvailable) ...[
-          const Gap(16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: BBText(
+          if (isPayjoinAvailable) ...[
+            const Gap(16),
+            BBText(
               context.loc.receivePayjoinActivated,
               style: context.font.bodyLarge,
               textAlign: .center,
             ),
-          ),
-        ],
-        const Gap(20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
+          ],
+          const Gap(20),
+          Column(
             crossAxisAlignment: .stretch,
             children: [
               BBText(
@@ -136,24 +173,22 @@ class ReceiveQRDetails extends StatelessWidget {
                 clipboardText: clipboardData,
                 overflow: .ellipsis,
                 canShowValueModal: true,
-                modalTitle:
-                    isLightning
-                        ? context.loc.receiveLightningInvoice
-                        : context.loc.receiveAddress,
-                modalContent:
-                    isLightning
-                        ? addressOrInvoiceOnly
-                        : addressOrInvoiceOnly
-                            .replaceAllMapped(
-                              RegExp('.{1,4}'),
-                              (match) => '${match.group(0)} ',
-                            )
-                            .trim(),
+                modalTitle: isLightning
+                    ? context.loc.receiveLightningInvoice
+                    : context.loc.receiveAddress,
+                modalContent: isLightning
+                    ? addressOrInvoiceOnly
+                    : addressOrInvoiceOnly
+                          .replaceAllMapped(
+                            RegExp('.{1,4}'),
+                            (match) => '${match.group(0)} ',
+                          )
+                          .trim(),
               ),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -230,8 +265,10 @@ class ReceiveInfoDetails extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      final receiveType =
-                          context.read<ReceiveBloc>().state.type;
+                      final receiveType = context
+                          .read<ReceiveBloc>()
+                          .state
+                          .type;
                       switch (receiveType) {
                         case ReceiveType.lightning:
                           context.pushNamed(
@@ -444,11 +481,7 @@ class ReceiveLnSwapID extends StatelessWidget {
             color: context.appColors.surfaceContainer,
           ),
           const Spacer(),
-          BBText(
-            swap.id,
-            style: context.font.bodyLarge,
-            textAlign: .end,
-          ),
+          BBText(swap.id, style: context.font.bodyLarge, textAlign: .end),
           const Gap(4),
           InkWell(
             child: Icon(Icons.copy, color: context.appColors.primary, size: 16),
@@ -595,10 +628,9 @@ class ReceiveCopyAddress extends StatelessWidget {
                   bloc.state.type == ReceiveType.bitcoin &&
                   bloc.state.isAddressOnly,
             ),
-            onChanged:
-                (addressOnly) => context.read<ReceiveBloc>().add(
-                  ReceiveEvent.receiveAddressOnlyToggled(addressOnly),
-                ),
+            onChanged: (addressOnly) => context.read<ReceiveBloc>().add(
+              ReceiveEvent.receiveAddressOnlyToggled(addressOnly),
+            ),
           ),
         ],
       ),
@@ -649,8 +681,8 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
 
           final keyChainPath =
               state.bitcoinAddress!.keyChain == WalletAddressKeyChain.external
-                  ? "0"
-                  : "1";
+              ? "0"
+              : "1";
           final derivationPath =
               "${state.wallet!.derivationPath}/$keyChainPath/${state.bitcoinAddress!.index}";
           context.pushNamed(
@@ -693,8 +725,8 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
 
           final keyChainPath =
               state.bitcoinAddress!.keyChain == WalletAddressKeyChain.external
-                  ? "0"
-                  : "1";
+              ? "0"
+              : "1";
           final derivationPath =
               "${state.wallet!.derivationPath}/$keyChainPath/${state.bitcoinAddress!.index}";
           context.pushNamed(
