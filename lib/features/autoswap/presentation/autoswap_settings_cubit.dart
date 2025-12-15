@@ -395,49 +395,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
   }
 
   void toggleBitcoinUnit() {
-    final currentUnit = state.bitcoinUnit;
-    if (currentUnit == null) return;
-
-    final newUnit = currentUnit == BitcoinUnit.btc
-        ? BitcoinUnit.sats
-        : BitcoinUnit.btc;
-
-    String? newAmountThresholdInput;
-    if (state.amountThresholdInput != null &&
-        state.amountThresholdInput!.isNotEmpty) {
-      if (currentUnit == BitcoinUnit.btc) {
-        final btcAmount = double.tryParse(state.amountThresholdInput!) ?? 0;
-        final satsAmount = ConvertAmount.btcToSats(btcAmount);
-        newAmountThresholdInput = satsAmount.toString();
-      } else {
-        final satsAmount = int.tryParse(state.amountThresholdInput!) ?? 0;
-        final btcAmount = ConvertAmount.satsToBtc(satsAmount);
-        newAmountThresholdInput = btcAmount.toString();
-      }
-    }
-
-    String? newTriggerBalanceSatsInput;
-    if (state.triggerBalanceSatsInput != null &&
-        state.triggerBalanceSatsInput!.isNotEmpty) {
-      if (currentUnit == BitcoinUnit.btc) {
-        final btcAmount = double.tryParse(state.triggerBalanceSatsInput!) ?? 0;
-        final satsAmount = ConvertAmount.btcToSats(btcAmount);
-        newTriggerBalanceSatsInput = satsAmount.toString();
-      } else {
-        final satsAmount = int.tryParse(state.triggerBalanceSatsInput!) ?? 0;
-        final btcAmount = ConvertAmount.satsToBtc(satsAmount);
-        newTriggerBalanceSatsInput = btcAmount.toString();
-      }
-    }
-
-    emit(
-      state.copyWith(
-        bitcoinUnit: newUnit,
-        amountThresholdInput: newAmountThresholdInput,
-        triggerBalanceSatsInput: newTriggerBalanceSatsInput,
-        amountThresholdError: null,
-      ),
-    );
+    emit(state.toggleBitcoinUnit());
   }
 
   Future<void> onTriggerBalanceChanged(String value) async {
@@ -445,44 +403,9 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         ? value.replaceAll(RegExp(r'[^\d]'), '')
         : value;
 
-    // Validate trigger balance is at least 2x the base balance in real-time
-    String? triggerBalanceError;
-    if (sanitizedValue.isNotEmpty &&
-        state.amountThresholdInput != null &&
-        state.amountThresholdInput!.isNotEmpty) {
-      final settings = await _getSettingsUsecase.execute();
-      final currentUnit = state.bitcoinUnit ?? settings.bitcoinUnit;
+    final settings = await _getSettingsUsecase.execute();
+    final currentUnit = state.bitcoinUnit ?? settings.bitcoinUnit;
 
-      int balanceThresholdSats;
-      if (currentUnit == BitcoinUnit.btc) {
-        final btcAmount =
-            double.tryParse(state.amountThresholdInput ?? '0') ?? 0;
-        balanceThresholdSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        balanceThresholdSats =
-            int.tryParse(state.amountThresholdInput ?? '0') ?? 0;
-      }
-
-      int triggerBalanceSats;
-      if (currentUnit == BitcoinUnit.btc) {
-        final btcAmount = double.tryParse(sanitizedValue) ?? 0;
-        triggerBalanceSats = ConvertAmount.btcToSats(btcAmount);
-      } else {
-        triggerBalanceSats = int.tryParse(sanitizedValue) ?? 0;
-      }
-
-      if (triggerBalanceSats > 0 &&
-          balanceThresholdSats > 0 &&
-          triggerBalanceSats < 2 * balanceThresholdSats) {
-        triggerBalanceError = 'autoswapTriggerBalanceError';
-      }
-    }
-
-    emit(
-      state.copyWith(
-        triggerBalanceSatsInput: sanitizedValue,
-        error: triggerBalanceError,
-      ),
-    );
+    emit(state.updateTriggerBalance(sanitizedValue, currentUnit));
   }
 }

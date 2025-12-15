@@ -242,6 +242,9 @@ class _TriggerBalanceField extends StatelessWidget {
     final error = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.error,
     );
+    final enabled = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,20 +287,25 @@ class _TriggerBalanceField extends StatelessWidget {
                     ),
                   ),
                 ),
-                onChanged: (value) {
-                  context
-                      .read<AutoSwapSettingsCubit>()
-                      .onTriggerBalanceChanged(value)
-                      .then((_) {
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          if (context.mounted) {
-                            context
-                                .read<AutoSwapSettingsCubit>()
-                                .updateSettings();
-                          }
-                        });
-                      });
-                },
+                onChanged: enabled
+                    ? (value) {
+                        context
+                            .read<AutoSwapSettingsCubit>()
+                            .onTriggerBalanceChanged(value)
+                            .then((_) {
+                              Future.delayed(
+                                const Duration(milliseconds: 500),
+                                () {
+                                  if (context.mounted) {
+                                    context
+                                        .read<AutoSwapSettingsCubit>()
+                                        .updateSettings();
+                                  }
+                                },
+                              );
+                            });
+                      }
+                    : (_) {},
               ),
             ),
           ],
@@ -332,6 +340,9 @@ class _FeeThresholdField extends StatelessWidget {
     final feeThresholdError = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdError,
     );
+    final enabled = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,17 +372,20 @@ class _FeeThresholdField extends StatelessWidget {
                   ),
                   child: BBText('%', style: context.font.bodyMedium),
                 ),
-                onChanged: (value) {
-                  context.read<AutoSwapSettingsCubit>().onFeeThresholdChanged(
-                    value,
-                  );
-                  // Auto-save after a short delay to debounce rapid changes
-                  Future.delayed(const Duration(milliseconds: 500), () {
-                    if (context.mounted) {
-                      context.read<AutoSwapSettingsCubit>().updateSettings();
-                    }
-                  });
-                },
+                onChanged: enabled
+                    ? (value) {
+                        context
+                            .read<AutoSwapSettingsCubit>()
+                            .onFeeThresholdChanged(value);
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          if (context.mounted) {
+                            context
+                                .read<AutoSwapSettingsCubit>()
+                                .updateSettings();
+                          }
+                        });
+                      }
+                    : (_) {},
               ),
             ),
           ],

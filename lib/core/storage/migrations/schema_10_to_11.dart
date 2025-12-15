@@ -37,7 +37,7 @@ class Schema10To11 {
 
     final db = m.database as SqliteDatabase;
     await db.managers.settings.update(
-      (f) => f(id: const Value(1), themeMode: const Value('system')),
+      (f) => f(themeMode: const Value('system')),
     );
   }
 }
