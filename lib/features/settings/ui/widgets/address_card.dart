@@ -13,12 +13,14 @@ class AddressCard extends StatelessWidget {
     required this.address,
     required this.index,
     required this.balanceSat,
+    required this.labels,
   });
 
   final bool isUsed;
   final String address;
   final int index;
   final int balanceSat;
+  final List<String> labels;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +103,29 @@ class AddressCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (labels.isNotEmpty) ...[
+              const Gap(8),
+              Text(
+                'Labels:',
+                style: context.font.bodyMedium?.copyWith(
+                  color: context.appColors.textMuted,
+                ),
+              ),
+              Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                children: labels
+                    .map(
+                      (label) => Text(
+                        label,
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.appColors.textMuted,
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
           ],
         ),
       ),
