@@ -39,5 +39,35 @@ class Schema10To11 {
     await db.managers.settings.update(
       (f) => f(themeMode: const Value('system')),
     );
+
+    final electrumServers = schema11.electrumServers;
+    const fulcrumUrl = 'ssl://fulcrum.bullbitcoin.com:50002';
+    const fulcrumUrlWithoutProtocol = 'fulcrum.bullbitcoin.com:50002';
+
+    await m.database.customUpdate(
+      'DELETE FROM electrum_servers WHERE url = ? OR url = ?',
+      variables: [
+        Variable<String>(fulcrumUrl),
+        Variable<String>(fulcrumUrlWithoutProtocol),
+      ],
+      updates: {electrumServers},
+    );
+
+    await m.database.customUpdate(
+      'UPDATE electrum_servers SET priority = priority + 1 WHERE is_testnet = 0 AND is_liquid = 0',
+      updates: {electrumServers},
+    );
+
+    await m.database
+        .into(electrumServers)
+        .insert(
+          RawValuesInsertable({
+            'url': const Constant(fulcrumUrl),
+            'is_testnet': const Constant(false),
+            'is_liquid': const Constant(false),
+            'priority': const Constant(0),
+            'is_custom': const Constant(false),
+          }),
+        );
   }
 }
