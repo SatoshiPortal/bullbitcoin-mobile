@@ -1,0 +1,44 @@
+import 'package:bb_mobile/core_deprecated/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core_deprecated/tor/data/datasources/tor_datasource.dart';
+import 'package:bb_mobile/core_deprecated/tor/data/repository/tor_repository.dart';
+import 'package:bb_mobile/core_deprecated/tor/data/usecases/init_tor_usecase.dart';
+import 'package:bb_mobile/core_deprecated/tor/data/usecases/is_tor_required_usecase.dart';
+import 'package:bb_mobile/core_deprecated/tor/data/usecases/tor_status_usecase.dart';
+import 'package:bb_mobile/core_deprecated/wallet/data/repositories/wallet_repository.dart';
+import 'package:get_it/get_it.dart';
+
+class TorLocator {
+  static Future<void> registerDatasources(GetIt locator) async {
+    if (!locator.isRegistered<TorDatasource>()) {
+      locator.registerSingletonAsync<TorDatasource>(() async {
+        return await TorDatasource.init();
+      });
+    }
+    await locator.isReady<TorDatasource>();
+  }
+
+  static Future<void> registerRepositories(GetIt locator) async {
+    locator.registerSingletonWithDependencies<TorRepository>(
+      () => TorRepository(locator<TorDatasource>()),
+      dependsOn: [TorDatasource],
+    );
+    await locator.isReady<TorRepository>();
+  }
+
+  static void registerUsecases(GetIt locator) {
+    locator.registerFactory<InitTorUsecase>(
+      () => InitTorUsecase(locator<TorRepository>()),
+    );
+
+    locator.registerFactory<IsTorRequiredUsecase>(
+      () => IsTorRequiredUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
+      ),
+    );
+
+    locator.registerFactory<TorStatusUsecase>(
+      () => TorStatusUsecase(locator<TorRepository>()),
+    );
+  }
+}

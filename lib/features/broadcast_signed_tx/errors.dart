@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core_deprecated/errors/bull_exception.dart';
 
 class BroadcastSignedTxError extends BullException {
   BroadcastSignedTxError(super.message);

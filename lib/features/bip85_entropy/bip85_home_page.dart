@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bip85_derivation_widget.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
+import 'package:bb_mobile/core_deprecated/themes/app_theme.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/widgets/bip85_derivation_widget.dart';
+import 'package:bb_mobile/core_deprecated/widgets/buttons/button.dart';
+import 'package:bb_mobile/core_deprecated/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
 import 'package:flutter/material.dart';

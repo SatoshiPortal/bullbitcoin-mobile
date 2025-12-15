@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core_deprecated/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core_deprecated/entities/signer_entity.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 

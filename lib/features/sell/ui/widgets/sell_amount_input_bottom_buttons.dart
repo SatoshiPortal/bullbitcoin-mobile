@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core_deprecated/themes/app_theme.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/widgets/buttons/button.dart';
+import 'package:bb_mobile/core_deprecated/widgets/cards/info_card.dart';
+import 'package:bb_mobile/core_deprecated/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core_deprecated/utils/amount_conversions.dart';
+import 'package:bb_mobile/core_deprecated/utils/amount_formatting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

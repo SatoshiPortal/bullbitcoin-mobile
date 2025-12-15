@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
+import 'package:bb_mobile/core_deprecated/themes/app_theme.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/widgets/buttons/button.dart';
+import 'package:bb_mobile/core_deprecated/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_wallet_radio_list.dart';

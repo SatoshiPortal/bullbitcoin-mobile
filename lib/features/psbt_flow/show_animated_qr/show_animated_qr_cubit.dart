@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/bbqr/bbqr.dart';
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/urqr/urqr.dart';
+import 'package:bb_mobile/core_deprecated/bbqr/bbqr.dart';
+import 'package:bb_mobile/core_deprecated/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core_deprecated/urqr/urqr.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

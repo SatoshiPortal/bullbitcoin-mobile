@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
+import 'package:bb_mobile/core_deprecated/themes/app_theme.dart';
+import 'package:bb_mobile/core_deprecated/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';

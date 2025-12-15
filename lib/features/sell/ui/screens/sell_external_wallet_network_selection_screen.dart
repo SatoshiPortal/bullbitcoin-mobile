@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/scrollable_column.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core_deprecated/themes/app_theme.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/widgets/loading/fading_linear_progress.dart';
+import 'package:bb_mobile/core_deprecated/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

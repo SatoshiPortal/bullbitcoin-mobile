@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core_deprecated/errors/bull_exception.dart';
+import 'package:bb_mobile/core_deprecated/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 
 class PinCodeRepository {
   final KeyValueStorageDatasource<String> _storage;

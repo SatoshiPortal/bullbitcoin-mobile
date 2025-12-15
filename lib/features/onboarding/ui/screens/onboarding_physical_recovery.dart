@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/mixins/privacy_screen.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
+import 'package:bb_mobile/core_deprecated/mixins/privacy_screen.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/widgets/loading/fading_linear_progress.dart';
+import 'package:bb_mobile/core_deprecated/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/app_bar.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';

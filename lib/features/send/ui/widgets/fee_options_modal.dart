@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/dropdown/selectable_list.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core_deprecated/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core_deprecated/themes/app_theme.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/widgets/dropdown/selectable_list.dart';
+import 'package:bb_mobile/core_deprecated/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/selectable_custom_fee_list_item.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core_deprecated/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
@@ -30,13 +30,6 @@ class RecipientsLocator {
     //  needing to have one big datasource with all API calls in it. Every feature
     //  could then just reuse the clients and implement only the api calls they need
     //  in their own gateways.
-    // The secure_storage and secure_storage_datasource were so much overkill,
-    // we should just share one instance with the settings like this.
-    locator.registerLazySingleton<FlutterSecureStorage>(
-      () => const FlutterSecureStorage(
-        aOptions: AndroidOptions(encryptedSharedPreferences: true),
-      ),
-    );
     locator.registerLazySingleton<BullbitcoinApiKeyProvider>(
       () => BullbitcoinApiKeyProvider(
         secureStorage: locator<FlutterSecureStorage>(),

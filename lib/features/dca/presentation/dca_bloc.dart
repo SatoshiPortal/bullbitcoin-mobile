@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
-import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/core_deprecated/errors/exchange_errors.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/usecases/save_user_preferences_usecase.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart' show log;
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/start_dca_usecase.dart';

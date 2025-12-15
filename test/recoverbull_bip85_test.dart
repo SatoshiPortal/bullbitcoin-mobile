@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core_deprecated/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core_deprecated/utils/recoverbull_bip85.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:flutter_test/flutter_test.dart';
 

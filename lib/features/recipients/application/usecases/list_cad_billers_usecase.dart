@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core_deprecated/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/recipients/application/dtos/cad_biller_dto.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 

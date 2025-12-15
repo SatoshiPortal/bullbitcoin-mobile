@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core_deprecated/errors/exchange_errors.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:flutter/foundation.dart';

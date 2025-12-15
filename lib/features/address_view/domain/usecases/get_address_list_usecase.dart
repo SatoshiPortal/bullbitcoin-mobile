@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core_deprecated/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/wallet_error.dart';
 
 class GetAddressListUsecase {
   final WalletAddressRepository _walletAddressRepository;

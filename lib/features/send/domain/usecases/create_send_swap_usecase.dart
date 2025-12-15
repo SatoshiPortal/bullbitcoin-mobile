@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/lightning.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core_deprecated/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core_deprecated/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core_deprecated/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core_deprecated/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core_deprecated/utils/constants.dart';
+import 'package:bb_mobile/core_deprecated/utils/lightning.dart';
+import 'package:bb_mobile/core_deprecated/wallet/data/repositories/wallet_repository.dart';
 
 class CreateSendSwapUsecase {
   final WalletRepository _walletRepository;

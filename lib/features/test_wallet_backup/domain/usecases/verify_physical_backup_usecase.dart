@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart'
+import 'package:bb_mobile/core_deprecated/seed/data/models/seed_model.dart'
     show MnemonicSeedModel, SeedModel;
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core_deprecated/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core_deprecated/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/wallet/data/repositories/wallet_repository.dart';
 
 class VerifyPhysicalBackupUsecase {
   final WalletRepository _walletRepository;

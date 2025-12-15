@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/ark/usecases/create_ark_secret_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core_deprecated/ark/usecases/create_ark_secret_usecase.dart';
+import 'package:bb_mobile/core_deprecated/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/features/ark_setup/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark_setup/setup_page.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';

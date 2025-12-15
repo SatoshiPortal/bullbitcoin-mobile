@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core_deprecated/errors/bull_exception.dart';
+import 'package:bb_mobile/core_deprecated/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core_deprecated/payjoin/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core_deprecated/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet_utxo.dart';
 
 class PrepareBitcoinSendUsecase {
   final PayjoinRepository _payjoin;

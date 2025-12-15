@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
-import 'package:bb_mobile/core/ark/errors.dart';
-import 'package:bb_mobile/core/ark/usecases/create_ark_secret_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/ark/entities/ark_wallet.dart';
+import 'package:bb_mobile/core_deprecated/ark/errors.dart';
+import 'package:bb_mobile/core_deprecated/ark/usecases/create_ark_secret_usecase.dart';
+import 'package:bb_mobile/core_deprecated/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
 import 'package:bb_mobile/features/ark_setup/presentation/state.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:convert/convert.dart';

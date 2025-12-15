@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/exchange/data/models/api_key_model.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // We don't need a full datasource since we only need to retrieve the API key

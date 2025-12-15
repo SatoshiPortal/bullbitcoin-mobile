@@ -1,0 +1,38 @@
+import 'package:bb_mobile/core_deprecated/wallet/data/models/wallet_address_model.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet_address.dart';
+
+class WalletAddressMapper {
+  static WalletAddress toEntity(
+    WalletAddressModel walletAddressModel, {
+    List<String>? labels,
+  }) {
+    return WalletAddress(
+      walletId: walletAddressModel.walletId,
+      index: walletAddressModel.index,
+      address: walletAddressModel.address,
+      keyChain:
+          walletAddressModel.isChange
+              ? WalletAddressKeyChain.internal
+              : WalletAddressKeyChain.external,
+      balanceSat: walletAddressModel.balanceSat,
+      nrOfTransactions: walletAddressModel.nrOfTransactions,
+      //highestPreviousBalanceSat: walletAddressModel.highestPreviousBalanceSat,
+      labels: labels,
+      createdAt: walletAddressModel.createdAt,
+      updatedAt: walletAddressModel.updatedAt,
+    );
+  }
+
+  static WalletAddressModel fromEntity(WalletAddress walletAddress) {
+    return WalletAddressModel(
+      address: walletAddress.address,
+      walletId: walletAddress.walletId,
+      index: walletAddress.index,
+      isChange: walletAddress.keyChain == WalletAddressKeyChain.internal,
+      balanceSat: walletAddress.balanceSat,
+      nrOfTransactions: walletAddress.nrOfTransactions,
+      createdAt: walletAddress.createdAt,
+      updatedAt: walletAddress.updatedAt,
+    );
+  }
+}

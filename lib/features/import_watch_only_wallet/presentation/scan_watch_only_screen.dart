@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
+import 'package:bb_mobile/core_deprecated/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core_deprecated/themes/app_theme.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/widgets/buttons/button.dart';
+import 'package:bb_mobile/core_deprecated/widgets/qr_scanner_widget.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter/cupertino.dart';

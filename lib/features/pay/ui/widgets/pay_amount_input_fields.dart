@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_currency_dropdown.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';

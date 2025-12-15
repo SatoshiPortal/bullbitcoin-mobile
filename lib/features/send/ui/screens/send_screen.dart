@@ -1,21 +1,21 @@
 import 'dart:math' as math;
 
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
-import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
-import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core_deprecated/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core_deprecated/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core_deprecated/themes/app_theme.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/utils/string_formatting.dart';
+import 'package:bb_mobile/core_deprecated/widgets/buttons/button.dart';
+import 'package:bb_mobile/core_deprecated/widgets/cards/info_card.dart';
+import 'package:bb_mobile/core_deprecated/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core_deprecated/widgets/loading/fading_linear_progress.dart';
+import 'package:bb_mobile/core_deprecated/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core_deprecated/widgets/price_input/balance_row.dart';
+import 'package:bb_mobile/core_deprecated/widgets/price_input/price_input.dart';
+import 'package:bb_mobile/core_deprecated/widgets/segment/segmented_full.dart';
+import 'package:bb_mobile/core_deprecated/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/core_deprecated/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
@@ -841,7 +841,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
             // InkWell(
             //   child: Icon(
             //     Icons.copy,
-            //     color: context.colour.primary,
+            //     color: context.appColors.primary,
             //     size: 16,
             //   ),
             // ),
@@ -1274,7 +1274,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             // InkWell(
             //   child: Icon(
             //     Icons.copy,
-            //     color: context.colour.primary,
+            //     color: context.appColors.primary,
             //     size: 16,
             //   ),
             // ),
@@ -1481,8 +1481,8 @@ class SendSendingScreen extends StatelessWidget {
       // BBButton.big(
       //   label: 'Go home',
       //   onPressed: () {},
-      //   bgColor: context.colour.secondary,
-      //   textColor: context.colour.onSecondary,
+      //   bgColor: context.appColors.secondary,
+      //   textColor: context.appColors.onSecondary,
       // ),
     );
   }

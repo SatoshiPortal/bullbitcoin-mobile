@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core_deprecated/entities/signer_device_entity.dart';
 import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_screen.dart';
 import 'package:go_router/go_router.dart';
 

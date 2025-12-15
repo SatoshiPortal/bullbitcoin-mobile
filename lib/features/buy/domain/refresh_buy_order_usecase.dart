@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/errors/bull_exception.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:bb_mobile/core_deprecated/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
 
 class RefreshBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;

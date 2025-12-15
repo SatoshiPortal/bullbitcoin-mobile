@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core_deprecated/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_payjoin_in_progress_screen.dart';

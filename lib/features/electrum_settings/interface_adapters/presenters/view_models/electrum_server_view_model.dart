@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/core_deprecated/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'electrum_server_view_model.freezed.dart';

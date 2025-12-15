@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core_deprecated/settings/data/settings_repository.dart';
 
 class StartDcaUsecase {
   final SettingsRepository _settingsRepository;

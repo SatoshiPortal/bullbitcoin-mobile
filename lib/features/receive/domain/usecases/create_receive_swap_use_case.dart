@@ -1,12 +1,12 @@
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/core_deprecated/labels/data/label_repository.dart';
+import 'package:bb_mobile/core_deprecated/labels/domain/label.dart';
+import 'package:bb_mobile/core_deprecated/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core_deprecated/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core_deprecated/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core_deprecated/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core_deprecated/utils/constants.dart';
+import 'package:bb_mobile/core_deprecated/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/usecases/get_receive_address_usecase.dart';
 
 class CreateReceiveSwapUsecase {
   final WalletRepository _walletRepository;

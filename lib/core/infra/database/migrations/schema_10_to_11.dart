@@ -1,0 +1,17 @@
+import 'package:bb_mobile/core/infra/database/sqlite_database.dart';
+import 'package:bb_mobile/core/infra/database/sqlite_database.steps.dart';
+import 'package:drift/drift.dart';
+
+class Schema10To11 {
+  static Future<void> migrate(Migrator m, Schema11 schema11) async {
+    await m.createTable(schema11.prices);
+
+    final settings = schema11.settings;
+    await m.addColumn(settings, settings.themeMode);
+
+    final db = m.database as SqliteDatabase;
+    await db.managers.settings.update(
+      (f) => f(id: const Value(1), themeMode: const Value('system')),
+    );
+  }
+}

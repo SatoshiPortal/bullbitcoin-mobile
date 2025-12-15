@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_permission_usecase.dart';
-import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
+import 'package:bb_mobile/core_deprecated/recoverbull/domain/usecases/fetch_permission_usecase.dart';
+import 'package:bb_mobile/core_deprecated/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/connecting_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/server_confirmation_page.dart';

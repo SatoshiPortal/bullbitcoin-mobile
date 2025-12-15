@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core_deprecated/errors/bull_exception.dart';
+import 'package:bb_mobile/core_deprecated/wallet/data/repositories/liquid_wallet_repository.dart';
 
 class SignLiquidTxUsecase {
   final LiquidWalletRepository _liquidWalletRepository;

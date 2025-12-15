@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
+import 'package:bb_mobile/core_deprecated/widgets/lists/transactions_by_day_list.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:flutter/material.dart';

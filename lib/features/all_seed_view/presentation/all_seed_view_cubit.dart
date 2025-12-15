@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/process_and_separate_seeds_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core_deprecated/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core_deprecated/seed/domain/usecases/delete_seed_usecase.dart';
+import 'package:bb_mobile/core_deprecated/seed/domain/usecases/get_all_seeds_usecase.dart';
+import 'package:bb_mobile/core_deprecated/seed/domain/usecases/process_and_separate_seeds_usecase.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

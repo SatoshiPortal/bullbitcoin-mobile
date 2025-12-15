@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/wallet/data/repositories/bitcoin_wallet_repository.dart';
 
 class BumpFeeUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;

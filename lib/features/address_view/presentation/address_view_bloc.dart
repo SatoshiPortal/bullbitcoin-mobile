@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_list_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
+import 'package:bb_mobile/core_deprecated/themes/app_theme.dart';
+import 'package:bb_mobile/core_deprecated/utils/amount_formatting.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,8 +52,9 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
     final isFiatCurrencyInput = context.select(
       (BuyBloc bloc) => bloc.state.isFiatCurrencyInput,
     );
-    final amountInputDecimals =
-        isFiatCurrencyInput ? currency?.decimals ?? 2 : bitcoinUnit.decimals;
+    final amountInputDecimals = isFiatCurrencyInput
+        ? currency?.decimals ?? 2
+        : bitcoinUnit.decimals;
 
     return Column(
       crossAxisAlignment: .start,
@@ -89,18 +90,17 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          inputFormatters:
-                              amountInputDecimals > 0
-                                  ? [
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(
-                                        r'^\d+\.?\d{0,'
-                                        '$amountInputDecimals'
-                                        '}',
-                                      ),
+                          inputFormatters: amountInputDecimals > 0
+                              ? [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(
+                                      r'^\d+\.?\d{0,'
+                                      '$amountInputDecimals'
+                                      '}',
                                     ),
-                                  ]
-                                  : [FilteringTextInputFormatter.digitsOnly],
+                                  ),
+                                ]
+                              : [FilteringTextInputFormatter.digitsOnly],
                           style: context.font.displaySmall?.copyWith(
                             color: context.appColors.primary,
                           ),
@@ -158,7 +158,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                       //   amountSat ?? 0,
                       //   showFiat: !isFiatCurrencyInput,
                       //   style: context.font.bodyMedium?.copyWith(
-                      //     color: context.colour.outline,
+                      //     color: context.appColors.outline,
                       //   ),
                       //   fiatCurrency: currency.code,
                       //   fiatAmount: !isFiatCurrencyInput ? fiatAmount : null,
@@ -166,7 +166,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                       // Text(
                       //   ' approx.',
                       //   style: context.font.bodyMedium?.copyWith(
-                      //     color: context.colour.outline,
+                      //     color: context.appColors.outline,
                       //   ),
                       // ),
                       const Spacer(),
@@ -222,18 +222,17 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                   Icons.keyboard_arrow_down,
                   color: context.appColors.onSurface,
                 ),
-                items:
-                    balances.keys
-                        .map(
-                          (currencyCode) => DropdownMenuItem<String>(
-                            value: currencyCode,
-                            child: Text(
-                              '$currencyCode Balance - ${FormatAmount.fiat(balances[currencyCode] ?? 0, currencyCode, simpleFormat: true)}',
-                              style: context.font.headlineSmall,
-                            ),
-                          ),
-                        )
-                        .toList(),
+                items: balances.keys
+                    .map(
+                      (currencyCode) => DropdownMenuItem<String>(
+                        value: currencyCode,
+                        child: Text(
+                          '$currencyCode Balance - ${FormatAmount.fiat(balances[currencyCode] ?? 0, currencyCode, simpleFormat: true)}',
+                          style: context.font.headlineSmall,
+                        ),
+                      ),
+                    )
+                    .toList(),
                 onChanged: (value) {
                   if (value != null) {
                     context.read<BuyBloc>().add(

@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
-import 'package:bb_mobile/core/ark/errors.dart';
+import 'package:bb_mobile/core_deprecated/ark/entities/ark_wallet.dart';
+import 'package:bb_mobile/core_deprecated/ark/errors.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';

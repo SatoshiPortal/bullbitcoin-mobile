@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/instructions_bottom_sheet.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/widgets/bottom_sheet/instructions_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 class QrDeviceInstructions {

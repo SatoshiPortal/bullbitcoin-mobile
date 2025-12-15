@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core_deprecated/entities/signer_device_entity.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_screen.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/scan_watch_only_screen.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';

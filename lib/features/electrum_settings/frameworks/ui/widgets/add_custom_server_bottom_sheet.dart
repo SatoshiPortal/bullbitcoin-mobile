@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
+import 'package:bb_mobile/core_deprecated/electrum/domain/value_objects/electrum_environment.dart';
+import 'package:bb_mobile/core_deprecated/themes/app_theme.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/utils/electrum_url_parser.dart';
+import 'package:bb_mobile/core_deprecated/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core_deprecated/widgets/buttons/button.dart';
+import 'package:bb_mobile/core_deprecated/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

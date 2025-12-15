@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
-import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_errors.dart';
+import 'package:bb_mobile/core_deprecated/bitbox/domain/entities/bitbox_device_entity.dart';
+import 'package:bb_mobile/core_deprecated/bitbox/domain/errors/bitbox_errors.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'bitbox_operation_state.freezed.dart';

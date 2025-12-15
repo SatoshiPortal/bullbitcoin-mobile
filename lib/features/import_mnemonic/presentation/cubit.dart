@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/usecases/check_wallet_status_usecase.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/usecases/import_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/errors.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;

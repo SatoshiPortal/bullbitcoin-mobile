@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core_deprecated/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core_deprecated/wallet/data/repositories/wallet_repository.dart';
 
 class CheckBackupUsecase {
   final WalletRepository _walletRepository;

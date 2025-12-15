@@ -1,8 +1,8 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
-import 'package:bb_mobile/core/ark/entities/ark_balance.dart';
-import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
-import 'package:bb_mobile/core/ark/errors.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core_deprecated/ark/entities/ark_balance.dart';
+import 'package:bb_mobile/core_deprecated/ark/entities/ark_wallet.dart';
+import 'package:bb_mobile/core_deprecated/ark/errors.dart';
+import 'package:bb_mobile/core_deprecated/settings/domain/settings_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';

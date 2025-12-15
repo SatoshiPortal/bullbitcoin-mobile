@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core_deprecated/settings/data/settings_repository.dart';
 
 class SetIsDevModeUsecase {
   final SettingsRepository _settingsRepository;

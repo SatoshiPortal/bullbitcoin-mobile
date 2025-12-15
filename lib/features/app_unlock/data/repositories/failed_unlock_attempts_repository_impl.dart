@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core_deprecated/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 
 class FailedUnlockAttemptsRepository {
   final KeyValueStorageDatasource<String> _storage;

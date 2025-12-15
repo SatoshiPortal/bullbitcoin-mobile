@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/utils/payment_request.dart';
 
 class DetectBitcoinStringUsecase {
   DetectBitcoinStringUsecase();

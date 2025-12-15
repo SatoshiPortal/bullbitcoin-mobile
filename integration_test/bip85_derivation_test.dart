@@ -1,15 +1,15 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/core_deprecated/bip85/data/bip85_datasource.dart';
+import 'package:bb_mobile/core_deprecated/bip85/data/bip85_repository.dart';
+import 'package:bb_mobile/core_deprecated/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/core_deprecated/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/infra/database/sqlite_database.dart';
+import 'package:bb_mobile/core/infra/database/tables/bip85_derivations_table.dart';
+import 'package:bb_mobile/core_deprecated/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core_deprecated/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;

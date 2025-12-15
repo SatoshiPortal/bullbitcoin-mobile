@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/widgets/log_viewer_widget.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/widgets/log_viewer_widget.dart';
 import 'package:flutter/material.dart';
 
 class LogSettingsScreen extends StatelessWidget {

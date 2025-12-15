@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/bbqr/bbqr.dart';
+import 'package:bb_mobile/core_deprecated/bbqr/bbqr.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

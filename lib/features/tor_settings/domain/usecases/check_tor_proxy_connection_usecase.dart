@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/tor/tor_status.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/tor/tor_status.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
 import 'package:bb_mobile/features/tor_settings/domain/ports/socket_port.dart';
 
 class CheckTorProxyConnectionUsecase {

@@ -1,0 +1,55 @@
+import 'package:bb_mobile/core_deprecated/blockchain/data/repository/bitcoin_blockchain_repository.dart';
+import 'package:bb_mobile/core_deprecated/blockchain/domain/ports/electrum_server_port.dart';
+import 'package:bb_mobile/core_deprecated/errors/send_errors.dart';
+import 'package:bb_mobile/core_deprecated/settings/data/settings_repository.dart';
+import 'package:convert/convert.dart';
+
+class BroadcastBitcoinTransactionUsecase {
+  final BitcoinBlockchainRepository _bitcoinBlockchain;
+  final SettingsRepository _settingsRepository;
+  final ElectrumServerPort _electrumServerPort;
+
+  BroadcastBitcoinTransactionUsecase({
+    required BitcoinBlockchainRepository bitcoinBlockchainRepository,
+    required SettingsRepository settingsRepository,
+    required ElectrumServerPort electrumServerPort,
+  }) : _bitcoinBlockchain = bitcoinBlockchainRepository,
+       _settingsRepository = settingsRepository,
+       _electrumServerPort = electrumServerPort;
+
+  Future<String> execute(String transaction, {required bool isPsbt}) async {
+    try {
+      final settings = await _settingsRepository.fetch();
+      final environment = settings.environment;
+
+      final electrumServers = await _electrumServerPort.getElectrumServers(
+        isTestnet: environment.isTestnet,
+        isLiquid: false,
+      );
+
+      // If no Electrum servers are available, throw an error
+      if (electrumServers.isEmpty) {
+        throw BroadcastTransactionException(
+          'No Electrum servers available for Bitcoin network.',
+        );
+      }
+
+      String txid;
+      if (isPsbt) {
+        txid = await _bitcoinBlockchain.broadcastPsbt(
+          transaction,
+          electrumServers: electrumServers,
+        );
+      } else {
+        txid = await _bitcoinBlockchain.broadcastTransaction(
+          hex.decode(transaction),
+          electrumServers: electrumServers,
+        );
+      }
+
+      return txid;
+    } catch (e) {
+      throw BroadcastTransactionException(e.toString());
+    }
+  }
+}

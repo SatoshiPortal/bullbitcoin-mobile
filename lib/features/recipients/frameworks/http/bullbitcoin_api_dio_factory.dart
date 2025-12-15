@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core_deprecated/utils/constants.dart';
 import 'package:dio/dio.dart';
 
 // TODO: This should be moved to the core/shared folder since more features

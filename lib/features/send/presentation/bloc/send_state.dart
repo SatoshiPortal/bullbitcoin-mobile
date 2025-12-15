@@ -1,15 +1,15 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/percentage.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core_deprecated/errors/bull_exception.dart';
+import 'package:bb_mobile/core_deprecated/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core_deprecated/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core_deprecated/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core_deprecated/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core_deprecated/utils/amount_conversions.dart';
+import 'package:bb_mobile/core_deprecated/utils/amount_formatting.dart';
+import 'package:bb_mobile/core_deprecated/utils/payment_request.dart';
+import 'package:bb_mobile/core_deprecated/utils/percentage.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet_utxo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'send_state.freezed.dart';

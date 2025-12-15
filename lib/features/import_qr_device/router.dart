@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core_deprecated/entities/signer_device_entity.dart';
 import 'package:bb_mobile/features/import_qr_device/device_config.dart';
 import 'package:bb_mobile/features/import_qr_device/import_qr_device_page.dart';
 import 'package:go_router/go_router.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/infra/database/sqlite_database.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
@@ -89,8 +89,9 @@ void main() {
       final migratedDb = v4.DatabaseAtV4(schema.newConnection());
 
       // Check that all records are still present
-      final allWallets =
-          await migratedDb.select(migratedDb.walletMetadatas).get();
+      final allWallets = await migratedDb
+          .select(migratedDb.walletMetadatas)
+          .get();
       expect(allWallets.length, 3);
 
       // Verify the migration mappings
@@ -150,8 +151,9 @@ void main() {
 
       // Verify the migrated data
       final migratedDb = v4.DatabaseAtV4(schema.newConnection());
-      final wallet =
-          await migratedDb.select(migratedDb.walletMetadatas).getSingle();
+      final wallet = await migratedDb
+          .select(migratedDb.walletMetadatas)
+          .getSingle();
 
       // Unknown source should map to Signer.none
       expect(wallet.signer, 'none');
@@ -175,8 +177,9 @@ void main() {
 
       // Verify the migrated database is empty
       final migratedDb = v4.DatabaseAtV4(schema.newConnection());
-      final allWallets =
-          await migratedDb.select(migratedDb.walletMetadatas).get();
+      final allWallets = await migratedDb
+          .select(migratedDb.walletMetadatas)
+          .get();
       expect(allWallets.length, 0);
       await migratedDb.close();
     });
@@ -217,8 +220,9 @@ void main() {
       final migratedDb = v4.DatabaseAtV4(schema.newConnection());
 
       // Check that all records are still present
-      final wallet1 =
-          await migratedDb.select(migratedDb.walletMetadatas).getSingle();
+      final wallet1 = await migratedDb
+          .select(migratedDb.walletMetadatas)
+          .getSingle();
 
       expect(wallet1.id, 'elwpkh([d2b5406d/84h/1h/0h])');
       expect(wallet1.signerDevice, null);

@@ -1,0 +1,65 @@
+import 'package:bb_mobile/core_deprecated/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/core_deprecated/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
+import 'package:bb_mobile/core_deprecated/blockchain/data/repository/bitcoin_blockchain_repository.dart';
+import 'package:bb_mobile/core_deprecated/blockchain/data/repository/liquid_blockchain_repository_impl.dart';
+import 'package:bb_mobile/core_deprecated/blockchain/domain/ports/electrum_server_port.dart';
+import 'package:bb_mobile/core_deprecated/blockchain/domain/repositories/liquid_blockchain_repository.dart';
+import 'package:bb_mobile/core_deprecated/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/core_deprecated/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core_deprecated/blockchain/interface_adapters/adapters/electrum_server_adapter.dart';
+import 'package:bb_mobile/core_deprecated/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
+import 'package:bb_mobile/core_deprecated/settings/data/settings_repository.dart';
+import 'package:get_it/get_it.dart';
+
+class BlockchainLocator {
+  static void registerDatasources(GetIt locator) {
+    locator.registerLazySingleton<BdkBitcoinBlockchainDatasource>(
+      () => const BdkBitcoinBlockchainDatasource(),
+    );
+
+    locator.registerLazySingleton<LwkLiquidBlockchainDatasource>(
+      () => const LwkLiquidBlockchainDatasource(),
+    );
+  }
+
+  static void registerRepositories(GetIt locator) {
+    locator.registerLazySingleton<BitcoinBlockchainRepository>(
+      () => BitcoinBlockchainRepository(
+        blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),
+      ),
+    );
+
+    locator.registerLazySingleton<LiquidBlockchainRepository>(
+      () => LiquidBlockchainRepositoryImpl(
+        blockchainDatasource: locator<LwkLiquidBlockchainDatasource>(),
+      ),
+    );
+  }
+
+  static void registerPorts(GetIt locator) {
+    locator.registerLazySingleton<ElectrumServerPort>(
+      () => ElectrumServerAdapter(
+        getElectrumServersToUseUsecase:
+            locator<GetElectrumServersToUseUsecase>(),
+      ),
+    );
+  }
+
+  static void registerUsecases(GetIt locator) {
+    locator.registerFactory<BroadcastBitcoinTransactionUsecase>(
+      () => BroadcastBitcoinTransactionUsecase(
+        bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+        electrumServerPort: locator<ElectrumServerPort>(),
+      ),
+    );
+
+    locator.registerFactory<BroadcastLiquidTransactionUsecase>(
+      () => BroadcastLiquidTransactionUsecase(
+        liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+        electrumServerPort: locator<ElectrumServerPort>(),
+      ),
+    );
+  }
+}

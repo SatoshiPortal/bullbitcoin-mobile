@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/entity/order.dart';
 
 enum DcaBuyFrequency { hourly, daily, weekly, monthly }
 

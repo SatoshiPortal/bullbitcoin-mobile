@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
+import 'package:bb_mobile/core_deprecated/utils/build_context_x.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core_deprecated/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

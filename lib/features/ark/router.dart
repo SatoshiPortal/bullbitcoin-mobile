@@ -1,9 +1,9 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
-import 'package:bb_mobile/core/ark/errors.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/ark/errors.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core_deprecated/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core_deprecated/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark/presentation/state.dart';
 import 'package:bb_mobile/features/ark/ui/ark_about_page.dart';

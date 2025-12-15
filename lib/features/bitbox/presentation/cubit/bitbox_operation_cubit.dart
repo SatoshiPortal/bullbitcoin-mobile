@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
-import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_errors.dart';
-import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
-import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
-import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core_deprecated/bitbox/domain/entities/bitbox_device_entity.dart';
+import 'package:bb_mobile/core_deprecated/bitbox/domain/errors/bitbox_errors.dart';
+import 'package:bb_mobile/core_deprecated/bitbox/domain/repositories/bitbox_device_repository.dart';
+import 'package:bb_mobile/core_deprecated/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
+import 'package:bb_mobile/core_deprecated/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
+import 'package:bb_mobile/core_deprecated/utils/logger.dart';
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

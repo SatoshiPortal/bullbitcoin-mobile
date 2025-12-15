@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/labels/domain/export_labels_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/import_labels_usecase.dart';
+import 'package:bb_mobile/core_deprecated/labels/domain/export_labels_usecase.dart';
+import 'package:bb_mobile/core_deprecated/labels/domain/import_labels_usecase.dart';
 import 'package:bb_mobile/features/bip329_labels/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

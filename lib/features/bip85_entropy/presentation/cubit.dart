@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/fetch_all_derivations_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core_deprecated/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/core_deprecated/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/core_deprecated/bip85/domain/fetch_all_derivations_usecase.dart';
+import 'package:bb_mobile/core_deprecated/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core_deprecated/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bip85_entropy/errors.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

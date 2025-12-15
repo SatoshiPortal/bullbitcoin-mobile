@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
+import 'package:bb_mobile/core_deprecated/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'ledger_operation_state.freezed.dart';
