@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_amount_input.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_balance_row.dart';
@@ -129,17 +130,8 @@ class SwapPageState extends State<SwapPage> {
                       BlocSelector<TransferBloc, TransferState, bool>(
                         selector: (state) => state.sendToExternal,
                         builder: (context, sendToExternal) {
-                          return Switch(
+                          return BBSwitch(
                             value: sendToExternal,
-                            activeThumbColor: context.appColors.onSecondary,
-                            activeTrackColor: context.appColors.secondary,
-                            inactiveThumbColor: context.appColors.onSecondary,
-                            inactiveTrackColor: context.appColors.surface,
-                            trackOutlineColor:
-                                WidgetStateProperty.resolveWith<Color?>(
-                                  (Set<WidgetState> states) =>
-                                      Colors.transparent,
-                                ),
                             onChanged: (value) {
                               context.read<TransferBloc>().add(
                                 TransferEvent.sendToExternalToggled(value),
@@ -208,17 +200,8 @@ class SwapPageState extends State<SwapPage> {
                       BlocSelector<TransferBloc, TransferState, bool>(
                         selector: (state) => state.receiveExactAmount,
                         builder: (context, receiveExactAmount) {
-                          return Switch(
+                          return BBSwitch(
                             value: receiveExactAmount,
-                            activeThumbColor: context.appColors.onSecondary,
-                            activeTrackColor: context.appColors.secondary,
-                            inactiveThumbColor: context.appColors.onSecondary,
-                            inactiveTrackColor: context.appColors.surface,
-                            trackOutlineColor:
-                                WidgetStateProperty.resolveWith<Color?>(
-                                  (Set<WidgetState> states) =>
-                                      Colors.transparent,
-                                ),
                             onChanged: (value) {
                               context.read<TransferBloc>().add(
                                 TransferEvent.receiveExactAmountToggled(value),

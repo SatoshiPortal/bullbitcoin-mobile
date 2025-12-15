@@ -23,25 +23,23 @@ class SwapBalanceRow extends StatelessWidget {
       (TransferBloc bloc) => bloc.state.bitcoinUnit,
     );
     final balanceSat = fromWallet?.balanceSat.toInt() ?? 0;
-    final balance =
-        bitcoinUnit == BitcoinUnit.sats
-            ? FormatAmount.sats(balanceSat)
-            : FormatAmount.btc(ConvertAmount.satsToBtc(balanceSat));
+    final balance = bitcoinUnit == BitcoinUnit.sats
+        ? FormatAmount.sats(balanceSat)
+        : FormatAmount.btc(ConvertAmount.satsToBtc(balanceSat));
 
     final maxAmountSat = context.select(
       (TransferBloc bloc) => bloc.state.maxAmountSat,
     );
-    final maxAmount =
-        bitcoinUnit == BitcoinUnit.sats
-            ? maxAmountSat
-            : ConvertAmount.satsToBtc(maxAmountSat ?? 0);
+    final maxAmount = bitcoinUnit == BitcoinUnit.sats
+        ? maxAmountSat
+        : ConvertAmount.satsToBtc(maxAmountSat ?? 0);
 
     return Row(
       children: [
         Text(
           context.loc.swapAvailableBalance,
           style: context.font.labelLarge?.copyWith(
-            color: context.appColors.surface,
+            color: context.appColors.secondary,
           ),
         ),
         const Gap(4),

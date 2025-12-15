@@ -69,13 +69,13 @@ class SendAddressScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.appColors.secondaryFixedDim,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.sendTitle,
-          color: context.appColors.secondaryFixedDim,
+          color: context.appColors.background,
           onBack: () => context.pop(),
         ),
       ),
@@ -173,7 +173,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
       },
       disabled: !isValidPaymentRequest || loadingBestWallet || creatingSwap,
       bgColor: context.appColors.secondary,
-      textColor: context.appColors.onPrimary,
+      textColor: context.appColors.onSecondary,
     );
   }
 }
@@ -192,12 +192,12 @@ class AddressField extends StatelessWidget {
       value: address,
       hint: context.loc.sendPasteAddressOrInvoice,
       hintStyle: context.font.bodyLarge?.copyWith(
-        color: context.appColors.surfaceContainer,
+        color: context.appColors.textMuted,
       ),
       maxLines: 1,
       rightIcon: Icon(
         Icons.paste_sharp,
-        color: context.appColors.secondary,
+        color: context.appColors.border,
         size: 20,
       ),
       onRightTap: () {
@@ -384,6 +384,39 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                       child: Column(
                         crossAxisAlignment: .stretch,
                         children: [
+                          ColoredBox(
+                            color: context.appColors.onPrimary,
+                            child: DropdownButtonFormField<Wallet>(
+                              alignment: Alignment.centerLeft,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
+                              ),
+                              icon: Icon(
+                                Icons.keyboard_arrow_down,
+                                color: context.appColors.secondary,
+                              ),
+                              initialValue: selectedWallet,
+                              items: wallets.map((w) {
+                                return DropdownMenuItem(
+                                  value: w,
+                                  child: Text(
+                                    w.displayLabel(context),
+                                    style: context.font.headlineSmall,
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  context
+                                      .read<SendCubit>()
+                                      .updateSelectedWallet(value);
+                                }
+                              },
+                            ),
+                          ),
                           const Gap(10),
                           PriceInput(
                             currency: inputCurrency,
@@ -437,38 +470,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               walletLabel: selectedWallet.label,
                             ),
                           ),
-                          const Gap(16),
-                          if (buildError != null) const _SendError(),
-                          DropdownButtonFormField<Wallet>(
-                            alignment: Alignment.centerLeft,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                              ),
-                            ),
-                            icon: Icon(
-                              Icons.keyboard_arrow_down,
-                              color: context.appColors.secondary,
-                            ),
-                            initialValue: selectedWallet,
-                            items: wallets.map((w) {
-                              return DropdownMenuItem(
-                                value: w,
-                                child: Text(
-                                  w.displayLabel(context),
-                                  style: context.font.headlineSmall,
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                context.read<SendCubit>().updateSelectedWallet(
-                                  value,
-                                );
-                              }
-                            },
-                          ),
+                          if (buildError != null) ...[
+                            const Gap(16),
+                            const _SendError(),
+                          ],
+
                           const Spacer(),
                           Padding(
                             padding: EdgeInsets.only(

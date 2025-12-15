@@ -9,12 +9,35 @@ class Schema10To11 {
     final settings = schema11.settings;
     await m.addColumn(settings, settings.themeMode);
 
+    await m.alterTable(
+      TableMigration(
+        schema11.autoSwap,
+        columnTransformer: {
+          schema11.autoSwap.id: schema11.autoSwap.id,
+          schema11.autoSwap.enabled: const Constant(true),
+          schema11.autoSwap.balanceThresholdSats:
+              schema11.autoSwap.balanceThresholdSats,
+          schema11.autoSwap.triggerBalanceSats:
+              schema11.autoSwap.balanceThresholdSats * const Constant(2),
+          schema11.autoSwap.feeThresholdPercent:
+              schema11.autoSwap.feeThresholdPercent,
+          schema11.autoSwap.blockTillNextExecution:
+              schema11.autoSwap.blockTillNextExecution,
+          schema11.autoSwap.alwaysBlock: schema11.autoSwap.alwaysBlock,
+          schema11.autoSwap.recipientWalletId:
+              schema11.autoSwap.recipientWalletId,
+          schema11.autoSwap.showWarning: const Constant(true),
+        },
+        newColumns: [
+          schema11.autoSwap.showWarning,
+          schema11.autoSwap.triggerBalanceSats,
+        ],
+      ),
+    );
+
     final db = m.database as SqliteDatabase;
     await db.managers.settings.update(
-      (f) => f(
-        id: const Value(1),
-        themeMode: const Value('system'),
-      ),
+      (f) => f(themeMode: const Value('system')),
     );
   }
 }

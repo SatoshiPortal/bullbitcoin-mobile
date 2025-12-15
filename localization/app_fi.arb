@@ -2678,14 +2678,6 @@
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
   },
-  "walletNameInstantPayments": "Pikamaksulompakko",
-  "@walletNameInstantPayments": {
-    "description": "Default name for Liquid/instant payments wallet"
-  },
-  "walletNameSecureBitcoin": "Turvallinen Bitcoin",
-  "@walletNameSecureBitcoin": {
-    "description": "Default name for Bitcoin wallet"
-  },
   "globalDefaultBitcoinWalletLabel": "Turvallinen Bitcoin",
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Oletustunniste Bitcoin-lompakoille, kun niitä käytetään oletuksena"
@@ -4630,6 +4622,10 @@
         "type": "String"
       }
     }
+  },
+  "autoswapTriggerBalanceError": "Käynnistyssaldo on oltava vähintään 2x perussaldo",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when trigger balance is less than 2x the base balance"
   },
   "arkNoTransactionsYet": "Ei vielä transaktioita.",
   "@arkNoTransactionsYet": {
@@ -10029,14 +10025,6 @@
   "buyConfirmExternalWallet": "Ulkoinen Bitcoin-lompakko",
   "@buyConfirmExternalWallet": {
     "description": "External wallet payout method"
-  },
-  "buyConfirmSecureWallet": "Bitcoin-säästölompakko",
-  "@buyConfirmSecureWallet": {
-    "description": "Secure wallet payout method"
-  },
-  "buyConfirmInstantWallet": "Pikamaksulompakko",
-  "@buyConfirmInstantWallet": {
-    "description": "Instant payment wallet payout method"
   },
   "buyConfirmAwaitingConfirmation": "Odottaa vahvistusta ",
   "@buyConfirmAwaitingConfirmation": {

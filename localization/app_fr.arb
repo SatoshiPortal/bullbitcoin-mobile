@@ -2830,14 +2830,6 @@
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Libellé pour l'heure de création Payjoin"
   },
-  "walletNameInstantPayments": "Paiements instantanés",
-  "@walletNameInstantPayments": {
-    "description": "Nom par défaut pour le portefeuille Liquid/paiements instantanés"
-  },
-  "walletNameSecureBitcoin": "Bitcoin sécurisé",
-  "@walletNameSecureBitcoin": {
-    "description": "Nom par défaut pour le portefeuille Bitcoin"
-  },
   "globalDefaultBitcoinWalletLabel": "Bitcoin sécurisé",
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Étiquette par défaut pour les portefeuilles Bitcoin lorsqu'ils sont utilisés par défaut"
@@ -4683,6 +4675,14 @@
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
+  "autoswapBaseBalanceInfoText": "Le solde de votre portefeuille de paiements instantanés reviendra à ce solde après un échange automatique.",
+  "@autoswapBaseBalanceInfoText": {
+    "description": "Info text explaining what happens to the balance after an autoswap"
+  },
+  "autoswapTriggerAtBalanceInfoText": "L'échange automatique se déclenchera lorsque votre solde dépasse ce montant.",
+  "@autoswapTriggerAtBalanceInfoText": {
+    "description": "Info text explaining when autoswap will trigger"
+  },
   "autoswapMaxFeeLabel": "Frais de Transfert Maximum",
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
@@ -4740,6 +4740,46 @@
       }
     }
   },
+  "autoswapWarningCardTitle": "Le transfert automatique est activé.",
+  "@autoswapWarningCardTitle": {
+    "description": "Texte du titre affiché sur la carte d'avertissement de transfert automatique sur l'écran d'accueil"
+  },
+  "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
+  "@autoswapWarningCardSubtitle": {
+    "description": "Texte du sous-titre affiché sur la carte d'avertissement de transfert automatique sur l'écran d'accueil"
+  },
+  "autoswapWarningDescription": "Le transfert automatique garantit qu'un bon équilibre est maintenu entre votre portefeuille de paiements instantanés et votre portefeuille Bitcoin sécurisé.",
+  "@autoswapWarningDescription": {
+    "description": "Texte de description en haut de la feuille d'avertissement de transfert automatique"
+  },
+  "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants :",
+  "@autoswapWarningTitle": {
+    "description": "Texte du titre dans la feuille d'avertissement de transfert automatique"
+  },
+  "autoswapWarningBaseBalance": "Solde de base 0,01 BTC",
+  "@autoswapWarningBaseBalance": {
+    "description": "Texte du solde de base affiché dans la feuille d'avertissement de transfert automatique"
+  },
+  "autoswapWarningTriggerAmount": "Montant de déclenchement de 0,02 BTC",
+  "@autoswapWarningTriggerAmount": {
+    "description": "Texte du montant de déclenchement affiché dans la feuille d'avertissement de transfert automatique"
+  },
+  "autoswapWarningExplanation": "Lorsque votre solde dépasse le montant de déclenchement, un échange sera déclenché. Le montant de base sera conservé dans votre portefeuille de paiements instantanés et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
+  "@autoswapWarningExplanation": {
+    "description": "Texte d'explication dans la feuille d'avertissement de transfert automatique"
+  },
+  "autoswapWarningDontShowAgain": "Ne plus afficher cet avertissement.",
+  "@autoswapWarningDontShowAgain": {
+    "description": "Libellé de la case à cocher pour ignorer l'avertissement de transfert automatique"
+  },
+  "autoswapWarningSettingsLink": "Me conduire aux paramètres de transfert automatique",
+  "@autoswapWarningSettingsLink": {
+    "description": "Texte du lien pour naviguer vers les paramètres de transfert automatique depuis la feuille d'avertissement"
+  },
+  "autoswapWarningOkButton": "OK",
+  "@autoswapWarningOkButton": {
+    "description": "Libellé du bouton OK dans la feuille d'avertissement de transfert automatique"
+  },
   "autoswapLoadSettingsError": "Échec du chargement des paramètres de transfert automatique",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"
@@ -4782,6 +4822,10 @@
         "type": "String"
       }
     }
+  },
+  "autoswapTriggerBalanceError": "Le solde de déclenchement doit être au moins 2x le solde de base",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when trigger balance is less than 2x the base balance"
   },
   "arkNoTransactionsYet": "Aucune transaction pour le moment.",
   "@arkNoTransactionsYet": {
@@ -10193,14 +10237,6 @@
   "buyConfirmExternalWallet": "Portefeuille Bitcoin externe",
   "@buyConfirmExternalWallet": {
     "description": "External wallet payout method"
-  },
-  "buyConfirmSecureWallet": "Portefeuille Bitcoin sécurisé",
-  "@buyConfirmSecureWallet": {
-    "description": "Secure wallet payout method"
-  },
-  "buyConfirmInstantWallet": "Portefeuille de paiement instantané",
-  "@buyConfirmInstantWallet": {
-    "description": "Instant payment wallet payout method"
   },
   "buyConfirmAwaitingConfirmation": "En attente de confirmation ",
   "@buyConfirmAwaitingConfirmation": {

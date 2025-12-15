@@ -19,8 +19,10 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
 
   @override
   void initState() {
-    final bitcoinAddressInput =
-        context.read<BuyBloc>().state.bitcoinAddressInput;
+    final bitcoinAddressInput = context
+        .read<BuyBloc>()
+        .state
+        .bitcoinAddressInput;
     _bitcoinAddressInputController = TextEditingController(
       text: bitcoinAddressInput,
     );
@@ -49,9 +51,6 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
       (BuyBloc bloc) => bloc.state.selectedWallet,
     );
     final externalBitcoinWalletLabel = context.loc.buyConfirmExternalWallet;
-    final secureBitcoinWalletLabel = context.loc.buyConfirmSecureWallet;
-    final instantPaymentWalletLabel = context.loc.buyConfirmInstantWallet;
-
     return Column(
       crossAxisAlignment: .start,
       children: [
@@ -77,11 +76,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                 initialValue: selectedWallet?.id,
                 items: [
                   ...wallets.map((w) {
-                    final label =
-                        w.label ??
-                        (w.isLiquid
-                            ? instantPaymentWalletLabel
-                            : secureBitcoinWalletLabel);
+                    final label = w.displayLabel(context);
                     return DropdownMenuItem(
                       value: w.id,
                       child: Text(label, style: context.font.headlineSmall),
@@ -97,8 +92,9 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                   ),
                 ],
                 onChanged: (value) {
-                  final selectedWallet =
-                      wallets.where((w) => w.id == value).firstOrNull;
+                  final selectedWallet = wallets
+                      .where((w) => w.id == value)
+                      .firstOrNull;
                   context.read<BuyBloc>().add(
                     BuyEvent.selectedWalletChanged(selectedWallet),
                   );
