@@ -7,22 +7,22 @@ import 'package:bb_mobile/core/labels/domain/import_labels_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/label_address_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/label_transaction_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class LabelsLocator {
-  static void registerDatasources() {
+  static void registerDatasources(GetIt locator) {
     locator.registerLazySingleton<LabelDatasource>(
       () => LabelDatasource(sqlite: locator<SqliteDatabase>()),
     );
   }
 
-  static void registerRepositories() {
+  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<LabelRepository>(
       () => LabelRepository(labelDatasource: locator<LabelDatasource>()),
     );
   }
 
-  static void registerUseCases() {
+  static void registerUseCases(GetIt locator) {
     locator.registerFactory<LabelTransactionUsecase>(
       () =>
           LabelTransactionUsecase(labelRepository: locator<LabelRepository>()),
