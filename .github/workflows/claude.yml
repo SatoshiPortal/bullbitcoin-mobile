@@ -8,7 +8,7 @@ on:
 
 permissions:
   id-token: write      # needed for OIDC
-  contents: read       # so it can read the repo
+  contents: write       # so it can write the repo
   issues: write        # so it can comment on issues
   pull-requests: write # so it can comment on PRs
 
