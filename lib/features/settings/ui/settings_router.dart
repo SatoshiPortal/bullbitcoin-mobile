@@ -40,6 +40,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:go_router/go_router.dart';
 
 enum SettingsRoute {
@@ -70,7 +71,8 @@ enum SettingsRoute {
   exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
   appSettings('app-settings'),
-  theme('theme');
+  theme('theme'),
+  autoswapSettings('autoswap-settings');
 
   final String path;
 
@@ -185,6 +187,11 @@ class SettingsRouter {
           BackupSettingsSettingsRouter.route,
           TestWalletBackupRouter.route,
         ],
+      ),
+      GoRoute(
+        name: SettingsRoute.autoswapSettings.name,
+        path: SettingsRoute.autoswapSettings.path,
+        builder: (context, state) => const AutoSwapSettingsScreen(),
       ),
       GoRoute(
         path: SettingsRoute.walletDetailsWalletList.path,

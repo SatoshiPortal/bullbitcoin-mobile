@@ -67,13 +67,13 @@ class SendAddressScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.appColors.secondaryFixedDim,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: context.loc.sendTitle,
-          color: context.appColors.secondaryFixedDim,
+          color: context.appColors.background,
           onBack: () => context.pop(),
         ),
       ),
@@ -171,7 +171,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
       },
       disabled: !isValidPaymentRequest || loadingBestWallet || creatingSwap,
       bgColor: context.appColors.secondary,
-      textColor: context.appColors.onPrimary,
+      textColor: context.appColors.onSecondary,
     );
   }
 }
@@ -190,12 +190,12 @@ class AddressField extends StatelessWidget {
       value: address,
       hint: context.loc.sendPasteAddressOrInvoice,
       hintStyle: context.font.bodyLarge?.copyWith(
-        color: context.appColors.surfaceContainer,
+        color: context.appColors.textMuted,
       ),
       maxLines: 1,
       rightIcon: Icon(
         Icons.paste_sharp,
-        color: context.appColors.secondary,
+        color: context.appColors.border,
         size: 20,
       ),
       onRightTap: () {

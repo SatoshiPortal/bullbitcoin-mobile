@@ -38,7 +38,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                color: context.appColors.overlay,
+                color: context.appColors.secondaryFixed,
                 height: 264 + 78,
                 child: Stack(
                   fit: StackFit.expand,
@@ -66,7 +66,6 @@ class ExchangeHomeTopSection extends StatelessWidget {
                               key: const ValueKey('balances'),
                               balances: balances,
                               balanceTextStyle: balanceTextStyle,
-                              theme: theme,
                               topGap: topGap,
                             ),
                     ),
@@ -95,13 +94,11 @@ class _BalancesView extends StatelessWidget {
     super.key,
     required this.balances,
     required this.balanceTextStyle,
-    required this.theme,
     required this.topGap,
   });
 
   final List<dynamic> balances;
   final TextStyle? balanceTextStyle;
-  final ThemeData theme;
   final double topGap;
 
   @override
@@ -114,7 +111,7 @@ class _BalancesView extends StatelessWidget {
           (b) => BBText(
             '${b.amount} ${b.currencyCode}',
             style: balanceTextStyle?.copyWith(
-              color: theme.colorScheme.onPrimary,
+              color: context.appColors.onSecondaryFixed,
               fontWeight: FontWeight.w500,
             ),
           ),

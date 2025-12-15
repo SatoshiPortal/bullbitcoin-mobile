@@ -77,11 +77,13 @@ class DatabaseSeeds {
         .insert(
           const AutoSwapRow(
             id: 1,
-            enabled: false,
-            balanceThresholdSats: 1000000,
-            feeThresholdPercent: 3.0,
+            enabled: true,
+            balanceThresholdSats: 500000,
+            triggerBalanceSats: 1000000,
+            feeThresholdPercent: 1.0,
             blockTillNextExecution: false,
             alwaysBlock: false,
+            showWarning: true,
           ),
         );
     await db
@@ -89,11 +91,13 @@ class DatabaseSeeds {
         .insert(
           const AutoSwapRow(
             id: 2,
-            enabled: false,
-            balanceThresholdSats: 1000000,
-            feeThresholdPercent: 3.0,
+            enabled: true,
+            balanceThresholdSats: 500000,
+            triggerBalanceSats: 1000000,
+            feeThresholdPercent: 1.0,
             blockTillNextExecution: false,
             alwaysBlock: false,
+            showWarning: true,
           ),
         );
   }

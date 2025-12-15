@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/storage/database_seeds.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:drift/drift.dart';
 
 class Schema9To10 {
@@ -19,6 +19,15 @@ class Schema9To10 {
         torProxyPort: const Value(9050),
       ),
     );
-    await DatabaseSeeds.seedDefaultRecoverbull(db);
+
+    await m.database
+        .into(schema10.recoverbull)
+        .insert(
+          RawValuesInsertable({
+            'id': const Constant(1),
+            'url': const Constant(SettingsConstants.recoverbullUrl),
+            'is_permission_granted': const Constant(false),
+          }),
+        );
   }
 }

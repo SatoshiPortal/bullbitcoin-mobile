@@ -26,18 +26,20 @@ class BoltzStorageDatasource {
             id: const Value(1),
             enabled: Value(settings.enabled),
             balanceThresholdSats: settings.balanceThresholdSats,
+            triggerBalanceSats: settings.triggerBalanceSats,
             feeThresholdPercent: settings.feeThresholdPercent,
             blockTillNextExecution: Value(settings.blockTillNextExecution),
             alwaysBlock: Value(settings.alwaysBlock),
             recipientWalletId: Value(settings.recipientWalletId),
+            showWarning: Value(settings.showWarning),
           ),
         );
   }
 
   Future<AutoSwapModel> getAutoSwapSettings() async {
-    final settings =
-        await (_localSwapStorage.select(_localSwapStorage.autoSwap)
-          ..where((tbl) => tbl.id.equals(1))).getSingle();
+    final settings = await (_localSwapStorage.select(
+      _localSwapStorage.autoSwap,
+    )..where((tbl) => tbl.id.equals(1))).getSingle();
     return AutoSwapModel.fromSqlite(settings);
   }
 
@@ -49,18 +51,20 @@ class BoltzStorageDatasource {
             id: const Value(2),
             enabled: Value(settings.enabled),
             balanceThresholdSats: settings.balanceThresholdSats,
+            triggerBalanceSats: settings.triggerBalanceSats,
             feeThresholdPercent: settings.feeThresholdPercent,
             blockTillNextExecution: Value(settings.blockTillNextExecution),
             alwaysBlock: Value(settings.alwaysBlock),
             recipientWalletId: Value(settings.recipientWalletId),
+            showWarning: Value(settings.showWarning),
           ),
         );
   }
 
   Future<AutoSwapModel> getAutoSwapSettingsTestnet() async {
-    final settings =
-        await (_localSwapStorage.select(_localSwapStorage.autoSwap)
-          ..where((tbl) => tbl.id.equals(2))).getSingle();
+    final settings = await (_localSwapStorage.select(
+      _localSwapStorage.autoSwap,
+    )..where((tbl) => tbl.id.equals(2))).getSingle();
     return AutoSwapModel.fromSqlite(settings);
   }
 
@@ -73,10 +77,9 @@ class BoltzStorageDatasource {
   }
 
   Future<SwapModel?> fetch(String swapId) async {
-    final swap =
-        await _localSwapStorage.managers.swaps
-            .filter((f) => f.id(swapId))
-            .getSingleOrNull();
+    final swap = await _localSwapStorage.managers.swaps
+        .filter((f) => f.id(swapId))
+        .getSingleOrNull();
     if (swap == null) return null;
     return SwapModel.fromSqlite(swap);
   }
@@ -112,36 +115,34 @@ class BoltzStorageDatasource {
   }
 
   Future<List<SwapModel>> fetchAll({String? walletId, bool? isTestnet}) async {
-    final all =
-        await _localSwapStorage.managers.swaps.filter((f) {
-          Expression<bool> expr = const Constant(true);
+    final all = await _localSwapStorage.managers.swaps.filter((f) {
+      Expression<bool> expr = const Constant(true);
 
-          if (walletId != null) {
-            expr =
-                expr &
-                (f.sendWalletId.equals(walletId) |
-                    f.receiveWalletId.equals(walletId));
-          }
+      if (walletId != null) {
+        expr =
+            expr &
+            (f.sendWalletId.equals(walletId) |
+                f.receiveWalletId.equals(walletId));
+      }
 
-          if (isTestnet != null) {
-            expr = expr & f.isTestnet.equals(isTestnet);
-          }
+      if (isTestnet != null) {
+        expr = expr & f.isTestnet.equals(isTestnet);
+      }
 
-          return expr;
-        }).get();
+      return expr;
+    }).get();
     return all.map((e) => SwapModel.fromSqlite(e)).toList();
   }
 
   Future<SwapModel?> fetchByTxId(String txId) async {
-    final swap =
-        await _localSwapStorage.managers.swaps
-            .filter(
-              (f) =>
-                  f.sendTxid.equals(txId) |
-                  f.receiveTxid.equals(txId) |
-                  f.refundTxid.equals(txId),
-            )
-            .getSingleOrNull();
+    final swap = await _localSwapStorage.managers.swaps
+        .filter(
+          (f) =>
+              f.sendTxid.equals(txId) |
+              f.receiveTxid.equals(txId) |
+              f.refundTxid.equals(txId),
+        )
+        .getSingleOrNull();
     if (swap == null) return null;
     return SwapModel.fromSqlite(swap);
   }

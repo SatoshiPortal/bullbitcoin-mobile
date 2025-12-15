@@ -4620,6 +4620,10 @@
       }
     }
   },
+  "autoswapTriggerBalanceError": "Käynnistyssaldo on oltava vähintään 2x perussaldo",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when trigger balance is less than 2x the base balance"
+  },
   "arkNoTransactionsYet": "Ei vielä transaktioita.",
   "@arkNoTransactionsYet": {
     "description": "Empty state message shown when user has no transaction history"

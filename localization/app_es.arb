@@ -4672,6 +4672,14 @@
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
+  "autoswapBaseBalanceInfoText": "El saldo de su billetera de pagos instantáneos volverá a este saldo después de un intercambio automático.",
+  "@autoswapBaseBalanceInfoText": {
+    "description": "Info text explaining what happens to the balance after an autoswap"
+  },
+  "autoswapTriggerAtBalanceInfoText": "El intercambio automático se activará cuando su saldo supere este monto.",
+  "@autoswapTriggerAtBalanceInfoText": {
+    "description": "Info text explaining when autoswap will trigger"
+  },
   "autoswapMaxFeeLabel": "Comisión Máxima de Transferencia",
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
@@ -4729,6 +4737,46 @@
       }
     }
   },
+  "autoswapWarningCardTitle": "La transferencia automática está habilitada.",
+  "@autoswapWarningCardTitle": {
+    "description": "Texto del título mostrado en la tarjeta de advertencia de transferencia automática en la pantalla de inicio"
+  },
+  "autoswapWarningCardSubtitle": "Se activará un intercambio si el saldo de su billetera de pagos instantáneos supera 0,02 BTC.",
+  "@autoswapWarningCardSubtitle": {
+    "description": "Texto del subtítulo mostrado en la tarjeta de advertencia de transferencia automática en la pantalla de inicio"
+  },
+  "autoswapWarningDescription": "La transferencia automática garantiza que se mantenga un buen equilibrio entre su billetera de pagos instantáneos y su billetera Bitcoin segura.",
+  "@autoswapWarningDescription": {
+    "description": "Texto de descripción en la parte superior de la hoja de advertencia de transferencia automática"
+  },
+  "autoswapWarningTitle": "La transferencia automática está habilitada con la siguiente configuración:",
+  "@autoswapWarningTitle": {
+    "description": "Texto del título en la hoja de advertencia de transferencia automática"
+  },
+  "autoswapWarningBaseBalance": "Saldo base 0,01 BTC",
+  "@autoswapWarningBaseBalance": {
+    "description": "Texto del saldo base mostrado en la hoja de advertencia de transferencia automática"
+  },
+  "autoswapWarningTriggerAmount": "Monto de activación de 0,02 BTC",
+  "@autoswapWarningTriggerAmount": {
+    "description": "Texto del monto de activación mostrado en la hoja de advertencia de transferencia automática"
+  },
+  "autoswapWarningExplanation": "Cuando su saldo supere el monto de activación, se activará un intercambio. El monto base se mantendrá en su billetera de pagos instantáneos y el monto restante se intercambiará en su billetera Bitcoin segura.",
+  "@autoswapWarningExplanation": {
+    "description": "Texto de explicación en la hoja de advertencia de transferencia automática"
+  },
+  "autoswapWarningDontShowAgain": "No volver a mostrar esta advertencia.",
+  "@autoswapWarningDontShowAgain": {
+    "description": "Etiqueta de la casilla de verificación para descartar la advertencia de transferencia automática"
+  },
+  "autoswapWarningSettingsLink": "Llévame a la configuración de transferencia automática",
+  "@autoswapWarningSettingsLink": {
+    "description": "Texto del enlace para navegar a la configuración de transferencia automática desde la hoja de advertencia"
+  },
+  "autoswapWarningOkButton": "OK",
+  "@autoswapWarningOkButton": {
+    "description": "Etiqueta del botón OK en la hoja de advertencia de transferencia automática"
+  },
   "autoswapLoadSettingsError": "Error al cargar la configuración de intercambio automático",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"
@@ -4771,6 +4819,10 @@
         "type": "String"
       }
     }
+  },
+  "autoswapTriggerBalanceError": "El saldo de activación debe ser al menos 2x el saldo base",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when trigger balance is less than 2x the base balance"
   },
   "arkNoTransactionsYet": "Aún no hay transacciones.",
   "@arkNoTransactionsYet": {
