@@ -4,8 +4,10 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -369,78 +371,118 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                   final buildError = context.select(
                     (SendCubit cubit) => cubit.state.buildTransactionException,
                   );
-                  final selectedWalletLabel = context.select(
-                    (SendCubit cubit) => cubit.state.selectedWallet!.label,
+                  final selectedWallet = context.select(
+                    (SendCubit cubit) => cubit.state.selectedWallet!,
+                  );
+                  final wallets = context.select(
+                    (SendCubit cubit) => cubit.state.wallets,
                   );
                   return IgnorePointer(
                     ignoring: state.amountConfirmedClicked,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: .stretch,
-                          children: [
-                            const Gap(10),
-                            const NetworkDisplay(),
-                            const Gap(24),
-                            PriceInput(
-                              currency: inputCurrency,
-                              amountEquivalent:
-                                  state.formattedAmountInputEquivalent,
-                              availableCurrencies: availableInputCurrencies,
-                              amountController: _amountController,
-                              onNoteChanged: cubit.noteChanged,
-                              onCurrencyChanged: (currencyCode) {
-                                _setIsMax(false);
-                                context.read<SendCubit>().onCurrencyChanged(
-                                  currencyCode,
-                                );
-                              },
-                              error: balanceError != null
-                                  ? context
-                                        .loc
-                                        .sendErrorInsufficientBalanceForPayment
-                                  : !walletHasBalance
-                                  ? context.loc.sendInsufficientBalance
-                                  : swapLimitsError != null
-                                  ? _getSwapLimitsErrorMessage(
-                                      context,
-                                      swapLimitsError,
-                                    )
-                                  : swapCreationError != null
-                                  ? context.loc.sendErrorSwapCreationFailed
-                                  : null,
-                              focusNode: _amountFocusNode,
-                              readOnly: _isMax,
-                              isMax: _isMax,
-                            ),
-                            const Gap(48),
-                            Divider(
-                              height: 1,
-                              color: context.appColors.secondaryFixedDim,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: BalanceRow(
-                                balance: state.formattedWalletBalance(),
-                                currencyCode: '',
-                                onMaxPressed: !isLightning && !isChainSwap
-                                    ? () {
-                                        _setIsMax(true);
-                                        context.read<SendCubit>().amountChanged(
-                                          isMax: true,
-                                        );
-                                      }
-                                    : null,
-                                walletLabel: selectedWalletLabel,
+                      child: Column(
+                        crossAxisAlignment: .stretch,
+                        children: [
+                          ColoredBox(
+                            color: context.appColors.onPrimary,
+                            child: DropdownButtonFormField<Wallet>(
+                              alignment: Alignment.centerLeft,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
                               ),
+                              icon: Icon(
+                                Icons.keyboard_arrow_down,
+                                color: context.appColors.secondary,
+                              ),
+                              initialValue: selectedWallet,
+                              items: wallets.map((w) {
+                                return DropdownMenuItem(
+                                  value: w,
+                                  child: Text(
+                                    w.displayLabel(context),
+                                    style: context.font.headlineSmall,
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  context
+                                      .read<SendCubit>()
+                                      .updateSelectedWallet(value);
+                                }
+                              },
                             ),
+                          ),
+                          const Gap(10),
+                          PriceInput(
+                            currency: inputCurrency,
+                            amountEquivalent:
+                                state.formattedAmountInputEquivalent,
+                            availableCurrencies: availableInputCurrencies,
+                            amountController: _amountController,
+                            onNoteChanged: cubit.noteChanged,
+                            onCurrencyChanged: (currencyCode) {
+                              _setIsMax(false);
+                              context.read<SendCubit>().onCurrencyChanged(
+                                currencyCode,
+                              );
+                            },
+                            error: balanceError != null
+                                ? context
+                                      .loc
+                                      .sendErrorInsufficientBalanceForPayment
+                                : !walletHasBalance
+                                ? context.loc.sendInsufficientBalance
+                                : swapLimitsError != null
+                                ? _getSwapLimitsErrorMessage(
+                                    context,
+                                    swapLimitsError,
+                                  )
+                                : swapCreationError != null
+                                ? context.loc.sendErrorSwapCreationFailed
+                                : null,
+                            focusNode: _amountFocusNode,
+                            readOnly: _isMax,
+                            isMax: _isMax,
+                          ),
+                          const Gap(48),
+                          Divider(
+                            height: 1,
+                            color: context.appColors.secondaryFixedDim,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: BalanceRow(
+                              balance: state.formattedWalletBalance(),
+                              currencyCode: '',
+                              onMaxPressed: !isLightning && !isChainSwap
+                                  ? () {
+                                      _setIsMax(true);
+                                      context.read<SendCubit>().amountChanged(
+                                        isMax: true,
+                                      );
+                                    }
+                                  : null,
+                              walletLabel: selectedWallet.label,
+                            ),
+                          ),
+                          if (buildError != null) ...[
                             const Gap(16),
-                            if (buildError != null) const _SendError(),
-                            const SendAmountConfirmButton(),
-                            const Gap(48),
+                            const _SendError(),
                           ],
-                        ),
+
+                          const Spacer(),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              bottom: Device.screen.height * 0.04,
+                            ),
+                            child: SendAmountConfirmButton(),
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -802,7 +844,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendFrom,
             details: BBText(
-              selectedWallet!.displayLabel,
+              selectedWallet!.displayLabel(context),
               style: context.font.bodyLarge,
               textAlign: .end,
             ),
@@ -971,7 +1013,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendFrom,
             details: BBText(
-              selectedWallet!.displayLabel,
+              selectedWallet!.displayLabel(context),
               style: context.font.bodyLarge,
               textAlign: .end,
             ),
@@ -1226,7 +1268,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendFrom,
             details: BBText(
-              selectedWallet!.displayLabel,
+              selectedWallet!.displayLabel(context),
               style: context.font.bodyLarge,
               textAlign: .end,
             ),

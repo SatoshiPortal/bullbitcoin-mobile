@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:flutter/material.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
@@ -151,12 +153,14 @@ abstract class Wallet with _$Wallet {
     };
   }
 
-  String get displayLabel {
+  String displayLabel(BuildContext context) {
     if (!isDefault) return label ?? origin;
 
     return switch (network) {
-      Network.bitcoinMainnet || Network.bitcoinTestnet => 'Secure Bitcoin',
-      Network.liquidMainnet || Network.liquidTestnet => 'Instant payments',
+      Network.bitcoinMainnet ||
+      Network.bitcoinTestnet => context.loc.globalDefaultBitcoinWalletLabel,
+      Network.liquidMainnet ||
+      Network.liquidTestnet => context.loc.globalDefaultLiquidWalletLabel,
     };
   }
 

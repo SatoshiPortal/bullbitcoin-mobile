@@ -22,44 +22,44 @@ class WalletOptionsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          wallet?.displayLabel ?? context.loc.walletOptionsUnnamedWalletFallback,
+          wallet?.displayLabel(context) ??
+              context.loc.walletOptionsUnnamedWalletFallback,
         ),
       ),
       body: SafeArea(
-        child:
-            wallet == null
-                ? Center(child: Text(context.loc.walletDeletionErrorWalletNotFound))
-                : Column(
-                  children: [
-                    Expanded(
-                      child: ListView(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        children: [
-                          SettingsEntryItem(
-                            icon: Icons.account_balance_wallet,
-                            title: context.loc.walletOptionsWalletDetailsTitle,
-                            onTap: () {
-                              context.pushNamed(
-                                SettingsRoute.walletDetailsSelectedWallet.name,
-                                pathParameters: {'walletId': walletId},
-                              );
-                            },
-                          ),
-                          SettingsEntryItem(
-                            icon: Icons.currency_bitcoin,
-                            title: context.loc.addressViewAddressesTitle,
-                            onTap: () {
-                              context.pushNamed(
-                                SettingsRoute.walletAddresses.name,
-                                pathParameters: {'walletId': walletId},
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+        child: wallet == null
+            ? Center(child: Text(context.loc.walletDeletionErrorWalletNotFound))
+            : Column(
+                children: [
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      children: [
+                        SettingsEntryItem(
+                          icon: Icons.account_balance_wallet,
+                          title: context.loc.walletOptionsWalletDetailsTitle,
+                          onTap: () {
+                            context.pushNamed(
+                              SettingsRoute.walletDetailsSelectedWallet.name,
+                              pathParameters: {'walletId': walletId},
+                            );
+                          },
+                        ),
+                        SettingsEntryItem(
+                          icon: Icons.currency_bitcoin,
+                          title: context.loc.addressViewAddressesTitle,
+                          onTap: () {
+                            context.pushNamed(
+                              SettingsRoute.walletAddresses.name,
+                              pathParameters: {'walletId': walletId},
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
       ),
     );
   }
