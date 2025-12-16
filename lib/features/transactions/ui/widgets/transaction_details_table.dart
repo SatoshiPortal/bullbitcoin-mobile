@@ -14,7 +14,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/transaction_notes_table_item.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -52,8 +52,7 @@ class TransactionDetailsTable extends StatelessWidget {
     final counterpartWalletLabel = counterpartWallet != null
         ? counterpartWallet.displayLabel(context)
         : '';
-    final addressLabels =
-        transaction?.walletTransaction?.toAddressLabels?.join(', ') ?? '';
+    final addressLabels = transaction?.walletTransaction?.toAddressLabels ?? [];
     final isOrder = transaction?.isOrder ?? false;
     final walletTransaction = transaction?.walletTransaction;
     final bitcoinUnit = context.select(
@@ -94,7 +93,11 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           ),
 
-        if (labels.isNotEmpty) TransactionNotesTableItem(labels: labels),
+        if (labels.isNotEmpty)
+          LabelsTableItem(
+            title: context.loc.transactionNotesLabel,
+            labels: labels,
+          ),
         if (walletLabel.isNotEmpty)
           DetailsTableItem(
             label: transaction?.isIncoming == true
@@ -121,9 +124,9 @@ class TransactionDetailsTable extends StatelessWidget {
             copyValue: toAddress,
           ),
         if (addressLabels.isNotEmpty)
-          DetailsTableItem(
-            label: context.loc.transactionDetailLabelAddressNotes,
-            displayValue: addressLabels,
+          LabelsTableItem(
+            title: context.loc.transactionDetailLabelAddressNotes,
+            labels: addressLabels,
           ),
         // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
         // to be able to use the CurrencyText widget instead of having to format the amount here.

@@ -1,15 +1,15 @@
 import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/labels_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class TransactionNotesTableItem extends StatelessWidget {
-  const TransactionNotesTableItem({super.key, required this.labels});
+class LabelsTableItem extends StatelessWidget {
+  const LabelsTableItem({super.key, required this.title, required this.labels});
 
+  final String title;
   final List<Label> labels;
 
   @override
@@ -22,9 +22,9 @@ class TransactionNotesTableItem extends StatelessWidget {
           Expanded(
             flex: 2,
             child: BBText(
-              context.loc.transactionNotesLabel,
+              title,
               style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.surfaceContainer,
+                color: context.appColors.onSurface,
               ),
             ),
           ),

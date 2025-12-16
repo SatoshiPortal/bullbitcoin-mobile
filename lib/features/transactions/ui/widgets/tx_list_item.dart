@@ -1,8 +1,9 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/label_text.dart';
+import 'package:bb_mobile/core/widgets/labels_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -49,10 +50,9 @@ class TxListItem extends StatelessWidget {
         : tx.isBitcoin
         ? context.loc.transactionNetworkBitcoin
         : context.loc.transactionNetworkLiquid;
-    final label =
-        tx.walletTransaction != null && tx.walletTransaction!.labels.isNotEmpty
-        ? tx.walletTransaction!.labels.first
-        : null;
+    final labels = tx.walletTransaction != null
+        ? tx.walletTransaction!.labels
+        : <Label>[];
     final date = tx.isSwap
         ? (!tx.isOngoingSwap
               ? (tx.swap?.completionTime != null
@@ -157,13 +157,7 @@ class TxListItem extends StatelessWidget {
                         : null,
                   ),
 
-                  if (label != null)
-                    LabelText(
-                      label,
-                      style: context.font.labelSmall?.copyWith(
-                        color: context.appColors.outline,
-                      ),
-                    ),
+                  if (labels.isNotEmpty) LabelsWidget(labels: labels),
                 ],
               ),
             ),

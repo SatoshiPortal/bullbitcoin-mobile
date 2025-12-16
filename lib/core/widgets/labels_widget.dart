@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/labels/domain/label_error.dart';
+import 'package:bb_mobile/core/labels/label_system.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/label_text.dart';
@@ -66,7 +67,7 @@ class _LabelsWidgetState extends State<LabelsWidget> {
         return LabelChip(
           label: label,
           isDeleting: isDeleting,
-          onDelete: () => _deleteLabel(label),
+          onDelete: widget.onDelete != null ? () => _deleteLabel(label) : null,
         );
       }).toList(),
     );
@@ -82,13 +83,14 @@ class LabelChip extends StatelessWidget {
   });
 
   final Label label;
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
   final bool isDeleting;
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final maxWidth = screenWidth * 0.8;
+    final isSystemLabel = LabelSystem.isSystemLabel(label.label);
 
     return Container(
       decoration: BoxDecoration(
@@ -96,7 +98,7 @@ class LabelChip extends StatelessWidget {
         border: Border.all(color: context.appColors.onSurface),
         borderRadius: BorderRadius.circular(3),
       ),
-      constraints: BoxConstraints(maxWidth: maxWidth),
+      constraints: BoxConstraints(maxWidth: maxWidth, minHeight: 28),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
@@ -112,27 +114,29 @@ class LabelChip extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 4),
-            if (isDeleting)
-              SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    context.appColors.primary,
+            if (!isSystemLabel && onDelete != null) ...[
+              const SizedBox(width: 4),
+              if (isDeleting)
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      context.appColors.primary,
+                    ),
+                  ),
+                )
+              else
+                GestureDetector(
+                  onTap: onDelete,
+                  child: Icon(
+                    Icons.close,
+                    size: 16,
+                    color: context.appColors.primary,
                   ),
                 ),
-              )
-            else
-              GestureDetector(
-                onTap: onDelete,
-                child: Icon(
-                  Icons.close,
-                  size: 16,
-                  color: context.appColors.primary,
-                ),
-              ),
+            ],
           ],
         ),
       ),
