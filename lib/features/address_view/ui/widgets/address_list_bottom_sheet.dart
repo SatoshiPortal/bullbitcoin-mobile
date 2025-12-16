@@ -125,9 +125,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                           address: address.address,
                           index: address.index,
                           balanceSat: address.balanceSat,
-                          labels: address.labels
-                              .map((label) => label.label)
-                              .toList(),
+                          labels: address.labels,
                         );
                       } else {
                         if (state.error != null && index == addresses.length) {

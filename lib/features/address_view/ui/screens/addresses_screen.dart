@@ -152,9 +152,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                             address: address.address,
                             index: address.index,
                             balanceSat: address.balanceSat,
-                            labels: address.labels
-                                .map((label) => label.label)
-                                .toList(),
+                            labels: address.labels,
                           );
                         } else {
                           if (state.error != null &&

@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/labels/label_system.dart';
+import 'package:bb_mobile/core/labels/domain/label_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/label_text.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 
@@ -36,14 +38,17 @@ class _LabelsWidgetState extends State<LabelsWidget> {
       if (mounted) {
         setState(() => _deletingLabels.remove(label.label));
       }
+    } on LabelError catch (e) {
+      if (mounted) {
+        setState(() => _deletingLabels.remove(label.label));
+        SnackBarUtils.showSnackBar(context, e.toTranslated(context));
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _deletingLabels.remove(label.label));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to delete label: $e'),
-            backgroundColor: context.appColors.error,
-          ),
+        SnackBarUtils.showSnackBar(
+          context,
+          context.loc.labelDeleteFailed(label.label),
         );
       }
     }
@@ -85,13 +90,6 @@ class LabelChip extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final maxWidth = screenWidth * 0.8;
 
-    String displayLabel = label.label;
-    if (LabelSystem.isSystemLabel(label.label)) {
-      displayLabel = LabelSystem.fromLabel(
-        label.label,
-      ).toTranslatedLabel(context);
-    }
-
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.onPrimary,
@@ -106,13 +104,11 @@ class LabelChip extends StatelessWidget {
           children: [
             Flexible(
               child: GestureDetector(
-                child: BBText(
-                  displayLabel,
+                child: LabelText(
+                  label,
                   style: context.font.bodySmall?.copyWith(
                     color: context.appColors.outlineVariant,
                   ),
-                  maxLines: 1,
-                  overflow: .ellipsis,
                 ),
               ),
             ),

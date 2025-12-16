@@ -12006,5 +12006,45 @@
   "systemLabelExchangeSell": "Vente",
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
+  },
+  "labelErrorNotFound": "Label \"{label}\" introuvable.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnsupportedType": "Ce type {type} n'est pas pris en charge",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "Erreur inattendue : {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "Les labels système ne peuvent pas être supprimés.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelDeleteFailed": "Impossible de supprimer \"{label}\". Veuillez réessayer.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
   }
 }
