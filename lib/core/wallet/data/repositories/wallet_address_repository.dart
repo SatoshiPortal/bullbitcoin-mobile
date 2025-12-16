@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
+import 'package:bb_mobile/core/labels/label_system.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -53,6 +54,25 @@ class WalletAddressRepository {
       address = addressInfo.confidential;
     }
 
+    var labels = await _labelDatasource.fetchByRef(address);
+
+    while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
+      index++;
+      if (walletModel is PublicBdkWalletModel) {
+        address = await _bdkWallet.getAddressByIndex(
+          index,
+          wallet: walletModel,
+        );
+      } else {
+        final addressInfo = await _lwkWallet.getAddressByIndex(
+          index,
+          wallet: walletModel,
+        );
+        address = addressInfo.confidential;
+      }
+      labels = await _labelDatasource.fetchByRef(address);
+    }
+
     final walletAddressModel = WalletAddressModel(
       walletId: walletId,
       index: index,
@@ -61,7 +81,6 @@ class WalletAddressRepository {
       updatedAt: DateTime.now(),
     );
 
-    final labels = await _labelDatasource.fetchByRef(address);
     final walletAddress = WalletAddressMapper.toEntity(
       walletAddressModel,
       labels: labels.map((label) => label.toEntity()).toList(),
@@ -104,6 +123,25 @@ class WalletAddressRepository {
       address = addressInfo.confidential;
     }
 
+    var labels = await _labelDatasource.fetchByRef(address);
+
+    while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
+      index++;
+      if (walletModel is PublicBdkWalletModel) {
+        address = await _bdkWallet.getAddressByIndex(
+          index,
+          wallet: walletModel,
+        );
+      } else {
+        final addressInfo = await _lwkWallet.getAddressByIndex(
+          index,
+          wallet: walletModel,
+        );
+        address = addressInfo.confidential;
+      }
+      labels = await _labelDatasource.fetchByRef(address);
+    }
+
     final walletAddressModel = WalletAddressModel(
       walletId: walletId,
       index: index,
@@ -112,7 +150,6 @@ class WalletAddressRepository {
       updatedAt: DateTime.now(),
     );
 
-    final labels = await _labelDatasource.fetchByRef(address);
     final walletAddress = WalletAddressMapper.toEntity(
       walletAddressModel,
       labels: labels.map((label) => label.toEntity()).toList(),
