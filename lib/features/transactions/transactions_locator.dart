@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/fetch_distinct_labels_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/label_transaction_usecase.dart';
@@ -45,6 +46,7 @@ class TransactionsLocator {
         testnetOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
+        labelExchangeOrdersUsecase: locator<LabelExchangeOrdersUsecase>(),
       ),
     );
 

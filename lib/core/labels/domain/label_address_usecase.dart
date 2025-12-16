@@ -11,7 +11,7 @@ class LabelAddressUsecase {
   Future<void> execute({
     required String address,
     required String label,
-    required String origin,
+    required String? origin,
   }) async {
     try {
       final addressLabel = Label.addr(

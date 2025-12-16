@@ -10,7 +10,7 @@ class LabelTransactionUsecase {
 
   Future<Label> execute({
     required String txid,
-    required String origin,
+    required String? origin,
     required String label,
   }) async {
     try {

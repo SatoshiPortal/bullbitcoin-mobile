@@ -93,7 +93,7 @@ class LabelChip extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.onPrimary,
-        border: Border.all(color: context.appColors.surface),
+        border: Border.all(color: context.appColors.onSurface),
         borderRadius: BorderRadius.circular(3),
       ),
       constraints: BoxConstraints(maxWidth: maxWidth),
@@ -107,7 +107,7 @@ class LabelChip extends StatelessWidget {
                 child: LabelText(
                   label,
                   style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.outlineVariant,
+                    color: context.appColors.onSurfaceVariant,
                   ),
                 ),
               ),
