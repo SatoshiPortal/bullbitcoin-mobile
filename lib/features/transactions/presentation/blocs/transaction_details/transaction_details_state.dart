@@ -7,7 +7,6 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     Wallet? wallet,
     Wallet? counterpartWallet,
     String? swapCounterpartTxId,
-    String? note,
     @Default(false) bool isBroadcastingPayjoinOriginalTx,
     @Default(false) bool retryingSwap,
     TransactionNotFoundError? notFoundError,

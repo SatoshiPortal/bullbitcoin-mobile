@@ -21,54 +21,50 @@ class TxListItem extends StatelessWidget {
     final isLnSwap = tx.isLnSwap;
     final isChainSwap = tx.isChainSwap;
     final isOrderType = tx.isOrder && tx.order != null;
-    final icon =
-        isOrderType
-            ? Icons.payments
-            : isChainSwap
-            ? Icons.swap_vert_rounded
-            : isLnSwap
-            ? (tx.isOutgoing ? Icons.arrow_upward : Icons.arrow_downward)
-            : tx.isOutgoing
-            ? Icons.arrow_upward
-            : Icons.arrow_downward;
-    final walletColor =
-        isOrderType
-            ? context.appColors.border
-            : tx.isOngoingSwap
-            ? context.appColors.border.withValues(alpha: 0.3)
-            : tx.isBitcoin
-            ? context.appColors.onTertiary
-            : context.appColors.tertiary;
-    final networkLabel =
-        isOrderType
-            ? tx.order!.orderType.value
-            : isLnSwap
-            ? context.loc.transactionNetworkLightning
-            : isChainSwap
-            ? tx.swap!.type == SwapType.liquidToBitcoin
-                ? context.loc.transactionSwapLiquidToBitcoin
-                : context.loc.transactionSwapBitcoinToLiquid
-            : tx.isBitcoin
-            ? context.loc.transactionNetworkBitcoin
-            : context.loc.transactionNetworkLiquid;
+    final icon = isOrderType
+        ? Icons.payments
+        : isChainSwap
+        ? Icons.swap_vert_rounded
+        : isLnSwap
+        ? (tx.isOutgoing ? Icons.arrow_upward : Icons.arrow_downward)
+        : tx.isOutgoing
+        ? Icons.arrow_upward
+        : Icons.arrow_downward;
+    final walletColor = isOrderType
+        ? context.appColors.border
+        : tx.isOngoingSwap
+        ? context.appColors.border.withValues(alpha: 0.3)
+        : tx.isBitcoin
+        ? context.appColors.onTertiary
+        : context.appColors.tertiary;
+    final networkLabel = isOrderType
+        ? tx.order!.orderType.value
+        : isLnSwap
+        ? context.loc.transactionNetworkLightning
+        : isChainSwap
+        ? tx.swap!.type == SwapType.liquidToBitcoin
+              ? context.loc.transactionSwapLiquidToBitcoin
+              : context.loc.transactionSwapBitcoinToLiquid
+        : tx.isBitcoin
+        ? context.loc.transactionNetworkBitcoin
+        : context.loc.transactionNetworkLiquid;
     final label =
         tx.walletTransaction != null && tx.walletTransaction!.labels.isNotEmpty
-            ? tx.walletTransaction!.labels.first
-            : null;
-    final date =
-        tx.isSwap
-            ? (!tx.isOngoingSwap
-                ? (tx.swap?.completionTime != null
+        ? tx.walletTransaction!.labels.first
+        : null;
+    final date = tx.isSwap
+        ? (!tx.isOngoingSwap
+              ? (tx.swap?.completionTime != null
                     ? timeago.format(tx.swap!.completionTime!)
                     : null)
-                : null)
-            : isOrderType
-            ? (tx.order?.completedAt != null
-                ? timeago.format(tx.order!.completedAt!)
-                : null)
-            : (tx.isBitcoin || tx.isLiquid)
-            ? (tx.timestamp != null ? timeago.format(tx.timestamp!) : null)
-            : null;
+              : null)
+        : isOrderType
+        ? (tx.order?.completedAt != null
+              ? timeago.format(tx.order!.completedAt!)
+              : null)
+        : (tx.isBitcoin || tx.isLiquid)
+        ? (tx.timestamp != null ? timeago.format(tx.timestamp!) : null)
+        : null;
     final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =
         isOrderType &&
@@ -119,15 +115,13 @@ class TxListItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color:
-                    tx.isOngoingSwap
-                        ? context.appColors.border.withValues(alpha: 0.3)
-                        : context.appColors.surface,
+                color: tx.isOngoingSwap
+                    ? context.appColors.border.withValues(alpha: 0.3)
+                    : context.appColors.surface,
                 border: Border.all(
-                  color:
-                      tx.isOngoingSwap
-                          ? context.appColors.border.withValues(alpha: 0.5)
-                          : context.appColors.border,
+                  color: tx.isOngoingSwap
+                      ? context.appColors.border.withValues(alpha: 0.5)
+                      : context.appColors.border,
                 ),
                 borderRadius: BorderRadius.circular(2.0),
               ),
@@ -150,21 +144,21 @@ class TxListItem extends StatelessWidget {
                     style: context.font.bodyLarge,
                     fiatAmount:
                         isOrderType &&
-                                showOrderInFiat &&
-                                orderAmountAndCurrency != null
-                            ? orderAmountAndCurrency.$1.toDouble()
-                            : null,
+                            showOrderInFiat &&
+                            orderAmountAndCurrency != null
+                        ? orderAmountAndCurrency.$1.toDouble()
+                        : null,
                     fiatCurrency:
                         isOrderType &&
-                                showOrderInFiat &&
-                                orderAmountAndCurrency != null
-                            ? orderAmountAndCurrency.$2
-                            : null,
+                            showOrderInFiat &&
+                            orderAmountAndCurrency != null
+                        ? orderAmountAndCurrency.$2
+                        : null,
                   ),
 
                   if (label != null)
                     BBText(
-                      label,
+                      label.label,
                       style: context.font.labelSmall?.copyWith(
                         color: context.appColors.outline,
                       ),

@@ -14,7 +14,6 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -306,45 +305,28 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
   }
 
-  Future<void> onNoteChanged(String note) async {
-    final validation = NoteValidator.validate(note);
-    if (!validation.isValid) {
-      emit(state.copyWith(err: validation.errorMessage, note: note));
-    } else {
-      emit(state.copyWith(note: note.trim(), err: null));
-    }
-  }
-
-  Future<void> saveTransactionNote() async {
+  Future<void> saveTransactionLabel(String label) async {
     // TODO: Permit multiple labels && labels for payjoin txs, so not only wallet txs (for example set on the original tx)
     //  I think the entity should be changed to Transaction instead of WalletTransaction for that
+    if (state.walletTransaction == null) return;
 
-    if (state.walletTransaction == null ||
-        state.note == null ||
-        state.walletTransaction!.labels.contains(state.note)) {
-      return;
-    }
     if (state.walletTransaction!.labels.length >= 10) {
       emit(state.copyWith(err: 'You can only have up to 10 labels'));
       return;
     }
 
-    await _labelTransactionUsecase.execute(
+    final txLabel = await _labelTransactionUsecase.execute(
       txid: state.walletTransaction!.txId,
       origin: state.walletTransaction!.walletId,
-      label: state.note!,
+      label: label,
     );
 
     final updatedWalletransaction = state.transaction?.walletTransaction
         ?.copyWith(
-          labels: [
-            ...?state.transaction?.walletTransaction?.labels,
-            state.note!,
-          ],
+          labels: [...?state.transaction?.walletTransaction?.labels, txLabel],
         );
     emit(
       state.copyWith(
-        note: null,
         transaction: state.transaction?.copyWith(
           walletTransaction: updatedWalletransaction,
         ),
@@ -368,7 +350,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     } catch (e) {
       emit(state.copyWith(err: e));
     } finally {
-      emit(state.copyWith(isBroadcastingPayjoinOriginalTx: false, note: null));
+      emit(state.copyWith(isBroadcastingPayjoinOriginalTx: false));
     }
   }
 
@@ -385,43 +367,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       await _deleteLabelUsecase.execute(transactionLabel);
 
       final updatedLabels = [...?state.transaction?.walletTransaction?.labels];
-      updatedLabels.remove(note);
-
-      final updatedWalletTransaction = state.transaction?.walletTransaction
-          ?.copyWith(labels: updatedLabels);
-      emit(
-        state.copyWith(
-          transaction: state.transaction?.copyWith(
-            walletTransaction: updatedWalletTransaction,
-          ),
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(err: e));
-    }
-  }
-
-  Future<void> editTransactionNote(String oldNote, String newNote) async {
-    final walletTransaction = state.walletTransaction;
-    if (walletTransaction == null) return;
-
-    try {
-      final oldLabel = Label.tx(
-        transactionId: walletTransaction.txId,
-        label: oldNote,
-        origin: walletTransaction.walletId,
-      );
-      await _deleteLabelUsecase.execute(oldLabel);
-
-      await _labelTransactionUsecase.execute(
-        txid: walletTransaction.txId,
-        origin: walletTransaction.walletId,
-        label: newNote,
-      );
-
-      final updatedLabels = [...?state.transaction?.walletTransaction?.labels];
-      updatedLabels.remove(oldNote);
-      updatedLabels.add(newNote);
+      updatedLabels.remove(transactionLabel);
 
       final updatedWalletTransaction = state.transaction?.walletTransaction
           ?.copyWith(labels: updatedLabels);

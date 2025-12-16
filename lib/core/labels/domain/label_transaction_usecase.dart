@@ -8,7 +8,7 @@ class LabelTransactionUsecase {
   LabelTransactionUsecase({required LabelRepository labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<void> execute({
+  Future<Label> execute({
     required String txid,
     required String origin,
     required String label,
@@ -20,6 +20,7 @@ class LabelTransactionUsecase {
         origin: origin,
       );
       await _labelRepository.store(transactionLabel);
+      return transactionLabel;
     } on LabelError {
       rethrow;
     } catch (e) {

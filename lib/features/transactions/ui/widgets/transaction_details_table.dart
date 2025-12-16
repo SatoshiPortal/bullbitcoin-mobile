@@ -94,7 +94,7 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           ),
 
-        if (labels.isNotEmpty) TransactionNotesTableItem(notes: labels),
+        if (labels.isNotEmpty) TransactionNotesTableItem(labels: labels),
         if (walletLabel.isNotEmpty)
           DetailsTableItem(
             label: transaction?.isIncoming == true

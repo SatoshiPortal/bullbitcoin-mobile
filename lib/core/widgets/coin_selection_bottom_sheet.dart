@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -148,6 +149,9 @@ class CommonCoinSelectTile extends StatelessWidget {
         ? 'Receive'
         : 'Change';
     final label = utxo.labels.join(', ');
+    final addressLabels = utxo.addressLabels.join(', ');
+    log.shout(label);
+    log.shout(addressLabels);
 
     return GestureDetector(
       onTap: onTap,
