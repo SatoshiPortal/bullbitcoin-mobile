@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/labels/label_system.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:drift/drift.dart';
 
 class LabelDatasource {
@@ -48,11 +49,15 @@ class LabelDatasource {
 
   Future<void> trashByLabel({required String label}) async {
     try {
-      LabelSystem.fromLabel(label);
-      throw BullException('System label cannot be deleted');
-    } catch (_) {}
+      if (LabelSystem.isSystemLabel(label)) {
+        throw BullException('System label cannot be deleted');
+      }
 
-    await _sqlite.managers.labels.filter((l) => l.label(label)).delete();
+      await _sqlite.managers.labels.filter((l) => l.label(label)).delete();
+    } catch (e) {
+      log.severe('$LabelDatasource: $e');
+      rethrow;
+    }
   }
 
   Future<void> trashByRef(String ref) async {
@@ -61,13 +66,17 @@ class LabelDatasource {
 
   Future<void> trashLabel(LabelModel label) async {
     try {
-      LabelSystem.fromLabel(label.label);
-      throw BullException('System label cannot be deleted');
-    } catch (_) {}
+      if (LabelSystem.isSystemLabel(label.label)) {
+        throw BullException('System label cannot be deleted');
+      }
 
-    await _sqlite.managers.labels
-        .filter((l) => l.ref(label.ref) & l.label(label.label))
-        .delete();
+      await _sqlite.managers.labels
+          .filter((l) => l.ref(label.ref) & l.label(label.label))
+          .delete();
+    } catch (e) {
+      log.severe('$LabelDatasource: $e');
+      rethrow;
+    }
   }
 
   Future<List<LabelModel>> fetchAll() async {

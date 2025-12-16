@@ -33,6 +33,15 @@ enum LabelSystem {
     };
   }
 
+  static bool isSystemLabel(String label) {
+    try {
+      fromLabel(label);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   String toTranslatedLabel(BuildContext context) {
     return switch (this) {
       LabelSystem.swaps => context.loc.systemLabelSwaps,
