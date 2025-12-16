@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/widgets/labels_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 
@@ -39,10 +40,9 @@ class CoinSelectTile extends StatelessWidget {
     ); // You can format this better
 
     final address = utxo.address;
-    final addressType =
-        utxo.addressKeyChain == WalletAddressKeyChain.external
-            ? context.loc.sendReceive
-            : context.loc.sendChange;
+    final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
+        ? context.loc.sendReceive
+        : context.loc.sendChange;
     final label = utxo.labels.join(', ');
 
     return GestureDetector(
@@ -132,6 +132,14 @@ class CoinSelectTile extends StatelessWidget {
                           color: context.appColors.secondary,
                         ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  LabelsWidget(
+                    labels: [
+                      ...utxo.labels,
+                      ...utxo.addressLabels,
+                      ...utxo.txLabels,
                     ],
                   ),
                 ],

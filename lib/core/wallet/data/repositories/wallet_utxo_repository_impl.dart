@@ -62,6 +62,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
       utxoModels.map((model) async {
         // Get labels for the UTXO if any
         final labelModels = await _labelDatasource.fetchByRef(model.labelRef);
+        final txLabels = await _labelDatasource.fetchByRef(model.txId);
         // Check if the UTXO is frozen
         final isFrozen = frozenUtxos.any(
           (frozenUtxo) =>
@@ -88,6 +89,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
           model,
           walletId: walletId,
           labels: labelModels.map((model) => model.toEntity()).toList(),
+          txLabels: txLabels.map((model) => model.toEntity()).toList(),
           addressLabels: addressLabels
               .map((model) => model.toEntity())
               .toList(),

@@ -8,6 +8,7 @@ class WalletUtxoMapper {
     WalletUtxoModel model, {
     required String walletId,
     List<Label> labels = const [],
+    List<Label> txLabels = const [],
     List<Label> addressLabels = const [],
     bool isFrozen = false,
   }) {
@@ -24,6 +25,7 @@ class WalletUtxoMapper {
               ? WalletAddressKeyChain.external
               : WalletAddressKeyChain.internal,
           labels: labels,
+          txLabels: txLabels,
           addressLabels: addressLabels,
           isFrozen: isFrozen,
         );
@@ -37,6 +39,7 @@ class WalletUtxoMapper {
           standardAddress: model.standardAddress,
           confidentialAddress: model.confidentialAddress,
           labels: labels,
+          txLabels: txLabels,
           addressLabels: addressLabels,
           isFrozen: isFrozen,
         );

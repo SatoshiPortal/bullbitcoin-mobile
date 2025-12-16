@@ -18,6 +18,7 @@ sealed class WalletUtxo with _$WalletUtxo {
     @Default(WalletAddressKeyChain.external)
     WalletAddressKeyChain addressKeyChain,
     @Default([]) List<Label> labels,
+    @Default([]) List<Label> txLabels,
     @Default([]) List<Label> addressLabels,
     @Default(false) bool isFrozen,
   }) = BitcoinWalletUtxo;
@@ -33,6 +34,7 @@ sealed class WalletUtxo with _$WalletUtxo {
     @Default(WalletAddressKeyChain.external)
     WalletAddressKeyChain addressKeyChain,
     @Default([]) List<Label> labels,
+    @Default([]) List<Label> txLabels,
     @Default([]) List<Label> addressLabels,
     @Default(false) bool isFrozen,
   }) = LiquidWalletUtxo;
