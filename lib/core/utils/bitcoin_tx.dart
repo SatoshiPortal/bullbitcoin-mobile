@@ -39,7 +39,7 @@ class BitcoinTx {
     final inputs = bdkTx.input();
     final outputs = bdkTx.output();
 
-    // ! iterate instead of mapto preserve index order
+    // ! iterate instead of map to preserve index order
     final vout = <TxVout>[];
     for (var i = 0; i < outputs.length; i++) {
       final output = outputs[i];

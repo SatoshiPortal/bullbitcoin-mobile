@@ -50,7 +50,7 @@ class LabelDatasource {
   Future<void> trashByLabel({required String label}) async {
     try {
       if (LabelSystem.isSystemLabel(label)) {
-        throw SystemLabelCannotBeDeletedError;
+        throw const SystemLabelCannotBeDeletedError();
       }
 
       await _sqlite.managers.labels.filter((l) => l.label(label)).delete();
@@ -67,7 +67,7 @@ class LabelDatasource {
   Future<void> trashLabel(LabelModel label) async {
     try {
       if (LabelSystem.isSystemLabel(label.label)) {
-        throw SystemLabelCannotBeDeletedError;
+        throw const SystemLabelCannotBeDeletedError();
       }
 
       await _sqlite.managers.labels
