@@ -17,6 +17,29 @@ class LabelText extends StatelessWidget {
         label.label,
       ).toTranslatedLabel(context);
     }
-    return BBText(displayLabel, style: style, maxLines: 1, overflow: .ellipsis);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textPainter = TextPainter(
+          text: TextSpan(text: displayLabel, style: style),
+          maxLines: 1,
+          textDirection: TextDirection.ltr,
+        )..layout(maxWidth: constraints.maxWidth);
+
+        final isOverflowing = textPainter.didExceedMaxLines;
+
+        final textWidget = BBText(
+          displayLabel,
+          style: style,
+          maxLines: 1,
+          overflow: .ellipsis,
+        );
+
+        if (isOverflowing) {
+          return Tooltip(message: displayLabel, child: textWidget);
+        }
+
+        return textWidget;
+      },
+    );
   }
 }

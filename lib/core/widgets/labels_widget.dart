@@ -93,52 +93,47 @@ class LabelChip extends StatelessWidget {
     final isSystemLabel = LabelSystem.isSystemLabel(label.label);
 
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
       decoration: BoxDecoration(
-        color: context.appColors.onPrimary,
-        border: Border.all(color: context.appColors.onSurface),
-        borderRadius: BorderRadius.circular(3),
+        color: context.appColors.border,
+        borderRadius: BorderRadius.circular(2.0),
       ),
-      constraints: BoxConstraints(maxWidth: maxWidth, minHeight: 28),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Row(
-          mainAxisSize: .min,
-          children: [
-            Flexible(
-              child: GestureDetector(
-                child: LabelText(
-                  label,
-                  style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.onSurfaceVariant,
-                  ),
-                ),
+      constraints: BoxConstraints(maxWidth: maxWidth),
+      child: Row(
+        mainAxisSize: .min,
+        children: [
+          Flexible(
+            child: LabelText(
+              label,
+              style: context.font.labelSmall?.copyWith(
+                color: context.appColors.onSurface,
               ),
             ),
-            if (!isSystemLabel && onDelete != null) ...[
-              const SizedBox(width: 4),
-              if (isDeleting)
-                SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      context.appColors.primary,
-                    ),
-                  ),
-                )
-              else
-                GestureDetector(
-                  onTap: onDelete,
-                  child: Icon(
-                    Icons.close,
-                    size: 16,
-                    color: context.appColors.primary,
+          ),
+          if (!isSystemLabel && onDelete != null) ...[
+            const SizedBox(width: 4),
+            if (isDeleting)
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    context.appColors.primary,
                   ),
                 ),
-            ],
+              )
+            else
+              GestureDetector(
+                onTap: onDelete,
+                child: Icon(
+                  Icons.close,
+                  size: 16,
+                  color: context.appColors.primary,
+                ),
+              ),
           ],
-        ),
+        ],
       ),
     );
   }
