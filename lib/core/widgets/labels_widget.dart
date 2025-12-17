@@ -59,10 +59,16 @@ class _LabelsWidgetState extends State<LabelsWidget> {
   Widget build(BuildContext context) {
     if (widget.labels.isEmpty) return const SizedBox.shrink();
 
+    final uniqueLabels = <String, Label>{};
+    for (final label in widget.labels) {
+      uniqueLabels[label.label] = label;
+    }
+    final distinctLabels = uniqueLabels.values.toList();
+
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: widget.labels.map((label) {
+      children: distinctLabels.map((label) {
         final isDeleting = _deletingLabels.contains(label.label);
         return LabelChip(
           label: label,
