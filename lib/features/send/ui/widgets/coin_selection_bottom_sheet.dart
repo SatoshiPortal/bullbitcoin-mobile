@@ -45,6 +45,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
         bitcoinUnit == BitcoinUnit.btc
             ? FormatAmount.btc(ConvertAmount.satsToBtc(amountToSendSat))
             : FormatAmount.sats(amountToSendSat);
+    final isAmountSufficient = selectedUtxoTotalSat > amountToSendSat;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -103,6 +104,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
             onPressed: context.pop,
             bgColor: context.appColors.secondary,
             textColor: context.appColors.onSecondary,
+            disabled: !isAmountSufficient,
           ),
           const Gap(24),
         ],
