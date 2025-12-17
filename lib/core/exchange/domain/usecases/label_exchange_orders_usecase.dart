@@ -1,25 +1,22 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
-import 'package:bb_mobile/core/labels/domain/label_address_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/label_transaction_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/batch_labels_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/labels/label_system.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
 class LabelExchangeOrdersUsecase {
   final LabelDatasource _labelDatasource;
-  final LabelTransactionUsecase _labelTransactionUsecase;
-  final LabelAddressUsecase _labelAddressUsecase;
+  final BatchLabelsUsecase _batchLabelsUsecase;
   final ListAllOrdersUsecase _listAllOrdersUsecase;
 
   LabelExchangeOrdersUsecase({
     required LabelDatasource labelDatasource,
-    required LabelTransactionUsecase labelTransactionUsecase,
-    required LabelAddressUsecase labelAddressUsecase,
+    required BatchLabelsUsecase batchLabelsUsecase,
     required ListAllOrdersUsecase listAllOrdersUsecase,
   }) : _labelDatasource = labelDatasource,
-       _labelTransactionUsecase = labelTransactionUsecase,
-       _labelAddressUsecase = labelAddressUsecase,
+       _batchLabelsUsecase = batchLabelsUsecase,
        _listAllOrdersUsecase = listAllOrdersUsecase;
 
   Future<void> execute() async {
@@ -32,6 +29,7 @@ class LabelExchangeOrdersUsecase {
 
       log.config('$LabelExchangeOrdersUsecase is labeling exchange orders');
 
+      final labels = <Label>[];
       for (final order in orders) {
         try {
           final isBuyOrder = order is BuyOrder;
@@ -40,24 +38,28 @@ class LabelExchangeOrdersUsecase {
               : LabelSystem.exchangeSell.label;
 
           if (isBuyOrder && order.toAddress != null) {
-            await _labelAddressUsecase.execute(
+            final label = Label.addr(
               address: order.toAddress!,
               label: systemLabel,
               origin: null,
             );
+            labels.add(label);
           }
 
           if (order.transactionId != null) {
-            await _labelTransactionUsecase.execute(
-              txid: order.transactionId!,
+            final label = Label.tx(
+              transactionId: order.transactionId!,
               label: systemLabel,
               origin: null,
             );
+            labels.add(label);
           }
         } catch (e) {
           log.warning('$LabelExchangeOrdersUsecase order ${order.orderId}: $e');
         }
       }
+
+      await _batchLabelsUsecase.execute(labels);
 
       log.fine(
         '$LabelExchangeOrdersUsecase labeled ${orders.length} exchange orders',

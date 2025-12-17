@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
+import 'package:bb_mobile/core/labels/domain/batch_labels_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/export_labels_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/fetch_distinct_labels_usecase.dart';
@@ -48,6 +49,9 @@ class LabelsLocator {
       () => FetchDistinctLabelsUsecase(
         labelRepository: locator<LabelRepository>(),
       ),
+    );
+    locator.registerFactory<BatchLabelsUsecase>(
+      () => BatchLabelsUsecase(labelRepository: locator<LabelRepository>()),
     );
   }
 }
