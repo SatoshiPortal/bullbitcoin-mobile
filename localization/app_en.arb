@@ -11982,5 +11982,69 @@
   "recoverbullErrorInvalidVaultFile": "Invalid vault file.",
   "@recoverbullErrorInvalidVaultFile": {
     "description": "Error message when vault file format is invalid"
+  },
+  "systemLabelSwaps": "Swaps",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "systemLabelAutoSwap": "Auto Swap",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelPayjoin": "Payjoin",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "systemLabelSelfSpend": "Self Spend",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "systemLabelExchangeBuy": "Buy",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "systemLabelExchangeSell": "Sell",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelErrorNotFound": "Label \"{label}\" not found.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnsupportedType": "This type {type} is not supported",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "Unexpected error: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "System labels cannot be deleted.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelDeleteFailed": "Unable to delete \"{label}\". Please try again.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
   }
 }

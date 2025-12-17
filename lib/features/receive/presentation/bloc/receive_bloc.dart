@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/label_wallet_address_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/label_address_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -52,7 +52,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required WatchWalletTransactionByAddressUsecase
     watchWalletTransactionByAddressUsecase,
     required WatchSwapUsecase watchSwapUsecase,
-    required LabelWalletAddressUsecase labelWalletAddressUsecase,
+    required LabelAddressUsecase labelAddressUsecase,
     required GetSwapLimitsUsecase getSwapLimitsUsecase,
     Wallet? wallet,
   }) : _getWalletsUsecase = getWalletsUsecase,
@@ -69,7 +69,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
        _watchWalletTransactionByAddressUsecase =
            watchWalletTransactionByAddressUsecase,
        _watchSwapUsecase = watchSwapUsecase,
-       _labelWalletAddressUsecase = labelWalletAddressUsecase,
+       _labelAddressUsecase = labelAddressUsecase,
        _getSwapLimitsUsecase = getSwapLimitsUsecase,
        _wallet = wallet,
        super(const ReceiveState()) {
@@ -103,7 +103,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final WatchWalletTransactionByAddressUsecase
   _watchWalletTransactionByAddressUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
-  final LabelWalletAddressUsecase _labelWalletAddressUsecase;
+  final LabelAddressUsecase _labelAddressUsecase;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final Wallet? _wallet;
   StreamSubscription<Payjoin>? _payjoinSubscription;
@@ -632,14 +632,16 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       switch (state.type) {
         case ReceiveType.bitcoin:
           if (state.bitcoinAddress == null) return;
-          await _labelWalletAddressUsecase.execute(
-            address: state.bitcoinAddress!,
+          await _labelAddressUsecase.execute(
+            address: state.bitcoinAddress!.address,
+            origin: state.bitcoinAddress!.walletId,
             label: note,
           );
         case ReceiveType.liquid:
           if (state.liquidAddress == null) return;
-          await _labelWalletAddressUsecase.execute(
-            address: state.liquidAddress!,
+          await _labelAddressUsecase.execute(
+            address: state.liquidAddress!.address,
+            origin: state.liquidAddress!.walletId,
             label: note,
           );
         case _:

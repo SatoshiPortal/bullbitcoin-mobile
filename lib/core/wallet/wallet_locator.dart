@@ -109,6 +109,7 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        labelDatasource: locator<LabelDatasource>(),
       ),
     );
 
@@ -171,9 +172,8 @@ class WalletLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );

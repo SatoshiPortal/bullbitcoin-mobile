@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_address.freezed.dart';
@@ -14,15 +15,10 @@ sealed class WalletAddress with _$WalletAddress {
     //@Default(0) int highestPreviousBalanceSat,
     @Default(0) int balanceSat,
     @Default(0) int nrOfTransactions,
-    List<String>? labels,
     required DateTime createdAt,
     required DateTime updatedAt,
+    @Default([]) List<Label> labels,
   }) = _WalletAddress;
-
-  // Todo: the following should not be defined here, the reason it is called
-  //  WalletAddress and not just Address is because this is for addresses from
-  //  the wallet itself, with index etc, not for external addresses. This should be removed.
-  //factory WalletAddress.external({required String payload}) = AddressOnly;
 
   const WalletAddress._();
 

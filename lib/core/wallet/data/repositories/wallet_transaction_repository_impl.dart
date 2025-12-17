@@ -79,16 +79,15 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   }) async {
     final walletTransactionLists = await Future.wait(
       walletModels.map((walletModel) async {
-        final walletTransactionModels =
-            walletModel is PublicBdkWalletModel
-                ? await _bdkWalletTransactionDatasource.getTransactions(
-                  wallet: walletModel,
-                  toAddress: toAddress,
-                )
-                : await _lwkWalletTransactionDatasource.getTransactions(
-                  wallet: walletModel,
-                  toAddress: toAddress,
-                );
+        final walletTransactionModels = walletModel is PublicBdkWalletModel
+            ? await _bdkWalletTransactionDatasource.getTransactions(
+                wallet: walletModel,
+                toAddress: toAddress,
+              )
+            : await _lwkWalletTransactionDatasource.getTransactions(
+                wallet: walletModel,
+                toAddress: toAddress,
+              );
 
         if (txId != null) {
           walletTransactionModels.retainWhere(
@@ -98,52 +97,49 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
 
         return await Future.wait(
           walletTransactionModels.map((walletTransactionModel) async {
-            final (inputs, outputs, labels) =
-                await (
-                  Future.wait(
-                    walletTransactionModel.inputs.map((inputModel) async {
-                      final inputLabels = await _labelDatasource.fetchByRef(
-                        inputModel.labelRef,
-                      );
-                      return TransactionInputMapper.toEntity(
-                        inputModel,
-                        labels:
-                            inputLabels.map((model) => model.label).toList(),
-                      );
-                    }),
-                  ),
-                  Future.wait(
-                    walletTransactionModel.outputs.map((outputModel) async {
-                      final outputLabels = await _labelDatasource.fetchByRef(
-                        outputModel.labelRef,
-                      );
-                      final outputModelAddress = outputModel.address;
-                      final addressLabels =
-                          outputModelAddress != null
-                              ? await _labelDatasource.fetchByRef(
-                                outputModelAddress,
-                              )
-                              : <LabelModel>[];
+            final (inputs, outputs, labels) = await (
+              Future.wait(
+                walletTransactionModel.inputs.map((inputModel) async {
+                  final inputLabels = await _labelDatasource.fetchByRef(
+                    inputModel.labelRef,
+                  );
+                  return TransactionInputMapper.toEntity(
+                    inputModel,
+                    labels: inputLabels.map((model) => model.label).toList(),
+                  );
+                }),
+              ),
+              Future.wait(
+                walletTransactionModel.outputs.map((outputModel) async {
+                  final outputLabels = await _labelDatasource.fetchByRef(
+                    outputModel.labelRef,
+                  );
+                  final outputModelAddress = outputModel.address;
+                  final addressLabels = outputModelAddress != null
+                      ? await _labelDatasource.fetchByRef(outputModelAddress)
+                      : <LabelModel>[];
 
-                      return TransactionOutputMapper.toEntity(
-                        outputModel,
-                        labels:
-                            outputLabels.map((model) => model.label).toList(),
-                        addressLabels:
-                            addressLabels.map((model) => model.label).toList(),
-                        //isFrozen: isFrozen, // Todo: check if frozen
-                      );
-                    }),
-                  ),
-                  _labelDatasource.fetchByRef(walletTransactionModel.txId),
-                ).wait;
+                  return TransactionOutputMapper.toEntity(
+                    outputModel,
+                    labels: outputLabels
+                        .map((model) => model.toEntity())
+                        .toList(),
+                    addressLabels: addressLabels
+                        .map((model) => model.toEntity())
+                        .toList(),
+                    //isFrozen: isFrozen, // Todo: check if frozen
+                  );
+                }),
+              ),
+              _labelDatasource.fetchByRef(walletTransactionModel.txId),
+            ).wait;
 
             return WalletTransactionMapper.toEntity(
               walletTransactionModel,
               walletId: walletModel.id,
               inputs: inputs,
               outputs: outputs,
-              labels: labels.map((model) => model.label).toList(),
+              labels: labels.map((model) => model.toEntity()).toList(),
               isRbf: walletTransactionModel.isRbf,
             );
           }).toList(),
@@ -173,24 +169,22 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
       (metadata) =>
           environment == null || environment.isTestnet == metadata.isTestnet,
     );
-    final walletModels =
-        filteredWalletsMetadata
-            .map(
-              (metadata) =>
-                  metadata.isBitcoin
-                      ? WalletModel.publicBdk(
-                        externalDescriptor: metadata.externalPublicDescriptor,
-                        internalDescriptor: metadata.internalPublicDescriptor,
-                        isTestnet: metadata.isTestnet,
-                        id: metadata.id,
-                      )
-                      : WalletModel.publicLwk(
-                        combinedCtDescriptor: metadata.externalPublicDescriptor,
-                        isTestnet: metadata.isTestnet,
-                        id: metadata.id,
-                      ),
-            )
-            .toList();
+    final walletModels = filteredWalletsMetadata
+        .map(
+          (metadata) => metadata.isBitcoin
+              ? WalletModel.publicBdk(
+                  externalDescriptor: metadata.externalPublicDescriptor,
+                  internalDescriptor: metadata.internalPublicDescriptor,
+                  isTestnet: metadata.isTestnet,
+                  id: metadata.id,
+                )
+              : WalletModel.publicLwk(
+                  combinedCtDescriptor: metadata.externalPublicDescriptor,
+                  isTestnet: metadata.isTestnet,
+                  id: metadata.id,
+                ),
+        )
+        .toList();
 
     // TODO: We should extract syncing from fetching the data,
     //  passing the getElectrumServers function here is a dirty hack for now
