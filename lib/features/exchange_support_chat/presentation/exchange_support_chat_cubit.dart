@@ -43,8 +43,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
             throw Exception('User ID not found in user summary');
           }
           emit(state.copyWith(userId: userId));
-        } catch (_) {
-        }
+        } catch (_) {}
       }
 
       final pageToLoad = page ?? 1;

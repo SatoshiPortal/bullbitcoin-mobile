@@ -66,7 +66,7 @@ class ExchangeSupportChatDatasource {
     List<SupportChatMessageAttachmentModel>? attachments,
   }) async {
     try {
-      final params = <String, dynamic>{'text': text};
+      final params = <String, dynamic>{'text': text, 'source': 'BULL Mobile'};
 
       final attachmentsList = attachments
           ?.where((attachment) => attachment.fileData != null)
