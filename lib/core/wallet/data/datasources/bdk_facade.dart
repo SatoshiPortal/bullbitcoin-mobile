@@ -21,8 +21,9 @@ class BdkFacade {
       throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
     }
 
-    final network =
-        walletModel.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+    final network = walletModel.isTestnet
+        ? bdk.Network.testnet
+        : bdk.Network.bitcoin;
 
     final external = await bdk.Descriptor.create(
       descriptor: walletModel.externalDescriptor,
@@ -54,8 +55,9 @@ class BdkFacade {
       throw ArgumentError('Wallet must be of type PrivateBdkWalletModel');
     }
 
-    final network =
-        walletModel.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+    final network = walletModel.isTestnet
+        ? bdk.Network.testnet
+        : bdk.Network.bitcoin;
 
     final bdkMnemonic = await bdk.Mnemonic.fromString(walletModel.mnemonic);
     final secretKey = await bdk.DescriptorSecretKey.create(
@@ -119,6 +121,10 @@ class BdkFacade {
     return wallet;
   }
 
+  static Future<String> getWalletDbPath(WalletModel walletModel) async {
+    return _getDbPath(walletModel.dbName);
+  }
+
   static Future<String> _getDbPath(String dbName) async {
     final dir = await getApplicationDocumentsDirectory();
     return '${dir.path}/$dbName';
@@ -135,10 +141,9 @@ class BdkFacade {
           url: electrumServer.url,
           // Only set the socks5 if it's not empty,
           //  otherwise bdk will throw an error
-          socks5:
-              electrumSettings.socks5?.isNotEmpty == true
-                  ? electrumSettings.socks5
-                  : null,
+          socks5: electrumSettings.socks5?.isNotEmpty == true
+              ? electrumSettings.socks5
+              : null,
           retry: electrumSettings.retry,
           timeout: electrumSettings.timeout,
           stopGap: BigInt.from(electrumSettings.stopGap),

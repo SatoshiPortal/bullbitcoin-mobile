@@ -5,6 +5,10 @@ import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
 class LwkFacade {
+  static Future<String> getWalletDbPath(WalletModel walletModel) async {
+    return _getDbPath(walletModel.dbName);
+  }
+
   static Future<String> _getDbPath(String dbName) async {
     try {
       final dir = await getApplicationDocumentsDirectory();
@@ -23,8 +27,9 @@ class LwkFacade {
       if (walletModel is! PublicLwkWalletModel) {
         throw Exception('Wallet is not an LWK wallet');
       }
-      final network =
-          walletModel.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
+      final network = walletModel.isTestnet
+          ? lwk.Network.testnet
+          : lwk.Network.mainnet;
       final descriptor = lwk.Descriptor(
         ctDescriptor: walletModel.combinedCtDescriptor,
       );
@@ -49,8 +54,9 @@ class LwkFacade {
       if (walletModel is! PrivateLwkWalletModel) {
         throw Exception('Wallet is not an LWK wallet');
       }
-      final network =
-          walletModel.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
+      final network = walletModel.isTestnet
+          ? lwk.Network.testnet
+          : lwk.Network.mainnet;
       final descriptor = await lwk.Descriptor.newConfidential(
         mnemonic: walletModel.mnemonic,
         network: network,

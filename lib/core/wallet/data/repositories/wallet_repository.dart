@@ -366,8 +366,14 @@ class WalletRepository {
 
   Future<void> deleteWallet({required String walletId}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
-    if (metadata == null) {
-      throw WalletError.notFound(walletId);
+    if (metadata == null) throw WalletError.notFound(walletId);
+
+    if (metadata.isBitcoin) {
+      await _bdkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+    }
+
+    if (metadata.isLiquid) {
+      await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
     }
 
     // Delete wallet metadata from database
