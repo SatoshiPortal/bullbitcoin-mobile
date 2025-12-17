@@ -680,6 +680,10 @@
   "@sendDone": {
     "description": "Button label for completing the send flow"
   },
+  "sendSelectedUtxosInsufficient": "Valitut UTXO:t eivät kata vaadittua määrää",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
   "sendAdvancedOptions": "Lisäasetukset",
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"

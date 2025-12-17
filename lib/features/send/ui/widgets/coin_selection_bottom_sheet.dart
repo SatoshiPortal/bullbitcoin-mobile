@@ -34,17 +34,15 @@ class CoinSelectionBottomSheet extends StatelessWidget {
       0,
       (previousValue, element) => previousValue + element.amountSat.toInt(),
     );
-    final selectedUtxoTotal =
-        bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
-            : FormatAmount.sats(selectedUtxoTotalSat);
+    final selectedUtxoTotal = bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
+        : FormatAmount.sats(selectedUtxoTotalSat);
     final amountToSendSat = context.select(
       (SendCubit send) => send.state.confirmedAmountSat ?? 0,
     );
-    final amountToSend =
-        bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(amountToSendSat))
-            : FormatAmount.sats(amountToSendSat);
+    final amountToSend = bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(amountToSendSat))
+        : FormatAmount.sats(amountToSendSat);
     final isAmountSufficient = selectedUtxoTotalSat > amountToSendSat;
 
     return SingleChildScrollView(
@@ -78,6 +76,15 @@ class CoinSelectionBottomSheet extends StatelessWidget {
             '${context.loc.sendAmountRequested}$amountToSend',
             style: context.font.bodySmall,
           ),
+          if (!isAmountSufficient) ...[
+            const Gap(8),
+            BBText(
+              context.loc.sendSelectedUtxosInsufficient,
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.error,
+              ),
+            ),
+          ],
           const Gap(24),
           ListView.separated(
             physics: const NeverScrollableScrollPhysics(),
@@ -86,9 +93,8 @@ class CoinSelectionBottomSheet extends StatelessWidget {
               return CoinSelectTile(
                 utxo: utxo,
                 selected: selectedUtxos.contains(utxo),
-                onTap:
-                    () async =>
-                        await context.read<SendCubit>().utxoSelected(utxo),
+                onTap: () async =>
+                    await context.read<SendCubit>().utxoSelected(utxo),
                 exchangeRate: exchangeRate,
                 bitcoinUnit: bitcoinUnit!,
                 fiatCurrency: fiatCurrency,
