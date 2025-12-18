@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class Bip85DerivationWidget extends StatefulWidget {
-  final String xprvBase58;
   final Bip85DerivationEntity derivation;
+  final String entropy;
   final Future<void> Function(Bip85DerivationEntity, String)? onAliasChanged;
   final Future<void> Function(Bip85DerivationEntity)? onDerivationRevoked;
   final Future<void> Function(Bip85DerivationEntity)? onDerivationActivated;
@@ -14,7 +13,7 @@ class Bip85DerivationWidget extends StatefulWidget {
   const Bip85DerivationWidget({
     super.key,
     required this.derivation,
-    required this.xprvBase58,
+    required this.entropy,
     this.onAliasChanged,
     this.onDerivationRevoked,
     this.onDerivationActivated,
@@ -35,6 +34,14 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
     _aliasController = TextEditingController(
       text: widget.derivation.alias ?? '',
     );
+  }
+
+  @override
+  void didUpdateWidget(Bip85DerivationWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.derivation.alias != oldWidget.derivation.alias) {
+      _aliasController.text = widget.derivation.alias ?? '';
+    }
   }
 
   @override
@@ -64,11 +71,6 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final data = bip85.Bip85Entropy.deriveFromHardenedPath(
-      xprvBase58: widget.xprvBase58,
-      path: bip85.Bip85HardenedPath(widget.derivation.path),
-    );
-
     final isRevoked = widget.derivation.status == Bip85Status.revoked;
 
     return Container(
@@ -154,7 +156,7 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: TextEditingController(text: data),
+                    controller: TextEditingController(text: widget.entropy),
                     obscureText: _isObscured,
                     readOnly: true,
                     decoration: const InputDecoration(border: InputBorder.none),
@@ -170,7 +172,7 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
                 IconButton(
                   icon: Icon(Icons.copy, color: context.appColors.onSurface),
                   onPressed: () {
-                    Clipboard.setData(ClipboardData(text: data));
+                    Clipboard.setData(ClipboardData(text: widget.entropy));
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Copied to clipboard'),

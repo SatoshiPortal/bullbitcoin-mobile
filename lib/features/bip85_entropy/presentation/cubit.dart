@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bip85_entropy/errors.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
+import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
@@ -48,10 +49,7 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> init() async {
     try {
-      emit(state.copyWith(isLoading: true));
-      await fetchXprvBase58();
       await fetchAllDerivations();
-      emit(state.copyWith(isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: Bip85EntropyError(e.toString())));
     }
@@ -59,17 +57,20 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> fetchAllDerivations() async {
     emit(state.copyWith(isLoading: true));
-    final derivations = await _fetchAllBip85DerivationsUsecase.execute();
-    emit(state.copyWith(derivations: derivations, isLoading: false));
-  }
-
-  Future<void> fetchXprvBase58() async {
-    final seed = await _getDefaultSeedUsecase.execute();
+    final defaultSeed = await _getDefaultSeedUsecase.execute();
     final xprvBase58 = Bip32Derivation.getXprvFromSeed(
-      seed.bytes,
+      defaultSeed.bytes,
       Network.bitcoinMainnet,
     );
-    emit(state.copyWith(xprvBase58: xprvBase58));
+    final derivations = await _fetchAllBip85DerivationsUsecase.execute();
+    final derivationsWithEntropy = derivations.map((e) {
+      final entropy = bip85.Bip85Entropy.deriveFromHardenedPath(
+        xprvBase58: xprvBase58,
+        path: bip85.Bip85HardenedPath(e.path),
+      );
+      return (derivation: e, entropy: entropy);
+    }).toList();
+    emit(state.copyWith(derivations: derivationsWithEntropy, isLoading: false));
   }
 
   Future<void> deriveNextMnemonic() async {

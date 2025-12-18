@@ -24,9 +24,7 @@ class Bip85HomePage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Column(
               children: [
-                FadingLinearProgress(
-                  trigger: state.xprvBase58.isEmpty || state.isLoading,
-                ),
+                FadingLinearProgress(trigger: state.isLoading),
                 Container(
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(12),
@@ -48,17 +46,17 @@ class Bip85HomePage extends StatelessWidget {
                   ),
                 ),
                 const Gap(16),
-                if (state.derivations.isNotEmpty && state.xprvBase58.isNotEmpty)
+                if (state.derivations.isNotEmpty)
                   Expanded(
                     child: ListView.builder(
                       itemCount: state.derivations.length,
                       itemBuilder: (context, index) {
-                        final derivation = state.derivations[index];
+                        final derivationWithEntropy = state.derivations[index];
                         return Padding(
                           padding: const EdgeInsets.all(8),
                           child: Bip85DerivationWidget(
-                            xprvBase58: state.xprvBase58,
-                            derivation: derivation,
+                            derivation: derivationWithEntropy.derivation,
+                            entropy: derivationWithEntropy.entropy,
                             onAliasChanged: cubit.aliasDerivation,
                             onDerivationRevoked: cubit.revokeDerivation,
                             onDerivationActivated: cubit.activateDerivation,
