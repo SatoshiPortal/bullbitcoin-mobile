@@ -564,7 +564,7 @@
   "@walletDeletionErrorDefaultWallet": {
     "description": "Error message when attempting to delete a default wallet"
   },
-  "walletDeletionErrorOngoingSwaps": "Et voi poistaa lompakkoa, jossa on käynnissä olevia swäppejä.",
+  "walletDeletionErrorOngoingSwaps": "Et voi poistaa lompakkoa, jossa on käynnissä olevia swappejä.",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
@@ -2402,7 +2402,7 @@
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
   },
-  "transactionSwapDescChainClaimable": "Lukitustransaktio on vahvistettu. Voit nyt lunastaa swäpin varat.",
+  "transactionSwapDescChainClaimable": "Lukitustransaktio on vahvistettu. Voit nyt lunastaa swapin varat.",
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
   },
@@ -4623,7 +4623,7 @@
       }
     }
   },
-  "autoswapTriggerBalanceError": "Käynnistyssaldo on oltava vähintään 2x perussaldo",
+  "autoswapTriggerBalanceError": "Aloitussaldon on oltava vähintään saldo x2",
   "@autoswapTriggerBalanceError": {
     "description": "Validation error shown when trigger balance is less than 2x the base balance"
   },
@@ -5589,7 +5589,7 @@
   "@feePriorityLabel": {
     "description": "Label for fee selection priority option"
   },
-  "transferIdLabel": "Swäpin tunnus",
+  "transferIdLabel": "Swapin tunnus",
   "@transferIdLabel": {
     "description": "Label for swap transfer ID"
   },
@@ -11186,7 +11186,7 @@
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
   },
-  "exchangeSupportChatMessageRequired": "Viesti vaaditaan",
+  "exchangeSupportChatMessageRequired": "Liite vaatii viestiin sisältöä",
   "@exchangeSupportChatMessageRequired": {
     "description": "Placeholder text when attachments are present but no message text"
   },
@@ -11198,7 +11198,7 @@
   "@exchangeSupportChatYesterday": {
     "description": "Label for yesterday in date formatting"
   },
-  "exchangeSupportChatWalletIssuesInfo": "Tämä chatti on vain vaihtoon liittyviä ongelmia varten Rahoituksessa/Osto/Myynti/Nosto/Maksu.\nLompakkoon liittyvien ongelmien osalta liity Telegram-ryhmään klikkaamalla tästä.",
+  "exchangeSupportChatWalletIssuesInfo": "Tämä chatti on vain pörssiin liittyviä talletus/osto/myynti/nosto/maksu -ongelmia varten.\nLompakkotukea tarjoavaan Telegram-ryhmään pääset tästä.",
   "@exchangeSupportChatWalletIssuesInfo": {
     "description": "Info message about wallet issues and telegram group link"
   },
@@ -11799,11 +11799,11 @@
   "@recoverbullErrorInvalidVaultFile": {
     "description": "Error message when vault file format is invalid"
   },
-  "systemLabelSwaps": "Swaps",
+  "systemLabelSwaps": "Swapit",
   "@systemLabelSwaps": {
     "description": "System label for swap transactions"
   },
-  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelAutoSwap": "Automaattinen swap",
   "@systemLabelAutoSwap": {
     "description": "System label for automatic swap transactions"
   },
@@ -11811,7 +11811,7 @@
   "@systemLabelPayjoin": {
     "description": "System label for payjoin transactions"
   },
-  "systemLabelSelfSpend": "Itsesiirto",
+  "systemLabelSelfSpend": "Oma siirto",
   "@systemLabelSelfSpend": {
     "description": "System label for self-spend transactions"
   },
@@ -11832,7 +11832,7 @@
       }
     }
   },
-  "labelErrorUnsupportedType": "Tyyppiä {type} ei tueta",
+  "labelErrorUnsupportedType": "Tunnistetyyppiä {type} ei tueta",
   "@labelErrorUnsupportedType": {
     "description": "Error message when label type is not supported",
     "placeholders": {
