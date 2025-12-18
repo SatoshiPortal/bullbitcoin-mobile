@@ -260,7 +260,7 @@
   "@walletDetailsPubkeyLabel": {
     "description": "Label for the public key field in wallet details"
   },
-  "walletDetailsDescriptorLabel": "Kuvaus",
+  "walletDetailsDescriptorLabel": "Descriptor-merkkijono",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
   },
@@ -296,11 +296,11 @@
   "@bitcoinSettingsWalletsTitle": {
     "description": "Title for the wallets section in Bitcoin settings"
   },
-  "bitcoinSettingsElectrumServerTitle": "Electrum-palvelimen asetukset",
+  "bitcoinSettingsElectrumServerTitle": "Electrum-palvelimet",
   "@bitcoinSettingsElectrumServerTitle": {
     "description": "Title for the Electrum server settings section in Bitcoin settings"
   },
-  "bitcoinSettingsAutoTransferTitle": "Automaattisen siirron asetukset",
+  "bitcoinSettingsAutoTransferTitle": "Automaattinen swap",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
@@ -700,7 +700,7 @@
   "@sendInsufficientBalance": {
     "description": "Error message when the wallet has insufficient balance to send"
   },
-  "sendScanBitcoinQRCode": "Skannaa mikä tahansa Bitcoin- tai Lightning-QR-koodi maksaaksesi bitcoinilla.",
+  "sendScanBitcoinQRCode": "Lähetä Bitcoin- tai Lightning-varoja scannaamalla QR-koodi.",
   "@sendScanBitcoinQRCode": {
     "description": "Instructions for scanning a QR code to make a Bitcoin payment"
   },
@@ -832,7 +832,7 @@
   "@receiveLiquid": {
     "description": "Label for receiving Bitcoin via Liquid Network"
   },
-  "receiveAddLabel": "Lisää tunniste",
+  "receiveAddLabel": "Lisää kuvaus",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
   },
@@ -864,7 +864,7 @@
   "@receiveNoteLabel": {
     "description": "Label for the note field in receive"
   },
-  "receiveEnterHere": "Syötä tähän...",
+  "receiveEnterHere": "(on antamatta)",
   "@receiveEnterHere": {
     "description": "Placeholder text for input fields in receive"
   },
@@ -2018,11 +2018,11 @@
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
   },
-  "transactionFilterSend": "Lähetetyt",
+  "transactionFilterSend": "Lähetetty",
   "@transactionFilterSend": {
     "description": "Filter option to show only sent transactions"
   },
-  "transactionFilterReceive": "Vastaanotetut",
+  "transactionFilterReceive": "Vastaanotettu",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
   },
@@ -2754,15 +2754,15 @@
   "@walletArkExperimental": {
     "description": "Description for Ark wallet indicating experimental status"
   },
-  "fundExchangeTitle": "Rahoitus",
+  "fundExchangeTitle": "Talleta varoja tilillesi",
   "@fundExchangeTitle": {
     "description": "AppBar title for funding screen"
   },
-  "fundExchangeAccountTitle": "Rahoita tilisi",
+  "fundExchangeAccountTitle": "Talletus",
   "@fundExchangeAccountTitle": {
     "description": "Main title on the fund exchange account screen"
   },
-  "fundExchangeAccountSubtitle": "Valitse maa ja maksutapa",
+  "fundExchangeAccountSubtitle": "Valitse maa ja talletustapa",
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
   },
@@ -2950,15 +2950,15 @@
   "@fundExchangeHelpBeneficiaryName": {
     "description": "Help text for beneficiary name field"
   },
-  "fundExchangeLabelTransferCode": "Siirtokoodi (lisää maksun kuvaukseen)",
+  "fundExchangeLabelTransferCode": "Siirtokoodi (tilisiirron viestikenttään)",
   "@fundExchangeLabelTransferCode": {
     "description": "Label for transfer code field"
   },
-  "fundExchangeHelpTransferCode": "Lisää tämä siirron syyksi",
+  "fundExchangeHelpTransferCode": "Lisää tämä tilisiirron viestiksi",
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "fundExchangeInfoTransferCode": "Sinun on lisättävä siirtokoodi maksun \"viestiksi\" tai \"syyksi\".",
+  "fundExchangeInfoTransferCode": "Sinun on lisättävä siirtokoodi tilisiirron \"viestiksi\" tai \"syyksi\".",
   "@fundExchangeInfoTransferCode": {
     "description": "Info card message about transfer code importance"
   },
@@ -3082,19 +3082,19 @@
   "@fundExchangeSepaTitle": {
     "description": "Screen title for SEPA transfer payment details"
   },
-  "fundExchangeSepaDescription": "Lähetä SEPA-siirto pankkitililtäsi käyttäen alla olevia tietoja ",
+  "fundExchangeSepaDescription": "Lähetä pankista SEPA-tilisiirto, käyttäen alla olevia vastaanottajatietoja ",
   "@fundExchangeSepaDescription": {
     "description": "Description for SEPA transfer (first part, before 'exactly')"
   },
-  "fundExchangeSepaDescriptionExactly": "täsmälleen.",
+  "fundExchangeSepaDescriptionExactly": "sellaisenaan.",
   "@fundExchangeSepaDescriptionExactly": {
     "description": "Emphasized word 'exactly' in SEPA description"
   },
-  "fundExchangeInstantSepaInfo": "Käytä vain alle 20 000 euron tapahtumiin. Suurempiin tapahtumiin käytä tavallista SEPA-vaihtoehtoa.",
+  "fundExchangeInstantSepaInfo": "Käytä vain alle 20 000 euron tapahtumiin. Suurempiin tapahtumiin käytä tavallista SEPA-siirtoa.",
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
   },
-  "fundExchangeRegularSepaInfo": "Käytä vain yli 20 000 euron tapahtumiin. Pienempiin tapahtumiin käytä välitöntä SEPA-vaihtoehtoa.",
+  "fundExchangeRegularSepaInfo": "Käytä vain yli 20 000 euron tapahtumiin. Pienempiin tapahtumiin käytä Instant SEPA-siirtoa.",
   "@fundExchangeRegularSepaInfo": {
     "description": "Info message for Regular SEPA transaction limits"
   },
@@ -3118,7 +3118,7 @@
   "@fundExchangeInfoBeneficiaryNameLeonod": {
     "description": "Critical info about beneficiary name being LEONOD"
   },
-  "fundExchangeInfoPaymentDescription": "Lisää maksun kuvaukseen siirtokoodisi.",
+  "fundExchangeInfoPaymentDescription": "Lisää siirtokoodisi tilisiirron viestikenttään.",
   "@fundExchangeInfoPaymentDescription": {
     "description": "Info about adding transfer code to payment description"
   },
@@ -3202,7 +3202,7 @@
   "@fundExchangeHelpPaymentDescription": {
     "description": "Help text for payment description field"
   },
-  "fundExchangeInfoTransferCodeRequired": "Sinun on lisättävä siirtokoodi maksutapahtuman \"viestiksi\", \"syyksi\" tai \"kuvaukseksi\". Jos unohdat lisätä tämän koodin, maksusi voidaan hylätä.",
+  "fundExchangeInfoTransferCodeRequired": "Sinun on lisättävä siirtokoodi tilisiirron \"viestiksi\", \"syyksi\" tai \"kuvaukseksi\". Jos unohdat lisätä tämän koodin, maksusi voidaan hylätä.",
   "@fundExchangeInfoTransferCodeRequired": {
     "description": "Important info about transfer code requirement for Costa Rica transfers"
   },
@@ -3982,11 +3982,11 @@
   "@anErrorOccurred": {
     "description": "Generic error message"
   },
-  "dcaSetRecurringBuyTitle": "Aseta toistuva osto",
+  "dcaSetRecurringBuyTitle": "Määritä toistuva osto",
   "@dcaSetRecurringBuyTitle": {
     "description": "AppBar title for the main DCA setup screen"
   },
-  "dcaInsufficientBalanceTitle": "Riittämätön saldo",
+  "dcaInsufficientBalanceTitle": "Saldo ei riitä",
   "@dcaInsufficientBalanceTitle": {
     "description": "InfoCard title when user has insufficient funds"
   },
@@ -3994,7 +3994,7 @@
   "@dcaInsufficientBalanceDescription": {
     "description": "InfoCard description explaining insufficient balance error"
   },
-  "dcaFundAccountButton": "Rahoita tilisi",
+  "dcaFundAccountButton": "Talletus",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
   },
@@ -5454,11 +5454,11 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "addressViewReceiveType": "Vastaanota",
+  "addressViewReceiveType": "Vastaanotto",
   "@addressViewReceiveType": {
     "description": "Address type label for external/receive addresses"
   },
-  "addressViewChangeType": "Muutos",
+  "addressViewChangeType": "Vaihtoraha",
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
   },
@@ -8979,7 +8979,7 @@
   "@importWatchOnlyBuyDevice": {
     "description": "Button label to purchase a hardware wallet device"
   },
-  "importWatchOnlyWalletGuides": "Lompakon oppaat",
+  "importWatchOnlyWalletGuides": "Oppaat",
   "@importWatchOnlyWalletGuides": {
     "description": "Button label for wallet documentation and guides"
   },
@@ -9604,7 +9604,7 @@
   "@exchangeLandingConnect": {
     "description": "Subtitle on exchange landing screen"
   },
-  "exchangeLandingFeature1": "Osta Bitcoinia suoraan omaan hallintaan",
+  "exchangeLandingFeature1": "Osta Bitcoinia omaan säilytykseen",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
   },
@@ -9735,7 +9735,7 @@
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
   },
-  "withdrawAmountTitle": "Nosta fiat-valuuttaa",
+  "withdrawAmountTitle": "Nosta varoja tililtäsi",
   "@withdrawAmountTitle": {
     "description": "AppBar title for withdraw amount screen"
   },
@@ -9824,7 +9824,7 @@
       }
     }
   },
-  "fundExchangeFundAccount": "Rahoita tiliäsi",
+  "fundExchangeFundAccount": "Talletus",
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
@@ -9860,7 +9860,7 @@
   "@dcaSetupInsufficientBalanceMessage": {
     "description": "Insufficient balance error message"
   },
-  "dcaSetupFundAccount": "Rahoita tiliäsi",
+  "dcaSetupFundAccount": "Talletus",
   "@dcaSetupFundAccount": {
     "description": "Button to fund account"
   },
@@ -9994,7 +9994,7 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "buyInputFundAccount": "Rahoita tiliäsi",
+  "buyInputFundAccount": "Talletus",
   "@buyInputFundAccount": {
     "description": "Button to fund account"
   },
@@ -10198,7 +10198,7 @@
   "@swapProgressGoHome": {
     "description": "Go home button on progress screen"
   },
-  "autoswapTitle": "Automaattisen siirron asetukset",
+  "autoswapTitle": "Automaattisen swapin asetukset",
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
@@ -11102,7 +11102,7 @@
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
-  "exchangeLandingConnectAccount": "Yhdistä Bull Bitcoin -pörssitilisi",
+  "exchangeLandingConnectAccount": "Yhdistä Bull Bitcoin -pörssitiliisi",
   "@exchangeLandingConnectAccount": {
     "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
@@ -11110,7 +11110,7 @@
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
   },
-  "exchangeFeatureSelfCustody": "• Osta Bitcoinia suoraan omaan säilytykseen",
+  "exchangeFeatureSelfCustody": "• Osta Bitcoinia omaan säilytykseen",
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
@@ -11134,11 +11134,11 @@
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
   },
-  "priceChartFetchingHistory": "Haetaan hintahistoriaa...",
+  "priceChartFetchingHistory": "Haetaan kurssihistoriaa...",
   "@priceChartFetchingHistory": {
     "description": "Message shown while fetching price history when no local data is available"
   },
-  "exchangeLandingDisclaimerLegal": "Pääsy pörssipalveluihin rajoitetaan maihin, joissa Bull Bitcoin voi toimia laillisesti, ja se voi edellyttää KYC-tunnistautumista.",
+  "exchangeLandingDisclaimerLegal": "Pääsy pörssipalveluihin rajoitetaan maihin, joissa Bull Bitcoin voi toimia laillisesti. Käyttö voi edellyttää KYC-tunnistautumista.",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"
   },
@@ -11210,7 +11210,7 @@
   "@exchangeDcaDeactivateTitle": {
     "description": "Title shown when DCA is active and can be deactivated"
   },
-  "exchangeDcaActivateTitle": "Ota toistuva osto käyttöön",
+  "exchangeDcaActivateTitle": "Ota käyttöön toistuvat ostot",
   "@exchangeDcaActivateTitle": {
     "description": "Title shown when DCA is inactive and can be activated"
   },
