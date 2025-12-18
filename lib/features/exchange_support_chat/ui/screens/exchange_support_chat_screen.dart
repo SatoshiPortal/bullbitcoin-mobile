@@ -333,9 +333,11 @@ class _MessageInputState extends State<_MessageInput> {
                     child: _AttachmentPreviewWidget(
                       attachment: attachment,
                       onRemove: () {
-                        context
-                            .read<ExchangeSupportChatCubit>()
-                            .removeAttachment(attachment.attachmentId!);
+                        if (attachment.attachmentId != null) {
+                          context
+                              .read<ExchangeSupportChatCubit>()
+                              .removeAttachment(attachment.attachmentId!);
+                        }
                       },
                     ),
                   );
