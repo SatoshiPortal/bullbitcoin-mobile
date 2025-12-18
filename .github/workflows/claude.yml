@@ -8,7 +8,7 @@ on:
 
 permissions:
   id-token: write      # needed for OIDC
-  contents: read       # so it can read the repo
+  contents: write       # so it can write the repo
   issues: write        # so it can comment on issues
   pull-requests: write # so it can comment on PRs
 
@@ -17,7 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0       # Fetch full history for branch operations
+          persist-credentials: true  # Keep credentials for subsequent git commands
 
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: "--model claude-opus-4-5-20251101"

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
@@ -53,12 +54,11 @@ sealed class Transaction with _$Transaction {
   bool get isOrder => order != null;
   bool get isBuyOrder => isOrder && order!.orderType == OrderType.buy;
   bool get isSellOrder => isOrder && order!.orderType == OrderType.sell;
-  bool get isOutgoing =>
-      walletTransaction != null
-          ? walletTransaction!.isOutgoing
-          : swap?.isLnSendSwap == true ||
-              swap?.isChainSwap == true ||
-              payjoin is PayjoinSender;
+  bool get isOutgoing => walletTransaction != null
+      ? walletTransaction!.isOutgoing
+      : swap?.isLnSendSwap == true ||
+            swap?.isChainSwap == true ||
+            payjoin is PayjoinSender;
   bool get isIncoming =>
       walletTransaction?.isIncoming ??
       swap?.isLnReceiveSwap == true ||
@@ -84,7 +84,7 @@ sealed class Transaction with _$Transaction {
   String get walletId =>
       walletTransaction?.walletId ?? swap?.walletId ?? payjoin!.walletId;
 
-  List<String>? get labels => walletTransaction?.labels;
+  List<Label>? get labels => walletTransaction?.labels;
 }
 
 /*

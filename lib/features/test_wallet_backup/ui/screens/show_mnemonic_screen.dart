@@ -38,7 +38,7 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
           builder: (context, state) {
             final walletName = state.selectedWallet?.isDefault ?? false
                 ? context.loc.testBackupDefaultWallets
-                : state.selectedWallet?.displayLabel ?? '';
+                : state.selectedWallet?.displayLabel(context) ?? '';
             final title = context.loc.testBackupWalletTitle(walletName);
 
             return Scaffold(
@@ -61,8 +61,8 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder:
-                                    (context) => const VerifyMnemonicScreen(),
+                                builder: (context) =>
+                                    const VerifyMnemonicScreen(),
                               ),
                             );
                           },
@@ -92,8 +92,10 @@ class _MnemonicDisplay extends StatelessWidget {
       (TestWalletBackupBloc bloc) => bloc.state.mnemonic,
     );
 
-    final selectedWallet =
-        context.watch<TestWalletBackupBloc>().state.selectedWallet;
+    final selectedWallet = context
+        .watch<TestWalletBackupBloc>()
+        .state
+        .selectedWallet;
     final lastPhysicalBackup = selectedWallet?.latestPhysicalBackup;
 
     return Padding(
@@ -104,9 +106,7 @@ class _MnemonicDisplay extends StatelessWidget {
           BBText(
             context.loc.testBackupWriteDownPhrase,
             textAlign: .center,
-            style: context.font.headlineLarge?.copyWith(
-              fontWeight: .w600,
-            ),
+            style: context.font.headlineLarge?.copyWith(fontWeight: .w600),
             maxLines: 2,
           ),
           const Gap(20),
@@ -122,7 +122,9 @@ class _MnemonicDisplay extends StatelessWidget {
           ),
           if (lastPhysicalBackup != null) ...[
             BBText(
-              context.loc.testBackupLastBackupTest(lastPhysicalBackup.toString().substring(0, 19)),
+              context.loc.testBackupLastBackupTest(
+                lastPhysicalBackup.toString().substring(0, 19),
+              ),
               textAlign: .center,
               style: context.font.labelMedium?.copyWith(
                 fontWeight: .w700,

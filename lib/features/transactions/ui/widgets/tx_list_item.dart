@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/labels_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -21,54 +23,49 @@ class TxListItem extends StatelessWidget {
     final isLnSwap = tx.isLnSwap;
     final isChainSwap = tx.isChainSwap;
     final isOrderType = tx.isOrder && tx.order != null;
-    final icon =
-        isOrderType
-            ? Icons.payments
-            : isChainSwap
-            ? Icons.swap_vert_rounded
-            : isLnSwap
-            ? (tx.isOutgoing ? Icons.arrow_upward : Icons.arrow_downward)
-            : tx.isOutgoing
-            ? Icons.arrow_upward
-            : Icons.arrow_downward;
-    final walletColor =
-        isOrderType
-            ? context.appColors.border
-            : tx.isOngoingSwap
-            ? context.appColors.border.withValues(alpha: 0.3)
-            : tx.isBitcoin
-            ? context.appColors.onTertiary
-            : context.appColors.tertiary;
-    final networkLabel =
-        isOrderType
-            ? tx.order!.orderType.value
-            : isLnSwap
-            ? context.loc.transactionNetworkLightning
-            : isChainSwap
-            ? tx.swap!.type == SwapType.liquidToBitcoin
-                ? context.loc.transactionSwapLiquidToBitcoin
-                : context.loc.transactionSwapBitcoinToLiquid
-            : tx.isBitcoin
-            ? context.loc.transactionNetworkBitcoin
-            : context.loc.transactionNetworkLiquid;
-    final label =
-        tx.walletTransaction != null && tx.walletTransaction!.labels.isNotEmpty
-            ? tx.walletTransaction!.labels.first
-            : null;
-    final date =
-        tx.isSwap
-            ? (!tx.isOngoingSwap
-                ? (tx.swap?.completionTime != null
+    final icon = isOrderType
+        ? Icons.payments
+        : isChainSwap
+        ? Icons.swap_vert_rounded
+        : isLnSwap
+        ? (tx.isOutgoing ? Icons.arrow_upward : Icons.arrow_downward)
+        : tx.isOutgoing
+        ? Icons.arrow_upward
+        : Icons.arrow_downward;
+    final walletColor = isOrderType
+        ? context.appColors.border
+        : tx.isOngoingSwap
+        ? context.appColors.border.withValues(alpha: 0.3)
+        : tx.isBitcoin
+        ? context.appColors.onTertiary
+        : context.appColors.tertiary;
+    final networkLabel = isOrderType
+        ? tx.order!.orderType.value
+        : isLnSwap
+        ? context.loc.transactionNetworkLightning
+        : isChainSwap
+        ? tx.swap!.type == SwapType.liquidToBitcoin
+              ? context.loc.transactionSwapLiquidToBitcoin
+              : context.loc.transactionSwapBitcoinToLiquid
+        : tx.isBitcoin
+        ? context.loc.transactionNetworkBitcoin
+        : context.loc.transactionNetworkLiquid;
+    final labels = tx.walletTransaction != null
+        ? tx.walletTransaction!.labels
+        : <Label>[];
+    final date = tx.isSwap
+        ? (!tx.isOngoingSwap
+              ? (tx.swap?.completionTime != null
                     ? timeago.format(tx.swap!.completionTime!)
                     : null)
-                : null)
-            : isOrderType
-            ? (tx.order?.completedAt != null
-                ? timeago.format(tx.order!.completedAt!)
-                : null)
-            : (tx.isBitcoin || tx.isLiquid)
-            ? (tx.timestamp != null ? timeago.format(tx.timestamp!) : null)
-            : null;
+              : null)
+        : isOrderType
+        ? (tx.order?.completedAt != null
+              ? timeago.format(tx.order!.completedAt!)
+              : null)
+        : (tx.isBitcoin || tx.isLiquid)
+        ? (tx.timestamp != null ? timeago.format(tx.timestamp!) : null)
+        : null;
     final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =
         isOrderType &&
@@ -119,15 +116,13 @@ class TxListItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color:
-                    tx.isOngoingSwap
-                        ? context.appColors.border.withValues(alpha: 0.3)
-                        : context.appColors.surface,
+                color: tx.isOngoingSwap
+                    ? context.appColors.border.withValues(alpha: 0.3)
+                    : context.appColors.surface,
                 border: Border.all(
-                  color:
-                      tx.isOngoingSwap
-                          ? context.appColors.border.withValues(alpha: 0.5)
-                          : context.appColors.border,
+                  color: tx.isOngoingSwap
+                      ? context.appColors.border.withValues(alpha: 0.5)
+                      : context.appColors.border,
                 ),
                 borderRadius: BorderRadius.circular(2.0),
               ),
@@ -150,25 +145,19 @@ class TxListItem extends StatelessWidget {
                     style: context.font.bodyLarge,
                     fiatAmount:
                         isOrderType &&
-                                showOrderInFiat &&
-                                orderAmountAndCurrency != null
-                            ? orderAmountAndCurrency.$1.toDouble()
-                            : null,
+                            showOrderInFiat &&
+                            orderAmountAndCurrency != null
+                        ? orderAmountAndCurrency.$1.toDouble()
+                        : null,
                     fiatCurrency:
                         isOrderType &&
-                                showOrderInFiat &&
-                                orderAmountAndCurrency != null
-                            ? orderAmountAndCurrency.$2
-                            : null,
+                            showOrderInFiat &&
+                            orderAmountAndCurrency != null
+                        ? orderAmountAndCurrency.$2
+                        : null,
                   ),
 
-                  if (label != null)
-                    BBText(
-                      label,
-                      style: context.font.labelSmall?.copyWith(
-                        color: context.appColors.outline,
-                      ),
-                    ),
+                  if (labels.isNotEmpty) LabelsWidget(labels: labels),
                 ],
               ),
             ),

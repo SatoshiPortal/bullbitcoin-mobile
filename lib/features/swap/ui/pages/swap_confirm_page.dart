@@ -72,8 +72,8 @@ class SwapConfirmPage extends StatelessWidget {
                       ),
                       const Gap(40),
                       CommonChainSwapSendInfoSection(
-                        sendWalletLabel: fromWallet!.displayLabel,
-                        receiveWalletLabel: toWallet!.displayLabel,
+                        sendWalletLabel: fromWallet!.displayLabel(context),
+                        receiveWalletLabel: toWallet!.displayLabel(context),
                         formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
                         swap: swap!,
                         absoluteFeesFormatted: absoluteFeesFormatted,

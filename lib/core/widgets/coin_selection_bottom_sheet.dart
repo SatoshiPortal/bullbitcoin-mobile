@@ -147,7 +147,6 @@ class CommonCoinSelectTile extends StatelessWidget {
     final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
         ? 'Receive'
         : 'Change';
-    final label = utxo.labels.join(', ');
 
     return GestureDetector(
       onTap: onTap,
@@ -181,12 +180,6 @@ class CommonCoinSelectTile extends StatelessWidget {
                           ),
                         ),
                       ],
-                    ),
-                    subtitle: BBText(
-                      label,
-                      style: context.font.labelMedium?.copyWith(
-                        color: context.appColors.outline,
-                      ),
                     ),
                     trailing: RadioGroup<bool>(
                       groupValue: selected,

@@ -524,7 +524,7 @@ class _WalletSelectionDropdown extends StatelessWidget {
                           height: 20,
                         ),
                         const Gap(8),
-                        Text(wallet.displayLabel),
+                        Text(wallet.displayLabel(context)),
                       ],
                     ),
                   ),

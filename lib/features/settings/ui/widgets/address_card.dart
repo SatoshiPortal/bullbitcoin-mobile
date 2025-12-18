@@ -1,6 +1,8 @@
+import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/widgets/labels_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,12 +15,14 @@ class AddressCard extends StatelessWidget {
     required this.address,
     required this.index,
     required this.balanceSat,
+    required this.labels,
   });
 
   final bool isUsed;
   final String address;
   final int index;
   final int balanceSat;
+  final List<Label> labels;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +105,10 @@ class AddressCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (labels.isNotEmpty) ...[
+              const Gap(8),
+              LabelsWidget(labels: labels),
+            ],
           ],
         ),
       ),

@@ -595,10 +595,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: "7872545770c277236fd32b022767576c562ba28366204ff1a5628853cf8f2200"
+      sha256: f8f4ea435f791ab1f817b4e338ed958cb3d04ba43d6736ffc39958d950754967
       url: "https://pub.dev"
     source: hosted
-    version: "10.3.7"
+    version: "10.3.6"
   file_selector_linux:
     dependency: transitive
     description:
@@ -1247,8 +1247,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "frb-2.11.1"
-      resolved-ref: "7d8481069114e5216b5978ba54ee3ee92784fac8"
+      ref: "2e10deb2fbaa76e888bda7be6a2128ce2c05173d"
+      resolved-ref: "2e10deb2fbaa76e888bda7be6a2128ce2c05173d"
       url: "https://github.com/SatoshiPortal/lwk-dart"
     source: git
     version: "0.2.2"
@@ -1610,8 +1610,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "frb-2.11.1"
-      resolved-ref: "2f0e1c12c89c488e23794076957cf1b3d8c6b3c8"
+      ref: "7b5341a5f6d8368173154132871d1f5f394019f9"
+      resolved-ref: "7b5341a5f6d8368173154132871d1f5f394019f9"
       url: "https://github.com/SatoshiPortal/satoshifier-dart"
     source: git
     version: "0.0.1"

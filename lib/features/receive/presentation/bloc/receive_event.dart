@@ -2,7 +2,8 @@ part of 'receive_bloc.dart';
 
 @freezed
 class ReceiveEvent with _$ReceiveEvent {
-  const factory ReceiveEvent.receiveBitcoinStarted() = ReceiveBitcoinStarted;
+  const factory ReceiveEvent.receiveBitcoinStarted(Wallet? wallet) =
+      ReceiveBitcoinStarted;
   const factory ReceiveEvent.receiveLightningStarted() =
       ReceiveLightningStarted;
   const factory ReceiveEvent.receiveLiquidStarted() = ReceiveLiquidStarted;

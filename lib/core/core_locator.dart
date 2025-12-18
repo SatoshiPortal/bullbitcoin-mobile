@@ -23,6 +23,7 @@ class CoreLocator {
   }
 
   static Future<void> registerDatasources() async {
+    LabelsLocator.registerDatasources(locator);
     await TorLocator.registerDatasources(locator);
     BlockchainLocator.registerDatasources(locator);
     await ElectrumLocator.registerDatasources(locator);
@@ -34,7 +35,6 @@ class CoreLocator {
     await StorageLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
-    LabelsLocator.registerDatasources();
     await SettingsLocator.registerDatasources(locator);
     Bip85DerivationsLocator.registerDatasources(locator);
     LedgerLocator.registerDatasources();
@@ -49,12 +49,12 @@ class CoreLocator {
   }
 
   static Future<void> registerRepositories() async {
+    LabelsLocator.registerRepositories(locator);
     await TorLocator.registerRepositories(locator);
     BlockchainLocator.registerRepositories(locator);
     ElectrumLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
     FeesLocator.registerRepositories(locator);
-    LabelsLocator.registerRepositories();
     PayjoinLocator.registerRepositories(locator);
     SeedLocator.registerRepositories(locator);
     StorageLocator.registerRepositories(locator);
@@ -73,11 +73,11 @@ class CoreLocator {
   }
 
   static void registerUsecases() {
+    LabelsLocator.registerUseCases(locator);
     ElectrumLocator.registerUsecases(locator);
     BlockchainLocator.registerUsecases(locator);
     ExchangeLocator.registerUseCases(locator);
     FeesLocator.registerUseCases(locator);
-    LabelsLocator.registerUseCases();
     PayjoinLocator.registerUsecases(locator);
     RecoverbullLocator.registerUsecases(locator);
     SeedLocator.registerUsecases(locator);

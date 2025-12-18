@@ -31,27 +31,20 @@ class BuyConfirmScreen extends StatelessWidget {
     final payoutAmountSat = ConvertAmount.btcToSats(
       payoutAmountBtc,
     ); // Convert sats to BTC
-    final formattedPayOutAmount =
-        bitcoinUnit == BitcoinUnit.sats
-            ? FormatAmount.sats(payoutAmountSat)
-            : FormatAmount.btc(buyOrder.payoutAmount);
+    final formattedPayOutAmount = bitcoinUnit == BitcoinUnit.sats
+        ? FormatAmount.sats(payoutAmountSat)
+        : FormatAmount.btc(buyOrder.payoutAmount);
     final formattedExchangeRate = FormatAmount.fiat(
       buyOrder.exchangeRateAmount!,
       buyOrder.exchangeRateCurrency!,
     );
     final externalBitcoinWalletLabel = context.loc.buyConfirmExternalWallet;
-    final secureBitcoinWalletLabel = context.loc.buyConfirmSecureWallet;
-    final instantPaymentWalletLabel = context.loc.buyConfirmInstantWallet;
     final selectedWallet = context.select(
       (BuyBloc bloc) => bloc.state.selectedWallet,
     );
-    final payoutMethod =
-        selectedWallet == null
-            ? externalBitcoinWalletLabel
-            : selectedWallet.label ??
-                (selectedWallet.isLiquid
-                    ? instantPaymentWalletLabel
-                    : secureBitcoinWalletLabel);
+    final payoutMethod = selectedWallet == null
+        ? externalBitcoinWalletLabel
+        : selectedWallet.displayLabel(context);
 
     final isConfirmingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isConfirmingOrder,

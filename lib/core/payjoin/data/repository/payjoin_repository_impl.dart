@@ -15,9 +15,9 @@ import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.da
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -75,11 +75,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Future<Payjoin?> getPayjoinById(String payjoinId) async {
-    final (receiver, sender) =
-        await (
-          _localPayjoinDatasource.fetchReceiver(payjoinId),
-          _localPayjoinDatasource.fetchSender(payjoinId),
-        ).wait;
+    final (receiver, sender) = await (
+      _localPayjoinDatasource.fetchReceiver(payjoinId),
+      _localPayjoinDatasource.fetchSender(payjoinId),
+    ).wait;
     if (receiver != null) {
       return receiver.toEntity();
     }
@@ -133,10 +132,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     final inputs = await Future.wait(
       payjoins.map((payjoin) async {
-        final psbt =
-            payjoin is PayjoinReceiverModel
-                ? payjoin.proposalPsbt
-                : (payjoin as PayjoinSenderModel).originalPsbt;
+        final psbt = payjoin is PayjoinReceiverModel
+            ? payjoin.proposalPsbt
+            : (payjoin as PayjoinSenderModel).originalPsbt;
 
         if (psbt == null) {
           return null;
@@ -151,10 +149,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         }
 
         // Extract the spent utxos from the proposal psbt
-        final spentUtxos = await TransactionParsing.extractSpentUtxosFromPsbt(
-          psbt,
-          isTestnet: walletMetadata.isTestnet,
-        );
+        final proposalTx = await BitcoinTx.fromPsbt(psbt);
+        final spentUtxos = proposalTx.inputs
+            .map((input) => (txId: input.txid, vout: input.vout))
+            .toList();
         return spentUtxos;
       }),
     );
@@ -225,22 +223,22 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<List<ElectrumServer>> _getSortedElectrumServersForNetwork(
     bool isTestnet,
   ) async {
-    final (electrumServers, electrumSettings) =
-        await (
-          _electrumServerStorage.fetchAllServers(
-            isTestnet: isTestnet,
-            isLiquid: false,
-          ),
-          _electrumSettingsStorage.fetchByNetwork(
-            ElectrumServerNetwork.fromEnvironment(
-              isTestnet: isTestnet,
-              isLiquid: false,
-            ),
-          ),
-        ).wait;
+    final (electrumServers, electrumSettings) = await (
+      _electrumServerStorage.fetchAllServers(
+        isTestnet: isTestnet,
+        isLiquid: false,
+      ),
+      _electrumSettingsStorage.fetchByNetwork(
+        ElectrumServerNetwork.fromEnvironment(
+          isTestnet: isTestnet,
+          isLiquid: false,
+        ),
+      ),
+    ).wait;
     final customServers = electrumServers.where((s) => s.isCustom).toList();
-    final serversToUse =
-        customServers.isNotEmpty ? customServers : electrumServers;
+    final serversToUse = customServers.isNotEmpty
+        ? customServers
+        : electrumServers;
     if (serversToUse.isEmpty) {
       throw Exception('No Electrum servers available for Bitcoin network.');
     }
@@ -377,10 +375,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       result = await _broadcastPsbt(
         payjoinId: payjoin.id,
         finalizedPsbt: finalizedPsbt,
-        network:
-            payjoinModel.isTestnet
-                ? Network.bitcoinTestnet
-                : Network.bitcoinMainnet,
+        network: payjoinModel.isTestnet
+            ? Network.bitcoinTestnet
+            : Network.bitcoinMainnet,
       );
       log.info(
         'Payjoin proposal broadcasted: ${payjoin.id} with txId: ${result.txId}',
@@ -490,8 +487,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
         hasOwnedInputs: (script) => _bdkWallet.isMine(script, wallet: wallet),
-        hasReceiverOutput:
-            (script) => _bdkWallet.isMine(script, wallet: wallet),
+        hasReceiverOutput: (script) =>
+            _bdkWallet.isMine(script, wallet: wallet),
         inputPairs: inputPairs,
         processPsbt: (psbt) => _bdkWallet.signPsbt(psbt, wallet: wallet),
       );

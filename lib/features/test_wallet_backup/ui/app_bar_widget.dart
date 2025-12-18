@@ -19,8 +19,10 @@ class AppBarWidget extends StatelessWidget {
   @override
   PreferredSizeWidget build(BuildContext context) {
     final wallets = context.watch<TestWalletBackupBloc>().state.wallets;
-    final selectedWallet =
-        context.watch<TestWalletBackupBloc>().state.selectedWallet;
+    final selectedWallet = context
+        .watch<TestWalletBackupBloc>()
+        .state
+        .selectedWallet;
 
     return AppBar(
       leading: IconButton(
@@ -98,7 +100,7 @@ Future<String?> _showWalletPicker({
                     child: BBText(
                       wallet.isDefault
                           ? context.loc.testBackupDefaultWallets
-                          : wallet.displayLabel,
+                          : wallet.displayLabel(context),
                       style: context.font.bodyLarge?.copyWith(
                         fontWeight: .w600,
                         fontSize: 18,

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/label_wallet_address_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/label_address_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
@@ -31,9 +31,8 @@ class ReceiveLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         seedRepository: locator<SeedRepository>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
@@ -59,7 +58,7 @@ class ReceiveLocator {
         watchWalletTransactionByAddressUsecase:
             locator<WatchWalletTransactionByAddressUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
-        labelWalletAddressUsecase: locator<LabelWalletAddressUsecase>(),
+        labelAddressUsecase: locator<LabelAddressUsecase>(),
         getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
         wallet: wallet,
       ),

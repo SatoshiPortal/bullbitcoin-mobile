@@ -42,10 +42,9 @@ class WalletCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wallets = context.select(
-      (WalletBloc bloc) =>
-          localSignersOnly
-              ? bloc.state.wallets.where((w) => w.signsLocally)
-              : bloc.state.wallets,
+      (WalletBloc bloc) => localSignersOnly
+          ? bloc.state.wallets.where((w) => w.signsLocally)
+          : bloc.state.wallets,
     );
     final syncStatus = context.select(
       (WalletBloc bloc) => bloc.state.syncStatus,
@@ -70,7 +69,7 @@ class WalletCards extends StatelessWidget {
           for (final w in wallets) ...[
             WalletCard(
               tagColor: cardDetails(context, w),
-              title: w.displayLabel,
+              title: w.displayLabel(context),
               description: w.walletTypeString,
               balanceSat: w.balanceSat.toInt(),
               isSyncing: syncStatus[w.id] ?? false,

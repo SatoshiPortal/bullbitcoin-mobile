@@ -1,30 +1,30 @@
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/labels/domain/label_error.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 
-class LabelWalletTransactionUsecase {
+class LabelAddressUsecase {
   final LabelRepository _labelRepository;
 
-  LabelWalletTransactionUsecase({required LabelRepository labelRepository})
+  LabelAddressUsecase({required LabelRepository labelRepository})
     : _labelRepository = labelRepository;
 
   Future<void> execute({
-    required WalletTransaction tx,
+    required String address,
     required String label,
+    required String? origin,
   }) async {
     try {
-      final transactionLabel = Label.tx(
-        transactionId: tx.txId,
+      final addressLabel = Label.addr(
+        address: address,
         label: label,
-        origin: tx.walletId,
+        origin: origin,
       );
-      await _labelRepository.store(transactionLabel);
+      await _labelRepository.store(addressLabel);
     } on LabelError {
       rethrow;
     } catch (e) {
       throw LabelError.unexpected(
-        'Failed to create label for transaction ${tx.txId}: $e',
+        'Failed to create label for address $address: $e',
       );
     }
   }

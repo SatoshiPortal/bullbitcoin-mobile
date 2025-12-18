@@ -80,14 +80,12 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
             const Gap(24),
             BlocBuilder<AddressViewBloc, AddressViewState>(
               builder: (context, state) {
-                final addresses =
-                    showChangeAddresses
-                        ? state.changeAddresses
-                        : state.receiveAddresses;
-                final hasReachedEnd =
-                    showChangeAddresses
-                        ? state.hasReachedEndOfChangeAddresses
-                        : state.hasReachedEndOfReceiveAddresses;
+                final addresses = showChangeAddresses
+                    ? state.changeAddresses
+                    : state.receiveAddresses;
+                final hasReachedEnd = showChangeAddresses
+                    ? state.hasReachedEndOfChangeAddresses
+                    : state.hasReachedEndOfReceiveAddresses;
                 if (state.isLoading && addresses.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state.error != null && addresses.isEmpty) {
@@ -127,6 +125,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                           address: address.address,
                           index: address.index,
                           balanceSat: address.balanceSat,
+                          labels: address.labels,
                         );
                       } else {
                         if (state.error != null && index == addresses.length) {

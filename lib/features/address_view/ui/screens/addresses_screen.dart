@@ -104,14 +104,12 @@ class _AddressesScreenState extends State<AddressesScreen> {
             Expanded(
               child: BlocBuilder<AddressViewBloc, AddressViewState>(
                 builder: (context, state) {
-                  final addresses =
-                      showChangeAddresses
-                          ? state.changeAddresses
-                          : state.receiveAddresses;
-                  final hasReachedEnd =
-                      showChangeAddresses
-                          ? state.hasReachedEndOfChangeAddresses
-                          : state.hasReachedEndOfReceiveAddresses;
+                  final addresses = showChangeAddresses
+                      ? state.changeAddresses
+                      : state.receiveAddresses;
+                  final hasReachedEnd = showChangeAddresses
+                      ? state.hasReachedEndOfChangeAddresses
+                      : state.hasReachedEndOfReceiveAddresses;
 
                   if (state.isLoading && addresses.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
@@ -154,6 +152,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                             address: address.address,
                             index: address.index,
                             balanceSat: address.balanceSat,
+                            labels: address.labels,
                           );
                         } else {
                           if (state.error != null &&

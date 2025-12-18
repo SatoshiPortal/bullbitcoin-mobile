@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/labels/label_system.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -29,8 +30,6 @@ Future<void> showTransactionLabelBottomSheet(
       return BlocProvider.value(
         value: detailsCubit,
         child: TransactionLabelBottomsheet(
-          initialNote: initialNote,
-          onEditComplete: onEditComplete,
           distinctLabelsFuture: detailsCubit.fetchDistinctLabels(),
         ),
       );
@@ -41,13 +40,9 @@ Future<void> showTransactionLabelBottomSheet(
 class TransactionLabelBottomsheet extends StatefulWidget {
   const TransactionLabelBottomsheet({
     super.key,
-    this.initialNote,
-    this.onEditComplete,
     required this.distinctLabelsFuture,
   });
 
-  final String? initialNote;
-  final Function(String)? onEditComplete;
   final Future<List<String>> distinctLabelsFuture;
 
   @override
@@ -57,18 +52,8 @@ class TransactionLabelBottomsheet extends StatefulWidget {
 
 class _TransactionLabelBottomsheetState
     extends State<TransactionLabelBottomsheet> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.initialNote ?? '');
-    if (widget.initialNote != null) {
-      context.read<TransactionDetailsCubit>().onNoteChanged(
-        widget.initialNote!,
-      );
-    }
-  }
+  final _controller = TextEditingController();
+  String get trimmedLabel => _controller.text.trim();
 
   @override
   void dispose() {
@@ -76,19 +61,15 @@ class _TransactionLabelBottomsheetState
     super.dispose();
   }
 
-  void _onSuggestionTap(String label) {
-    _controller.text = label;
-    context.read<TransactionDetailsCubit>().onNoteChanged(label);
-  }
-
   Widget _buildSuggestions(List<String> existingLabels) {
     final height = Device.screen.height * 0.05;
-    final currentText = _controller.text.trim().toLowerCase();
+    final currentText = trimmedLabel.toLowerCase();
 
-    final suggestions =
-        existingLabels
-            .where((label) => label.toLowerCase().startsWith(currentText))
-            .toList();
+    final suggestions = existingLabels
+        .where((label) => label.toLowerCase().startsWith(currentText))
+        // don't show system labels
+        .where((label) => !LabelSystem.isSystemLabel(label))
+        .toList();
 
     if (suggestions.isEmpty ||
         (suggestions.length == 1 &&
@@ -106,7 +87,7 @@ class _TransactionLabelBottomsheetState
           final suggestion = suggestions[index];
           return _LabelSuggestionChip(
             label: suggestion,
-            onTap: () => _onSuggestionTap(suggestion),
+            onTap: () => setState(() => _controller.text = suggestion),
           );
         },
       ),
@@ -116,7 +97,6 @@ class _TransactionLabelBottomsheetState
   @override
   Widget build(BuildContext context) {
     final state = context.watch<TransactionDetailsCubit>().state;
-    final isEditing = widget.initialNote != null;
 
     return FutureBuilder<List<String>>(
       future: widget.distinctLabelsFuture,
@@ -137,9 +117,7 @@ class _TransactionLabelBottomsheetState
                 children: [
                   const Spacer(),
                   BBText(
-                    isEditing
-                        ? context.loc.transactionNoteEditTitle
-                        : context.loc.transactionNoteAddTitle,
+                    context.loc.transactionNoteAddTitle,
                     style: context.font.headlineMedium,
                   ),
                   const Spacer(),
@@ -160,41 +138,34 @@ class _TransactionLabelBottomsheetState
               Gap(Device.screen.height * 0.01),
               BBInputText(
                 controller: _controller,
+                value: _controller.text,
                 hint: context.loc.transactionNoteHint,
                 hintStyle: context.font.bodyLarge?.copyWith(
                   color: context.appColors.textMuted,
                 ),
-                maxLines: 2,
-                value: state.note ?? widget.initialNote ?? '',
+                maxLines: 1,
                 maxLength: NoteValidator.maxNoteLength,
-                onChanged: (note) {
-                  context.read<TransactionDetailsCubit>().onNoteChanged(note);
-                },
+                onChanged: (_) => setState(() {}),
               ),
               if (state.err != null) ...[
                 Gap(Device.screen.height * 0.01),
                 BBText(
                   state.err!.toString(),
-                  style: context.font.bodySmall?.copyWith(color: context.appColors.error),
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.error,
+                  ),
                 ),
               ],
               Gap(Device.screen.height * 0.03),
               BBButton.big(
-                label:
-                    isEditing
-                        ? context.loc.transactionNoteUpdateButton
-                        : context.loc.transactionNoteSaveButton,
-                disabled: state.err != null || _controller.text.trim().isEmpty,
+                label: context.loc.transactionNoteSaveButton,
+                disabled: state.err != null || trimmedLabel.isEmpty,
                 onPressed: () {
-                  final validation = NoteValidator.validate(_controller.text);
+                  final validation = NoteValidator.validate(trimmedLabel);
                   if (validation.isValid) {
-                    if (widget.onEditComplete != null) {
-                      widget.onEditComplete!(_controller.text.trim());
-                    } else {
-                      context
-                          .read<TransactionDetailsCubit>()
-                          .saveTransactionNote();
-                    }
+                    context
+                        .read<TransactionDetailsCubit>()
+                        .saveTransactionLabel(trimmedLabel);
                     context.pop();
                   }
                 },

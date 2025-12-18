@@ -14,7 +14,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/transaction_notes_table_item.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -32,39 +32,27 @@ class TransactionDetailsTable extends StatelessWidget {
     final txId = transaction?.txId;
     final isTestnet = transaction?.isTestnet ?? false;
     final isLiquid = transaction?.isLiquid ?? false;
-    final mempoolUrl =
-        txId != null
-            ? isLiquid
-                ? MempoolUrl.liquidTxidUrl(
+    final mempoolUrl = txId != null
+        ? isLiquid
+              ? MempoolUrl.liquidTxidUrl(
                   transaction?.walletTransaction?.unblindedUrl ?? '',
                   isTestnet: isTestnet,
                 )
-                : MempoolUrl.bitcoinTxidUrl(txId, isTestnet: isTestnet)
-            : null;
+              : MempoolUrl.bitcoinTxidUrl(txId, isTestnet: isTestnet)
+        : null;
     final labels = transaction?.labels ?? [];
     final wallet = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.wallet,
     );
-    final walletLabel =
-        wallet != null
-            ? wallet.label ??
-                (wallet.isLiquid
-                    ? context.loc.walletNameInstantPayments
-                    : context.loc.walletNameSecureBitcoin)
-            : '';
+    final walletLabel = wallet != null ? wallet.displayLabel(context) : '';
 
     final counterpartWallet = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.counterpartWallet,
     );
-    final counterpartWalletLabel =
-        counterpartWallet != null
-            ? counterpartWallet.label ??
-                (counterpartWallet.isLiquid == true
-                    ? context.loc.walletNameInstantPayments
-                    : context.loc.walletNameSecureBitcoin)
-            : '';
-    final addressLabels =
-        transaction?.walletTransaction?.toAddressLabels?.join(', ') ?? '';
+    final counterpartWalletLabel = counterpartWallet != null
+        ? counterpartWallet.displayLabel(context)
+        : '';
+    final addressLabels = transaction?.walletTransaction?.toAddressLabels ?? [];
     final isOrder = transaction?.isOrder ?? false;
     final walletTransaction = transaction?.walletTransaction;
     final bitcoinUnit = context.select(
@@ -105,82 +93,80 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           ),
 
-        if (labels.isNotEmpty) TransactionNotesTableItem(notes: labels),
+        if (labels.isNotEmpty)
+          LabelsTableItem(
+            title: context.loc.transactionNotesLabel,
+            labels: labels,
+          ),
         if (walletLabel.isNotEmpty)
           DetailsTableItem(
-            label:
-                transaction?.isIncoming == true
-                    ? context.loc.transactionDetailLabelToWallet
-                    : context.loc.transactionDetailLabelFromWallet,
+            label: transaction?.isIncoming == true
+                ? context.loc.transactionDetailLabelToWallet
+                : context.loc.transactionDetailLabelFromWallet,
             displayValue: walletLabel,
           ),
         if (counterpartWalletLabel.isNotEmpty)
           DetailsTableItem(
-            label:
-                transaction?.isOutgoing == true
-                    ? context.loc.transactionDetailLabelToWallet
-                    : context.loc.transactionDetailLabelFromWallet,
+            label: transaction?.isOutgoing == true
+                ? context.loc.transactionDetailLabelToWallet
+                : context.loc.transactionDetailLabelFromWallet,
             displayValue: counterpartWalletLabel,
           ),
         if (toAddress != null)
           DetailsTableItem(
             label:
                 swap != null &&
-                        swap.receiveAddress != null &&
-                        swap.receiveAddress!.isNotEmpty
-                    ? context.loc.transactionDetailLabelRecipientAddress
-                    : context.loc.transactionDetailLabelAddress,
+                    swap.receiveAddress != null &&
+                    swap.receiveAddress!.isNotEmpty
+                ? context.loc.transactionDetailLabelRecipientAddress
+                : context.loc.transactionDetailLabelAddress,
             displayValue: StringFormatting.truncateMiddle(toAddress),
             copyValue: toAddress,
           ),
         if (addressLabels.isNotEmpty)
-          DetailsTableItem(
-            label: context.loc.transactionDetailLabelAddressNotes,
-            displayValue: addressLabels,
+          LabelsTableItem(
+            title: context.loc.transactionDetailLabelAddressNotes,
+            labels: addressLabels,
           ),
         // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
         // to be able to use the CurrencyText widget instead of having to format the amount here.
         if (!isOrder)
           DetailsTableItem(
-            label:
-                transaction?.isIncoming == true
-                    ? context.loc.transactionDetailLabelAmountReceived
-                    : context.loc.transactionDetailLabelAmountSent,
-            displayValue:
-                bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(
+            label: transaction?.isIncoming == true
+                ? context.loc.transactionDetailLabelAmountReceived
+                : context.loc.transactionDetailLabelAmountSent,
+            displayValue: bitcoinUnit == BitcoinUnit.sats
+                ? FormatAmount.sats(
+                    transaction?.isIncoming == true
+                        ? amountReceived
+                        : amountSent,
+                  ).toUpperCase()
+                : FormatAmount.btc(
+                    ConvertAmount.satsToBtc(
                       transaction?.isIncoming == true
                           ? amountReceived
                           : amountSent,
-                    ).toUpperCase()
-                    : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(
-                        transaction?.isIncoming == true
-                            ? amountReceived
-                            : amountSent,
-                      ),
-                    ).toUpperCase(),
+                    ),
+                  ).toUpperCase(),
           ),
         if (walletTransaction != null) ...[
           if (walletTransaction.isToSelf == true)
             DetailsTableItem(
               label: context.loc.transactionDetailLabelAmountReceived,
-              displayValue:
-                  bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(amountReceived).toUpperCase()
-                      : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(amountReceived),
-                      ).toUpperCase(),
+              displayValue: bitcoinUnit == BitcoinUnit.sats
+                  ? FormatAmount.sats(amountReceived).toUpperCase()
+                  : FormatAmount.btc(
+                      ConvertAmount.satsToBtc(amountReceived),
+                    ).toUpperCase(),
             ),
           if (transaction?.isOutgoing == true && swap == null)
             DetailsTableItem(
               label: context.loc.transactionDetailLabelTransactionFee,
-              displayValue:
-                  bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(txFee ?? 0).toUpperCase()
-                      : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(txFee ?? 0),
-                      ).toUpperCase(),
+              displayValue: bitcoinUnit == BitcoinUnit.sats
+                  ? FormatAmount.sats(txFee ?? 0).toUpperCase()
+                  : FormatAmount.btc(
+                      ConvertAmount.satsToBtc(txFee ?? 0),
+                    ).toUpperCase(),
             ),
           DetailsTableItem(
             label: context.loc.transactionDetailLabelStatus,
@@ -212,25 +198,25 @@ class TransactionDetailsTable extends StatelessWidget {
                   label: context.loc.transactionDetailLabelPayinAmount,
                   displayValue:
                       order.payinCurrency == 'LBTC' ||
-                              order.payinCurrency == 'BTC'
-                          ? bitcoinUnit == BitcoinUnit.sats
-                              ? FormatAmount.sats(
+                          order.payinCurrency == 'BTC'
+                      ? bitcoinUnit == BitcoinUnit.sats
+                            ? FormatAmount.sats(
                                 ConvertAmount.btcToSats(order.payinAmount),
                               )
-                              : FormatAmount.btc(order.payinAmount)
-                          : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                            : FormatAmount.btc(order.payinAmount)
+                      : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
                 ),
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue:
                       order.payoutCurrency == 'LBTC' ||
-                              order.payoutCurrency == 'BTC'
-                          ? bitcoinUnit == BitcoinUnit.sats
-                              ? FormatAmount.sats(
+                          order.payoutCurrency == 'BTC'
+                      ? bitcoinUnit == BitcoinUnit.sats
+                            ? FormatAmount.sats(
                                 ConvertAmount.btcToSats(order.payoutAmount),
                               )
-                              : FormatAmount.btc(order.payoutAmount)
-                          : '${order.payoutAmount} ${order.payoutCurrency}',
+                            : FormatAmount.btc(order.payoutAmount)
+                      : '${order.payoutAmount} ${order.payoutCurrency}',
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
@@ -288,12 +274,11 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinAmount,
-                  displayValue:
-                      bitcoinUnit == BitcoinUnit.sats
-                          ? FormatAmount.sats(payinAmountSat).toUpperCase()
-                          : FormatAmount.btc(
-                            ConvertAmount.satsToBtc(payinAmountSat),
-                          ).toUpperCase(),
+                  displayValue: bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(payinAmountSat).toUpperCase()
+                      : FormatAmount.btc(
+                          ConvertAmount.satsToBtc(payinAmountSat),
+                        ).toUpperCase(),
                 ),
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
@@ -723,24 +708,22 @@ class TransactionDetailsTable extends StatelessWidget {
         // Transfer info
         if (swap != null) ...[
           DetailsTableItem(
-            label:
-                swap.isChainSwap
-                    ? context.loc.transactionDetailLabelTransferId
-                    : context.loc.transactionDetailLabelSwapId,
+            label: swap.isChainSwap
+                ? context.loc.transactionDetailLabelTransferId
+                : context.loc.transactionDetailLabelSwapId,
             displayValue: swap.id,
             copyValue: swap.id,
           ),
           DetailsTableItem(
-            label:
-                swap.isChainSwap
-                    ? context.loc.transactionDetailLabelTransferStatus
-                    : context.loc.transactionDetailLabelSwapStatus,
+            label: swap.isChainSwap
+                ? context.loc.transactionDetailLabelTransferStatus
+                : context.loc.transactionDetailLabelSwapStatus,
             displayValue:
                 (swap.isChainSwap && (swap as ChainSwap).refundTxid != null ||
-                        swap.isLnSendSwap &&
-                            (swap as LnSendSwap).refundTxid != null)
-                    ? context.loc.transactionDetailLabelRefunded
-                    : swap.status.displayName(context),
+                    swap.isLnSendSwap &&
+                        (swap as LnSendSwap).refundTxid != null)
+                ? context.loc.transactionDetailLabelRefunded
+                : swap.status.displayName(context),
             expandableChild: BBText(
               swap.getDisplayMessage(context),
               style: context.font.bodySmall?.copyWith(
@@ -763,10 +746,9 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           if (swapCounterpartTxId != null)
             DetailsTableItem(
-              label:
-                  counterpartWallet?.isLiquid == true
-                      ? context.loc.transactionDetailLabelLiquidTxId
-                      : context.loc.transactionDetailLabelBitcoinTxId,
+              label: counterpartWallet?.isLiquid == true
+                  ? context.loc.transactionDetailLabelLiquidTxId
+                  : context.loc.transactionDetailLabelBitcoinTxId,
               displayValue: StringFormatting.truncateMiddle(
                 swapCounterpartTxId,
               ),
@@ -776,124 +758,104 @@ class TransactionDetailsTable extends StatelessWidget {
             if (swap.isChainSwap) ...[
               DetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
-                displayValue:
-                    bitcoinUnit == BitcoinUnit.sats
-                        ? FormatAmount.sats(
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(
+                        (swap as ChainSwap).paymentAmount,
+                      ).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(
                           (swap as ChainSwap).paymentAmount,
-                        ).toUpperCase()
-                        : FormatAmount.btc(
-                          ConvertAmount.satsToBtc(
-                            (swap as ChainSwap).paymentAmount,
-                          ),
-                        ).toUpperCase(),
+                        ),
+                      ).toUpperCase(),
               ),
               if (swap.receieveAmount != null)
                 DetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayValue:
-                      bitcoinUnit == BitcoinUnit.sats
-                          ? FormatAmount.sats(
-                            swap.receieveAmount!,
-                          ).toUpperCase()
-                          : FormatAmount.btc(
-                            ConvertAmount.satsToBtc(swap.receieveAmount!),
-                          ).toUpperCase(),
+                  displayValue: bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(swap.receieveAmount!).toUpperCase()
+                      : FormatAmount.btc(
+                          ConvertAmount.satsToBtc(swap.receieveAmount!),
+                        ).toUpperCase(),
                 ),
               if (swap.fees!.lockupFee != null)
                 DetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
-                  displayValue:
-                      bitcoinUnit == BitcoinUnit.sats
-                          ? FormatAmount.sats(
-                            swap.fees!.lockupFee!,
-                          ).toUpperCase()
-                          : FormatAmount.btc(
-                            ConvertAmount.satsToBtc(swap.fees!.lockupFee!),
-                          ).toUpperCase(),
+                  displayValue: bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(swap.fees!.lockupFee!).toUpperCase()
+                      : FormatAmount.btc(
+                          ConvertAmount.satsToBtc(swap.fees!.lockupFee!),
+                        ).toUpperCase(),
                 ),
             ] else if (swap.isLnSendSwap) ...[
               DetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
-                displayValue:
-                    bitcoinUnit == BitcoinUnit.sats
-                        ? FormatAmount.sats(
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(
+                        (swap as LnSendSwap).paymentAmount,
+                      ).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(
                           (swap as LnSendSwap).paymentAmount,
-                        ).toUpperCase()
-                        : FormatAmount.btc(
-                          ConvertAmount.satsToBtc(
-                            (swap as LnSendSwap).paymentAmount,
-                          ),
-                        ).toUpperCase(),
+                        ),
+                      ).toUpperCase(),
               ),
               if (swap.receieveAmount != null)
                 DetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayValue:
-                      bitcoinUnit == BitcoinUnit.sats
-                          ? FormatAmount.sats(
-                            swap.receieveAmount!,
-                          ).toUpperCase()
-                          : FormatAmount.btc(
-                            ConvertAmount.satsToBtc(swap.receieveAmount!),
-                          ).toUpperCase(),
+                  displayValue: bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(swap.receieveAmount!).toUpperCase()
+                      : FormatAmount.btc(
+                          ConvertAmount.satsToBtc(swap.receieveAmount!),
+                        ).toUpperCase(),
                 ),
               if (swap.fees!.lockupFee != null)
                 DetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
-                  displayValue:
-                      bitcoinUnit == BitcoinUnit.sats
-                          ? FormatAmount.sats(
-                            swap.fees!.lockupFee!,
-                          ).toUpperCase()
-                          : FormatAmount.btc(
-                            ConvertAmount.satsToBtc(swap.fees!.lockupFee!),
-                          ).toUpperCase(),
+                  displayValue: bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(swap.fees!.lockupFee!).toUpperCase()
+                      : FormatAmount.btc(
+                          ConvertAmount.satsToBtc(swap.fees!.lockupFee!),
+                        ).toUpperCase(),
                 ),
             ] else if (swap.isLnReceiveSwap) ...[
               if (swap.sendAmount != null)
                 DetailsTableItem(
                   label: context.loc.transactionLabelSendAmount,
-                  displayValue:
-                      bitcoinUnit == BitcoinUnit.sats
-                          ? FormatAmount.sats(swap.sendAmount!).toUpperCase()
-                          : FormatAmount.btc(
-                            ConvertAmount.satsToBtc(swap.sendAmount!),
-                          ).toUpperCase(),
+                  displayValue: bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(swap.sendAmount!).toUpperCase()
+                      : FormatAmount.btc(
+                          ConvertAmount.satsToBtc(swap.sendAmount!),
+                        ).toUpperCase(),
                 ),
               if (swap.receieveAmount != null)
                 DetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayValue:
-                      bitcoinUnit == BitcoinUnit.sats
-                          ? FormatAmount.sats(
-                            swap.receieveAmount!,
-                          ).toUpperCase()
-                          : FormatAmount.btc(
-                            ConvertAmount.satsToBtc(swap.receieveAmount!),
-                          ).toUpperCase(),
+                  displayValue: bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(swap.receieveAmount!).toUpperCase()
+                      : FormatAmount.btc(
+                          ConvertAmount.satsToBtc(swap.receieveAmount!),
+                        ).toUpperCase(),
                 ),
             ],
           ],
           if (swap.fees != null)
             DetailsTableItem(
-              label:
-                  swap.type.isChain
-                      ? context.loc.transactionDetailLabelTransferFees
-                      : context.loc.transactionDetailLabelSwapFees,
-              displayValue:
-                  bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(
+              label: swap.type.isChain
+                  ? context.loc.transactionDetailLabelTransferFees
+                  : context.loc.transactionDetailLabelSwapFees,
+              displayValue: bitcoinUnit == BitcoinUnit.sats
+                  ? FormatAmount.sats(
+                      swap.isLnReceiveSwap
+                          ? swap.fees!.totalFees(swap.amountSat)
+                          : swap.fees!.totalFeesMinusLockup(swap.amountSat),
+                    ).toUpperCase()
+                  : FormatAmount.btc(
+                      ConvertAmount.satsToBtc(
                         swap.isLnReceiveSwap
                             ? swap.fees!.totalFees(swap.amountSat)
                             : swap.fees!.totalFeesMinusLockup(swap.amountSat),
-                      ).toUpperCase()
-                      : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(
-                          swap.isLnReceiveSwap
-                              ? swap.fees!.totalFees(swap.amountSat)
-                              : swap.fees!.totalFeesMinusLockup(swap.amountSat),
-                        ),
-                      ).toUpperCase(),
+                      ),
+                    ).toUpperCase(),
               expandableChild: Column(
                 children: [
                   const Gap(4),
@@ -953,12 +915,12 @@ class TransactionDetailsTable extends StatelessWidget {
             label: context.loc.transactionDetailLabelPayjoinStatus,
             displayValue:
                 payjoin.isCompleted ||
-                        (payjoin.status == PayjoinStatus.proposed &&
-                            walletTransaction != null)
-                    ? context.loc.transactionDetailLabelPayjoinCompleted
-                    : payjoin.isExpired
-                    ? context.loc.transactionDetailLabelPayjoinExpired
-                    : payjoin.status.name,
+                    (payjoin.status == PayjoinStatus.proposed &&
+                        walletTransaction != null)
+                ? context.loc.transactionDetailLabelPayjoinCompleted
+                : payjoin.isExpired
+                ? context.loc.transactionDetailLabelPayjoinExpired
+                : payjoin.status.name,
           ),
           DetailsTableItem(
             label: context.loc.transactionDetailLabelPayjoinCreationTime,
