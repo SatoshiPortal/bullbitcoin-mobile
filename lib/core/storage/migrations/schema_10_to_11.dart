@@ -44,19 +44,42 @@ class Schema10To11 {
     const fulcrumUrl = 'ssl://fulcrum.bullbitcoin.com:50002';
     const fulcrumUrlWithoutProtocol = 'fulcrum.bullbitcoin.com:50002';
 
-    await m.database.customUpdate(
-      'DELETE FROM electrum_servers WHERE url = ? OR url = ?',
-      variables: [
-        Variable<String>(fulcrumUrl),
-        Variable<String>(fulcrumUrlWithoutProtocol),
-      ],
-      updates: {electrumServers},
-    );
+    // Delete any existing custom entries for the fulcrum server
+    await (m.database.delete(electrumServers)..where(
+          (e) =>
+              electrumServers.url.equals(fulcrumUrl) |
+              electrumServers.url.equals(fulcrumUrlWithoutProtocol),
+        ))
+        .go();
 
-    await m.database.customUpdate(
-      'UPDATE electrum_servers SET priority = priority + 1 WHERE is_testnet = 0 AND is_liquid = 0',
-      updates: {electrumServers},
-    );
+    // Get all Bitcoin mainnet servers and update their priority
+    final serversToUpdate =
+        await (m.database.select(electrumServers)..where(
+              (e) =>
+                  electrumServers.isTestnet.equals(0) &
+                  electrumServers.isLiquid.equals(0),
+            ))
+            .get();
+
+    for (final server in serversToUpdate) {
+      final url = server.read('url') as String;
+      final isTestnet = server.read('is_testnet') as bool;
+      final isLiquid = server.read('is_liquid') as bool;
+      final priority = server.read('priority') as int;
+      final isCustom = server.read('is_custom') as bool;
+
+      await m.database
+          .into(electrumServers)
+          .insertOnConflictUpdate(
+            RawValuesInsertable({
+              'url': Constant(url),
+              'is_testnet': Constant(isTestnet),
+              'is_liquid': Constant(isLiquid),
+              'priority': Constant(priority + 1),
+              'is_custom': Constant(isCustom),
+            }),
+          );
+    }
 
     await m.database
         .into(electrumServers)
