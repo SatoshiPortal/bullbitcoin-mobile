@@ -55,25 +55,37 @@ class CommonCoinSelectionBottomSheet extends StatelessWidget {
               Center(
                 child: BBText(
                   "Select amount",
-                  style: context.font.headlineMedium,
+                  style: context.font.headlineMedium?.copyWith(
+                    color: context.appColors.secondary,
+                  ),
                 ),
               ),
               Positioned(
                 right: 0,
                 child: IconButton(
                   iconSize: 24,
-                  icon: const Icon(Icons.close),
+                  icon: Icon(
+                    Icons.close,
+                    color: context.appColors.secondary,
+                  ),
                   onPressed: context.pop,
                 ),
               ),
             ],
           ),
           const Gap(32),
-          BBText(selectedUtxoTotal, style: context.font.displaySmall),
+          BBText(
+            selectedUtxoTotal,
+            style: context.font.displaySmall?.copyWith(
+              color: context.appColors.secondary,
+            ),
+          ),
           const Gap(8),
           BBText(
             'Amount requested: $amountToSend',
-            style: context.font.bodySmall,
+            style: context.font.bodySmall?.copyWith(
+              color: context.appColors.secondary,
+            ),
           ),
           const Gap(24),
           ListView.separated(
@@ -175,7 +187,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                         BBText(
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
-                            color: context.appColors.outlineVariant,
+                            color: context.appColors.secondary,
                             fontWeight: .w500,
                           ),
                         ),
@@ -193,7 +205,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                   BBText(
                     '~$fiatEquivalent',
                     style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.outlineVariant,
+                      color: context.appColors.secondary,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -205,7 +217,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                       BBText(
                         'Address: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.appColors.surfaceContainer,
+                          color: context.appColors.secondary,
                         ),
                       ),
                       Expanded(
@@ -219,7 +231,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                       BBText(
                         'Type: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.appColors.surfaceContainer,
+                          color: context.appColors.secondary,
                         ),
                       ),
                       BBText(

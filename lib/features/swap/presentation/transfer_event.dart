@@ -17,4 +17,13 @@ sealed class TransferEvent with _$TransferEvent {
       TransferExternalAddressChanged;
   const factory TransferEvent.receiveExactAmountToggled(bool enabled) =
       TransferReceiveExactAmountToggled;
+  const factory TransferEvent.replaceByFeeChanged(bool replaceByFee) =
+      TransferReplaceByFeeChanged;
+  const factory TransferEvent.utxoSelected(WalletUtxo utxo) =
+      TransferUtxoSelected;
+  const factory TransferEvent.loadUtxos() = TransferLoadUtxos;
+  const factory TransferEvent.feeOptionSelected(FeeSelection feeSelection) =
+      TransferFeeOptionSelected;
+  const factory TransferEvent.customFeeChanged(NetworkFee fee) =
+      TransferCustomFeeChanged;
 }
