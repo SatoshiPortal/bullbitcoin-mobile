@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -606,17 +605,8 @@ class BdkWalletDatasource {
   }
 
   Future<void> delete({required WalletModel wallet}) async {
-    try {
-      final dbPath = await BdkFacade.getWalletDbPath(wallet);
-      final dbFile = File(dbPath);
-
-      if (!await dbFile.exists()) throw WalletNotFoundError();
-
-      await dbFile.delete();
-      log.fine('Deleted wallet ${wallet.id} BDK database');
-    } catch (e) {
-      rethrow;
-    }
+    await BdkFacade.delete(wallet);
+    log.fine('Deleted wallet ${wallet.id} BDK database');
   }
 }
 
@@ -630,8 +620,4 @@ class UnsupportedBdkNetworkException extends BullException {
 
 class NoSpendableUtxoException extends BullException {
   NoSpendableUtxoException(super.message);
-}
-
-class WalletNotFoundError extends BullException {
-  WalletNotFoundError() : super('Wallet not found in database');
 }

@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_settings_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 
@@ -121,13 +124,18 @@ class BdkFacade {
     return wallet;
   }
 
-  static Future<String> getWalletDbPath(WalletModel walletModel) async {
-    return _getDbPath(walletModel.dbName);
-  }
-
   static Future<String> _getDbPath(String dbName) async {
     final dir = await getApplicationDocumentsDirectory();
     return '${dir.path}/$dbName';
+  }
+
+  static Future<void> delete(WalletModel walletModel) async {
+    final dbPath = await _getDbPath(walletModel.dbName);
+    final dbFile = File(dbPath);
+
+    if (!await dbFile.exists()) WalletError.notFound(walletModel.id);
+
+    await dbFile.delete();
   }
 
   static Future<void> sync(

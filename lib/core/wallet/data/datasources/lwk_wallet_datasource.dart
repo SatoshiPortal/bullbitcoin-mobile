@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -559,17 +558,8 @@ class LwkWalletDatasource {
   }
 
   Future<void> delete({required WalletModel wallet}) async {
-    try {
-      final dbPath = await LwkFacade.getWalletDbPath(wallet);
-      final dbFile = File(dbPath);
-
-      if (!await dbFile.exists()) throw WalletNotFoundError();
-
-      await dbFile.delete();
-      log.fine('Deleted wallet ${wallet.id} LWK database');
-    } catch (e) {
-      rethrow;
-    }
+    await LwkFacade.delete(wallet);
+    log.fine('Deleted wallet ${wallet.id} LWK database');
   }
 }
 
@@ -588,8 +578,4 @@ extension NetworkX on Network {
 
 class UnsupportedLwkNetworkException extends BullException {
   UnsupportedLwkNetworkException(super.message);
-}
-
-class WalletNotFoundError extends BullException {
-  WalletNotFoundError() : super('Wallet not found in database');
 }
