@@ -2746,7 +2746,7 @@
   "@walletButtonSend": {
     "description": "Button label to send funds"
   },
-  "walletArkInstantPayments": "Ark Välittömät maksut",
+  "walletArkInstantPayments": "Välittömät Ark-maksut",
   "@walletArkInstantPayments": {
     "description": "Title for Ark wallet card"
   },
@@ -4719,7 +4719,7 @@
   "@arkRedeemButton": {
     "description": "Confirm button to execute collaborative redeem"
   },
-  "arkInstantPayments": "Ark Välittömät maksut",
+  "arkInstantPayments": "Välittömät Ark-maksut",
   "@arkInstantPayments": {
     "description": "Main page title in top bar"
   },
@@ -4959,7 +4959,7 @@
   "@arkSettled": {
     "description": "Label for settled balance in Ark balance breakdown"
   },
-  "arkAvailable": "Saatavilla",
+  "arkAvailable": "Käytettävissä",
   "@arkAvailable": {
     "description": "Label for available balance in Ark balance breakdown"
   },
@@ -8963,7 +8963,7 @@
   "@importWatchOnlyFingerprint": {
     "description": "Label for wallet fingerprint field"
   },
-  "importWatchOnlyDerivationPath": "Johdannaispolku",
+  "importWatchOnlyDerivationPath": "Derivointipolku",
   "@importWatchOnlyDerivationPath": {
     "description": "Label for derivation path field"
   },
@@ -8987,7 +8987,7 @@
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
   },
-  "importWatchOnlySelectDerivation": "Valitse johdannainen",
+  "importWatchOnlySelectDerivation": "Valitse derivointitapa",
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
@@ -9019,11 +9019,11 @@
   "@importWatchOnlyExtendedPublicKey": {
     "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
-  "importWatchOnlyDisclaimerTitle": "Johdannaispolkuvaroitus",
+  "importWatchOnlyDisclaimerTitle": "Derivointipolkuvaroitus",
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
   },
-  "importWatchOnlyDisclaimerDescription": "Varmista, että valitsemasi johdannaispolku vastaa sitä, jolla annettu xpub on tuotettu, tarkistamalla ennen käyttöä ensimmäinen lompakosta johdettu osoite. Väärän polun käyttäminen voi johtaa varojen menetykseen.",
+  "importWatchOnlyDisclaimerDescription": "Varmista, että valitsemasi derivointipolku vastaa sitä, jolla annettu xpub on tuotettu. Tarkista ennen käyttöä ensimmäinen lompakosta johdettu osoite. Väärän polun käyttäminen voi johtaa varojen menetykseen.",
   "@importWatchOnlyDisclaimerDescription": {
     "description": "Description explaining derivation path matching requirement"
   },
@@ -9031,7 +9031,7 @@
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
   },
-  "bip85ExperimentalWarning": "Kokeellinen\nVarmuuskopioi johdannaispolut käsin",
+  "bip85ExperimentalWarning": "Kokeellinen\nVarmuuskopioi derivointipolut käsin",
   "@bip85ExperimentalWarning": {
     "description": "Warning message about experimental feature"
   },
@@ -10130,7 +10130,7 @@
   "@arkSetupTitle": {
     "description": "AppBar title for Ark setup screen"
   },
-  "arkSetupExperimentalWarning": "Ark on yhä kokeellinen.\n\nArk-lompakkosi johdetaan päälompakkosi siemenlauseesta. Erillistä varmuuskopiota ei tarvita, nykyinen lompakon varmuuskopio palauttaa myös Ark-varasi.\n\nJatkamalla hyväksyt Arkin kokeellisen luonteen ja riskin varojen menettämisestä.\n\nKehittäjähuomautus: Ark-salasana johdetaan päälompakon siemenestä mielivaltaisella BIP-85-derivaatiolla (indeksi 11811).",
+  "arkSetupExperimentalWarning": "Ark on vielä kokeellinen teknologia.\n\nArk-lompakkosi johdetaan päälompakkosi siemenlauseesta. Erillistä varmuuskopiota ei tarvita, koska nykyisen lompakon varmuuskopio palauttaa myös Ark-varasi.\n\nJatkamalla hyväksyt Arkin kokeellisen luonteen ja riskin varojen menettämisestä.\n\nKehittäjähuomautus: Ark-salasana johdetaan päälompakon siemenestä mielivaltaisella BIP-85-derivaatiolla (indeksi 11811).",
   "@arkSetupExperimentalWarning": {
     "description": "Ark experimental warning text"
   },
