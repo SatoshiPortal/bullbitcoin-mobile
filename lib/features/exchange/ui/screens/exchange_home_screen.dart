@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
+import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -86,6 +87,9 @@ class ExchangeHomeScreen extends StatelessWidget {
                   BlocBuilder<PriceChartCubit, PriceChartState>(
                     builder: (context, priceChartState) {
                       final showChart = priceChartState.showChart;
+                      final hasApiKey = context.select(
+                        (ExchangeCubit cubit) => cubit.state.apiKeyException == null,
+                      );
 
                       return SliverAppBar(
                         backgroundColor: Colors.transparent,
@@ -96,22 +100,59 @@ class ExchangeHomeScreen extends StatelessWidget {
                         title: showChart ? null : const TopBarBullLogo(),
                         leading: Padding(
                           padding: const EdgeInsets.only(left: 16.0),
-                          child: IconButton(
-                            icon: Icon(
-                              showChart ? Icons.arrow_back : Icons.show_chart,
-                              color: context.appColors.onPrimary,
-                              size: 24,
-                            ),
-                            onPressed: () {
-                              if (showChart) {
-                                context.read<PriceChartCubit>().hideChart();
-                              } else {
-                                context.read<PriceChartCubit>().showChart();
-                              }
-                            },
-                          ),
+                          child: showChart
+                              ? IconButton(
+                                  icon: Icon(
+                                    Icons.arrow_back,
+                                    color: context.appColors.onPrimary,
+                                    size: 24,
+                                  ),
+                                  onPressed: () {
+                                    context.read<PriceChartCubit>().hideChart();
+                                  },
+                                )
+                              : SizedBox(
+                                  width: hasApiKey ? 96 : 48,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        visualDensity: VisualDensity.compact,
+                                        icon: Icon(
+                                          Icons.show_chart,
+                                          color: context.appColors.onPrimary,
+                                          size: 24,
+                                        ),
+                                        onPressed: () {
+                                          context
+                                              .read<PriceChartCubit>()
+                                              .showChart();
+                                        },
+                                      ),
+                                      if (hasApiKey)
+                                        IconButton(
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                          visualDensity: VisualDensity.compact,
+                                          icon: Icon(
+                                            Icons.chat_bubble_outline,
+                                            color: context.appColors.onPrimary,
+                                            size: 24,
+                                          ),
+                                          onPressed: () {
+                                            context.pushNamed(
+                                              ExchangeSupportChatRoute
+                                                  .supportChat.name,
+                                            );
+                                          },
+                                        ),
+                                    ],
+                                  ),
+                                ),
                         ),
-                        leadingWidth: 56,
+                        leadingWidth: showChart ? 56 : (hasApiKey ? 112 : 56),
                         actionsIconTheme: IconThemeData(
                           color: context.appColors.onPrimary,
                           size: 24,

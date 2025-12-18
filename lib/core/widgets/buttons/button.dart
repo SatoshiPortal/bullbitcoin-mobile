@@ -96,6 +96,8 @@ class BBButton extends StatelessWidget {
                     style: textStyle ?? context.font.headlineLarge,
                     color: textColor,
                   ),
+                ] else if (label.isEmpty) ...[
+                  image,
                 ] else ...[
                   if (iconFirst) ...[
                     image,

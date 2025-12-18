@@ -1,17 +1,20 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/price_local_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/price_remote_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_funding_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/price_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_funding_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/price_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
@@ -22,10 +25,13 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_det
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_price_history_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
@@ -82,6 +88,24 @@ class ExchangeLocator {
 
     locator.registerLazySingleton<PriceLocalDatasource>(
       () => PriceLocalDatasource(db: locator<SqliteDatabase>()),
+    );
+
+    locator.registerLazySingleton<ExchangeSupportChatDatasource>(
+      () => ExchangeSupportChatDatasource(
+        bullbitcoinApiHttpClient: Dio(
+          BaseOptions(baseUrl: ApiServiceConstants.bbApiUrl),
+        ),
+      ),
+      instanceName: 'mainnetExchangeSupportChatDatasource',
+    );
+
+    locator.registerLazySingleton<ExchangeSupportChatDatasource>(
+      () => ExchangeSupportChatDatasource(
+        bullbitcoinApiHttpClient: Dio(
+          BaseOptions(baseUrl: ApiServiceConstants.bbApiTestUrl),
+        ),
+      ),
+      instanceName: 'testnetExchangeSupportChatDatasource',
     );
   }
 
@@ -177,6 +201,34 @@ class ExchangeLocator {
         remoteDatasource: locator<PriceRemoteDatasource>(),
         localDatasource: locator<PriceLocalDatasource>(),
       ),
+    );
+
+    locator.registerLazySingleton<ExchangeSupportChatRepository>(
+      () => ExchangeSupportChatRepositoryImpl(
+        datasource: locator<ExchangeSupportChatDatasource>(
+          instanceName: 'mainnetExchangeSupportChatDatasource',
+        ),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'mainnetExchangeApiDatasource',
+        ),
+        isTestnet: false,
+      ),
+      instanceName: 'mainnetExchangeSupportChatRepository',
+    );
+
+    locator.registerLazySingleton<ExchangeSupportChatRepository>(
+      () => ExchangeSupportChatRepositoryImpl(
+        datasource: locator<ExchangeSupportChatDatasource>(
+          instanceName: 'testnetExchangeSupportChatDatasource',
+        ),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'testnetExchangeApiDatasource',
+        ),
+        isTestnet: true,
+      ),
+      instanceName: 'testnetExchangeSupportChatRepository',
     );
   }
 
@@ -374,6 +426,42 @@ class ExchangeLocator {
       ),
     );
 
+    locator.registerFactory<GetSupportChatMessagesUsecase>(
+      () => GetSupportChatMessagesUsecase(
+        mainnetRepository: locator<ExchangeSupportChatRepository>(
+          instanceName: 'mainnetExchangeSupportChatRepository',
+        ),
+        testnetRepository: locator<ExchangeSupportChatRepository>(
+          instanceName: 'testnetExchangeSupportChatRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<SendSupportChatMessageUsecase>(
+      () => SendSupportChatMessageUsecase(
+        mainnetRepository: locator<ExchangeSupportChatRepository>(
+          instanceName: 'mainnetExchangeSupportChatRepository',
+        ),
+        testnetRepository: locator<ExchangeSupportChatRepository>(
+          instanceName: 'testnetExchangeSupportChatRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<GetSupportChatMessageAttachmentUsecase>(
+      () => GetSupportChatMessageAttachmentUsecase(
+        mainnetRepository: locator<ExchangeSupportChatRepository>(
+          instanceName: 'mainnetExchangeSupportChatRepository',
+        ),
+        testnetRepository: locator<ExchangeSupportChatRepository>(
+          instanceName: 'testnetExchangeSupportChatRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
     locator.registerFactory<LabelExchangeOrdersUsecase>(
       () => LabelExchangeOrdersUsecase(
         labelDatasource: locator<LabelDatasource>(),
@@ -381,5 +469,11 @@ class ExchangeLocator {
         listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
       ),
     );
+  }
+
+  static void setup(GetIt locator) {
+    registerDatasources(locator);
+    registerRepositories(locator);
+    registerUseCases(locator);
   }
 }

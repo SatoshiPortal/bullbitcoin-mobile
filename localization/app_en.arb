@@ -11386,6 +11386,34 @@
   "@exchangeHomeWithdrawButton": {
     "description": "Button label for withdrawing funds from the exchange"
   },
+  "exchangeSupportChatTitle": "Support Chat",
+  "@exchangeSupportChatTitle": {
+    "description": "Title for the support chat screen"
+  },
+  "exchangeSupportChatEmptyState": "No messages yet. Start a conversation!",
+  "@exchangeSupportChatEmptyState": {
+    "description": "Message shown when there are no chat messages"
+  },
+  "exchangeSupportChatInputHint": "Type a message...",
+  "@exchangeSupportChatInputHint": {
+    "description": "Placeholder text for the message input field"
+  },
+  "exchangeSupportChatMessageRequired": "A message is required",
+  "@exchangeSupportChatMessageRequired": {
+    "description": "Placeholder text when attachments are present but no message text"
+  },
+  "exchangeSupportChatMessageEmptyError": "Message cannot be empty",
+  "@exchangeSupportChatMessageEmptyError": {
+    "description": "Error message when trying to send an empty message"
+  },
+  "exchangeSupportChatYesterday": "Yesterday",
+  "@exchangeSupportChatYesterday": {
+    "description": "Label for yesterday in date formatting"
+  },
+  "exchangeSupportChatWalletIssuesInfo": "This chat is only for exchange related issues in Funding/Buy/Sell/Withdraw/Pay.\nFor wallet related issues, join the telegram group by clicking here.",
+  "@exchangeSupportChatWalletIssuesInfo": {
+    "description": "Info message about wallet issues and telegram group link"
+  },
   "exchangeDcaUnableToGetConfig": "Unable to get DCA configuration",
   "@exchangeDcaUnableToGetConfig": {
     "description": "Error message when DCA configuration cannot be retrieved"

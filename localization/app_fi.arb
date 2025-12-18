@@ -11174,6 +11174,34 @@
   "@exchangeHomeWithdrawButton": {
     "description": "Button label for withdrawing funds from the exchange"
   },
+  "exchangeSupportChatTitle": "Tukichatti",
+  "@exchangeSupportChatTitle": {
+    "description": "Title for the support chat screen"
+  },
+  "exchangeSupportChatEmptyState": "Ei viestejä vielä. Aloita keskustelu!",
+  "@exchangeSupportChatEmptyState": {
+    "description": "Message shown when there are no chat messages"
+  },
+  "exchangeSupportChatInputHint": "Kirjoita viesti...",
+  "@exchangeSupportChatInputHint": {
+    "description": "Placeholder text for the message input field"
+  },
+  "exchangeSupportChatMessageRequired": "Viesti vaaditaan",
+  "@exchangeSupportChatMessageRequired": {
+    "description": "Placeholder text when attachments are present but no message text"
+  },
+  "exchangeSupportChatMessageEmptyError": "Viesti ei voi olla tyhjä",
+  "@exchangeSupportChatMessageEmptyError": {
+    "description": "Error message when trying to send an empty message"
+  },
+  "exchangeSupportChatYesterday": "Eilen",
+  "@exchangeSupportChatYesterday": {
+    "description": "Label for yesterday in date formatting"
+  },
+  "exchangeSupportChatWalletIssuesInfo": "Tämä chatti on vain vaihtoon liittyviä ongelmia varten Rahoituksessa/Osto/Myynti/Nosto/Maksu.\nLompakkoon liittyvien ongelmien osalta liity Telegram-ryhmään klikkaamalla tästä.",
+  "@exchangeSupportChatWalletIssuesInfo": {
+    "description": "Info message about wallet issues and telegram group link"
+  },
   "exchangeDcaUnableToGetConfig": "DCA-asetuksia ei saatu haettua",
   "@exchangeDcaUnableToGetConfig": {
     "description": "Error message when DCA configuration cannot be retrieved"
