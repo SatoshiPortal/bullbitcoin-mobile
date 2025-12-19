@@ -1,6 +1,12 @@
 # Use a base Ubuntu image
 FROM --platform=linux/amd64 ubuntu:24.04
 
+# Build arguments
+ARG VERSION=main
+ARG MODE=debug
+ARG FORMAT=apk
+ARG SOURCE=github
+
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
 ENV USER="docker"
@@ -28,9 +34,9 @@ RUN adduser $USER sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER $USER
-RUN sudo apt update 
+RUN sudo apt update
 
-# Install OpenJDK 17
+# Install OpenJDK 21
 RUN sudo apt-get update && sudo apt-get install -y openjdk-21-jdk && sudo rm -rf /var/lib/apt/lists/*
 
 # Install Rust
@@ -40,14 +46,18 @@ ENV PATH="/home/$USER/.cargo/bin:${PATH}"
 # Verify Rust installation
 RUN rustc --version && cargo --version
 
-# Set environment variables
-ENV FLUTTER_HOME=/opt/flutter
-ENV ANDROID_HOME=/opt/android-sdk
-ENV PATH=$FLUTTER_HOME/bin:$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+# Install Android Rust targets for cross-compilation
+RUN rustup target add aarch64-linux-android
+RUN rustup target add armv7-linux-androideabi
+RUN rustup target add x86_64-linux-android
+RUN rustup target add i686-linux-android
 
-# Install Flutter
-RUN sudo git clone https://github.com/flutter/flutter.git $FLUTTER_HOME
-RUN sudo sh -c "cd $FLUTTER_HOME && git checkout stable && ./bin/flutter --version"
+# Set Rust flags for reproducible builds (remap absolute paths)
+ENV RUSTFLAGS="--remap-path-prefix=/home/docker/.cargo=/cargo --remap-path-prefix=/app=/build"
+
+# Set environment variables
+ENV ANDROID_HOME=/opt/android-sdk
+ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
 
 # Set up Android SDK
 RUN sudo mkdir -p ${ANDROID_HOME}/cmdline-tools && \
@@ -56,14 +66,15 @@ RUN sudo mkdir -p ${ANDROID_HOME}/cmdline-tools && \
     sudo mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest && \
     sudo rm android-cmdline-tools.zip
 
-RUN sudo chown -R $USER /opt/flutter
 RUN sudo chown -R $USER /opt/android-sdk
-
-RUN flutter config --android-sdk=/opt/android-sdk
 
 # Accept licenses and install necessary Android SDK components
 RUN yes | sdkmanager --licenses
 RUN sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+# Install FVM (Flutter Version Manager)
+RUN cd /home/$USER && curl -fsSL https://fvm.app/install.sh | bash
+ENV PATH="/home/$USER/fvm/bin:/home/$USER/.pub-cache/bin:${PATH}"
 
 # Clean up existing app directory
 RUN sudo rm -rf /app
@@ -72,24 +83,25 @@ RUN sudo mkdir /app
 
 RUN sudo chown -R $USER /app
 
-# Clone the Bull Bitcoin mobile repository
-RUN git clone --branch main https://github.com/SatoshiPortal/bullbitcoin-mobile /app
-
-# Create device-spec.json directly in the container
-RUN echo '{\
-    "supportedAbis": ["armeabi-v7a", "armeabi"],\
-    "supportedLocales": ["en"],\
-    "screenDensity": 280,\
-    "sdkVersion": 31\
-}' > /app/device-spec.json
+# Get source code (clone from GitHub or copy local files)
+COPY . /app/local-source/
+RUN if [ "$SOURCE" = "local" ]; then \
+        cp -r /app/local-source/. /app/ && rm -rf /app/local-source; \
+    else \
+        rm -rf /app/local-source && \
+        git clone --branch ${VERSION} https://github.com/SatoshiPortal/bullbitcoin-mobile /app; \
+    fi
 
 WORKDIR /app
 
+# Install Flutter version specified in .fvmrc
+RUN fvm install
+
 # Setup the project
-RUN make clean
-RUN make deps
-RUN make build-runner
-RUN make l10n
+RUN fvm flutter clean
+RUN fvm flutter pub get
+RUN fvm dart run build_runner build --delete-conflicting-outputs
+RUN fvm flutter gen-l10n
 
 # Create .env (empty values)
 RUN cp .env.template .env
@@ -103,5 +115,9 @@ RUN echo "storePassword=android" > /app/android/key.properties && \
     echo "keyAlias=upload" >> /app/android/key.properties && \
     echo "storeFile=/app/upload-keystore.jks" >> /app/android/key.properties
 
-# Build APK with specific target platform
-RUN flutter build apk --debug --target-platform android-arm64
+# Build the app
+RUN if [ "$FORMAT" = "aab" ]; then \
+        fvm flutter build appbundle --${MODE}; \
+    else \
+        fvm flutter build apk --${MODE}; \
+    fi
