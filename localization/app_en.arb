@@ -556,6 +556,10 @@
   "@exchangeRecipientsComingSoon": {
     "description": "Message indicating that the recipients feature is coming soon"
   },
+  "exchangeRecipientsDescription": "Manage your saved fiat payment recipients",
+  "@exchangeRecipientsDescription": {
+    "description": "Description for the recipients section in exchange settings"
+  },
   "exchangeLogoutComingSoon": "Log Out - Coming Soon",
   "@exchangeLogoutComingSoon": {
     "description": "Message indicating that the log out feature is coming soon"
@@ -580,9 +584,29 @@
   "@exchangeFileUploadInstructions": {
     "description": "Instructions for uploading documents in exchange"
   },
-  "exchangeFileUploadButton": "Upload",
+  "exchangeFileUploadButton": "Select File",
   "@exchangeFileUploadButton": {
-    "description": "Button label for uploading files in exchange"
+    "description": "Button label for selecting a file in exchange"
+  },
+  "exchangeFileUploadStart": "Upload File",
+  "@exchangeFileUploadStart": {
+    "description": "Button label to start uploading file in exchange"
+  },
+  "exchangeFileUploadSuccess": "File uploaded successfully",
+  "@exchangeFileUploadSuccess": {
+    "description": "Success message when file is uploaded in exchange"
+  },
+  "exchangeFileUploadProgress": "Uploading...",
+  "@exchangeFileUploadProgress": {
+    "description": "Label shown during file upload progress"
+  },
+  "exchangeFileUploadAnother": "Upload Another File",
+  "@exchangeFileUploadAnother": {
+    "description": "Button label to upload another file after success"
+  },
+  "exchangeFileUploadUploading": "Uploading...",
+  "@exchangeFileUploadUploading": {
+    "description": "Button label while file is being uploaded"
   },
   "exchangeAccountTitle": "Exchange Account",
   "@exchangeAccountTitle": {
@@ -616,6 +640,10 @@
   "@exchangeBitcoinWalletsEnterAddressHint": {
     "description": "Hint text for entering an address in exchange Bitcoin wallets"
   },
+  "exchangeBitcoinWalletsDeleteConfirmation": "Are you sure you want to delete this address?",
+  "@exchangeBitcoinWalletsDeleteConfirmation": {
+    "description": "Confirmation message for deleting an address in exchange Bitcoin wallets"
+  },
   "exchangeAppSettingsSaveSuccessMessage": "Settings saved successfully",
   "@exchangeAppSettingsSaveSuccessMessage": {
     "description": "Success message displayed when exchange app settings are saved"
@@ -635,6 +663,14 @@
   "exchangeAppSettingsSaveButton": "Save",
   "@exchangeAppSettingsSaveButton": {
     "description": "Button label for saving exchange app settings"
+  },
+  "exchangeAppSettingsEmailNotificationsTitle": "Email Notifications",
+  "@exchangeAppSettingsEmailNotificationsTitle": {
+    "description": "Title for email notifications toggle in exchange app settings"
+  },
+  "exchangeAppSettingsEmailNotificationsDescription": "Receive email notifications about your orders and account activity",
+  "@exchangeAppSettingsEmailNotificationsDescription": {
+    "description": "Description for email notifications toggle in exchange app settings"
   },
   "exchangeAccountInfoTitle": "Account information",
   "@exchangeAccountInfoTitle": {
@@ -683,6 +719,66 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "User number copied to clipboard",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
+  },
+  "exchangeStatisticsTitle": "Statistics",
+  "@exchangeStatisticsTitle": {
+    "description": "Title for the statistics section in exchange"
+  },
+  "exchangeStatisticsNoData": "No statistics available yet",
+  "@exchangeStatisticsNoData": {
+    "description": "Message when no statistics are available"
+  },
+  "exchangeStatisticsUpdatedAt": "Last updated",
+  "@exchangeStatisticsUpdatedAt": {
+    "description": "Label for when the statistics were last updated"
+  },
+  "exchangeStatisticsTradeCount": "Trade Count",
+  "@exchangeStatisticsTradeCount": {
+    "description": "Section title for trade count statistics"
+  },
+  "exchangeStatisticsBuyTrades": "Buy Orders",
+  "@exchangeStatisticsBuyTrades": {
+    "description": "Label for buy trades count"
+  },
+  "exchangeStatisticsSellTrades": "Sell Orders",
+  "@exchangeStatisticsSellTrades": {
+    "description": "Label for sell trades count"
+  },
+  "exchangeStatisticsTotalTrades": "Total Orders",
+  "@exchangeStatisticsTotalTrades": {
+    "description": "Label for total trades count"
+  },
+  "exchangeStatisticsBuySellRatio": "Buy/Sell Ratio",
+  "@exchangeStatisticsBuySellRatio": {
+    "description": "Label for buy/sell ratio"
+  },
+  "exchangeStatisticsBuyVolume": "Buy Volume",
+  "@exchangeStatisticsBuyVolume": {
+    "description": "Section title for buy volume statistics"
+  },
+  "exchangeStatisticsSellVolume": "Sell Volume",
+  "@exchangeStatisticsSellVolume": {
+    "description": "Section title for sell volume statistics"
+  },
+  "exchangeStatisticsAveragePrice": "Average Price",
+  "@exchangeStatisticsAveragePrice": {
+    "description": "Section title for average price statistics"
+  },
+  "exchangeStatisticsBuyPrice": "Average Buy Price",
+  "@exchangeStatisticsBuyPrice": {
+    "description": "Label for average buy price"
+  },
+  "exchangeStatisticsSellPrice": "Average Sell Price",
+  "@exchangeStatisticsSellPrice": {
+    "description": "Label for average sell price"
+  },
+  "exchangeStatisticsPaidBillers": "Paid Billers",
+  "@exchangeStatisticsPaidBillers": {
+    "description": "Section title for paid billers statistics"
+  },
+  "exchangeStatisticsOrders": "orders",
+  "@exchangeStatisticsOrders": {
+    "description": "Label for orders count in paid billers"
   },
   "walletsListTitle": "Wallet details",
   "@walletsListTitle": {

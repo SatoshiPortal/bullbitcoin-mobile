@@ -588,6 +588,193 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
     return resp.data['result'] as Map<String, dynamic>;
   }
+
+  Future<Map<String, dynamic>> getOrderStats({required String apiKey}) async {
+    final resp = await _http.post(
+      _ordersPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'getOrderStats',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to get order stats');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to get order stats: $error');
+    }
+
+    return resp.data['result'] as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> listDefaultWallets({
+    required String apiKey,
+  }) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'listMyRecipients',
+        'params': {
+          'filters': {
+            'recipientTypes': [
+              'OUT_BITCOIN_ADDRESS',
+              'OUT_LIGHTNING_ADDRESS',
+              'OUT_LIQUID_ADDRESS',
+            ],
+            'isDefault': true,
+          },
+        },
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to list default wallets');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to list default wallets: $error');
+    }
+
+    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    return elements?.cast<Map<String, dynamic>>() ?? [];
+  }
+
+  Future<Map<String, dynamic>> createRecipient({
+    required String apiKey,
+    required String recipientType,
+    required String address,
+    required bool isDefault,
+    required bool isOwner,
+  }) async {
+    final Map<String, dynamic> recipientDetails;
+    switch (recipientType) {
+      case 'OUT_BITCOIN_ADDRESS':
+        recipientDetails = {'bitcoinAddress': address};
+        break;
+      case 'OUT_LIGHTNING_ADDRESS':
+        recipientDetails = {'lightningAddress': address};
+        break;
+      case 'OUT_LIQUID_ADDRESS':
+        recipientDetails = {'liquidAddress': address};
+        break;
+      default:
+        throw Exception('Unknown recipient type: $recipientType');
+    }
+
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'createMyRecipient',
+        'params': {
+          'recipientType': recipientType,
+          'recipientDetails': recipientDetails,
+          'isDefault': isDefault,
+          'isOwner': isOwner,
+        },
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to create recipient');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to create recipient: $error');
+    }
+
+    return resp.data['result'] as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> updateRecipient({
+    required String apiKey,
+    required String recipientId,
+    String? address,
+    bool? isDefault,
+  }) async {
+    final params = <String, dynamic>{'recipientId': recipientId};
+    if (address != null) params['address'] = address;
+    if (isDefault != null) params['isDefault'] = isDefault;
+
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'updateMyRecipient',
+        'params': params,
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to update recipient');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to update recipient: $error');
+    }
+
+    return resp.data['result'] as Map<String, dynamic>;
+  }
+
+  Future<String> uploadSecureFile({
+    required String apiKey,
+    required String fileName,
+    required List<int> fileBytes,
+    required String mimeType,
+    void Function(double progress)? onProgress,
+  }) async {
+    final formData = FormData.fromMap({
+      'file': MultipartFile.fromBytes(
+        fileBytes,
+        filename: fileName,
+        contentType: DioMediaType.parse(mimeType),
+      ),
+    });
+
+    final resp = await _http.post(
+      '/ak/api-kyc/uploadFile',
+      data: formData,
+      options: Options(
+        headers: {
+          'X-API-Key': apiKey,
+          'Content-Type': 'multipart/form-data',
+        },
+      ),
+      onSendProgress: (sent, total) {
+        if (onProgress != null && total > 0) {
+          onProgress(sent / total);
+        }
+      },
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to upload file');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to upload file: $error');
+    }
+
+    // Return the file ID from the response
+    return resp.data['result']['fileId'] as String? ?? '';
+  }
 }
 
 class BullBitcoinApiMinAmountException extends BullException {

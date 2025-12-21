@@ -86,6 +86,8 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                     context.read<ExchangeCubit>().updateSelectedCurrency(value);
                   },
                 ),
+                const SizedBox(height: 24),
+                _buildEmailNotificationsToggle(context, state),
                 const Spacer(),
                 if (hasUnsetValues) ...[
                   BBText(
@@ -172,6 +174,70 @@ class ExchangeAppSettingsScreen extends StatelessWidget {
                 onChanged: onChanged,
               ),
             ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmailNotificationsToggle(
+    BuildContext context,
+    ExchangeState state,
+  ) {
+    final emailNotificationsEnabled =
+        state.userSummary?.emailNotificationsEnabled ?? true;
+    final isToggling = state.isTogglingEmailNotifications;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BBText(
+          context.loc.exchangeAppSettingsEmailNotificationsTitle,
+          style: context.font.labelMedium?.copyWith(
+            color: context.appColors.secondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: context.appColors.onPrimary,
+            borderRadius: BorderRadius.circular(4),
+            boxShadow: [
+              BoxShadow(
+                color: context.appColors.surface.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: BBText(
+                  context.loc.exchangeAppSettingsEmailNotificationsDescription,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.secondary,
+                  ),
+                ),
+              ),
+              if (isToggling)
+                const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              else
+                Switch(
+                  value: emailNotificationsEnabled,
+                  onChanged: (value) {
+                    context.read<ExchangeCubit>().toggleEmailNotifications(value);
+                  },
+                  activeColor: context.appColors.primary,
+                ),
+            ],
           ),
         ),
       ],

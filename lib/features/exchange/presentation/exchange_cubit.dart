@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/toggle_email_notifications_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,10 +17,12 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     required SaveExchangeApiKeyUsecase saveExchangeApiKeyUsecase,
     required SaveUserPreferencesUsecase saveUserPreferencesUsecase,
     required DeleteExchangeApiKeyUsecase deleteExchangeApiKeyUsecase,
+    required ToggleEmailNotificationsUsecase toggleEmailNotificationsUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _saveExchangeApiKeyUsecase = saveExchangeApiKeyUsecase,
        _saveUserPreferencesUsecase = saveUserPreferencesUsecase,
        _deleteExchangeApiKeyUsecase = deleteExchangeApiKeyUsecase,
+       _toggleEmailNotificationsUsecase = toggleEmailNotificationsUsecase,
        super(const ExchangeState());
 
   Timer? _pollingTimer;
@@ -28,6 +31,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   final SaveExchangeApiKeyUsecase _saveExchangeApiKeyUsecase;
   final SaveUserPreferencesUsecase _saveUserPreferencesUsecase;
   final DeleteExchangeApiKeyUsecase _deleteExchangeApiKeyUsecase;
+  final ToggleEmailNotificationsUsecase _toggleEmailNotificationsUsecase;
 
   Future<void> fetchUserSummary() async {
     try {
@@ -123,6 +127,21 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       log.severe('Error in stopDca: $e');
     } finally {
       emit(state.copyWith(isSaving: false));
+    }
+  }
+
+  Future<void> toggleEmailNotifications(bool enabled) async {
+    try {
+      emit(state.copyWith(isTogglingEmailNotifications: true));
+
+      await _toggleEmailNotificationsUsecase.execute(enabled: enabled);
+
+      // Refresh user summary to update the emailNotificationsEnabled field
+      await fetchUserSummary();
+    } catch (e) {
+      log.severe('Error in toggleEmailNotifications: $e');
+    } finally {
+      emit(state.copyWith(isTogglingEmailNotifications: false));
     }
   }
 

@@ -90,4 +90,33 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
       }
     }
   }
+
+  @override
+  Future<void> saveUserPreferences({bool? emailNotificationsEnabled}) async {
+    try {
+      final apiKey = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+      if (apiKey == null) {
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      final params = UserPreferencePayloadModel(
+        emailNotificationsEnabled: emailNotificationsEnabled,
+      );
+
+      await _bullbitcoinApiDatasource.saveUserPreference(
+        apiKey: apiKey.key,
+        params: params,
+      );
+    } catch (e) {
+      if (e is ApiKeyException) {
+        rethrow;
+      } else {
+        throw Exception('Failed to save user preferences: $e');
+      }
+    }
+  }
 }

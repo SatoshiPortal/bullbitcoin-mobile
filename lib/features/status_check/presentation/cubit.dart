@@ -20,15 +20,19 @@ class ServiceStatusCubit extends Cubit<ServiceStatusState> {
       emit(state.copyWith(isLoading: true, error: null));
 
       final wallets = await _getWalletsUsecase.execute();
+      if (isClosed) return;
+
       final defaultWallet = wallets.firstWhere((w) => w.isDefault);
       final network = defaultWallet.network;
 
       final serviceStatus = await _checkAllServiceStatusUsecase.execute(
         network: network,
       );
+      if (isClosed) return;
 
       emit(state.copyWith(serviceStatus: serviceStatus, isLoading: false));
     } catch (e) {
+      if (isClosed) return;
       log.severe('[ServiceStatusCubit] Failed to check service status: $e');
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }

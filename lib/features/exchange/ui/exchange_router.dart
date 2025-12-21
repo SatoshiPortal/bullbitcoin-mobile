@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.d
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -57,12 +58,13 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeLanding.name,
       path: ExchangeRoute.exchangeLanding.path,
       pageBuilder: (context, state) {
-        // Show v2 screen for iOS without superuser, v1 for iOS with superuser, regular screen for Android
+        // Show v2 screen for iOS without superuser (unless in debug mode),
+        // v1 for iOS with superuser or debug mode, regular screen for Android
         Widget landingScreen;
         if (Platform.isIOS) {
           final isSuperuser =
               context.read<SettingsCubit>().state.isSuperuser ?? false;
-          if (isSuperuser) {
+          if (isSuperuser || kDebugMode) {
             landingScreen = const ExchangeLandingScreen();
           } else {
             landingScreen = const ExchangeLandingScreenV2();
@@ -81,9 +83,8 @@ class ExchangeRouter {
         return NoTransitionPage(
           key: state.pageKey,
           child: BlocListener<ExchangeCubit, ExchangeState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.notLoggedIn && !current.notLoggedIn,
+            listenWhen: (previous, current) =>
+                previous.notLoggedIn && !current.notLoggedIn,
             listener: (context, state) {
               // Redirect to home screen if the API key becomes valid
               context.goNamed(ExchangeRoute.exchangeHome.name);

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order_stats.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 
 abstract class ExchangeOrderRepository {
@@ -42,4 +43,5 @@ abstract class ExchangeOrderRepository {
   });
   Future<Map<String, dynamic>> getBuyLimits();
   Future<Map<String, dynamic>> getSellLimits();
+  Future<OrderStats> getOrderStats();
 }

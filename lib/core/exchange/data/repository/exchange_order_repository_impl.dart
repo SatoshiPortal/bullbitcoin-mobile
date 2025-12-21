@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/models/order_stats_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order_stats.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
@@ -636,6 +638,36 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
     } catch (e) {
       throw Exception('Failed to get sell limits: $e');
+    }
+  }
+
+  @override
+  Future<OrderStats> getOrderStats() async {
+    try {
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+
+      if (apiKeyModel == null) {
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw ApiKeyException(
+          'API key is inactive. Please login again to your Bull Bitcoin account.',
+        );
+      }
+
+      final statsJson = await _bullbitcoinApiDatasource.getOrderStats(
+        apiKey: apiKeyModel.key,
+      );
+
+      final statsModel = OrderStatsModel.fromJson(statsJson);
+      return statsModel.toEntity();
+    } catch (e) {
+      throw Exception('Failed to get order stats: $e');
     }
   }
 }

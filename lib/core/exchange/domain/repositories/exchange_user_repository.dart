@@ -8,4 +8,5 @@ abstract class ExchangeUserRepository {
     bool? dcaEnabled,
     String? autoBuyEnabled,
   });
+  Future<void> saveUserPreferences({bool? emailNotificationsEnabled});
 }

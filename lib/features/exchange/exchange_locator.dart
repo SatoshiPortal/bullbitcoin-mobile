@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/toggle_email_notifications_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:get_it/get_it.dart';
 
@@ -18,6 +19,8 @@ class ExchangeLocator {
             locator.get<GetExchangeUserSummaryUsecase>(),
         saveUserPreferencesUsecase: locator.get<SaveUserPreferencesUsecase>(),
         deleteExchangeApiKeyUsecase: locator.get<DeleteExchangeApiKeyUsecase>(),
+        toggleEmailNotificationsUsecase:
+            locator.get<ToggleEmailNotificationsUsecase>(),
       ),
     );
   }

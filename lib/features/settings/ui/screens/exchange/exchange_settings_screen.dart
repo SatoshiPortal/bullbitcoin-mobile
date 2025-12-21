@@ -46,76 +46,76 @@ class ExchangeSettingsScreen extends StatelessWidget {
                     }
                   },
                 ),
-                // SettingsEntryItem(
-                //   icon: Icons.currency_bitcoin,
-                //   title: 'Default Bitcoin Wallets',
-                //   onTap: () {
-                //     if (state.notLoggedIn) {
-                //       NotLoggedInBottomSheet.show(context);
-                //     } else {
-                //       ComingSoonBottomSheet.show(context);
-                //     }
-                //   },
-                // ),
-                // SettingsEntryItem(
-                //   icon: Icons.settings,
-                //   title: 'App Settings',
-                //   onTap: () {
-                //     if (state.notLoggedIn) {
-                //       NotLoggedInBottomSheet.show(context);
-                //     } else {
-                //       ComingSoonBottomSheet.show(context);
-                //     }
-                //   },
-                // ),
-                // SettingsEntryItem(
-                //   icon: Icons.upload_file,
-                //   title: 'Secure File Upload',
-                //   onTap: () {
-                //     if (state.notLoggedIn) {
-                //       NotLoggedInBottomSheet.show(context);
-                //     } else {
-                //       ComingSoonBottomSheet.show(context);
-                //     }
-                //   },
-                // ),
-                // SettingsEntryItem(
-                //   icon: Icons.history,
-                //   title: 'Transactions',
-                //   onTap: () {
-                //     if (state.notLoggedIn) {
-                //       NotLoggedInBottomSheet.show(context);
-                //     } else {
-                //       context.pushNamed(
-                //         SettingsRoute.exchangeTransactions.name,
-                //       );
-                //     }
-                //   },
-                // ),
-                // SettingsEntryItem(
-                //   icon: Icons.history_edu,
-                //   title: 'Legacy Transactions',
-                //   onTap: () {
-                //     if (state.notLoggedIn) {
-                //       NotLoggedInBottomSheet.show(context);
-                //     } else {
-                //       context.pushNamed(
-                //         SettingsRoute.exchangeLegacyTransactions.name,
-                //       );
-                //     }
-                //   },
-                // ),
-                // SettingsEntryItem(
-                //   icon: Icons.people,
-                //   title: 'Recipients',
-                //   onTap: () {
-                //     if (state.notLoggedIn) {
-                //       NotLoggedInBottomSheet.show(context);
-                //     } else {
-                //       context.pushNamed(SettingsRoute.exchangeRecipients.name);
-                //     }
-                //   },
-                // ),
+                SettingsEntryItem(
+                  icon: Icons.currency_bitcoin,
+                  title: context.loc.exchangeBitcoinWalletsTitle,
+                  onTap: () {
+                    if (state.notLoggedIn) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(
+                        SettingsRoute.exchangeBitcoinWallets.name,
+                      );
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.settings,
+                  title: context.loc.settingsAppSettingsTitle,
+                  onTap: () {
+                    if (state.notLoggedIn) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeAppSettings.name);
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.upload_file,
+                  title: context.loc.exchangeFileUploadTitle,
+                  onTap: () {
+                    if (state.notLoggedIn) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeFileUpload.name);
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.history,
+                  title: context.loc.exchangeTransactionsTitle,
+                  onTap: () {
+                    if (state.notLoggedIn) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(
+                        SettingsRoute.exchangeTransactions.name,
+                      );
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.people,
+                  title: context.loc.exchangeRecipientsTitle,
+                  onTap: () {
+                    if (state.notLoggedIn) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeRecipients.name);
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.bar_chart,
+                  title: context.loc.exchangeStatisticsTitle,
+                  onTap: () {
+                    if (state.notLoggedIn) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeStatistics.name);
+                    }
+                  },
+                ),
                 SettingsEntryItem(
                   icon: Icons.share,
                   title: context.loc.exchangeSettingsReferralsTitle,

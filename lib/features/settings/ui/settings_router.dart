@@ -29,6 +29,7 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/logout_screen.da
 import 'package:bb_mobile/features/settings/ui/screens/exchange/recipients_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
@@ -68,6 +69,7 @@ enum SettingsRoute {
   exchangeLegacyTransactions('exchange-legacy-transactions'),
   exchangeRecipients('exchange-recipients'),
   exchangeReferrals('exchange-referrals'),
+  exchangeStatistics('exchange-statistics'),
   exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
   appSettings('app-settings'),
@@ -151,6 +153,11 @@ class SettingsRouter {
         name: SettingsRoute.exchangeReferrals.name,
         path: SettingsRoute.exchangeReferrals.path,
         builder: (context, state) => const ExchangeReferralsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeStatistics.name,
+        path: SettingsRoute.exchangeStatistics.path,
+        builder: (context, state) => const ExchangeStatisticsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeLogout.name,

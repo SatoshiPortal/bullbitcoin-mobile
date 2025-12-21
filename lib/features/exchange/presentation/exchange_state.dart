@@ -18,6 +18,7 @@ abstract class ExchangeState with _$ExchangeState {
     String? selectedLanguage,
     String? selectedCurrency,
     @Default(false) bool isSaving,
+    @Default(false) bool isTogglingEmailNotifications,
   }) = _ExchangeState;
 
   const ExchangeState._();
