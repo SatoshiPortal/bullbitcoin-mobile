@@ -1099,7 +1099,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
         absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: dummyDrainTxInfo.unsignedPsbt,
-          feeRate: networkFee.value as double,
         );
 
         log.info("Absolute fees: $absoluteFees");
