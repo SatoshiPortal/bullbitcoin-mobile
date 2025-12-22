@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/swap/ui/widgets/swap_balance_row.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_external_address_input.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_from_wallet_dropdown.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_to_wallet_dropdown.dart';
+import 'package:bb_mobile/features/swap/ui/widgets/swap_advanced_options_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -182,37 +183,83 @@ class SwapPageState extends State<SwapPage> {
                       );
                     },
                   ),
-                  const Gap(24),
-                  Row(
-                    mainAxisAlignment: .spaceBetween,
-                    children: [
-                      BlocSelector<TransferBloc, TransferState, bool>(
-                        selector: (state) => state.receiveExactAmount,
-                        builder: (context, receiveExactAmount) {
-                          return Text(
-                            receiveExactAmount
-                                ? context.loc.swapReceiveExactAmountLabel
-                                : context.loc.swapSubtractFeesLabel,
-                            style: context.font.bodyLarge,
-                          );
-                        },
-                      ),
-                      BlocSelector<TransferBloc, TransferState, bool>(
-                        selector: (state) => state.receiveExactAmount,
-                        builder: (context, receiveExactAmount) {
-                          return BBSwitch(
-                            value: receiveExactAmount,
-                            onChanged: (value) {
-                              context.read<TransferBloc>().add(
-                                TransferEvent.receiveExactAmountToggled(value),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ],
+                  BlocSelector<TransferBloc, TransferState, bool>(
+                    selector: (state) => state.shouldShowAdvancedOptions && !state.isSameChainTransfer,
+                    builder: (context, showReceiveExactAmount) {
+                      if (!showReceiveExactAmount) {
+                        return const SizedBox.shrink();
+                      }
+                      return Column(
+                        children: [
+                          const Gap(24),
+                          Row(
+                            mainAxisAlignment: .spaceBetween,
+                            children: [
+                              BlocSelector<TransferBloc, TransferState, bool>(
+                                selector: (state) => state.receiveExactAmount,
+                                builder: (context, receiveExactAmount) {
+                                  return Text(
+                                    receiveExactAmount
+                                        ? context.loc.swapReceiveExactAmountLabel
+                                        : context.loc.swapSubtractFeesLabel,
+                                    style: context.font.bodyLarge,
+                                  );
+                                },
+                              ),
+                              BlocSelector<TransferBloc, TransferState, bool>(
+                                selector: (state) => state.receiveExactAmount,
+                                builder: (context, receiveExactAmount) {
+                                  return BBSwitch(
+                                    value: receiveExactAmount,
+                                    onChanged: (value) {
+                                      context.read<TransferBloc>().add(
+                                        TransferEvent.receiveExactAmountToggled(value),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   const Gap(24),
+                  BlocSelector<TransferBloc, TransferState, bool>(
+                    selector: (state) => state.shouldShowAdvancedOptions,
+                    builder: (context, showAdvancedOptions) {
+                      if (!showAdvancedOptions) {
+                        return const SizedBox.shrink();
+                      }
+                      return Column(
+                        crossAxisAlignment: .stretch,
+                        children: [
+                          BBButton.big(
+                            label: context.loc.sendAdvancedOptions,
+                            bgColor: context.appColors.transparent,
+                            textColor: context.appColors.secondary,
+                            outlined: true,
+                            borderColor: context.appColors.secondary,
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: context.appColors.onSecondary,
+                                constraints: const BoxConstraints(maxWidth: double.infinity),
+                                useSafeArea: true,
+                                builder: (BuildContext buildContext) => BlocProvider.value(
+                                  value: context.read<TransferBloc>(),
+                                  child: const SwapAdvancedOptionsBottomSheet(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Gap(16),
+                        ],
+                      );
+                    },
+                  ),
                   BlocSelector<TransferBloc, TransferState, bool>(
                     selector: (state) =>
                         state.isStarting ||

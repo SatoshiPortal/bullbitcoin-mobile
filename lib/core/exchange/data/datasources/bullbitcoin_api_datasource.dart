@@ -93,11 +93,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         throw 'Unable to fetch user summary from Bull Bitcoin API';
       }
 
-      print('BullbitcoinApiDatasource.getUserSummary API Response:');
-      print('  Status Code: ${resp.statusCode}');
-      print('  Response Data: ${resp.data}');
-      print('  Result: ${resp.data['result']}');
-
       final userSummary = UserSummaryModel.fromJson(
         resp.data['result'] as Map<String, dynamic>,
       );
