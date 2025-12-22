@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_server_usecase.dart';
 
-class MempoolUrlService {
+class MempoolUrlBuilder {
   final GetActiveMempoolServerUsecase _getActiveMempoolServerUsecase;
 
-  const MempoolUrlService({
+  const MempoolUrlBuilder({
     required GetActiveMempoolServerUsecase getActiveMempoolServerUsecase,
   }) : _getActiveMempoolServerUsecase = getActiveMempoolServerUsecase;
 

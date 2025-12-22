@@ -129,13 +129,14 @@ class Schema10To11 {
     for (final server in mempoolServersData) {
       await db
           .into(mempoolServers)
-          .insertOnConflictUpdate(
+          .insert(
             RawValuesInsertable({
               'url': Constant(server['url']),
               'is_testnet': Constant(server['isTestnet']),
               'is_liquid': Constant(server['isLiquid']),
               'is_custom': Constant(server['isCustom']),
             }),
+            mode: InsertMode.insertOrReplace,
           );
     }
 
@@ -150,11 +151,12 @@ class Schema10To11 {
     for (final network in mempoolNetworks) {
       await db
           .into(mempoolSettings)
-          .insertOnConflictUpdate(
+          .insert(
             RawValuesInsertable({
               'network': Constant(network),
               'use_for_fee_estimation': const Constant(true),
             }),
+            mode: InsertMode.insertOrReplace,
           );
     }
   }

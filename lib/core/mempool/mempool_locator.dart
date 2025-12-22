@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/mempool/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
+import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/datasources/mempool_server_storage_datasource.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/datasources/mempool_settings_storage_datasource.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/environment/settings_environment_adapter.dart';
@@ -15,7 +16,6 @@ import 'package:bb_mobile/core/mempool/interface_adapters/repositories/drift_mem
 import 'package:bb_mobile/core/mempool/interface_adapters/validators/http_mempool_server_validator.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/utils/mempool_url.dart';
 import 'package:get_it/get_it.dart';
 
 class MempoolLocator {
@@ -95,8 +95,8 @@ class MempoolLocator {
   }
 
   static void registerServices(GetIt locator) {
-    locator.registerLazySingleton<MempoolUrlService>(
-      () => MempoolUrlService(
+    locator.registerLazySingleton<MempoolUrlBuilder>(
+      () => MempoolUrlBuilder(
         getActiveMempoolServerUsecase: locator<GetActiveMempoolServerUsecase>(),
       ),
     );

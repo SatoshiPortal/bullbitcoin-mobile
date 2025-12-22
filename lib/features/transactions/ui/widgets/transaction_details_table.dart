@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/mempool_url.dart';
+import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
@@ -76,16 +76,16 @@ class TransactionDetailsTable extends StatelessWidget {
             copyValue: txId,
             displayWidget: GestureDetector(
               onTap: () async {
-                final mempoolUrlService = locator<MempoolUrlService>();
+                final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
 
                 final String mempoolUrl;
                 if (isLiquid) {
-                  mempoolUrl = await mempoolUrlService.liquidTxidUrl(
+                  mempoolUrl = await mempoolUrlBuilder.liquidTxidUrl(
                     transaction?.walletTransaction?.unblindedUrl ?? '',
                     isTestnet: isTestnet,
                   );
                 } else {
-                  mempoolUrl = await mempoolUrlService.bitcoinTxidUrl(
+                  mempoolUrl = await mempoolUrlBuilder.bitcoinTxidUrl(
                     txId,
                     isTestnet: isTestnet,
                   );

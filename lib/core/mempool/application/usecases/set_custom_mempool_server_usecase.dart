@@ -3,8 +3,10 @@ import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
+import 'package:bb_mobile/core/mempool/domain/value_objects/normalized_mempool_url.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class SetCustomMempoolServerResult {
   final bool isValid;
@@ -49,7 +51,18 @@ class SetCustomMempoolServerUsecase {
       isLiquid: request.isLiquid,
     );
 
-    // validate URL first unless explicitly skipped
+    final customUrl = NormalizedMempoolUrl(request.url);
+
+    final defaultServerResult = await _fetchDefaultServerSafely(network);
+    if (defaultServerResult != null) {
+      final defaultUrl = NormalizedMempoolUrl(defaultServerResult.url);
+      if (customUrl == defaultUrl) {
+        return SetCustomMempoolServerResult.failure(
+          'This URL is the same as the default server. Please use a different URL.',
+        );
+      }
+    }
+
     if (!skipValidation) {
       try {
         final isValid = await _validator.validateServer(
@@ -82,6 +95,20 @@ class SetCustomMempoolServerUsecase {
       return SetCustomMempoolServerResult.failure(
         'Failed to save server: ${e.toString()}',
       );
+    }
+  }
+
+  Future<MempoolServer?> _fetchDefaultServerSafely(
+    MempoolServerNetwork network,
+  ) async {
+    try {
+      return await _serverRepository.fetchDefaultServer(network);
+    } catch (e) {
+      // log the error for debugging but don't throw.
+      log.warning(
+        'Could not fetch default mempool server for comparison: $e',
+      );
+      return null;
     }
   }
 }

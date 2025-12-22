@@ -142,7 +142,7 @@ class MempoolServerItem extends StatelessWidget {
                 ],
               ],
             ),
-            if (!disabled && onFeeEstimationChanged != null) ...[
+            if (isCustom && !disabled && onFeeEstimationChanged != null) ...[
               const SizedBox(height: 12),
               Row(
                 children: [

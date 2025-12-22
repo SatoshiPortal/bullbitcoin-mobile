@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_item.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/set_custom_server_bottom_sheet.dart';
@@ -91,47 +92,50 @@ class MempoolServerList extends StatelessWidget {
   }
 
   void _showAddServerSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (bottomSheetContext) => BlocProvider.value(
-        value: context.read<MempoolSettingsCubit>(),
-        child: const SetCustomServerBottomSheet(),
-      ),
-    );
+    SetCustomServerBottomSheet.show(context);
   }
 
   void _showEditServerSheet(BuildContext context, String currentUrl) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (bottomSheetContext) => BlocProvider.value(
-        value: context.read<MempoolSettingsCubit>(),
-        child: SetCustomServerBottomSheet(initialUrl: currentUrl),
-      ),
-    );
+    SetCustomServerBottomSheet.show(context, initialUrl: currentUrl);
   }
 
   void _showDeleteConfirmation(BuildContext context) {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        backgroundColor: context.appColors.onPrimary,
         title: Text(context.loc.mempoolCustomServerDeleteTitle),
-        content: Text(context.loc.mempoolCustomServerDeleteMessage),
+        content: Text(
+          context.loc.mempoolCustomServerDeleteMessage,
+          style: context.font.bodyMedium,
+        ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(context.loc.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              context.read<MempoolSettingsCubit>().deleteCustomServer();
-            },
-            child: Text(
-              context.loc.delete,
-              style: TextStyle(color: context.appColors.error),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: BBButton.small(
+                  label: context.loc.cancel,
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  bgColor: context.appColors.transparent,
+                  outlined: true,
+                  textStyle: context.font.headlineLarge,
+                  textColor: context.appColors.secondary,
+                ),
+              ),
+              const Gap(12),
+              Expanded(
+                child: BBButton.small(
+                  label: context.loc.delete,
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                    context.read<MempoolSettingsCubit>().deleteCustomServer();
+                  },
+                  bgColor: context.appColors.error,
+                  textStyle: context.font.headlineLarge,
+                  textColor: context.appColors.onPrimary,
+                ),
+              ),
+            ],
           ),
         ],
       ),
