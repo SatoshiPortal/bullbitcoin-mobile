@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -79,9 +80,8 @@ class SwapLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -99,9 +99,8 @@ class SwapLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -138,6 +137,8 @@ class SwapLocator {
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
+        convertSatsToCurrencyAmountUsecase:
+            locator<ConvertSatsToCurrencyAmountUsecase>(),
       ),
     );
   }

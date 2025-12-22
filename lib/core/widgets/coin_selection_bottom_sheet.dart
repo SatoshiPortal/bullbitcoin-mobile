@@ -74,6 +74,15 @@ class _CommonCoinSelectionBottomSheetState
         ? FormatAmount.btc(ConvertAmount.satsToBtc(widget.amountToSendSat))
         : FormatAmount.sats(widget.amountToSendSat);
 
+    final isAmountSufficient = selectedUtxoTotalSat >= widget.amountToSendSat;
+
+    final selectedFiatEquivalent = widget.exchangeRate > 0
+        ? FormatAmount.fiat(
+            ConvertAmount.satsToFiat(selectedUtxoTotalSat, widget.exchangeRate),
+            widget.fiatCurrency,
+          )
+        : null;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Column(
@@ -107,13 +116,31 @@ class _CommonCoinSelectionBottomSheetState
               color: context.appColors.secondary,
             ),
           ),
+          if (selectedFiatEquivalent != null) ...[
+            const Gap(4),
+            BBText(
+              '~$selectedFiatEquivalent',
+              style: context.font.bodyLarge?.copyWith(
+                color: context.appColors.onSurfaceVariant,
+              ),
+            ),
+          ],
           const Gap(8),
           BBText(
             'Amount requested: $amountToSend',
             style: context.font.bodySmall?.copyWith(
-              color: context.appColors.secondary,
+              color: context.appColors.onSurfaceVariant,
             ),
           ),
+          if (!isAmountSufficient) ...[
+            const Gap(8),
+            BBText(
+              'Selected amount is insufficient',
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.error,
+              ),
+            ),
+          ],
           const Gap(24),
           ListView.separated(
             physics: const NeverScrollableScrollPhysics(),
