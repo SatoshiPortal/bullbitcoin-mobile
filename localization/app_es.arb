@@ -832,6 +832,10 @@
   "@sendDone": {
     "description": "Button label for completing the send flow"
   },
+  "sendSelectedUtxosInsufficient": "Los UTXO seleccionados no cubren el monto requerido",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
   "sendAdvancedOptions": "Opciones Avanzadas",
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"

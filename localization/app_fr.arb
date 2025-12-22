@@ -832,6 +832,10 @@
   "@sendDone": {
     "description": "Libellé du bouton pour terminer le flux d'envoi"
   },
+  "sendSelectedUtxosInsufficient": "Les UTXO sélectionnés ne couvrent pas le montant requis",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Message d'erreur lorsque les UTXO sélectionnés ne couvrent pas le montant requis"
+  },
   "sendAdvancedOptions": "Options avancées",
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
