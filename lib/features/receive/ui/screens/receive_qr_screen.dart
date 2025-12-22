@@ -103,36 +103,40 @@ class ReceiveQRDetails extends StatelessWidget {
               selectedWallet.isBitcoin)
             ColoredBox(
               color: context.appColors.onSecondary,
-              child: DropdownButtonFormField<Wallet>(
-                alignment: Alignment.centerLeft,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.appColors.secondary,
-                ),
-                dropdownColor: context.appColors.onSecondary,
-                initialValue: selectedWallet,
-                items: wallets.map((w) {
-                  return DropdownMenuItem(
-                    value: w,
-                    child: Text(
-                      w.displayLabel(context),
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.appColors.secondary,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: DropdownButtonFormField<Wallet>(
+                  alignment: Alignment.centerLeft,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: context.appColors.secondary,
+                  ),
+                  iconSize: 24,
+                  dropdownColor: context.appColors.onSecondary,
+                  initialValue: selectedWallet,
+                  items: wallets.map((w) {
+                    return DropdownMenuItem(
+                      value: w,
+                      child: Text(
+                        w.displayLabel(context),
+                        style: context.font.headlineSmall?.copyWith(
+                          color: context.appColors.secondary,
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    context.read<ReceiveBloc>().add(
-                      ReceiveEvent.receiveBitcoinStarted(value),
                     );
-                  }
-                },
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      context.read<ReceiveBloc>().add(
+                        ReceiveEvent.receiveBitcoinStarted(value),
+                      );
+                    }
+                  },
+                ),
               ),
             ),
           const Gap(20),

@@ -399,7 +399,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                             color: context.appColors.onSecondary,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0,
+                                horizontal: 12.0,
                               ),
                               child: DropdownButtonFormField<Wallet>(
                                 alignment: Alignment.centerLeft,
