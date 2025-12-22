@@ -36,8 +36,8 @@ class BalanceRow extends StatelessWidget {
                 RichText(
                   text: TextSpan(
                     text: 'Wallet: ',
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.surface,
+                    style: context.font.labelLarge?.copyWith(
+                      color: context.appColors.onSurfaceVariant,
                     ),
                     children: [
                       TextSpan(
@@ -55,7 +55,7 @@ class BalanceRow extends StatelessWidget {
                 text: TextSpan(
                   text: '$title: ',
                   style: context.font.labelLarge?.copyWith(
-                    color: context.appColors.surface,
+                    color: context.appColors.onSurfaceVariant,
                   ),
                   children: [
                     TextSpan(

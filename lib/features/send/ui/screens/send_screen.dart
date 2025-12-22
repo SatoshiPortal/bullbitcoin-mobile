@@ -90,7 +90,7 @@ class SendAddressScreen extends StatelessWidget {
                   (SendCubit cubit) =>
                       cubit.state.loadingBestWallet || cubit.state.creatingSwap,
                 ),
-                backgroundColor: context.appColors.onPrimary,
+                backgroundColor: context.appColors.onSecondary,
                 foregroundColor: context.appColors.primary,
               ),
               Expanded(
@@ -112,7 +112,7 @@ class SendAddressScreen extends StatelessWidget {
                       child: SingleChildScrollView(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: context.appColors.onPrimary,
+                            color: context.appColors.onSecondary,
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(12),
                               topRight: Radius.circular(12),
@@ -127,6 +127,7 @@ class SendAddressScreen extends StatelessWidget {
                               BBText(
                                 context.loc.sendRecipientAddress,
                                 style: context.font.bodyMedium,
+                                color: context.appColors.secondary,
                               ),
                               const Gap(16),
                               const AddressField(),
@@ -197,7 +198,7 @@ class AddressField extends StatelessWidget {
       maxLines: 1,
       rightIcon: Icon(
         Icons.paste_sharp,
-        color: context.appColors.border,
+        color: context.appColors.secondary,
         size: 20,
       ),
       onRightTap: () {
@@ -309,7 +310,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.appColors.onPrimary,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
@@ -325,7 +326,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             trigger: context.select(
               (SendCubit cubit) => cubit.state.creatingSwap,
             ),
-            backgroundColor: context.appColors.onPrimary,
+            backgroundColor: context.appColors.background,
             foregroundColor: context.appColors.primary,
           ),
           Expanded(
@@ -395,36 +396,40 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                         crossAxisAlignment: .stretch,
                         children: [
                           ColoredBox(
-                            color: context.appColors.onPrimary,
-                            child: DropdownButtonFormField<Wallet>(
-                              alignment: Alignment.centerLeft,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16.0,
+                            color: context.appColors.onSecondary,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                              ),
+                              child: DropdownButtonFormField<Wallet>(
+                                alignment: Alignment.centerLeft,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.zero,
                                 ),
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down,
+                                  color: context.appColors.secondary,
+                                ),
+                                iconSize: 24,
+                                initialValue: selectedWallet,
+                                items: wallets.map((w) {
+                                  return DropdownMenuItem(
+                                    value: w,
+                                    child: Text(
+                                      w.displayLabel(context),
+                                      style: context.font.headlineSmall,
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    context
+                                        .read<SendCubit>()
+                                        .updateSelectedWallet(value);
+                                  }
+                                },
                               ),
-                              icon: Icon(
-                                Icons.keyboard_arrow_down,
-                                color: context.appColors.secondary,
-                              ),
-                              initialValue: selectedWallet,
-                              items: wallets.map((w) {
-                                return DropdownMenuItem(
-                                  value: w,
-                                  child: Text(
-                                    w.displayLabel(context),
-                                    style: context.font.headlineSmall,
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  context
-                                      .read<SendCubit>()
-                                      .updateSelectedWallet(value);
-                                }
-                              },
                             ),
                           ),
                           const Gap(10),
@@ -605,7 +610,7 @@ class SendConfirmScreen extends StatelessWidget {
                   cubit.state.buildingTransaction ||
                   cubit.state.signingTransaction,
             ),
-            backgroundColor: context.appColors.onPrimary,
+            backgroundColor: context.appColors.background,
             foregroundColor: context.appColors.primary,
           ),
           Expanded(
@@ -716,8 +721,8 @@ class _HighFeeWarning extends StatelessWidget {
       description: context.loc.sendHighFeeWarningDescription(
         feePercent.toStringAsFixed(2),
       ),
-      tagColor: context.appColors.onError,
-      bgColor: context.appColors.secondaryFixed,
+      tagColor: context.appColors.error,
+      bgColor: context.appColors.errorContainer,
     );
   }
 }
@@ -730,8 +735,8 @@ class _SlowPaymentWarning extends StatelessWidget {
     return InfoCard(
       title: context.loc.sendSlowPaymentWarning,
       description: context.loc.sendSlowPaymentWarningDescription,
-      tagColor: context.appColors.onError,
-      bgColor: context.appColors.secondaryFixed,
+      tagColor: context.appColors.error,
+      bgColor: context.appColors.errorContainer,
     );
   }
 }
@@ -763,7 +768,7 @@ class _BottomButtons extends StatelessWidget {
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
-                  backgroundColor: context.appColors.secondaryFixed,
+                  backgroundColor: context.appColors.onSecondary,
                   constraints: const BoxConstraints(maxWidth: double.infinity),
                   builder: (BuildContext buildContext) => BlocProvider.value(
                     value: context.read<SendCubit>(),
@@ -918,7 +923,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
                 BBText(
                   '~$formattedFiatEquivalent',
                   style: context.font.labelSmall,
-                  color: context.appColors.surfaceContainer,
+                  color: context.appColors.onSurfaceVariant,
                 ),
               ],
             ),
@@ -1417,7 +1422,7 @@ class InfoRow extends StatelessWidget {
           BBText(
             title,
             style: context.font.bodySmall,
-            color: context.appColors.surfaceContainer,
+            color: context.appColors.onSurfaceVariant,
           ),
           const Gap(24),
           Expanded(child: details),
@@ -1454,12 +1459,16 @@ class SendConfirmTopArea extends StatelessWidget {
           ),
         ),
         const Gap(16),
-        BBText(context.loc.sendConfirmSend, style: context.font.bodyMedium),
+        BBText(
+          context.loc.sendConfirmSend,
+          style: context.font.bodyMedium,
+          color: context.appColors.secondary,
+        ),
         const Gap(4),
         BBText(
           amountBitcoin,
           style: context.font.displaySmall,
-          color: context.appColors.outlineVariant,
+          color: context.appColors.secondary,
         ),
       ],
     );
