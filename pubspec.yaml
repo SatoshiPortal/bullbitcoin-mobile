@@ -12,7 +12,7 @@ dependencies:
   bdk_flutter:
     git:
       url: https://github.com/SatoshiPortal/bdk-flutter
-      ref: frb-2.11.1
+      ref: 3024b3452b4b0e5982d737f82ff461024a881ae7
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -25,7 +25,7 @@ dependencies:
   payjoin_flutter:
     git:
       url: https://github.com/SatoshiPortal/payjoin-flutter
-      ref: frb-2.11.1
+      ref: 913812dba120703ce9738fa330c5203e1d11f2fa
   qr_flutter: ^4.1.0
   dio: ^5.9.0
   timeago: ^3.7.1
@@ -36,7 +36,7 @@ dependencies:
   bitbox_flutter:
     git:
       url: https://github.com/SatoshiPortal/bitbox-dart
-      ref: frb-2.11.1
+      ref: d44d96983a39896fdc02a2d320036a5ef340e5eb
   flutter_dotenv: ^6.0.0
   hex: ^0.2.0
   auto_size_text: ^3.0.0
@@ -50,7 +50,7 @@ dependencies:
   boltz:
     git:
       url: https://github.com/SatoshiPortal/boltz-dart
-      ref: frb-2.11.1
+      ref: 9c6b351cd077a645a77661414f5009c15048a0c3
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart
@@ -96,13 +96,13 @@ dependencies:
   dart_bbqr:
     git:
       url: https://github.com/SatoshiPortal/bbqr-dart
-      ref: frb-2.11.1
+      ref: 170873e1d59a0b037f2dfac4d26bf900cd539532
   sliver_tools: ^0.2.12
   logging_colorful: ^1.3.2
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/satoshifier-dart
-      ref: 7b5341a5f6d8368173154132871d1f5f394019f9
+      ref: 1957d91551dc0ca5a226252dc7a8dd6535e4bfbc
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:
@@ -119,7 +119,7 @@ dependencies:
   ark_wallet:
     git:
       url: https://github.com/SatoshiPortal/ark-wallet-dart
-      ref: frb-2.11.1
+      ref: 847342ecd4a2d70bea5a0755e4152d1cb7e68493
   socks5_proxy: ^2.1.1
   tor:
     git:

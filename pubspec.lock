@@ -53,8 +53,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "frb-2.11.1"
-      resolved-ref: "386c004724a676370ed72ab61c85e7daf7e63bda"
+      ref: "847342ecd4a2d70bea5a0755e4152d1cb7e68493"
+      resolved-ref: "847342ecd4a2d70bea5a0755e4152d1cb7e68493"
       url: "https://github.com/SatoshiPortal/ark-wallet-dart"
     source: git
     version: "0.0.1"
@@ -94,8 +94,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "frb-2.11.1"
-      resolved-ref: "64e6035d4ae97c3a39e24b9642f9507fd820e7d2"
+      ref: "3024b3452b4b0e5982d737f82ff461024a881ae7"
+      resolved-ref: "3024b3452b4b0e5982d737f82ff461024a881ae7"
       url: "https://github.com/SatoshiPortal/bdk-flutter"
     source: git
     version: "0.31.3"
@@ -151,8 +151,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "frb-2.11.1"
-      resolved-ref: fc67f48768167d6eb72d341997c791c5b86a8749
+      ref: d44d96983a39896fdc02a2d320036a5ef340e5eb
+      resolved-ref: d44d96983a39896fdc02a2d320036a5ef340e5eb
       url: "https://github.com/SatoshiPortal/bitbox-dart"
     source: git
     version: "0.1.0"
@@ -201,8 +201,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "frb-2.11.1"
-      resolved-ref: ad104e32820134ed67ab65c64cac133e8cabe4d7
+      ref: "9c6b351cd077a645a77661414f5009c15048a0c3"
+      resolved-ref: "9c6b351cd077a645a77661414f5009c15048a0c3"
       url: "https://github.com/SatoshiPortal/boltz-dart"
     source: git
     version: "0.2.1"
@@ -466,8 +466,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "frb-2.11.1"
-      resolved-ref: ee90c7d578115fb906d136c3960ee2de43a5ec48
+      ref: "170873e1d59a0b037f2dfac4d26bf900cd539532"
+      resolved-ref: "170873e1d59a0b037f2dfac4d26bf900cd539532"
       url: "https://github.com/SatoshiPortal/bbqr-dart"
     source: git
     version: "0.0.1"
@@ -1424,8 +1424,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "frb-2.11.1"
-      resolved-ref: "9a64069f0995ba41a8cd2916a14cb1361fdd694b"
+      ref: "913812dba120703ce9738fa330c5203e1d11f2fa"
+      resolved-ref: "913812dba120703ce9738fa330c5203e1d11f2fa"
       url: "https://github.com/SatoshiPortal/payjoin-flutter"
     source: git
     version: "0.23.0"
@@ -1610,8 +1610,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "7b5341a5f6d8368173154132871d1f5f394019f9"
-      resolved-ref: "7b5341a5f6d8368173154132871d1f5f394019f9"
+      ref: "1957d91551dc0ca5a226252dc7a8dd6535e4bfbc"
+      resolved-ref: "1957d91551dc0ca5a226252dc7a8dd6535e4bfbc"
       url: "https://github.com/SatoshiPortal/satoshifier-dart"
     source: git
     version: "0.0.1"
