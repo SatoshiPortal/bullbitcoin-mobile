@@ -118,10 +118,10 @@ class DatabaseSeeds {
 
   static Future<void> seedDefaultMempoolServers(SqliteDatabase db) async {
     final serversData = [
-      ('mempool.bullbitcoin.com', false, false),
-      ('mempool.space/testnet', true, false),
-      ('liquid.bullbitcoin.com', false, true),
-      ('liquid.bullbitcoin.com/testnet', true, true),
+      (ApiServiceConstants.bbMempoolUrlPath, false, false),
+      (ApiServiceConstants.testnetMempoolUrlPath, true, false),
+      (ApiServiceConstants.bbLiquidMempoolUrlPath, false, true),
+      (ApiServiceConstants.bbLiquidMempoolTestnetUrlPath, true, true),
     ];
 
     for (final (url, isTestnet, isLiquid) in serversData) {

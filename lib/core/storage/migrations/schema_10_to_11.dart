@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/storage/database_seeds.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -99,8 +98,64 @@ class Schema10To11 {
     await m.createTable(schema11.mempoolServers);
     await m.createTable(schema11.mempoolSettings);
 
-    // Seed default mempool data
-    await DatabaseSeeds.seedDefaultMempoolServers(db);
-    await DatabaseSeeds.seedDefaultMempoolSettings(db);
+    // Seed default mempool servers
+    final mempoolServers = schema11.mempoolServers;
+    final mempoolServersData = [
+      {
+        'url': ApiServiceConstants.bbMempoolUrlPath,
+        'isTestnet': false,
+        'isLiquid': false,
+        'isCustom': false,
+      },
+      {
+        'url': ApiServiceConstants.testnetMempoolUrlPath,
+        'isTestnet': true,
+        'isLiquid': false,
+        'isCustom': false,
+      },
+      {
+        'url': ApiServiceConstants.bbLiquidMempoolUrlPath,
+        'isTestnet': false,
+        'isLiquid': true,
+        'isCustom': false,
+      },
+      {
+        'url': ApiServiceConstants.bbLiquidMempoolTestnetUrlPath,
+        'isTestnet': true,
+        'isLiquid': true,
+        'isCustom': false,
+      },
+    ];
+    for (final server in mempoolServersData) {
+      await db
+          .into(mempoolServers)
+          .insertOnConflictUpdate(
+            RawValuesInsertable({
+              'url': Constant(server['url']),
+              'is_testnet': Constant(server['isTestnet']),
+              'is_liquid': Constant(server['isLiquid']),
+              'is_custom': Constant(server['isCustom']),
+            }),
+          );
+    }
+
+    // Seed default mempool settings
+    final mempoolSettings = schema11.mempoolSettings;
+    final mempoolNetworks = [
+      'bitcoinMainnet',
+      'bitcoinTestnet',
+      'liquidMainnet',
+      'liquidTestnet',
+    ];
+    for (final network in mempoolNetworks) {
+      await db
+          .into(mempoolSettings)
+          .insertOnConflictUpdate(
+            RawValuesInsertable({
+              'network': Constant(network),
+              'use_for_fee_estimation': const Constant(true),
+            }),
+          );
+    }
   }
 }
