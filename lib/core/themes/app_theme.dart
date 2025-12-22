@@ -18,6 +18,11 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: colors.primary,
+        brightness: brightness,
+        primary: colors.primary,
+      ),
       canvasColor: colors.cardBackground,
       scaffoldBackgroundColor: colors.background,
       fontFamily: fonts.fontFamily,
@@ -124,6 +129,9 @@ class AppTheme {
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         refreshBackgroundColor: colors.text,
+        color: colors.primary,
+        circularTrackColor: colors.primary,
+        linearTrackColor: colors.primary,
       ),
     );
   }
