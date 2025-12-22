@@ -284,6 +284,13 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
       ),
     );
     _amountFocusNode = FocusNode();
+    _amountController.addListener(() {
+      final text = _amountController.text;
+      final cubit = context.read<SendCubit>();
+      if (text != cubit.state.amount && !_isMax) {
+        cubit.amountChanged(amount: text);
+      }
+    });
   }
 
   void _setIsMax(bool isMax) {
@@ -353,6 +360,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                   );
                   final walletHasBalance = context.select(
                     (SendCubit cubit) => cubit.state.walletHasBalance,
+                  );
+                  final amountConfirmedClicked = context.select(
+                    (SendCubit cubit) => cubit.state.amountConfirmedClicked,
                   );
                   final isLightning = context.select(
                     (SendCubit cubit) => cubit.state.isLightning,
@@ -431,11 +441,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                 currencyCode,
                               );
                             },
-                            error: balanceError != null
+                            error:
+                                balanceError != null && amountConfirmedClicked
                                 ? context
                                       .loc
                                       .sendErrorInsufficientBalanceForPayment
-                                : !walletHasBalance
+                                : (!walletHasBalance && amountConfirmedClicked)
                                 ? context.loc.sendInsufficientBalance
                                 : swapLimitsError != null
                                 ? _getSwapLimitsErrorMessage(
@@ -459,12 +470,16 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                             child: BalanceRow(
                               balance: state.formattedWalletBalance(),
                               currencyCode: '',
-                              onMaxPressed: !isLightning && !isChainSwap
-                                  ? () {
-                                      _setIsMax(true);
+                              isMax: _isMax,
+                              onMaxToggled: !isLightning && !isChainSwap
+                                  ? (value) {
+                                      _setIsMax(value);
                                       context.read<SendCubit>().amountChanged(
-                                        isMax: true,
+                                        isMax: value,
                                       );
+                                      if (!value) {
+                                        _amountFocusNode.requestFocus();
+                                      }
                                     }
                                   : null,
                               walletLabel: selectedWallet.label,
@@ -480,7 +495,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                             padding: EdgeInsets.only(
                               bottom: Device.screen.height * 0.04,
                             ),
-                            child: SendAmountConfirmButton(),
+                            child: SendAmountConfirmButton(
+                              amountController: _amountController,
+                            ),
                           ),
                         ],
                       ),
@@ -497,13 +514,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
 }
 
 class SendAmountConfirmButton extends StatelessWidget {
-  const SendAmountConfirmButton({super.key});
+  const SendAmountConfirmButton({super.key, required this.amountController});
+
+  final TextEditingController amountController;
 
   @override
   Widget build(BuildContext context) {
-    final hasBalance = context.select(
-      (SendCubit cubit) => cubit.state.walletHasBalance,
-    );
     final amountConfirmedClicked = context.select(
       (SendCubit cubit) => cubit.state.amountConfirmedClicked,
     );
@@ -519,16 +535,20 @@ class SendAmountConfirmButton extends StatelessWidget {
     return BBButton.big(
       label: context.loc.sendContinue,
       onPressed: () {
-        context.read<SendCubit>().onAmountConfirmed();
+        final cubit = context.read<SendCubit>();
+        final currentAmount = amountController.text;
+        if (currentAmount != cubit.state.amount) {
+          cubit.amountChanged(amount: currentAmount);
+        }
+        cubit.onAmountConfirmed();
       },
       disabled:
           amountConfirmedClicked ||
-          !hasBalance ||
           creatingSwap ||
           loadingBestWallet ||
           inputAmountSat <= 0,
       bgColor: context.appColors.secondary,
-      textColor: context.appColors.onPrimary,
+      textColor: context.appColors.onSecondary,
     );
   }
 }

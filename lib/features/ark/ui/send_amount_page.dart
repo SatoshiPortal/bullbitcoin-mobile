@@ -35,6 +35,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
   late BitcoinUnit _preferredBitcoinUnit;
   String? _error;
   int? _maxSpendableSat;
+  bool _isMax = false;
 
   @override
   void initState() {
@@ -191,6 +192,8 @@ class _SendAmountPageState extends State<SendAmountPage> {
                   amountController: _controller,
                   focusNode: _focusNode,
                   error: _error,
+                  readOnly: _isMax,
+                  isMax: _isMax,
                 ),
                 Column(
                   mainAxisAlignment: .spaceBetween,
@@ -208,13 +211,19 @@ class _SendAmountPageState extends State<SendAmountPage> {
                                   : '0.00000000')
                             : (_maxSpendableSat?.toString() ?? '0'),
                         currencyCode: _preferredBitcoinUnit.code,
-                        onMaxPressed: () async {
-                          await context
-                              .read<ArkCubit>()
-                              .onSendCurrencyCodeChanged(
-                                _preferredBitcoinUnit.code,
-                              );
-                          _controller.text = _calculateMaxAmountValue();
+                        isMax: _isMax,
+                        onMaxToggled: (value) async {
+                          setState(() {
+                            _isMax = value;
+                          });
+                          if (value) {
+                            await context
+                                .read<ArkCubit>()
+                                .onSendCurrencyCodeChanged(
+                                  _preferredBitcoinUnit.code,
+                                );
+                            _controller.text = _calculateMaxAmountValue();
+                          }
                         },
                         walletLabel: context.loc.arkInstantPayments,
                       ),
