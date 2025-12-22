@@ -1,9 +1,12 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_proxy_widget.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +30,11 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
 
   @override
   Widget build(BuildContext context) {
+    final currentLanguage = context.select(
+      (SettingsCubit cubit) =>
+          cubit.state.language ?? Language.unitedStatesEnglish,
+    );
+
     return Scaffold(
       appBar: AppBar(title: const Text('Advanced Options')),
       body: SafeArea(
@@ -74,6 +82,29 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                             ),
                           );
                         },
+                      ),
+                      SettingsEntryItem(
+                        icon: Icons.language,
+                        title: context.loc.settingsLanguageTitle,
+                        trailing: DropdownButton<Language>(
+                          value: currentLanguage,
+                          underline: const SizedBox.shrink(),
+                          items: Language.values
+                              .map(
+                                (language) => DropdownMenuItem<Language>(
+                                  value: language,
+                                  child: Text(language.label),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (Language? newLanguage) {
+                            if (newLanguage != null) {
+                              context.read<SettingsCubit>().changeLanguage(
+                                newLanguage,
+                              );
+                            }
+                          },
+                        ),
                       ),
                       const Gap(24),
                       Padding(
