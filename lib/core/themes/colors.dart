@@ -153,7 +153,7 @@ class AppColors {
     primaryFixed: Color(0xFFC50909),
     onPrimaryFixed: Color(0xFFFFFFFF),
     secondary: Color(0xFFFFFFFF),
-    onSecondary: Color(0xFF1C1C1E),
+    onSecondary: Color(0xFF15171C),
     secondaryFixed: Color(0xFF15171C),
     secondaryFixedDim: Color(0xFF58585A),
     onSecondaryFixed: Color(0xFFFFFFFF),

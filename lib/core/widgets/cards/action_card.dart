@@ -33,7 +33,7 @@ class ActionCard extends StatelessWidget {
             Container(
               // padding: const EdgeInsets.all(20),
               height: 70,
-              color: context.appColors.cardBackground,
+              color: context.appColors.background,
               // color: Colors.red,
             ),
             // const Gap(2),
@@ -202,7 +202,7 @@ class _ActionButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: radius,
-            color: context.appColors.surface,
+            color: context.appColors.background,
             backgroundBlendMode: disabled ? .darken : null,
           ),
           child: Column(
@@ -213,9 +213,13 @@ class _ActionButton extends StatelessWidget {
                 icon,
                 height: 24,
                 width: 24,
-                color: context.appColors.onSurface,
+                color: context.appColors.secondary,
               ),
-              BBText(label, style: context.font.bodyLarge),
+              BBText(
+                label,
+                style: context.font.bodyLarge,
+                color: context.appColors.secondary,
+              ),
             ],
           ),
         ),
