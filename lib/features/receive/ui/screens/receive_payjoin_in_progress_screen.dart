@@ -109,7 +109,7 @@ class PayjoinInProgressPage extends StatelessWidget {
             Text(
               '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
               style: context.font.bodyLarge?.copyWith(
-                color: context.appColors.surface,
+                color: context.appColors.onSurfaceVariant,
               ),
             ),
           ],

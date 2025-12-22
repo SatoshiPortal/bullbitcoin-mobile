@@ -39,9 +39,9 @@ class ExchangeSupportChatScreen extends StatelessWidget {
             context.loc.exchangeSupportChatTitle,
             style: context.font.headlineMedium,
           ),
-          backgroundColor: context.appColors.surface,
+          backgroundColor: context.appColors.background,
         ),
-        backgroundColor: context.appColors.surface,
+        backgroundColor: context.appColors.background,
         body: const _ChatBody(),
       ),
     );
@@ -201,11 +201,11 @@ class _MessageBubble extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: isUserMessage
-                  ? context.appColors.surfaceContainer
+                  ? context.appColors.secondary
                   : Color.lerp(
                           context.appColors.primary,
-                          context.appColors.secondary,
-                          0.3,
+                          context.appColors.secondaryFixed,
+                          0.2,
                         ) ??
                         context.appColors.primary,
               borderRadius: BorderRadius.circular(12),
@@ -220,7 +220,7 @@ class _MessageBubble extends StatelessWidget {
                     message.text!,
                     style: context.font.bodyMedium?.copyWith(
                       color: isUserMessage
-                          ? context.appColors.onSurface
+                          ? context.appColors.onSecondary
                           : context.appColors.onPrimary,
                     ),
                   ),
@@ -290,119 +290,128 @@ class _MessageInputState extends State<_MessageInput> {
   Widget build(BuildContext context) {
     final state = context.watch<ExchangeSupportChatCubit>().state;
 
-    return Container(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 8,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 8,
-      ),
-      decoration: BoxDecoration(
-        color: context.appColors.surface,
-        border: Border(
-          top: BorderSide(
-            color: context.appColors.outline.withValues(alpha: 0.2),
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 8,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        decoration: BoxDecoration(
+          color: context.appColors.background,
+          border: Border(
+            top: BorderSide(
+              color: context.appColors.outline.withValues(alpha: 0.2),
+            ),
           ),
         ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (state.errorSendingMessage.isNotEmpty) ...[
-            BBText(
-              state.errorSendingMessage ==
-                      ExchangeSupportChatCubit.errorMessageEmpty
-                  ? context.loc.exchangeSupportChatMessageEmptyError
-                  : state.errorSendingMessage,
-              style: context.font.labelSmall?.copyWith(
-                color: context.appColors.error,
-              ),
-            ),
-            const Gap(8),
-          ],
-          if (state.newMessageAttachments.isNotEmpty) ...[
-            SizedBox(
-              height: 60,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: state.newMessageAttachments.length,
-                itemBuilder: (context, index) {
-                  final attachment = state.newMessageAttachments[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: _AttachmentPreviewWidget(
-                      attachment: attachment,
-                      onRemove: () {
-                        if (attachment.attachmentId != null) {
-                          context
-                              .read<ExchangeSupportChatCubit>()
-                              .removeAttachment(attachment.attachmentId!);
-                        }
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
-            const Gap(8),
-          ],
-          Row(
-            children: [
-              SizedBox(
-                width: 52,
-                height: 52,
-                child: BBButton.big(
-                  label: '',
-                  iconData: Icons.attach_file,
-                  disabled: false,
-                  onPressed: () {
-                    context.read<ExchangeSupportChatCubit>().addAttachment();
-                  },
-                  bgColor: context.appColors.surfaceContainer,
-                  textColor: context.appColors.onSurface,
-                  width: 52,
-                  height: 52,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (state.errorSendingMessage.isNotEmpty) ...[
+              BBText(
+                state.errorSendingMessage ==
+                        ExchangeSupportChatCubit.errorMessageEmpty
+                    ? context.loc.exchangeSupportChatMessageEmptyError
+                    : state.errorSendingMessage,
+                style: context.font.labelSmall?.copyWith(
+                  color: context.appColors.error,
                 ),
               ),
               const Gap(8),
-              Expanded(
-                child: BBInputText(
-                  value: state.newMessageText,
-                  hint:
-                      state.newMessageAttachments.isNotEmpty &&
-                          state.newMessageText.trim().isEmpty
-                      ? context.loc.exchangeSupportChatMessageRequired
-                      : context.loc.exchangeSupportChatInputHint,
-                  maxLines: 4,
-                  onChanged: (text) {
-                    context.read<ExchangeSupportChatCubit>().updateMessageText(
-                      text,
+            ],
+            if (state.newMessageAttachments.isNotEmpty) ...[
+              SizedBox(
+                height: 60,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.newMessageAttachments.length,
+                  itemBuilder: (context, index) {
+                    final attachment = state.newMessageAttachments[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: _AttachmentPreviewWidget(
+                        attachment: attachment,
+                        onRemove: () {
+                          if (attachment.attachmentId != null) {
+                            context
+                                .read<ExchangeSupportChatCubit>()
+                                .removeAttachment(attachment.attachmentId!);
+                          }
+                        },
+                      ),
                     );
                   },
                 ),
               ),
               const Gap(8),
-              SizedBox(
-                width: 52,
-                height: 52,
-                child: BBButton.big(
-                  label: '',
-                  iconData: Icons.send,
-                  disabled:
-                      state.sendingMessage ||
-                      state.newMessageText.trim().isEmpty,
-                  onPressed: () {
-                    context.read<ExchangeSupportChatCubit>().sendMessage();
-                  },
-                  bgColor: context.appColors.primary,
-                  textColor: context.appColors.onPrimary,
+            ],
+            Row(
+              children: [
+                SizedBox(
                   width: 52,
                   height: 52,
+                  child: BBButton.big(
+                    label: '',
+                    iconData: Icons.attach_file,
+                    disabled: false,
+                    onPressed: () {
+                      context.read<ExchangeSupportChatCubit>().addAttachment();
+                    },
+                    bgColor: context.appColors.surfaceContainer,
+                    textColor: context.appColors.onSurface,
+                    width: 52,
+                    height: 52,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+                const Gap(8),
+                Expanded(
+                  child: BBInputText(
+                    value: state.newMessageText,
+                    hint:
+                        state.newMessageAttachments.isNotEmpty &&
+                            state.newMessageText.trim().isEmpty
+                        ? context.loc.exchangeSupportChatMessageRequired
+                        : context.loc.exchangeSupportChatInputHint,
+                    maxLines: 4,
+                    onChanged: (text) {
+                      context
+                          .read<ExchangeSupportChatCubit>()
+                          .updateMessageText(text);
+                    },
+                  ),
+                ),
+                const Gap(8),
+                SizedBox(
+                  width: 52,
+                  height: 52,
+                  child: BBButton.big(
+                    label: '',
+                    iconData: Icons.send,
+                    disabled:
+                        state.sendingMessage ||
+                        state.newMessageText.trim().isEmpty,
+                    onPressed: () {
+                      context.read<ExchangeSupportChatCubit>().sendMessage();
+                    },
+                    bgColor:
+                        Color.lerp(
+                          context.appColors.primary,
+                          context.appColors.secondaryFixed,
+                          0.2,
+                        ) ??
+                        context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
+                    width: 52,
+                    height: 52,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -454,12 +463,12 @@ class _AttachmentWidget extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: isUserMessage
-                  ? context.appColors.surfaceContainer
+                  ? context.appColors.secondary
                   : context.appColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: isUserMessage
-                    ? context.appColors.outline.withValues(alpha: 0.2)
+                    ? context.appColors.onSecondary
                     : context.appColors.secondary,
                 width: isUserMessage ? 1 : 2,
               ),
@@ -471,7 +480,7 @@ class _AttachmentWidget extends StatelessWidget {
                   Icons.image,
                   size: 30,
                   color: isUserMessage
-                      ? context.appColors.onSurface
+                      ? context.appColors.onSecondary
                       : context.appColors.secondary,
                 ),
                 const Gap(8),
@@ -480,7 +489,11 @@ class _AttachmentWidget extends StatelessWidget {
                     attachment.fileName != null
                         ? _shortenFileName(attachment.fileName!)
                         : 'Image',
-                    style: context.font.bodySmall,
+                    style: context.font.bodySmall?.copyWith(
+                      color: isUserMessage
+                          ? context.appColors.onSecondary
+                          : null,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -525,7 +538,7 @@ class _AttachmentWidget extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: isUserMessage
-                ? context.appColors.surfaceContainer
+                ? context.appColors.secondaryFixedDim
                 : context.appColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
@@ -543,7 +556,7 @@ class _AttachmentWidget extends StatelessWidget {
                   Icons.picture_as_pdf,
                   size: 30,
                   color: isUserMessage
-                      ? context.appColors.onSurface
+                      ? context.appColors.onSecondary
                       : context.appColors.secondary,
                 )
               else
@@ -551,7 +564,7 @@ class _AttachmentWidget extends StatelessWidget {
                   Icons.file_present,
                   size: 30,
                   color: isUserMessage
-                      ? context.appColors.onSurface
+                      ? context.appColors.onSecondary
                       : context.appColors.secondary,
                 ),
               const Gap(8),
@@ -560,7 +573,9 @@ class _AttachmentWidget extends StatelessWidget {
                   attachment.fileName != null
                       ? _shortenFileName(attachment.fileName!)
                       : 'Unknown file',
-                  style: context.font.bodySmall,
+                  style: context.font.bodySmall?.copyWith(
+                    color: isUserMessage ? context.appColors.onSecondary : null,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

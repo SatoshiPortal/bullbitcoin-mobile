@@ -17,7 +17,7 @@ class TransactionDirectionBadge extends StatelessWidget {
       height: 72,
       decoration: BoxDecoration(
         border: Border.all(color: context.appColors.surface),
-        color: context.appColors.onPrimary,
+        color: context.appColors.onSecondary,
         borderRadius: BorderRadius.circular(60),
         boxShadow: [
           BoxShadow(

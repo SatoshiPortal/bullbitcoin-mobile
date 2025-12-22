@@ -64,6 +64,7 @@ class AppRouter {
           final isExchangeLanding = location.contains(
             ExchangeRoute.exchangeLanding.path,
           );
+          final isSupportChat = location.contains('/support-chat');
 
           return BlocProvider(
             create: (_) => locator<PriceChartCubit>(),
@@ -78,7 +79,7 @@ class AppRouter {
                 appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                 extendBodyBehindAppBar: true,
                 body: child,
-                bottomNavigationBar: isExchangeLanding
+                bottomNavigationBar: isExchangeLanding || isSupportChat
                     ? null
                     : BottomNavigationBar(
                         currentIndex: tabIndex,

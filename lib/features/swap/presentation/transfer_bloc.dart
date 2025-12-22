@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -66,6 +67,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     required DetectBitcoinStringUsecase detectBitcoinStringUsecase,
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required GetWalletUtxosUsecase getWalletUtxosUsecase,
+    required ConvertSatsToCurrencyAmountUsecase
+    convertSatsToCurrencyAmountUsecase,
   }) : _getSettingsUsecase = getSettingsUsecase,
        _getWalletsUsecase = getWalletsUsecase,
        _getSwapLimitsUsecase = getSwapLimitsUsecase,
@@ -89,6 +92,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
        _detectBitcoinStringUsecase = detectBitcoinStringUsecase,
        _getReceiveAddressUsecase = getReceiveAddressUsecase,
        _getWalletUtxosUsecase = getWalletUtxosUsecase,
+       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
        super(const TransferState()) {
     on<TransferStarted>(_onStarted);
     on<TransferWalletsChanged>(_onWalletsChanged);
@@ -129,6 +133,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
+  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
 
   @override
   Future<void> close() async {
@@ -142,11 +147,19 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   ) async {
     emit(state.copyWith(isStarting: true));
     try {
-      final (settings, wallets, liquidNetworkFees, bitcoinNetworkFees) = await (
-        _getSettingsUsecase.execute(),
+      final settings = await _getSettingsUsecase.execute();
+      final (
+        wallets,
+        liquidNetworkFees,
+        bitcoinNetworkFees,
+        exchangeRate,
+      ) = await (
         _getWalletsUsecase.execute(),
         _getNetworkFeesUsecase.execute(isLiquid: true),
         _getNetworkFeesUsecase.execute(isLiquid: false),
+        _convertSatsToCurrencyAmountUsecase.execute(
+          currencyCode: settings.currencyCode,
+        ),
       ).wait;
       final liquidWallets = wallets
           .where(
@@ -178,7 +191,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           bitcoinNetworkFees: bitcoinNetworkFees,
           liquidNetworkFees: liquidNetworkFees,
           fiatCurrencyCode: settings.currencyCode,
-          exchangeRate: 0.0,
+          exchangeRate: exchangeRate,
         ),
       );
 

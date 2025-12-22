@@ -20,8 +20,9 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: context.appColors.onSecondary,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         mainAxisSize: .min,
@@ -33,13 +34,17 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
                 child: BBText(
                   context.loc.sendAdvancedOptions,
                   style: context.font.headlineMedium,
+                  color: context.appColors.secondary,
                 ),
               ),
               Positioned(
                 right: 0,
                 child: IconButton(
                   iconSize: 24,
-                  icon: const Icon(Icons.close),
+                  icon: Icon(
+                    Icons.close,
+                    color: context.appColors.secondary,
+                  ),
                   onPressed: context.pop,
                 ),
               ),
@@ -52,6 +57,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
               BBText(
                 context.loc.sendReplaceByFeeActivated,
                 style: context.font.headlineMedium,
+                color: context.appColors.secondary,
               ),
               Switch(
                 value: isRBFEnabled,
@@ -69,13 +75,17 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
               style: context.font.bodyLarge?.copyWith(
                 fontWeight: .w500,
               ),
+              color: context.appColors.secondary,
             ),
-            trailing: const Icon(Icons.arrow_forward),
+            trailing: Icon(
+              Icons.arrow_forward,
+              color: context.appColors.secondary,
+            ),
             onTap: () {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                backgroundColor: context.appColors.secondaryFixed,
+                backgroundColor: context.appColors.onSecondary,
                 constraints: const BoxConstraints(maxWidth: double.infinity),
                 useSafeArea: true,
                 builder:

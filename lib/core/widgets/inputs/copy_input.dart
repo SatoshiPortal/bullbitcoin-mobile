@@ -36,7 +36,7 @@ class CopyInput extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: context.appColors.onPrimary,
+        color: context.appColors.onSecondary,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: context.appColors.secondaryFixedDim),
       ),

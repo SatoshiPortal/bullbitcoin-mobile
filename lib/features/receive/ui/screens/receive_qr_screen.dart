@@ -102,35 +102,41 @@ class ReceiveQRDetails extends StatelessWidget {
               selectedWallet != null &&
               selectedWallet.isBitcoin)
             ColoredBox(
-              color: context.appColors.onPrimary,
-              child: DropdownButtonFormField<Wallet>(
-                alignment: Alignment.centerLeft,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.appColors.secondary,
-                ),
-                dropdownColor: context.appColors.onPrimary,
-                initialValue: selectedWallet,
-                items: wallets.map((w) {
-                  return DropdownMenuItem(
-                    value: w,
-                    child: Text(
-                      w.displayLabel(context),
-                      style: context.font.headlineSmall,
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    context.read<ReceiveBloc>().add(
-                      ReceiveEvent.receiveBitcoinStarted(value),
+              color: context.appColors.onSecondary,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: DropdownButtonFormField<Wallet>(
+                  alignment: Alignment.centerLeft,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: context.appColors.secondary,
+                  ),
+                  iconSize: 24,
+                  dropdownColor: context.appColors.onSecondary,
+                  initialValue: selectedWallet,
+                  items: wallets.map((w) {
+                    return DropdownMenuItem(
+                      value: w,
+                      child: Text(
+                        w.displayLabel(context),
+                        style: context.font.headlineSmall?.copyWith(
+                          color: context.appColors.secondary,
+                        ),
+                      ),
                     );
-                  }
-                },
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      context.read<ReceiveBloc>().add(
+                        ReceiveEvent.receiveBitcoinStarted(value),
+                      );
+                    }
+                  },
+                ),
               ),
             ),
           const Gap(20),
@@ -164,6 +170,7 @@ class ReceiveQRDetails extends StatelessWidget {
                     ? context.loc.receiveLightningInvoice
                     : context.loc.receiveAddress,
                 style: context.font.bodyMedium,
+                color: context.appColors.secondary,
               ),
               const Gap(6),
               // TODO: We should probably just make a specific widget for the
@@ -240,7 +247,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         BBText(
                           context.loc.receiveAmount,
                           style: context.font.labelSmall,
-                          color: context.appColors.outline,
+                          color: context.appColors.onSurfaceVariant,
                         ),
                         const Gap(4),
                         Row(
@@ -258,7 +265,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         BBText(
                           '~$amountEquivalent',
                           style: context.font.bodyLarge,
-                          color: context.appColors.outline,
+                          color: context.appColors.onSurfaceVariant,
                         ),
                       ],
                     ),
@@ -314,7 +321,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                         BBText(
                           context.loc.receiveNote,
                           style: context.font.labelSmall,
-                          color: context.appColors.outline,
+                          color: context.appColors.onSurfaceVariant,
                         ),
                         const Gap(4),
                         BBText(
@@ -390,7 +397,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                 BBText(
                   context.loc.receiveAmount,
                   style: context.font.bodySmall,
-                  color: context.appColors.surfaceContainer,
+                  color: context.appColors.onSurfaceVariant,
                 ),
                 const Spacer(),
                 Column(
@@ -404,7 +411,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                     BBText(
                       '~$amountEquivalent',
                       style: context.font.labelSmall,
-                      color: context.appColors.surfaceContainer,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                   ],
                 ),
@@ -421,7 +428,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                   BBText(
                     context.loc.receiveReceiveAmount,
                     style: context.font.bodySmall,
-                    color: context.appColors.surfaceContainer,
+                    color: context.appColors.onSurfaceVariant,
                   ),
                   const Spacer(),
                   CurrencyText(
@@ -442,7 +449,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                   BBText(
                     context.loc.receiveNote,
                     style: context.font.labelSmall,
-                    color: context.appColors.outline,
+                    color: context.appColors.onSurfaceVariant,
                   ),
                   const Gap(24),
                   Expanded(
@@ -478,7 +485,7 @@ class ReceiveLnSwapID extends StatelessWidget {
           BBText(
             context.loc.receiveSwapId,
             style: context.font.bodySmall,
-            color: context.appColors.surfaceContainer,
+            color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
           BBText(swap.id, style: context.font.bodyLarge, textAlign: .end),
@@ -513,14 +520,14 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
           BBText(
             label,
             style: context.font.bodySmall,
-            color: context.appColors.surfaceContainer,
+            color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
           CurrencyText(
             amt,
             showFiat: false,
             style: context.font.bodySmall,
-            color: context.appColors.surfaceContainer,
+            color: context.appColors.onSurfaceVariant,
           ),
         ],
       ),
@@ -550,14 +557,14 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
               BBText(
                 context.loc.receiveTotalFee,
                 style: context.font.bodySmall,
-                color: context.appColors.surfaceContainer,
+                color: context.appColors.onSurfaceVariant,
               ),
               const Spacer(),
               CurrencyText(
                 swap.fees?.totalFees(null) ?? 0,
                 showFiat: false,
                 style: context.font.bodyLarge,
-                color: context.appColors.outlineVariant,
+                color: context.appColors.onSurfaceVariant,
               ),
               const Gap(4),
               Icon(
@@ -575,7 +582,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
             child: BBText(
               context.loc.receiveFeeExplanation,
               style: context.font.labelSmall,
-              color: context.appColors.surfaceContainer,
+              color: context.appColors.onSurfaceVariant,
             ),
           ),
           if (swap.fees!.lockupFee != null)

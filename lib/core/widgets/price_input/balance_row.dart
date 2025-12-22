@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -7,7 +8,8 @@ class BalanceRow extends StatelessWidget {
   final String title;
   final String balance;
   final String currencyCode;
-  final void Function()? onMaxPressed;
+  final void Function(bool)? onMaxToggled;
+  final bool isMax;
   final String? walletLabel;
 
   const BalanceRow({
@@ -15,7 +17,8 @@ class BalanceRow extends StatelessWidget {
     this.title = 'Balance',
     required this.balance,
     required this.currencyCode,
-    required this.onMaxPressed,
+    this.onMaxToggled,
+    this.isMax = false,
     this.walletLabel,
   });
 
@@ -33,8 +36,8 @@ class BalanceRow extends StatelessWidget {
                 RichText(
                   text: TextSpan(
                     text: 'Wallet: ',
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.surface,
+                    style: context.font.labelLarge?.copyWith(
+                      color: context.appColors.onSurfaceVariant,
                     ),
                     children: [
                       TextSpan(
@@ -52,7 +55,7 @@ class BalanceRow extends StatelessWidget {
                 text: TextSpan(
                   text: '$title: ',
                   style: context.font.labelLarge?.copyWith(
-                    color: context.appColors.surface,
+                    color: context.appColors.onSurfaceVariant,
                   ),
                   children: [
                     TextSpan(
@@ -67,15 +70,17 @@ class BalanceRow extends StatelessWidget {
             ],
           ),
         ),
-        if (onMaxPressed != null)
-          BBButton.small(
-            label: 'MAX',
-            height: 30,
-            width: 51,
-            bgColor: context.appColors.secondaryFixedDim,
-            textColor: context.appColors.secondary,
-            textStyle: context.font.labelLarge,
-            onPressed: onMaxPressed!,
+        if (onMaxToggled != null)
+          Row(
+            children: [
+              BBText(
+                'MAX',
+                style: context.font.labelLarge,
+                color: context.appColors.secondary,
+              ),
+              const Gap(8),
+              BBSwitch(value: isMax, onChanged: onMaxToggled!),
+            ],
           ),
       ],
     );
