@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:bb_mobile/core/recoverbull/data/models/drive_file_metadata_model.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
 class GoogleDriveAppDatasource {
-  static final _google = GoogleSignIn.instance;
-  static const _scopes = ['https://www.googleapis.com/auth/drive.appdata'];
+  static final _google = GoogleSignIn(
+    scopes: ['https://www.googleapis.com/auth/drive.appdata'],
+  );
 
   drive.DriveApi? _driveApi;
 
@@ -20,24 +20,12 @@ class GoogleDriveAppDatasource {
 
   Future<void> connect() async {
     try {
-      if (ApiServiceConstants.googleDriveClientId.isNotEmpty) {
-        await GoogleSignIn.instance.initialize(
-          clientId: ApiServiceConstants.googleDriveClientId,
-          serverClientId: ApiServiceConstants.googleDriveClientId,
-        );
-      }
+      final account = await _google.signIn();
+      if (account == null) throw 'Sign-in failed';
 
-      var authorization = await _google.authorizationClient
-          .authorizationForScopes(_scopes);
+      final client = await _google.authenticatedClient();
+      if (client == null) throw 'Failed to get authenticated client';
 
-      if (authorization == null) {
-        final account = await _google.authenticate(scopeHint: _scopes);
-        authorization = await account.authorizationClient.authorizeScopes(
-          _scopes,
-        );
-      }
-
-      final client = authorization.authClient(scopes: _scopes);
       _driveApi = drive.DriveApi(client);
     } catch (e) {
       log.severe('Google Sign-in error: $e');

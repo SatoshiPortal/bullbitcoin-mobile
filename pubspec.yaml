@@ -69,8 +69,8 @@ dependencies:
   custom_sliding_segmented_control: ^1.8.5
   shimmer: ^3.0.0
   googleapis: ^15.0.0
-  google_sign_in: ^7.2.0
-  extension_google_sign_in_as_googleapis_auth: ^3.0.0
+  google_sign_in: ^6.3.0
+  extension_google_sign_in_as_googleapis_auth: ^2.0.13
   recoverbull:
     git:
       url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
