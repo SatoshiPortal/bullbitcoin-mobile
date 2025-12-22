@@ -43,7 +43,7 @@ enum Language {
   unitedStatesEnglish('en', 'US', 'English'),
   franceFrench('fr', 'FR', 'Français'),
   spanish('es', 'ES', 'Español'),
-  finnish('fi', 'FI', 'Suomeksi');
+  finnish('fi', 'FI', 'Suomi');
 
   final String languageCode;
   final String? countryCode;
