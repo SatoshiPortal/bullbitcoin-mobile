@@ -12,47 +12,41 @@ class SellCoinSelectionBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bitcoinUnit = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).bitcoinUnit
-              : BitcoinUnit.btc,
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).bitcoinUnit
+          : BitcoinUnit.btc,
     );
 
     final utxos = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).utxos
-              : <WalletUtxo>[],
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).utxos
+          : <WalletUtxo>[],
     );
 
     final selectedUtxos = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).selectedUtxos
-              : <WalletUtxo>[],
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).selectedUtxos
+          : <WalletUtxo>[],
     );
 
     final exchangeRate = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).exchangeRateEstimate
-              : 0.0,
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).exchangeRateEstimate
+          : 0.0,
     );
 
     final fiatCurrency = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? (bloc.state as SellPaymentState).fiatCurrency.code
-              : 'CAD',
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? (bloc.state as SellPaymentState).fiatCurrency.code
+          : 'CAD',
     );
 
     final payinAmountSat = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellPaymentState
-              ? ConvertAmount.btcToSats(
-                (bloc.state as SellPaymentState).sellOrder.payinAmount,
-              )
-              : 0,
+      (SellBloc bloc) => bloc.state is SellPaymentState
+          ? ConvertAmount.btcToSats(
+              (bloc.state as SellPaymentState).sellOrder.payinAmount,
+            )
+          : 0,
     );
 
     return CommonCoinSelectionBottomSheet(
@@ -60,10 +54,12 @@ class SellCoinSelectionBottomSheet extends StatelessWidget {
       exchangeRate: exchangeRate ?? 0.0,
       fiatCurrency: fiatCurrency,
       utxos: utxos,
-      selectedUtxos: selectedUtxos,
+      initialSelectedUtxos: selectedUtxos,
       amountToSendSat: payinAmountSat,
-      onUtxoSelected: (utxo) {
-        context.read<SellBloc>().add(SellEvent.utxoSelected(utxo: utxo));
+      onDone: (selectedUtxos) {
+        context.read<SellBloc>().add(
+          SellEvent.utxosSelected(utxos: selectedUtxos),
+        );
       },
     );
   }

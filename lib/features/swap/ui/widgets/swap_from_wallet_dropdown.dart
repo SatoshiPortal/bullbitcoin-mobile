@@ -27,7 +27,7 @@ class SwapFromWalletDropdown extends StatelessWidget {
         else
           BBDropdown<Wallet>(
             items: wallets
-                .where((wallet) => wallet.isLiquid || wallet.signsLocally)
+                .where((wallet) => wallet.signsLocally)
                 .map(
                   (wallet) => DropdownMenuItem(
                     value: wallet,
@@ -56,12 +56,36 @@ class SwapFromWalletDropdown extends StatelessWidget {
             },
             onChanged: (value) {
               if (value != null) {
-                context.read<TransferBloc>().add(
-                  TransferWalletsChanged(
-                    fromWallet: value,
-                    toWallet: context.read<TransferBloc>().state.toWallet!,
-                  ),
-                );
+                final bloc = context.read<TransferBloc>();
+                final currentToWallet = bloc.state.toWallet;
+
+                // If Liquid wallet selected in From, ensure To is Bitcoin
+                if (value.isLiquid &&
+                    currentToWallet != null &&
+                    currentToWallet.isLiquid) {
+                  // Find Secure Bitcoin (default Bitcoin wallet)
+                  final secureBitcoin = wallets
+                      .where((w) => !w.isLiquid && w.isDefault)
+                      .firstOrNull;
+                  if (secureBitcoin != null) {
+                    bloc.add(
+                      TransferWalletsChanged(
+                        fromWallet: value,
+                        toWallet: secureBitcoin,
+                      ),
+                    );
+                    return;
+                  }
+                }
+
+                if (currentToWallet != null) {
+                  bloc.add(
+                    TransferWalletsChanged(
+                      fromWallet: value,
+                      toWallet: currentToWallet,
+                    ),
+                  );
+                }
               }
             },
           ),

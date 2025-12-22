@@ -32,23 +32,21 @@ class LwkWalletDatasource {
   Stream<String> get walletSyncFinishedStream =>
       _walletSyncFinishedController.stream;
 
-  bool isWalletSyncing({String? walletId}) =>
-      walletId == null
-          ? _activeSyncs.isNotEmpty
-          : _activeSyncs.containsKey(walletId);
+  bool isWalletSyncing({String? walletId}) => walletId == null
+      ? _activeSyncs.isNotEmpty
+      : _activeSyncs.containsKey(walletId);
 
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     try {
       final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       final balances = await lwkWallet.balances();
 
-      final lBtcAssetBalance =
-          balances.firstWhere((balance) {
-            final assetId = _lBtcAssetId(
-              wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
-            );
-            return balance.assetId == assetId;
-          }).value;
+      final lBtcAssetBalance = balances.firstWhere((balance) {
+        final assetId = _lBtcAssetId(
+          wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+        );
+        return balance.assetId == assetId;
+      }).value;
 
       final balance = BalanceModel(
         confirmedSat: BigInt.from(lBtcAssetBalance),
@@ -313,8 +311,9 @@ class LwkWalletDatasource {
       final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       final transactions = await lwkWallet.txs();
       final usedAddressesMap = await _getUsedAddressesMap(wallet: wallet);
-      final network =
-          wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet;
+      final network = wallet.isTestnet
+          ? Network.liquidTestnet
+          : Network.liquidMainnet;
       final lbtcAssetId = _lBtcAssetId(network);
       final walletTxs = await Future.wait(
         transactions.map((tx) async {
@@ -337,58 +336,56 @@ class LwkWalletDatasource {
           final isToSelf =
               tx.kind == 'redeposit' || finalBalance.abs() == tx.fee.toInt();
           int changeAmountInToSelf = 0;
-          final (inputs, outputs) =
-              await (
-                Future.wait(
-                  tx.inputs.asMap().entries.map((entry) async {
-                    final vin = entry.key;
-                    final input = entry.value;
-                    final walletInputAddress =
-                        usedAddressesMap[input.address.standard] ??
-                        usedAddressesMap[input.address.confidential];
-                    final isOwn = isToSelf || walletInputAddress != null;
-                    return TransactionInputModel.liquid(
-                      txId: tx.txid,
-                      vin: vin,
-                      isOwn: isOwn,
-                      value: input.unblinded.value,
-                      scriptPubkey: input.scriptPubkey,
-                      previousTxId: input.outpoint.txid,
-                      previousTxVout: input.outpoint.vout,
-                    );
-                  }),
-                ),
-                Future.wait(
-                  tx.outputs.asMap().entries.map((entry) async {
-                    final vout = entry.key;
-                    final output = entry.value;
-                    final walletOutputAddress =
-                        usedAddressesMap[output.address.standard] ??
-                        usedAddressesMap[output.address.confidential];
-                    final isOwn = isToSelf || walletOutputAddress != null;
-                    if (isToSelf && walletOutputAddress == null) {
-                      changeAmountInToSelf += output.unblinded.value.toInt();
-                    }
-                    return TransactionOutputModel.liquid(
-                      txId: tx.txid,
-                      vout: vout,
-                      isOwn: isOwn,
-                      value: output.unblinded.value,
-                      scriptPubkey: output.scriptPubkey,
-                      address: output.address.confidential,
-                    );
-                  }),
-                ),
-              ).wait;
+          final (inputs, outputs) = await (
+            Future.wait(
+              tx.inputs.asMap().entries.map((entry) async {
+                final vin = entry.key;
+                final input = entry.value;
+                final walletInputAddress =
+                    usedAddressesMap[input.address.standard] ??
+                    usedAddressesMap[input.address.confidential];
+                final isOwn = isToSelf || walletInputAddress != null;
+                return TransactionInputModel.liquid(
+                  txId: tx.txid,
+                  vin: vin,
+                  isOwn: isOwn,
+                  value: input.unblinded.value,
+                  scriptPubkey: input.scriptPubkey,
+                  previousTxId: input.outpoint.txid,
+                  previousTxVout: input.outpoint.vout,
+                );
+              }),
+            ),
+            Future.wait(
+              tx.outputs.asMap().entries.map((entry) async {
+                final vout = entry.key;
+                final output = entry.value;
+                final walletOutputAddress =
+                    usedAddressesMap[output.address.standard] ??
+                    usedAddressesMap[output.address.confidential];
+                final isOwn = isToSelf || walletOutputAddress != null;
+                if (isToSelf && walletOutputAddress == null) {
+                  changeAmountInToSelf += output.unblinded.value.toInt();
+                }
+                return TransactionOutputModel.liquid(
+                  txId: tx.txid,
+                  vout: vout,
+                  isOwn: isOwn,
+                  value: output.unblinded.value,
+                  scriptPubkey: output.scriptPubkey,
+                  address: output.address.confidential,
+                );
+              }),
+            ),
+          ).wait;
           final sumOutputs = outputs
               .map((i) => i.value?.toInt() ?? 0)
               .fold(0, (int a, b) => a + b);
-          final netAmountSat =
-              isToSelf
-                  ? sumOutputs - changeAmountInToSelf
-                  : isIncoming
-                  ? finalBalance
-                  : finalBalance.abs() - tx.fee.toInt();
+          final netAmountSat = isToSelf
+              ? sumOutputs - changeAmountInToSelf
+              : isIncoming
+              ? finalBalance
+              : finalBalance.abs() - tx.fee.toInt();
 
           return WalletTransactionModel(
             txId: tx.txid,
@@ -497,8 +494,9 @@ class LwkWalletDatasource {
       final decoded = await lwkWallet.decodeTx(pset: pset);
 
       // Get the L-BTC asset ID for the network
-      final network =
-          wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet;
+      final network = wallet.isTestnet
+          ? Network.liquidTestnet
+          : Network.liquidMainnet;
       final lbtcAssetId = _lBtcAssetId(network);
 
       // Find the L-BTC balance in the decoded amounts
@@ -557,6 +555,11 @@ class LwkWalletDatasource {
         rethrow;
       }
     }
+  }
+
+  Future<void> delete({required WalletModel wallet}) async {
+    await LwkFacade.delete(wallet);
+    log.fine('Deleted wallet ${wallet.id} LWK database');
   }
 }
 

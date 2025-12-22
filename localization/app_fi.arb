@@ -260,7 +260,7 @@
   "@walletDetailsPubkeyLabel": {
     "description": "Label for the public key field in wallet details"
   },
-  "walletDetailsDescriptorLabel": "Kuvaus",
+  "walletDetailsDescriptorLabel": "Descriptor-merkkijono",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
   },
@@ -296,11 +296,11 @@
   "@bitcoinSettingsWalletsTitle": {
     "description": "Title for the wallets section in Bitcoin settings"
   },
-  "bitcoinSettingsElectrumServerTitle": "Electrum-palvelimen asetukset",
+  "bitcoinSettingsElectrumServerTitle": "Electrum-palvelimet",
   "@bitcoinSettingsElectrumServerTitle": {
     "description": "Title for the Electrum server settings section in Bitcoin settings"
   },
-  "bitcoinSettingsAutoTransferTitle": "Automaattisen siirron asetukset",
+  "bitcoinSettingsAutoTransferTitle": "Automaattinen swap",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
@@ -564,7 +564,7 @@
   "@walletDeletionErrorDefaultWallet": {
     "description": "Error message when attempting to delete a default wallet"
   },
-  "walletDeletionErrorOngoingSwaps": "Et voi poistaa lompakkoa, jossa on käynnissä olevia swäppejä.",
+  "walletDeletionErrorOngoingSwaps": "Et voi poistaa lompakkoa, jossa on käynnissä olevia swappejä.",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
@@ -680,6 +680,10 @@
   "@sendDone": {
     "description": "Button label for completing the send flow"
   },
+  "sendSelectedUtxosInsufficient": "Valitut UTXO:t eivät kata vaadittua määrää",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
   "sendAdvancedOptions": "Lisäasetukset",
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
@@ -700,7 +704,7 @@
   "@sendInsufficientBalance": {
     "description": "Error message when the wallet has insufficient balance to send"
   },
-  "sendScanBitcoinQRCode": "Skannaa mikä tahansa Bitcoin- tai Lightning-QR-koodi maksaaksesi bitcoinilla.",
+  "sendScanBitcoinQRCode": "Lähetä Bitcoin- tai Lightning-varoja scannaamalla QR-koodi.",
   "@sendScanBitcoinQRCode": {
     "description": "Instructions for scanning a QR code to make a Bitcoin payment"
   },
@@ -832,7 +836,7 @@
   "@receiveLiquid": {
     "description": "Label for receiving Bitcoin via Liquid Network"
   },
-  "receiveAddLabel": "Lisää tunniste",
+  "receiveAddLabel": "Lisää kuvaus",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
   },
@@ -864,7 +868,7 @@
   "@receiveNoteLabel": {
     "description": "Label for the note field in receive"
   },
-  "receiveEnterHere": "Syötä tähän...",
+  "receiveEnterHere": "(on antamatta)",
   "@receiveEnterHere": {
     "description": "Placeholder text for input fields in receive"
   },
@@ -2018,11 +2022,11 @@
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
   },
-  "transactionFilterSend": "Lähetetyt",
+  "transactionFilterSend": "Lähetetty",
   "@transactionFilterSend": {
     "description": "Filter option to show only sent transactions"
   },
-  "transactionFilterReceive": "Vastaanotetut",
+  "transactionFilterReceive": "Vastaanotettu",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
   },
@@ -2402,7 +2406,7 @@
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
   },
-  "transactionSwapDescChainClaimable": "Lukitustransaktio on vahvistettu. Voit nyt lunastaa swäpin varat.",
+  "transactionSwapDescChainClaimable": "Lukitustransaktio on vahvistettu. Voit nyt lunastaa swapin varat.",
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
   },
@@ -2746,7 +2750,7 @@
   "@walletButtonSend": {
     "description": "Button label to send funds"
   },
-  "walletArkInstantPayments": "Ark Välittömät maksut",
+  "walletArkInstantPayments": "Välittömät Ark-maksut",
   "@walletArkInstantPayments": {
     "description": "Title for Ark wallet card"
   },
@@ -2754,15 +2758,15 @@
   "@walletArkExperimental": {
     "description": "Description for Ark wallet indicating experimental status"
   },
-  "fundExchangeTitle": "Rahoitus",
+  "fundExchangeTitle": "Talleta varoja tilillesi",
   "@fundExchangeTitle": {
     "description": "AppBar title for funding screen"
   },
-  "fundExchangeAccountTitle": "Rahoita tilisi",
+  "fundExchangeAccountTitle": "Talletus",
   "@fundExchangeAccountTitle": {
     "description": "Main title on the fund exchange account screen"
   },
-  "fundExchangeAccountSubtitle": "Valitse maa ja maksutapa",
+  "fundExchangeAccountSubtitle": "Valitse maa ja talletustapa",
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
   },
@@ -2950,15 +2954,15 @@
   "@fundExchangeHelpBeneficiaryName": {
     "description": "Help text for beneficiary name field"
   },
-  "fundExchangeLabelTransferCode": "Siirtokoodi (lisää maksun kuvaukseen)",
+  "fundExchangeLabelTransferCode": "Siirtokoodi (tilisiirron viestikenttään)",
   "@fundExchangeLabelTransferCode": {
     "description": "Label for transfer code field"
   },
-  "fundExchangeHelpTransferCode": "Lisää tämä siirron syyksi",
+  "fundExchangeHelpTransferCode": "Lisää tämä tilisiirron viestiksi",
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "fundExchangeInfoTransferCode": "Sinun on lisättävä siirtokoodi maksun \"viestiksi\" tai \"syyksi\".",
+  "fundExchangeInfoTransferCode": "Sinun on lisättävä siirtokoodi tilisiirron \"viestiksi\" tai \"syyksi\".",
   "@fundExchangeInfoTransferCode": {
     "description": "Info card message about transfer code importance"
   },
@@ -3082,19 +3086,19 @@
   "@fundExchangeSepaTitle": {
     "description": "Screen title for SEPA transfer payment details"
   },
-  "fundExchangeSepaDescription": "Lähetä SEPA-siirto pankkitililtäsi käyttäen alla olevia tietoja ",
+  "fundExchangeSepaDescription": "Lähetä pankista SEPA-tilisiirto, käyttäen alla olevia vastaanottajatietoja ",
   "@fundExchangeSepaDescription": {
     "description": "Description for SEPA transfer (first part, before 'exactly')"
   },
-  "fundExchangeSepaDescriptionExactly": "täsmälleen.",
+  "fundExchangeSepaDescriptionExactly": "sellaisenaan.",
   "@fundExchangeSepaDescriptionExactly": {
     "description": "Emphasized word 'exactly' in SEPA description"
   },
-  "fundExchangeInstantSepaInfo": "Käytä vain alle 20 000 euron tapahtumiin. Suurempiin tapahtumiin käytä tavallista SEPA-vaihtoehtoa.",
+  "fundExchangeInstantSepaInfo": "Käytä vain alle 20 000 euron tapahtumiin. Suurempiin tapahtumiin käytä tavallista SEPA-siirtoa.",
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
   },
-  "fundExchangeRegularSepaInfo": "Käytä vain yli 20 000 euron tapahtumiin. Pienempiin tapahtumiin käytä välitöntä SEPA-vaihtoehtoa.",
+  "fundExchangeRegularSepaInfo": "Käytä vain yli 20 000 euron tapahtumiin. Pienempiin tapahtumiin käytä Instant SEPA-siirtoa.",
   "@fundExchangeRegularSepaInfo": {
     "description": "Info message for Regular SEPA transaction limits"
   },
@@ -3118,7 +3122,7 @@
   "@fundExchangeInfoBeneficiaryNameLeonod": {
     "description": "Critical info about beneficiary name being LEONOD"
   },
-  "fundExchangeInfoPaymentDescription": "Lisää maksun kuvaukseen siirtokoodisi.",
+  "fundExchangeInfoPaymentDescription": "Lisää siirtokoodisi tilisiirron viestikenttään.",
   "@fundExchangeInfoPaymentDescription": {
     "description": "Info about adding transfer code to payment description"
   },
@@ -3202,7 +3206,7 @@
   "@fundExchangeHelpPaymentDescription": {
     "description": "Help text for payment description field"
   },
-  "fundExchangeInfoTransferCodeRequired": "Sinun on lisättävä siirtokoodi maksutapahtuman \"viestiksi\", \"syyksi\" tai \"kuvaukseksi\". Jos unohdat lisätä tämän koodin, maksusi voidaan hylätä.",
+  "fundExchangeInfoTransferCodeRequired": "Sinun on lisättävä siirtokoodi tilisiirron \"viestiksi\", \"syyksi\" tai \"kuvaukseksi\". Jos unohdat lisätä tämän koodin, maksusi voidaan hylätä.",
   "@fundExchangeInfoTransferCodeRequired": {
     "description": "Important info about transfer code requirement for Costa Rica transfers"
   },
@@ -3982,11 +3986,11 @@
   "@anErrorOccurred": {
     "description": "Generic error message"
   },
-  "dcaSetRecurringBuyTitle": "Aseta toistuva osto",
+  "dcaSetRecurringBuyTitle": "Määritä toistuva osto",
   "@dcaSetRecurringBuyTitle": {
     "description": "AppBar title for the main DCA setup screen"
   },
-  "dcaInsufficientBalanceTitle": "Riittämätön saldo",
+  "dcaInsufficientBalanceTitle": "Saldo ei riitä",
   "@dcaInsufficientBalanceTitle": {
     "description": "InfoCard title when user has insufficient funds"
   },
@@ -3994,7 +3998,7 @@
   "@dcaInsufficientBalanceDescription": {
     "description": "InfoCard description explaining insufficient balance error"
   },
-  "dcaFundAccountButton": "Rahoita tilisi",
+  "dcaFundAccountButton": "Talletus",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
   },
@@ -4623,7 +4627,7 @@
       }
     }
   },
-  "autoswapTriggerBalanceError": "Käynnistyssaldo on oltava vähintään 2x perussaldo",
+  "autoswapTriggerBalanceError": "Aloitussaldon on oltava vähintään saldo x2",
   "@autoswapTriggerBalanceError": {
     "description": "Validation error shown when trigger balance is less than 2x the base balance"
   },
@@ -4719,7 +4723,7 @@
   "@arkRedeemButton": {
     "description": "Confirm button to execute collaborative redeem"
   },
-  "arkInstantPayments": "Ark Välittömät maksut",
+  "arkInstantPayments": "Välittömät Ark-maksut",
   "@arkInstantPayments": {
     "description": "Main page title in top bar"
   },
@@ -4959,7 +4963,7 @@
   "@arkSettled": {
     "description": "Label for settled balance in Ark balance breakdown"
   },
-  "arkAvailable": "Saatavilla",
+  "arkAvailable": "Käytettävissä",
   "@arkAvailable": {
     "description": "Label for available balance in Ark balance breakdown"
   },
@@ -5454,11 +5458,11 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "addressViewReceiveType": "Vastaanota",
+  "addressViewReceiveType": "Vastaanotto",
   "@addressViewReceiveType": {
     "description": "Address type label for external/receive addresses"
   },
-  "addressViewChangeType": "Muutos",
+  "addressViewChangeType": "Vaihtoraha",
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
   },
@@ -5589,7 +5593,7 @@
   "@feePriorityLabel": {
     "description": "Label for fee selection priority option"
   },
-  "transferIdLabel": "Swäpin tunnus",
+  "transferIdLabel": "Swapin tunnus",
   "@transferIdLabel": {
     "description": "Label for swap transfer ID"
   },
@@ -8963,7 +8967,7 @@
   "@importWatchOnlyFingerprint": {
     "description": "Label for wallet fingerprint field"
   },
-  "importWatchOnlyDerivationPath": "Johdannaispolku",
+  "importWatchOnlyDerivationPath": "Derivointipolku",
   "@importWatchOnlyDerivationPath": {
     "description": "Label for derivation path field"
   },
@@ -8979,7 +8983,7 @@
   "@importWatchOnlyBuyDevice": {
     "description": "Button label to purchase a hardware wallet device"
   },
-  "importWatchOnlyWalletGuides": "Lompakon oppaat",
+  "importWatchOnlyWalletGuides": "Oppaat",
   "@importWatchOnlyWalletGuides": {
     "description": "Button label for wallet documentation and guides"
   },
@@ -8987,7 +8991,7 @@
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
   },
-  "importWatchOnlySelectDerivation": "Valitse johdannainen",
+  "importWatchOnlySelectDerivation": "Valitse derivointitapa",
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
@@ -9019,11 +9023,11 @@
   "@importWatchOnlyExtendedPublicKey": {
     "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
-  "importWatchOnlyDisclaimerTitle": "Johdannaispolkuvaroitus",
+  "importWatchOnlyDisclaimerTitle": "Derivointipolkuvaroitus",
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
   },
-  "importWatchOnlyDisclaimerDescription": "Varmista, että valitsemasi johdannaispolku vastaa sitä, jolla annettu xpub on tuotettu, tarkistamalla ennen käyttöä ensimmäinen lompakosta johdettu osoite. Väärän polun käyttäminen voi johtaa varojen menetykseen.",
+  "importWatchOnlyDisclaimerDescription": "Varmista, että valitsemasi derivointipolku vastaa sitä, jolla annettu xpub on tuotettu. Tarkista ennen käyttöä ensimmäinen lompakosta johdettu osoite. Väärän polun käyttäminen voi johtaa varojen menetykseen.",
   "@importWatchOnlyDisclaimerDescription": {
     "description": "Description explaining derivation path matching requirement"
   },
@@ -9031,7 +9035,7 @@
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
   },
-  "bip85ExperimentalWarning": "Kokeellinen\nVarmuuskopioi johdannaispolut käsin",
+  "bip85ExperimentalWarning": "Kokeellinen\nVarmuuskopioi derivointipolut käsin",
   "@bip85ExperimentalWarning": {
     "description": "Warning message about experimental feature"
   },
@@ -9283,6 +9287,10 @@
   "importQrDeviceJadeStep10": "Valmista!",
   "@importQrDeviceJadeStep10": {
     "description": "Jade instruction step 10"
+  },
+  "importQrDeviceJadeFirmwareWarning": "Varmista, että laitteesi on päivitetty uusimpaan laiteohjelmistoon",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
   },
   "importQrDeviceKruxName": "Krux",
   "@importQrDeviceKruxName": {
@@ -9604,7 +9612,7 @@
   "@exchangeLandingConnect": {
     "description": "Subtitle on exchange landing screen"
   },
-  "exchangeLandingFeature1": "Osta Bitcoinia suoraan omaan hallintaan",
+  "exchangeLandingFeature1": "Osta Bitcoinia omaan säilytykseen",
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
   },
@@ -9735,7 +9743,7 @@
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
   },
-  "withdrawAmountTitle": "Nosta fiat-valuuttaa",
+  "withdrawAmountTitle": "Nosta varoja tililtäsi",
   "@withdrawAmountTitle": {
     "description": "AppBar title for withdraw amount screen"
   },
@@ -9824,7 +9832,7 @@
       }
     }
   },
-  "fundExchangeFundAccount": "Rahoita tiliäsi",
+  "fundExchangeFundAccount": "Talletus",
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
@@ -9860,7 +9868,7 @@
   "@dcaSetupInsufficientBalanceMessage": {
     "description": "Insufficient balance error message"
   },
-  "dcaSetupFundAccount": "Rahoita tiliäsi",
+  "dcaSetupFundAccount": "Talletus",
   "@dcaSetupFundAccount": {
     "description": "Button to fund account"
   },
@@ -9994,7 +10002,7 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "buyInputFundAccount": "Rahoita tiliäsi",
+  "buyInputFundAccount": "Talletus",
   "@buyInputFundAccount": {
     "description": "Button to fund account"
   },
@@ -10130,7 +10138,7 @@
   "@arkSetupTitle": {
     "description": "AppBar title for Ark setup screen"
   },
-  "arkSetupExperimentalWarning": "Ark on yhä kokeellinen.\n\nArk-lompakkosi johdetaan päälompakkosi siemenlauseesta. Erillistä varmuuskopiota ei tarvita, nykyinen lompakon varmuuskopio palauttaa myös Ark-varasi.\n\nJatkamalla hyväksyt Arkin kokeellisen luonteen ja riskin varojen menettämisestä.\n\nKehittäjähuomautus: Ark-salasana johdetaan päälompakon siemenestä mielivaltaisella BIP-85-derivaatiolla (indeksi 11811).",
+  "arkSetupExperimentalWarning": "Ark on vielä kokeellinen teknologia.\n\nArk-lompakkosi johdetaan päälompakkosi siemenlauseesta. Erillistä varmuuskopiota ei tarvita, koska nykyisen lompakon varmuuskopio palauttaa myös Ark-varasi.\n\nJatkamalla hyväksyt Arkin kokeellisen luonteen ja riskin varojen menettämisestä.\n\nKehittäjähuomautus: Ark-salasana johdetaan päälompakon siemenestä mielivaltaisella BIP-85-derivaatiolla (indeksi 11811).",
   "@arkSetupExperimentalWarning": {
     "description": "Ark experimental warning text"
   },
@@ -10198,7 +10206,7 @@
   "@swapProgressGoHome": {
     "description": "Go home button on progress screen"
   },
-  "autoswapTitle": "Automaattisen siirron asetukset",
+  "autoswapTitle": "Automaattisen swapin asetukset",
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
@@ -11102,7 +11110,7 @@
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
-  "exchangeLandingConnectAccount": "Yhdistä Bull Bitcoin -pörssitilisi",
+  "exchangeLandingConnectAccount": "Yhdistä Bull Bitcoin -pörssitiliisi",
   "@exchangeLandingConnectAccount": {
     "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
@@ -11110,7 +11118,7 @@
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
   },
-  "exchangeFeatureSelfCustody": "• Osta Bitcoinia suoraan omaan säilytykseen",
+  "exchangeFeatureSelfCustody": "• Osta Bitcoinia omaan säilytykseen",
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
@@ -11134,11 +11142,11 @@
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
   },
-  "priceChartFetchingHistory": "Haetaan hintahistoriaa...",
+  "priceChartFetchingHistory": "Haetaan kurssihistoriaa...",
   "@priceChartFetchingHistory": {
     "description": "Message shown while fetching price history when no local data is available"
   },
-  "exchangeLandingDisclaimerLegal": "Pääsy pörssipalveluihin rajoitetaan maihin, joissa Bull Bitcoin voi toimia laillisesti, ja se voi edellyttää KYC-tunnistautumista.",
+  "exchangeLandingDisclaimerLegal": "Pääsy pörssipalveluihin rajoitetaan maihin, joissa Bull Bitcoin voi toimia laillisesti. Käyttö voi edellyttää KYC-tunnistautumista.",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"
   },
@@ -11186,7 +11194,7 @@
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
   },
-  "exchangeSupportChatMessageRequired": "Viesti vaaditaan",
+  "exchangeSupportChatMessageRequired": "Liite vaatii viestiin sisältöä",
   "@exchangeSupportChatMessageRequired": {
     "description": "Placeholder text when attachments are present but no message text"
   },
@@ -11198,7 +11206,7 @@
   "@exchangeSupportChatYesterday": {
     "description": "Label for yesterday in date formatting"
   },
-  "exchangeSupportChatWalletIssuesInfo": "Tämä chatti on vain vaihtoon liittyviä ongelmia varten Rahoituksessa/Osto/Myynti/Nosto/Maksu.\nLompakkoon liittyvien ongelmien osalta liity Telegram-ryhmään klikkaamalla tästä.",
+  "exchangeSupportChatWalletIssuesInfo": "Tämä chatti on vain pörssiin liittyviä talletus/osto/myynti/nosto/maksu -ongelmia varten.\nLompakkotukea tarjoavaan Telegram-ryhmään pääset tästä.",
   "@exchangeSupportChatWalletIssuesInfo": {
     "description": "Info message about wallet issues and telegram group link"
   },
@@ -11210,7 +11218,7 @@
   "@exchangeDcaDeactivateTitle": {
     "description": "Title shown when DCA is active and can be deactivated"
   },
-  "exchangeDcaActivateTitle": "Ota toistuva osto käyttöön",
+  "exchangeDcaActivateTitle": "Ota käyttöön toistuvat ostot",
   "@exchangeDcaActivateTitle": {
     "description": "Title shown when DCA is inactive and can be activated"
   },
@@ -11799,11 +11807,11 @@
   "@recoverbullErrorInvalidVaultFile": {
     "description": "Error message when vault file format is invalid"
   },
-  "systemLabelSwaps": "Swaps",
+  "systemLabelSwaps": "Swapit",
   "@systemLabelSwaps": {
     "description": "System label for swap transactions"
   },
-  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelAutoSwap": "Automaattinen swap",
   "@systemLabelAutoSwap": {
     "description": "System label for automatic swap transactions"
   },
@@ -11811,7 +11819,7 @@
   "@systemLabelPayjoin": {
     "description": "System label for payjoin transactions"
   },
-  "systemLabelSelfSpend": "Itsesiirto",
+  "systemLabelSelfSpend": "Oma siirto",
   "@systemLabelSelfSpend": {
     "description": "System label for self-spend transactions"
   },
@@ -11832,7 +11840,7 @@
       }
     }
   },
-  "labelErrorUnsupportedType": "Tyyppiä {type} ei tueta",
+  "labelErrorUnsupportedType": "Tunnistetyyppiä {type} ei tueta",
   "@labelErrorUnsupportedType": {
     "description": "Error message when label type is not supported",
     "placeholders": {

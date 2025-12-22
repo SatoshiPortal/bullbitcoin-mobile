@@ -832,6 +832,10 @@
   "@sendDone": {
     "description": "Button label for completing the send flow"
   },
+  "sendSelectedUtxosInsufficient": "Los UTXO seleccionados no cubren el monto requerido",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
   "sendAdvancedOptions": "Opciones Avanzadas",
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
@@ -9483,6 +9487,10 @@
   "importQrDeviceJadeStep10": "¡Eso es todo!",
   "@importQrDeviceJadeStep10": {
     "description": "Jade instruction step 10"
+  },
+  "importQrDeviceJadeFirmwareWarning": "Asegúrese de que su dispositivo esté actualizado con el firmware más reciente",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
   },
   "importQrDeviceKruxName": "Krux",
   "@importQrDeviceKruxName": {

@@ -28,9 +28,10 @@ class DatabaseSeeds {
 
   static Future<void> seedDefaultElectrumServers(SqliteDatabase db) async {
     final serversData = [
-      (ApiServiceConstants.bbElectrumUrl, false, false, 0),
+      (ApiServiceConstants.fulcrumElectrumUrl, false, false, 0),
+      (ApiServiceConstants.bbElectrumUrl, false, false, 1),
       (ApiServiceConstants.bbLiquidElectrumUrlPath, false, true, 0),
-      (ApiServiceConstants.publicElectrumUrl, false, false, 1),
+      (ApiServiceConstants.publicElectrumUrl, false, false, 2),
       (ApiServiceConstants.publicLiquidElectrumUrlPath, false, true, 1),
       (ApiServiceConstants.publicElectrumTestUrl, true, false, 0),
       (ApiServiceConstants.publicliquidElectrumTestUrlPath, true, true, 0),
