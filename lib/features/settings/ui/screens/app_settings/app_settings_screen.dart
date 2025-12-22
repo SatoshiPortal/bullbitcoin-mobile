@@ -44,30 +44,29 @@ class AppSettingsScreen extends StatelessWidget {
                     context.pushNamed(TorSettingsRoute.torSettings.name);
                   },
                 ),
-                if (isSuperuser)
-                  SettingsEntryItem(
-                    icon: Icons.language,
-                    title: context.loc.settingsLanguageTitle,
-                    trailing: DropdownButton<Language>(
-                      value: currentLanguage,
-                      underline: const SizedBox.shrink(),
-                      items: Language.values
-                          .map(
-                            (language) => DropdownMenuItem<Language>(
-                              value: language,
-                              child: Text(language.label),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (Language? newLanguage) {
-                        if (newLanguage != null) {
-                          context.read<SettingsCubit>().changeLanguage(
-                            newLanguage,
-                          );
-                        }
-                      },
-                    ),
+                SettingsEntryItem(
+                  icon: Icons.language,
+                  title: context.loc.settingsLanguageTitle,
+                  trailing: DropdownButton<Language>(
+                    value: currentLanguage,
+                    underline: const SizedBox.shrink(),
+                    items: Language.values
+                        .map(
+                          (language) => DropdownMenuItem<Language>(
+                            value: language,
+                            child: Text(language.label),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (Language? newLanguage) {
+                      if (newLanguage != null) {
+                        context.read<SettingsCubit>().changeLanguage(
+                          newLanguage,
+                        );
+                      }
+                    },
                   ),
+                ),
                 if (isSuperuser)
                   SettingsEntryItem(
                     icon: Icons.developer_mode,
