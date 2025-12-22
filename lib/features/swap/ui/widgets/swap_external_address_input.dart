@@ -26,7 +26,12 @@ class SwapExternalAddressInput extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        Text(context.loc.swapToLabel, style: context.font.bodyLarge),
+        Text(
+          context.loc.swapToLabel,
+          style: context.font.bodyLarge?.copyWith(
+            color: context.appColors.onSurface,
+          ),
+        ),
         const Gap(4),
         BBInputText(
           onChanged: (value) {
@@ -37,7 +42,7 @@ class SwapExternalAddressInput extends StatelessWidget {
           value: state.address,
           hint: context.loc.swapExternalAddressHint,
           hintStyle: context.font.bodyMedium?.copyWith(
-            color: context.appColors.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
           maxLines: 1,
           rightIcon: Row(
@@ -46,7 +51,7 @@ class SwapExternalAddressInput extends StatelessWidget {
               IconButton(
                 icon: Icon(
                   Icons.qr_code_scanner,
-                  color: context.appColors.secondary,
+                  color: context.appColors.onSurface,
                   size: 20,
                 ),
                 onPressed: () async {
@@ -63,7 +68,7 @@ class SwapExternalAddressInput extends StatelessWidget {
               IconButton(
                 icon: Icon(
                   Icons.paste_sharp,
-                  color: context.appColors.secondary,
+                  color: context.appColors.onSurface,
                   size: 20,
                 ),
                 onPressed: () {
