@@ -38,14 +38,13 @@ class SwapCoinSelectionBottomSheet extends StatelessWidget {
       exchangeRate: exchangeRate,
       fiatCurrency: fiatCurrency,
       utxos: utxos,
-      selectedUtxos: selectedUtxos,
+      initialSelectedUtxos: selectedUtxos,
       amountToSendSat: amountToSendSat,
-      onUtxoSelected: (utxo) {
+      onDone: (selectedUtxos) {
         context.read<TransferBloc>().add(
-          TransferEvent.utxoSelected(utxo),
+          TransferEvent.utxosSelected(selectedUtxos),
         );
       },
     );
   }
 }
-

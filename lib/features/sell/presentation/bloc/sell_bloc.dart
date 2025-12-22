@@ -93,7 +93,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     on<SellSendPaymentConfirmed>(_onSendPaymentConfirmed);
     on<SellPollOrderStatus>(_onPollOrderStatus);
     on<SellReplaceByFeeChanged>(_onReplaceByFeeChanged);
-    on<SellUtxoSelected>(_onUtxoSelected);
+    on<SellUtxosSelected>(_onUtxosSelected);
     on<SellLoadUtxos>(_onLoadUtxos);
   }
 
@@ -576,20 +576,14 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     await _recalculateFees(emit);
   }
 
-  Future<void> _onUtxoSelected(
-    SellUtxoSelected event,
+  Future<void> _onUtxosSelected(
+    SellUtxosSelected event,
     Emitter<SellState> emit,
   ) async {
     if (state is! SellPaymentState) return;
 
     final sellPaymentState = state as SellPaymentState;
-    final selectedUtxos = List.of(sellPaymentState.selectedUtxos);
-
-    if (selectedUtxos.contains(event.utxo)) {
-      selectedUtxos.remove(event.utxo);
-    } else {
-      selectedUtxos.add(event.utxo);
-    }
+    final selectedUtxos = event.utxos;
 
     emit(sellPaymentState.copyWith(selectedUtxos: selectedUtxos));
     await _recalculateFees(emit);

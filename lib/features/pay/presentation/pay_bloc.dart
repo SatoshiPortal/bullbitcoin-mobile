@@ -85,7 +85,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     on<PaySendPaymentConfirmed>(_onSendPaymentConfirmed);
     on<PayPollOrderStatus>(_onPollOrderStatus);
     on<PayReplaceByFeeChanged>(_onReplaceByFeeChanged);
-    on<PayUtxoSelected>(_onUtxoSelected);
+    on<PayUtxosSelected>(_onUtxosSelected);
     on<PayLoadUtxos>(_onLoadUtxos);
     on<PayUpdateOrderStatus>(_onUpdateOrderStatus);
   }
@@ -536,20 +536,14 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   }
 
   // From Sell: Select/deselect UTXOs
-  Future<void> _onUtxoSelected(
-    PayUtxoSelected event,
+  Future<void> _onUtxosSelected(
+    PayUtxosSelected event,
     Emitter<PayState> emit,
   ) async {
     if (state is! PayPaymentState) return;
 
     final payPaymentState = state as PayPaymentState;
-    final selectedUtxos = List.of(payPaymentState.selectedUtxos);
-
-    if (selectedUtxos.contains(event.utxo)) {
-      selectedUtxos.remove(event.utxo);
-    } else {
-      selectedUtxos.add(event.utxo);
-    }
+    final selectedUtxos = event.utxos;
 
     emit(payPaymentState.copyWith(selectedUtxos: selectedUtxos));
     await _recalculateFees(emit);

@@ -19,8 +19,8 @@ sealed class TransferEvent with _$TransferEvent {
       TransferReceiveExactAmountToggled;
   const factory TransferEvent.replaceByFeeChanged(bool replaceByFee) =
       TransferReplaceByFeeChanged;
-  const factory TransferEvent.utxoSelected(WalletUtxo utxo) =
-      TransferUtxoSelected;
+  const factory TransferEvent.utxosSelected(List<WalletUtxo> utxos) =
+      TransferUtxosSelected;
   const factory TransferEvent.loadUtxos() = TransferLoadUtxos;
   const factory TransferEvent.feeOptionSelected(FeeSelection feeSelection) =
       TransferFeeOptionSelected;

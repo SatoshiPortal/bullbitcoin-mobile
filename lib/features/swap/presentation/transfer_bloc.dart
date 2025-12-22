@@ -99,7 +99,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     on<TransferExternalAddressChanged>(_onExternalAddressChanged);
     on<TransferReceiveExactAmountToggled>(_onReceiveExactAmountToggled);
     on<TransferReplaceByFeeChanged>(_onReplaceByFeeChanged);
-    on<TransferUtxoSelected>(_onUtxoSelected);
+    on<TransferUtxosSelected>(_onUtxosSelected);
     on<TransferLoadUtxos>(_onLoadUtxos);
     on<TransferFeeOptionSelected>(_onFeeOptionSelected);
     on<TransferCustomFeeChanged>(_onCustomFeeChanged);
@@ -142,40 +142,30 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   ) async {
     emit(state.copyWith(isStarting: true));
     try {
-      final (settings, wallets, liquidNetworkFees, bitcoinNetworkFees) =
-          await (
-            _getSettingsUsecase.execute(),
-            _getWalletsUsecase.execute(),
-            _getNetworkFeesUsecase.execute(isLiquid: true),
-            _getNetworkFeesUsecase.execute(isLiquid: false),
-          ).wait;
-      final liquidWallets =
-          wallets
-              .where(
-                (wallet) =>
-                    wallet.isLiquid &&
-                    (wallet.isDefault || wallet.signsLocally),
-              )
-              .toList();
-      final bitcoinWallets =
-          wallets
-              .where((wallet) => !wallet.isLiquid && wallet.signsLocally)
-              .toList();
+      final (settings, wallets, liquidNetworkFees, bitcoinNetworkFees) = await (
+        _getSettingsUsecase.execute(),
+        _getWalletsUsecase.execute(),
+        _getNetworkFeesUsecase.execute(isLiquid: true),
+        _getNetworkFeesUsecase.execute(isLiquid: false),
+      ).wait;
+      final liquidWallets = wallets
+          .where(
+            (wallet) =>
+                wallet.isLiquid && (wallet.isDefault || wallet.signsLocally),
+          )
+          .toList();
+      final bitcoinWallets = wallets
+          .where((wallet) => !wallet.isLiquid && wallet.signsLocally)
+          .toList();
 
-      final fromWallet =
-          liquidWallets.isNotEmpty
-              ? (liquidWallets
-                      .where((wallet) => wallet.isDefault)
-                      .firstOrNull ??
-                  liquidWallets.first)
-              : null;
-      final toWallet =
-          bitcoinWallets.isNotEmpty
-              ? (bitcoinWallets
-                      .where((wallet) => wallet.isDefault)
-                      .firstOrNull ??
-                  bitcoinWallets.first)
-              : null;
+      final fromWallet = liquidWallets.isNotEmpty
+          ? (liquidWallets.where((wallet) => wallet.isDefault).firstOrNull ??
+                liquidWallets.first)
+          : null;
+      final toWallet = bitcoinWallets.isNotEmpty
+          ? (bitcoinWallets.where((wallet) => wallet.isDefault).firstOrNull ??
+                bitcoinWallets.first)
+          : null;
       // Set the bitcoin network fees and liquid network fees already here,
       //  since they are needed for the rest of the initialization steps, like
       //  calculating the max amount.
@@ -198,19 +188,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         btcToLbtcSwapLimitsAndFees,
         maxAmountSat,
       ) = await (
-            _getSwapLimitsUsecase.execute(
-              type: SwapType.liquidToBitcoin,
-              isTestnet: isTestnet,
-            ),
-            _getSwapLimitsUsecase.execute(
-              type: SwapType.bitcoinToLiquid,
-              isTestnet: isTestnet,
-              updateLimitsAndFees: false, // chain fees are already updated
-            ),
-            fromWallet != null
-                ? getMaxAmountSat(fromWallet)
-                : Future.value(null),
-          ).wait;
+        _getSwapLimitsUsecase.execute(
+          type: SwapType.liquidToBitcoin,
+          isTestnet: isTestnet,
+        ),
+        _getSwapLimitsUsecase.execute(
+          type: SwapType.bitcoinToLiquid,
+          isTestnet: isTestnet,
+          updateLimitsAndFees: false, // chain fees are already updated
+        ),
+        fromWallet != null ? getMaxAmountSat(fromWallet) : Future.value(null),
+      ).wait;
 
       emit(
         state.copyWith(
@@ -253,7 +241,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           newToWallet = bitcoinWallets.first;
         }
       } else if (!isFromWalletChanged && newToWallet.isLiquid) {
-        final bitcoinWallets = state.wallets.where((w) => !w.isLiquid && w.signsLocally).toList();
+        final bitcoinWallets = state.wallets
+            .where((w) => !w.isLiquid && w.signsLocally)
+            .toList();
         if (bitcoinWallets.isNotEmpty) {
           newFromWallet = bitcoinWallets.first;
         }
@@ -306,10 +296,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       ),
     );
     try {
-      final inputAmountSat =
-          state.bitcoinUnit == BitcoinUnit.sats
-              ? int.parse(event.amount)
-              : ConvertAmount.btcToSats(double.parse(event.amount));
+      final inputAmountSat = state.bitcoinUnit == BitcoinUnit.sats
+          ? int.parse(event.amount)
+          : ConvertAmount.btcToSats(double.parse(event.amount));
 
       int paymentAmountSat = inputAmountSat;
       if (state.receiveExactAmount && !state.isSameChainTransfer) {
@@ -350,10 +339,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           return;
         }
 
-        final swapType =
-            state.fromWallet!.isLiquid
-                ? SwapType.liquidToBitcoin
-                : SwapType.bitcoinToLiquid;
+        final swapType = state.fromWallet!.isLiquid
+            ? SwapType.liquidToBitcoin
+            : SwapType.bitcoinToLiquid;
 
         swap = await _createChainSwapToExternalUsecase.execute(
           sendWalletId: state.fromWallet!.id,
@@ -402,16 +390,19 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
             ),
           );
         } else {
-        final bitcoinWalletId = state.fromWallet!.id;
-        final selectedFee = state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
-        final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase
+          final bitcoinWalletId = state.fromWallet!.id;
+          final selectedFee =
+              state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
+          final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase
               .execute(
                 walletId: bitcoinWalletId,
                 address: swap.paymentAddress,
                 amountSat: isMaxSend ? null : swap.paymentAmount,
                 networkFee: selectedFee,
                 drain: isMaxSend,
-                selectedInputs: state.selectedUtxos.isNotEmpty ? state.selectedUtxos : null,
+                selectedInputs: state.selectedUtxos.isNotEmpty
+                    ? state.selectedUtxos
+                    : null,
                 replaceByFee: state.replaceByFee,
               );
 
@@ -428,10 +419,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
           signedPsbt = signedPsbtAndTxSize.signedPsbt;
           bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
-              .execute(
-                psbt: signedPsbtAndTxSize.signedPsbt,
-                feeRate: selectedFee.value as double,
-              );
+              .execute(psbt: signedPsbtAndTxSize.signedPsbt);
           final bitcoinTxSize = signedPsbtAndTxSize.txSize;
           final settings = await _getSettingsUsecase.execute();
           final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
@@ -461,14 +449,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           type: SwapType.bitcoinToLiquid,
           amountSat: paymentAmountSat,
         );
-        final selectedFee = state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
+        final selectedFee =
+            state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: bitcoinWalletId,
           address: swap.paymentAddress,
           amountSat: isMaxSend ? null : swap.paymentAmount,
           networkFee: selectedFee,
           drain: isMaxSend,
-          selectedInputs: state.selectedUtxos.isNotEmpty ? state.selectedUtxos : null,
+          selectedInputs: state.selectedUtxos.isNotEmpty
+              ? state.selectedUtxos
+              : null,
           replaceByFee: state.replaceByFee,
         );
 
@@ -485,10 +476,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
         signedPsbt = signedPsbtAndTxSize.signedPsbt;
         bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
-            .execute(
-              psbt: signedPsbtAndTxSize.signedPsbt,
-              feeRate: selectedFee.value as double,
-            );
+            .execute(psbt: signedPsbtAndTxSize.signedPsbt);
         final bitcoinTxSize = signedPsbtAndTxSize.txSize;
         final settings = await _getSettingsUsecase.execute();
         final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
@@ -585,14 +573,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           return;
         }
 
-        final selectedFee = state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
+        final selectedFee =
+            state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: bitcoinWalletId,
           address: receiveAddress,
           amountSat: isMaxSend ? null : paymentAmountSat,
           networkFee: selectedFee,
           drain: isMaxSend,
-          selectedInputs: state.selectedUtxos.isNotEmpty ? state.selectedUtxos : null,
+          selectedInputs: state.selectedUtxos.isNotEmpty
+              ? state.selectedUtxos
+              : null,
           replaceByFee: state.replaceByFee,
         );
 
@@ -602,10 +593,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         );
 
         signedPsbt = signedPsbtAndTxSize.signedPsbt;
-        bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-          psbt: signedPsbtAndTxSize.signedPsbt,
-          feeRate: selectedFee.value as double,
-        );
+        bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
+            .execute(psbt: signedPsbtAndTxSize.signedPsbt);
         final bitcoinTxSize = signedPsbtAndTxSize.txSize;
 
         emit(
@@ -634,10 +623,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         ),
       );
     } catch (e) {
-      final errorMessage =
-          _isInsufficientFundsException(e)
-              ? 'Insufficient Balance To Cover Fees And Amount'
-              : e.toString();
+      final errorMessage = _isInsufficientFundsException(e)
+          ? 'Insufficient Balance To Cover Fees And Amount'
+          : e.toString();
       emit(
         state.copyWith(
           swapCreationException: SwapCreationException(errorMessage),
@@ -694,10 +682,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           data: sanitizedText,
         );
       } catch (e) {
-        final errorMessage =
-            fromWallet.isLiquid == true
-                ? 'Please enter a valid Bitcoin address'
-                : 'Please enter a valid Liquid address';
+        final errorMessage = fromWallet.isLiquid == true
+            ? 'Please enter a valid Bitcoin address'
+            : 'Please enter a valid Liquid address';
         emit(
           state.copyWith(
             externalAddress: sanitizedText,
@@ -768,10 +755,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         String? bip21AmountText;
         if (bip21AmountSat != null) {
           try {
-            bip21AmountText =
-                state.bitcoinUnit == BitcoinUnit.sats
-                    ? bip21AmountSat.toString()
-                    : ConvertAmount.satsToBtc(bip21AmountSat).toString();
+            bip21AmountText = state.bitcoinUnit == BitcoinUnit.sats
+                ? bip21AmountSat.toString()
+                : ConvertAmount.satsToBtc(bip21AmountSat).toString();
           } catch (e) {
             bip21AmountText = null;
           }
@@ -788,10 +774,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           ),
         );
       } catch (e) {
-        final errorMessage =
-            fromWallet.isLiquid == true
-                ? 'Please enter a valid Bitcoin address'
-                : 'Please enter a valid Liquid address';
+        final errorMessage = fromWallet.isLiquid == true
+            ? 'Please enter a valid Bitcoin address'
+            : 'Please enter a valid Liquid address';
         emit(
           state.copyWith(
             externalAddress: sanitizedText,
@@ -806,10 +791,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         '',
       );
       final fromWallet = state.fromWallet;
-      final errorMessage =
-          fromWallet?.isLiquid == true
-              ? 'Please enter a valid Bitcoin address'
-              : 'Please enter a valid Liquid address';
+      final errorMessage = fromWallet?.isLiquid == true
+          ? 'Please enter a valid Bitcoin address'
+          : 'Please enter a valid Liquid address';
       emit(
         state.copyWith(
           externalAddress: sanitizedText,
@@ -834,17 +818,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     await _rebuildTransaction(emit);
   }
 
-  Future<void> _onUtxoSelected(
-    TransferUtxoSelected event,
+  Future<void> _onUtxosSelected(
+    TransferUtxosSelected event,
     Emitter<TransferState> emit,
   ) async {
-    final selectedUtxos = List.of(state.selectedUtxos);
-    if (selectedUtxos.contains(event.utxo)) {
-      selectedUtxos.remove(event.utxo);
-    } else {
-      selectedUtxos.add(event.utxo);
-    }
-    emit(state.copyWith(selectedUtxos: selectedUtxos));
+    emit(state.copyWith(selectedUtxos: event.utxos));
     await _rebuildTransaction(emit);
   }
 
@@ -890,7 +868,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   ) async {
     if (stateToUse.fromWallet == null) return;
     if (!stateToUse.shouldShowAdvancedOptions) return;
-    if (stateToUse.signedPsbt.isEmpty && stateToUse.swap == null && !stateToUse.isSameChainTransfer) return;
+    if (stateToUse.signedPsbt.isEmpty &&
+        stateToUse.swap == null &&
+        !stateToUse.isSameChainTransfer) {
+      return;
+    }
 
     try {
       final fromWallet = stateToUse.fromWallet!;
@@ -901,8 +883,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         if (receiveAddress == null || receiveAddress.isEmpty) return;
 
         final inputAmountSat = stateToUse.inputAmountSat;
-        final isMaxSend = stateToUse.maxAmountSat != null && inputAmountSat == stateToUse.maxAmountSat;
-        final selectedFee = stateToUse.selectedFee ?? stateToUse.bitcoinNetworkFees!.fastest;
+        final isMaxSend =
+            stateToUse.maxAmountSat != null &&
+            inputAmountSat == stateToUse.maxAmountSat;
+        final selectedFee =
+            stateToUse.selectedFee ?? stateToUse.bitcoinNetworkFees!.fastest;
 
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: fromWallet.id,
@@ -910,7 +895,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           amountSat: isMaxSend ? null : inputAmountSat,
           networkFee: selectedFee,
           drain: isMaxSend,
-          selectedInputs: stateToUse.selectedUtxos.isNotEmpty ? stateToUse.selectedUtxos : null,
+          selectedInputs: stateToUse.selectedUtxos.isNotEmpty
+              ? stateToUse.selectedUtxos
+              : null,
           replaceByFee: stateToUse.replaceByFee,
         );
 
@@ -919,10 +906,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           psbt: unsignedPsbtAndTxSize.unsignedPsbt,
         );
 
-        final bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-          psbt: signedPsbtAndTxSize.signedPsbt,
-          feeRate: selectedFee.isAbsolute ? selectedFee.value.toDouble() : selectedFee.value as double,
-        );
+        final bitcoinAbsoluteFeesSat =
+            await _calculateBitcoinAbsoluteFeesUsecase.execute(
+              psbt: signedPsbtAndTxSize.signedPsbt,
+            );
 
         emit(
           stateToUse.copyWith(
@@ -934,8 +921,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       } else if (stateToUse.swap != null && stateToUse.swap is ChainSwap) {
         final swap = stateToUse.swap as ChainSwap;
         final inputAmountSat = stateToUse.inputAmountSat;
-        final isMaxSend = stateToUse.maxAmountSat != null && inputAmountSat == stateToUse.maxAmountSat;
-        final selectedFee = stateToUse.selectedFee ?? stateToUse.bitcoinNetworkFees!.fastest;
+        final isMaxSend =
+            stateToUse.maxAmountSat != null &&
+            inputAmountSat == stateToUse.maxAmountSat;
+        final selectedFee =
+            stateToUse.selectedFee ?? stateToUse.bitcoinNetworkFees!.fastest;
 
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: fromWallet.id,
@@ -943,7 +933,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           amountSat: isMaxSend ? null : swap.paymentAmount,
           networkFee: selectedFee,
           drain: isMaxSend,
-          selectedInputs: stateToUse.selectedUtxos.isNotEmpty ? stateToUse.selectedUtxos : null,
+          selectedInputs: stateToUse.selectedUtxos.isNotEmpty
+              ? stateToUse.selectedUtxos
+              : null,
           replaceByFee: stateToUse.replaceByFee,
         );
 
@@ -958,10 +950,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           psbt: unsignedPsbtAndTxSize.unsignedPsbt,
         );
 
-        final bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-          psbt: signedPsbtAndTxSize.signedPsbt,
-          feeRate: selectedFee.isAbsolute ? selectedFee.value.toDouble() : selectedFee.value as double,
-        );
+        final bitcoinAbsoluteFeesSat =
+            await _calculateBitcoinAbsoluteFeesUsecase.execute(
+              psbt: signedPsbtAndTxSize.signedPsbt,
+            );
 
         final settings = await _getSettingsUsecase.execute();
         final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
@@ -1075,10 +1067,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
   Future<int?> getMaxAmountSat(Wallet fromWallet) async {
     try {
-      final networkFee =
-          fromWallet.isLiquid
-              ? state.liquidNetworkFees!.fastest
-              : state.bitcoinNetworkFees!.fastest;
+      final networkFee = fromWallet.isLiquid
+          ? state.liquidNetworkFees!.fastest
+          : state.bitcoinNetworkFees!.fastest;
 
       // Create a dummy drain transaction to calculate the absolute fees
       int absoluteFees;

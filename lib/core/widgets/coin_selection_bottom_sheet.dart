@@ -11,14 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class CommonCoinSelectionBottomSheet extends StatelessWidget {
+class CommonCoinSelectionBottomSheet extends StatefulWidget {
   final BitcoinUnit bitcoinUnit;
   final double exchangeRate;
   final String fiatCurrency;
   final List<WalletUtxo> utxos;
-  final List<WalletUtxo> selectedUtxos;
+  final List<WalletUtxo> initialSelectedUtxos;
   final int amountToSendSat;
-  final Function(WalletUtxo) onUtxoSelected;
+  final Function(List<WalletUtxo>) onDone;
 
   const CommonCoinSelectionBottomSheet({
     super.key,
@@ -26,23 +26,53 @@ class CommonCoinSelectionBottomSheet extends StatelessWidget {
     required this.exchangeRate,
     required this.fiatCurrency,
     required this.utxos,
-    required this.selectedUtxos,
+    required this.initialSelectedUtxos,
     required this.amountToSendSat,
-    required this.onUtxoSelected,
+    required this.onDone,
   });
 
   @override
+  State<CommonCoinSelectionBottomSheet> createState() =>
+      _CommonCoinSelectionBottomSheetState();
+}
+
+class _CommonCoinSelectionBottomSheetState
+    extends State<CommonCoinSelectionBottomSheet> {
+  late List<WalletUtxo> _selectedUtxos;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedUtxos = List.of(widget.initialSelectedUtxos);
+  }
+
+  void _onUtxoTapped(WalletUtxo utxo) {
+    setState(() {
+      if (_selectedUtxos.contains(utxo)) {
+        _selectedUtxos.remove(utxo);
+      } else {
+        _selectedUtxos.add(utxo);
+      }
+    });
+  }
+
+  void _onDonePressed() {
+    widget.onDone(_selectedUtxos);
+    context.pop();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final selectedUtxoTotalSat = selectedUtxos.fold(
+    final selectedUtxoTotalSat = _selectedUtxos.fold(
       0,
       (previousValue, element) => previousValue + element.amountSat.toInt(),
     );
-    final selectedUtxoTotal = bitcoinUnit == BitcoinUnit.btc
+    final selectedUtxoTotal = widget.bitcoinUnit == BitcoinUnit.btc
         ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
         : FormatAmount.sats(selectedUtxoTotalSat);
-    final amountToSend = bitcoinUnit == BitcoinUnit.btc
-        ? FormatAmount.btc(ConvertAmount.satsToBtc(amountToSendSat))
-        : FormatAmount.sats(amountToSendSat);
+    final amountToSend = widget.bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(widget.amountToSendSat))
+        : FormatAmount.sats(widget.amountToSendSat);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -64,10 +94,7 @@ class CommonCoinSelectionBottomSheet extends StatelessWidget {
                 right: 0,
                 child: IconButton(
                   iconSize: 24,
-                  icon: Icon(
-                    Icons.close,
-                    color: context.appColors.secondary,
-                  ),
+                  icon: Icon(Icons.close, color: context.appColors.secondary),
                   onPressed: context.pop,
                 ),
               ),
@@ -91,31 +118,31 @@ class CommonCoinSelectionBottomSheet extends StatelessWidget {
           ListView.separated(
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (_, index) {
-              final utxo = utxos[index];
+              final utxo = widget.utxos[index];
               return CommonCoinSelectTile(
                 utxo: utxo,
-                selected: selectedUtxos.contains(utxo),
-                onTap: () => onUtxoSelected(utxo),
-                exchangeRate: exchangeRate,
-                bitcoinUnit: bitcoinUnit,
-                fiatCurrency: fiatCurrency,
+                selected: _selectedUtxos.contains(utxo),
+                onTap: () => _onUtxoTapped(utxo),
+                exchangeRate: widget.exchangeRate,
+                bitcoinUnit: widget.bitcoinUnit,
+                fiatCurrency: widget.fiatCurrency,
               );
             },
             separatorBuilder: (_, _) => const Gap(24),
-            itemCount: utxos.length,
+            itemCount: widget.utxos.length,
             shrinkWrap: true,
           ),
           const Gap(24),
           BBButton.big(
             label: "Done",
-            onPressed: selectedUtxoTotalSat >= amountToSendSat
-                ? () => context.pop()
+            onPressed: selectedUtxoTotalSat >= widget.amountToSendSat
+                ? _onDonePressed
                 : () {},
-            disabled: selectedUtxoTotalSat < amountToSendSat,
-            bgColor: selectedUtxoTotalSat >= amountToSendSat
+            disabled: selectedUtxoTotalSat < widget.amountToSendSat,
+            bgColor: selectedUtxoTotalSat >= widget.amountToSendSat
                 ? context.appColors.secondary
                 : context.appColors.outlineVariant,
-            textColor: selectedUtxoTotalSat >= amountToSendSat
+            textColor: selectedUtxoTotalSat >= widget.amountToSendSat
                 ? context.appColors.onSecondary
                 : context.appColors.outline,
           ),
