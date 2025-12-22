@@ -70,6 +70,7 @@ class ApiServiceConstants {
   static const publicLiquidMempoolTestnetUrl = 'https://liquid.network/testnet';
 
   // Bitcoin Electrum servers
+  static const fulcrumElectrumUrl = 'ssl://fulcrum.bullbitcoin.com:50002';
   static const bbElectrumUrl = 'ssl://wes.bullbitcoin.com:50002';
   static const publicElectrumUrl = 'ssl://blockstream.info:700';
   // BB test currently not operational
