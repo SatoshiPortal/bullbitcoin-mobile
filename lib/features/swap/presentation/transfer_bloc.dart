@@ -407,7 +407,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
               .execute(
                 psbt: signedPsbtAndTxSize.signedPsbt,
-                feeRate: state.bitcoinNetworkFees!.fastest.value as double,
               );
           final settings = await _getSettingsUsecase.execute();
           final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
@@ -459,7 +458,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
             .execute(
               psbt: signedPsbtAndTxSize.signedPsbt,
-              feeRate: state.bitcoinNetworkFees!.fastest.value as double,
             );
         final settings = await _getSettingsUsecase.execute();
         final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
@@ -827,7 +825,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
         absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: dummyDrainTxInfo.unsignedPsbt,
-          feeRate: networkFee.value as double,
         );
 
         log.info("Absolute fees: $absoluteFees");

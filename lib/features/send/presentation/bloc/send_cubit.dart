@@ -1208,7 +1208,6 @@ class SendCubit extends Cubit<SendState> {
           final bitcoinAbsoluteFeesSat =
               await _calculateBitcoinAbsoluteFeesUsecase.execute(
                 psbt: signedPsbtAndTxSize.signedPsbt,
-                feeRate: state.selectedFee!.value as double,
               );
           if (state.chainSwap != null) {
             final settings = await _getSettingsUsecase.execute();
@@ -1355,7 +1354,6 @@ class SendCubit extends Cubit<SendState> {
             final bitcoinAbsoluteFeesSat =
                 await _calculateBitcoinAbsoluteFeesUsecase.execute(
                   psbt: signedPsbtAndTxSize.signedPsbt,
-                  feeRate: state.selectedFee!.value as double,
                 );
             final settings = await _getSettingsUsecase.execute();
             final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
@@ -1637,7 +1635,6 @@ class SendCubit extends Cubit<SendState> {
         );
         absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: dummyDrainTxInfo.unsignedPsbt,
-          feeRate: networkFee.value as double,
         );
         emit(state.copyWith(bitcoinTxSize: dummyDrainTxInfo.txSize));
       }

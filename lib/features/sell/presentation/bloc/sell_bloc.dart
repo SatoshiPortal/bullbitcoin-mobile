@@ -235,7 +235,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
         absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
-          feeRate: fastestFee.value as double,
         );
       }
     } catch (e) {
@@ -425,10 +424,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
             message: 'Transaction fees not calculated. Please try again.',
           );
         }
-        final bitcoinFees = await _getNetworkFeesUsecase.execute(
-          isLiquid: false,
-        );
-        final fastestFee = bitcoinFees.fastest;
 
         final preparedSend = await _prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
@@ -441,10 +436,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           replaceByFee: sellPaymentState.replaceByFee,
         );
         final absoluteFeesUpdated = await _calculateBitcoinAbsoluteFeesUsecase
-            .execute(
-              psbt: preparedSend.unsignedPsbt,
-              feeRate: fastestFee.value as double,
-            );
+            .execute(psbt: preparedSend.unsignedPsbt);
         emit(sellPaymentState.copyWith(absoluteFees: absoluteFeesUpdated));
         final signedTx = await _signBitcoinTxUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
@@ -670,7 +662,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
         final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
-          feeRate: fastestFee.value as double,
         );
         emit(sellPaymentState.copyWith(absoluteFees: absoluteFees));
       }
