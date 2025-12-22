@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/bip85_derivation_widget.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -69,19 +70,23 @@ class Bip85HomePage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
-                    mainAxisAlignment: .spaceBetween,
                     children: [
-                      BBButton.small(
-                        onPressed: () => cubit.deriveNextMnemonic(),
-                        label: context.loc.bip85NextMnemonic,
-                        bgColor: context.appColors.onSurface,
-                        textColor: context.appColors.surface,
+                      Expanded(
+                        child: BBButton.big(
+                          onPressed: () => cubit.deriveNextMnemonic(),
+                          label: context.loc.bip85NextMnemonic,
+                          bgColor: context.appColors.onSurface,
+                          textColor: context.appColors.surface,
+                        ),
                       ),
-                      BBButton.small(
-                        onPressed: () => cubit.deriveNextHex(),
-                        label: context.loc.bip85NextHex,
-                        bgColor: context.appColors.onSurface,
-                        textColor: context.appColors.surface,
+                      Gap(Device.screen.width * 0.01),
+                      Expanded(
+                        child: BBButton.big(
+                          onPressed: () => cubit.deriveNextHex(),
+                          label: context.loc.bip85NextHex,
+                          bgColor: context.appColors.onSurface,
+                          textColor: context.appColors.surface,
+                        ),
                       ),
                     ],
                   ),
