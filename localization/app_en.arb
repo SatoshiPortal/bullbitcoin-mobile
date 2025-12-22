@@ -9488,6 +9488,10 @@
   "@importQrDeviceJadeStep10": {
     "description": "Jade instruction step 10"
   },
+  "importQrDeviceJadeFirmwareWarning": "Make sure your device is updated to the latest firmware",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
+  },
   "importQrDeviceKruxName": "Krux",
   "@importQrDeviceKruxName": {
     "description": "Name of Krux device"

@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_qr_device/device_instructions_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
@@ -41,6 +42,15 @@ class ImportQrDevicePage extends StatelessWidget {
               maxLines: 2,
             ),
 
+            if (device == SignerDeviceEntity.jade) ...[
+              Gap(Device.screen.height * 0.03),
+              InfoCard(
+                description: context.loc.importQrDeviceJadeFirmwareWarning,
+                tagColor: context.appColors.warning,
+                bgColor: context.appColors.warningContainer,
+              ),
+            ],
+
             Gap(Device.screen.height * 0.05),
             Image.asset(
               Assets.misc.qRPlaceholder.path,
@@ -53,11 +63,10 @@ class ImportQrDevicePage extends StatelessWidget {
               children: [
                 BBButton.small(
                   label: context.loc.importQrDeviceButtonOpenCamera,
-                  onPressed:
-                      () => context.pushNamed(
-                        ImportWatchOnlyWalletRoutes.scan.name,
-                        extra: device,
-                      ),
+                  onPressed: () => context.pushNamed(
+                    ImportWatchOnlyWalletRoutes.scan.name,
+                    extra: device,
+                  ),
                   bgColor: context.appColors.surface,
                   textColor: context.appColors.text,
                   outlined: true,
@@ -66,12 +75,11 @@ class ImportQrDevicePage extends StatelessWidget {
                 Gap(Device.screen.height * 0.02),
                 BBButton.small(
                   label: context.loc.importQrDeviceButtonInstructions,
-                  onPressed:
-                      () => DeviceInstructionsBottomSheet.show(
-                        context,
-                        title: instructionsTitle,
-                        instructions: instructions,
-                      ),
+                  onPressed: () => DeviceInstructionsBottomSheet.show(
+                    context,
+                    title: instructionsTitle,
+                    instructions: instructions,
+                  ),
                   bgColor: context.appColors.surface,
                   textColor: context.appColors.text,
                   outlined: true,
