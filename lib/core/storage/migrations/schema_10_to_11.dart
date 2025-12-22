@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:drift/drift.dart';
 
 class Schema10To11 {
@@ -41,8 +42,8 @@ class Schema10To11 {
     );
 
     final electrumServers = schema11.electrumServers;
-    const fulcrumUrl = 'ssl://fulcrum.bullbitcoin.com:50002';
-    const fulcrumUrlWithoutProtocol = 'fulcrum.bullbitcoin.com:50002';
+    final fulcrumUrl = ApiServiceConstants.fulcrumElectrumUrl;
+    final fulcrumUrlWithoutProtocol = fulcrumUrl.replaceAll('ssl://', '');
 
     // Delete any existing custom entries for the fulcrum server
     await (m.database.delete(electrumServers)..where(
@@ -85,7 +86,7 @@ class Schema10To11 {
         .into(electrumServers)
         .insert(
           RawValuesInsertable({
-            'url': const Constant(fulcrumUrl),
+            'url': Constant(fulcrumUrl),
             'is_testnet': const Constant(false),
             'is_liquid': const Constant(false),
             'priority': const Constant(0),
