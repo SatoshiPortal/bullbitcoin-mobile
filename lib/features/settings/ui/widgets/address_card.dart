@@ -52,7 +52,7 @@ class AddressCard extends StatelessWidget {
                       textAlign: .center,
                       style: TextStyle(
                         fontSize: 14,
-                        color: context.appColors.surfaceFixed,
+                        color: context.appColors.surface,
                       ),
                     ),
                     duration: const Duration(seconds: 2),
