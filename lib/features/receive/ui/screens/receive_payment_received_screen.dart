@@ -82,7 +82,7 @@ class PaymentReceivedPage extends StatelessWidget {
           BBText(
             '~$amountFiat',
             style: context.font.bodyLarge,
-            color: context.appColors.surface,
+            color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
           const ReceiveDetailsButton(),

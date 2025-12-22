@@ -60,7 +60,7 @@ class PriceInput extends StatelessWidget {
                               'MAX',
                               style: context.font.displaySmall!.copyWith(
                                 fontSize: 36,
-                                color: context.appColors.outlineVariant,
+                                color: context.appColors.secondary,
                               ),
                             )
                           : TextField(
@@ -75,7 +75,7 @@ class PriceInput extends StatelessWidget {
                               cursorHeight: 30,
                               style: context.font.displaySmall!.copyWith(
                                 fontSize: 36,
-                                color: context.appColors.outlineVariant,
+                                color: context.appColors.secondary,
                               ),
                               textAlign: .center,
                               decoration: InputDecoration(
@@ -88,7 +88,7 @@ class PriceInput extends StatelessWidget {
                                     : "0",
                                 hintStyle: context.font.displaySmall!.copyWith(
                                   fontSize: 36,
-                                  color: context.appColors.outlineVariant,
+                                  color: context.appColors.secondary,
                                 ),
                               ),
                             ),
@@ -97,7 +97,7 @@ class PriceInput extends StatelessWidget {
                     Text(
                       currency,
                       style: context.font.displaySmall?.copyWith(
-                        color: context.appColors.outlineVariant,
+                        color: context.appColors.secondary,
                       ),
                       maxLines: 1,
                     ),
@@ -126,7 +126,7 @@ class PriceInput extends StatelessWidget {
         Text(
           '~$amountEquivalent',
           style: context.font.bodyLarge?.copyWith(
-            color: context.appColors.surfaceContainer,
+            color: context.appColors.onSurfaceVariant,
           ),
         ),
         const Gap(14),
@@ -149,7 +149,7 @@ class PriceInput extends StatelessWidget {
                   filled: true,
                   hintText: 'Add note',
                   hintStyle: context.font.labelSmall!.copyWith(
-                    color: context.appColors.surfaceContainer,
+                    color: context.appColors.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -201,7 +201,12 @@ class CurrencyBottomSheet extends StatelessWidget {
             children: [
               const Gap(16 * 3),
               const Spacer(),
-              Text('Currency', style: context.font.headlineMedium),
+              Text(
+                'Currency',
+                style: context.font.headlineMedium?.copyWith(
+                  color: context.appColors.secondary,
+                ),
+              ),
               const Spacer(),
               IconButton(
                 iconSize: 20,
@@ -252,7 +257,7 @@ class CurrencyBottomSheet extends StatelessWidget {
                               Text(
                                 curr,
                                 style: context.font.bodySmall?.copyWith(
-                                  color: context.appColors.outlineVariant,
+                                  color: context.appColors.onSurfaceVariant,
                                 ),
                               ),
                             ],

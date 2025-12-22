@@ -55,6 +55,7 @@ class ReceiveEnterNote extends StatelessWidget {
               BBText(
                 context.loc.receiveAddLabel,
                 style: context.font.headlineMedium,
+                color: context.appColors.secondary,
               ),
               const Spacer(),
               IconButton(
@@ -70,7 +71,7 @@ class ReceiveEnterNote extends StatelessWidget {
           BBInputText(
             hint: context.loc.receiveNotePlaceholder,
             hintStyle: context.font.bodyLarge?.copyWith(
-              color: context.appColors.surfaceContainer,
+              color: context.appColors.onSurfaceVariant,
             ),
             value: currentNote,
             maxLength: NoteValidator.maxNoteLength,
