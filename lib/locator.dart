@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/buy/buy_locator.dart';
 import 'package:bb_mobile/features/dca/dca_locator.dart';
 import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_locator.dart';
+import 'package:bb_mobile/features/mempool_settings/mempool_settings_locator.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
@@ -59,6 +60,7 @@ class AppLocator {
 
     // Register feature-specific dependencies
     ElectrumSettingsLocator.setup();
+    MempoolSettingsLocator.setup();
     TorSettingsLocator.setup();
     PinCodeLocator.setup();
     AppStartupLocator.setup();

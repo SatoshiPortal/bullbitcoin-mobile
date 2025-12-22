@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
+import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
@@ -52,6 +53,13 @@ class BitcoinSettingsScreen extends StatelessWidget {
                     context.pushNamed(
                       ElectrumSettingsRoute.electrumSettings.name,
                     );
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.analytics,
+                  title: context.loc.bitcoinSettingsMempoolServerTitle,
+                  onTap: () {
+                    context.pushNamed(MempoolSettingsRoute.name);
                   },
                 ),
                 SettingsEntryItem(

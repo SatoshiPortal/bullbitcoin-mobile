@@ -1076,6 +1076,118 @@
       "references": [],
       "type": "table",
       "data": {
+        "name": "mempool_servers",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "url",
+            "getter_name": "url",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_testnet",
+            "getter_name": "isTestnet",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"is_testnet\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"is_testnet\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_liquid",
+            "getter_name": "isLiquid",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"is_liquid\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"is_liquid\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_custom",
+            "getter_name": "isCustom",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"is_custom\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"is_custom\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "url",
+          "is_testnet",
+          "is_liquid"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "mempool_settings",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "network",
+            "getter_name": "network",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "use_for_fee_estimation",
+            "getter_name": "useForFeeEstimation",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"use_for_fee_estimation\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"use_for_fee_estimation\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "network"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "references": [],
+      "type": "table",
+      "data": {
         "name": "swaps",
         "was_declared_in_moor": false,
         "columns": [
@@ -1334,7 +1446,7 @@
       }
     },
     {
-      "id": 9,
+      "id": 11,
       "references": [],
       "type": "table",
       "data": {
@@ -1460,7 +1572,7 @@
       }
     },
     {
-      "id": 10,
+      "id": 12,
       "references": [],
       "type": "table",
       "data": {
@@ -1535,7 +1647,7 @@
       }
     },
     {
-      "id": 11,
+      "id": 13,
       "references": [],
       "type": "table",
       "data": {
@@ -1589,7 +1701,7 @@
       }
     },
     {
-      "id": 12,
+      "id": 14,
       "references": [],
       "type": "table",
       "data": {
@@ -1797,6 +1909,24 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"electrum_settings\" (\"network\" TEXT NOT NULL, \"validate_domain\" INTEGER NOT NULL CHECK (\"validate_domain\" IN (0, 1)), \"stop_gap\" INTEGER NOT NULL, \"timeout\" INTEGER NOT NULL, \"retry\" INTEGER NOT NULL, \"socks5\" TEXT NULL, PRIMARY KEY (\"network\"));"
+        }
+      ]
+    },
+    {
+      "name": "mempool_servers",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"mempool_servers\" (\"url\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"is_liquid\" INTEGER NOT NULL CHECK (\"is_liquid\" IN (0, 1)), \"is_custom\" INTEGER NOT NULL CHECK (\"is_custom\" IN (0, 1)), PRIMARY KEY (\"url\", \"is_testnet\", \"is_liquid\"));"
+        }
+      ]
+    },
+    {
+      "name": "mempool_settings",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"mempool_settings\" (\"network\" TEXT NOT NULL, \"use_for_fee_estimation\" INTEGER NOT NULL DEFAULT 1 CHECK (\"use_for_fee_estimation\" IN (0, 1)), PRIMARY KEY (\"network\"));"
         }
       ]
     },

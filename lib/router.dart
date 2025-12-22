@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
@@ -152,6 +153,7 @@ class AppRouter {
       ReplaceByFeeRouter.route,
       Bip85EntropyRouter.route,
       ElectrumSettingsRouter.route,
+      MempoolSettingsRoute.route,
       ArkSetupRouter.route,
       ArkRouter.route,
       ...ImportQrDeviceRouter.routes,

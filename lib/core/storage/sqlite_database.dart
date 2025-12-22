@@ -18,6 +18,8 @@ import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
+import 'package:bb_mobile/core/storage/tables/mempool_servers_table.dart';
+import 'package:bb_mobile/core/storage/tables/mempool_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
 import 'package:bb_mobile/core/storage/tables/prices_table.dart';
@@ -46,6 +48,8 @@ part 'sqlite_database.g.dart';
     PayjoinReceivers,
     ElectrumServers,
     ElectrumSettings,
+    MempoolServers,
+    MempoolSettings,
     Swaps,
     AutoSwap,
     Bip85Derivations,

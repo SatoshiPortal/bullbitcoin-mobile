@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/widgets/tables/details_table.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -57,8 +58,6 @@ class ArkTransactionDetailsPage extends StatelessWidget {
     }
 
     final isBoarding = transaction is ark_wallet.Transaction_Boarding;
-    final mempoolUrl =
-        isBoarding ? MempoolUrl.bitcoinTxidUrl(txid, isTestnet: false) : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -106,9 +105,18 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                       displayValue: StringFormatting.truncateMiddle(txid),
                       copyValue: txid,
                       displayWidget:
-                          mempoolUrl != null
+                          isBoarding
                               ? GestureDetector(
                                 onTap: () async {
+                                  final mempoolUrlService =
+                                      locator<MempoolUrlService>();
+
+                                  final mempoolUrl =
+                                      await mempoolUrlService.bitcoinTxidUrl(
+                                    txid,
+                                    isTestnet: false,
+                                  );
+
                                   await launchUrl(Uri.parse(mempoolUrl));
                                 },
                                 child: Text(
@@ -116,7 +124,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                                   style: TextStyle(
                                     color: context.appColors.primary,
                                   ),
-                                  textAlign: .end,
+                                  textAlign: TextAlign.end,
                                 ),
                               )
                               : null,

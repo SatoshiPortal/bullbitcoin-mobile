@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -32,14 +33,6 @@ class TransactionDetailsTable extends StatelessWidget {
     final txId = transaction?.txId;
     final isTestnet = transaction?.isTestnet ?? false;
     final isLiquid = transaction?.isLiquid ?? false;
-    final mempoolUrl = txId != null
-        ? isLiquid
-              ? MempoolUrl.liquidTxidUrl(
-                  transaction?.walletTransaction?.unblindedUrl ?? '',
-                  isTestnet: isTestnet,
-                )
-              : MempoolUrl.bitcoinTxidUrl(txId, isTestnet: isTestnet)
-        : null;
     final labels = transaction?.labels ?? [];
     final wallet = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.wallet,
@@ -83,12 +76,27 @@ class TransactionDetailsTable extends StatelessWidget {
             copyValue: txId,
             displayWidget: GestureDetector(
               onTap: () async {
-                await launchUrl(Uri.parse(mempoolUrl!));
+                final mempoolUrlService = locator<MempoolUrlService>();
+
+                final String mempoolUrl;
+                if (isLiquid) {
+                  mempoolUrl = await mempoolUrlService.liquidTxidUrl(
+                    transaction?.walletTransaction?.unblindedUrl ?? '',
+                    isTestnet: isTestnet,
+                  );
+                } else {
+                  mempoolUrl = await mempoolUrlService.bitcoinTxidUrl(
+                    txId,
+                    isTestnet: isTestnet,
+                  );
+                }
+
+                await launchUrl(Uri.parse(mempoolUrl));
               },
               child: Text(
                 StringFormatting.truncateMiddle(txId),
                 style: TextStyle(color: context.appColors.primary),
-                textAlign: .end,
+                textAlign: TextAlign.end,
               ),
             ),
           ),

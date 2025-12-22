@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/exchange/exchange_locator.dart';
 import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/core/labels/labels_locator.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
+import 'package:bb_mobile/core/mempool/mempool_locator.dart';
 import 'package:bb_mobile/core/payjoin/payjoin_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
@@ -29,6 +30,7 @@ class CoreLocator {
     await ElectrumLocator.registerDatasources(locator);
     ExchangeLocator.registerDatasources(locator);
     FeesLocator.registerDatasources(locator);
+    await MempoolLocator.registerDatasources(locator);
     PayjoinLocator.registerDatasources(locator);
     await RecoverbullLocator.registerDatasources(locator);
     SeedLocator.registerDatasources(locator);
@@ -44,6 +46,7 @@ class CoreLocator {
   static void registerPorts() {
     ElectrumLocator.registerPorts(locator);
     BlockchainLocator.registerPorts(locator);
+    MempoolLocator.registerPorts(locator);
     SwapsLocator.registerPorts(locator);
     WalletLocator.registerPorts(locator);
   }
@@ -55,6 +58,7 @@ class CoreLocator {
     ElectrumLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
     FeesLocator.registerRepositories(locator);
+    MempoolLocator.registerRepositories(locator);
     PayjoinLocator.registerRepositories(locator);
     SeedLocator.registerRepositories(locator);
     StorageLocator.registerRepositories(locator);
@@ -68,6 +72,7 @@ class CoreLocator {
   }
 
   static void registerServices() {
+    MempoolLocator.registerServices(locator);
     SeedLocator.registerServices(locator);
     SwapsLocator.registerServices(locator);
   }
@@ -78,6 +83,7 @@ class CoreLocator {
     BlockchainLocator.registerUsecases(locator);
     ExchangeLocator.registerUseCases(locator);
     FeesLocator.registerUseCases(locator);
+    MempoolLocator.registerUsecases(locator);
     PayjoinLocator.registerUsecases(locator);
     RecoverbullLocator.registerUsecases(locator);
     SeedLocator.registerUsecases(locator);

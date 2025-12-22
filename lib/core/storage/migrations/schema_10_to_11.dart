@@ -93,5 +93,45 @@ class Schema10To11 {
             'is_custom': const Constant(false),
           }),
         );
+
+    // Add mempool tables
+    await m.createTable(schema11.mempoolServers);
+    await m.createTable(schema11.mempoolSettings);
+
+    // Seed default mempool servers
+    final defaultMempoolServers = [
+      ('mempool.bullbitcoin.com', false, false, false),
+      ('mempool.space/testnet', true, false, false),
+      ('liquid.bullbitcoin.com', false, true, false),
+      ('liquid.bullbitcoin.com/testnet', true, true, false),
+    ];
+
+    for (final (url, isTestnet, isLiquid, isCustom) in defaultMempoolServers) {
+      await db.into(db.mempoolServers).insert(
+        MempoolServersCompanion.insert(
+          url: url,
+          isTestnet: isTestnet,
+          isLiquid: isLiquid,
+          isCustom: isCustom,
+        ),
+      );
+    }
+
+    // Seed default mempool settings for all 4 networks
+    final defaultMempoolSettings = [
+      'bitcoinMainnet',
+      'bitcoinTestnet',
+      'liquidMainnet',
+      'liquidTestnet',
+    ];
+
+    for (final network in defaultMempoolSettings) {
+      await db.into(db.mempoolSettings).insert(
+        MempoolSettingsCompanion.insert(
+          network: network,
+          useForFeeEstimation: const Value(true),
+        ),
+      );
+    }
   }
 }
