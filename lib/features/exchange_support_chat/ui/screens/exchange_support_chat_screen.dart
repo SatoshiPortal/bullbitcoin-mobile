@@ -202,7 +202,11 @@ class _MessageBubble extends StatelessWidget {
             decoration: BoxDecoration(
               color: isUserMessage
                   ? context.appColors.secondary
-                  : Color.lerp(context.appColors.primary, Colors.black, 0.2) ??
+                  : Color.lerp(
+                          context.appColors.primary,
+                          context.appColors.secondaryFixed,
+                          0.2,
+                        ) ??
                         context.appColors.primary,
               borderRadius: BorderRadius.circular(12),
             ),
@@ -395,7 +399,7 @@ class _MessageInputState extends State<_MessageInput> {
                     bgColor:
                         Color.lerp(
                           context.appColors.primary,
-                          Colors.black,
+                          context.appColors.secondaryFixed,
                           0.2,
                         ) ??
                         context.appColors.primary,
