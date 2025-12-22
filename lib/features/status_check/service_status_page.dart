@@ -126,11 +126,11 @@ class _ServiceStatusItem extends StatelessWidget {
   Color _getStatusColor(BuildContext context) {
     switch (service.status) {
       case ServiceStatus.online:
-        return context.appColors.inverseSurface;
+        return context.appColors.success;
       case ServiceStatus.offline:
         return context.appColors.error;
       case ServiceStatus.unknown:
-        return context.appColors.surfaceContainerHighest;
+        return context.appColors.textMuted;
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -160,18 +161,12 @@ class PriceInput extends StatelessWidget {
   }
 
   Future<String?> _openPopup(BuildContext context, String selected) async {
-    final c = await showModalBottomSheet<String?>(
-      useRootNavigator: true,
+    final c = await BlurredBottomSheet.show<String?>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.appColors.secondaryFixedDim,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (context) {
-        return CurrencyBottomSheet(
-          availableCurrencies: availableCurrencies,
-          selectedValue: selected,
-        );
-      },
+      child: CurrencyBottomSheet(
+        availableCurrencies: availableCurrencies,
+        selectedValue: selected,
+      ),
     );
 
     return c;
@@ -190,6 +185,10 @@ class CurrencyBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(
+        color: context.appColors.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
@@ -204,14 +203,14 @@ class CurrencyBottomSheet extends StatelessWidget {
               Text(
                 'Currency',
                 style: context.font.headlineMedium?.copyWith(
-                  color: context.appColors.secondary,
+                  color: context.appColors.onSurface,
                 ),
               ),
               const Spacer(),
               IconButton(
                 iconSize: 20,
                 onPressed: () => Navigator.pop(context),
-                color: context.appColors.secondary,
+                color: context.appColors.onSurface,
                 icon: const Icon(Icons.close),
               ),
               const Gap(16),
@@ -250,7 +249,7 @@ class CurrencyBottomSheet extends StatelessWidget {
                                 style: context.font.headlineSmall?.copyWith(
                                   color: selectedValue == curr
                                       ? context.appColors.primary
-                                      : context.appColors.secondary,
+                                      : context.appColors.onSurface,
                                 ),
                               ),
                               const Gap(2),

@@ -40,7 +40,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                         context.loc.pinCodeCreateTitle,
                         textAlign: .center,
                         style: context.font.headlineMedium?.copyWith(
-                          color: context.appColors.outline,
+                          color: context.appColors.onSurface,
                         ),
                         maxLines: 3,
                       ),
@@ -49,7 +49,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                         context.loc.pinCodeCreateDescription,
                         textAlign: .center,
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.appColors.outline,
+                          color: context.appColors.textMuted,
                         ),
                       ),
                       const Gap(30),
@@ -58,21 +58,26 @@ class ChoosePinCodeScreen extends StatelessWidget {
                         PinCodeSettingState,
                         (String, bool)
                       >(
-                        selector:
-                            (state) => (state.pinCode, state.obscurePinCode),
+                        selector: (state) =>
+                            (state.pinCode, state.obscurePinCode),
                         builder: (context, data) {
                           final (pinCode, obscurePinCode) = data;
                           return BBInputText(
                             value: pinCode,
                             obscure: obscurePinCode,
-                            onRightTap:
-                                () => context.read<PinCodeSettingBloc>().add(
+                            onRightTap: () =>
+                                context.read<PinCodeSettingBloc>().add(
                                   const PinCodeSettingPinCodeObscureToggled(),
                                 ),
-                            rightIcon:
-                                obscurePinCode
-                                    ? const Icon(Icons.visibility_off_outlined)
-                                    : const Icon(Icons.visibility_outlined),
+                            rightIcon: obscurePinCode
+                                ? Icon(
+                                    Icons.visibility_off_outlined,
+                                    color: context.appColors.onSurface,
+                                  )
+                                : Icon(
+                                    Icons.visibility_outlined,
+                                    color: context.appColors.onSurface,
+                                  ),
                             onlyNumbers: true,
                             onChanged: (value) {},
                           );
@@ -93,18 +98,18 @@ class ChoosePinCodeScreen extends StatelessWidget {
                                       .pinCode
                                       .isNotEmpty
                               ? Text(
-                                context.loc.pinCodeMinLengthError(
-                                  context
-                                      .read<PinCodeSettingBloc>()
-                                      .state
-                                      .minPinCodeLength
-                                      .toString(),
-                                ),
-                                textAlign: .start,
-                                style: context.font.labelSmall?.copyWith(
-                                  color: context.appColors.error,
-                                ),
-                              )
+                                  context.loc.pinCodeMinLengthError(
+                                    context
+                                        .read<PinCodeSettingBloc>()
+                                        .state
+                                        .minPinCodeLength
+                                        .toString(),
+                                  ),
+                                  textAlign: .start,
+                                  style: context.font.labelSmall?.copyWith(
+                                    color: context.appColors.error,
+                                  ),
+                                )
                               : const SizedBox.shrink();
                         },
                       ),
@@ -116,14 +121,12 @@ class ChoosePinCodeScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: DialPad(
-                onNumberPressed:
-                    (value) => context.read<PinCodeSettingBloc>().add(
-                      PinCodeSettingPinCodeNumberAdded(int.parse(value)),
-                    ),
-                onBackspacePressed:
-                    () => context.read<PinCodeSettingBloc>().add(
-                      const PinCodeSettingPinCodeNumberRemoved(),
-                    ),
+                onNumberPressed: (value) => context
+                    .read<PinCodeSettingBloc>()
+                    .add(PinCodeSettingPinCodeNumberAdded(int.parse(value))),
+                onBackspacePressed: () => context
+                    .read<PinCodeSettingBloc>()
+                    .add(const PinCodeSettingPinCodeNumberRemoved()),
                 disableFeedback: true,
                 onlyDigits: true,
               ),
@@ -162,10 +165,9 @@ class _ConfirmButton extends StatelessWidget {
             label: context.loc.pinCodeContinue,
             textStyle: context.font.headlineLarge,
             disabled: !isValidPinCode,
-            bgColor:
-                isValidPinCode
-                    ? context.appColors.onSurface
-                    : context.appColors.textMuted,
+            bgColor: isValidPinCode
+                ? context.appColors.primary
+                : context.appColors.surfaceContainerHighest,
             onPressed: () {
               if (isValidPinCode) {
                 context.read<PinCodeSettingBloc>().add(
@@ -173,7 +175,9 @@ class _ConfirmButton extends StatelessWidget {
                 );
               }
             },
-            textColor: context.appColors.surface,
+            textColor: isValidPinCode
+                ? context.appColors.onPrimary
+                : context.appColors.textMuted,
           );
         },
       ),

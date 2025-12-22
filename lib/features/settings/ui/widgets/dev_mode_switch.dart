@@ -17,7 +17,7 @@ class DevModeSwitch extends StatelessWidget {
       context: context,
       child: Container(
         decoration: BoxDecoration(
-          color: context.appColors.onPrimary,
+          color: context.appColors.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: SafeArea(
@@ -28,12 +28,16 @@ class DevModeSwitch extends StatelessWidget {
               children: [
                 Text(
                   context.loc.settingsDevModeWarningTitle,
-                  style: context.font.headlineMedium,
+                  style: context.font.headlineMedium?.copyWith(
+                    color: context.appColors.onSurface,
+                  ),
                 ),
                 const Gap(16),
                 Text(
                   context.loc.settingsDevModeWarningMessage,
-                  style: context.font.bodyMedium,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.onSurface,
+                  ),
                 ),
                 const Gap(16),
                 BBButton.big(
