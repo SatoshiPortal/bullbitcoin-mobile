@@ -59,15 +59,14 @@ class _Screen extends StatelessWidget {
                       child: _BackupTestStatusWidget(),
                     ),
                     const Gap(40),
+                    const _StartBackupButton(),
                     if (state.lastEncryptedBackup != null)
                       const _ViewVaultKeyButton(),
                     if (state.lastEncryptedBackup != null ||
                         state.lastPhysicalBackup != null)
                       const _TestBackupButton(),
-                    const _StartBackupButton(),
-                    const _Bip329LabelsButton(),
                     const _RecoverBullSettingsButton(),
-                    const Gap(20),
+                    const _Bip329LabelsButton(),
                     if (state.error != null) ErrorWidget(error: state.error!),
                   ],
                 ),
@@ -156,6 +155,7 @@ class _StartBackupButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SettingsEntryItem(
       icon: Icons.save_as,
+      iconColor: context.appColors.primary,
       title: context.loc.backupSettingsStartBackup,
       onTap: () => context.pushNamed(
         BackupSettingsSubroute.backupOptions.name,
