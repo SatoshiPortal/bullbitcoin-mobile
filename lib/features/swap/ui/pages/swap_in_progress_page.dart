@@ -113,7 +113,7 @@ class SwapInProgressPage extends StatelessWidget {
                   InfoCard(
                     description: context.loc.swapDoNotUninstallWarning,
                     tagColor: context.appColors.tertiary,
-                    bgColor: context.appColors.secondaryFixed,
+                    bgColor: context.appColors.warningContainer,
                     boldDescription: true,
                   ),
                   const Gap(16),

@@ -239,6 +239,9 @@ class MnemonicWordState extends State<MnemonicWord> {
               enableSuggestions: false,
               autocorrect: false,
               controller: _controller,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.text,
+              ),
               onChanged: (value) {
                 widget.onWordChanged((
                   index: widget.index,
@@ -268,7 +271,11 @@ class MnemonicWordState extends State<MnemonicWord> {
                 _controller.clear();
                 widget.onWordChanged((index: widget.index, word: ''));
               },
-              icon: const Icon(Icons.close, size: 24),
+              icon: Icon(
+                Icons.close,
+                size: 24,
+                color: context.appColors.text,
+              ),
               padding: EdgeInsets.zero,
             ),
         ],

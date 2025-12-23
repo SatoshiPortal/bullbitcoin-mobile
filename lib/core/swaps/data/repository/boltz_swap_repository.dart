@@ -358,17 +358,18 @@ class BoltzSwapRepository {
     final updatedSwap = switch (swap) {
       LnSendSwap() => swap.copyWith(
         sendTxid: txid,
-        status:
-            swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
-        fees:
-            absoluteFees != null
-                ? swap.fees?.copyWith(lockupFee: absoluteFees)
-                : swap.fees,
+        status: swap.status == SwapStatus.pending
+            ? SwapStatus.paid
+            : swap.status,
+        fees: absoluteFees != null
+            ? swap.fees?.copyWith(lockupFee: absoluteFees)
+            : swap.fees,
       ),
       ChainSwap() => swap.copyWith(
         sendTxid: txid,
-        status:
-            swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
+        status: swap.status == SwapStatus.pending
+            ? SwapStatus.paid
+            : swap.status,
       ),
       _ => throw "Only lnSend or chain swaps can be marked as paid",
     };
@@ -418,9 +419,9 @@ class BoltzSwapRepository {
       LnReceiveSwap() =>
         swap.receiveTxid != null
             ? swap.copyWith(
-              completionTime: DateTime.now(),
-              status: SwapStatus.completed,
-            )
+                completionTime: DateTime.now(),
+                status: SwapStatus.completed,
+              )
             : swap,
       LnSendSwap() => swap.copyWith(
         completionTime: DateTime.now(),
@@ -429,9 +430,9 @@ class BoltzSwapRepository {
       ChainSwap() =>
         (swap.receiveTxid != null || swap.refundTxid != null)
             ? swap.copyWith(
-              completionTime: DateTime.now(),
-              status: SwapStatus.completed,
-            )
+                completionTime: DateTime.now(),
+                status: SwapStatus.completed,
+              )
             : swap,
     };
 
@@ -440,8 +441,9 @@ class BoltzSwapRepository {
 
   Future<int> _nextRevKeyIndex(String walletId) async {
     final swaps = await _getRevSwapsForWallet(walletId);
-    final nextWalletIndex =
-        swaps.isEmpty ? 0 : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
+    final nextWalletIndex = swaps.isEmpty
+        ? 0
+        : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
     return nextWalletIndex;
   }
 
@@ -458,8 +460,9 @@ class BoltzSwapRepository {
 
   Future<int> _nextSubKeyIndex(String walletId) async {
     final swaps = await _getSubSwapsForWallet(walletId);
-    final nextWalletIndex =
-        swaps.isEmpty ? 0 : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
+    final nextWalletIndex = swaps.isEmpty
+        ? 0
+        : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
     return nextWalletIndex;
   }
 
@@ -476,8 +479,9 @@ class BoltzSwapRepository {
 
   Future<int> _nextChainKeyIndex(String walletId) async {
     final swaps = await _getChainSwapsForWallet(walletId);
-    final nextWalletIndex =
-        swaps.isEmpty ? 0 : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
+    final nextWalletIndex = swaps.isEmpty
+        ? 0
+        : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
     return nextWalletIndex;
   }
 
@@ -560,8 +564,9 @@ class BoltzSwapRepository {
   Future<List<Swap>> getOngoingSwaps({String? walletId}) async {
     final allSwapModels = await _boltz.storage.fetchAll(isTestnet: _isTestnet);
 
-    final allSwaps =
-        allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
+    final allSwaps = allSwapModels
+        .map((swapModel) => swapModel.toEntity())
+        .toList();
     return allSwaps
         .where(
           (swap) =>
@@ -589,8 +594,9 @@ class BoltzSwapRepository {
       walletId: walletId,
       isTestnet: _isTestnet,
     );
-    final allSwaps =
-        allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
+    final allSwaps = allSwapModels
+        .map((swapModel) => swapModel.toEntity())
+        .toList();
     return allSwaps;
   }
 
@@ -783,10 +789,9 @@ class BoltzSwapRepository {
   }
 
   Future<AutoSwap> getAutoSwapParams() async {
-    final model =
-        _isTestnet
-            ? await _boltz.storage.getAutoSwapSettingsTestnet()
-            : await _boltz.storage.getAutoSwapSettings();
+    final model = _isTestnet
+        ? await _boltz.storage.getAutoSwapSettingsTestnet()
+        : await _boltz.storage.getAutoSwapSettings();
     return model.toEntity();
   }
 
