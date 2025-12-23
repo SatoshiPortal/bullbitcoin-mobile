@@ -871,6 +871,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
             details: BBText(
               selectedWallet!.displayLabel(context),
               style: context.font.bodyLarge,
+              color: context.appColors.secondary,
               textAlign: .end,
             ),
           ),
@@ -886,6 +887,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
                     paymentRequestAddress,
                     maxLines: 5,
                     style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
                     textAlign: .end,
                   ),
                 ),
@@ -919,7 +921,11 @@ class _OnchainSendInfoSection extends StatelessWidget {
             details: Column(
               crossAxisAlignment: .end,
               children: [
-                BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
+                BBText(
+                  formattedBitcoinAmount,
+                  style: context.font.bodyLarge,
+                  color: context.appColors.secondary,
+                ),
                 BBText(
                   '~$formattedFiatEquivalent',
                   style: context.font.labelSmall,
@@ -935,6 +941,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
             details: BBText(
               formattedAbsoluteFees,
               style: context.font.bodyLarge,
+              color: context.appColors.secondary,
               textAlign: .end,
             ),
           ),
@@ -1040,6 +1047,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             details: BBText(
               selectedWallet!.displayLabel(context),
               style: context.font.bodyLarge,
+              color: context.appColors.secondary,
               textAlign: .end,
             ),
           ),
@@ -1049,6 +1057,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             details: BBText(
               swap!.id,
               style: context.font.bodyLarge,
+              color: context.appColors.secondary,
               textAlign: .end,
             ),
           ),
@@ -1067,6 +1076,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                             paymentRequestAddress,
                           ),
                     style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
                     textAlign: .end,
                     maxLines: 10,
                   ),
@@ -1099,6 +1109,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                     swap.paymentAmount,
                     showFiat: false,
                     style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
                   ),
                 ],
               ),
@@ -1114,6 +1125,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                     swap.receieveAmount!,
                     showFiat: false,
                     style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
                   ),
                 ],
               ),
@@ -1129,6 +1141,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                     swap.fees!.lockupFee!,
                     showFiat: false,
                     style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
                   ),
                 ],
               ),
@@ -1168,14 +1181,14 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
           BBText(
             label,
             style: context.font.bodySmall,
-            color: context.appColors.surfaceContainer,
+            color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
           CurrencyText(
             amt,
             showFiat: false,
             style: context.font.bodySmall,
-            color: context.appColors.surfaceContainer,
+            color: context.appColors.secondary,
           ),
         ],
       ),
@@ -1206,14 +1219,14 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                   BBText(
                     context.loc.sendTransferFee,
                     style: context.font.bodySmall,
-                    color: context.appColors.surfaceContainer,
+                    color: context.appColors.onSurfaceVariant,
                   ),
                   const Spacer(),
                   CurrencyText(
                     total,
                     showFiat: false,
                     style: context.font.bodyLarge,
-                    color: context.appColors.outlineVariant,
+                    color: context.appColors.secondary,
                   ),
                   const Gap(4),
                   Icon(
@@ -1235,7 +1248,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                   child: BBText(
                     context.loc.sendTransferFeeDescription,
                     style: context.font.labelSmall,
-                    color: context.appColors.surfaceContainer,
+                    color: context.appColors.onSurfaceVariant,
                   ),
                 ),
                 if (fees.claimFee != null)
@@ -1295,6 +1308,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             details: BBText(
               selectedWallet!.displayLabel(context),
               style: context.font.bodyLarge,
+              color: context.appColors.secondary,
               textAlign: .end,
             ),
           ),
@@ -1304,6 +1318,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             details: BBText(
               swap!.id,
               style: context.font.bodyLarge,
+              color: context.appColors.secondary,
               textAlign: .end,
             ),
           ),
@@ -1318,6 +1333,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   child: BBText(
                     paymentRequestAddress,
                     style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
                     textAlign: .end,
                     maxLines: 10,
                   ),
@@ -1356,6 +1372,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   swap.sendAmount!,
                   showFiat: false,
                   style: context.font.bodyLarge,
+                  color: context.appColors.secondary,
                 ),
               ],
             ),
@@ -1371,6 +1388,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                     swap.receieveAmount!,
                     showFiat: false,
                     style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
                   ),
                 ],
               ),
@@ -1386,6 +1404,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                     absoluteFees,
                     showFiat: false,
                     style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
                   ),
                 ],
               ),
@@ -1645,8 +1664,9 @@ class SendSucessScreen extends StatelessWidget {
                       style: context.font.headlineLarge,
                       textAlign: .center,
                     ),
-                  ] else if (isLnSwap && lnSwap.status == SwapStatus.canCoop ||
-                      lnSwap?.status == SwapStatus.completed) ...[
+                  ] else if (isLnSwap &&
+                      (lnSwap.status == SwapStatus.canCoop ||
+                          lnSwap.status == SwapStatus.completed)) ...[
                     Gif(
                       image: AssetImage(Assets.animations.successTick.path),
                       autostart: Autostart.once,
@@ -1696,8 +1716,8 @@ class SendSucessScreen extends StatelessWidget {
                   const Gap(4),
                   BBText(
                     '~$fiatEquivalent',
-                    style: context.font.bodyLarge,
-                    color: context.appColors.surfaceContainer,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.secondary,
                     maxLines: 4,
                     textAlign: .center,
                   ),
@@ -1713,24 +1733,34 @@ class SendSucessScreen extends StatelessWidget {
                     context.pushNamed(
                       TransactionsRoute.transactionDetails.name,
                       pathParameters: {'txId': walletTransaction.txId},
-                      queryParameters: {'walletId': walletTransaction.walletId},
+                      queryParameters: {
+                        'walletId': walletTransaction.walletId,
+                        'returnHome': 'true',
+                      },
                     );
                   } else if (isLnSwap) {
                     context.pushNamed(
                       TransactionsRoute.swapTransactionDetails.name,
                       pathParameters: {'swapId': lnSwap.id},
-                      queryParameters: {'walletId': lnSwap.walletId},
+                      queryParameters: {
+                        'walletId': lnSwap.walletId,
+                        'returnHome': 'true',
+                      },
                     );
                   } else if (isChainSwap) {
                     context.pushNamed(
                       TransactionsRoute.swapTransactionDetails.name,
                       pathParameters: {'swapId': chainSwap.id},
-                      queryParameters: {'walletId': chainSwap.walletId},
+                      queryParameters: {
+                        'walletId': chainSwap.walletId,
+                        'returnHome': 'true',
+                      },
                     );
                   } else if (payjoin != null) {
                     context.pushNamed(
                       TransactionsRoute.payjoinTransactionDetails.name,
                       pathParameters: {'payjoinId': payjoin.id},
+                      queryParameters: {'returnHome': 'true'},
                     );
                   }
                 },

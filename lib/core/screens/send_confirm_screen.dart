@@ -99,7 +99,7 @@ class CommonInfoRow extends StatelessWidget {
           BBText(
             title,
             style: context.font.bodySmall?.copyWith(
-              color: context.appColors.secondary,
+              color: context.appColors.onSurfaceVariant,
             ),
           ),
           const Gap(24),
@@ -418,7 +418,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                   BBText(
                     context.loc.coreScreensTransferFeeLabel,
                     style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.secondary,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                   ),
                   const Spacer(),
@@ -431,7 +431,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                   const Gap(4),
                   Icon(
                     expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                    color: context.appColors.secondary,
+                    color: context.appColors.primary,
                   ),
                 ],
               ),

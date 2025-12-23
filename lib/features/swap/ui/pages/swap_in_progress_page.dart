@@ -54,12 +54,16 @@ class SwapInProgressPage extends StatelessWidget {
                         const Gap(8),
                         Text(
                           context.loc.swapTransferPendingTitle,
-                          style: context.font.headlineLarge,
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                         ),
                         const Gap(8),
                         Text(
                           context.loc.swapTransferPendingMessage,
-                          style: context.font.bodyMedium,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                           maxLines: 4,
                           textAlign: .center,
                         ),
@@ -68,12 +72,16 @@ class SwapInProgressPage extends StatelessWidget {
                           swap?.refundTxid == null) ...[
                         Text(
                           context.loc.swapTransferCompletedTitle,
-                          style: context.font.headlineLarge,
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                         ),
                         const Gap(8),
                         Text(
                           context.loc.swapTransferCompletedMessage,
-                          style: context.font.bodyMedium,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                           maxLines: 4,
                           textAlign: .center,
                         ),
@@ -81,12 +89,16 @@ class SwapInProgressPage extends StatelessWidget {
                       if (swap?.status == SwapStatus.refundable) ...[
                         Text(
                           context.loc.swapTransferRefundInProgressTitle,
-                          style: context.font.headlineLarge,
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                         ),
                         const Gap(8),
                         Text(
                           context.loc.swapTransferRefundInProgressMessage,
-                          style: context.font.bodyMedium,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                           maxLines: 4,
                           textAlign: .center,
                         ),
@@ -95,12 +107,16 @@ class SwapInProgressPage extends StatelessWidget {
                           swap?.refundTxid != null) ...[
                         Text(
                           context.loc.swapTransferRefundedTitle,
-                          style: context.font.headlineLarge,
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                         ),
                         const Gap(8),
                         Text(
                           context.loc.swapTransferRefundedMessage,
-                          style: context.font.bodyMedium,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                           maxLines: 4,
                           textAlign: .center,
                         ),
