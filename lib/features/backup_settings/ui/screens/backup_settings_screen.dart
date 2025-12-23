@@ -155,7 +155,7 @@ class _StartBackupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsEntryItem(
-      icon: Icons.backup,
+      icon: Icons.save_as,
       title: context.loc.backupSettingsStartBackup,
       onTap: () => context.pushNamed(
         BackupSettingsSubroute.backupOptions.name,
@@ -243,7 +243,7 @@ class _Bip329LabelsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsEntryItem(
-      icon: Icons.label,
+      icon: Icons.sell,
       title: context.loc.backupSettingsLabelsButton,
       onTap: () => context.push(Bip329LabelsRouter.route.path),
     );
@@ -256,7 +256,7 @@ class _RecoverBullSettingsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsEntryItem(
-      icon: Icons.settings,
+      icon: Icons.cloud_circle,
       iconColor: context.appColors.secondary,
       textColor: context.appColors.secondary,
       title: context.loc.backupSettingsRecoverBullSettings,

@@ -68,7 +68,7 @@ class AppSettingsScreen extends StatelessWidget {
                   },
                 ),
                 SettingsEntryItem(
-                  icon: Icons.pin,
+                  icon: Icons.fiber_pin,
                   title: context.loc.settingsSecurityPinTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.pinCode.name);
@@ -90,7 +90,7 @@ class AppSettingsScreen extends StatelessWidget {
                 ),
                 if (isSuperuser)
                   SettingsEntryItem(
-                    icon: Icons.developer_mode,
+                    icon: Icons.logo_dev,
                     title: context.loc.appSettingsDevModeTitle,
                     trailing: const DevModeSwitch(),
                   ),

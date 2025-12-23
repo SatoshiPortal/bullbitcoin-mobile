@@ -47,7 +47,28 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   },
                 ),
                 SettingsEntryItem(
-                  icon: Icons.settings_input_component,
+                  icon: Icons.sim_card_download,
+                  title: context.loc.bitcoinSettingsImportWalletTitle,
+                  onTap: () => context.pushNamed(
+                    ImportWalletRoute.importWalletHome.name,
+                  ),
+                ),
+                SettingsEntryItem(
+                  icon: Icons.swap_horiz,
+                  title: context.loc.bitcoinSettingsAutoTransferTitle,
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.autoswapSettings.name);
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.satellite_alt,
+                  title: context.loc.bitcoinSettingsBroadcastTransactionTitle,
+                  onTap: () => context.pushNamed(
+                    BroadcastSignedTxRoute.broadcastHome.name,
+                  ),
+                ),
+                SettingsEntryItem(
+                  icon: Icons.hub,
                   title: context.loc.bitcoinSettingsElectrumServerTitle,
                   onTap: () {
                     context.pushNamed(
@@ -56,17 +77,10 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   },
                 ),
                 SettingsEntryItem(
-                  icon: Icons.analytics,
+                  icon: Icons.memory,
                   title: context.loc.bitcoinSettingsMempoolServerTitle,
                   onTap: () {
                     context.pushNamed(MempoolSettingsRoute.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.swap_horiz,
-                  title: context.loc.bitcoinSettingsAutoTransferTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.autoswapSettings.name);
                   },
                 ),
                 if (hasLegacySeeds)
@@ -77,20 +91,6 @@ class BitcoinSettingsScreen extends StatelessWidget {
                       context.pushNamed(SettingsRoute.legacySeeds.name);
                     },
                   ),
-                SettingsEntryItem(
-                  icon: Icons.download,
-                  title: context.loc.bitcoinSettingsImportWalletTitle,
-                  onTap: () => context.pushNamed(
-                    ImportWalletRoute.importWalletHome.name,
-                  ),
-                ),
-                SettingsEntryItem(
-                  icon: Icons.satellite_alt,
-                  title: context.loc.bitcoinSettingsBroadcastTransactionTitle,
-                  onTap: () => context.pushNamed(
-                    BroadcastSignedTxRoute.broadcastHome.name,
-                  ),
-                ),
                 if (isSuperuser)
                   SettingsEntryItem(
                     icon: Icons.science,
