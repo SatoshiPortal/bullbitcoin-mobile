@@ -113,7 +113,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                 crossAxisAlignment: .stretch,
                 children: [
                   SizedBox(
-                    height: 60,
+                    height: 50,
                     child: Center(
                       child: BBText(
                         description,
@@ -125,7 +125,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                       ),
                     ),
                   ),
-                  const Gap(16),
+                  const Gap(12),
                   BBText(
                     needPasswordConfirmation && validatedPassword.isNotEmpty
                         ? context.loc.recoverbullConfirmInput(inputTypeString)
@@ -188,7 +188,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                       errorMaxLines: 4,
                     ),
                   ),
-                  const Gap(30),
+                  const Gap(16),
                   if (needPasswordConfirmation && validatedPassword.isNotEmpty)
                     BBButton.small(
                       label: context.loc.recoverbullGoBackEdit,
@@ -255,11 +255,9 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                         },
                       ),
                     ),
-                  if (inputType == InputType.pin) const Gap(16),
+                  if (inputType == InputType.pin) const Gap(12),
                   Padding(
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).size.height * 0.05,
-                    ),
+                    padding: const EdgeInsets.only(bottom: 60),
                     child: BBButton.big(
                       label:
                           needPasswordConfirmation &&
