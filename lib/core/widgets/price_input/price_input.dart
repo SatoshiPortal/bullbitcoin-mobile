@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
@@ -67,7 +68,11 @@ class PriceInput extends StatelessWidget {
                           : TextField(
                               controller: amountController,
                               focusNode: focusNode,
-                              keyboardType: TextInputType.none,
+                              keyboardType: TextInputType.numberWithOptions(
+                                signed: true,
+                                // We could pass the bitcoin unit to restrict the system DialPad
+                                // decimal: true
+                              ),
                               inputFormatters: [AmountInputFormatter(currency)],
                               showCursor: !readOnly,
                               readOnly: readOnly,
