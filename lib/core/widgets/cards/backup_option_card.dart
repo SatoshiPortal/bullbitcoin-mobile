@@ -44,7 +44,7 @@ class BackupOptionCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: .start,
                 children: [
-                  SizedBox(width: 45, height: 45, child: icon),
+                  SizedBox(width: 40, height: 40, child: icon),
                   const Gap(12),
                   Expanded(
                     child: Column(
