@@ -37,3 +37,25 @@ class WrongSignerForDeviceError implements Exception {
   String toString() =>
       'WrongSignerForDeviceError: Wallet with ID $walletId has signer $signer which is incompatible with signer device $signerDevice.';
 }
+
+class InvalidBalanceError implements Exception {
+  final String field;
+  final int value;
+
+  const InvalidBalanceError({required this.field, required this.value});
+
+  @override
+  String toString() =>
+      'InvalidBalanceError: $field cannot be negative. Given value: $value';
+}
+
+class InvalidOutputError implements Exception {
+  final String field;
+  final dynamic value;
+
+  const InvalidOutputError({required this.field, required this.value});
+
+  @override
+  String toString() =>
+      'InvalidOutputError: Invalid $field. Given value: $value';
+}

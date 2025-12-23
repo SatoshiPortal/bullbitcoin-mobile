@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/primitives/transaction/transaction_direction.dart
 import 'package:bb_mobile/features/wallets/application/errors/wallet_errors.dart';
 import 'package:bb_mobile/features/wallets/application/ports/wallet_port.dart';
 import 'package:bb_mobile/features/wallets/domain/entities/wallet_transaction_entity.dart';
-import 'package:bb_mobile/features/wallets/domain/value_objects/unspent_output_vo.dart';
+import 'package:bb_mobile/features/wallets/domain/value_objects/wallet_output_vo.dart';
 import 'package:bb_mobile/features/wallets/domain/value_objects/wallet_balance_vo.dart';
 import 'package:bb_mobile/features/wallets/frameworks/lwk/lwk_wallet_factory.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -25,7 +25,7 @@ class LwkWalletAdapter implements WalletPort {
        _secureStorage = secureStorage;
 
   @override
-  Future<WalletBalanceVo> getBalance(int walletId) async {
+  Future<WalletBalanceVO> getBalance(int walletId) async {
     final config = await _getWalletConfigById(walletId);
     final wallet = await _lwkWalletFactory.createWallet(
       id: walletId,
@@ -40,7 +40,7 @@ class LwkWalletAdapter implements WalletPort {
       return balance.assetId == assetId;
     }).value;
 
-    return LiquidWalletBalanceVo(confirmedSat: lBtcAssetBalance);
+    return LiquidWalletBalanceVO(confirmedSat: lBtcAssetBalance);
   }
 
   @override
@@ -94,7 +94,7 @@ class LwkWalletAdapter implements WalletPort {
   }
 
   @override
-  Future<List<UnspentOutputVO>> getUnspentOutputs(int walletId) async {
+  Future<List<WalletOutputVO>> getUnspentOutputs(int walletId) async {
     final config = await _getWalletConfigById(walletId);
     final wallet = await _lwkWalletFactory.createWallet(
       id: walletId,
@@ -105,7 +105,7 @@ class LwkWalletAdapter implements WalletPort {
     final utxos = await wallet.utxos();
 
     final unspentOutputs = utxos.map((utxo) {
-      return UnspentOutputVO(
+      return WalletOutputVO(
         txId: utxo.outpoint.txid,
         vout: utxo.outpoint.vout,
         amountSat: utxo.unblinded.value.toInt(),

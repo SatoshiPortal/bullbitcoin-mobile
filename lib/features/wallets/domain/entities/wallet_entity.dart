@@ -56,6 +56,7 @@ class WalletEntity {
     required Network network,
     DateTime? mnemonicTestedAt,
     DateTime? encryptedVaultTestedAt,
+    DateTime? syncedAt,
     DateTime? birthday,
   }) {
     return WalletEntity._(
@@ -65,6 +66,7 @@ class WalletEntity {
       network: network,
       mnemonicTestedAt: mnemonicTestedAt,
       encryptedVaultTestedAt: encryptedVaultTestedAt,
+      syncedAt: syncedAt,
       birthday: birthday,
     );
   }

@@ -1,11 +1,9 @@
 import 'package:bb_mobile/core/infra/database/sqlite_database.dart';
-import 'package:bb_mobile/core/infra/database/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/core/primitives/wallet/signer.dart';
-import 'package:bb_mobile/core_deprecated/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core_deprecated/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core_deprecated/wallet/wallet_metadata_service.dart';
+import 'package:bb_mobile/core/primitives/network/network.dart';
+import 'package:bb_mobile/features/wallets/domain/entities/wallet_entity.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
+import 'package:drift/drift.dart' hide isNotNull;
 import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
@@ -16,32 +14,29 @@ Future<void> main({bool isInitialized = false}) async {
 
   group('WalletMetadata Sqlite Integration Tests', () {
     test('can store and fetch a wallet metadata', () async {
-      const fingerprint = 'master';
-      const scriptType = ScriptType.bip84;
+      //const fingerprint = 'master';
+      //const scriptType = ScriptType.bip84;
 
-      final metadata = WalletMetadataModel(
-        masterFingerprint: fingerprint,
-        id: WalletMetadataService.encodeOrigin(
-          fingerprint: fingerprint,
-          network: Network.bitcoinMainnet,
-          scriptType: scriptType,
-        ),
-        xpubFingerprint: 'abc12345',
-        xpub: 'xpub6CUGRUonZSQ4TWtTMmzXdrXDtypWKiKp5i1Lsfk...',
-        externalPublicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub.../0/*)',
-        internalPublicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub.../1/*)',
-        signer: Signer.local,
-        latestEncryptedBackup: 1680000000,
-        latestPhysicalBackup: 1681000000,
-        isEncryptedVaultTested: true,
-        isPhysicalBackupTested: true,
+      final metadata = WalletEntity.rehydrate(
+        id: 1,
+        label: 'Secure Bitcoin Wallet',
+        network: Network.bitcoin,
         isDefault: true,
-        label: 'My Main Wallet',
         syncedAt: DateTime.now(),
       );
 
       // Store a metadata
-      await sqlite.into(sqlite.walletMetadatas).insert(metadata.toSqlite());
+      await sqlite
+          .into(sqlite.walletMetadatas)
+          .insert(
+            WalletMetadatasCompanion.insert(
+              id: Value(metadata.id!),
+              label: Value(metadata.label),
+              network: metadata.network,
+              isDefault: metadata.isDefault,
+              syncedAt: Value(metadata.syncedAt),
+            ),
+          );
 
       // Fetch one
       final fetchedMetadata = await sqlite.managers.walletMetadatas

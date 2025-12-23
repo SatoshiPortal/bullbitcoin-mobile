@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/primitives/transaction/transaction_direction.dart
 import 'package:bb_mobile/features/wallets/application/errors/wallet_errors.dart';
 import 'package:bb_mobile/features/wallets/application/ports/wallet_port.dart';
 import 'package:bb_mobile/features/wallets/domain/entities/wallet_transaction_entity.dart';
-import 'package:bb_mobile/features/wallets/domain/value_objects/unspent_output_vo.dart';
+import 'package:bb_mobile/features/wallets/domain/value_objects/wallet_output_vo.dart';
 import 'package:bb_mobile/features/wallets/domain/value_objects/wallet_balance_vo.dart';
 import 'package:bb_mobile/features/wallets/frameworks/bdk/bdk_wallet_factory.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -24,12 +24,12 @@ class BdkWalletAdapter implements WalletPort {
        _secureStorage = secureStorage;
 
   @override
-  Future<WalletBalanceVo> getBalance(int walletId) async {
+  Future<WalletBalanceVO> getBalance(int walletId) async {
     final wallet = await _getWalletById(walletId);
 
     final balance = wallet.getBalance();
 
-    return BitcoinWalletBalanceVo(
+    return BitcoinWalletBalanceVO(
       immatureSat: balance.immature.toInt(),
       trustedPendingSat: balance.trustedPending.toInt(),
       untrustedPendingSat: balance.untrustedPending.toInt(),
@@ -86,12 +86,12 @@ class BdkWalletAdapter implements WalletPort {
   }
 
   @override
-  Future<List<UnspentOutputVO>> getUnspentOutputs(int walletId) async {
+  Future<List<WalletOutputVO>> getUnspentOutputs(int walletId) async {
     final wallet = await _getWalletById(walletId);
 
     final unspentList = wallet.listUnspent();
     final unspentOutputs = unspentList.map((unspent) {
-      return UnspentOutputVO(
+      return WalletOutputVO(
         txId: unspent.outpoint.txid,
         vout: unspent.outpoint.vout,
         amountSat: unspent.txout.value.toInt(),

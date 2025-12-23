@@ -10,6 +10,7 @@ class WalletMapper {
       network: row.network,
       mnemonicTestedAt: row.mnemonicTestedAt,
       encryptedVaultTestedAt: row.encryptedVaultTestedAt,
+      syncedAt: row.syncedAt,
       birthday: row.birthday,
     );
   }

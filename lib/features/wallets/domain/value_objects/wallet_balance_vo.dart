@@ -1,15 +1,17 @@
 import 'package:meta/meta.dart';
 
+import '../errors/wallet_errors.dart';
+
 @immutable
-sealed class WalletBalanceVo {
-  const WalletBalanceVo();
+sealed class WalletBalanceVO {
+  const WalletBalanceVO();
 
   int get totalSat;
   int get spendableSat;
 }
 
 @immutable
-class BitcoinWalletBalanceVo extends WalletBalanceVo {
+class BitcoinWalletBalanceVO extends WalletBalanceVO {
   /// Balance from all coinbase outputs not yet matured
   final int _immatureSat;
 
@@ -22,7 +24,7 @@ class BitcoinWalletBalanceVo extends WalletBalanceVo {
   /// Confirmed and immediately spendable balance
   final int _confirmedSat;
 
-  const BitcoinWalletBalanceVo({
+  const BitcoinWalletBalanceVO({
     required int immatureSat,
     required int trustedPendingSat,
     required int untrustedPendingSat,
@@ -31,7 +33,20 @@ class BitcoinWalletBalanceVo extends WalletBalanceVo {
        _trustedPendingSat = trustedPendingSat,
        _untrustedPendingSat = untrustedPendingSat,
        _confirmedSat = confirmedSat,
-       super();
+       super() {
+    if (immatureSat < 0) {
+      throw InvalidBalanceError(field: 'immatureSat', value: immatureSat);
+    }
+    if (trustedPendingSat < 0) {
+      throw InvalidBalanceError(field: 'trustedPendingSat', value: trustedPendingSat);
+    }
+    if (untrustedPendingSat < 0) {
+      throw InvalidBalanceError(field: 'untrustedPendingSat', value: untrustedPendingSat);
+    }
+    if (confirmedSat < 0) {
+      throw InvalidBalanceError(field: 'confirmedSat', value: confirmedSat);
+    }
+  }
 
   int get immatureSat => _immatureSat;
   int get trustedPendingSat => _trustedPendingSat;
@@ -47,12 +62,16 @@ class BitcoinWalletBalanceVo extends WalletBalanceVo {
 }
 
 @immutable
-class LiquidWalletBalanceVo extends WalletBalanceVo {
+class LiquidWalletBalanceVO extends WalletBalanceVO {
   final int _confirmedSat;
 
-  const LiquidWalletBalanceVo({required int confirmedSat})
+  const LiquidWalletBalanceVO({required int confirmedSat})
     : _confirmedSat = confirmedSat,
-      super();
+      super() {
+    if (confirmedSat < 0) {
+      throw InvalidBalanceError(field: 'confirmedSat', value: confirmedSat);
+    }
+  }
 
   @override
   int get spendableSat => _confirmedSat;
@@ -63,8 +82,8 @@ class LiquidWalletBalanceVo extends WalletBalanceVo {
 // TODO: Implement properly with all different Arkade balances when Arkade
 // needs to come out of dev mode
 @immutable
-class ArkadeWalletBalanceVo extends WalletBalanceVo {
-  const ArkadeWalletBalanceVo() : super();
+class ArkadeWalletBalanceVO extends WalletBalanceVO {
+  const ArkadeWalletBalanceVO() : super();
 
   @override
   int get spendableSat => 0;
