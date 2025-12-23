@@ -7,16 +7,16 @@ import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecas
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/verify_address_ledger_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class LedgerLocator {
-  static void registerDatasources() {
+  static void registerDatasources(GetIt locator) {
     locator.registerLazySingleton<LedgerDeviceDatasource>(
       () => LedgerDeviceDatasource(),
     );
   }
 
-  static void registerRepositories() {
+  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<LedgerDeviceRepository>(
       () => LedgerDeviceRepositoryImpl(
         datasource: locator<LedgerDeviceDatasource>(),
@@ -24,7 +24,7 @@ class LedgerLocator {
     );
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<ScanLedgerDevicesUsecase>(
       () => ScanLedgerDevicesUsecase(
         repository: locator<LedgerDeviceRepository>(),

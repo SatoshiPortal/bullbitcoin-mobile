@@ -12,10 +12,10 @@ import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_blo
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class AppStartupLocator {
-  static void setup() {
+  static void setup(GetIt locator) {
     // Use cases
     locator.registerFactory<ResetAppDataUsecase>(
       () =>

@@ -9,16 +9,16 @@ import 'package:bb_mobile/core/bitbox/domain/usecases/sign_psbt_bitbox_usecase.d
 import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/verify_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class BitBoxCoreLocator {
-  static void registerDatasources() {
+  static void registerDatasources(GetIt locator) {
     locator.registerLazySingleton<BitBoxDeviceDatasource>(
       () => BitBoxDeviceDatasource(),
     );
   }
 
-  static void registerRepositories() {
+  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BitBoxDeviceRepository>(
       () => BitBoxDeviceRepositoryImpl(
         datasource: locator<BitBoxDeviceDatasource>(),
@@ -26,7 +26,7 @@ class BitBoxCoreLocator {
     );
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerLazySingleton<ScanBitBoxDevicesUsecase>(
       () => ScanBitBoxDevicesUsecase(
         repository: locator<BitBoxDeviceRepository>(),

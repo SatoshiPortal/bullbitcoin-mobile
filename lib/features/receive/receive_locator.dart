@@ -19,10 +19,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class ReceiveLocator {
-  static void setup() {
+  static void setup(GetIt locator) {
     locator.registerFactory<CreateReceiveSwapUsecase>(
       () => CreateReceiveSwapUsecase(
         walletRepository: locator<WalletRepository>(),

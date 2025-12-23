@@ -23,10 +23,10 @@ import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class TransactionsLocator {
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<GetTransactionsUsecase>(
       () => GetTransactionsUsecase(
         settingsRepository: locator<SettingsRepository>(),
@@ -73,7 +73,7 @@ class TransactionsLocator {
     );
   }
 
-  static void registerBlocs() {
+  static void registerBlocs(GetIt locator) {
     // Bloc
     locator.registerFactoryParam<TransactionsCubit, String?, void>(
       (walletId, _) => TransactionsCubit(
