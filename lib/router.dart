@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/ark/router.dart';
@@ -114,10 +115,12 @@ class AppRouter {
                           BottomNavigationBarItem(
                             icon: const Icon(Icons.currency_bitcoin),
                             label: context.loc.navigationTabWallet,
+                            backgroundColor: context.appColors.background,
                           ),
                           BottomNavigationBarItem(
                             icon: const Icon(Icons.attach_money),
                             label: context.loc.navigationTabExchange,
+                            backgroundColor: context.appColors.background,
                           ),
                         ],
                       ),
