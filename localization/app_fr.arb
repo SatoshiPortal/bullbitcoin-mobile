@@ -360,6 +360,10 @@
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
   },
+  "settingsThemeTitle": "Thème",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
   "settingsArkTitle": "Ark",
   "@settingsArkTitle": {
     "description": "Title for the Ark protocol section in Bitcoin settings"
