@@ -70,59 +70,67 @@ Future<String?> _showWalletPicker({
     context: context,
     isDismissible: true,
     child: Container(
-      height: MediaQuery.of(context).size.height * 0.4,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.4,
+      ),
       decoration: BoxDecoration(
-        color: context.appColors.onPrimary,
+        color: context.appColors.onSecondary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
-      child: Column(
-        mainAxisSize: .min,
-        children: [
-          Row(
-            children: [
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          ),
-          const Gap(8),
-          Expanded(
-            child: CupertinoPicker(
-              scrollController: controller,
-              itemExtent: 70,
-              onSelectedItemChanged: (index) {},
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: Column(
+          mainAxisSize: .min,
+          children: [
+            Row(
               children: [
-                for (final wallet in wallets)
-                  Center(
-                    child: BBText(
-                      wallet.isDefault
-                          ? context.loc.testBackupDefaultWallets
-                          : wallet.displayLabel(context),
-                      style: context.font.bodyLarge?.copyWith(
-                        fontWeight: .w600,
-                        fontSize: 18,
-                      ),
-                    ),
+                const Spacer(),
+                IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    color: context.appColors.secondary,
                   ),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
               ],
             ),
-          ),
-          BBButton.big(
-            label: context.loc.testBackupConfirm,
-            onPressed: () {
-              final wallet = wallets[controller.selectedItem];
-              context.read<TestWalletBackupBloc>().add(
-                LoadMnemonicForWallet(wallet: wallet),
-              );
-              Navigator.of(context).pop();
-            },
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
-          ),
-        ],
+            const Gap(8),
+            Expanded(
+              child: CupertinoPicker(
+                scrollController: controller,
+                itemExtent: 70,
+                onSelectedItemChanged: (index) {},
+                children: [
+                  for (final wallet in wallets)
+                    Center(
+                      child: BBText(
+                        wallet.isDefault
+                            ? context.loc.testBackupDefaultWallets
+                            : wallet.displayLabel(context),
+                        style: context.font.bodyLarge?.copyWith(
+                          fontWeight: .w600,
+                          fontSize: 18,
+                          color: context.appColors.secondary,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            BBButton.big(
+              label: context.loc.testBackupConfirm,
+              onPressed: () {
+                final wallet = wallets[controller.selectedItem];
+                context.read<TestWalletBackupBloc>().add(
+                  LoadMnemonicForWallet(wallet: wallet),
+                );
+                Navigator.of(context).pop();
+              },
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
+            ),
+          ],
+        ),
       ),
     ),
   );
