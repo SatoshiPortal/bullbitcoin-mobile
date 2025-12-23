@@ -42,7 +42,7 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
             final title = context.loc.testBackupWalletTitle(walletName);
 
             return Scaffold(
-              backgroundColor: context.appColors.onSecondary,
+              backgroundColor: context.appColors.background,
               appBar: PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
                 child: AppBarWidget(title: title),
@@ -106,7 +106,10 @@ class _MnemonicDisplay extends StatelessWidget {
           BBText(
             context.loc.testBackupWriteDownPhrase,
             textAlign: .center,
-            style: context.font.headlineLarge?.copyWith(fontWeight: .w600),
+            style: context.font.headlineLarge?.copyWith(
+              fontWeight: .w600,
+              color: context.appColors.text,
+            ),
             maxLines: 2,
           ),
           const Gap(20),
@@ -115,7 +118,7 @@ class _MnemonicDisplay extends StatelessWidget {
             textAlign: .center,
             style: context.font.labelMedium?.copyWith(
               fontWeight: .w700,
-              color: context.appColors.surface,
+              color: context.appColors.textMuted,
               letterSpacing: 0,
               fontSize: 12,
             ),
@@ -128,7 +131,7 @@ class _MnemonicDisplay extends StatelessWidget {
               textAlign: .center,
               style: context.font.labelMedium?.copyWith(
                 fontWeight: .w700,
-                color: context.appColors.surface,
+                color: context.appColors.textMuted,
                 letterSpacing: 0,
                 fontSize: 12,
               ),
@@ -159,7 +162,7 @@ class _MnemonicDisplay extends StatelessWidget {
           ),
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: context.appColors.surface),
+              border: Border.all(color: context.appColors.border),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(11),
                 topRight: Radius.circular(11),
@@ -202,7 +205,7 @@ class _MnemonicDisplay extends StatelessWidget {
                       _buildWarningItem(
                         icon: CupertinoIcons.check_mark,
                         text: context.loc.testBackupTranscribe,
-                        iconColor: const Color(0xFF34C759),
+                        iconColor: context.appColors.success,
                         context: context,
                       ),
                       _buildWarningItem(
@@ -272,10 +275,10 @@ class _RecoveryPhraseWord extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.appColors.surface,
           borderRadius: BorderRadius.circular(2.76),
-          border: Border.all(color: context.appColors.surface, width: 0.69),
+          border: Border.all(color: context.appColors.border, width: 0.69),
           boxShadow: [
             BoxShadow(
-              color: context.appColors.surface,
+              color: context.appColors.border.withValues(alpha: 0.3),
               offset: const Offset(0, 2),
             ),
           ],
@@ -304,7 +307,7 @@ class _RecoveryPhraseWord extends StatelessWidget {
                       fontWeight: .w700,
                       fontSize: 16,
                       letterSpacing: 0.15,
-                      color: context.appColors.onPrimary,
+                      color: context.appColors.onSecondary,
                     ),
                   ),
                 ),
@@ -348,10 +351,10 @@ class _PassphraseWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.appColors.surface,
         borderRadius: BorderRadius.circular(2.76),
-        border: Border.all(color: context.appColors.surface, width: 0.69),
+        border: Border.all(color: context.appColors.border, width: 0.69),
         boxShadow: [
           BoxShadow(
-            color: context.appColors.surface,
+            color: context.appColors.border.withValues(alpha: 0.3),
             offset: const Offset(0, 2),
           ),
         ],
@@ -363,7 +366,7 @@ class _PassphraseWidget extends StatelessWidget {
             context.loc.testBackupPassphrase,
             style: context.font.labelMedium?.copyWith(
               fontWeight: .w700,
-              color: context.appColors.surface,
+              color: context.appColors.onSurface,
               letterSpacing: 0,
               fontSize: 14,
             ),

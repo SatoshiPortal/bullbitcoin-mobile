@@ -7,13 +7,12 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-typedef Mnemonic =
-    ({
-      String label,
-      String passphrase,
-      List<String> words,
-      bip39.Language language,
-    });
+typedef Mnemonic = ({
+  String label,
+  String passphrase,
+  List<String> words,
+  bip39.Language language,
+});
 
 class MnemonicWidget extends StatefulWidget {
   final bip39.Language language;
@@ -217,12 +216,11 @@ class MnemonicWordState extends State<MnemonicWord> {
             width: 34,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color:
-                  widget.word.isEmpty
-                      ? context.appColors.onSurface
-                      : isValidWord
-                      ? context.appColors.success
-                      : context.appColors.error,
+              color: widget.word.isEmpty
+                  ? context.appColors.onSurface
+                  : isValidWord
+                  ? context.appColors.success
+                  : context.appColors.error,
 
               borderRadius: BorderRadius.circular(4),
             ),
@@ -239,6 +237,9 @@ class MnemonicWordState extends State<MnemonicWord> {
               enableSuggestions: false,
               autocorrect: false,
               controller: _controller,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.text,
+              ),
               onChanged: (value) {
                 widget.onWordChanged((
                   index: widget.index,
@@ -268,7 +269,7 @@ class MnemonicWordState extends State<MnemonicWord> {
                 _controller.clear();
                 widget.onWordChanged((index: widget.index, word: ''));
               },
-              icon: const Icon(Icons.close, size: 24),
+              icon: Icon(Icons.close, size: 24, color: context.appColors.text),
               padding: EdgeInsets.zero,
             ),
         ],
@@ -325,13 +326,13 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   void _initializeFocusNodes() {
     focusNodes = List.generate(
       widget.words.length,
-      (index) =>
-          FocusNode()..addListener(() {
-            final focusedIndex = focusNodes.indexWhere((node) => node.hasFocus);
-            if (focusedIndex != -1 && _focusedDisplayIndex != focusedIndex) {
-              setState(() => _focusedDisplayIndex = focusedIndex);
-            }
-          }),
+      (index) => FocusNode()
+        ..addListener(() {
+          final focusedIndex = focusNodes.indexWhere((node) => node.hasFocus);
+          if (focusedIndex != -1 && _focusedDisplayIndex != focusedIndex) {
+            setState(() => _focusedDisplayIndex = focusedIndex);
+          }
+        }),
     );
   }
 
@@ -389,8 +390,8 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final splitIndex =
-        (widget.words.length / MnemonicSentenceWidget.columns).floor();
+    final splitIndex = (widget.words.length / MnemonicSentenceWidget.columns)
+        .floor();
     final leftWords = List.generate(
       splitIndex,
       (i) => (index: i, word: widget.words[i]),
@@ -409,36 +410,34 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
             Expanded(
               child: Column(
                 spacing: 16,
-                children:
-                    leftWords
-                        .map(
-                          (entry) => MnemonicWord(
-                            index: entry.index,
-                            word: entry.word,
-                            onWordChanged: widget.onWordChanged,
-                            focusNode: focusNodes[entry.index],
-                            onComplete: () => _focusNext(entry.index + 1),
-                          ),
-                        )
-                        .toList(),
+                children: leftWords
+                    .map(
+                      (entry) => MnemonicWord(
+                        index: entry.index,
+                        word: entry.word,
+                        onWordChanged: widget.onWordChanged,
+                        focusNode: focusNodes[entry.index],
+                        onComplete: () => _focusNext(entry.index + 1),
+                      ),
+                    )
+                    .toList(),
               ),
             ),
             Expanded(
               child: Column(
                 spacing: 16,
                 crossAxisAlignment: .start,
-                children:
-                    rightWords
-                        .map(
-                          (entry) => MnemonicWord(
-                            index: entry.index,
-                            word: entry.word,
-                            onWordChanged: widget.onWordChanged,
-                            focusNode: focusNodes[entry.index],
-                            onComplete: () => _focusNext(entry.index + 1),
-                          ),
-                        )
-                        .toList(),
+                children: rightWords
+                    .map(
+                      (entry) => MnemonicWord(
+                        index: entry.index,
+                        word: entry.word,
+                        onWordChanged: widget.onWordChanged,
+                        focusNode: focusNodes[entry.index],
+                        onComplete: () => _focusNext(entry.index + 1),
+                      ),
+                    )
+                    .toList(),
               ),
             ),
           ],
@@ -471,21 +470,20 @@ class MnemonicLengthDropdown extends StatelessWidget {
       ),
       dropdownColor: context.appColors.surface,
       borderRadius: BorderRadius.circular(4),
-      items:
-          bip39.MnemonicLength.values
-              .map(
-                (length) => DropdownMenuItem(
-                  value: length,
-                  child: BBText(
-                    '${length.words} words',
-                    style: context.font.bodyMedium?.copyWith(
-                      fontWeight: .w600,
-                      color: context.appColors.text,
-                    ),
-                  ),
+      items: bip39.MnemonicLength.values
+          .map(
+            (length) => DropdownMenuItem(
+              value: length,
+              child: BBText(
+                '${length.words} words',
+                style: context.font.bodyMedium?.copyWith(
+                  fontWeight: .w600,
+                  color: context.appColors.text,
                 ),
-              )
-              .toList(),
+              ),
+            ),
+          )
+          .toList(),
       onChanged: (v) => onChanged(v ?? bip39.MnemonicLength.words12),
     );
   }

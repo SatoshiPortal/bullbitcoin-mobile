@@ -52,7 +52,7 @@ class BackupTestSuccessScreen extends StatelessWidget {
               child: BBButton.big(
                 label: context.loc.testBackupSuccessButton,
                 bgColor: context.appColors.secondary,
-                textColor: context.appColors.onPrimary,
+                textColor: context.appColors.onSecondary,
                 onPressed: () {
                   context.goNamed(WalletRoute.walletHome.name);
                 },

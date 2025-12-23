@@ -52,34 +52,32 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
               BackupOptionCard(
                 icon: Image.asset(
                   Assets.misc.encryptedVault.path,
-                  width: 36,
-                  height: 45,
-                  fit: .cover,
+                  width: 32,
+                  height: 40,
+                  fit: .contain,
                 ),
                 title: context.loc.backupWalletEncryptedVaultTitle,
                 description: context.loc.backupWalletEncryptedVaultDescription,
                 tag: context.loc.backupWalletEncryptedVaultTag,
-                onTap:
-                    () => context.pushNamed(
-                      RecoverBullRoute.recoverbullFlows.name,
-                      extra: RecoverBullFlowsExtra(
-                        flow: switch (widget.flow) {
-                          BackupSettingsFlow.backup =>
-                            RecoverBullFlow.secureVault,
-                          BackupSettingsFlow.test => RecoverBullFlow.testVault,
-                        },
-                        vault: null,
-                      ),
-                    ),
+                onTap: () => context.pushNamed(
+                  RecoverBullRoute.recoverbullFlows.name,
+                  extra: RecoverBullFlowsExtra(
+                    flow: switch (widget.flow) {
+                      BackupSettingsFlow.backup => RecoverBullFlow.secureVault,
+                      BackupSettingsFlow.test => RecoverBullFlow.testVault,
+                    },
+                    vault: null,
+                  ),
+                ),
               ),
               const Gap(16),
 
               BackupOptionCard(
                 icon: Image.asset(
                   Assets.misc.physicalBackup.path,
-                  width: 36,
-                  height: 45,
-                  fit: .cover,
+                  width: 32,
+                  height: 40,
+                  fit: .contain,
                 ),
                 title: context.loc.backupWalletPhysicalBackupTitle,
                 description: context.loc.backupWalletPhysicalBackupDescription,

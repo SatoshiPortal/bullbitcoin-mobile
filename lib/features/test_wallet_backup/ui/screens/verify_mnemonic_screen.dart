@@ -201,13 +201,14 @@ class _ShuffledMnemonicWord extends StatelessWidget {
       splashColor: context.appColors.transparent,
       child: Container(
         margin: const EdgeInsets.fromLTRB(8, 0, 8, 20),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: context.appColors.surface,
           borderRadius: BorderRadius.circular(2.76),
-          border: Border.all(color: context.appColors.surface, width: 0.69),
+          border: Border.all(color: context.appColors.border, width: 0.69),
           boxShadow: [
             BoxShadow(
-              color: context.appColors.surface,
+              color: context.appColors.border.withValues(alpha: 0.3),
               offset: const Offset(0, 2),
             ),
           ],
@@ -230,12 +231,12 @@ class _ShuffledMnemonicWord extends StatelessWidget {
                 height: 34.48,
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? const Color(0xFFE53935)
-                      : const Color(0xFFA9A9A9),
+                      ? context.appColors.primary
+                      : context.appColors.textMuted,
                   border: Border.all(
                     color: isSelected
-                        ? const Color(0xFFE53935)
-                        : const Color(0xFFA9A9A9),
+                        ? context.appColors.primary
+                        : context.appColors.textMuted,
                     width: 0.82,
                   ),
                   borderRadius: BorderRadius.circular(2.46),

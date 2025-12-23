@@ -65,12 +65,11 @@ class TransactionDetailsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title:
-              isOngoingSwap == true
-                  ? (isChainSwap
-                      ? context.loc.transactionDetailTransferProgress
-                      : context.loc.transactionDetailSwapProgress)
-                  : context.loc.transactionDetailTitle,
+          title: isOngoingSwap == true
+              ? (isChainSwap
+                    ? context.loc.transactionDetailTransferProgress
+                    : context.loc.transactionDetailSwapProgress)
+              : context.loc.transactionDetailTitle,
           actionIcon: Icons.close,
           onAction: () {
             if (context.canPop()) {
@@ -148,12 +147,9 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const Gap(16),
                   BBButton.big(
                     disabled: retryingSwap,
-                    label:
-                        isChainSwap
-                            ? context.loc.transactionDetailRetryTransfer(
-                              swapAction,
-                            )
-                            : context.loc.transactionDetailRetrySwap(swapAction),
+                    label: isChainSwap
+                        ? context.loc.transactionDetailRetryTransfer(swapAction)
+                        : context.loc.transactionDetailRetrySwap(swapAction),
                     onPressed: () async {
                       await context.read<TransactionDetailsCubit>().processSwap(
                         swap,

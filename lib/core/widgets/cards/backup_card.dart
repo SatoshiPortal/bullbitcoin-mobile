@@ -23,7 +23,12 @@ class BackupCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Image.asset(Assets.misc.passwordbook.path, height: 32, width: 32),
+            Image.asset(
+              Assets.misc.passwordbook.path,
+              height: 32,
+              width: 32,
+              color: context.appColors.onSecondary,
+            ),
             const Gap(16),
             Column(
               crossAxisAlignment: .start,
@@ -31,17 +36,17 @@ class BackupCard extends StatelessWidget {
                 BBText(
                   'Protect your bitcoin.',
                   style: context.font.bodyMedium,
-                  color: context.appColors.onPrimary,
+                  color: context.appColors.onSecondary,
                 ),
                 BBText(
                   'Back up your wallet now.',
                   style: context.font.bodyMedium,
-                  color: context.appColors.surfaceContainer,
+                  color: context.appColors.onSecondary,
                 ),
               ],
             ),
             const Spacer(),
-            Icon(Icons.arrow_forward, color: context.appColors.onPrimary),
+            Icon(Icons.arrow_forward, color: context.appColors.onSecondary),
           ],
         ),
       ),

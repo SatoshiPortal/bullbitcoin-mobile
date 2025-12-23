@@ -63,17 +63,16 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                           widget.displayWidget ??
                           (widget.displayValue != null
                               ? Text(
-                                widget.displayValue!,
-                                textAlign: .end,
-                                overflow: .clip,
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: context.appColors.onSurface,
-                                  decoration:
-                                      widget.isUnderline
-                                          ? TextDecoration.underline
-                                          : TextDecoration.none,
-                                ),
-                              )
+                                  widget.displayValue!,
+                                  textAlign: .end,
+                                  overflow: .clip,
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    color: context.appColors.onSurface,
+                                    decoration: widget.isUnderline
+                                        ? TextDecoration.underline
+                                        : TextDecoration.none,
+                                  ),
+                                )
                               : const LoadingLineContent()),
                     ),
                     const Gap(8),

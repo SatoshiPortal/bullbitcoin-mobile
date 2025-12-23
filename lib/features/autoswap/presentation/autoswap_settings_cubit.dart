@@ -169,6 +169,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           feeThresholdPercent: feeThreshold,
           alwaysBlock: state.alwaysBlock,
           recipientWalletId: state.selectedBitcoinWalletId,
+          showWarning: state.enabledToggle ? state.settings?.showWarning ?? true : false,
         ),
         isTestnet: isTestnet,
       );
@@ -347,12 +348,13 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
 
       await _saveAutoSwapSettingsUsecase.execute(
         AutoSwap(
-          enabled: false, // Always false for auto-save when disabled
+          enabled: false,
           balanceThresholdSats: balanceThresholdSats,
           triggerBalanceSats: triggerBalanceSats,
           feeThresholdPercent: feeThreshold,
           alwaysBlock: state.alwaysBlock,
           recipientWalletId: state.selectedBitcoinWalletId,
+          showWarning: false,
         ),
         isTestnet: isTestnet,
       );
