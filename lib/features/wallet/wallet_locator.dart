@@ -17,10 +17,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class WalletLocator {
-  static void setup() {
+  static void setup(GetIt locator) {
     // Usecase
     locator.registerFactory<GetUnconfirmedIncomingBalanceUsecase>(
       () => GetUnconfirmedIncomingBalanceUsecase(
@@ -30,9 +30,8 @@ class WalletLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );

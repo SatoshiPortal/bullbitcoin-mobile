@@ -6,13 +6,11 @@ import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_se
 import 'package:get_it/get_it.dart';
 
 class MempoolSettingsLocator {
-  static void setup() {
-    registerBlocs();
+  static void setup(GetIt locator) {
+    registerBlocs(locator);
   }
 
-  static void registerBlocs() {
-    final locator = GetIt.instance;
-
+  static void registerBlocs(GetIt locator) {
     locator.registerFactory<MempoolSettingsCubit>(
       () => MempoolSettingsCubit(
         loadDataUsecase: locator<LoadMempoolServerDataUsecase>(),

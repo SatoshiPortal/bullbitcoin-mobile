@@ -5,10 +5,10 @@ import 'package:bb_mobile/features/pin_code/domain/usecases/delete_pin_code_usec
 import 'package:bb_mobile/features/pin_code/domain/usecases/is_pin_code_set_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class PinCodeLocator {
-  static void setup() {
+  static void setup(GetIt locator) {
     // Todo: check what can be moved to core (since the pin code repository is needed both in settings as in app unlock)
 
     // Repositories

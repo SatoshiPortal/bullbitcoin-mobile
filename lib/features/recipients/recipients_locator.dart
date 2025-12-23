@@ -11,20 +11,20 @@ import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delega
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_it/get_it.dart';
 
 class RecipientsLocator {
-  static void setup() {
+  static void setup(GetIt locator) {
     // Register recipients feature dependencies here
-    registerFrameworks();
-    registerDrivenInterfaceAdapters();
-    registerApplicationServicesAndUseCases();
-    registerDrivingInterfaceAdapters();
+    registerFrameworks(locator);
+    registerDrivenInterfaceAdapters(locator);
+    registerApplicationServicesAndUseCases(locator);
+    registerDrivingInterfaceAdapters(locator);
   }
 
-  static void registerFrameworks() {
+  static void registerFrameworks(GetIt locator) {
     // TODO: These instances should be moved to the core/shared locator so they can
     //  be used by other features that need to call the Bull Bitcoin API, without
     //  needing to have one big datasource with all API calls in it. Every feature
@@ -60,7 +60,7 @@ class RecipientsLocator {
     );
   }
 
-  static void registerDrivenInterfaceAdapters() {
+  static void registerDrivenInterfaceAdapters(GetIt locator) {
     // Only register the DelegatingRecipientsGateway here, since it
     // encapsulates both the mainnet and testnet gateways, which shouldn't be
     // used directly/independently for now.
@@ -80,7 +80,7 @@ class RecipientsLocator {
     );
   }
 
-  static void registerApplicationServicesAndUseCases() {
+  static void registerApplicationServicesAndUseCases(GetIt locator) {
     // Register application services and use cases here
     locator.registerFactory<AddRecipientUsecase>(
       () => AddRecipientUsecase(
@@ -108,7 +108,7 @@ class RecipientsLocator {
     );
   }
 
-  static void registerDrivingInterfaceAdapters() {
+  static void registerDrivingInterfaceAdapters(GetIt locator) {
     // Register presenters, controllers, etc. here
     locator.registerFactoryParam<
       RecipientsBloc,

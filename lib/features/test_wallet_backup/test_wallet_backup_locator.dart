@@ -4,10 +4,10 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class TestWalletBackupLocator {
-  static void setup() {
+  static void setup(GetIt locator) {
     locator.registerLazySingleton<LoadWalletsForNetworkUsecase>(
       () => LoadWalletsForNetworkUsecase(
         walletRepository: locator<WalletRepository>(),

@@ -19,15 +19,15 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_use
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class PayLocator {
-  static void setup() {
-    registerUsecases();
-    registerBlocs();
+  static void setup(GetIt locator) {
+    registerUsecases(locator);
+    registerBlocs(locator);
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<PlacePayOrderUsecase>(
       () => PlacePayOrderUsecase(
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
@@ -53,7 +53,7 @@ class PayLocator {
     );
   }
 
-  static void registerBlocs() {
+  static void registerBlocs(GetIt locator) {
     locator.registerFactoryParam<PayBloc, RecipientViewModel, void>(
       (recipient, _) => PayBloc(
         recipient: recipient,

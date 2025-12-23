@@ -6,10 +6,10 @@ import 'package:bb_mobile/core/bip85/domain/fetch_all_derivations_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class Bip85EntropyLocator {
-  static void setup() {
+  static void setup(GetIt locator) {
     locator.registerFactory<Bip85EntropyCubit>(
       () => Bip85EntropyCubit(
         fetchAllBip85DerivationsUsecase:
@@ -21,7 +21,8 @@ class Bip85EntropyLocator {
         getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
         aliasBip85DerivationUsecase: locator<AliasBip85DerivationUsecase>(),
         revokeBip85DerivationUsecase: locator<RevokeBip85DerivationUsecase>(),
-        activateBip85DerivationUsecase: locator<ActivateBip85DerivationUsecase>(),
+        activateBip85DerivationUsecase:
+            locator<ActivateBip85DerivationUsecase>(),
       ),
     );
   }
