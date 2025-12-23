@@ -1,11 +1,12 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/mempool_url.dart';
+import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -102,11 +103,14 @@ class ArkTxWidget extends StatelessWidget {
                   if (tx is ark_wallet.Transaction_Boarding)
                     GestureDetector(
                       onTap: () async {
-                        await launchUrl(
-                          Uri.parse(
-                            MempoolUrl.bitcoinTxidUrl(txid, isTestnet: false),
-                          ),
+                        final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
+
+                        final mempoolUrl = await mempoolUrlBuilder.bitcoinTxidUrl(
+                          txid,
+                          isTestnet: false,
                         );
+
+                        await launchUrl(Uri.parse(mempoolUrl));
                       },
                       child: Text(
                         StringFormatting.truncateMiddle(txid),

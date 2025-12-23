@@ -93,5 +93,71 @@ class Schema10To11 {
             'is_custom': const Constant(false),
           }),
         );
+
+    // Add mempool tables
+    await m.createTable(schema11.mempoolServers);
+    await m.createTable(schema11.mempoolSettings);
+
+    // Seed default mempool servers
+    final mempoolServers = schema11.mempoolServers;
+    final mempoolServersData = [
+      {
+        'url': ApiServiceConstants.bbMempoolUrlPath,
+        'isTestnet': false,
+        'isLiquid': false,
+        'isCustom': false,
+      },
+      {
+        'url': ApiServiceConstants.testnetMempoolUrlPath,
+        'isTestnet': true,
+        'isLiquid': false,
+        'isCustom': false,
+      },
+      {
+        'url': ApiServiceConstants.bbLiquidMempoolUrlPath,
+        'isTestnet': false,
+        'isLiquid': true,
+        'isCustom': false,
+      },
+      {
+        'url': ApiServiceConstants.bbLiquidMempoolTestnetUrlPath,
+        'isTestnet': true,
+        'isLiquid': true,
+        'isCustom': false,
+      },
+    ];
+    for (final server in mempoolServersData) {
+      await db
+          .into(mempoolServers)
+          .insert(
+            RawValuesInsertable({
+              'url': Constant(server['url']),
+              'is_testnet': Constant(server['isTestnet']),
+              'is_liquid': Constant(server['isLiquid']),
+              'is_custom': Constant(server['isCustom']),
+            }),
+            mode: InsertMode.insertOrReplace,
+          );
+    }
+
+    // Seed default mempool settings
+    final mempoolSettings = schema11.mempoolSettings;
+    final mempoolNetworks = [
+      'bitcoinMainnet',
+      'bitcoinTestnet',
+      'liquidMainnet',
+      'liquidTestnet',
+    ];
+    for (final network in mempoolNetworks) {
+      await db
+          .into(mempoolSettings)
+          .insert(
+            RawValuesInsertable({
+              'network': Constant(network),
+              'use_for_fee_estimation': const Constant(true),
+            }),
+            mode: InsertMode.insertOrReplace,
+          );
+    }
   }
 }

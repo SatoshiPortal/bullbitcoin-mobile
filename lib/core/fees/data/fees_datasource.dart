@@ -1,36 +1,47 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_server_usecase.dart';
+import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
+import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:dio/dio.dart';
 
 class FeesDatasource {
-  final Dio _bitcoinMainnetMempoolHttpClient;
-  final Dio _bitcoinTestnetMempoolHttpClient;
+  final GetActiveMempoolServerUsecase _getActiveMempoolServerUsecase;
+  final MempoolSettingsRepository _mempoolSettingsRepository;
 
   FeesDatasource({
-    String? bitcoinMainnetMempoolUrl,
-    String? bitcoinTestnetMempoolUrl,
-  }) : _bitcoinMainnetMempoolHttpClient = Dio(
-         BaseOptions(
-           baseUrl:
-               bitcoinMainnetMempoolUrl ??
-               'https://${ApiServiceConstants.bbMempoolUrlPath}',
-         ),
-       ),
-       _bitcoinTestnetMempoolHttpClient = Dio(
-         BaseOptions(
-           baseUrl:
-               bitcoinTestnetMempoolUrl ??
-               'https://${ApiServiceConstants.testnetMempoolUrlPath}',
-         ),
-       );
+    required GetActiveMempoolServerUsecase getActiveMempoolServerUsecase,
+    required MempoolSettingsRepository mempoolSettingsRepository,
+  })  : _getActiveMempoolServerUsecase = getActiveMempoolServerUsecase,
+        _mempoolSettingsRepository = mempoolSettingsRepository;
 
   Future<FeeOptions> getBitcoinNetworkFeeOptions({
     required bool isTestnet,
   }) async {
-    final http =
-        isTestnet
-            ? _bitcoinTestnetMempoolHttpClient
-            : _bitcoinMainnetMempoolHttpClient;
+    // Get network settings
+    final network = MempoolServerNetwork.fromEnvironment(
+      isTestnet: isTestnet,
+      isLiquid: false,
+    );
+    final settings = await _mempoolSettingsRepository.fetchByNetwork(network);
+
+    // Determine which mempool server to use
+    String baseUrl;
+    if (settings.useForFeeEstimation) {
+      // Use custom or default mempool server from settings
+      final server = await _getActiveMempoolServerUsecase.execute(
+        isTestnet: isTestnet,
+        isLiquid: false,
+      );
+      baseUrl = server.fullUrl;
+    } else {
+      // Fall back to BB's mempool
+      baseUrl = isTestnet
+          ? 'https://${ApiServiceConstants.testnetMempoolUrlPath}'
+          : 'https://${ApiServiceConstants.bbMempoolUrlPath}';
+    }
+
+    final http = Dio(BaseOptions(baseUrl: baseUrl));
     const path = '/api/v1/fees/recommended';
 
     final resp = await http.get(path);

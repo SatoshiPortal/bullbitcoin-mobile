@@ -4282,6 +4282,476 @@ class ElectrumSettingsCompanion extends UpdateCompanion<ElectrumSettingsData> {
   }
 }
 
+class MempoolServers extends Table
+    with TableInfo<MempoolServers, MempoolServersData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  MempoolServers(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+    'url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> isTestnet = GeneratedColumn<int>(
+    'is_testnet',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (is_testnet IN (0, 1))',
+  );
+  late final GeneratedColumn<int> isLiquid = GeneratedColumn<int>(
+    'is_liquid',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (is_liquid IN (0, 1))',
+  );
+  late final GeneratedColumn<int> isCustom = GeneratedColumn<int>(
+    'is_custom',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (is_custom IN (0, 1))',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [url, isTestnet, isLiquid, isCustom];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mempool_servers';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {url, isTestnet, isLiquid};
+  @override
+  MempoolServersData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MempoolServersData(
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      )!,
+      isTestnet: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_testnet'],
+      )!,
+      isLiquid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_liquid'],
+      )!,
+      isCustom: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_custom'],
+      )!,
+    );
+  }
+
+  @override
+  MempoolServers createAlias(String alias) {
+    return MempoolServers(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(url, is_testnet, is_liquid)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class MempoolServersData extends DataClass
+    implements Insertable<MempoolServersData> {
+  final String url;
+  final int isTestnet;
+  final int isLiquid;
+  final int isCustom;
+  const MempoolServersData({
+    required this.url,
+    required this.isTestnet,
+    required this.isLiquid,
+    required this.isCustom,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['url'] = Variable<String>(url);
+    map['is_testnet'] = Variable<int>(isTestnet);
+    map['is_liquid'] = Variable<int>(isLiquid);
+    map['is_custom'] = Variable<int>(isCustom);
+    return map;
+  }
+
+  MempoolServersCompanion toCompanion(bool nullToAbsent) {
+    return MempoolServersCompanion(
+      url: Value(url),
+      isTestnet: Value(isTestnet),
+      isLiquid: Value(isLiquid),
+      isCustom: Value(isCustom),
+    );
+  }
+
+  factory MempoolServersData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MempoolServersData(
+      url: serializer.fromJson<String>(json['url']),
+      isTestnet: serializer.fromJson<int>(json['isTestnet']),
+      isLiquid: serializer.fromJson<int>(json['isLiquid']),
+      isCustom: serializer.fromJson<int>(json['isCustom']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'url': serializer.toJson<String>(url),
+      'isTestnet': serializer.toJson<int>(isTestnet),
+      'isLiquid': serializer.toJson<int>(isLiquid),
+      'isCustom': serializer.toJson<int>(isCustom),
+    };
+  }
+
+  MempoolServersData copyWith({
+    String? url,
+    int? isTestnet,
+    int? isLiquid,
+    int? isCustom,
+  }) => MempoolServersData(
+    url: url ?? this.url,
+    isTestnet: isTestnet ?? this.isTestnet,
+    isLiquid: isLiquid ?? this.isLiquid,
+    isCustom: isCustom ?? this.isCustom,
+  );
+  MempoolServersData copyWithCompanion(MempoolServersCompanion data) {
+    return MempoolServersData(
+      url: data.url.present ? data.url.value : this.url,
+      isTestnet: data.isTestnet.present ? data.isTestnet.value : this.isTestnet,
+      isLiquid: data.isLiquid.present ? data.isLiquid.value : this.isLiquid,
+      isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MempoolServersData(')
+          ..write('url: $url, ')
+          ..write('isTestnet: $isTestnet, ')
+          ..write('isLiquid: $isLiquid, ')
+          ..write('isCustom: $isCustom')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(url, isTestnet, isLiquid, isCustom);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MempoolServersData &&
+          other.url == this.url &&
+          other.isTestnet == this.isTestnet &&
+          other.isLiquid == this.isLiquid &&
+          other.isCustom == this.isCustom);
+}
+
+class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
+  final Value<String> url;
+  final Value<int> isTestnet;
+  final Value<int> isLiquid;
+  final Value<int> isCustom;
+  final Value<int> rowid;
+  const MempoolServersCompanion({
+    this.url = const Value.absent(),
+    this.isTestnet = const Value.absent(),
+    this.isLiquid = const Value.absent(),
+    this.isCustom = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MempoolServersCompanion.insert({
+    required String url,
+    required int isTestnet,
+    required int isLiquid,
+    required int isCustom,
+    this.rowid = const Value.absent(),
+  }) : url = Value(url),
+       isTestnet = Value(isTestnet),
+       isLiquid = Value(isLiquid),
+       isCustom = Value(isCustom);
+  static Insertable<MempoolServersData> custom({
+    Expression<String>? url,
+    Expression<int>? isTestnet,
+    Expression<int>? isLiquid,
+    Expression<int>? isCustom,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (url != null) 'url': url,
+      if (isTestnet != null) 'is_testnet': isTestnet,
+      if (isLiquid != null) 'is_liquid': isLiquid,
+      if (isCustom != null) 'is_custom': isCustom,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MempoolServersCompanion copyWith({
+    Value<String>? url,
+    Value<int>? isTestnet,
+    Value<int>? isLiquid,
+    Value<int>? isCustom,
+    Value<int>? rowid,
+  }) {
+    return MempoolServersCompanion(
+      url: url ?? this.url,
+      isTestnet: isTestnet ?? this.isTestnet,
+      isLiquid: isLiquid ?? this.isLiquid,
+      isCustom: isCustom ?? this.isCustom,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (isTestnet.present) {
+      map['is_testnet'] = Variable<int>(isTestnet.value);
+    }
+    if (isLiquid.present) {
+      map['is_liquid'] = Variable<int>(isLiquid.value);
+    }
+    if (isCustom.present) {
+      map['is_custom'] = Variable<int>(isCustom.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MempoolServersCompanion(')
+          ..write('url: $url, ')
+          ..write('isTestnet: $isTestnet, ')
+          ..write('isLiquid: $isLiquid, ')
+          ..write('isCustom: $isCustom, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class MempoolSettings extends Table
+    with TableInfo<MempoolSettings, MempoolSettingsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  MempoolSettings(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> network = GeneratedColumn<String>(
+    'network',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> useForFeeEstimation = GeneratedColumn<int>(
+    'use_for_fee_estimation',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 1 CHECK (use_for_fee_estimation IN (0, 1))',
+    defaultValue: const CustomExpression('1'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [network, useForFeeEstimation];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mempool_settings';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {network};
+  @override
+  MempoolSettingsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MempoolSettingsData(
+      network: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}network'],
+      )!,
+      useForFeeEstimation: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}use_for_fee_estimation'],
+      )!,
+    );
+  }
+
+  @override
+  MempoolSettings createAlias(String alias) {
+    return MempoolSettings(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(network)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class MempoolSettingsData extends DataClass
+    implements Insertable<MempoolSettingsData> {
+  final String network;
+  final int useForFeeEstimation;
+  const MempoolSettingsData({
+    required this.network,
+    required this.useForFeeEstimation,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['network'] = Variable<String>(network);
+    map['use_for_fee_estimation'] = Variable<int>(useForFeeEstimation);
+    return map;
+  }
+
+  MempoolSettingsCompanion toCompanion(bool nullToAbsent) {
+    return MempoolSettingsCompanion(
+      network: Value(network),
+      useForFeeEstimation: Value(useForFeeEstimation),
+    );
+  }
+
+  factory MempoolSettingsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MempoolSettingsData(
+      network: serializer.fromJson<String>(json['network']),
+      useForFeeEstimation: serializer.fromJson<int>(
+        json['useForFeeEstimation'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'network': serializer.toJson<String>(network),
+      'useForFeeEstimation': serializer.toJson<int>(useForFeeEstimation),
+    };
+  }
+
+  MempoolSettingsData copyWith({String? network, int? useForFeeEstimation}) =>
+      MempoolSettingsData(
+        network: network ?? this.network,
+        useForFeeEstimation: useForFeeEstimation ?? this.useForFeeEstimation,
+      );
+  MempoolSettingsData copyWithCompanion(MempoolSettingsCompanion data) {
+    return MempoolSettingsData(
+      network: data.network.present ? data.network.value : this.network,
+      useForFeeEstimation: data.useForFeeEstimation.present
+          ? data.useForFeeEstimation.value
+          : this.useForFeeEstimation,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MempoolSettingsData(')
+          ..write('network: $network, ')
+          ..write('useForFeeEstimation: $useForFeeEstimation')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(network, useForFeeEstimation);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MempoolSettingsData &&
+          other.network == this.network &&
+          other.useForFeeEstimation == this.useForFeeEstimation);
+}
+
+class MempoolSettingsCompanion extends UpdateCompanion<MempoolSettingsData> {
+  final Value<String> network;
+  final Value<int> useForFeeEstimation;
+  final Value<int> rowid;
+  const MempoolSettingsCompanion({
+    this.network = const Value.absent(),
+    this.useForFeeEstimation = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MempoolSettingsCompanion.insert({
+    required String network,
+    this.useForFeeEstimation = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : network = Value(network);
+  static Insertable<MempoolSettingsData> custom({
+    Expression<String>? network,
+    Expression<int>? useForFeeEstimation,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (network != null) 'network': network,
+      if (useForFeeEstimation != null)
+        'use_for_fee_estimation': useForFeeEstimation,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MempoolSettingsCompanion copyWith({
+    Value<String>? network,
+    Value<int>? useForFeeEstimation,
+    Value<int>? rowid,
+  }) {
+    return MempoolSettingsCompanion(
+      network: network ?? this.network,
+      useForFeeEstimation: useForFeeEstimation ?? this.useForFeeEstimation,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (network.present) {
+      map['network'] = Variable<String>(network.value);
+    }
+    if (useForFeeEstimation.present) {
+      map['use_for_fee_estimation'] = Variable<int>(useForFeeEstimation.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MempoolSettingsCompanion(')
+          ..write('network: $network, ')
+          ..write('useForFeeEstimation: $useForFeeEstimation, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class Swaps extends Table with TableInfo<Swaps, SwapsData> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -6937,6 +7407,8 @@ class DatabaseAtV11 extends GeneratedDatabase {
   late final PayjoinReceivers payjoinReceivers = PayjoinReceivers(this);
   late final ElectrumServers electrumServers = ElectrumServers(this);
   late final ElectrumSettings electrumSettings = ElectrumSettings(this);
+  late final MempoolServers mempoolServers = MempoolServers(this);
+  late final MempoolSettings mempoolSettings = MempoolSettings(this);
   late final Swaps swaps = Swaps(this);
   late final AutoSwap autoSwap = AutoSwap(this);
   late final Bip85Derivations bip85Derivations = Bip85Derivations(this);
@@ -6955,6 +7427,8 @@ class DatabaseAtV11 extends GeneratedDatabase {
     payjoinReceivers,
     electrumServers,
     electrumSettings,
+    mempoolServers,
+    mempoolSettings,
     swaps,
     autoSwap,
     bip85Derivations,

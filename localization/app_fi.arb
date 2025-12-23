@@ -300,6 +300,90 @@
   "@bitcoinSettingsElectrumServerTitle": {
     "description": "Title for the Electrum server settings section in Bitcoin settings"
   },
+  "mempoolSettingsTitle": "Mempool Server",
+  "@mempoolSettingsTitle": {
+    "description": "Title for mempool settings screen"
+  },
+  "mempoolSettingsDescription": "Configure custom mempool servers for different networks. Each network can use its own server for block explorer and fee estimation.",
+  "@mempoolSettingsDescription": {
+    "description": "Description text for mempool settings screen"
+  },
+  "mempoolSettingsDefaultServer": "Default Server",
+  "@mempoolSettingsDefaultServer": {
+    "description": "Label for default mempool server section"
+  },
+  "mempoolSettingsCustomServer": "Custom Server",
+  "@mempoolSettingsCustomServer": {
+    "description": "Label for custom mempool server section"
+  },
+  "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
+  "@mempoolNetworkBitcoinMainnet": {
+    "description": "Label for Bitcoin mainnet network option"
+  },
+  "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
+  "@mempoolNetworkBitcoinTestnet": {
+    "description": "Label for Bitcoin testnet network option"
+  },
+  "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
+  "@mempoolNetworkLiquidMainnet": {
+    "description": "Label for Liquid mainnet network option"
+  },
+  "mempoolNetworkLiquidTestnet": "Liquid Testnet",
+  "@mempoolNetworkLiquidTestnet": {
+    "description": "Label for Liquid testnet network option"
+  },
+  "mempoolCustomServerAdd": "Add Custom Server",
+  "@mempoolCustomServerAdd": {
+    "description": "Button text to add a custom mempool server"
+  },
+  "mempoolCustomServerEdit": "Edit",
+  "@mempoolCustomServerEdit": {
+    "description": "Button text to edit custom server"
+  },
+  "mempoolCustomServerDelete": "Delete",
+  "@mempoolCustomServerDelete": {
+    "description": "Button text to delete custom server"
+  },
+  "mempoolCustomServerLabel": "CUSTOM",
+  "@mempoolCustomServerLabel": {
+    "description": "Label badge for custom server"
+  },
+  "mempoolServerNotUsed": "Not used (custom server active)",
+  "@mempoolServerNotUsed": {
+    "description": "Label shown when default server is not used because custom server is active"
+  },
+  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
+  "@mempoolCustomServerDeleteTitle": {
+    "description": "Title for delete confirmation dialog"
+  },
+  "mempoolCustomServerDeleteMessage": "Are you sure you want to delete this custom mempool server? The default server will be used instead.",
+  "@mempoolCustomServerDeleteMessage": {
+    "description": "Message for delete confirmation dialog"
+  },
+  "mempoolCustomServerUrl": "Server URL",
+  "@mempoolCustomServerUrl": {
+    "description": "Label for server URL input field"
+  },
+  "mempoolCustomServerUrlEmpty": "Please enter a server URL",
+  "@mempoolCustomServerUrlEmpty": {
+    "description": "Error message when URL is empty"
+  },
+  "mempoolCustomServerSaveSuccess": "Custom server saved successfully",
+  "@mempoolCustomServerSaveSuccess": {
+    "description": "Success message after saving custom server"
+  },
+  "mempoolCustomServerBottomSheetDescription": "Enter the URL of your custom mempool server. The server will be validated before saving.",
+  "@mempoolCustomServerBottomSheetDescription": {
+    "description": "Description text in add custom server bottom sheet"
+  },
+  "mempoolSettingsUseForFeeEstimation": "Use for Fee Estimation",
+  "@mempoolSettingsUseForFeeEstimation": {
+    "description": "Label for fee estimation toggle"
+  },
+  "mempoolSettingsUseForFeeEstimationDescription": "When enabled, this server will be used for fee estimation. When disabled, Bull Bitcoin's mempool server will be used instead.",
+  "@mempoolSettingsUseForFeeEstimationDescription": {
+    "description": "Description for fee estimation toggle"
+  },
   "bitcoinSettingsAutoTransferTitle": "Automaattinen swap",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"

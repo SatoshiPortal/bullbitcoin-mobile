@@ -115,4 +115,42 @@ class DatabaseSeeds {
           ),
         );
   }
+
+  static Future<void> seedDefaultMempoolServers(SqliteDatabase db) async {
+    final serversData = [
+      (ApiServiceConstants.bbMempoolUrlPath, false, false),
+      (ApiServiceConstants.testnetMempoolUrlPath, true, false),
+      (ApiServiceConstants.bbLiquidMempoolUrlPath, false, true),
+      (ApiServiceConstants.bbLiquidMempoolTestnetUrlPath, true, true),
+    ];
+
+    for (final (url, isTestnet, isLiquid) in serversData) {
+      final server = MempoolServerRow(
+        url: url,
+        isTestnet: isTestnet,
+        isLiquid: isLiquid,
+        isCustom: false,
+      );
+
+      await db.into(db.mempoolServers).insertOnConflictUpdate(server);
+    }
+  }
+
+  static Future<void> seedDefaultMempoolSettings(SqliteDatabase db) async {
+    final networks = [
+      'bitcoinMainnet',
+      'bitcoinTestnet',
+      'liquidMainnet',
+      'liquidTestnet',
+    ];
+
+    for (final network in networks) {
+      final settings = MempoolSettingsRow(
+        network: network,
+        useForFeeEstimation: true,
+      );
+
+      await db.into(db.mempoolSettings).insertOnConflictUpdate(settings);
+    }
+  }
 }

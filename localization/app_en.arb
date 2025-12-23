@@ -452,6 +452,94 @@
   "@bitcoinSettingsElectrumServerTitle": {
     "description": "Title for the Electrum server settings section in Bitcoin settings"
   },
+  "bitcoinSettingsMempoolServerTitle": "Mempool Server Settings",
+  "@bitcoinSettingsMempoolServerTitle": {
+    "description": "Title for the Mempool server settings section in Bitcoin settings"
+  },
+  "mempoolSettingsTitle": "Mempool Server",
+  "@mempoolSettingsTitle": {
+    "description": "Title for mempool settings screen"
+  },
+  "mempoolSettingsDescription": "Configure custom mempool servers for different networks. Each network can use its own server for block explorer and fee estimation.",
+  "@mempoolSettingsDescription": {
+    "description": "Description text for mempool settings screen"
+  },
+  "mempoolSettingsDefaultServer": "Default Server",
+  "@mempoolSettingsDefaultServer": {
+    "description": "Label for default mempool server section"
+  },
+  "mempoolSettingsCustomServer": "Custom Server",
+  "@mempoolSettingsCustomServer": {
+    "description": "Label for custom mempool server section"
+  },
+  "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
+  "@mempoolNetworkBitcoinMainnet": {
+    "description": "Label for Bitcoin Mainnet network"
+  },
+  "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
+  "@mempoolNetworkBitcoinTestnet": {
+    "description": "Label for Bitcoin Testnet network"
+  },
+  "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
+  "@mempoolNetworkLiquidMainnet": {
+    "description": "Label for Liquid Mainnet network"
+  },
+  "mempoolNetworkLiquidTestnet": "Liquid Testnet",
+  "@mempoolNetworkLiquidTestnet": {
+    "description": "Label for Liquid Testnet network"
+  },
+  "mempoolCustomServerAdd": "Add Custom Server",
+  "@mempoolCustomServerAdd": {
+    "description": "Button text to add custom mempool server"
+  },
+  "mempoolCustomServerEdit": "Edit",
+  "@mempoolCustomServerEdit": {
+    "description": "Button text to edit custom mempool server"
+  },
+  "mempoolCustomServerDelete": "Delete",
+  "@mempoolCustomServerDelete": {
+    "description": "Button text to delete custom mempool server"
+  },
+  "mempoolCustomServerLabel": "CUSTOM",
+  "@mempoolCustomServerLabel": {
+    "description": "Label badge for custom server"
+  },
+  "mempoolServerNotUsed": "Not used (custom server active)",
+  "@mempoolServerNotUsed": {
+    "description": "Label shown when default server is not used because custom server is active"
+  },
+  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
+  "@mempoolCustomServerDeleteTitle": {
+    "description": "Title for delete custom server confirmation dialog"
+  },
+  "mempoolCustomServerDeleteMessage": "Are you sure you want to delete this custom mempool server? The default server will be used instead.",
+  "@mempoolCustomServerDeleteMessage": {
+    "description": "Message for delete custom server confirmation dialog"
+  },
+  "mempoolCustomServerUrl": "Server URL",
+  "@mempoolCustomServerUrl": {
+    "description": "Label for custom mempool server URL input field"
+  },
+  "mempoolCustomServerUrlEmpty": "Please enter a server URL",
+  "@mempoolCustomServerUrlEmpty": {
+    "description": "Error message when server URL is empty"
+  },
+  "mempoolCustomServerSaveSuccess": "Custom server saved successfully",
+  "@mempoolCustomServerSaveSuccess": {
+    "description": "Success message when custom server is saved"
+  },
+  "mempoolCustomServerBottomSheetDescription": "Enter the URL of your custom mempool server. The server will be validated before saving.",
+  "@mempoolCustomServerBottomSheetDescription": {
+    "description": "Description in bottom sheet for adding/editing custom server"
+  },
+  "mempoolSettingsUseForFeeEstimation": "Use for Fee Estimation",
+  "@mempoolSettingsUseForFeeEstimation": {
+    "description": "Label for use for fee estimation toggle"
+  },
+  "mempoolSettingsUseForFeeEstimationDescription": "When enabled, this server will be used for fee estimation. When disabled, Bull Bitcoin's mempool server will be used instead.",
+  "@mempoolSettingsUseForFeeEstimationDescription": {
+    "description": "Description for use for fee estimation toggle"
+  },
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"
@@ -11701,6 +11789,10 @@
   "delete": "Delete",
   "@delete": {
     "description": "Generic delete button label"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button label"
   },
   "statusCheckTitle": "Service Status",
   "@statusCheckTitle": {

@@ -27,6 +27,8 @@ class Schema0To1 {
       DatabaseSeeds.seedDefaultElectrumSettings(m.database as SqliteDatabase),
       DatabaseSeeds.seedDefaultAutoSwap(m.database as SqliteDatabase),
       DatabaseSeeds.seedDefaultRecoverbull(m.database as SqliteDatabase),
+      DatabaseSeeds.seedDefaultMempoolServers(m.database as SqliteDatabase),
+      DatabaseSeeds.seedDefaultMempoolSettings(m.database as SqliteDatabase),
     ]);
   }
 }

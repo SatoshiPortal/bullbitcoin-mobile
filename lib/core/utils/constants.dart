@@ -60,14 +60,16 @@ class PayjoinConstants {
 class ApiServiceConstants {
   // Bitcoin mempool
   static const bbMempoolUrlPath = 'mempool.bullbitcoin.com';
-  static const publicMempoolUrlPath = 'mempool.space';
+  static const publicMempoolUrlPath = 'mempool.space'; // note: not used
   static const testnetMempoolUrlPath = 'mempool.space/testnet';
 
   // Liquid mempool
   static const bbLiquidMempoolUrlPath = 'liquid.bullbitcoin.com';
   static const bbLiquidMempoolTestnetUrlPath = 'liquid.bullbitcoin.com/testnet';
-  static const publicLiquidMempoolUrl = 'https://liquid.network';
-  static const publicLiquidMempoolTestnetUrl = 'https://liquid.network/testnet';
+  static const publicLiquidMempoolUrl =
+      'https://liquid.network'; // note: not used
+  static const publicLiquidMempoolTestnetUrl =
+      'https://liquid.network/testnet'; // note: not used
 
   // Bitcoin Electrum servers
   static const fulcrumElectrumUrl = 'ssl://fulcrum.bullbitcoin.com:50002';
